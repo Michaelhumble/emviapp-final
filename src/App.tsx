@@ -25,6 +25,10 @@ import CustomerDashboard from "./pages/dashboard/Customer";
 import ArtistDashboard from "./pages/dashboard/Artist";
 import OwnerDashboard from "./pages/dashboard/Owner";
 import SupplierDashboard from "./pages/dashboard/Supplier";
+import NailJobs from "./pages/NailJobs";
+import SalonMarketplace from "./pages/SalonMarketplace";
+import SupplierDirectory from "./pages/SupplierDirectory";
+import ProductPromotions from "./pages/ProductPromotions";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +55,12 @@ const App = () => (
             <Route path="/analysis" element={<Analysis />} />
             <Route path="/post-job" element={<PostJob />} />
             <Route path="/post-salon" element={<PostSalon />} />
+            
+            {/* New Feature Routes */}
+            <Route path="/nail-jobs" element={<NailJobs />} />
+            <Route path="/salon-marketplace" element={<SalonMarketplace />} />
+            <Route path="/supplier-directory" element={<SupplierDirectory />} />
+            <Route path="/product-promotions" element={<ProductPromotions />} />
             
             {/* Dashboard Routes */}
             <Route path="/dashboard/customer" element={<CustomerDashboard />} />
