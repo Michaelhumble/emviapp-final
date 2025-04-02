@@ -5,11 +5,22 @@ import { motion } from "framer-motion";
 
 const Hero = () => {
   return (
-    <div className="relative bg-gradient-to-br from-primary/10 to-primary/5 pt-20 pb-24 overflow-hidden">
-      <div className="container mx-auto px-4">
+    <div className="relative bg-[#FDFDFD] pt-20 pb-24 overflow-hidden">
+      {/* Blurred background image overlay */}
+      <div className="absolute inset-0 w-full h-full overflow-hidden">
+        <div className="absolute inset-0 bg-black/20 z-10" aria-hidden="true" />
+        <img 
+          src="https://images.unsplash.com/photo-1562322140-8baeececf3df?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1769&q=80" 
+          alt="" 
+          className="w-full h-full object-cover scale-105 blur-sm opacity-50"
+          aria-hidden="true"
+        />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-20">
         <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
           <motion.h1 
-            className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif leading-tight mb-6"
+            className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif leading-tight mb-6 text-gray-900"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
@@ -17,7 +28,7 @@ const Hero = () => {
             The Future of Hiring for the Beauty Industry
           </motion.h1>
           <motion.p 
-            className="text-lg md:text-xl text-gray-600 mb-8 max-w-3xl font-sans"
+            className="text-lg md:text-xl text-gray-700 mb-8 max-w-3xl font-sans"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
