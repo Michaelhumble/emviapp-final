@@ -8,6 +8,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Salons from "./pages/Salons";
+import SalonOwners from "./pages/SalonOwners";
 import Jobs from "./pages/Jobs";
 import Profile from "./pages/Profile";
 import SignIn from "./pages/auth/SignIn";
@@ -35,6 +36,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/salons" element={<Salons />} />
+            <Route path="/salon-owners" element={<SalonOwners />} />
             <Route path="/jobs" element={<Jobs />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/checkout" element={<Checkout />} />
@@ -46,7 +48,7 @@ const App = () => (
             <Route path="/suppliers" element={<Suppliers />} />
             <Route path="/analysis" element={<Analysis />} />
             
-            {/* New Dashboard Routes */}
+            {/* Dashboard Routes */}
             <Route path="/dashboard/customer" element={<CustomerDashboard />} />
             <Route path="/dashboard/artist" element={<ArtistDashboard />} />
             <Route path="/dashboard/owner" element={<OwnerDashboard />} />

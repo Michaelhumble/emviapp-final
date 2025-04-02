@@ -45,12 +45,30 @@ const Navbar = () => {
           >
             Salons
           </Link>
-          <Link 
-            to="/artists" 
-            className="text-gray-600 hover:text-primary transition-colors"
-          >
-            Community
-          </Link>
+          
+          {/* Community Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="text-gray-600 hover:text-primary transition-colors">
+                Community
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center">
+              <DropdownMenuItem asChild>
+                <Link to="/customers" className="w-full">Customers</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/artists" className="w-full">Artists</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/salon-owners" className="w-full">Salon Owners</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/suppliers" className="w-full">Suppliers</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
           <Link 
             to="/analysis" 
             className="text-gray-600 hover:text-primary transition-colors"
@@ -131,12 +149,35 @@ const Navbar = () => {
                 >
                   Salons
                 </Link>
-                <Link
-                  to="/artists"
-                  className="text-gray-600 hover:text-primary transition-colors block py-2"
-                >
-                  Community
-                </Link>
+                <div className="py-2">
+                  <p className="font-medium mb-2">Community</p>
+                  <div className="pl-4 flex flex-col gap-2">
+                    <Link
+                      to="/customers"
+                      className="text-gray-600 hover:text-primary transition-colors block py-1"
+                    >
+                      Customers
+                    </Link>
+                    <Link
+                      to="/artists"
+                      className="text-gray-600 hover:text-primary transition-colors block py-1"
+                    >
+                      Artists
+                    </Link>
+                    <Link
+                      to="/salon-owners"
+                      className="text-gray-600 hover:text-primary transition-colors block py-1"
+                    >
+                      Salon Owners
+                    </Link>
+                    <Link
+                      to="/suppliers"
+                      className="text-gray-600 hover:text-primary transition-colors block py-1"
+                    >
+                      Suppliers
+                    </Link>
+                  </div>
+                </div>
                 <Link
                   to="/analysis"
                   className="text-gray-600 hover:text-primary transition-colors block py-2"
