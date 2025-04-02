@@ -27,8 +27,8 @@ const ArtistCallout = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Behind Every Set of Nails is a Hustle</h2>
-            <p className="text-lg text-gray-600 mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 font-display tracking-wide">Behind Every Set of Nails is a Hustle</h2>
+            <p className="text-lg text-gray-600 mb-8 font-sans leading-relaxed">
               You don't have to hustle alone. EmviApp is here to support you with consistent clients, 
               fair compensation, and career growth opportunities.
             </p>

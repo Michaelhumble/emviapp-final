@@ -50,16 +50,28 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-8">
             <div className="flex space-x-6">
               <Link
-                to="/salons"
-                className="text-gray-700 hover:text-primary transition-colors"
+                to="/customers"
+                className="text-gray-700 hover:text-primary transition-colors font-sans"
               >
-                Salons
+                Customers
               </Link>
               <Link
-                to="/jobs"
-                className="text-gray-700 hover:text-primary transition-colors"
+                to="/artists"
+                className="text-gray-700 hover:text-primary transition-colors font-sans"
               >
-                Jobs
+                Artists
+              </Link>
+              <Link
+                to="/salons"
+                className="text-gray-700 hover:text-primary transition-colors font-sans"
+              >
+                Salon Owners
+              </Link>
+              <Link
+                to="/suppliers"
+                className="text-gray-700 hover:text-primary transition-colors font-sans"
+              >
+                Suppliers
               </Link>
             </div>
 
@@ -105,18 +117,32 @@ const Navbar = () => {
           <div className="md:hidden mt-4 pb-4">
             <div className="flex flex-col space-y-4">
               <Link
-                to="/salons"
-                className="text-gray-700 hover:text-primary transition-colors"
+                to="/customers"
+                className="text-gray-700 hover:text-primary transition-colors font-sans"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Salons
+                Customers
               </Link>
               <Link
-                to="/jobs"
-                className="text-gray-700 hover:text-primary transition-colors"
+                to="/artists"
+                className="text-gray-700 hover:text-primary transition-colors font-sans"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Jobs
+                Artists
+              </Link>
+              <Link
+                to="/salons"
+                className="text-gray-700 hover:text-primary transition-colors font-sans"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Salon Owners
+              </Link>
+              <Link
+                to="/suppliers"
+                className="text-gray-700 hover:text-primary transition-colors font-sans"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Suppliers
               </Link>
               {user ? (
                 <>
