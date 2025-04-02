@@ -1,8 +1,10 @@
 
 import { Link } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { user } = useAuth();
   
   return (
     <footer className="bg-gray-900 text-white">
@@ -12,6 +14,7 @@ const Footer = () => {
             <h3 className="text-xl font-bold mb-4">EmviApp</h3>
             <p className="text-gray-400 mb-4">
               Connecting beauty professionals with clients and salons.
+              Built with love for the beauty world.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-white">
@@ -55,26 +58,25 @@ const Footer = () => {
           </div>
           
           <div>
-            <h3 className="text-lg font-semibold mb-4">Subscribe</h3>
-            <p className="text-gray-400 mb-4">Stay updated with our latest news and offers.</p>
-            <form className="flex flex-col sm:flex-row gap-2">
-              <input
-                type="email"
-                placeholder="Your email"
-                className="px-4 py-2 rounded-md focus:outline-none text-gray-900"
-              />
-              <button
-                type="submit"
-                className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition duration-300"
-              >
-                Subscribe
-              </button>
-            </form>
+            <h3 className="text-lg font-semibold mb-4">Account</h3>
+            <ul className="space-y-2">
+              {user ? (
+                <>
+                  <li><Link to="/profile" className="text-gray-400 hover:text-white">Profile</Link></li>
+                  <li><Link to="/messages" className="text-gray-400 hover:text-white">Messages</Link></li>
+                </>
+              ) : (
+                <>
+                  <li><Link to="/auth/signin" className="text-gray-400 hover:text-white">Sign In</Link></li>
+                  <li><Link to="/auth/signup" className="text-gray-400 hover:text-white">Sign Up</Link></li>
+                </>
+              )}
+            </ul>
           </div>
         </div>
         
         <div className="border-t border-gray-800 mt-12 pt-6 text-center text-gray-400">
-          <p>&copy; {currentYear} EmviApp. All rights reserved.</p>
+          <p>&copy; {currentYear} EmviApp. Built with love for the beauty world.</p>
         </div>
       </div>
     </footer>
