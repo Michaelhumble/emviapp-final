@@ -12,6 +12,8 @@ import Jobs from "./pages/Jobs";
 import Profile from "./pages/Profile";
 import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
+import Checkout from "./pages/Checkout";
+import Messaging from "./pages/Messaging";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +29,8 @@ const App = () => (
             <Route path="/salons" element={<Salons />} />
             <Route path="/jobs" element={<Jobs />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/messages" element={<Messaging />} />
             <Route path="/auth/signin" element={<SignIn />} />
             <Route path="/auth/signup" element={<SignUp />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
