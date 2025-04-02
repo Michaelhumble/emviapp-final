@@ -1,6 +1,7 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { EmviLogo } from "@/components/ui/logo";
+import EmviLogo from "@/components/branding/EmviLogo";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -175,8 +176,6 @@ const Navbar = () => {
           </Sheet>
         </div>
       </div>
-      
-      {/* Mobile menu */}
     </header>
   );
 };
