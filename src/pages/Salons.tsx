@@ -1,652 +1,328 @@
 
 import { useState } from "react";
-import Layout from "@/components/layout/Layout";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
-import { Building, Phone, Users, DollarSign, Info, MapPin, MessageSquare } from "lucide-react";
-import { Link } from "react-router-dom";
+import { MapPin, Phone, DollarSign, Users, Building, Star, Calendar } from "lucide-react";
+import Layout from "@/components/layout/Layout";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 
-// Mock data for salons - would come from API in production
-const salonListings = [
+// Hiring salons data (jobs)
+const hiringSalons = [
   {
     id: 1,
-    name: "Elegant Nails & Spa",
-    nameVn: "Tiệm Nail Elegant",
-    location: "New York, NY",
-    revenue: "$350K/year",
-    rent: "$5,000/month",
-    staffCount: 8,
-    contactName: "Sarah Johnson",
-    phone: "(212) 555-9876",
-    price: "$250,000",
-    description: "Well-established nail salon with loyal customer base. 8 manicure stations, 6 pedicure chairs, all modern equipment. Great location with high foot traffic.",
-    image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e",
-    forSale: true,
-    forRent: false,
-    hiring: true,
+    name: "Luxury Nails & Spa",
+    location: "Houston, TX",
+    jobTitle: {
+      vi: "Cần thợ gấp",
+      en: "Nail Tech Needed ASAP"
+    },
+    salary: "$800-1200/week",
+    features: ["Weekly Pay", "Tips", "Bao Lương Nếu Cần"],
+    phone: "(713) 555-1234",
+    image: "https://images.unsplash.com/photo-1632345031435-8727f6897d53?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60"
   },
   {
     id: 2,
-    name: "Modern Beauty Lounge",
-    nameVn: "Tiệm Modern Beauty",
-    location: "Los Angeles, CA",
-    revenue: "$280K/year",
-    rent: "$4,200/month",
-    staffCount: 6,
-    contactName: "Michael Chen",
-    phone: "(310) 555-3421",
-    price: "$180,000",
-    description: "Contemporary salon in upscale shopping district. Recently remodeled with premium fixtures and equipment. Excellent opportunity for booth rental.",
-    image: "https://images.unsplash.com/photo-1470259078422-826894b933aa",
-    forSale: false,
-    forRent: true,
-    hiring: true,
+    name: "Diamond Nails",
+    location: "Dallas, TX",
+    jobTitle: {
+      vi: "Tuyển thợ bột",
+      en: "Seeking Powder Specialist"
+    },
+    salary: "$1000-1500/week",
+    features: ["Full-Time", "Tips"],
+    phone: "(214) 555-2345",
+    image: "https://images.unsplash.com/photo-1607779097040-26e80aa78e66?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60"
   },
   {
     id: 3,
-    name: "Luxe Hair Studio",
-    nameVn: "Tiệm Luxe Hair",
-    location: "Miami, FL",
-    revenue: "$420K/year",
-    rent: "$6,500/month",
-    staffCount: 10,
-    contactName: "Jessica Rodriguez",
-    phone: "(305) 555-7890",
-    price: "$320,000",
-    description: "Premium hair salon with established clientele. Fully equipped with top-of-the-line stations and products. Owner retiring after 15 years of successful operation.",
-    image: "https://images.unsplash.com/photo-1633681926022-84c23e8cb2d6",
-    forSale: true,
-    forRent: false,
-    hiring: false,
+    name: "Queen Nails",
+    location: "San Jose, CA",
+    jobTitle: {
+      vi: "Cần thợ nail",
+      en: "Nail Technician Position"
+    },
+    salary: "Call for salary",
+    features: ["Weekly Pay", "Bao Lương Nếu Cần"],
+    phone: "(408) 555-3456",
+    image: "https://images.unsplash.com/photo-1610992015732-2449b76344bc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60"
   },
   {
     id: 4,
-    name: "Serenity Day Spa",
-    nameVn: "Tiệm Spa Serenity",
-    location: "Chicago, IL",
-    revenue: "$310K/year",
-    rent: "$4,800/month",
-    staffCount: 7,
-    contactName: "David Kim",
-    phone: "(312) 555-6543",
-    price: "$230,000",
-    description: "Full-service day spa with massage rooms, facial rooms, and nail services. Established for 8 years with consistent growth. Great opportunity for expansion.",
-    image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef",
-    forSale: false,
-    forRent: true,
-    hiring: false,
-  },
-  {
-    id: 5,
-    name: "Chic Style Salon",
-    nameVn: "Tiệm Chic Style",
-    location: "Austin, TX",
-    revenue: "$250K/year",
-    rent: "$3,800/month",
-    staffCount: 5,
-    contactName: "Amanda Taylor",
-    price: "$140,000",
-    phone: "(512) 555-2109",
-    description: "Hip, trendy salon in downtown Austin. Looking for experienced stylists to join our team. Booth rental available with flexible terms.",
-    image: "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f",
-    forSale: false,
-    forRent: true,
-    hiring: true,
-  },
-  {
-    id: 6,
-    name: "Glamour & Grace",
-    nameVn: "Tiệm Glamour & Grace",
-    location: "Seattle, WA",
-    revenue: "$380K/year",
-    rent: "$5,200/month",
-    staffCount: 9,
-    contactName: "Robert Williams",
-    phone: "(206) 555-8765",
-    price: "$295,000",
-    description: "Award-winning salon with prime downtown location. Owner selling due to relocation. Turnkey operation with established clientele and expert staff willing to stay.",
-    image: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250",
-    forSale: true,
-    forRent: false,
-    hiring: false,
-  },
-  {
-    id: 7,
-    name: "Prestige Nails & Spa",
-    nameVn: "Tiệm Prestige Nails",
-    location: "San Francisco, CA",
-    revenue: "$400K/year",
-    rent: "$6,800/month",
-    staffCount: 12,
-    contactName: "Linda Wang",
-    phone: "(415) 555-4321",
-    price: "$350,000",
-    description: "Upscale nail salon in premium location with 10+ years of operation. Includes 10 manicure stations, 8 pedicure chairs, and 2 private treatment rooms.",
-    image: "https://images.unsplash.com/photo-1595446402689-71e41e575e50",
-    forSale: true,
-    forRent: false,
-    hiring: true,
-  },
-  {
-    id: 8,
-    name: "Rose Nail Salon",
-    nameVn: "Tiệm Nail Rose",
-    location: "Denver, CO",
-    revenue: "$280K/year",
-    rent: "$4,000/month",
-    staffCount: 6,
-    contactName: "John Nguyen",
-    phone: "(720) 555-9876",
-    price: "$175,000",
-    description: "Established nail salon with loyal clientele. Great opportunity for new owner. All equipment and inventory included in sale price.",
-    image: "https://images.unsplash.com/photo-1580087061158-4402f2075b6d",
-    forSale: true,
-    forRent: false,
-    hiring: false,
-  },
+    name: "Crystal Spa & Nails",
+    location: "Atlanta, GA",
+    jobTitle: {
+      vi: "Tuyển thợ có kinh nghiệm",
+      en: "Experienced Nail Tech Wanted"
+    },
+    salary: "$900-1400/week",
+    features: ["Full-Time", "Tips"],
+    phone: "(404) 555-4567",
+    image: "https://images.unsplash.com/photo-1613966802194-d46a163af70c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzJ8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60"
+  }
 ];
 
-// Job listings imported from the Jobs page data
-const jobListings = [
+// Salons for sale data
+const salonsForSale = [
   {
-    id: 1,
-    title: "Senior Nail Technician",
-    titleVn: "Cần thợ gấp",
-    salon: "Glamour Nail & Spa",
-    location: "New York, NY",
-    salary: "$25-35/hr + tips",
-    image: "https://images.unsplash.com/photo-1604654894610-df63bc536371",
-    phone: "(212) 555-1234",
-    urgentLabel: "Weekly Pay",
+    id: 101,
+    name: "Elite Nails & Spa",
+    location: "Orlando, FL",
+    price: "$120,000",
+    rent: "$3,500/month",
+    staff: 6,
+    revenue: "$28,000/month",
+    features: ["10 Years Established", "High Traffic Area", "Full Equipment"],
+    description: {
+      vi: "Tiệm rộng 1800sf, 6 ghế nail, 6 ghế spa pedicure. Tiệm đông khách, khu Mỹ trắng, income cao.",
+      en: "1800sf salon, 6 nail stations, 6 spa pedicure chairs. Busy salon in upscale area with high income."
+    },
+    phone: "(407) 555-6789",
+    image: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bmFpbCUyMHNhbG9ufGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60"
   },
   {
-    id: 2,
-    title: "Hair Stylist",
-    titleVn: "Thợ làm tóc",
-    salon: "Chic Styles",
-    location: "Los Angeles, CA",
-    salary: "$30-40/hr + tips",
-    image: "https://images.unsplash.com/photo-1560066984-138dadb4c035",
-    phone: "(310) 555-6789",
-    urgentLabel: "Bao Luong Neu Can",
+    id: 102,
+    name: "Golden Nails",
+    location: "San Diego, CA",
+    price: "$180,000",
+    rent: "$4,200/month",
+    staff: 8,
+    revenue: "$35,000/month",
+    features: ["Prime Location", "Owner Will Train", "Loyal Customers"],
+    description: {
+      vi: "Tiệm đẹp khu Mỹ trắng, income ổn định. Chủ bán vì về hưu, sẽ training lại cho chủ mới.",
+      en: "Beautiful salon in upscale area with stable income. Owner selling due to retirement, will train new owner."
+    },
+    phone: "(619) 555-7890",
+    image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bmFpbCUyMHNhbG9ufGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60"
   },
   {
-    id: 3,
-    title: "Nail Technician",
-    titleVn: "Cần thợ nail",
-    salon: "Luxe Nails",
-    location: "Houston, TX",
-    salary: "$25-32/hr + tips",
-    image: "https://images.unsplash.com/photo-1610992003924-38fb62a3e5c0",
-    phone: "(713) 555-4321",
-    urgentLabel: "Tips",
+    id: 103,
+    name: "Serenity Nails & Spa",
+    location: "Chicago, IL",
+    price: "$95,000",
+    rent: "$3,800/month",
+    staff: 5,
+    revenue: "$22,000/month",
+    features: ["New Equipment", "Near Shopping Center", "Parking Available"],
+    description: {
+      vi: "Tiệm vị trí đắc địa, gần trung tâm mua sắm lớn. Mới trang bị lại toàn bộ thiết bị.",
+      en: "Salon in ideal location near major shopping center. Recently upgraded all equipment."
+    },
+    phone: "(312) 555-8901",
+    image: "https://images.unsplash.com/photo-1604654894611-6973b376cbde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60"
   },
   {
-    id: 4,
-    title: "Nail Tech ASAP Needed",
-    titleVn: "Cần thợ gấp",
-    salon: "Elegant Touch",
-    location: "Atlanta, GA",
-    salary: "$28-35/hr guaranteed",
-    image: "https://images.unsplash.com/photo-1607779097040-813cc5d5c9f5",
-    phone: "(404) 555-8765",
-    urgentLabel: "Bao Luong Neu Can",
+    id: 104,
+    name: "Bliss Nails",
+    location: "Seattle, WA",
+    price: "$155,000",
+    rent: "$4,500/month",
+    staff: 7,
+    revenue: "$32,000/month",
+    features: ["Established 12 Years", "Owner Retiring", "High-End Clientele"],
+    description: {
+      vi: "Tiệm cao cấp đã hoạt động 12 năm, khách hàng ổn định. Chủ bán vì về hưu.",
+      en: "Upscale salon established for 12 years with stable clientele. Owner selling due to retirement."
+    },
+    phone: "(206) 555-9012",
+    image: "https://images.unsplash.com/photo-1610384104075-e05c8cf200c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzZ8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60"
   }
 ];
 
 const Salons = () => {
-  const [filters, setFilters] = useState({
-    forSale: false,
-    forRent: false,
-    hiring: false,
-  });
-  
-  const handleFilterChange = (filterType, value) => {
-    setFilters((prev) => ({
-      ...prev,
-      [filterType]: value,
-    }));
-  };
-  
-  const filteredSalons = filters.forSale || filters.forRent || filters.hiring
-    ? salonListings.filter(salon => 
-        (filters.forSale && salon.forSale) || 
-        (filters.forRent && salon.forRent) || 
-        (filters.hiring && salon.hiring)
-      )
-    : salonListings;
-  
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-  
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
-  };
-
-  const getStatusBadges = (salon) => {
-    const badges = [];
-    if (salon.forSale) 
-      badges.push({ text: "For Sale", color: "bg-blue-100 text-blue-800" });
-    if (salon.forRent) 
-      badges.push({ text: "For Rent", color: "bg-green-100 text-green-800" });
-    if (salon.hiring) 
-      badges.push({ text: "Hiring", color: "bg-purple-100 text-purple-800" });
-    return badges;
-  };
+  const [activeTab, setActiveTab] = useState("hiring");
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-16">
-        <motion.div 
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-        >
-          <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">Beauty Salon Opportunities</h1>
-          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto font-sans">
-            Discover salons for sale, rent, or with hiring opportunities. Connect directly with salon owners and find your perfect match.
-          </p>
-
-          <Tabs defaultValue="all" className="w-full max-w-3xl mx-auto">
-            <TabsList className="grid w-full grid-cols-3 mb-8">
-              <TabsTrigger value="all">All Listings</TabsTrigger>
-              <TabsTrigger value="hiring">Hiring Now</TabsTrigger>
-              <TabsTrigger value="forsale">Salons For Sale</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="all">
-              <div className="flex flex-wrap justify-center gap-4">
-                <Button 
-                  variant={filters.forSale ? "default" : "outline"} 
-                  onClick={() => handleFilterChange("forSale", !filters.forSale)}
-                  className="min-w-[120px]"
-                >
-                  For Sale
-                </Button>
-                <Button 
-                  variant={filters.forRent ? "default" : "outline"} 
-                  onClick={() => handleFilterChange("forRent", !filters.forRent)}
-                  className="min-w-[120px]"
-                >
-                  For Rent
-                </Button>
-                <Button 
-                  variant={filters.hiring ? "default" : "outline"} 
-                  onClick={() => handleFilterChange("hiring", !filters.hiring)}
-                  className="min-w-[120px]"
-                >
-                  Hiring
-                </Button>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="hiring">
-              {/* Hiring section displays job listings */}
-              <div className="mb-8">
-                <motion.div 
-                  className="text-center mb-10"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <h2 className="text-3xl font-serif font-bold mb-3">Nail Salons Hiring Now</h2>
+      <div className="container mx-auto px-4 py-12 bg-[#FDFDFD]">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Tabs defaultValue="hiring" className="mb-12" onValueChange={setActiveTab}>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+                <div>
+                  <h1 className="text-3xl md:text-4xl font-serif mb-2">
+                    {activeTab === "hiring" 
+                      ? "Tiệm Đang Tuyển Thợ / Hiring Now"
+                      : "Salon Nails Cần Bán / Salons For Sale"}
+                  </h1>
                   <p className="text-gray-600">
-                    Connect with salon owners looking for talented professionals
+                    {activeTab === "hiring"
+                      ? "Tìm Việc Nail Lương Cao, Bao Lương Nếu Cần — Hơn 800+ tiệm đang cần thợ, đăng ký miễn phí."
+                      : "Cơ Hội Đầu Tư Tốt Nhất — Giá từ $80,000 đến $300,000, chọn vị trí đẹp, tiệm có thợ, và thu nhập cao."}
                   </p>
-                </motion.div>
+                </div>
                 
-                <motion.div 
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-                  variants={container}
-                  initial="hidden"
-                  animate="show"
-                >
-                  {jobListings.map((job) => (
-                    <motion.div key={job.id} variants={item}>
-                      <Card className="h-full flex flex-col hover:shadow-lg transition-shadow duration-300">
-                        <div className="relative h-40 overflow-hidden rounded-t-lg">
-                          <img 
-                            src={job.image} 
-                            alt={job.salon} 
-                            className="w-full h-full object-cover"
-                          />
-                          {job.urgentLabel && (
-                            <div className="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold">
-                              {job.urgentLabel}
-                            </div>
-                          )}
+                <TabsList className="mt-4 sm:mt-0 bg-muted/30">
+                  <TabsTrigger value="hiring" className="text-sm">Hiring Now</TabsTrigger>
+                  <TabsTrigger value="forsale" className="text-sm">For Sale</TabsTrigger>
+                </TabsList>
+              </div>
+
+              <TabsContent value="hiring" className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {hiringSalons.map((salon) => (
+                    <motion.div
+                      key={salon.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: salon.id * 0.1 }}
+                    >
+                      <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full">
+                        <div 
+                          className="h-48 bg-center bg-cover relative" 
+                          style={{ backgroundImage: `url(${salon.image})` }}
+                        >
+                          <div className="absolute inset-0 bg-black/30"></div>
                         </div>
-                        <CardHeader className="pb-2">
-                          <div className="space-y-1">
-                            <h3 className="text-lg font-serif font-semibold">{job.title}</h3>
-                            <p className="text-xs text-gray-600 italic">{job.titleVn}</p>
+                        <CardContent className="p-5">
+                          <div className="flex justify-between items-start mb-3">
+                            <h3 className="font-bold text-lg line-clamp-1">{salon.name}</h3>
+                            <Badge>{salon.salary}</Badge>
                           </div>
-                          <p className="text-gray-700 font-medium text-sm">{job.salon}</p>
-                        </CardHeader>
-                        <CardContent className="flex-grow">
-                          <div className="flex items-center text-gray-600 mb-2">
-                            <MapPin className="h-3 w-3 mr-1" /> 
-                            <span className="text-xs">{job.location}</span>
+                          
+                          <div className="mb-4">
+                            <h4 className="text-primary font-medium">
+                              {salon.jobTitle.vi} / {salon.jobTitle.en}
+                            </h4>
+                            <div className="flex items-center text-sm text-gray-500 mt-1">
+                              <MapPin className="w-4 h-4 mr-1" />
+                              <span>{salon.location}</span>
+                            </div>
                           </div>
-                          <div className="flex items-center text-gray-600">
-                            <DollarSign className="h-3 w-3 mr-1" /> 
-                            <span className="text-xs">{job.salary}</span>
+                          
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {salon.features.map((feature, index) => (
+                              <Badge key={index} variant="outline" className="bg-orange-50">
+                                {feature}
+                              </Badge>
+                            ))}
+                          </div>
+                          
+                          <div className="flex justify-between mt-4">
+                            <Button variant="outline" className="gap-1">
+                              <Phone className="h-4 w-4" />
+                              {salon.phone}
+                            </Button>
+                            <Button>
+                              Message
+                            </Button>
+                          </div>
+                          
+                          <div className="text-xs text-center text-gray-500 mt-4 pt-2 border-t">
+                            Want your ad seen nationwide? 
+                            <Button variant="link" className="text-xs p-0 h-auto ml-1">Boost Ad</Button>
                           </div>
                         </CardContent>
-                        <CardFooter className="flex justify-center pt-0">
-                          <Link to="/jobs">
-                            <Button size="sm">View Job</Button>
-                          </Link>
-                        </CardFooter>
                       </Card>
                     </motion.div>
                   ))}
-                </motion.div>
-                
-                <div className="text-center mt-8">
-                  <Link to="/jobs">
-                    <Button variant="outline">View All Jobs</Button>
-                  </Link>
                 </div>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="forsale">
-              <motion.div 
-                className="text-center mb-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <h2 className="text-3xl font-serif font-bold mb-3">Salon Nails Cần Bán — Cơ Hội Đầu Tư Tốt Nhất</h2>
-                <p className="text-gray-600">
-                  Giá từ $80,000 đến $300,000 — chọn vị trí đẹp, tiệm có thợ, và thu nhập cao.
-                </p>
-              </motion.div>
-              
-              <motion.div 
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                variants={container}
-                initial="hidden"
-                animate="show"
-              >
-                {salonListings.filter(salon => salon.forSale).map((salon) => (
-                  <motion.div key={salon.id} variants={item}>
-                    <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                      <div className="relative h-48">
-                        <img 
-                          src={salon.image} 
-                          alt={salon.name} 
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-                          <div className="text-white font-bold text-lg">{salon.price}</div>
-                        </div>
-                      </div>
-                      <CardHeader className="pb-2">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="text-xl font-serif font-semibold">{salon.name}</h3>
-                            <p className="text-sm text-gray-600 italic">{salon.nameVn}</p>
-                          </div>
-                          <HoverCard>
-                            <HoverCardTrigger asChild>
-                              <Button variant="ghost" size="icon">
-                                <Info className="h-4 w-4" />
-                              </Button>
-                            </HoverCardTrigger>
-                            <HoverCardContent side="top">
-                              <p className="text-sm">{salon.description}</p>
-                            </HoverCardContent>
-                          </HoverCard>
-                        </div>
-                        <div className="flex items-center text-gray-600">
-                          <MapPin className="h-4 w-4 mr-1" /> 
-                          <span className="text-sm">{salon.location}</span>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="flex-grow">
-                        <div className="space-y-2">
-                          <div className="flex items-center text-gray-600">
-                            <DollarSign className="h-4 w-4 mr-1" /> 
-                            <span className="text-sm">Revenue: {salon.revenue}</span>
-                          </div>
-                          <div className="flex items-center text-gray-600">
-                            <Building className="h-4 w-4 mr-1" /> 
-                            <span className="text-sm">Rent: {salon.rent}</span>
-                          </div>
-                          <div className="flex items-center text-gray-600">
-                            <Users className="h-4 w-4 mr-1" /> 
-                            <span className="text-sm">Staff: {salon.staffCount} professionals</span>
-                          </div>
-                        </div>
-                      </CardContent>
-                      <CardFooter className="grid grid-cols-2 gap-2">
-                        <Button className="w-full">View Listing</Button>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button variant="outline" className="w-full">Contact</Button>
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <div className="space-y-3">
-                              <h4 className="font-medium">{salon.contactName}</h4>
-                              <div className="flex items-center">
-                                <Phone className="h-4 w-4 mr-2" />
-                                <span>{salon.phone}</span>
-                              </div>
-                              <div className="flex gap-2 mt-2">
-                                <Button size="sm" className="flex-1">
-                                  <Phone className="h-3 w-3 mr-1" /> Call
-                                </Button>
-                                <Button size="sm" variant="outline" className="flex-1">
-                                  <MessageSquare className="h-3 w-3 mr-1" /> Chat
-                                </Button>
-                              </div>
-                            </div>
-                          </PopoverContent>
-                        </Popover>
-                        <div className="col-span-2 mt-2 pt-2 border-t text-center">
-                          <p className="text-xs text-gray-500">Want your ad seen nationwide? 
-                            <Button variant="link" className="text-xs p-0 h-auto" disabled>
-                              Boost your listing
-                            </Button>
-                          </p>
-                        </div>
-                      </CardFooter>
-                    </Card>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </TabsContent>
-          </Tabs>
-        </motion.div>
-        
-        {/* Statistics */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-          {[
-            { label: "Beauty Professionals", value: "+15,000" },
-            { label: "Active Job Listings", value: "+2,500" },
-            { label: "Business Opportunities", value: "+3,800" },
-            { label: "Hiring Success Rate", value: "92%" }
-          ].map((stat, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white p-4 rounded-lg shadow-sm text-center"
-            >
-              <p className="text-2xl font-serif font-bold">{stat.value}</p>
-              <p className="text-gray-600 text-sm">{stat.label}</p>
-            </motion.div>
-          ))}
-        </div>
-        
-        {/* Main Salon Listings (when not in a specific tab) */}
-        {/* Only show when on the "all" tab */}
-        <Tabs.Content value="all">
-          <motion.div 
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            variants={container}
-            initial="hidden"
-            animate="show"
-          >
-            {filteredSalons.map((salon) => (
-              <motion.div key={salon.id} variants={item}>
-                <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                  <div className="relative h-48">
-                    <img 
-                      src={salon.image} 
-                      alt={salon.name} 
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute bottom-0 left-0 right-0 flex flex-wrap gap-2 p-3">
-                      {getStatusBadges(salon).map((badge, index) => (
-                        <span 
-                          key={index} 
-                          className={`${badge.color} text-xs font-medium px-2 py-1 rounded-full`}
+
+                <div className="flex justify-center mt-8">
+                  <Button variant="outline" className="mr-2">Previous</Button>
+                  <Button variant="outline">Next</Button>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="forsale" className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {salonsForSale.map((salon) => (
+                    <motion.div
+                      key={salon.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: (salon.id - 100) * 0.1 }}
+                    >
+                      <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full">
+                        <div 
+                          className="h-56 bg-center bg-cover relative" 
+                          style={{ backgroundImage: `url(${salon.image})` }}
                         >
-                          {badge.text}
-                        </span>
-                      ))}
-                    </div>
-                    {salon.forSale && (
-                      <div className="absolute top-0 left-0 bg-blue-600 text-white py-1 px-3 rounded-br-lg font-bold">
-                        {salon.price}
-                      </div>
-                    )}
-                  </div>
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="text-xl font-serif font-semibold">{salon.name}</h3>
-                        <p className="text-sm text-gray-600 italic">{salon.nameVn}</p>
-                      </div>
-                      <HoverCard>
-                        <HoverCardTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <Info className="h-4 w-4" />
-                          </Button>
-                        </HoverCardTrigger>
-                        <HoverCardContent side="top">
-                          <p className="text-sm">{salon.description}</p>
-                        </HoverCardContent>
-                      </HoverCard>
-                    </div>
-                    <div className="flex items-center text-gray-600">
-                      <MapPin className="h-4 w-4 mr-1" /> 
-                      <span className="text-sm">{salon.location}</span>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="flex-grow">
-                    <div className="space-y-2">
-                      <div className="flex items-center text-gray-600">
-                        <DollarSign className="h-4 w-4 mr-1" /> 
-                        <span className="text-sm">Revenue: {salon.revenue}</span>
-                      </div>
-                      <div className="flex items-center text-gray-600">
-                        <Building className="h-4 w-4 mr-1" /> 
-                        <span className="text-sm">Rent: {salon.rent}</span>
-                      </div>
-                      <div className="flex items-center text-gray-600">
-                        <Users className="h-4 w-4 mr-1" /> 
-                        <span className="text-sm">Staff: {salon.staffCount} professionals</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="grid grid-cols-2 gap-2">
-                    <Button className="w-full">View Listing</Button>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button variant="outline" className="w-full">Contact</Button>
-                      </PopoverTrigger>
-                      <PopoverContent>
-                        <div className="space-y-3">
-                          <h4 className="font-medium">{salon.contactName}</h4>
-                          <div className="flex items-center">
-                            <Phone className="h-4 w-4 mr-2" />
-                            <span>{salon.phone}</span>
-                          </div>
-                          <div className="flex gap-2 mt-2">
-                            <Button size="sm" className="flex-1">
-                              <Phone className="h-3 w-3 mr-1" /> Call
-                            </Button>
-                            <Button size="sm" variant="outline" className="flex-1">
-                              <MessageSquare className="h-3 w-3 mr-1" /> Chat
-                            </Button>
+                          <div className="absolute inset-0 bg-black/30 flex items-end">
+                            <div className="p-4 w-full">
+                              <Badge className="bg-primary/90 hover:bg-primary text-white text-lg py-1 px-3">
+                                {salon.price}
+                              </Badge>
+                            </div>
                           </div>
                         </div>
-                      </PopoverContent>
-                    </Popover>
-                    <div className="col-span-2 mt-2 pt-2 border-t text-center">
-                      <p className="text-xs text-gray-500">Want your ad seen nationwide? 
-                        <Button variant="link" className="text-xs p-0 h-auto" disabled>
-                          Boost your listing
-                        </Button>
-                      </p>
-                    </div>
-                  </CardFooter>
-                </Card>
-              </motion.div>
-            ))}
+                        
+                        <CardContent className="p-5">
+                          <div className="mb-3">
+                            <h3 className="font-bold text-lg">{salon.name}</h3>
+                            <div className="flex items-center text-sm text-gray-500">
+                              <MapPin className="w-4 h-4 mr-1" />
+                              <span>{salon.location}</span>
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-3 mb-4">
+                            <div className="flex items-center text-sm">
+                              <Building className="w-4 h-4 mr-2 text-gray-500" />
+                              <span>Rent: {salon.rent}</span>
+                            </div>
+                            <div className="flex items-center text-sm">
+                              <Users className="w-4 h-4 mr-2 text-gray-500" />
+                              <span>{salon.staff} Staff</span>
+                            </div>
+                            <div className="flex items-center text-sm">
+                              <DollarSign className="w-4 h-4 mr-2 text-gray-500" />
+                              <span>Rev: {salon.revenue}</span>
+                            </div>
+                            <div className="flex items-center text-sm">
+                              <Calendar className="w-4 h-4 mr-2 text-gray-500" />
+                              <span>Available Now</span>
+                            </div>
+                          </div>
+                          
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {salon.features.map((feature, index) => (
+                              <Badge key={index} variant="outline" className="bg-purple-50">
+                                {feature}
+                              </Badge>
+                            ))}
+                          </div>
+                          
+                          <div className="mt-3 mb-4 text-sm border-l-2 border-primary pl-3 italic">
+                            <p className="mb-1">{salon.description.vi}</p>
+                            <p className="text-gray-600">{salon.description.en}</p>
+                          </div>
+                          
+                          <div className="flex justify-between mt-4">
+                            <Button variant="outline" className="gap-1">
+                              <Phone className="h-4 w-4" />
+                              {salon.phone}
+                            </Button>
+                            <Button>
+                              View Details
+                            </Button>
+                          </div>
+                          
+                          <div className="text-xs text-center text-gray-500 mt-4 pt-2 border-t">
+                            Want your ad seen nationwide? 
+                            <Button variant="link" className="text-xs p-0 h-auto ml-1">Boost Ad</Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
+                
+                <div className="flex justify-center mt-8">
+                  <Button variant="outline" className="mr-2">Previous</Button>
+                  <Button variant="outline">Next</Button>
+                </div>
+              </TabsContent>
+            </Tabs>
           </motion.div>
-        </Tabs.Content>
-        
-        {/* Empty state */}
-        {filteredSalons.length === 0 && (
-          <div className="text-center py-12">
-            <h3 className="text-xl font-medium mb-2">No salons match your filters</h3>
-            <p className="text-gray-600">Try adjusting your filter criteria</p>
-            <Button 
-              className="mt-4" 
-              onClick={() => setFilters({
-                forSale: false,
-                forRent: false,
-                hiring: false,
-              })}
-            >
-              Reset Filters
-            </Button>
-          </div>
-        )}
-        
-        {/* Call to action */}
-        <motion.div 
-          className="mt-16 bg-white rounded-lg shadow-md p-8 text-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          viewport={{ once: true }}
-        >
-          <h2 className="text-2xl md:text-3xl font-serif font-bold mb-4">Own a Salon or Have Space to Rent?</h2>
-          <p className="text-lg text-gray-600 mb-6 max-w-2xl mx-auto">
-            List your salon on EmviApp and connect with thousands of beauty professionals looking for opportunities.
-          </p>
-          <Link to="/profile">
-            <Button size="lg" className="font-medium px-8">
-              List Your Salon
-            </Button>
-          </Link>
-        </motion.div>
+        </div>
       </div>
     </Layout>
   );
