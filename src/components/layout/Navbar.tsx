@@ -1,259 +1,183 @@
-
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "@/context/AuthContext";
+import { EmviLogo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
-import { Menu, X, User, LogOut } from "lucide-react";
-import EmviLogo from "@/components/branding/EmviLogo";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
-import { cn } from "@/lib/utils";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 const Navbar = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  const handleSignOut = async () => {
-    await signOut();
-  };
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-white shadow-md" : "bg-transparent"
-      }`}
-    >
-      <div className="container mx-auto px-4 py-3">
-        <div className="flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold text-primary">
-            <EmviLogo />
-          </Link>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
+      <div className="container flex items-center justify-between mx-auto h-16 px-4">
+        <Link to="/" className="flex items-center">
+          <EmviLogo className="h-8 w-auto" />
+        </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <NavigationMenu>
-              <NavigationMenuList>
-                <NavigationMenuItem>
-                  <Link to="/jobs">
-                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                      Jobs
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <Link to="/salons">
-                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                      Salons
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger>Community</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid gap-3 p-4 w-[400px] md:grid-cols-2">
-                      <li>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            to="/artists"
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                          >
-                            <div className="text-sm font-medium leading-none">Artists</div>
-                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                              Connect with talented beauty professionals
-                            </p>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                      <li>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            to="/suppliers"
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                          >
-                            <div className="text-sm font-medium leading-none">Suppliers</div>
-                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                              Find quality beauty products and suppliers
-                            </p>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                      <li className="col-span-2">
-                        <NavigationMenuLink asChild>
-                          <Link
-                            to="/customers"
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                          >
-                            <div className="text-sm font-medium leading-none">Customers</div>
-                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                              Browse top-rated services and special offers
-                            </p>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <Link to="/analysis">
-                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                      Analysis
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
-
-            <div className="flex items-center space-x-4">
-              {user ? (
-                <div className="flex items-center space-x-3">
-                  <Link to="/profile">
-                    <Button variant="ghost" size="sm" className="flex items-center">
-                      <User className="h-4 w-4 mr-2" />
-                      Profile
-                    </Button>
-                  </Link>
-                  <Button variant="outline" size="sm" onClick={handleSignOut} className="flex items-center">
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Sign Out
-                  </Button>
-                </div>
-              ) : (
-                <div className="flex items-center space-x-3">
-                  <Link to="/auth/signin">
-                    <Button variant="ghost" size="sm">
-                      Sign In
-                    </Button>
-                  </Link>
-                  <Link to="/auth/signup">
-                    <Button size="sm" className="bg-primary hover:bg-primary/90">
-                      Sign Up
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Mobile menu button */}
-          <button
-            className="md:hidden text-gray-700 focus:outline-none"
-            onClick={toggleMenu}
+        {/* Main navigation */}
+        <nav className="hidden md:flex items-center space-x-6">
+          <Link 
+            to="/jobs" 
+            className="text-gray-600 hover:text-primary transition-colors"
           >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
+            Jobs
+          </Link>
+          <Link 
+            to="/salons" 
+            className="text-gray-600 hover:text-primary transition-colors"
+          >
+            Salons
+          </Link>
+          <Link 
+            to="/artists" 
+            className="text-gray-600 hover:text-primary transition-colors"
+          >
+            Community
+          </Link>
+          <Link 
+            to="/analysis" 
+            className="text-gray-600 hover:text-primary transition-colors"
+          >
+            Analysis
+          </Link>
+        </nav>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden mt-4 pb-4">
-            <div className="flex flex-col space-y-4">
-              <Link
-                to="/jobs"
-                className="text-gray-700 hover:text-primary transition-colors font-sans"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Jobs
+        {/* Auth buttons or user menu */}
+        <div className="flex items-center gap-2">
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src="/placeholder.svg" alt={user.email || ""} />
+                    <AvatarFallback>
+                      {user.email ? user.email.charAt(0).toUpperCase() : "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">Account</p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/profile">Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/messages">Messages</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => signOut()}>
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <Link to="/auth/signin">
+                <Button variant="ghost">Sign In</Button>
               </Link>
-              <Link
-                to="/salons"
-                className="text-gray-700 hover:text-primary transition-colors font-sans"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Salons
+              <Link to="/auth/signup">
+                <Button>Sign Up</Button>
               </Link>
-              <Link
-                to="/artists"
-                className="text-gray-700 hover:text-primary transition-colors font-sans"
-                onClick={() => setIsMenuOpen(false)}
+            </>
+          )}
+          
+          {/* Mobile menu button */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                className="md:hidden"
+                onClick={toggleMobileMenu}
               >
-                Community: Artists
-              </Link>
-              <Link
-                to="/suppliers"
-                className="text-gray-700 hover:text-primary transition-colors font-sans"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Community: Suppliers
-              </Link>
-              <Link
-                to="/customers"
-                className="text-gray-700 hover:text-primary transition-colors font-sans"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Community: Customers
-              </Link>
-              <Link
-                to="/analysis"
-                className="text-gray-700 hover:text-primary transition-colors font-sans"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Analysis
-              </Link>
-              {user ? (
-                <>
-                  <Link
-                    to="/profile"
-                    className="text-gray-700 hover:text-primary transition-colors"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Profile
-                  </Link>
-                  <Button variant="outline" onClick={handleSignOut}>
-                    Sign Out
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Link
-                    to="/auth/signin"
-                    className="block"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <Button variant="ghost" className="w-full justify-start">
-                      Sign In
+                <Menu className="h-4 w-4" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom">
+              <div className="grid gap-4 py-4">
+                <Link
+                  to="/jobs"
+                  className="text-gray-600 hover:text-primary transition-colors block py-2"
+                >
+                  Jobs
+                </Link>
+                <Link
+                  to="/salons"
+                  className="text-gray-600 hover:text-primary transition-colors block py-2"
+                >
+                  Salons
+                </Link>
+                <Link
+                  to="/artists"
+                  className="text-gray-600 hover:text-primary transition-colors block py-2"
+                >
+                  Community
+                </Link>
+                <Link
+                  to="/analysis"
+                  className="text-gray-600 hover:text-primary transition-colors block py-2"
+                >
+                  Analysis
+                </Link>
+                {user ? (
+                  <>
+                    <Link
+                      to="/profile"
+                      className="text-gray-600 hover:text-primary transition-colors block py-2"
+                    >
+                      Profile
+                    </Link>
+                    <Link
+                      to="/messages"
+                      className="text-gray-600 hover:text-primary transition-colors block py-2"
+                    >
+                      Messages
+                    </Link>
+                    <Button variant="ghost" className="w-full justify-start" onClick={() => signOut()}>
+                      Sign Out
                     </Button>
-                  </Link>
-                  <Link
-                    to="/auth/signup"
-                    className="block"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <Button className="w-full justify-start">Sign Up</Button>
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
-        )}
+                  </>
+                ) : (
+                  <>
+                    <Link to="/auth/signin">
+                      <Button variant="ghost" className="w-full justify-start">Sign In</Button>
+                    </Link>
+                    <Link to="/auth/signup">
+                      <Button className="w-full justify-start">Sign Up</Button>
+                    </Link>
+                  </>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
-    </nav>
+      
+      {/* Mobile menu */}
+    </header>
   );
 };
 

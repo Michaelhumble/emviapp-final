@@ -4,13 +4,17 @@ import { Session, User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
+type UserRole = 'customer' | 'artist' | 'owner' | 'supplier' | null;
+
 type AuthContextType = {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  userRole: UserRole;
   signUp: (email: string, password: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  updateUserRole: (role: UserRole) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,6 +23,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState<UserRole>(null);
+
+  // Fetch user role from database
+  const fetchUserRole = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', userId)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching user role:', error);
+        return;
+      }
+      
+      if (data) {
+        setUserRole(data.role as UserRole);
+      }
+    } catch (error) {
+      console.error('Error in fetchUserRole:', error);
+    }
+  };
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -29,8 +56,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         if (event === 'SIGNED_IN') {
           toast.success('Successfully signed in');
+          // Fetch user role on sign in
+          if (session?.user) {
+            fetchUserRole(session.user.id);
+          }
         } else if (event === 'SIGNED_OUT') {
           toast.info('Signed out');
+          setUserRole(null);
         }
       }
     );
@@ -39,6 +71,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        fetchUserRole(session.user.id);
+      }
+      
       setLoading(false);
     });
 
@@ -96,8 +133,42 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const updateUserRole = async (role: UserRole): Promise<void> => {
+    if (!user) {
+      toast.error('You must be signed in to update your role');
+      return;
+    }
+    
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ role })
+        .eq('id', user.id);
+      
+      if (error) {
+        toast.error('Failed to update role');
+        throw error;
+      }
+      
+      setUserRole(role);
+      toast.success(`Role updated to ${role}`);
+    } catch (error: any) {
+      console.error('Error updating user role:', error);
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      session, 
+      loading, 
+      userRole,
+      signUp, 
+      signIn, 
+      signOut,
+      updateUserRole
+    }}>
       {children}
     </AuthContext.Provider>
   );

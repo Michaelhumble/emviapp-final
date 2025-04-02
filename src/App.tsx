@@ -18,6 +18,10 @@ import Customers from "./pages/Customers";
 import Artists from "./pages/Artists";
 import Suppliers from "./pages/Suppliers";
 import Analysis from "./pages/Analysis";
+import CustomerDashboard from "./pages/dashboard/Customer";
+import ArtistDashboard from "./pages/dashboard/Artist";
+import OwnerDashboard from "./pages/dashboard/Owner";
+import SupplierDashboard from "./pages/dashboard/Supplier";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +45,13 @@ const App = () => (
             <Route path="/artists" element={<Artists />} />
             <Route path="/suppliers" element={<Suppliers />} />
             <Route path="/analysis" element={<Analysis />} />
+            
+            {/* New Dashboard Routes */}
+            <Route path="/dashboard/customer" element={<CustomerDashboard />} />
+            <Route path="/dashboard/artist" element={<ArtistDashboard />} />
+            <Route path="/dashboard/owner" element={<OwnerDashboard />} />
+            <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
+            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
