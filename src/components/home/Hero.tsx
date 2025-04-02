@@ -9,7 +9,7 @@ const Hero = () => {
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
           <motion.h1 
-            className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6"
+            className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif leading-tight mb-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
@@ -17,7 +17,7 @@ const Hero = () => {
             The Future of Hiring for the Beauty Industry
           </motion.h1>
           <motion.p 
-            className="text-lg md:text-xl text-gray-600 mb-8 max-w-3xl"
+            className="text-lg md:text-xl text-gray-600 mb-8 max-w-3xl font-sans"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
