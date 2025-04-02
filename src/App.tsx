@@ -19,6 +19,8 @@ import Customers from "./pages/Customers";
 import Artists from "./pages/Artists";
 import Suppliers from "./pages/Suppliers";
 import Analysis from "./pages/Analysis";
+import PostJob from "./pages/PostJob";
+import PostSalon from "./pages/PostSalon";
 import CustomerDashboard from "./pages/dashboard/Customer";
 import ArtistDashboard from "./pages/dashboard/Artist";
 import OwnerDashboard from "./pages/dashboard/Owner";
@@ -47,6 +49,8 @@ const App = () => (
             <Route path="/artists" element={<Artists />} />
             <Route path="/suppliers" element={<Suppliers />} />
             <Route path="/analysis" element={<Analysis />} />
+            <Route path="/post-job" element={<PostJob />} />
+            <Route path="/post-salon" element={<PostSalon />} />
             
             {/* Dashboard Routes */}
             <Route path="/dashboard/customer" element={<CustomerDashboard />} />
