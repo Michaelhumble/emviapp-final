@@ -30,6 +30,12 @@ import SalonMarketplace from "./pages/SalonMarketplace";
 import SupplierDirectory from "./pages/SupplierDirectory";
 import ProductPromotions from "./pages/ProductPromotions";
 
+// Post Management System
+import PostingIndex from "./pages/posting/Index";
+import JobPost from "./pages/posting/JobPost";
+import SalonPost from "./pages/posting/SalonPost";
+import BoothPost from "./pages/posting/BoothPost";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -61,6 +67,12 @@ const App = () => (
             <Route path="/salon-marketplace" element={<SalonMarketplace />} />
             <Route path="/supplier-directory" element={<SupplierDirectory />} />
             <Route path="/product-promotions" element={<ProductPromotions />} />
+            
+            {/* Post Management System Routes */}
+            <Route path="/posting" element={<PostingIndex />} />
+            <Route path="/posting/job" element={<JobPost />} />
+            <Route path="/posting/salon" element={<SalonPost />} />
+            <Route path="/posting/booth" element={<BoothPost />} />
             
             {/* Dashboard Routes */}
             <Route path="/dashboard/customer" element={<CustomerDashboard />} />
