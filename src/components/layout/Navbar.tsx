@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Menu, X, User } from "lucide-react";
+import EmviLogo from "@/components/branding/EmviLogo";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
@@ -42,7 +43,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <Link to="/" className="text-2xl font-bold text-primary">
-            EmviApp
+            <EmviLogo />
           </Link>
 
           {/* Desktop Navigation */}
