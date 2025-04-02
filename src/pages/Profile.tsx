@@ -22,6 +22,7 @@ interface UserProfile {
   website: string | null;
   specialty: string | null;
   avatar_url: string | null;
+  created_at: string | null; // Added the missing created_at property
 }
 
 const Profile = () => {
