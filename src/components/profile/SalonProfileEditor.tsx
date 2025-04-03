@@ -1,119 +1,104 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "sonner";
-import { Upload, Instagram, Globe, Loader2, PlusCircle, X } from "lucide-react";
 
-interface SalonProfile {
-  id: string;
+import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/auth';
+import { supabase } from '@/integrations/supabase/client';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Loader2, Upload, Building, MapPin, Globe, AtSign, Phone, ImagePlus } from 'lucide-react';
+import { toast } from 'sonner';
+import { SalonProfile } from '@/types/profile';
+
+type SalonFormValues = {
   salon_name: string;
-  logo_url?: string;
-  location?: string;
-  about?: string;
-  website?: string;
-  instagram?: string;
-  phone?: string;
-  photos?: SalonPhoto[];
-}
-
-interface SalonPhoto {
-  id: string;
-  photo_url: string;
-  caption?: string;
-  order_number?: number;
-}
+  location: string;
+  about: string | null;
+  website: string | null;
+  instagram: string | null;
+  phone: string | null;
+};
 
 const SalonProfileEditor = () => {
-  const { user, refreshUserProfile } = useAuth();
-  const [profile, setProfile] = useState<SalonProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const { user, userProfile, refreshUserProfile } = useAuth();
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  const [photos, setPhotos] = useState<SalonPhoto[]>([]);
-  const [newPhotos, setNewPhotos] = useState<File[]>([]);
-  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
-  
-  useEffect(() => {
-    if (user) {
-      fetchSalonProfile();
+  const [salonPhotos, setSalonPhotos] = useState<Array<{ id: string; url: string; caption: string | null }>>([]);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<SalonFormValues>({
+    defaultValues: {
+      salon_name: '',
+      location: '',
+      about: '',
+      website: '',
+      instagram: '',
+      phone: ''
     }
-  }, [user]);
-  
-  const fetchSalonProfile = async () => {
-    try {
-      setLoading(true);
+  });
+
+  // Load existing salon data
+  useEffect(() => {
+    const loadSalonProfile = async () => {
+      if (!user) return;
       
-      // Fetch salon profile
-      const { data: salonData, error: salonError } = await supabase
-        .from("salons")
-        .select("*")
-        .eq("id", user?.id)
-        .single();
-      
-      if (salonError && salonError.code !== 'PGRST116') {
-        throw salonError;
-      }
-      
-      // Fetch salon photos if salon exists
-      let photoData: SalonPhoto[] = [];
-      if (salonData) {
-        const { data: photos, error: photosError } = await supabase
-          .from("salon_photos")
-          .select("*")
-          .eq("salon_id", user?.id)
-          .order("order_number", { ascending: true });
+      try {
+        const { data, error } = await supabase
+          .from('salons')
+          .select('*')
+          .eq('id', user.id)
+          .single();
           
-        if (photosError) {
-          throw photosError;
+        if (error && error.code !== 'PGRST116') {
+          throw error;
         }
         
-        photoData = photos || [];
+        if (data) {
+          setValue('salon_name', data.salon_name || '');
+          setValue('location', data.location || '');
+          setValue('about', data.about || '');
+          setValue('website', data.website || '');
+          setValue('instagram', data.instagram || '');
+          setValue('phone', data.phone || '');
+          
+          if (data.logo_url) {
+            setLogoPreview(data.logo_url);
+          }
+        }
+        
+        // Load salon photos
+        const { data: photosData, error: photosError } = await supabase
+          .from('salon_photos')
+          .select('*')
+          .eq('salon_id', user.id)
+          .order('order_number', { ascending: true });
+          
+        if (photosError) throw photosError;
+        
+        if (photosData) {
+          setSalonPhotos(photosData.map(photo => ({
+            id: photo.id,
+            url: photo.photo_url,
+            caption: photo.caption
+          })));
+        }
+      } catch (error) {
+        console.error('Error loading salon profile:', error);
+        toast.error('Failed to load salon profile.');
       }
-      
-      // Create profile object from various sources
-      const profileData: SalonProfile = {
-        id: user?.id as string,
-        salon_name: salonData?.salon_name || "",
-        logo_url: salonData?.logo_url || undefined,
-        location: salonData?.location || undefined,
-        about: salonData?.about || undefined,
-        website: salonData?.website || undefined,
-        instagram: salonData?.instagram || undefined,
-        phone: salonData?.phone || undefined,
-      };
-      
-      setProfile(profileData);
-      setPhotos(photoData);
-      
-      if (profileData.logo_url) {
-        setLogoPreview(profileData.logo_url);
-      }
-    } catch (error) {
-      console.error("Error fetching salon profile:", error);
-      toast.error("Failed to load your profile information.");
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    if (profile) {
-      setProfile({
-        ...profile,
-        [name]: value,
-      });
-    }
-  };
-  
+    };
+    
+    loadSalonProfile();
+  }, [user, setValue]);
+
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
+    if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       setLogoFile(file);
       
@@ -126,423 +111,401 @@ const SalonProfileEditor = () => {
     }
   };
   
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const filesArray = Array.from(e.target.files);
+  const uploadLogo = async () => {
+    if (!logoFile || !user) return null;
+    
+    const fileExt = logoFile.name.split('.').pop();
+    const filePath = `${user.id}-${Date.now()}.${fileExt}`;
+    
+    try {
+      const { error: uploadError } = await supabase.storage
+        .from('salon_photos')
+        .upload(filePath, logoFile);
+        
+      if (uploadError) throw uploadError;
       
-      // Only add up to 5 photos total
-      const allowedNewPhotos = Math.max(0, 5 - photos.length);
-      const filesToAdd = filesArray.slice(0, allowedNewPhotos);
-      
-      setNewPhotos([...newPhotos, ...filesToAdd]);
-      
-      // Create previews for the new photos
-      filesToAdd.forEach(file => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setPhotoPreviews(prev => [...prev, reader.result as string]);
-        };
-        reader.readAsDataURL(file);
-      });
+      const { data } = supabase.storage
+        .from('salon_photos')
+        .getPublicUrl(filePath);
+        
+      return data.publicUrl;
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      toast.error('Failed to upload logo.');
+      return null;
     }
   };
-  
-  const removeExistingPhoto = async (photoId: string) => {
+
+  const onSubmit = async (data: SalonFormValues) => {
+    if (!user) return;
+    
+    setIsLoading(true);
+    
     try {
-      const { error } = await supabase
-        .from("salon_photos")
-        .delete()
-        .eq("id", photoId);
+      // Upload logo if selected
+      let logoUrl = null;
+      if (logoFile) {
+        logoUrl = await uploadLogo();
+      }
+      
+      // Prepare salon data
+      const salonData: any = {
+        ...data,
+        updated_at: new Date().toISOString()
+      };
+      
+      // Only add logo_url if we have a new one
+      if (logoUrl) {
+        salonData.logo_url = logoUrl;
+      }
+      
+      // Check if salon profile exists
+      const { data: existingSalon } = await supabase
+        .from('salons')
+        .select('id')
+        .eq('id', user.id)
+        .single();
+      
+      let error;
+      
+      if (existingSalon) {
+        // Update existing profile
+        const { error: updateError } = await supabase
+          .from('salons')
+          .update(salonData)
+          .eq('id', user.id);
+          
+        error = updateError;
+      } else {
+        // Insert new profile with user ID
+        const { error: insertError } = await supabase
+          .from('salons')
+          .insert({
+            id: user.id,
+            ...salonData
+          });
+          
+        error = insertError;
+      }
       
       if (error) throw error;
       
-      // Remove from state
-      setPhotos(photos.filter(photo => photo.id !== photoId));
-      toast.success("Photo removed successfully");
+      toast.success('Salon profile updated successfully!');
+      
+      // Refresh user profile data in context
+      if (refreshUserProfile) {
+        await refreshUserProfile();
+      }
+      
     } catch (error) {
-      console.error("Error removing photo:", error);
-      toast.error("Failed to remove photo");
+      console.error('Error saving salon profile:', error);
+      toast.error('Failed to update salon profile.');
+    } finally {
+      setIsLoading(false);
     }
   };
-  
-  const removeNewPhoto = (index: number) => {
-    setNewPhotos(newPhotos.filter((_, i) => i !== index));
-    setPhotoPreviews(photoPreviews.filter((_, i) => i !== index));
-  };
-  
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!profile) return;
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0 || !user) return;
     
-    setSaving(true);
+    setIsUploading(true);
     
     try {
-      let logoUrl = profile.logo_url;
+      const file = e.target.files[0];
+      const fileExt = file.name.split('.').pop();
+      const filePath = `salon-photo-${Date.now()}.${fileExt}`;
       
-      // Upload logo if changed
-      if (logoFile) {
-        const fileExt = logoFile.name.split('.').pop();
-        const fileName = `salon-logo-${user?.id}-${Date.now()}.${fileExt}`;
+      // Upload to storage
+      const { error: uploadError } = await supabase.storage
+        .from('salon_photos')
+        .upload(filePath, file);
         
-        const { error: uploadError, data: uploadData } = await supabase.storage
-          .from('avatars')
-          .upload(fileName, logoFile);
-        
-        if (uploadError) throw uploadError;
-        
-        if (uploadData) {
-          const { data: { publicUrl } } = supabase.storage
-            .from('avatars')
-            .getPublicUrl(fileName);
-          
-          logoUrl = publicUrl;
-        }
-      }
+      if (uploadError) throw uploadError;
       
-      // Check if salon exists
-      const { data: existingSalon, error: checkError } = await supabase
-        .from("salons")
-        .select("id")
-        .eq("id", user?.id)
-        .maybeSingle();
+      // Get public URL
+      const { data } = supabase.storage
+        .from('salon_photos')
+        .getPublicUrl(filePath);
       
-      if (checkError) throw checkError;
-      
-      // Insert or update salon
-      if (!existingSalon) {
-        // Create new salon
-        const { error: insertError } = await supabase
-          .from("salons")
-          .insert({
-            id: user?.id,
-            salon_name: profile.salon_name,
-            logo_url: logoUrl,
-            location: profile.location,
-            about: profile.about,
-            website: profile.website,
-            instagram: profile.instagram,
-            phone: profile.phone
-          });
-        
-        if (insertError) throw insertError;
-      } else {
-        // Update existing salon
-        const { error: updateError } = await supabase
-          .from("salons")
-          .update({
-            salon_name: profile.salon_name,
-            logo_url: logoUrl,
-            location: profile.location,
-            about: profile.about,
-            website: profile.website,
-            instagram: profile.instagram,
-            phone: profile.phone,
-            updated_at: new Date().toISOString()
-          })
-          .eq("id", user?.id);
-        
-        if (updateError) throw updateError;
-      }
-      
-      // Upload new photos
-      for (let i = 0; i < newPhotos.length; i++) {
-        const photo = newPhotos[i];
-        const fileExt = photo.name.split('.').pop();
-        const fileName = `salon-photo-${user?.id}-${Date.now()}-${i}.${fileExt}`;
-        
-        const { error: uploadError, data: uploadData } = await supabase.storage
-          .from('salon_photos')
-          .upload(fileName, photo);
-        
-        if (uploadError) throw uploadError;
-        
-        if (uploadData) {
-          const { data: { publicUrl } } = supabase.storage
-            .from('salon_photos')
-            .getPublicUrl(fileName);
-          
-          // Add to salon_photos table
-          const { error: photoError } = await supabase
-            .from("salon_photos")
-            .insert({
-              salon_id: user?.id,
-              photo_url: publicUrl,
-              order_number: photos.length + i + 1
-            });
-          
-          if (photoError) throw photoError;
-        }
-      }
-      
-      // Also update user profile for convenience
-      await supabase
-        .from("users")
-        .update({
-          salon_name: profile.salon_name,
-          avatar_url: logoUrl,
-          updated_at: new Date().toISOString()
+      // Save to database
+      const { data: photoData, error: insertError } = await supabase
+        .from('salon_photos')
+        .insert({
+          salon_id: user.id,
+          photo_url: data.publicUrl,
+          order_number: salonPhotos.length + 1
         })
-        .eq("id", user?.id);
+        .select()
+        .single();
+        
+      if (insertError) throw insertError;
       
-      // Refresh the user profile in context
-      await refreshUserProfile();
+      // Update local state
+      if (photoData) {
+        setSalonPhotos([...salonPhotos, {
+          id: photoData.id,
+          url: photoData.photo_url,
+          caption: photoData.caption
+        }]);
+      }
       
-      // Refetch salon data to get the newly uploaded photos
-      await fetchSalonProfile();
-      
-      // Clear photo uploads state
-      setNewPhotos([]);
-      setPhotoPreviews([]);
-      
-      toast.success("Salon profile updated successfully!");
+      toast.success('Photo uploaded successfully!');
     } catch (error) {
-      console.error("Error updating profile:", error);
-      toast.error("Failed to update your profile. Please try again.");
+      console.error('Error uploading photo:', error);
+      toast.error('Failed to upload photo.');
     } finally {
-      setSaving(false);
+      setIsUploading(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="animate-pulse space-y-4">
-        <div className="h-12 bg-muted rounded w-1/3"></div>
-        <div className="h-64 bg-muted rounded"></div>
-        <div className="h-12 bg-muted rounded w-1/4"></div>
-      </div>
-    );
-  }
+  const handleDeletePhoto = async (photoId: string) => {
+    if (!user) return;
+    
+    try {
+      const { error } = await supabase
+        .from('salon_photos')
+        .delete()
+        .eq('id', photoId)
+        .eq('salon_id', user.id);
+        
+      if (error) throw error;
+      
+      // Update local state
+      setSalonPhotos(salonPhotos.filter(photo => photo.id !== photoId));
+      
+      toast.success('Photo deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting photo:', error);
+      toast.error('Failed to delete photo.');
+    }
+  };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="space-y-8">
-        {/* Logo Upload */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Salon Logo</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col items-center">
-            <div className="h-40 w-40 rounded-md border-2 border-primary flex items-center justify-center overflow-hidden bg-muted">
-              {logoPreview ? (
-                <img 
-                  src={logoPreview} 
-                  alt="Salon logo preview" 
-                  className="h-full w-full object-cover" 
-                />
-              ) : (
-                <Upload className="h-12 w-12 text-muted-foreground" />
-              )}
-            </div>
-            
-            <div className="mt-4">
-              <Input
-                id="logo"
-                type="file"
-                accept="image/*"
-                onChange={handleLogoChange}
-                className="hidden"
-              />
-              <Label 
-                htmlFor="logo" 
-                className="cursor-pointer bg-secondary hover:bg-secondary/80 text-secondary-foreground px-4 py-2 rounded-md text-sm font-medium"
-              >
-                {logoPreview ? "Change Logo" : "Upload Logo"}
-              </Label>
-            </div>
-          </CardContent>
-        </Card>
+    <div className="space-y-6">
+      <Tabs defaultValue="profile">
+        <TabsList className="grid grid-cols-3 mb-8">
+          <TabsTrigger value="profile">Profile Info</TabsTrigger>
+          <TabsTrigger value="photos">Salon Photos</TabsTrigger>
+          <TabsTrigger value="services">Services</TabsTrigger>
+        </TabsList>
         
-        {/* Basic Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Salon Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-2">
-              <Label htmlFor="salon_name">Salon Name</Label>
-              <Input 
-                id="salon_name" 
-                name="salon_name" 
-                value={profile?.salon_name || ""} 
-                onChange={handleChange} 
-                required 
-              />
-            </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input 
-                id="phone" 
-                name="phone" 
-                value={profile?.phone || ""} 
-                onChange={handleChange} 
-                placeholder="Business phone number" 
-              />
-            </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="location">Location</Label>
-              <Input 
-                id="location" 
-                name="location" 
-                value={profile?.location || ""} 
-                onChange={handleChange} 
-                placeholder="City, State or full address" 
-              />
-            </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="about">About Your Salon</Label>
-              <Textarea 
-                id="about" 
-                name="about" 
-                value={profile?.about || ""} 
-                onChange={handleChange} 
-                placeholder="Describe your salon, services, and what makes it special" 
-                className="min-h-[120px]" 
-              />
-            </div>
-          </CardContent>
-        </Card>
-        
-        {/* Social Media */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Web & Social Media</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-2">
-              <Label htmlFor="website" className="flex items-center gap-2">
-                <Globe className="h-4 w-4" /> Website
-              </Label>
-              <Input 
-                id="website" 
-                name="website" 
-                value={profile?.website || ""} 
-                onChange={handleChange} 
-                placeholder="https://yoursalon.com" 
-              />
-            </div>
-            
-            <div className="grid gap-2">
-              <Label htmlFor="instagram" className="flex items-center gap-2">
-                <Instagram className="h-4 w-4" /> Instagram
-              </Label>
-              <Input 
-                id="instagram" 
-                name="instagram" 
-                value={profile?.instagram || ""} 
-                onChange={handleChange} 
-                placeholder="@yoursalon" 
-              />
-            </div>
-          </CardContent>
-        </Card>
-        
-        {/* Salon Photos */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Salon Photos</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Existing photos */}
-            {photos.length > 0 && (
-              <div>
-                <Label className="mb-2 block">Current Photos</Label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
-                  {photos.map((photo) => (
-                    <div key={photo.id} className="relative group">
-                      <div className="h-40 rounded-md overflow-hidden">
+        <TabsContent value="profile">
+          <Card>
+            <CardContent className="pt-6">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                {/* Logo upload section */}
+                <div className="flex flex-col items-center mb-8">
+                  <div className="mb-4">
+                    <div className="w-32 h-32 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden bg-gray-50">
+                      {logoPreview ? (
                         <img 
-                          src={photo.photo_url} 
-                          alt="Salon" 
-                          className="h-full w-full object-cover" 
+                          src={logoPreview} 
+                          alt="Salon logo" 
+                          className="w-full h-full object-cover"
                         />
+                      ) : (
+                        <Building className="h-12 w-12 text-gray-400" />
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <Input
+                      id="logo"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoChange}
+                      className="hidden"
+                    />
+                    <Label
+                      htmlFor="logo"
+                      className="cursor-pointer inline-flex items-center px-4 py-2 bg-gray-100 border border-gray-200 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200"
+                    >
+                      <Upload className="mr-2 h-4 w-4" />
+                      {logoPreview ? 'Change Logo' : 'Upload Logo'}
+                    </Label>
+                  </div>
+                </div>
+                
+                {/* Salon details form */}
+                <div className="grid grid-cols-1 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="salon_name" className="text-base">
+                      <Building className="w-4 h-4 inline-block mr-2" />
+                      Salon Name
+                    </Label>
+                    <Input
+                      id="salon_name"
+                      placeholder="Enter your salon name"
+                      {...register('salon_name', { required: 'Salon name is required' })}
+                    />
+                    {errors.salon_name && (
+                      <p className="text-sm text-red-500">{errors.salon_name.message}</p>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="location" className="text-base">
+                      <MapPin className="w-4 h-4 inline-block mr-2" />
+                      Location
+                    </Label>
+                    <Input
+                      id="location"
+                      placeholder="City, State"
+                      {...register('location', { required: 'Location is required' })}
+                    />
+                    {errors.location && (
+                      <p className="text-sm text-red-500">{errors.location.message}</p>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-base">
+                      <Phone className="w-4 h-4 inline-block mr-2" />
+                      Phone Number
+                    </Label>
+                    <Input
+                      id="phone"
+                      placeholder="(555) 555-5555"
+                      {...register('phone')}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="website" className="text-base">
+                      <Globe className="w-4 h-4 inline-block mr-2" />
+                      Website
+                    </Label>
+                    <Input
+                      id="website"
+                      placeholder="https://www.yoursalon.com"
+                      {...register('website')}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="instagram" className="text-base">
+                      <AtSign className="w-4 h-4 inline-block mr-2" />
+                      Instagram
+                    </Label>
+                    <Input
+                      id="instagram"
+                      placeholder="@yoursalon"
+                      {...register('instagram')}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="about" className="text-base">
+                      About Your Salon
+                    </Label>
+                    <Textarea
+                      id="about"
+                      placeholder="Tell potential employees about your salon..."
+                      rows={5}
+                      {...register('about')}
+                    />
+                  </div>
+                  
+                  <Button type="submit" disabled={isLoading} className="mt-6">
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      'Save Profile'
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="photos">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-6">
+                <div className="flex flex-col items-center mb-6">
+                  <h3 className="text-lg font-medium mb-2">Salon Photos</h3>
+                  <p className="text-muted-foreground text-sm mb-4">
+                    Upload photos of your salon to attract potential employees
+                  </p>
+                  
+                  <div>
+                    <Input
+                      id="salon-photos"
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoUpload}
+                      className="hidden"
+                      disabled={isUploading}
+                    />
+                    <Label
+                      htmlFor="salon-photos"
+                      className="cursor-pointer inline-flex items-center px-4 py-2 bg-primary text-white rounded-md text-sm font-medium hover:bg-primary/90"
+                    >
+                      {isUploading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <ImagePlus className="mr-2 h-4 w-4" />
+                          Add Salon Photo
+                        </>
+                      )}
+                    </Label>
+                  </div>
+                </div>
+                
+                {/* Photo gallery */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {salonPhotos.map(photo => (
+                    <div key={photo.id} className="relative overflow-hidden rounded-lg aspect-[4/3]">
+                      <img 
+                        src={photo.url} 
+                        alt={photo.caption || 'Salon photo'} 
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <Button 
+                          variant="destructive" 
+                          size="sm"
+                          onClick={() => handleDeletePhoto(photo.id)}
+                        >
+                          Remove
+                        </Button>
                       </div>
-                      <button 
-                        type="button"
-                        onClick={() => removeExistingPhoto(photo.id)}
-                        className="absolute top-2 right-2 bg-black/70 hover:bg-black text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
                     </div>
                   ))}
                 </div>
+                
+                {salonPhotos.length === 0 && (
+                  <div className="text-center py-8 border-2 border-dashed rounded-lg">
+                    <p className="text-muted-foreground">No photos uploaded yet</p>
+                  </div>
+                )}
               </div>
-            )}
-            
-            {/* New photo previews */}
-            {photoPreviews.length > 0 && (
-              <div>
-                <Label className="mb-2 block">New Photos to Upload</Label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
-                  {photoPreviews.map((preview, index) => (
-                    <div key={index} className="relative group">
-                      <div className="h-40 rounded-md overflow-hidden">
-                        <img 
-                          src={preview} 
-                          alt="Preview" 
-                          className="h-full w-full object-cover" 
-                        />
-                      </div>
-                      <button 
-                        type="button"
-                        onClick={() => removeNewPhoto(index)}
-                        className="absolute top-2 right-2 bg-black/70 hover:bg-black text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {/* Upload new photos */}
-            {(photos.length + newPhotos.length) < 5 && (
-              <div>
-                <Input
-                  id="photos"
-                  type="file"
-                  accept="image/*"
-                  onChange={handlePhotoChange}
-                  className="hidden"
-                  multiple
-                />
-                <Label 
-                  htmlFor="photos" 
-                  className="cursor-pointer border-2 border-dashed border-gray-300 rounded-md p-6 text-center flex flex-col items-center justify-center hover:bg-gray-50 transition-colors"
-                >
-                  <PlusCircle className="h-8 w-8 text-gray-400 mb-2" />
-                  <span className="block text-sm font-medium">
-                    Add salon photos ({5 - photos.length - newPhotos.length} remaining)
-                  </span>
-                  <span className="text-xs text-gray-500 mt-1">
-                    JPG, PNG or WebP (max 5MB each)
-                  </span>
-                </Label>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
         
-        <CardFooter className="flex justify-end px-0">
-          <Button 
-            type="submit" 
-            disabled={saving}
-            className="min-w-[150px]"
-          >
-            {saving ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                Saving...
-              </>
-            ) : "Save Changes"}
-          </Button>
-        </CardFooter>
-      </div>
-    </form>
+        <TabsContent value="services">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center py-8">
+                <h3 className="text-lg font-medium mb-2">Services Coming Soon</h3>
+                <p className="text-muted-foreground">
+                  You'll soon be able to list all services your salon offers
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 

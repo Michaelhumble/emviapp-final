@@ -51,6 +51,8 @@ const Index = () => {
           navigate('/dashboard/artist');
           break;
         case 'salon':
+          navigate('/dashboard/salon');
+          break;
         case 'owner':
           navigate('/dashboard/owner');
           break;

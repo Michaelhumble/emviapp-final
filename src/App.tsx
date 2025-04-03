@@ -11,6 +11,7 @@ import Jobs from './pages/jobs';
 import Messages from './pages/messages';
 import Welcome from './pages/Welcome';
 import OwnerDashboard from './pages/dashboard/Owner';
+import SalonDashboard from './pages/dashboard/Salon';
 import SalonOwnerSetup from './pages/profile/salon/setup';
 import PostJob from './pages/PostJob';
 import ManageJobs from './pages/ManageJobs';
@@ -26,6 +27,7 @@ function App() {
           <Route path="/profile/edit" element={<ProfileEdit />} />
           <Route path="/dashboard/artist" element={<ArtistDashboard />} />
           <Route path="/dashboard/owner" element={<OwnerDashboard />} />
+          <Route path="/dashboard/salon" element={<SalonDashboard />} />
           <Route path="/auth/signin" element={<SignIn />} />
           <Route path="/auth/signup" element={<SignUp />} />
           <Route path="/jobs" element={<Jobs />} />

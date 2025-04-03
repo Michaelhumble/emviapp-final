@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
@@ -40,6 +39,8 @@ const Welcome = () => {
         navigate('/dashboard/artist');
         break;
       case 'salon':
+        navigate('/dashboard/salon');
+        break;
       case 'owner':
         navigate('/dashboard/owner');
         break;
