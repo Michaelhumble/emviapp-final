@@ -4,14 +4,20 @@ import { Session, User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
-type UserRole = 'customer' | 'artist' | 'owner' | 'supplier' | null;
+type UserRole = 'customer' | 'artist' | 'owner' | 'renter' | 'supplier' | null;
+
+type UserMetadata = {
+  full_name?: string;
+  user_type?: UserRole;
+  [key: string]: any;
+};
 
 type AuthContextType = {
   user: User | null;
   session: Session | null;
   loading: boolean;
   userRole: UserRole;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, metadata?: UserMetadata) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   updateUserRole: (role: UserRole) => Promise<void>;
@@ -84,11 +90,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  const signUp = async (email: string, password: string): Promise<void> => {
+  const signUp = async (email: string, password: string, metadata?: UserMetadata): Promise<void> => {
     try {
       const { error } = await supabase.auth.signUp({ 
         email, 
-        password 
+        password,
+        options: {
+          data: metadata
+        }
       });
       
       if (error) {

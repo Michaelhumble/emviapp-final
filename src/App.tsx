@@ -36,6 +36,11 @@ import JobPost from "./pages/posting/JobPost";
 import SalonPost from "./pages/posting/SalonPost";
 import BoothPost from "./pages/posting/BoothPost";
 
+// Profile Setup Pages
+import ArtistSetup from "./pages/profile/artist/setup";
+import SalonOwnerSetup from "./pages/profile/salon/setup";
+import BoothRenterSetup from "./pages/profile/renter/setup";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -79,6 +84,11 @@ const App = () => (
             <Route path="/dashboard/artist" element={<ArtistDashboard />} />
             <Route path="/dashboard/owner" element={<OwnerDashboard />} />
             <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
+            
+            {/* Profile Setup Routes */}
+            <Route path="/profile/artist/setup" element={<ArtistSetup />} />
+            <Route path="/profile/salon/setup" element={<SalonOwnerSetup />} />
+            <Route path="/profile/renter/setup" element={<BoothRenterSetup />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

@@ -1,18 +1,26 @@
 
 import { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+
+// User type options for registration
+type UserType = "artist" | "owner" | "renter" | "customer";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [userType, setUserType] = useState<UserType>("artist");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { signUp, user } = useAuth();
+  const navigate = useNavigate();
 
   // Redirect if already logged in
   if (user) {
@@ -24,10 +32,30 @@ const SignUp = () => {
     setIsSubmitting(true);
 
     try {
-      await signUp(email, password);
-      // Toast message is handled by the AuthContext
-    } catch (error) {
-      // Error is handled by the AuthContext and displayed via toast
+      await signUp(email, password, {
+        full_name: fullName,
+        user_type: userType
+      });
+      
+      // Redirect based on user type
+      switch (userType) {
+        case "artist":
+          navigate("/profile/artist/setup");
+          break;
+        case "owner":
+          navigate("/profile/salon/setup");
+          break;
+        case "renter":
+          navigate("/profile/renter/setup");
+          break;
+        case "customer":
+          navigate("/");
+          break;
+        default:
+          navigate("/");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Sign up failed. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -39,11 +67,23 @@ const SignUp = () => {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">Create an account</CardTitle>
           <CardDescription className="text-center">
-            Enter your email and password to sign up
+            Enter your details to sign up
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="fullName">Full Name</Label>
+              <Input
+                id="fullName"
+                type="text"
+                placeholder="Your full name"
+                required
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                disabled={isSubmitting}
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -68,6 +108,32 @@ const SignUp = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isSubmitting}
               />
+            </div>
+            
+            <div className="space-y-3">
+              <Label>I am a:</Label>
+              <RadioGroup 
+                value={userType} 
+                onValueChange={(value) => setUserType(value as UserType)}
+                className="grid grid-cols-2 gap-4"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="artist" id="artist" />
+                  <Label htmlFor="artist" className="cursor-pointer">Nail Technician/Artist</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="owner" id="owner" />
+                  <Label htmlFor="owner" className="cursor-pointer">Salon Owner</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="renter" id="renter" />
+                  <Label htmlFor="renter" className="cursor-pointer">Booth Renter</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="customer" id="customer" />
+                  <Label htmlFor="customer" className="cursor-pointer">Customer</Label>
+                </div>
+              </RadioGroup>
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
