@@ -1,14 +1,13 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Phone, DollarSign, Users, Building, Star, Calendar } from "lucide-react";
 import Layout from "@/components/layout/Layout";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import SalonListings from "@/components/salons/SalonListings";
 import { Job } from "@/types/job";
+import SampleIndustryListings from "@/components/marketplace/SampleIndustryListings";
 
 // Hiring salons data (jobs)
 const hiringSalons = [
@@ -214,6 +213,7 @@ const salonsForSale: Job[] = [
 
 const Salons = () => {
   const [activeTab, setActiveTab] = useState("hiring");
+  const [showSampleListings, setShowSampleListings] = useState(false);
 
   return (
     <Layout>
@@ -242,6 +242,9 @@ const Salons = () => {
                 <TabsList className="mt-4 sm:mt-0 bg-muted/30">
                   <TabsTrigger value="hiring" className="text-sm">Hiring Now</TabsTrigger>
                   <TabsTrigger value="forsale" className="text-sm">For Sale</TabsTrigger>
+                  {showSampleListings && (
+                    <TabsTrigger value="samples" className="text-sm">Sample Listings</TabsTrigger>
+                  )}
                 </TabsList>
               </div>
 
@@ -314,7 +317,25 @@ const Salons = () => {
               <TabsContent value="forsale" className="space-y-6">
                 <SalonListings salonsForSale={salonsForSale} />
               </TabsContent>
+              
+              <TabsContent value="samples">
+                <SampleIndustryListings />
+              </TabsContent>
             </Tabs>
+            
+            {!showSampleListings && (
+              <div className="text-center mt-8">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setShowSampleListings(true);
+                    setActiveTab("samples");
+                  }}
+                >
+                  Show Sample Industry Listings
+                </Button>
+              </div>
+            )}
           </motion.div>
         </div>
       </div>
