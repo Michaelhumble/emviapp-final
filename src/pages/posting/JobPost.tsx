@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -17,6 +16,7 @@ import { calculateJobPostPrice } from "@/utils/postingPriceCalculator";
 import PaymentConfirmationModal from "@/components/posting/PaymentConfirmationModal";
 import ThankYouModal from "@/components/posting/ThankYouModal";
 import PostWizardLayout from "@/components/posting/PostWizardLayout";
+import { Navigate } from "react-router-dom";
 
 const formSchema = z.object({
   salonName: z.string().min(2, {

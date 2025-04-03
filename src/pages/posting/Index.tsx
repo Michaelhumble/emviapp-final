@@ -1,9 +1,8 @@
-
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Briefcase, Store, ChairOffice } from "lucide-react";
+import { Briefcase, Store, Building, MapPin } from "lucide-react";
 
 const PostingIndex = () => {
   const navigate = useNavigate();
@@ -93,7 +92,7 @@ const PostingIndex = () => {
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader className="pb-3">
                 <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mb-2">
-                  <ChairOffice className="w-6 h-6 text-green-600" />
+                  <Building className="w-6 h-6 text-green-600" />
                 </div>
                 <CardTitle>Booth Rental</CardTitle>
                 <CardDescription>Advertise available booth rentals</CardDescription>
