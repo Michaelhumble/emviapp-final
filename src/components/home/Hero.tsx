@@ -22,8 +22,11 @@ const Hero = () => {
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#FDFDFD] to-[#F6F6F6] z-0"></div>
       
-      {/* Image carousel with layering fixed */}
-      <div className="absolute inset-0 w-full h-full overflow-hidden z-10">
+      {/* Glass effect frame */}
+      <div className="absolute inset-0 md:m-4 backdrop-blur-sm bg-white/10 border border-white/30 rounded-lg shadow-xl z-10"></div>
+      
+      {/* Image carousel placed in front of glass background */}
+      <div className="absolute inset-0 w-full h-full overflow-hidden z-20">
         <HeroCarousel images={heroImages} activeIndex={activeIndex} />
       </div>
 

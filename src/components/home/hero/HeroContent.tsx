@@ -39,7 +39,7 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages }: HeroContentPro
           transition={{ duration: 0.7, delay: 0.2 }}
           style={{ textShadow: '0px 2px 4px rgba(0,0,0,0.3)' }}
         >
-          The Beauty Industry's Missing Piece — We Just Built It.
+          This Isn't Just an App—It's the Future of the Beauty Industry
         </motion.h1>
         <motion.p 
           className="text-lg md:text-xl text-white mb-10 max-w-3xl font-sans"
