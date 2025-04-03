@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { calculateJobPostPrice } from "@/utils/postingPriceCalculator";
+import { calculateJobPostPrice } from "@/utils/posting";
 import PostWizardLayout from "@/components/posting/PostWizardLayout";
 import PaymentConfirmationModal from "@/components/posting/PaymentConfirmationModal";
 import ThankYouModal from "@/components/posting/ThankYouModal";

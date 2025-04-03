@@ -3,7 +3,7 @@ import { Info } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import SmartAdOptions from "@/components/posting/SmartAdOptions";
 import PricingDisplay from "@/components/posting/PricingDisplay";
-import { PricingOptions, generatePromotionalText } from "@/utils/postingPriceCalculator";
+import { PricingOptions, generatePromotionalText } from "@/utils/posting";
 
 interface JobPostOptionsProps {
   postType: 'job';
