@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
 export const useRoleSelection = () => {
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
   const [hasSelectedRole, setHasSelectedRole] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
@@ -40,7 +40,7 @@ export const useRoleSelection = () => {
     };
     
     checkUserRole();
-  }, [user?.id]);
+  }, [user?.id, userRole]);
   
   return {
     isRoleModalOpen,

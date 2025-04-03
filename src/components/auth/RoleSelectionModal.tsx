@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
-type Role = "customer" | "artist" | "owner" | "supplier";
+type Role = "customer" | "artist" | "owner" | "renter" | "supplier";
 
 interface RoleSelectionModalProps {
   open: boolean;
@@ -40,6 +40,11 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
       description: "Manage your salon and hire talented artists"
     },
     {
+      id: "renter",
+      label: "Booth Renter",
+      description: "Operate your own business within a salon"
+    },
+    {
       id: "supplier",
       label: "Supplier",
       description: "Offer beauty products to salons and artists"
@@ -67,7 +72,25 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
       });
       
       // Redirect to appropriate dashboard
-      navigate(`/dashboard/${selectedRole}`);
+      switch(selectedRole) {
+        case 'artist':
+          navigate('/dashboard/artist');
+          break;
+        case 'owner':
+          navigate('/dashboard/owner');
+          break;
+        case 'renter':
+          // For booth renters, redirect to artist dashboard for now
+          navigate('/dashboard/artist');
+          break;
+        case 'supplier':
+          navigate('/dashboard/supplier');
+          break;
+        case 'customer':
+        default:
+          navigate('/dashboard/customer');
+          break;
+      }
     } catch (error) {
       console.error("Error setting user role:", error);
       toast({
