@@ -43,13 +43,13 @@ const generateOwnerName = (): string => {
 
 // Generate salary range in Vietnamese format
 const generateSalaryRange = (): string => {
-  const minValues = [700, 800, 900, 1000, 1100, 1200];
-  const maxValues = [1300, 1400, 1500, 1600, 1800, 2000];
+  const minValues = [600, 700, 800, 900, 1000, 1100, 1200];
+  const maxValues = [1300, 1400, 1500, 1600, 1800, 2000, 2200, 2500];
   
   const min = minValues[Math.floor(Math.random() * minValues.length)];
   const max = maxValues[Math.floor(Math.random() * maxValues.length)];
   
-  return `$${min}-${max}/tuần`;
+  return `$${min} - $${max}/week`;
 };
 
 // Generate Vietnamese tip range
@@ -65,10 +65,30 @@ const generateTipRange = (): string => {
 
 // Generate nail specialties in Vietnamese
 const generateSpecialties = (): string[] => {
-  const allSpecialties = ["Chân tay nước", "Dip", "Bột", "Waxing", "Gel-X", "Làm chân", "Làm tay"];
+  const allSpecialties = [
+    "Acrylic Nails",
+    "Gel Nails",
+    "Dipping Powder",
+    "Nail Art",
+    "Pedicure",
+    "Manicure",
+    "Shellac",
+    "Waxing",
+    "Eyelash Extensions",
+    "Facial"
+  ];
+  
   const count = Math.floor(Math.random() * 4) + 2; // 2-5 specialties
-  const shuffled = [...allSpecialties].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, count);
+  const result = [];
+  
+  while (result.length < count) {
+    const specialty = allSpecialties[Math.floor(Math.random() * allSpecialties.length)];
+    if (!result.includes(specialty)) {
+      result.push(specialty);
+    }
+  }
+  
+  return result;
 };
 
 // Generate benefits in Vietnamese

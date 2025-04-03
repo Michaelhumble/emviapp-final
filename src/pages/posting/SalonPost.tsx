@@ -1,7 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
 import PostWizardLayout from '@/components/posting/PostWizardLayout';
+import { useToast } from '@/hooks/use-toast';
+import { Job } from '@/types/job';
+import { SalonPostForm } from '@/components/posting/salon/SalonPostForm';
+import { SalonPostOptions } from '@/components/posting/salon/SalonPostOptions';
+import { PaymentConfirmationModal } from '@/components/posting/PaymentConfirmationModal';
+import { ThankYouModal } from '@/components/posting/ThankYouModal';
+import { calculateSalonForSalePrice } from '@/utils/posting/salonPricing';
+import type { SalonFormValues } from '@/components/posting/salon/salonFormSchema';
 
 const SalonPost = () => {
   const { user } = useAuth();

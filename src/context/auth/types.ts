@@ -1,4 +1,3 @@
-
 import { Session, User } from "@supabase/supabase-js";
 
 export type UserRole = 
@@ -24,29 +23,26 @@ export type UserMetadata = {
 // Extended user profile interface to include all possible fields
 export interface UserProfile {
   id: string;
-  full_name: string;
   email: string;
-  avatar_url: string | null;
-  bio: string | null;
-  specialty: string | null;
-  location: string | null;
-  instagram: string | null;
-  website: string | null;
-  phone: string | null;
-  preferred_language: string | null;
-  credits: number | null;
-  badges: any | null; // Json
-  role: UserRole;
-  created_at: string | null;
-  updated_at: string | null;
+  full_name: string;
+  avatar_url?: string;
+  location?: string;
+  bio?: string;
+  phone?: string;
+  instagram?: string;
+  website?: string;
+  specialty?: string;
+  role?: string;
+  skill_level?: string;
+  skills?: string[];
+  salon_name?: string;
+  business_address?: string;
+  company_name?: string;
+  product_type?: string;
   // Fields for salon owners
-  salon_name?: string | null;
-  business_address?: string | null;
   license_number?: string | null;
   salon_type?: string | null;
   // Fields for vendors/suppliers
-  company_name?: string | null;
-  product_type?: string | null;
   website_url?: string | null;
   // For extensibility
   [key: string]: any;

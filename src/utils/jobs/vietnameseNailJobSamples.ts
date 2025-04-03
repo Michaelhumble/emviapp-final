@@ -121,13 +121,11 @@ const getRandomSpecialty = (): string => {
 };
 
 const getRandomSalaryRange = (): string => {
-  const minValues = [700, 800, 900, 1000, 1100, 1200];
-  const maxValues = [1300, 1400, 1500, 1600, 1800, 2000];
-  
+  const minValues = [600, 700, 800, 900, 1000, 1100, 1200];
+  const maxValues = [1300, 1400, 1500, 1600, 1800, 2000, 2200, 2500];
   const min = minValues[Math.floor(Math.random() * minValues.length)];
   const max = maxValues[Math.floor(Math.random() * maxValues.length)];
-  
-  return `$${min}-${max}/tuần`;
+  return `$${min} - $${max}/week`;
 };
 
 const getRandomTipRange = (): string => {
@@ -171,21 +169,37 @@ const generateRandomCompanyName = (): string => {
 };
 
 const generateRandomPhone = (): string => {
-  const area = Math.floor(Math.random() * 800) + 200;
-  const prefix = Math.floor(Math.random() * 900) + 100;
-  const lineNumber = Math.floor(Math.random() * 9000) + 1000;
-  return `(${area}) ${prefix}-${lineNumber}`;
+  return `(${Math.floor(Math.random() * 900) + 100}) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`;
 };
 
 const generateRandomEmail = (): string => {
-  const firstNames = ["Hoa", "Linh", "Minh", "Tuan", "Anh", "Thu", "Lan", "Hai", "Thuy", "Phuong", "Trang", "Van", "Nga", "Thanh", "Huong"];
-  const lastNames = ["Nguyen", "Tran", "Le", "Pham", "Vo", "Dang", "Bui", "Do", "Ho", "Ngo", "Duong", "Ly", "Huynh", "Vu", "Mai"];
-  
-  return `${firstNames[Math.floor(Math.random() * firstNames.length)]}.${lastNames[Math.floor(Math.random() * lastNames.length)]}@gmail.com`;
+  const domains = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com"];
+  const names = ["nailsalon", "beautynails", "luxurynails", "vipnails", "starnails", "topnails"];
+  const numbers = ["", "1", "2", "123", "88", "99", "777"];
+  const name = names[Math.floor(Math.random() * names.length)] + numbers[Math.floor(Math.random() * numbers.length)];
+  const domain = domains[Math.floor(Math.random() * domains.length)];
+  return `${name}@${domain}`;
 };
 
 const generateRandomWorkHours = (): string => {
-  return "8:00 AM - 5:00 PM";
+  const startHours = ["9am", "10am", "8am"];
+  const endHours = ["7pm", "8pm", "9pm", "10pm"];
+  return `${startHours[Math.floor(Math.random() * startHours.length)]} - ${endHours[Math.floor(Math.random() * endHours.length)]}`;
+};
+
+const parseCityState = (location: string): {city: string, state: string} => {
+  const parts = location.split(',');
+  return {
+    city: parts[0]?.trim() || '',
+    state: parts[1]?.trim() || ''
+  };
+};
+
+const generateRandomSpecialties = (): string[] => {
+  const allSpecialties = ["Chân tay nước", "Dip", "Bột", "Waxing", "Gel-X", "Làm chân", "Làm tay", "Nail Art"];
+  const count = Math.floor(Math.random() * 4) + 2; // 2-5 specialties
+  const shuffled = [...allSpecialties].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
 };
 
 export const generateVietnameseNailSampleJobs = (count: number): Job[] => {

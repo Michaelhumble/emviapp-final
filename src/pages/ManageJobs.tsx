@@ -15,82 +15,63 @@ const ManageJobs = () => {
   const { user } = useAuth();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
-  
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    fetchAllJobs();
+    fetchUserJobs();
   }, []);
 
-  const fetchAllJobs = async () => {
+  const fetchUserJobs = async () => {
     setLoading(true);
     try {
-      const { data: jobsData, error: jobsError } = await supabase
-        .from("posts")
-        .select(`
-          id,
-          title,
-          content,
-          created_at,
-          expires_at,
-          status,
-          location,
-          metadata
-        `)
-        .eq("post_type", "job")
-        .eq("user_id", user?.id)
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('*, _count { applications }')
+        .eq('user_id', user?.id);
 
-      if (jobsError) throw jobsError;
-      
-      const formattedJobs: Job[] = jobsData.map(job => ({
-        id: job.id,
-        title: job.title,
-        description: job.content,
-        created_at: job.created_at,
-        expires_at: job.expires_at,
-        status: job.status,
-        location: job.location,
-        compensation_type: job.metadata?.compensation_type || '',
-        compensation_details: job.metadata?.compensation_details || '',
-        _count: {
-          applications: 0
-        }
-      }));
-      
-      const jobIds = formattedJobs.map(job => job.id);
-      const { data: appData, error: appError } = await supabase
-        .from("job_applications")
-        .select("job_id, count(*)")
-        .in("job_id", jobIds)
-        .group("job_id");
-      
-      if (appError) throw appError;
-      
-      if (appData) {
-        const appCounts: Record<string, number> = {};
-        appData.forEach((item: any) => {
-          appCounts[item.job_id] = parseInt(item.count);
-        });
-        
-        formattedJobs.forEach(job => {
-          job._count = {
-            applications: appCounts[job.id] || 0
-          };
-        });
-      }
+      if (error) throw error;
+
+      const formattedJobs = data?.map(job => {
+        return {
+          id: job.id,
+          title: job.title || '',
+          compensation_type: job.compensation_type || '',
+          compensation_details: job.compensation_details || '',
+          created_at: job.created_at || '',
+          expires_at: job.expires_at || '',
+          status: job.status || '',
+          requirements: job.requirements || '',
+          description: job.description || '',
+          _count: job._count || { applications: 0 }
+        } as Job;
+      }) || [];
       
       setJobs(formattedJobs);
-    } catch (error: any) {
-      console.error("Error fetching jobs:", error.message);
-      toast({
-        title: "Error",
-        description: "Failed to load your job listings",
-        variant: "destructive",
-      });
+      
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+      setError('Failed to load jobs. Please try again.');
     } finally {
       setLoading(false);
     }
   };
-  
+
+  const fetchApplications = async (jobId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('job_applications')
+        .select('*, profiles(*)')
+        .eq('job_id', jobId)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching applications:', error);
+      return [];
+    }
+  };
+
   const handleDeleteJob = async (jobId: string) => {
     if (confirm("Are you sure you want to delete this job post? This action cannot be undone.")) {
       try {
@@ -107,6 +88,33 @@ const ManageJobs = () => {
         console.error("Error deleting job:", error);
         toast.error("Failed to delete the job.");
       }
+    }
+  };
+
+  const handleStatusChange = async (jobId: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('jobs')
+        .update({ status: newStatus })
+        .eq('id', jobId);
+      
+      if (error) throw error;
+      
+      setJobs(prev => prev.map(job => 
+        job.id === jobId ? { ...job, status: newStatus } : job
+      ));
+      
+      toast({
+        description: `Job status updated to ${newStatus}`,
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error('Error updating job status:', error);
+      toast({
+        variant: "destructive",
+        description: "Failed to update job status",
+        duration: 3000,
+      });
     }
   };
 

@@ -1,211 +1,180 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import Layout from "@/components/layout/Layout";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
-import { Eye, EyeOff } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-const formSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters." }),
-  confirmPassword: z.string().min(8, {
-    message: "Confirm Password must be at least 8 characters.",
-  }),
-});
+import { Label } from "@/components/ui/label";
+import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Loader2 } from "lucide-react";
 
 const SignUp = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { signUp } = useAuth();
+  const { isSignedIn } = useAuth();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
-  });
+  if (isSignedIn) {
+    navigate('/dashboard');
+    return null;
+  }
 
-  const isLoading = form.formState.isSubmitting;
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (values.password !== values.confirmPassword) {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
       toast({
-        title: "Error",
-        description: "Passwords do not match.",
         variant: "destructive",
+        description: "Passwords do not match"
       });
       return;
     }
-
+    
+    setIsLoading(true);
+    
     try {
-      const { error } = await signUp({
-        email: values.email,
-        password: values.password,
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+            role: role || 'customer'
+          }
+        }
       });
-
+      
       if (error) {
         toast({
-          title: "Error",
-          description: error.message,
           variant: "destructive",
+          description: error.message
         });
-      } else {
-        toast({
-          title: "Success",
-          description: "Please check your email to verify your account.",
-        });
-        navigate("/auth/verify-email");
+        return;
       }
-    } catch (error: any) {
+      
       toast({
-        title: "Error",
-        description: error?.message || "Something went wrong.",
-        variant: "destructive",
+        description: "Sign up successful! Check your email to verify your account."
       });
+      
+      navigate('/auth/signin');
+    } catch (err) {
+      console.error("Error during sign up:", err);
+      toast({
+        variant: "destructive",
+        description: "An unexpected error occurred"
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="container relative h-[800px] flex-col items-center justify-center md:grid lg:max-w-none lg:px-0">
-      <div className="relative hidden h-full flex-col bg-muted p-10 text-white lg:flex">
-        <div className="absolute inset-0 bg-[url(/images/auth-background.png)] opacity-30" />
-        <div className="relative mt-auto">
-          <blockquote className="space-y-2">
-            <p className="text-lg">
-              &ldquo;Embrace the beauty of your journey, for every step forward
-              is a stroke of brilliance on the canvas of your life.&rdquo;
-            </p>
-            <footer className="text-sm">Lovable AI</footer>
-          </blockquote>
-        </div>
-      </div>
-      <div className="lg:p-8">
-        <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+    <Layout>
+      <div className="container relative grid min-h-screen place-items-center md:px-10">
+        <div className="mx-auto flex w-full max-w-md flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col space-y-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">
               Create an account
             </h1>
             <p className="text-sm text-muted-foreground">
-              Enter your email and password to create an account
+              Enter your email below to create your account
             </p>
           </div>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-4"
-            >
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your email"
-                        type="email"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+          <form onSubmit={handleSubmit} className="grid gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="name">Full Name</Label>
+              <Input
+                id="name"
+                placeholder="Enter your full name"
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required
               />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your password"
-                        type={showPassword ? "text" : "password"}
-                        {...field}
-                      />
-                    </FormControl>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-2 top-7 rounded-r-none"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                      <span className="sr-only">Show password</span>
-                    </Button>
-                    <FormMessage />
-                  </FormItem>
-                )}
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                placeholder="Enter your email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Confirm your password"
-                        type={showConfirmPassword ? "text" : "password"}
-                        {...field}
-                      />
-                    </FormControl>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-2 top-7 rounded-r-none"
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                      <span className="sr-only">Show password</span>
-                    </Button>
-                    <FormMessage />
-                  </FormItem>
-                )}
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                placeholder="Enter your password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
               />
-              <Button disabled={isLoading} className="w-full">
-                {isLoading ? "Loading" : "Sign Up"}
-              </Button>
-            </form>
-          </Form>
-          <p className="text-center text-sm text-muted-foreground">
-            Already have an account?{" "}
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="confirm-password">Confirm Password</Label>
+              <Input
+                id="confirm-password"
+                placeholder="Confirm your password"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="role">Account Type</Label>
+              <Select onValueChange={setRole}>
+                <SelectTrigger id="role">
+                  <SelectValue placeholder="Select account type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="customer">Customer</SelectItem>
+                  <SelectItem value="artist">Artist</SelectItem>
+                  <SelectItem value="owner">Salon Owner</SelectItem>
+                  <SelectItem value="supplier">Supplier</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button disabled={isLoading}>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Sign Up
+            </Button>
+          </form>
+          <p className="px-8 text-center text-sm text-muted-foreground">
+            By clicking continue, you agree to our{" "}
             <Link
-              to="/auth/sign-in"
-              className="hover:text-foreground underline underline-offset-4"
+              to="#"
+              className="underline underline-offset-4 hover:text-foreground"
             >
-              Sign in
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link
+              to="#"
+              className="underline underline-offset-4 hover:text-foreground"
+            >
+              Privacy Policy
             </Link>
+            .
           </p>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

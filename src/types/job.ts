@@ -51,6 +51,7 @@ export interface Job {
   monthly_rent?: string;
   square_feet?: string;
   number_of_stations?: number;
+  number_of_chairs?: number; // Added because it's used in salonData.ts
   revenue?: string;
   reason_for_selling?: string;
   salon_features?: string[];

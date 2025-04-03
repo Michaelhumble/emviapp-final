@@ -4,6 +4,7 @@ import Layout from '@/components/layout/Layout';
 import { useAuth } from '@/context/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import StripeCheckout from "@/components/payments/StripeCheckout";
 
 const plans = [
   {

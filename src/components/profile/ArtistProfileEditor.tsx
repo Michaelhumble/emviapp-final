@@ -1,4 +1,6 @@
+
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/auth';
@@ -8,6 +10,25 @@ import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { 
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter
+} from "@/components/ui/card";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { AtSign, Globe, Upload, ImageOff, Loader2 } from 'lucide-react';
 
 // List of specialties for artists to choose from
 const specialties = [
@@ -100,7 +121,11 @@ const ArtistProfileEditor = () => {
   
   const handleSaveProfile = async () => {
     if (!user) {
-      toast.error("You must be logged in to update your profile");
+      toast({
+        title: "Error",
+        description: "You must be logged in to update your profile",
+        variant: "destructive"
+      });
       return;
     }
     
@@ -154,10 +179,17 @@ const ArtistProfileEditor = () => {
       // Refresh the context with updated profile
       await refreshUserProfile();
       
-      toast.success("Profile updated successfully!");
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been updated successfully!",
+      });
     } catch (error) {
       console.error("Error updating profile:", error);
-      toast.error("Failed to update profile. Please try again.");
+      toast({
+        title: "Error",
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setIsLoading(false);
     }

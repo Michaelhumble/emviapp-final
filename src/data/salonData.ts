@@ -1,4 +1,3 @@
-
 import { Job } from "@/types/job";
 
 // Hiring salons data (jobs)
@@ -200,5 +199,64 @@ export const salonsForSale: Job[] = [
     reason_for_selling: "Mở thêm chi nhánh mới / Opening new locations",
     image: "https://images.unsplash.com/photo-1610992015732-2449b76344bc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60",
     emvi_ai_boosted: true
+  }
+];
+
+export const salonListings = [
+  {
+    id: "salon1",
+    name: "Luxury Nails & Spa",
+    location: "Houston, TX",
+    jobTitle: {
+      vi: "Cần thợ gấp",
+      en: "Nail Tech Needed ASAP"
+    },
+    salary: "$800-1200/week",
+    features: ["Weekly Pay", "Tips", "Bao Lương Nếu Cần"],
+    phone: "(713) 555-1234",
+    image: "https://images.unsplash.com/photo-1632345031435-8727f6897d53?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60",
+    number_of_stations: 10
+  },
+  {
+    id: "2",
+    name: "Diamond Nails",
+    location: "Dallas, TX",
+    jobTitle: {
+      vi: "Tuyển thợ bột",
+      en: "Seeking Powder Specialist"
+    },
+    salary: "$1000-1500/week",
+    features: ["Full-Time", "Tips"],
+    phone: "(214) 555-2345",
+    image: "https://images.unsplash.com/photo-1607779097040-26e80aa78e66?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60",
+    number_of_stations: 8
+  },
+  {
+    id: "3",
+    name: "Queen Nails",
+    location: "San Jose, CA",
+    jobTitle: {
+      vi: "Cần thợ nail",
+      en: "Nail Technician Position"
+    },
+    salary: "Call for salary",
+    features: ["Weekly Pay", "Bao Lương Nếu Cần"],
+    phone: "(408) 555-3456",
+    image: "https://images.unsplash.com/photo-1610992015732-2449b76344bc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60",
+    number_of_stations: 6
+  },
+  {
+    id: "4",
+    name: "Crystal Spa & Nails",
+    location: "Atlanta, GA",
+    jobTitle: {
+      vi: "Tuyển thợ có kinh nghiệm",
+      en: "Experienced Nail Tech Wanted"
+    },
+    salary: "$900-1400/week",
+    features: ["Full-Time", "Tips"],
+    phone: "(404) 555-4567",
+    image: "https://images.unsplash.com/photo-1613966802194-d46a163af70c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzJ8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60",
+    number_of_stations: 7
   }
 ];
