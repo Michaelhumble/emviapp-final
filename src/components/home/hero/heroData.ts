@@ -1,16 +1,16 @@
 
 export const heroImages = [
   {
-    url: "https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80",
-    alt: "Hairstylist working with client"
+    url: "https://images.lovable.ai/app-6b747c95-e37a-4c93-908d-4c4e1519e75f/pexels-lucaspezeta-2328149.jpg",
+    alt: "Makeup Artist Applying Makeup"
   },
   {
-    url: "https://images.unsplash.com/photo-1582095133179-bfd08e2fc6b3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80",
-    alt: "Nail technician creating nail art"
+    url: "https://images.lovable.ai/app-6b747c95-e37a-4c93-908d-4c4e1519e75f/pexels-rdne-7755558.jpg",
+    alt: "Nail Technician Performing Pedicure"
   },
   {
-    url: "https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80",
-    alt: "Makeup artist applying makeup on client"
+    url: "https://images.lovable.ai/app-6b747c95-e37a-4c93-908d-4c4e1519e75f/pexels-freestocks-361754.jpg",
+    alt: "Nail Artist Creating Acrylic Set"
   },
   {
     url: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80",
