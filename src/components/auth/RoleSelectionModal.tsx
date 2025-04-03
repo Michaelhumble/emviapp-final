@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
-type Role = "customer" | "artist" | "owner" | "renter" | "supplier" | "freelancer";
+type Role = "customer" | "artist" | "owner" | "supplier" | "freelancer";
 
 interface RoleSelectionModalProps {
   open: boolean;
@@ -24,24 +25,19 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
   
   const roles: { id: Role; label: string; description: string }[] = [
     {
-      id: "customer",
-      label: "Customer",
-      description: "Browse beauty services and book appointments"
-    },
-    {
-      id: "artist",
-      label: "Artist",
-      description: "Showcase your work and connect with salons"
-    },
-    {
       id: "owner",
       label: "Salon Owner",
       description: "Manage your salon and hire talented artists"
     },
     {
-      id: "renter",
-      label: "Booth Renter",
-      description: "Operate your own business within a salon"
+      id: "customer",
+      label: "Customer",
+      description: "Browse beauty services and book appointments"
+    },
+    {
+      id: "freelancer",
+      label: "Freelancer",
+      description: "I'm an independent artist looking for gigs, bookings, or to build my brand"
     },
     {
       id: "supplier",
@@ -49,9 +45,9 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
       description: "Offer beauty products to salons and artists"
     },
     {
-      id: "freelancer",
-      label: "Freelancer",
-      description: "I'm an independent artist looking for gigs, bookings, or to build my brand"
+      id: "artist",
+      label: "Artist",
+      description: "Showcase your work and connect with salons"
     }
   ];
 
@@ -82,10 +78,6 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
           break;
         case 'owner':
           navigate('/dashboard/owner');
-          break;
-        case 'renter':
-          // For booth renters, redirect to artist dashboard for now
-          navigate('/dashboard/artist');
           break;
         case 'supplier':
           navigate('/dashboard/supplier');
