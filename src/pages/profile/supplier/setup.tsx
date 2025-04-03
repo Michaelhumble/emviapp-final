@@ -1,15 +1,18 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Instagram, Facebook, Upload, Loader2 } from "lucide-react"; 
+import Layout from '@/components/layout/Layout';
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardFooter, 
+  CardHeader, 
+  CardTitle 
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useAuth } from '@/context/auth';
 import { toast } from "sonner";
-import { useAuth } from '@/context/AuthContext';
 import { supabase } from "@/integrations/supabase/client";
 
 const SupplierSetup = () => {
@@ -24,7 +27,6 @@ const SupplierSetup = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   
-  // Handle image selection
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
@@ -36,19 +38,16 @@ const SupplierSetup = () => {
     }
   };
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      // Make sure user is logged in
       if (!user) {
         toast.error('You must be logged in to set up your profile');
         return;
       }
 
-      // Upload profile data to Supabase
       const { error } = await supabase
         .from('users')
         .update({
@@ -64,9 +63,6 @@ const SupplierSetup = () => {
 
       if (error) throw error;
 
-      // Handle image uploads in a real implementation
-      // For now just simulate success
-      
       toast.success('Profile setup complete!');
       navigate('/dashboard/supplier');
     } catch (error: any) {

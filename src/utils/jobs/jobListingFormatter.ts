@@ -60,7 +60,12 @@ export const formatJobListings = (data: any[]): Job[] => {
         verified: Math.random() > 0.3, // 70% chance of being verified
         activelyHiring: Math.random() > 0.2, // 80% chance of actively hiring
         chatAvailable: Math.random() > 0.5 // 50% chance of chat available
-      }
+      },
+      // Required properties from Job interface
+      compensation_type: metadata.compensation_type || '',
+      compensation_details: metadata.compensation_details || '',
+      expires_at: post.expires_at || '',
+      status: post.status || 'active'
     };
   }) || [];
 

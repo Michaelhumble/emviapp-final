@@ -1,14 +1,7 @@
-
-import { useState, useEffect } from "react";
-import { useAuth } from "@/context/AuthContext";
-import { useToast } from "@/hooks/use-toast";
-import PostWizardLayout from "@/components/posting/PostWizardLayout";
-import PaymentConfirmationModal from "@/components/posting/PaymentConfirmationModal";
-import ThankYouModal from "@/components/posting/ThankYouModal";
-import { SalonPostForm } from "@/components/posting/salon/SalonPostForm";
-import { SalonFormValues } from "@/components/posting/salon/salonFormSchema";
-import SalonPostOptions from "@/components/posting/salon/SalonPostOptions";
-import { calculateSalonForSalePrice } from "@/utils/posting/salonPricing";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/auth';
+import PostWizardLayout from '@/components/posting/PostWizardLayout';
 
 const SalonPost = () => {
   const { user } = useAuth();

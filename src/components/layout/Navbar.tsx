@@ -1,20 +1,32 @@
-
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import EmviLogo from "@/components/branding/EmviLogo";
+import { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { 
+  User, 
+  X, 
+  Menu, 
+  LogOut, 
+  Settings, 
+  Bell, 
+  MessageSquare, 
+  ChevronDown,
+  UserPlus,
+  CreditCard,
+  Calendar
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth } from "@/context/auth";
+import EmviLogo from "@/components/branding/EmviLogo";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -54,18 +66,20 @@ const Navbar = () => {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="center">
-              <DropdownMenuItem asChild>
-                <Link to="/customers" className="w-full">Customers</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/artists" className="w-full">Artists</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/salon-owners" className="w-full">Salon Owners</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="/suppliers" className="w-full">Suppliers</Link>
-              </DropdownMenuItem>
+              <DropdownMenuGroup>
+                <DropdownMenuItem asChild>
+                  <Link to="/customers" className="w-full">Customers</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/artists" className="w-full">Artists</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/salon-owners" className="w-full">Salon Owners</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/suppliers" className="w-full">Suppliers</Link>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
           

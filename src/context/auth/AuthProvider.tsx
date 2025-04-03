@@ -1,4 +1,3 @@
-
 import { createContext, useEffect, useState, ReactNode } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { toast } from "sonner";
@@ -7,7 +6,17 @@ import { UserRole, UserProfile, UserMetadata, AuthContextType } from "./types";
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+interface SupplierProfile {
+  company_name?: string;
+  product_type?: string;
+}
+
+interface SalonProfile {
+  salon_name?: string;
+  business_address?: string;
+}
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
@@ -32,7 +41,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUserRole(data.role as UserRole);
         setUserProfile(data as UserProfile);
         
-        // Check if profile is complete based on role-specific required fields
         let isComplete = false;
         
         if (data.role === 'artist' || data.role === 'nail technician/artist' || data.role === 'freelancer') {
@@ -42,7 +50,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } else if (data.role === 'vendor' || data.role === 'supplier' || data.role === 'beauty supplier') {
           isComplete = !!(data.company_name && data.product_type);
         } else {
-          // For customers and other roles, simpler requirements
           isComplete = !!(data.full_name);
         }
         
@@ -57,6 +64,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const refreshUserProfile = async () => {
     if (user?.id) {
       await fetchUserProfile(user.id);
+    }
+  };
+
+  const updateUserProfile = async (updatedData: Partial<UserProfile & SupplierProfile & SalonProfile>) => {
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update(updatedData)
+        .eq('id', user?.id);
+      
+      if (error) {
+        console.error('Error updating user profile:', error);
+        return;
+      }
+      
+      setUserProfile(updatedData as UserProfile);
+      setProfileComplete(true);
+      console.log("User profile updated:", updatedData);
+    } catch (error) {
+      console.error('Error updating user profile:', error);
     }
   };
 
@@ -173,21 +200,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const contextValue = {
+    user, 
+    session, 
+    loading, 
+    userRole,
+    userProfile,
+    profileComplete,
+    signUp, 
+    signIn, 
+    signOut,
+    updateUserRole,
+    refreshUserProfile,
+    updateUserProfile
+  };
+
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      session, 
-      loading, 
-      userRole,
-      userProfile,
-      profileComplete,
-      signUp, 
-      signIn, 
-      signOut,
-      updateUserRole,
-      refreshUserProfile
-    }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+export default AuthProvider;

@@ -1,14 +1,8 @@
-
 import { useEffect } from "react";
-import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/auth";
 import Layout from "@/components/layout/Layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { CalendarDays, Search, Gift, User } from "lucide-react";
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import AIDashboardWidgets from "@/components/ai/AIDashboardWidgets";
-import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
+import CustomerDashboard from "@/components/customer/CustomerDashboard";
 
 const CustomerDashboard = () => {
   const { userProfile } = useAuth();

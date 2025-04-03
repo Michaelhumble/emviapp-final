@@ -1,11 +1,9 @@
-
-import { useState, useEffect } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/AuthContext";
-import Layout from "@/components/layout/Layout";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import StripeCheckout from "@/components/payments/StripeCheckout";
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import Layout from '@/components/layout/Layout';
+import { useAuth } from '@/context/auth';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 const plans = [
   {
@@ -50,18 +48,15 @@ const plans = [
 const Checkout = () => {
   const { user, userRole } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedPlan, setSelectedPlan] = useState(plans[1]);
 
-  // Check if user should see pricing plans based on role
-  // Only Artist and Freelancer roles should see the pricing plans
   const shouldShowPricingPlans = userRole === 'artist' || userRole === 'freelancer';
 
-  // Redirect users who don't need to see plans to their dashboard
   useEffect(() => {
     if (user && !shouldShowPricingPlans) {
-      // Determine which dashboard to redirect to
-      let dashboardPath = '/dashboard/customer'; // Default
-      
+      let dashboardPath = '/dashboard/customer';
+
       switch(userRole) {
         case 'salon':
           dashboardPath = '/dashboard/owner';
@@ -77,24 +72,20 @@ const Checkout = () => {
           dashboardPath = '/dashboard/customer';
           break;
       }
-      
+
       navigate(dashboardPath);
     }
   }, [user, userRole, shouldShowPricingPlans, navigate]);
 
-  // Redirect to login if user is not authenticated
   if (!user) {
     return <Navigate to="/auth/signin" replace />;
   }
 
-  // Render nothing while redirecting non-eligible users
   if (!shouldShowPricingPlans) {
     return null;
   }
 
   const handleSuccess = () => {
-    // In a real implementation, this would redirect to a success page
-    // or update the user's subscription status
     setTimeout(() => {
       navigate("/profile");
     }, 1500);

@@ -17,31 +17,75 @@ const ManageJobs = () => {
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    if (user) {
-      loadJobs();
-    }
-  }, [user]);
-  
-  const loadJobs = async () => {
+    fetchAllJobs();
+  }, []);
+
+  const fetchAllJobs = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('jobs')
+      const { data: jobsData, error: jobsError } = await supabase
+        .from("posts")
         .select(`
-          *,
-          _count {
-            applications
-          }
+          id,
+          title,
+          content,
+          created_at,
+          expires_at,
+          status,
+          location,
+          metadata
         `)
-        .eq('salon_id', user?.id)
-        .order('created_at', { ascending: false });
+        .eq("post_type", "job")
+        .eq("user_id", user?.id)
+        .order("created_at", { ascending: false });
+
+      if (jobsError) throw jobsError;
       
-      if (error) throw error;
+      const formattedJobs: Job[] = jobsData.map(job => ({
+        id: job.id,
+        title: job.title,
+        description: job.content,
+        created_at: job.created_at,
+        expires_at: job.expires_at,
+        status: job.status,
+        location: job.location,
+        compensation_type: job.metadata?.compensation_type || '',
+        compensation_details: job.metadata?.compensation_details || '',
+        _count: {
+          applications: 0
+        }
+      }));
       
-      setJobs(data || []);
-    } catch (error) {
-      console.error("Error loading jobs:", error);
-      toast.error("Failed to load your job posts.");
+      const jobIds = formattedJobs.map(job => job.id);
+      const { data: appData, error: appError } = await supabase
+        .from("job_applications")
+        .select("job_id, count(*)")
+        .in("job_id", jobIds)
+        .group("job_id");
+      
+      if (appError) throw appError;
+      
+      if (appData) {
+        const appCounts: Record<string, number> = {};
+        appData.forEach((item: any) => {
+          appCounts[item.job_id] = parseInt(item.count);
+        });
+        
+        formattedJobs.forEach(job => {
+          job._count = {
+            applications: appCounts[job.id] || 0
+          };
+        });
+      }
+      
+      setJobs(formattedJobs);
+    } catch (error: any) {
+      console.error("Error fetching jobs:", error.message);
+      toast({
+        title: "Error",
+        description: "Failed to load your job listings",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,3 @@
-
 import { Job } from "@/types/job";
 import { addDays } from "date-fns";
 
@@ -109,75 +108,99 @@ const generateWorkHours = (): string => {
   return `${start}am-${end}pm`;
 };
 
-export const generateVietnameseNailSamples = (count: number = 5): Job[] => {
-  const sampleJobs: Job[] = [];
-  
-  // Create dates including some expired listings
+// Helper function to generate random past date
+const getRandomPastDate = (): Date => {
   const now = new Date();
-  
-  for (let i = 0; i < count; i++) {
-    const locationIndex = Math.floor(Math.random() * vietnameseNailLocations.length);
-    const location = vietnameseNailLocations[locationIndex];
-    const salonNameIndex = Math.floor(Math.random() * vietnameseNailSalonNames.length);
-    const salonName = vietnameseNailSalonNames[salonNameIndex];
+  const daysAgo = Math.floor(Math.random() * 30);
+  return addDays(now, -daysAgo);
+};
+
+// Helper function to generate random salon name
+const getRandomSalonName = (): string => {
+  const salonNameIndex = Math.floor(Math.random() * vietnameseNailSalonNames.length);
+  return vietnameseNailSalonNames[salonNameIndex];
+};
+
+// Helper function to generate random location
+const getRandomLocation = (): string => {
+  const locationIndex = Math.floor(Math.random() * vietnameseNailLocations.length);
+  return `${vietnameseNailLocations[locationIndex].city}, ${vietnameseNailLocations[locationIndex].state}`;
+};
+
+// Helper function to generate random job title
+const getRandomJobTitle = (): string => {
+  const specialties = generateSpecialties();
+  return `CẦN THỢ NAIL ${specialties[0].toUpperCase()}`;
+};
+
+// Helper function to generate random description
+const getRandomDescription = (): string => {
+  return `We are looking for experienced nail technicians to join our salon.`;
+};
+
+// Helper function to generate random Vietnamese description
+const getRandomVietnameseDescription = (): string => {
+  const location = getRandomLocation();
+  const specialties = generateSpecialties();
+  return generateVietnameseDescription(location, specialties);
+};
+
+// Helper function to generate random work hours
+const getRandomWorkHours = (): string => {
+  return generateWorkHours();
+};
+
+// Helper function to generate random benefits
+const getRandomBenefits = (): string[] => {
+  const hasHousing = Math.random() > 0.7;
+  return generateBenefits(hasHousing);
+};
+
+// Helper function to generate random owner name
+const getRandomOwnerName = (): string => {
+  return generateOwnerName();
+};
+
+// Helper function to generate random phone number
+const getRandomPhone = (): string => {
+  return generatePhoneNumber();
+};
+
+export const generateVietnameseNailSamples = (count: number): Job[] => {
+  return Array.from({ length: count }, (_, i) => {
+    const id = `sample-vietnamese-job-${i + 1}`;
+    const createdDate = getRandomPastDate();
+    const company = getRandomSalonName();
+    const location = getRandomLocation();
     
-    const hasHousing = Math.random() > 0.6;
-    const isFullTime = Math.random() > 0.3;
-    const ownerName = generateOwnerName();
-    const specialties = generateSpecialties();
-    const phone = generatePhoneNumber();
-    const workHours = generateWorkHours();
-    
-    // Make some listings expired (older than 30 days)
-    const isExpired = i % 3 === 0; // Make every third listing expired
-    const daysAgo = isExpired ? Math.floor(Math.random() * 30) + 31 : Math.floor(Math.random() * 30);
-    const createdDate = addDays(now, -daysAgo).toISOString();
-    
-    const vietnameseDescription = generateVietnameseDescription(`${location.city}, ${location.state}`, specialties);
-    
-    sampleJobs.push({
-      id: `vn-sample-job-${i + 1}`,
-      created_at: createdDate,
-      title: `CẦN THỢ NAIL ${specialties[0].toUpperCase()}`,
-      company: salonName,
-      location: `${location.city}, ${location.state}`,
-      salary_range: generateSalaryRange(),
-      description: `We are looking for experienced nail technicians to join our salon.`,
-      vietnamese_description: vietnameseDescription,
-      weekly_pay: true,
-      owner_will_train: Math.random() > 0.7,
-      employment_type: isFullTime ? "Full-Time" : "Part-Time",
-      user_id: `sample-user-${i + 1}`,
-      responsibilities: [
-        "Perform manicures and pedicures",
-        "Apply nail enhancements",
-        "Maintain cleanliness of work area",
-        "Provide excellent customer service"
-      ],
-      qualifications: [
-        "Valid nail technician license",
-        "Minimum 1-2 years experience",
-        "Reliable and punctual",
-        "Professional demeanor"
-      ],
-      benefits: generateBenefits(hasHousing),
-      specialties: specialties,
-      has_housing: hasHousing,
-      tip_range: generateTipRange(),
-      company_description: `Tiệm tại khu ${location.city}, không khí làm việc vui vẻ, hòa đồng, không áp lực.`,
-      work_hours: workHours,
+    return {
+      id,
+      title: getRandomJobTitle(),
+      company,
+      location,
+      salary_range: getRandomSalaryRange(),
+      description: getRandomDescription(),
+      vietnamese_description: getRandomVietnameseDescription(),
+      created_at: createdDate.toISOString(),
+      specialties: getRandomSpecialties(),
+      weekly_pay: Math.random() > 0.5,
+      owner_will_train: Math.random() > 0.6,
+      has_housing: Math.random() > 0.7,
+      work_hours: getRandomWorkHours(),
+      benefits: getRandomBenefits(),
       contact_info: {
-        phone: phone,
-        owner_name: ownerName
+        owner_name: getRandomOwnerName(),
+        phone: getRandomPhone()
       },
+      is_sample: true,
       trust_indicators: {
-        verified: Math.random() > 0.5,
-        activelyHiring: !isExpired,
-        chatAvailable: !isExpired
+        verified: Math.random() > 0.4,
+        activelyHiring: Math.random() > 0.3
       },
-      is_sample: true
-    });
-  }
-  
-  return sampleJobs;
+      compensation_type: "hourly",
+      compensation_details: getRandomSalaryRange(),
+      expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      status: "active"
+    };
+  });
 };

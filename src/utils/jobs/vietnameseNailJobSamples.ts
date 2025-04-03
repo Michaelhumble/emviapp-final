@@ -1,4 +1,3 @@
-
 import { Job } from "@/types/job";
 import { addDays } from "date-fns";
 
@@ -105,74 +104,132 @@ const generateExpiredJobDescription = (location: string, specialties: string[]):
   return descriptions[Math.floor(Math.random() * descriptions.length)];
 };
 
-export const generateVietnameseNailSampleJobs = (count: number = 15): Job[] => {
-  const sampleJobs: Job[] = [];
-  
-  // Create expired dates between 1-60 days ago
+const getRandomDateWithinRange = (minDays: number, maxDays: number): Date => {
   const now = new Date();
+  const daysAgo = Math.floor(Math.random() * (maxDays - minDays + 1)) + minDays;
+  return addDays(now, -daysAgo);
+};
+
+const getRandomLocation = (): string => {
+  const locationIndex = Math.floor(Math.random() * vietnameseNailLocations.length);
+  return `${vietnameseNailLocations[locationIndex].city}, ${vietnameseNailLocations[locationIndex].state}`;
+};
+
+const getRandomSpecialty = (): string => {
+  const specialties = generateSpecialties();
+  return specialties[Math.floor(Math.random() * specialties.length)];
+};
+
+const getRandomSalaryRange = (): string => {
+  const minValues = [700, 800, 900, 1000, 1100, 1200];
+  const maxValues = [1300, 1400, 1500, 1600, 1800, 2000];
   
-  for (let i = 0; i < count; i++) {
-    const locationIndex = Math.floor(Math.random() * vietnameseNailLocations.length);
-    const location = vietnameseNailLocations[locationIndex];
-    const salonNameIndex = Math.floor(Math.random() * vietnameseNailSalonNames.length);
-    const salonName = vietnameseNailSalonNames[salonNameIndex];
+  const min = minValues[Math.floor(Math.random() * minValues.length)];
+  const max = maxValues[Math.floor(Math.random() * maxValues.length)];
+  
+  return `$${min}-${max}/tuần`;
+};
+
+const getRandomTipRange = (): string => {
+  const minValues = [100, 150, 200];
+  const maxValues = [300, 350, 400, 500];
+  
+  const min = minValues[Math.floor(Math.random() * minValues.length)];
+  const max = maxValues[Math.floor(Math.random() * maxValues.length)];
+  
+  return `$${min}-${max}/ngày`;
+};
+
+const generateRandomBenefits = (): string[] => {
+  const benefits: string[] = ["Tip cao ✨"];
+  
+  // Random additions
+  if (Math.random() > 0.5) benefits.push("Bao lương 💰");
+  if (Math.random() > 0.6) benefits.push("Có chỗ ở 🏠");
+  if (Math.random() > 0.7) benefits.push("Không trừ supply ✅");
+  if (Math.random() > 0.3) benefits.push("Môi trường vui vẻ 😊");
+  if (Math.random() > 0.6) benefits.push("Không khí gia đình 👨‍👩‍👧‍👦");
+  if (Math.random() > 0.7) benefits.push("Thưởng cuối năm 🎁");
+  
+  return benefits;
+};
+
+const generateRandomTitle = (specialty: string): string => {
+  return `CẦN THỢ LÀM NAIL ${specialty}`;
+};
+
+const generateRandomDescription = (specialty: string): string => {
+  return `We are looking for experienced nail technicians to join our salon. Great working environment with high-end clientele.`;
+};
+
+const generateRandomVietnameseDescription = (specialty: string, location: string, salary: string): string => {
+  return generateExpiredJobDescription(`${location.city}, ${location.state}`, [specialty]);
+};
+
+const generateRandomCompanyName = (): string => {
+  return "Lucky Nails & Spa";
+};
+
+const generateRandomPhone = (): string => {
+  const area = Math.floor(Math.random() * 800) + 200;
+  const prefix = Math.floor(Math.random() * 900) + 100;
+  const lineNumber = Math.floor(Math.random() * 9000) + 1000;
+  return `(${area}) ${prefix}-${lineNumber}`;
+};
+
+const generateRandomEmail = (): string => {
+  const firstNames = ["Hoa", "Linh", "Minh", "Tuan", "Anh", "Thu", "Lan", "Hai", "Thuy", "Phuong", "Trang", "Van", "Nga", "Thanh", "Huong"];
+  const lastNames = ["Nguyen", "Tran", "Le", "Pham", "Vo", "Dang", "Bui", "Do", "Ho", "Ngo", "Duong", "Ly", "Huynh", "Vu", "Mai"];
+  
+  return `${firstNames[Math.floor(Math.random() * firstNames.length)]}.${lastNames[Math.floor(Math.random() * lastNames.length)]}@gmail.com`;
+};
+
+const generateRandomWorkHours = (): string => {
+  return "8:00 AM - 5:00 PM";
+};
+
+export const generateVietnameseNailSampleJobs = (count: number): Job[] => {
+  return Array.from({ length: count }, (_, i) => {
+    const id = `sample-nail-job-${i + 1}`;
+    const createdDate = getRandomDateWithinRange(30, 180);
+    const location = getRandomLocation();
+    const specialty = getRandomSpecialty();
+    const salary = getRandomSalaryRange();
+    const benefits = generateRandomBenefits();
+    const title = generateRandomTitle(specialty);
     
-    const hasHousing = Math.random() > 0.6;
-    const noSupplyDeduction = Math.random() > 0.5;
-    const isFullTime = Math.random() > 0.3;
-    const ownerName = generateOwnerName();
-    const specialties = generateSpecialties();
-    const phone = generatePhoneNumber();
-    
-    // Create expired date between 1-60 days ago
-    const daysAgo = Math.floor(Math.random() * 60) + 1;
-    const createdDate = addDays(now, -daysAgo).toISOString();
-    
-    const vietnameseDescription = generateExpiredJobDescription(`${location.city}, ${location.state}`, specialties);
-    
-    sampleJobs.push({
-      id: `sample-vn-job-${i + 1}`,
-      created_at: createdDate,
-      title: `CẦN THỢ LÀM NAIL`,
-      company: salonName,
-      location: `${location.city}, ${location.state}`,
-      salary_range: generateSalaryRange(),
-      description: `We are looking for experienced nail technicians to join our salon. Great working environment with high-end clientele.`,
-      vietnamese_description: vietnameseDescription,
-      weekly_pay: true,
-      owner_will_train: Math.random() > 0.7,
-      employment_type: isFullTime ? "Full-Time" : "Part-Time",
-      user_id: `sample-user-${i + 1}`,
-      responsibilities: [
-        "Perform manicures and pedicures",
-        "Apply nail enhancements",
-        "Maintain cleanliness of work area",
-        "Provide excellent customer service"
-      ],
-      qualifications: [
-        "Valid nail technician license",
-        "Minimum 1-2 years experience",
-        "Reliable and punctual",
-        "Professional demeanor"
-      ],
-      benefits: generateBenefits(hasHousing, noSupplyDeduction),
-      specialties: specialties,
-      has_housing: hasHousing,
-      no_supply_deduction: noSupplyDeduction,
-      tip_range: generateTipRange(),
-      company_description: `Tiệm tại khu ${location.city}, không khí làm việc vui vẻ, hòa đồng, không áp lực.`,
+    return {
+      id,
+      title,
+      company: generateRandomCompanyName(),
+      location,
+      salary_range: salary,
+      description: generateRandomDescription(specialty),
+      vietnamese_description: generateRandomVietnameseDescription(specialty, location, salary),
+      created_at: createdDate.toISOString(),
+      specialties: generateRandomSpecialties(),
+      weekly_pay: Math.random() > 0.3,
+      owner_will_train: Math.random() > 0.4,
+      has_housing: Math.random() > 0.6,
+      no_supply_deduction: Math.random() > 0.7,
+      tip_range: getRandomTipRange(),
+      benefits,
+      work_hours: getRandomWorkHours(),
       contact_info: {
-        phone: phone,
-        owner_name: ownerName
+        owner_name: getRandomOwnerName(),
+        phone: getRandomPhone(),
+        email: getRandomEmail()
       },
+      is_sample: true,
       trust_indicators: {
-        verified: Math.random() > 0.5,
-        activelyHiring: false, // These are expired
-        chatAvailable: false // These are expired
+        verified: Math.random() > 0.3,
+        activelyHiring: true,
+        chatAvailable: Math.random() > 0.5
       },
-      is_sample: true
-    });
-  }
-  
-  return sampleJobs;
+      compensation_type: "hourly",
+      compensation_details: salary,
+      expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      status: "active"
+    };
+  });
 };

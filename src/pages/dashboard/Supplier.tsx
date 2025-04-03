@@ -1,6 +1,6 @@
-
 import { useEffect } from "react";
-import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/auth";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,8 @@ import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
 const SupplierDashboard = () => {
   const { userProfile } = useAuth();
   const firstName = userProfile?.company_name || userProfile?.full_name?.split(' ')[0] || userProfile?.email?.split('@')[0] || 'Supplier';
-  
+  const navigate = useNavigate();
+
   useEffect(() => {
     document.title = "Vendor Dashboard | EmviApp";
   }, []);

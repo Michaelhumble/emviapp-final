@@ -1,15 +1,7 @@
-
-import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
-import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, User } from "lucide-react";
+import { useAuth } from "@/context/auth";
 
 interface UserProfile {
   id: string;
@@ -22,16 +14,17 @@ interface UserProfile {
   website: string | null;
   specialty: string | null;
   avatar_url: string | null;
-  created_at: string | null; // Added the missing created_at property
+  created_at: string | null;
 }
 
 const Profile = () => {
   const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [formData, setFormData] = useState<Partial<UserProfile>>({});
-  
+
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (!user) {
