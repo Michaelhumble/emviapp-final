@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
+import { useState } from "react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Salons from "./pages/Salons";
@@ -51,74 +52,76 @@ import OtherRoleSetup from "./pages/profile/other/setup";
 import ProfileEdit from "./pages/profile/edit";
 import UserProfilePage from "./pages/profile/[username]";
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/salons" element={<Salons />} />
-            <Route path="/salon-owners" element={<SalonOwners />} />
-            <Route path="/jobs" element={<Jobs />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/profile/edit" element={<ProfileEdit />} />
-            <Route path="/profile/:username" element={<UserProfilePage />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/messages" element={<Messaging />} />
-            <Route path="/auth/signin" element={<SignIn />} />
-            <Route path="/auth/signup" element={<SignUp />} />
-            <Route path="/customers" element={<Customers />} />
-            <Route path="/artists" element={<Artists />} />
-            <Route path="/suppliers" element={<Suppliers />} />
-            <Route path="/freelancers" element={<Freelancers />} />
-            <Route path="/analysis" element={<Analysis />} />
-            <Route path="/post-job" element={<PostJob />} />
-            <Route path="/post-salon" element={<PostSalon />} />
-            <Route path="/welcome" element={<Welcome />} />
-            
-            <Route path="/nail-jobs" element={<NailJobs />} />
-            <Route path="/salon-marketplace" element={<SalonMarketplace />} />
-            <Route path="/supplier-directory" element={<SupplierDirectory />} />
-            <Route path="/product-promotions" element={<ProductPromotions />} />
-            
-            <Route path="/posting" element={<PostingIndex />} />
-            <Route path="/posting/job" element={<JobPost />} />
-            <Route path="/posting/salon" element={<SalonPost />} />
-            <Route path="/posting/booth" element={<BoothPost />} />
-            
-            <Route path="/dashboard/customer" element={<CustomerDashboard />} />
-            <Route path="/dashboard/artist" element={<ArtistDashboard />} />
-            <Route path="/dashboard/owner" element={<OwnerDashboard />} />
-            <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
-            <Route path="/dashboard/freelancer" element={<FreelancerDashboard />} />
-            <Route path="/dashboard/other" element={<OtherDashboard />} />
-            
-            <Route path="/artists/profile-setup" element={<ArtistSetup />} />
-            <Route path="/salon/profile-setup" element={<SalonOwnerSetup />} />
-            <Route path="/freelancers/profile-setup" element={<FreelancerSetup />} />
-            <Route path="/customers/profile-setup" element={<CustomerSetup />} />
-            <Route path="/vendors/profile-setup" element={<SupplierSetup />} />
-            <Route path="/other/profile-setup" element={<OtherRoleSetup />} />
-            <Route path="/profile/renter/setup" element={<BoothRenterSetup />} />
-            
-            <Route path="/profile/artist/setup" element={<ArtistSetup />} />
-            <Route path="/profile/salon/setup" element={<SalonOwnerSetup />} />
-            <Route path="/profile/freelancer/setup" element={<FreelancerSetup />} />
-            <Route path="/profile/customer/setup" element={<CustomerSetup />} />
-            <Route path="/profile/supplier/setup" element={<SupplierSetup />} />
-            <Route path="/profile/other/setup" element={<OtherRoleSetup />} />
-            
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  const [queryClient] = useState(() => new QueryClient());
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/salons" element={<Salons />} />
+              <Route path="/salon-owners" element={<SalonOwners />} />
+              <Route path="/jobs" element={<Jobs />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/profile/edit" element={<ProfileEdit />} />
+              <Route path="/profile/:username" element={<UserProfilePage />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/messages" element={<Messaging />} />
+              <Route path="/auth/signin" element={<SignIn />} />
+              <Route path="/auth/signup" element={<SignUp />} />
+              <Route path="/customers" element={<Customers />} />
+              <Route path="/artists" element={<Artists />} />
+              <Route path="/suppliers" element={<Suppliers />} />
+              <Route path="/freelancers" element={<Freelancers />} />
+              <Route path="/analysis" element={<Analysis />} />
+              <Route path="/post-job" element={<PostJob />} />
+              <Route path="/post-salon" element={<PostSalon />} />
+              <Route path="/welcome" element={<Welcome />} />
+              
+              <Route path="/nail-jobs" element={<NailJobs />} />
+              <Route path="/salon-marketplace" element={<SalonMarketplace />} />
+              <Route path="/supplier-directory" element={<SupplierDirectory />} />
+              <Route path="/product-promotions" element={<ProductPromotions />} />
+              
+              <Route path="/posting" element={<PostingIndex />} />
+              <Route path="/posting/job" element={<JobPost />} />
+              <Route path="/posting/salon" element={<SalonPost />} />
+              <Route path="/posting/booth" element={<BoothPost />} />
+              
+              <Route path="/dashboard/customer" element={<CustomerDashboard />} />
+              <Route path="/dashboard/artist" element={<ArtistDashboard />} />
+              <Route path="/dashboard/owner" element={<OwnerDashboard />} />
+              <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
+              <Route path="/dashboard/freelancer" element={<FreelancerDashboard />} />
+              <Route path="/dashboard/other" element={<OtherDashboard />} />
+              
+              <Route path="/artists/profile-setup" element={<ArtistSetup />} />
+              <Route path="/salon/profile-setup" element={<SalonOwnerSetup />} />
+              <Route path="/freelancers/profile-setup" element={<FreelancerSetup />} />
+              <Route path="/customers/profile-setup" element={<CustomerSetup />} />
+              <Route path="/vendors/profile-setup" element={<SupplierSetup />} />
+              <Route path="/other/profile-setup" element={<OtherRoleSetup />} />
+              <Route path="/profile/renter/setup" element={<BoothRenterSetup />} />
+              
+              <Route path="/profile/artist/setup" element={<ArtistSetup />} />
+              <Route path="/profile/salon/setup" element={<SalonOwnerSetup />} />
+              <Route path="/profile/freelancer/setup" element={<FreelancerSetup />} />
+              <Route path="/profile/customer/setup" element={<CustomerSetup />} />
+              <Route path="/profile/supplier/setup" element={<SupplierSetup />} />
+              <Route path="/profile/other/setup" element={<OtherRoleSetup />} />
+              
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

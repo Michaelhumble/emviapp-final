@@ -24,12 +24,39 @@ type UserMetadata = {
   [key: string]: any;
 };
 
+// Extended user profile interface to include all possible fields
+interface UserProfile {
+  id: string;
+  full_name: string;
+  email: string;
+  avatar_url: string;
+  bio: string;
+  specialty: string;
+  location: string;
+  instagram: string;
+  website: string;
+  phone: string;
+  preferred_language: string;
+  credits: number;
+  badges: any; // Json
+  role: UserRole;
+  created_at: string;
+  // Fields for salon owners
+  salon_name?: string;
+  business_address?: string;
+  license_number?: string;
+  // Fields for vendors/suppliers
+  company_name?: string;
+  product_type?: string;
+  [key: string]: any; // For any additional fields
+}
+
 type AuthContextType = {
   user: User | null;
   session: Session | null;
   loading: boolean;
   userRole: UserRole;
-  userProfile: any | null;
+  userProfile: UserProfile | null;
   profileComplete: boolean;
   signUp: (email: string, password: string, metadata?: UserMetadata) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
@@ -45,7 +72,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState<UserRole>(null);
-  const [userProfile, setUserProfile] = useState<any | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [profileComplete, setProfileComplete] = useState(false);
 
   const fetchUserProfile = async (userId: string) => {
@@ -63,7 +90,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       if (data) {
         setUserRole(data.role as UserRole);
-        setUserProfile(data);
+        setUserProfile(data as UserProfile);
         
         // Check if profile is complete based on role-specific required fields
         let isComplete = false;
