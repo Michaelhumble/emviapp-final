@@ -16,6 +16,7 @@ import { useRoleSelection } from "@/hooks/useRoleSelection";
 import AIPowerhouse from "@/components/home/AIPowerhouse";
 import AIAgents from "@/components/home/AIAgents";
 import AITeam from "@/components/home/AITeam";
+import PricingSection from "@/components/home/PricingSection";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
@@ -91,6 +92,7 @@ const Index = () => {
       <AITeam />
       {renderRoleBasedDashboard()}
       <AIAgents />
+      <PricingSection />
       <AIPowerhouse />
       <FeaturedSalons />
       <JobsHighlight />
