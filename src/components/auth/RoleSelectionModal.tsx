@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
-type Role = "artist" | "freelancer" | "salon" | "customer" | "supplier" | "other";
+type Role = "artist" | "nail technician/artist" | "freelancer" | "salon" | "customer" | "supplier" | "beauty supplier" | "other";
 
 interface RoleSelectionModalProps {
   open: boolean;
