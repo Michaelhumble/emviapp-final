@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { toast } from "sonner";
@@ -46,30 +45,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
       
       if (data) {
-        // Map database role to application role
-        let appRole: UserRole = null;
-        
-        // Map role values from database to our application roles
-        switch(data.role) {
-          case 'artist':
-            appRole = 'artist';
-            break;
-          case 'owner':
-            appRole = 'owner';
-            break;
-          case 'renter':
-            appRole = 'renter';
-            break;
-          case 'supplier':
-            appRole = 'supplier';
-            break;
-          case 'customer':
-          default:
-            appRole = 'customer';
-            break;
-        }
-        
-        setUserRole(appRole);
+        setUserRole(data.role as UserRole);
+        console.log("User role fetched from Supabase:", data.role);
       }
     } catch (error) {
       console.error('Error in fetchUserRole:', error);

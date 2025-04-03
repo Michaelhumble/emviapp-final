@@ -30,6 +30,8 @@ const Index = () => {
   // If user has a role, redirect them to their dashboard
   useEffect(() => {
     if (user && userRole && hasSelectedRole && !loading && !isLoading) {
+      console.log("Redirecting based on user role:", userRole);
+      
       switch(userRole) {
         case 'customer':
           navigate('/dashboard/customer');
@@ -42,7 +44,6 @@ const Index = () => {
           break;
         case 'renter':
           // For renter role, navigate to artist dashboard for now
-          // We can create a specific renter dashboard later
           navigate('/dashboard/artist');
           break;
         case 'supplier':
