@@ -39,8 +39,8 @@ const HeroCarousel = ({ images, activeIndex }: HeroCarouselProps) => {
           
           {/* Enhanced gradient overlay for text readability - darker at bottom */}
           <div 
-            className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20 z-10 rounded-lg"
-            style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 30%, rgba(0,0,0,0.2) 100%)' }}
+            className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 z-10 rounded-lg"
+            style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,0.2) 100%)' }}
             aria-hidden="true"
           ></div>
         </motion.div>

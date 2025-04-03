@@ -10,10 +10,10 @@ const Hero = () => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
-    // Auto-advance the carousel every 4 seconds
+    // Auto-advance the carousel every 5 seconds
     const interval = setInterval(() => {
       setActiveIndex(prevIndex => (prevIndex + 1) % heroImages.length);
-    }, 4000);
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
