@@ -49,7 +49,7 @@ const Welcome = () => {
         navigate('/dashboard/freelancer');
         break;
       case 'other':
-        navigate('/dashboard/customer'); // Fallback to customer for "other" role
+        navigate('/dashboard/other');
         break;
       case 'customer':
         navigate('/dashboard/customer');

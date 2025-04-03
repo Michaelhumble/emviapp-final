@@ -60,7 +60,7 @@ const Index = () => {
           navigate('/dashboard/freelancer');
           break;
         case 'other':
-          navigate('/dashboard/customer'); // Fallback to customer dashboard for "other" role
+          navigate('/dashboard/other');
           break;
         // Handle legacy roles
         case 'nail technician/artist':

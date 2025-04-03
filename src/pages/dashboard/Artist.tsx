@@ -4,8 +4,9 @@ import { useAuth } from "@/context/AuthContext";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BriefcaseBusiness, Users, ImagePlus, Lightbulb } from "lucide-react";
+import { Briefcase, ImagePlus, LineChart, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const ArtistDashboard = () => {
   const { user } = useAuth();
@@ -41,10 +42,10 @@ const ArtistDashboard = () => {
         >
           <div className="text-center mb-12">
             <h1 className="text-3xl md:text-4xl font-serif mb-4">
-              Hi {firstName}! Let's help you get the most out of EmviApp as an Artist 💅
+              Hi {firstName}! Let's find you something amazing 💅
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Showcase your work, connect with clients, and grow your beauty career.
+              You don't have to hustle alone. EmviApp is here.
             </p>
           </div>
           
@@ -52,85 +53,73 @@ const ArtistDashboard = () => {
             variants={container}
             initial="hidden"
             animate="show"
-            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
           >
             <motion.div variants={item}>
-              <Card>
+              <Card className="h-full">
                 <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                  <CardTitle className="text-xl">Job Opportunities</CardTitle>
-                  <BriefcaseBusiness className="h-5 w-5 text-primary" />
+                  <CardTitle className="text-xl">View Job Listings</CardTitle>
+                  <Briefcase className="h-5 w-5 text-primary" />
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="mb-4">Available positions matching your skills</CardDescription>
-                  <div className="space-y-4">
-                    <div className="p-3 border rounded-md">
-                      <p className="font-medium">Senior Hair Stylist</p>
-                      <p className="text-sm text-muted-foreground mb-2">Luxe Salon • 2 miles away</p>
-                      <Button size="sm" variant="outline">View Details</Button>
-                    </div>
-                    <div className="p-3 border rounded-md">
-                      <p className="font-medium">Makeup Artist (Contract)</p>
-                      <p className="text-sm text-muted-foreground mb-2">Beauty Co • Remote</p>
-                      <Button size="sm" variant="outline">View Details</Button>
-                    </div>
-                    <Button variant="ghost" size="sm" className="w-full">Browse All Jobs</Button>
-                  </div>
+                  <CardDescription className="mb-4">Find your next opportunity</CardDescription>
+                  <Link to="/jobs">
+                    <Button variant="default" className="w-full">
+                      Browse Jobs
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
             </motion.div>
             
             <motion.div variants={item}>
-              <Card>
+              <Card className="h-full">
                 <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                  <CardTitle className="text-xl">Portfolio</CardTitle>
+                  <CardTitle className="text-xl">Showcase Your Profile</CardTitle>
                   <ImagePlus className="h-5 w-5 text-primary" />
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="mb-4">Showcase your best work</CardDescription>
-                  <div className="text-center py-8 border border-dashed rounded-md">
-                    <p className="text-muted-foreground">Start building your portfolio</p>
-                    <Button variant="secondary" className="mt-2">Upload Photos</Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-            
-            <motion.div variants={item}>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                  <CardTitle className="text-xl">Network</CardTitle>
-                  <Users className="h-5 w-5 text-primary" />
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="mb-4">Connect with salons and other artists</CardDescription>
-                  <div className="space-y-2">
-                    <p className="text-sm">• Find mentors in your specialty</p>
-                    <p className="text-sm">• Join beauty professional groups</p>
-                    <p className="text-sm">• Connect with salon owners looking to hire</p>
-                    <Button variant="ghost" size="sm" className="mt-2 w-full justify-start">
-                      Explore Network
+                  <CardDescription className="mb-4">Make your portfolio stand out</CardDescription>
+                  <Link to="/profile/artist/setup">
+                    <Button variant="default" className="w-full">
+                      Update Portfolio
                     </Button>
-                  </div>
+                  </Link>
                 </CardContent>
               </Card>
             </motion.div>
             
             <motion.div variants={item}>
-              <Card>
+              <Card className="h-full">
                 <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                  <CardTitle className="text-xl">Skills Development</CardTitle>
-                  <Lightbulb className="h-5 w-5 text-primary" />
+                  <CardTitle className="text-xl">Track Applications</CardTitle>
+                  <LineChart className="h-5 w-5 text-primary" />
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="mb-4">Grow your professional abilities</CardDescription>
-                  <div className="space-y-4">
-                    <Button variant="outline" className="w-full justify-start">Browse Workshops</Button>
-                    <Button variant="outline" className="w-full justify-start">Online Courses</Button>
-                    <Button variant="outline" className="w-full justify-start">Certification Programs</Button>
-                  </div>
+                  <CardDescription className="mb-4">Manage your job applications</CardDescription>
+                  <Button variant="default" className="w-full">
+                    View Applications
+                  </Button>
                 </CardContent>
               </Card>
             </motion.div>
+          </motion.div>
+          
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6, duration: 0.5 }}
+            className="mt-12 p-6 bg-primary/5 rounded-lg border border-primary/10"
+          >
+            <div className="flex flex-col md:flex-row items-center justify-between">
+              <div className="mb-4 md:mb-0">
+                <h3 className="text-xl font-medium mb-2">Upgrade to Premium Artist</h3>
+                <p className="text-muted-foreground">Get featured in search results and access exclusive opportunities</p>
+              </div>
+              <Button variant="outline" className="min-w-[140px]">
+                <Sparkles className="mr-2 h-4 w-4" /> Upgrade Now
+              </Button>
+            </div>
           </motion.div>
         </motion.div>
       </div>

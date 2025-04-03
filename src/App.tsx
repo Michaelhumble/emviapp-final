@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,6 +26,7 @@ import ArtistDashboard from "./pages/dashboard/Artist";
 import OwnerDashboard from "./pages/dashboard/Owner";
 import SupplierDashboard from "./pages/dashboard/Supplier";
 import FreelancerDashboard from "./pages/dashboard/Freelancer";
+import OtherDashboard from "./pages/dashboard/Other";
 import Freelancers from "./pages/Freelancers";
 import NailJobs from "./pages/NailJobs";
 import SalonMarketplace from "./pages/SalonMarketplace";
@@ -90,6 +92,7 @@ const App = () => (
             <Route path="/dashboard/owner" element={<OwnerDashboard />} />
             <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
             <Route path="/dashboard/freelancer" element={<FreelancerDashboard />} />
+            <Route path="/dashboard/other" element={<OtherDashboard />} />
             
             <Route path="/artists/profile-setup" element={<ArtistSetup />} />
             <Route path="/salon/profile-setup" element={<SalonOwnerSetup />} />
