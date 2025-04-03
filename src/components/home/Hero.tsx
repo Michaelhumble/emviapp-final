@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
-import EmviLogo from "@/components/branding/EmviLogo";
 import { ArrowDown } from "lucide-react";
 
 const Hero = () => {
@@ -51,15 +50,6 @@ const Hero = () => {
 
       <div className="container mx-auto px-4 relative z-20">
         <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mb-8"
-          >
-            <EmviLogo className="mx-auto scale-110" />
-          </motion.div>
-          
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
