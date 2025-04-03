@@ -1,4 +1,3 @@
-
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
 import FeaturedSalons from "@/components/home/FeaturedSalons";
@@ -27,10 +26,16 @@ const Index = () => {
     userId
   } = useRoleSelection();
   
-  // If user has a role, redirect them to their dashboard
   useEffect(() => {
     if (user && userRole && hasSelectedRole && !loading && !isLoading) {
       console.log("Redirecting based on user role:", userRole);
+      
+      const welcomeSeen = localStorage.getItem(`emvi_welcome_seen_${user.id}`);
+      
+      if (!welcomeSeen) {
+        navigate('/welcome');
+        return;
+      }
       
       switch(userRole) {
         case 'customer':
@@ -43,20 +48,17 @@ const Index = () => {
           navigate('/dashboard/owner');
           break;
         case 'renter':
-          // For renter role, navigate to artist dashboard for now
           navigate('/dashboard/artist');
           break;
         case 'supplier':
           navigate('/dashboard/supplier');
           break;
         default:
-          // If we have an invalid role or it's not yet set, stay on this page
           break;
       }
     }
   }, [user, userRole, hasSelectedRole, loading, isLoading, navigate]);
   
-  // Function to render appropriate dashboard based on user role
   const renderRoleBasedDashboard = () => {
     if (loading || isLoading) {
       return (
@@ -72,7 +74,6 @@ const Index = () => {
     }
     
     if (user && user.email) {
-      // If user has a role, show the customer dashboard as fallback until redirect happens
       return <CustomerDashboard />;
     }
     
@@ -90,7 +91,6 @@ const Index = () => {
       <Testimonials />
       <CallToAction />
       
-      {/* Only show the role selection modal if the user is logged in and has no role yet */}
       {user && userId && (
         <RoleSelectionModal 
           open={isRoleModalOpen} 

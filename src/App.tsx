@@ -29,6 +29,7 @@ import NailJobs from "./pages/NailJobs";
 import SalonMarketplace from "./pages/SalonMarketplace";
 import SupplierDirectory from "./pages/SupplierDirectory";
 import ProductPromotions from "./pages/ProductPromotions";
+import Welcome from "./pages/Welcome";
 
 // Post Management System
 import PostingIndex from "./pages/posting/Index";
@@ -66,6 +67,7 @@ const App = () => (
             <Route path="/analysis" element={<Analysis />} />
             <Route path="/post-job" element={<PostJob />} />
             <Route path="/post-salon" element={<PostSalon />} />
+            <Route path="/welcome" element={<Welcome />} />
             
             {/* New Feature Routes */}
             <Route path="/nail-jobs" element={<NailJobs />} />
