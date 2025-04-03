@@ -9,6 +9,7 @@ import JobFilters from "@/components/jobs/JobFilters";
 import JobLoadingState from "@/components/jobs/JobLoadingState";
 import JobEmptyState from "@/components/jobs/JobEmptyState";
 import JobsGrid from "@/components/jobs/JobsGrid";
+import VietnameseJobSection from "@/components/jobs/VietnameseJobSection";
 import { useJobsData } from "@/hooks/useJobsData";
 import { useJobRenewal } from "@/hooks/useJobRenewal";
 
@@ -70,7 +71,11 @@ const Jobs = () => {
 
   const checkExpiration = (job: Job): boolean => {
     if (job.is_sample) {
-      return true;
+      const createdDate = new Date(job.created_at);
+      const now = new Date();
+      const differenceInMs = now.getTime() - createdDate.getTime();
+      const differenceInDays = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
+      return differenceInDays >= 30;
     }
     
     return expirations[job.id] === true;
@@ -117,6 +122,9 @@ const Jobs = () => {
               checkExpiration={checkExpiration}
             />
           )}
+          
+          {/* Vietnamese Job Section */}
+          <VietnameseJobSection checkExpiration={checkExpiration} />
         </div>
       </div>
       
