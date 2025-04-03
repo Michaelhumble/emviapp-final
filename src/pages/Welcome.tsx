@@ -47,6 +47,9 @@ const Welcome = () => {
       case 'supplier':
         navigate('/dashboard/supplier');
         break;
+      case 'freelancer':
+        navigate('/dashboard/freelancer');
+        break;
       case 'customer':
       default:
         navigate('/dashboard/customer');
