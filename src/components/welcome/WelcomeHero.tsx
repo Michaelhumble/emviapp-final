@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
 interface WelcomeHeroProps {
-  userRole?: 'artist' | 'owner' | 'renter' | 'supplier' | 'customer' | null;
+  userRole?: 'artist' | 'owner' | 'renter' | 'supplier' | 'customer' | 'freelancer' | null;
   onContinue: () => void;
   onSkip: () => void;
 }
@@ -26,6 +26,8 @@ const WelcomeHero = ({
         return "Booth Renter";
       case 'supplier':
         return "Supplier";
+      case 'freelancer':
+        return "Freelancer";
       case 'customer':
         return "Beauty Enthusiast";
       default:
@@ -44,6 +46,8 @@ const WelcomeHero = ({
         return "Maximize your booth rental income and build your client base with EmviApp.";
       case 'supplier':
         return "Connect with salons and professionals looking for quality products like yours.";
+      case 'freelancer':
+        return "Build your independent career with tools designed for success on your own terms.";
       case 'customer':
         return "Discover talented professionals and amazing salons for your beauty needs.";
       default:
@@ -61,6 +65,8 @@ const WelcomeHero = ({
         return "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&auto=format&fit=crop";
       case 'supplier':
         return "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop";
+      case 'freelancer':
+        return "https://images.unsplash.com/photo-1562259929-b4e1fd3aef09?w=800&auto=format&fit=crop";
       default:
         return "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&auto=format&fit=crop";
     }
