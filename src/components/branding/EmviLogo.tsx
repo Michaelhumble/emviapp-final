@@ -10,14 +10,14 @@ const EmviLogo: React.FC<EmviLogoProps> = ({ className = "" }) => {
     <div className={`flex items-center ${className}`}>
       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF4E00] to-[#FF9E00] flex items-center justify-center mr-2">
         <svg 
-          width="20" 
-          height="20" 
+          width="24" 
+          height="24" 
           viewBox="0 0 24 24" 
           fill="none" 
           xmlns="http://www.w3.org/2000/svg"
         >
           <path 
-            d="M5 12L10 17L19 8" 
+            d="M4 13L9 18L20 7" 
             stroke="white" 
             strokeWidth="3" 
             strokeLinecap="round" 
