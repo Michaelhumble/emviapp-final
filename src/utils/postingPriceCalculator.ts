@@ -3,6 +3,7 @@ interface UserPostingStats {
   totalJobPosts: number;
   totalSalonPosts: number;
   totalBoothPosts: number;
+  totalSupplyPosts: number;
   referralCount: number;
 }
 
@@ -13,6 +14,8 @@ export interface PricingOptions {
   bundleWithJobPost?: boolean;
   fastSalePackage?: boolean;
   isRenewal?: boolean;
+  featuredPost?: boolean;
+  showAtTop?: boolean;
 }
 
 export const calculateJobPostPrice = (
@@ -86,6 +89,11 @@ export const calculateBoothRentalPrice = (
   // Base price
   let price = 15;
   
+  // Show at top of feed
+  if (options.showAtTop) {
+    price += 10;
+  }
+  
   // Nationwide boost
   if (options.isNationwide) {
     price += 10;
@@ -104,17 +112,44 @@ export const calculateBoothRentalPrice = (
   return price;
 };
 
+export const calculateSupplyPostPrice = (
+  userStats: UserPostingStats,
+  options: PricingOptions
+): number => {
+  // For renewals or not first post
+  if (options.isRenewal || userStats.totalSupplyPosts > 0) {
+    // Base price
+    let price = 25;
+    
+    // Add nationwide boost if requested
+    if (options.isNationwide) {
+      price += 5;
+    }
+    
+    return price;
+  }
+  
+  // First post
+  if (options.isFirstPost) {
+    return options.isNationwide ? 5 : 0; // Free first local post, $5 for nationwide
+  }
+  
+  return 25; // Base price
+};
+
 export const getRenewalPrice = (
-  postType: 'job' | 'salon' | 'booth', 
+  postType: 'job' | 'salon' | 'booth' | 'supply', 
   isNationwide: boolean, 
   fastSalePackage: boolean = false,
-  bundleWithJobPost: boolean = false
+  bundleWithJobPost: boolean = false,
+  showAtTop: boolean = false
 ): number => {
   // Create a mock stats object
   const mockStats: UserPostingStats = {
     totalJobPosts: 0,
     totalSalonPosts: 0,
     totalBoothPosts: 0,
+    totalSupplyPosts: 0,
     referralCount: 0
   };
 
@@ -122,7 +157,8 @@ export const getRenewalPrice = (
     isNationwide,
     isRenewal: true,
     fastSalePackage,
-    bundleWithJobPost
+    bundleWithJobPost,
+    showAtTop
   };
 
   switch (postType) {
@@ -132,7 +168,65 @@ export const getRenewalPrice = (
       return calculateSalonForSalePrice(mockStats, options);
     case 'booth':
       return calculateBoothRentalPrice(mockStats, options);
+    case 'supply':
+      return calculateSupplyPostPrice(mockStats, options);
     default:
       return 0;
+  }
+};
+
+// Utility function to calculate discount percentage based on original and discounted price
+export const calculateDiscountPercentage = (originalPrice: number, discountedPrice: number): number => {
+  if (originalPrice <= 0) return 0;
+  const discountPercent = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
+  return discountPercent;
+};
+
+// Utility function to generate pricing promotional text
+export const generatePromotionalText = (
+  postType: 'job' | 'salon' | 'booth' | 'supply',
+  userStats: UserPostingStats,
+  options: PricingOptions
+): string => {
+  // First post with nationwide
+  if (options.isFirstPost && options.isNationwide) {
+    return "First post + nationwide visibility for just $5!";
+  }
+  
+  // First post free
+  if (options.isFirstPost && !options.isNationwide) {
+    return "Your first post is FREE! Just add your payment method.";
+  }
+  
+  // Referral discount for job posts
+  if (postType === 'job' && userStats.referralCount >= 1 && !options.isRenewal) {
+    return "Special price: $5 (75% off) — thanks for referring friends!";
+  }
+  
+  // Renewal
+  if (options.isRenewal) {
+    return "Renew your listing to keep it visible for another 30 days.";
+  }
+  
+  // Standard posts
+  switch (postType) {
+    case 'salon':
+      if (options.fastSalePackage) {
+        return "Premium listing package: Get featured at the top with priority visibility!";
+      }
+      return options.isNationwide 
+        ? "Nationwide visibility will help you find buyers faster!" 
+        : "Increase your chances with nationwide visibility (+$10)";
+    
+    case 'booth':
+      return options.showAtTop 
+        ? "Your booth will be shown at the top of search results!" 
+        : "Get more visibility by showing at the top of results (+$10)";
+        
+    case 'supply':
+      return "Reach more salon owners and increase your product visibility!";
+      
+    default:
+      return "Post your listing today!";
   }
 };

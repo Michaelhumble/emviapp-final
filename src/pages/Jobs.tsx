@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -13,12 +12,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar } from "lucide-react";
+import { Calendar, LockIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { usePostExpirationCheck } from "@/hooks/usePostExpirationCheck";
+import PaymentConfirmationModal from "@/components/posting/PaymentConfirmationModal";
+import { getRenewalPrice } from "@/utils/postingPriceCalculator";
 
 interface Job {
   id: string;
@@ -33,6 +34,7 @@ interface Job {
   owner_will_train: boolean;
   employment_type: string;
   user_id: string;
+  is_nationwide?: boolean;
 }
 
 interface Filters {
@@ -54,8 +56,14 @@ const Jobs = () => {
   });
   const { user } = useAuth();
   const [isRenewing, setIsRenewing] = useState(false);
+  const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [renewalPrice, setRenewalPrice] = useState(0);
+  const [renewalOptions, setRenewalOptions] = useState({
+    isNationwide: false,
+    isRenewal: true
+  });
   
-  // Fetch expiration status for jobs
   const jobIds = jobs.map((job) => job.id);
   const { expirations, isLoading: isExpirationLoading } = usePostExpirationCheck(jobIds);
   
@@ -76,7 +84,6 @@ const Jobs = () => {
       }
 
       if (filters.weeklyPay) {
-        // Use the correct approach to query JSON fields
         query = query.eq("metadata->>weekly_pay", "true");
       }
       
@@ -88,7 +95,6 @@ const Jobs = () => {
         query = query.eq("metadata->>employment_type", filters.employmentType);
       }
       
-      // Fetch only active jobs if showExpired is false
       if (!filters.showExpired) {
         const today = new Date();
         const thirtyDaysAgo = new Date(today);
@@ -102,7 +108,6 @@ const Jobs = () => {
         throw error;
       }
 
-      // Transform the posts data to match the Job interface
       const formattedJobs: Job[] = data?.map(post => {
         const metadata = post.metadata as Record<string, any> || {};
         
@@ -110,15 +115,16 @@ const Jobs = () => {
           id: post.id,
           created_at: post.created_at,
           title: post.title || '',
-          company: metadata.company || '',
+          company: String(metadata.company || ''),
           location: post.location || '',
-          salary_range: metadata.salary_range || '',
+          salary_range: String(metadata.salary_range || ''),
           description: post.content || '',
-          requirements: metadata.requirements || '',
+          requirements: String(metadata.requirements || ''),
           weekly_pay: Boolean(metadata.weekly_pay) || false,
           owner_will_train: Boolean(metadata.owner_will_train) || false,
-          employment_type: metadata.employment_type || 'full-time',
-          user_id: post.user_id
+          employment_type: String(metadata.employment_type || 'full-time'),
+          user_id: post.user_id,
+          is_nationwide: post.is_nationwide || false
         };
       }) || [];
 
@@ -139,7 +145,21 @@ const Jobs = () => {
     return expirations[jobId] === true;
   };
   
-  const renewPost = async (jobId: string) => {
+  const prepareRenewal = (job: Job) => {
+    const options = {
+      isNationwide: job.is_nationwide || false,
+      isRenewal: true
+    };
+    
+    setRenewalJobId(job.id);
+    setRenewalOptions(options);
+    setRenewalPrice(getRenewalPrice('job', options.isNationwide));
+    setIsPaymentModalOpen(true);
+  };
+  
+  const handleRenewalPaymentSuccess = async () => {
+    if (!renewalJobId) return;
+    
     setIsRenewing(true);
     try {
       const today = new Date();
@@ -147,7 +167,7 @@ const Jobs = () => {
       const { error } = await supabase
         .from('posts')
         .update({ created_at: today.toISOString() })
-        .eq('id', jobId);
+        .eq('id', renewalJobId);
       
       if (error) throw error;
       
@@ -156,7 +176,7 @@ const Jobs = () => {
         description: "Job post renewed successfully!",
       });
       
-      fetchJobs(); // Refresh jobs to reflect the updated timestamp
+      fetchJobs();
     } catch (error: any) {
       toast({
         title: "Error",
@@ -165,6 +185,8 @@ const Jobs = () => {
       });
     } finally {
       setIsRenewing(false);
+      setRenewalJobId(null);
+      setIsPaymentModalOpen(false);
     }
   };
 
@@ -254,7 +276,14 @@ const Jobs = () => {
             {jobs.map((job) => (
               <Card key={job.id}>
                 <CardContent className="p-4">
-                  <h2 className="text-lg font-semibold mb-2">{job.title}</h2>
+                  <h2 className="text-lg font-semibold mb-2 flex items-center justify-between">
+                    {job.title}
+                    {job.is_nationwide && (
+                      <Badge variant="outline" className="ml-2 bg-blue-50 text-blue-700 border-blue-200">
+                        Nationwide
+                      </Badge>
+                    )}
+                  </h2>
                   <p className="text-gray-600 mb-2">{job.company}</p>
                   <p className="text-sm mb-2">
                     <Calendar className="inline-block h-4 w-4 mr-1" />
@@ -270,9 +299,12 @@ const Jobs = () => {
                   )}
                   
                   {isExpired(job.id) && (
-                    <Badge variant="destructive" className="mt-2">
-                      Expired
-                    </Badge>
+                    <div className="mt-2 flex flex-col gap-2">
+                      <Badge variant="destructive" className="flex items-center justify-center gap-1">
+                        <LockIcon size={12} /> Expired
+                      </Badge>
+                      <p className="text-xs text-gray-500">Contact info is hidden until renewed</p>
+                    </div>
                   )}
                   
                   <div className="mt-4 flex justify-between items-center">
@@ -283,7 +315,7 @@ const Jobs = () => {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => renewPost(job.id)}
+                        onClick={() => prepareRenewal(job)}
                         disabled={isRenewing}
                       >
                         {isRenewing ? "Renewing..." : "Renew Post"}
@@ -296,6 +328,15 @@ const Jobs = () => {
           </div>
         )}
       </div>
+      
+      <PaymentConfirmationModal
+        open={isPaymentModalOpen}
+        onOpenChange={setIsPaymentModalOpen}
+        postType="job"
+        price={renewalPrice}
+        options={renewalOptions}
+        onSuccess={handleRenewalPaymentSuccess}
+      />
     </Layout>
   );
 };

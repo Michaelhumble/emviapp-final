@@ -2,20 +2,18 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CreditCard, CheckCircle, AlertCircle } from "lucide-react";
+import { CreditCard, CheckCircle, AlertCircle, Zap, Globe, TrendingUp } from "lucide-react";
 import StripeCheckout from "@/components/payments/StripeCheckout";
+import PricingDisplay from "@/components/posting/PricingDisplay";
+import { generatePromotionalText, PricingOptions } from "@/utils/postingPriceCalculator";
 
 interface PaymentConfirmationModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  postType: 'job' | 'salon' | 'booth';
+  postType: 'job' | 'salon' | 'booth' | 'supply';
   price: number;
-  options: {
-    isNationwide?: boolean;
-    isFirstPost?: boolean;
-    fastSalePackage?: boolean;
-    bundleWithJobPost?: boolean;
-  };
+  options: PricingOptions;
+  originalPrice?: number;
   onSuccess: () => void;
 }
 
@@ -25,11 +23,21 @@ const PaymentConfirmationModal = ({
   postType,
   price,
   options,
+  originalPrice,
   onSuccess
 }: PaymentConfirmationModalProps) => {
   const [isPaid, setIsPaid] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const isFree = price === 0;
+  
+  // Mock user stats for promotional text
+  const mockUserStats = {
+    totalJobPosts: 0,
+    totalSalonPosts: 0,
+    totalBoothPosts: 0,
+    totalSupplyPosts: 0,
+    referralCount: options.isFirstPost ? 0 : 1 // Just for demo
+  };
   
   // Reset state when modal opens
   useEffect(() => {
@@ -63,6 +71,8 @@ const PaymentConfirmationModal = ({
         return 'Salon For Sale Listing';
       case 'booth':
         return 'Booth Rental';
+      case 'supply':
+        return 'Supply Listing';
       default:
         return 'Post';
     }
@@ -87,7 +97,15 @@ const PaymentConfirmationModal = ({
       details.push('Bundled with Job Post');
     }
     
+    if (postType === 'booth' && options.showAtTop) {
+      details.push('Top Position in Search');
+    }
+    
     return details;
+  };
+  
+  const getPromotionalText = () => {
+    return generatePromotionalText(postType, mockUserStats, options);
   };
   
   return (
@@ -126,7 +144,14 @@ const PaymentConfirmationModal = ({
                 </div>
                 <div className="border-t pt-2 flex justify-between font-medium">
                   <span>Total</span>
-                  <span>{isFree ? 'FREE' : `$${price}`}</span>
+                  <div className="flex flex-col items-end">
+                    {originalPrice && originalPrice > price ? (
+                      <span className="text-xs text-gray-500 line-through">
+                        ${originalPrice}
+                      </span>
+                    ) : null}
+                    <span>{isFree ? 'FREE' : `$${price}`}</span>
+                  </div>
                 </div>
                 {isFree && (
                   <p className="text-xs text-gray-500 mt-2">
@@ -156,6 +181,11 @@ const PaymentConfirmationModal = ({
                   <CreditCard className="h-4 w-4" />
                   <span>Secure payment processed by Stripe</span>
                 </div>
+              </div>
+              
+              {/* Added promotional message */}
+              <div className="mt-4 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg text-sm text-center text-gray-700">
+                {getPromotionalText()}
               </div>
             </div>
           </>
