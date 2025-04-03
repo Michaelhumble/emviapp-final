@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Camera, Briefcase, Users, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import AIDashboardWidgets from "@/components/ai/AIDashboardWidgets";
 
 const FreelancerDashboard = () => {
   const { user } = useAuth();
@@ -48,6 +49,9 @@ const FreelancerDashboard = () => {
               Turn passion into your path — with EmviApp.
             </p>
           </div>
+          
+          {/* AI Dashboard Widgets */}
+          <AIDashboardWidgets className="mb-12" />
           
           <motion.div 
             variants={container}

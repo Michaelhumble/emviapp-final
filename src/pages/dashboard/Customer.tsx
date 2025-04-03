@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { CalendarDays, Search, Gift, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import AIDashboardWidgets from "@/components/ai/AIDashboardWidgets";
 
 const CustomerDashboard = () => {
   const { user } = useAuth();
@@ -48,6 +49,9 @@ const CustomerDashboard = () => {
               Great artists are one click away
             </p>
           </div>
+          
+          {/* AI Dashboard Widgets */}
+          <AIDashboardWidgets className="mb-12" />
           
           <motion.div 
             variants={container}

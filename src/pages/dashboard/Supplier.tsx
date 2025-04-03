@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Package, BarChart3, Megaphone, ShoppingBag } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import AIDashboardWidgets from "@/components/ai/AIDashboardWidgets";
 
 const SupplierDashboard = () => {
   const { user } = useAuth();
@@ -48,6 +49,9 @@ const SupplierDashboard = () => {
               Every salon needs great tools — make sure they see yours.
             </p>
           </div>
+          
+          {/* AI Dashboard Widgets */}
+          <AIDashboardWidgets className="mb-12" />
           
           <motion.div 
             variants={container}

@@ -8,6 +8,8 @@ import { Compass, Lightbulb, HelpCircle, UserPlus } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useRoleSelection } from "@/hooks/useRoleSelection";
+import AISmartReminder from "@/components/ai/AISmartReminder";
+import AIWelcomeAssistant from "@/components/ai/AIWelcomeAssistant";
 
 const OtherDashboard = () => {
   const { user } = useAuth();
@@ -49,6 +51,12 @@ const OtherDashboard = () => {
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Tell us more so we can guide your journey
             </p>
+          </div>
+          
+          {/* AI Dashboard Widgets - only a few for "Other" role */}
+          <div className="space-y-6 mb-12">
+            <AISmartReminder />
+            <AIWelcomeAssistant />
           </div>
           
           <motion.div 

@@ -5,6 +5,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { Sparkles, Lock, TrendingUp, Gift, Lightbulb } from "lucide-react";
+import AIWelcomeAssistant from "@/components/ai/AIWelcomeAssistant";
+import AISmartReminder from "@/components/ai/AISmartReminder";
 
 const CustomerDashboard = () => {
   const { user } = useAuth();
@@ -29,7 +31,7 @@ const CustomerDashboard = () => {
     <div className="py-12 bg-gradient-to-b from-white to-gray-50">
       <div className="container px-4 mx-auto">
         <motion.div 
-          className="text-center mb-12"
+          className="text-center mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -43,6 +45,14 @@ const CustomerDashboard = () => {
               : "Sign up to unlock exclusive discounts, beauty tips, and special offers."}
           </p>
         </motion.div>
+        
+        {/* AI Components for logged in users */}
+        {isLoggedIn && (
+          <div className="max-w-3xl mx-auto mb-10 space-y-4">
+            <AISmartReminder />
+            <AIWelcomeAssistant />
+          </div>
+        )}
 
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"

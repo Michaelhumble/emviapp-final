@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Users, Building2, Store, Briefcase } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import AIDashboardWidgets from "@/components/ai/AIDashboardWidgets";
 
 const OwnerDashboard = () => {
   const { user } = useAuth();
@@ -48,6 +49,9 @@ const OwnerDashboard = () => {
               Quality artists are searching. Let's help them find you.
             </p>
           </div>
+          
+          {/* AI Dashboard Widgets */}
+          <AIDashboardWidgets className="mb-12" />
           
           <motion.div 
             variants={container}
