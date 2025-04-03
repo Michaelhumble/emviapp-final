@@ -1,8 +1,10 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, ArrowRight } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const Hero = () => {
   return (
@@ -76,7 +78,7 @@ const Hero = () => {
             AI-powered. Built with love. Funded by those who care.
           </motion.p>
           <motion.div 
-            className="flex flex-col sm:flex-row gap-4 mt-6"
+            className="flex flex-col sm:flex-row gap-6 mt-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.4 }}
@@ -89,15 +91,40 @@ const Hero = () => {
                 Join The Movement
               </Button>
             </Link>
-            <Link to="/jobs">
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="font-medium px-8 py-6 text-lg border-gray-300 bg-white/80 backdrop-blur-sm hover:bg-gray-100/80 transition-all duration-300"
-              >
-                Explore Jobs & Salons
-              </Button>
-            </Link>
+            
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link to="/jobs">
+                    <motion.div
+                      whileHover={{
+                        scale: 1.03,
+                        transition: { 
+                          duration: 0.2,
+                          repeat: 1,
+                          repeatType: "reverse" 
+                        }
+                      }}
+                    >
+                      <Button 
+                        size="lg" 
+                        variant="outline" 
+                        className="relative font-medium px-8 py-6 text-lg overflow-hidden border-gray-300 bg-white/80 backdrop-blur-sm hover:bg-white transition-all duration-300 group font-serif"
+                      >
+                        <span className="relative z-10 flex items-center">
+                          🔮 Find My Next Opportunity
+                          <ArrowRight className="ml-2 w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
+                        </span>
+                        <span className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-orange-300 to-red-300 blur-md transition-opacity duration-300"></span>
+                      </Button>
+                    </motion.div>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent className="bg-gray-900/90 text-white border-none backdrop-blur-md">
+                  <p className="text-sm">💬 Let's find where you truly belong.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </motion.div>
           
           <motion.div 
