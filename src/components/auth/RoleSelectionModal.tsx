@@ -7,9 +7,10 @@ import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Scissors, Building2, User, Briefcase, ShoppingBag, HelpCircle } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-type Role = "artist" | "nail technician/artist" | "freelancer" | "salon" | "customer" | "supplier" | "beauty supplier" | "other";
+type Role = "artist" | "salon" | "customer" | "freelancer" | "vendor" | "other";
 
 interface RoleSelectionModalProps {
   open: boolean;
@@ -23,36 +24,42 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const roles: { id: Role; label: string; description: string }[] = [
+  const roles: { id: Role; label: string; description: string; icon: React.ReactNode }[] = [
     {
       id: "artist",
-      label: "Artist (Nail Technicians, Hair Stylists, etc.)",
-      description: "I'm a licensed beauty artist ready to offer my services."
-    },
-    {
-      id: "freelancer",
-      label: "Freelancer (Makeup, Photography, Content, etc.)",
-      description: "I'm an independent creative offering beauty-related gigs or support."
+      label: "Artist (Hair, Brows, Lashes, Nails, Tattoo...)",
+      description: "I'm a beauty professional looking for jobs, exposure, or to build my brand.",
+      icon: <Scissors className="h-5 w-5 text-primary" />
     },
     {
       id: "salon",
-      label: "Salon (Business Owner)",
-      description: "I own or manage a beauty business."
+      label: "Salon (Business)",
+      description: "I'm a salon owner hiring, managing my team, or selling my salon.",
+      icon: <Building2 className="h-5 w-5 text-primary" />
     },
     {
       id: "customer",
       label: "Customer",
-      description: "I'm here to discover services, book appointments, or explore EmviApp."
+      description: "I'm looking for beauty services and offers from top professionals.",
+      icon: <User className="h-5 w-5 text-primary" />
     },
     {
-      id: "supplier",
-      label: "Beauty Supplier (Vendor)",
-      description: "I sell products or equipment to beauty professionals."
+      id: "freelancer",
+      label: "Freelancer (Makeup Artist, Photographer, etc.)",
+      description: "I'm a solo artist looking for gigs, clients, or to promote my service.",
+      icon: <Briefcase className="h-5 w-5 text-primary" />
+    },
+    {
+      id: "vendor",
+      label: "Vendor (Beauty Supplier)",
+      description: "I sell products or tools for beauty salons and professionals.",
+      icon: <ShoppingBag className="h-5 w-5 text-primary" />
     },
     {
       id: "other",
       label: "Other",
-      description: "I'm not listed above, but I'd still love to join."
+      description: "I'm not sure yet — I just want to explore.",
+      icon: <HelpCircle className="h-5 w-5 text-primary" />
     }
   ];
 
@@ -84,7 +91,7 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
         case 'salon':
           navigate('/salon/profile-setup');
           break;
-        case 'supplier':
+        case 'vendor':
           navigate('/vendors/profile-setup');
           break;
         case 'freelancer':
@@ -137,9 +144,14 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
               >
                 <RadioGroupItem value={role.id} id={role.id} className="mt-1" />
                 <div className="flex-1">
-                  <Label htmlFor={role.id} className="text-base font-medium">
-                    {role.label}
-                  </Label>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-shrink-0">
+                      {role.icon}
+                    </div>
+                    <Label htmlFor={role.id} className="text-base font-medium">
+                      {role.label}
+                    </Label>
+                  </div>
                   <p className="text-sm text-muted-foreground mt-1">{role.description}</p>
                 </div>
               </div>

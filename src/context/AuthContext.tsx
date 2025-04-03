@@ -7,14 +7,15 @@ import { supabase } from "@/integrations/supabase/client";
 export type UserRole = 
   | 'customer' 
   | 'artist' 
-  | 'owner' 
-  | 'renter' 
-  | 'supplier' 
-  | 'freelancer' 
   | 'salon' 
-  | 'other' 
-  | 'nail technician/artist'
-  | 'beauty supplier'
+  | 'vendor'
+  | 'freelancer' 
+  | 'other'
+  | 'renter'  // legacy role
+  | 'owner'   // legacy role
+  | 'supplier'  // legacy role
+  | 'nail technician/artist'  // legacy role
+  | 'beauty supplier'  // legacy role
   | null;
 
 type UserMetadata = {

@@ -7,11 +7,58 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Loader2 } from "lucide-react";
+import { Loader2, Scissors, Building2, User, Briefcase, ShoppingBag, HelpCircle } from "lucide-react";
 import { toast } from "sonner";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 // User type options for registration - make sure this matches AuthContext
-type UserType = "artist" | "freelancer" | "salon" | "customer" | "supplier" | "other";
+type UserType = "artist" | "salon" | "customer" | "freelancer" | "vendor" | "other";
+
+const roles = [
+  {
+    id: "artist",
+    label: "Artist",
+    description: "Hair, Brows, Lashes, Nails, Tattoo...",
+    tooltip: "I'm a beauty professional looking for jobs, exposure, or to build my brand.",
+    icon: <Scissors className="h-4 w-4" />
+  },
+  {
+    id: "salon",
+    label: "Salon",
+    description: "Business",
+    tooltip: "I'm a salon owner hiring, managing my team, or selling my salon.",
+    icon: <Building2 className="h-4 w-4" />
+  },
+  {
+    id: "customer",
+    label: "Customer",
+    description: "",
+    tooltip: "I'm looking for beauty services and offers from top professionals.",
+    icon: <User className="h-4 w-4" />
+  },
+  {
+    id: "freelancer",
+    label: "Freelancer",
+    description: "Makeup Artist, Photographer, etc.",
+    tooltip: "I'm a solo artist looking for gigs, clients, or to promote my service.",
+    icon: <Briefcase className="h-4 w-4" />
+  },
+  {
+    id: "vendor",
+    label: "Vendor",
+    description: "Beauty Supplier",
+    tooltip: "I sell products or tools for beauty salons and professionals.",
+    icon: <ShoppingBag className="h-4 w-4" />
+  },
+  {
+    id: "other",
+    label: "Other",
+    description: "",
+    tooltip: "I'm not sure yet — I just want to explore.",
+    icon: <HelpCircle className="h-4 w-4" />
+  }
+];
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -48,7 +95,7 @@ const SignUp = () => {
         case "freelancer":
           navigate("/freelancers/profile-setup");
           break;
-        case "supplier":
+        case "vendor":
           navigate("/vendors/profile-setup");
           break;
         case "other":
@@ -118,36 +165,37 @@ const SignUp = () => {
             
             <div className="space-y-3">
               <Label>I am a:</Label>
-              <RadioGroup 
-                value={userType} 
-                onValueChange={(value) => setUserType(value as UserType)}
-                className="grid grid-cols-2 gap-4"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="artist" id="artist" />
-                  <Label htmlFor="artist" className="cursor-pointer">Artist</Label>
+              <TooltipProvider>
+                <div className="grid grid-cols-2 gap-3">
+                  {roles.map((role) => (
+                    <Tooltip key={role.id}>
+                      <TooltipTrigger asChild>
+                        <div 
+                          className={cn(
+                            "flex flex-col items-center justify-center p-3 border rounded-lg cursor-pointer transition-all",
+                            userType === role.id ? "border-primary bg-primary/5" : "hover:border-primary/50"
+                          )}
+                          onClick={() => setUserType(role.id as UserType)}
+                        >
+                          <RadioGroup value={userType} onValueChange={(value) => setUserType(value as UserType)} className="hidden">
+                            <RadioGroupItem value={role.id} id={`signup-${role.id}`} />
+                          </RadioGroup>
+                          <div className="rounded-full bg-primary/10 p-2 mb-2">
+                            {role.icon}
+                          </div>
+                          <div className="text-center">
+                            <div className="font-medium">{role.label}</div>
+                            {role.description && <div className="text-xs text-muted-foreground">{role.description}</div>}
+                          </div>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="max-w-xs">
+                        {role.tooltip}
+                      </TooltipContent>
+                    </Tooltip>
+                  ))}
                 </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="freelancer" id="freelancer" />
-                  <Label htmlFor="freelancer" className="cursor-pointer">Freelancer</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="salon" id="salon" />
-                  <Label htmlFor="salon" className="cursor-pointer">Salon Owner</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="customer" id="customer" />
-                  <Label htmlFor="customer" className="cursor-pointer">Customer</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="supplier" id="supplier" />
-                  <Label htmlFor="supplier" className="cursor-pointer">Beauty Supplier</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="other" id="other" />
-                  <Label htmlFor="other" className="cursor-pointer">Other</Label>
-                </div>
-              </RadioGroup>
+              </TooltipProvider>
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">

@@ -50,17 +50,10 @@ const Index = () => {
         case 'artist':
           navigate('/dashboard/artist');
           break;
-        case 'nail technician/artist':
-          navigate('/dashboard/artist');
-          break;
         case 'salon':
-        case 'owner':
           navigate('/dashboard/owner');
           break;
-        case 'supplier':
-          navigate('/dashboard/supplier');
-          break;
-        case 'beauty supplier':
+        case 'vendor':
           navigate('/dashboard/supplier');
           break;
         case 'freelancer':
@@ -68,6 +61,17 @@ const Index = () => {
           break;
         case 'other':
           navigate('/dashboard/customer'); // Fallback to customer dashboard for "other" role
+          break;
+        // Handle legacy roles
+        case 'nail technician/artist':
+          navigate('/dashboard/artist');
+          break;
+        case 'owner':
+          navigate('/dashboard/owner');
+          break;
+        case 'supplier':
+        case 'beauty supplier':
+          navigate('/dashboard/supplier');
           break;
         default:
           // If no valid role is found, stay on the landing page
