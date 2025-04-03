@@ -76,15 +76,16 @@ const Jobs = () => {
       }
 
       if (filters.weeklyPay) {
-        query = query.eq("metadata->weekly_pay", true);
+        // Use the correct approach to query JSON fields
+        query = query.eq("metadata->>weekly_pay", "true");
       }
       
       if (filters.ownerWillTrain) {
-        query = query.eq("metadata->owner_will_train", true);
+        query = query.eq("metadata->>owner_will_train", "true");
       }
       
       if (filters.employmentType !== "all") {
-        query = query.eq("metadata->employment_type", filters.employmentType);
+        query = query.eq("metadata->>employment_type", filters.employmentType);
       }
       
       // Fetch only active jobs if showExpired is false
@@ -102,20 +103,24 @@ const Jobs = () => {
       }
 
       // Transform the posts data to match the Job interface
-      const formattedJobs: Job[] = data?.map(post => ({
-        id: post.id,
-        created_at: post.created_at,
-        title: post.title || '',
-        company: post.metadata?.company || '',
-        location: post.location || '',
-        salary_range: post.metadata?.salary_range || '',
-        description: post.content || '',
-        requirements: post.metadata?.requirements || '',
-        weekly_pay: post.metadata?.weekly_pay || false,
-        owner_will_train: post.metadata?.owner_will_train || false,
-        employment_type: post.metadata?.employment_type || 'full-time',
-        user_id: post.user_id
-      })) || [];
+      const formattedJobs: Job[] = data?.map(post => {
+        const metadata = post.metadata as Record<string, any> || {};
+        
+        return {
+          id: post.id,
+          created_at: post.created_at,
+          title: post.title || '',
+          company: metadata.company || '',
+          location: post.location || '',
+          salary_range: metadata.salary_range || '',
+          description: post.content || '',
+          requirements: metadata.requirements || '',
+          weekly_pay: Boolean(metadata.weekly_pay) || false,
+          owner_will_train: Boolean(metadata.owner_will_train) || false,
+          employment_type: metadata.employment_type || 'full-time',
+          user_id: post.user_id
+        };
+      }) || [];
 
       setJobs(formattedJobs);
     } catch (error: any) {
