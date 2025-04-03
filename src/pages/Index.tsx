@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 import { useRoleSelection } from "@/hooks/useRoleSelection";
+import AIPowerhouse from "@/components/home/AIPowerhouse";
 
 const Index = () => {
   const { user, userRole } = useAuth();
@@ -52,6 +53,7 @@ const Index = () => {
     <Layout>
       <Hero />
       {user && user.email ? <CustomerDashboard /> : null}
+      <AIPowerhouse /> {/* Added the AI Powerhouse section */}
       <FeaturedSalons />
       <JobsHighlight />
       <ArtistCallout />
