@@ -11,7 +11,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 // User type options for registration - make sure this matches AuthContext
-type UserType = "artist" | "owner" | "customer" | "supplier" | "freelancer" | "other";
+type UserType = "artist" | "freelancer" | "salon" | "customer" | "supplier" | "other";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -42,7 +42,7 @@ const SignUp = () => {
         case "artist":
           navigate("/profile/artist/setup");
           break;
-        case "owner":
+        case "salon":
           navigate("/profile/salon/setup");
           break;
         case "freelancer":
@@ -124,16 +124,20 @@ const SignUp = () => {
                 className="grid grid-cols-2 gap-4"
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="owner" id="owner" />
-                  <Label htmlFor="owner" className="cursor-pointer">Salon Owner</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="customer" id="customer" />
-                  <Label htmlFor="customer" className="cursor-pointer">Customer</Label>
+                  <RadioGroupItem value="artist" id="artist" />
+                  <Label htmlFor="artist" className="cursor-pointer">Artist</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="freelancer" id="freelancer" />
                   <Label htmlFor="freelancer" className="cursor-pointer">Freelancer</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="salon" id="salon" />
+                  <Label htmlFor="salon" className="cursor-pointer">Salon Owner</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="customer" id="customer" />
+                  <Label htmlFor="customer" className="cursor-pointer">Customer</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="supplier" id="supplier" />
@@ -142,10 +146,6 @@ const SignUp = () => {
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="other" id="other" />
                   <Label htmlFor="other" className="cursor-pointer">Other</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="artist" id="artist" />
-                  <Label htmlFor="artist" className="cursor-pointer">Nail Technician/Artist</Label>
                 </div>
               </RadioGroup>
             </div>

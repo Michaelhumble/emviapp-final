@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
-type Role = "customer" | "artist" | "owner" | "supplier" | "freelancer";
+type Role = "artist" | "freelancer" | "salon" | "customer" | "supplier" | "other";
 
 interface RoleSelectionModalProps {
   open: boolean;
@@ -25,29 +25,34 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
   
   const roles: { id: Role; label: string; description: string }[] = [
     {
-      id: "owner",
-      label: "Salon Owner",
-      description: "Manage your salon and hire talented artists"
+      id: "artist",
+      label: "Artist (Nail Technicians, Hair Stylists, etc.)",
+      description: "I'm a licensed beauty artist ready to offer my services."
+    },
+    {
+      id: "freelancer",
+      label: "Freelancer (Makeup, Photography, Content, etc.)",
+      description: "I'm an independent creative offering beauty-related gigs or support."
+    },
+    {
+      id: "salon",
+      label: "Salon (Business Owner)",
+      description: "I own or manage a beauty business."
     },
     {
       id: "customer",
       label: "Customer",
-      description: "Browse beauty services and book appointments"
-    },
-    {
-      id: "freelancer",
-      label: "Freelancer",
-      description: "I'm an independent artist looking for gigs, bookings, or to build my brand"
+      description: "I'm here to discover services, book appointments, or explore EmviApp."
     },
     {
       id: "supplier",
-      label: "Supplier",
-      description: "Offer beauty products to salons and artists"
+      label: "Beauty Supplier (Vendor)",
+      description: "I sell products or equipment to beauty professionals."
     },
     {
-      id: "artist",
-      label: "Artist",
-      description: "Showcase your work and connect with salons"
+      id: "other",
+      label: "Other",
+      description: "I'm not listed above, but I'd still love to join."
     }
   ];
 
@@ -76,7 +81,7 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
         case 'artist':
           navigate('/dashboard/artist');
           break;
-        case 'owner':
+        case 'salon':
           navigate('/dashboard/owner');
           break;
         case 'supplier':
@@ -84,6 +89,9 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
           break;
         case 'freelancer':
           navigate('/profile/freelancer/setup');
+          break;
+        case 'other':
+          navigate('/dashboard/customer'); // Default to customer dashboard
           break;
         case 'customer':
         default:

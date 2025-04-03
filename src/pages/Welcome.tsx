@@ -38,17 +38,17 @@ const Welcome = () => {
       case 'artist':
         navigate('/dashboard/artist');
         break;
-      case 'owner':
+      case 'salon':
         navigate('/dashboard/owner');
-        break;
-      case 'renter':
-        navigate('/dashboard/artist'); // Using artist dashboard for renters
         break;
       case 'supplier':
         navigate('/dashboard/supplier');
         break;
       case 'freelancer':
         navigate('/dashboard/freelancer');
+        break;
+      case 'other':
+        navigate('/dashboard/customer'); // Default to customer dashboard
         break;
       case 'customer':
       default:
