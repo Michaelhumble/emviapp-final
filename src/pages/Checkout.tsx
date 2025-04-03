@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import Layout from "@/components/layout/Layout";
@@ -48,12 +48,48 @@ const plans = [
 ];
 
 const Checkout = () => {
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
   const navigate = useNavigate();
   const [selectedPlan, setSelectedPlan] = useState(plans[1]);
 
+  // Check if user should see pricing plans based on role
+  // Only Artist and Freelancer roles should see the pricing plans
+  const shouldShowPricingPlans = userRole === 'artist' || userRole === 'freelancer';
+
+  // Redirect users who don't need to see plans to their dashboard
+  useEffect(() => {
+    if (user && !shouldShowPricingPlans) {
+      // Determine which dashboard to redirect to
+      let dashboardPath = '/dashboard/customer'; // Default
+      
+      switch(userRole) {
+        case 'salon':
+          dashboardPath = '/dashboard/owner';
+          break;
+        case 'vendor':
+          dashboardPath = '/dashboard/supplier';
+          break;
+        case 'other':
+          dashboardPath = '/dashboard/other';
+          break;
+        case 'customer':
+        default:
+          dashboardPath = '/dashboard/customer';
+          break;
+      }
+      
+      navigate(dashboardPath);
+    }
+  }, [user, userRole, shouldShowPricingPlans, navigate]);
+
+  // Redirect to login if user is not authenticated
   if (!user) {
     return <Navigate to="/auth/signin" replace />;
+  }
+
+  // Render nothing while redirecting non-eligible users
+  if (!shouldShowPricingPlans) {
+    return null;
   }
 
   const handleSuccess = () => {
