@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Phone, DollarSign, Users, Building, Star, Calendar } from "lucide-react";
@@ -7,11 +6,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import SalonListings from "@/components/salons/SalonListings";
 
 // Hiring salons data (jobs)
 const hiringSalons = [
   {
-    id: 1,
+    id: "1",
     name: "Luxury Nails & Spa",
     location: "Houston, TX",
     jobTitle: {
@@ -24,7 +24,7 @@ const hiringSalons = [
     image: "https://images.unsplash.com/photo-1632345031435-8727f6897d53?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60"
   },
   {
-    id: 2,
+    id: "2",
     name: "Diamond Nails",
     location: "Dallas, TX",
     jobTitle: {
@@ -37,7 +37,7 @@ const hiringSalons = [
     image: "https://images.unsplash.com/photo-1607779097040-26e80aa78e66?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60"
   },
   {
-    id: 3,
+    id: "3",
     name: "Queen Nails",
     location: "San Jose, CA",
     jobTitle: {
@@ -50,7 +50,7 @@ const hiringSalons = [
     image: "https://images.unsplash.com/photo-1610992015732-2449b76344bc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60"
   },
   {
-    id: 4,
+    id: "4",
     name: "Crystal Spa & Nails",
     location: "Atlanta, GA",
     jobTitle: {
@@ -64,71 +64,134 @@ const hiringSalons = [
   }
 ];
 
-// Salons for sale data
+// Enhanced salons for sale data
 const salonsForSale = [
   {
-    id: 101,
-    name: "Elite Nails & Spa",
+    id: "101",
+    company: "Elite Nails & Spa",
     location: "Orlando, FL",
-    price: "$120,000",
-    rent: "$3,500/month",
-    staff: 6,
+    asking_price: "$120,000",
+    monthly_rent: "$3,500/month",
+    number_of_stations: 6,
+    number_of_chairs: 8,
+    square_feet: "1,800",
     revenue: "$28,000/month",
-    features: ["10 Years Established", "High Traffic Area", "Full Equipment"],
-    description: {
-      vi: "Tiệm rộng 1800sf, 6 ghế nail, 6 ghế spa pedicure. Tiệm đông khách, khu Mỹ trắng, income cao.",
-      en: "1800sf salon, 6 nail stations, 6 spa pedicure chairs. Busy salon in upscale area with high income."
+    salon_features: ["10 Years Established", "High Traffic Area", "Full Equipment"],
+    vietnamese_description: "Tiệm rộng 1800sf, 6 ghế nail, 6 ghế spa pedicure. Tiệm đông khách, khu Mỹ trắng, income cao.",
+    description: "1800sf salon, 6 nail stations, 6 spa pedicure chairs. Busy salon in upscale area with high income.",
+    contact_info: {
+      phone: "(407) 555-6789",
+      email: "contact@elitespa.com"
     },
-    phone: "(407) 555-6789",
-    image: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bmFpbCUyMHNhbG9ufGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60"
+    has_housing: true,
+    has_wax_room: true,
+    has_dining_room: true,
+    has_laundry: true,
+    owner_will_train: true,
+    reason_for_selling: "Về hưu / Retirement",
+    image: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bmFpbCUyMHNhbG9ufGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60",
+    emvi_ai_boosted: true
   },
   {
-    id: 102,
-    name: "Golden Nails",
+    id: "102",
+    company: "Golden Nails",
     location: "San Diego, CA",
-    price: "$180,000",
-    rent: "$4,200/month",
-    staff: 8,
+    asking_price: "$180,000",
+    monthly_rent: "$4,200/month",
+    number_of_stations: 8,
+    number_of_chairs: 10,
+    square_feet: "2,200",
     revenue: "$35,000/month",
-    features: ["Prime Location", "Owner Will Train", "Loyal Customers"],
-    description: {
-      vi: "Tiệm đẹp khu Mỹ trắng, income ổn định. Chủ bán vì về hưu, sẽ training lại cho chủ mới.",
-      en: "Beautiful salon in upscale area with stable income. Owner selling due to retirement, will train new owner."
+    salon_features: ["Prime Location", "Owner Will Train", "Loyal Customers"],
+    vietnamese_description: "Tiệm đẹp khu Mỹ trắng, income ổn định. Chủ bán vì về hưu, sẽ training lại cho chủ mới.",
+    description: "Beautiful salon in upscale area with stable income. Owner selling due to retirement, will train new owner.",
+    contact_info: {
+      phone: "(619) 555-7890",
+      email: "info@goldennails.com"
     },
-    phone: "(619) 555-7890",
+    has_housing: false,
+    has_wax_room: true,
+    has_dining_room: true,
+    has_laundry: false,
+    owner_will_train: true,
+    reason_for_selling: "Chuyển tiểu bang / Moving",
     image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bmFpbCUyMHNhbG9ufGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60"
   },
   {
-    id: 103,
-    name: "Serenity Nails & Spa",
+    id: "103",
+    company: "Serenity Nails & Spa",
     location: "Chicago, IL",
-    price: "$95,000",
-    rent: "$3,800/month",
-    staff: 5,
+    asking_price: "$95,000",
+    monthly_rent: "$3,800/month",
+    number_of_stations: 5,
+    number_of_chairs: 6,
+    square_feet: "1,500",
     revenue: "$22,000/month",
-    features: ["New Equipment", "Near Shopping Center", "Parking Available"],
-    description: {
-      vi: "Tiệm vị trí đắc địa, gần trung tâm mua sắm lớn. Mới trang bị lại toàn bộ thiết bị.",
-      en: "Salon in ideal location near major shopping center. Recently upgraded all equipment."
+    salon_features: ["New Equipment", "Near Shopping Center", "Parking Available"],
+    vietnamese_description: "Tiệm vị trí đắc địa, gần trung tâm mua sắm lớn. Mới trang bị lại toàn bộ thiết bị.",
+    description: "Salon in ideal location near major shopping center. Recently upgraded all equipment.",
+    contact_info: {
+      phone: "(312) 555-8901",
+      email: "hello@serenitynails.com"
     },
-    phone: "(312) 555-8901",
+    has_housing: true,
+    has_wax_room: false,
+    has_dining_room: false,
+    has_laundry: true,
+    owner_will_train: false,
+    reason_for_selling: "Đổi ngành / Career change",
     image: "https://images.unsplash.com/photo-1604654894611-6973b376cbde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60"
   },
   {
-    id: 104,
-    name: "Bliss Nails",
+    id: "104",
+    company: "Bliss Nails",
     location: "Seattle, WA",
-    price: "$155,000",
-    rent: "$4,500/month",
-    staff: 7,
+    asking_price: "$155,000",
+    monthly_rent: "$4,500/month",
+    number_of_stations: 7,
+    number_of_chairs: 9,
+    square_feet: "1,900",
     revenue: "$32,000/month",
-    features: ["Established 12 Years", "Owner Retiring", "High-End Clientele"],
-    description: {
-      vi: "Tiệm cao cấp đã hoạt động 12 năm, khách hàng ổn định. Chủ bán vì về hưu.",
-      en: "Upscale salon established for 12 years with stable clientele. Owner selling due to retirement."
+    salon_features: ["Established 12 Years", "Owner Retiring", "High-End Clientele"],
+    vietnamese_description: "Tiệm cao cấp đã hoạt động 12 năm, khách hàng ổn định. Chủ bán vì về hưu.",
+    description: "Upscale salon established for 12 years with stable clientele. Owner selling due to retirement.",
+    contact_info: {
+      phone: "(206) 555-9012",
+      email: "info@blissnails.com"
     },
-    phone: "(206) 555-9012",
+    has_housing: false,
+    has_wax_room: true,
+    has_dining_room: true,
+    has_laundry: true,
+    owner_will_train: true,
+    reason_for_selling: "Về hưu / Retirement",
     image: "https://images.unsplash.com/photo-1610384104075-e05c8cf200c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzZ8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60"
+  },
+  {
+    id: "105",
+    company: "Pearl Beauty & Nail Spa",
+    location: "Miami, FL",
+    asking_price: "$210,000",
+    monthly_rent: "$5,200/month",
+    number_of_stations: 10,
+    number_of_chairs: 12,
+    square_feet: "2,500",
+    revenue: "$42,000/month",
+    salon_features: ["Beach Location", "Luxury Clientele", "Full Service Spa"],
+    vietnamese_description: "Tiệm spa cao cấp gần bãi biển, khách hàng giàu có. Đầy đủ dịch vụ spa.",
+    description: "Luxury full-service spa near the beach with high-end clientele. Complete spa services available.",
+    contact_info: {
+      phone: "(305) 555-1234",
+      email: "contact@pearlbeautyspa.com"
+    },
+    has_housing: false,
+    has_wax_room: true,
+    has_dining_room: true,
+    has_laundry: true,
+    owner_will_train: true,
+    reason_for_selling: "Mở thêm chi nhánh mới / Opening new locations",
+    image: "https://images.unsplash.com/photo-1610992015732-2449b76344bc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60",
+    emvi_ai_boosted: true
   }
 ];
 
@@ -232,93 +295,7 @@ const Salons = () => {
               </TabsContent>
 
               <TabsContent value="forsale" className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {salonsForSale.map((salon) => (
-                    <motion.div
-                      key={salon.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: (salon.id - 100) * 0.1 }}
-                    >
-                      <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full">
-                        <div 
-                          className="h-56 bg-center bg-cover relative" 
-                          style={{ backgroundImage: `url(${salon.image})` }}
-                        >
-                          <div className="absolute inset-0 bg-black/30 flex items-end">
-                            <div className="p-4 w-full">
-                              <Badge className="bg-primary/90 hover:bg-primary text-white text-lg py-1 px-3">
-                                {salon.price}
-                              </Badge>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <CardContent className="p-5">
-                          <div className="mb-3">
-                            <h3 className="font-bold text-lg">{salon.name}</h3>
-                            <div className="flex items-center text-sm text-gray-500">
-                              <MapPin className="w-4 h-4 mr-1" />
-                              <span>{salon.location}</span>
-                            </div>
-                          </div>
-                          
-                          <div className="grid grid-cols-2 gap-3 mb-4">
-                            <div className="flex items-center text-sm">
-                              <Building className="w-4 h-4 mr-2 text-gray-500" />
-                              <span>Rent: {salon.rent}</span>
-                            </div>
-                            <div className="flex items-center text-sm">
-                              <Users className="w-4 h-4 mr-2 text-gray-500" />
-                              <span>{salon.staff} Staff</span>
-                            </div>
-                            <div className="flex items-center text-sm">
-                              <DollarSign className="w-4 h-4 mr-2 text-gray-500" />
-                              <span>Rev: {salon.revenue}</span>
-                            </div>
-                            <div className="flex items-center text-sm">
-                              <Calendar className="w-4 h-4 mr-2 text-gray-500" />
-                              <span>Available Now</span>
-                            </div>
-                          </div>
-                          
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            {salon.features.map((feature, index) => (
-                              <Badge key={index} variant="outline" className="bg-purple-50">
-                                {feature}
-                              </Badge>
-                            ))}
-                          </div>
-                          
-                          <div className="mt-3 mb-4 text-sm border-l-2 border-primary pl-3 italic">
-                            <p className="mb-1">{salon.description.vi}</p>
-                            <p className="text-gray-600">{salon.description.en}</p>
-                          </div>
-                          
-                          <div className="flex justify-between mt-4">
-                            <Button variant="outline" className="gap-1">
-                              <Phone className="h-4 w-4" />
-                              {salon.phone}
-                            </Button>
-                            <Button>
-                              View Details
-                            </Button>
-                          </div>
-                          
-                          <div className="text-xs text-center text-gray-500 mt-4 pt-2 border-t">
-                            Want your ad seen nationwide? 
-                            <Button variant="link" className="text-xs p-0 h-auto ml-1">Boost Ad</Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  ))}
-                </div>
-                
-                <div className="flex justify-center mt-8">
-                  <Button variant="outline" className="mr-2">Previous</Button>
-                  <Button variant="outline">Next</Button>
-                </div>
+                <SalonListings salonsForSale={salonsForSale} />
               </TabsContent>
             </Tabs>
           </motion.div>

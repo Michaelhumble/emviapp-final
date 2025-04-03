@@ -35,5 +35,20 @@ export interface Job {
     chatAvailable?: boolean;
   };
   is_sample?: boolean;
-  is_nationwide?: boolean; // Added missing property
+  is_nationwide?: boolean;
+  
+  // Additional fields for salon listings
+  asking_price?: string;
+  monthly_rent?: string;
+  square_feet?: string;
+  number_of_stations?: number;
+  number_of_chairs?: number;
+  revenue?: string;
+  reason_for_selling?: string;
+  has_wax_room?: boolean;
+  has_dining_room?: boolean;
+  has_laundry?: boolean;
+  salon_features?: string[];
+  boost_status?: 'standard' | 'nationwide';
+  emvi_ai_boosted?: boolean;
 }

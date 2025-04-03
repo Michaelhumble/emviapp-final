@@ -17,9 +17,11 @@ export const salonFormSchema = z.object({
   }),
   monthlyRent: z.string().optional(),
   numberOfStaff: z.string().min(1, {
-    message: "Number of staff is required.",
+    message: "Number of staff/stations is required.",
   }),
+  squareFeet: z.string().optional(),
   revenue: z.string().optional(),
+  reasonForSelling: z.string().optional(),
   vietnameseDescription: z.string().min(10, {
     message: "Vietnamese description must be at least 10 characters.",
   }),
@@ -29,6 +31,10 @@ export const salonFormSchema = z.object({
   willTrain: z.boolean().default(false),
   isNationwide: z.boolean().default(false),
   fastSalePackage: z.boolean().default(false),
+  hasHousing: z.boolean().default(false),
+  hasWaxRoom: z.boolean().default(false),
+  hasDiningRoom: z.boolean().default(false),
+  hasLaundry: z.boolean().default(false),
 });
 
 export type SalonFormValues = z.infer<typeof salonFormSchema>;
