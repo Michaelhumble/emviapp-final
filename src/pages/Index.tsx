@@ -48,6 +48,8 @@ const Index = () => {
           navigate('/dashboard/customer');
           break;
         case 'artist':
+          navigate('/dashboard/artist');
+          break;
         case 'nail technician/artist':
           navigate('/dashboard/artist');
           break;
@@ -56,6 +58,8 @@ const Index = () => {
           navigate('/dashboard/owner');
           break;
         case 'supplier':
+          navigate('/dashboard/supplier');
+          break;
         case 'beauty supplier':
           navigate('/dashboard/supplier');
           break;

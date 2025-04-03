@@ -37,6 +37,8 @@ const Welcome = () => {
     console.log("Redirecting with user role:", userRole);
     switch(userRole) {
       case 'artist':
+        navigate('/dashboard/artist');
+        break;
       case 'nail technician/artist':
         navigate('/dashboard/artist');
         break;
@@ -45,6 +47,8 @@ const Welcome = () => {
         navigate('/dashboard/owner');
         break;
       case 'supplier':
+        navigate('/dashboard/supplier');
+        break;
       case 'beauty supplier':
         navigate('/dashboard/supplier');
         break;

@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 
 const HeroSection = () => {
@@ -33,7 +34,7 @@ const HeroSection = () => {
               transition={{ delay: 0.2, duration: 0.7 }}
             >
               <img 
-                src="https://images.unsplash.com/photo-1604902396830-aca29e19b067?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&q=90" 
+                src="/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png" 
                 alt="Professional nail technician at work"
                 className="w-full h-64 object-cover hover:scale-105 transition-transform duration-700 ease-in-out"
               />
@@ -51,7 +52,7 @@ const HeroSection = () => {
               transition={{ delay: 0.4, duration: 0.7 }}
             >
               <img 
-                src="https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&q=90" 
+                src="/lovable-uploads/68057e27-17e9-4643-941f-d68d048d40ce.png" 
                 alt="Makeup artist applying makeup to client"
                 className="w-full h-64 object-cover hover:scale-105 transition-transform duration-700 ease-in-out"
               />
