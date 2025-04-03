@@ -1,3 +1,4 @@
+
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
 import ArtistTestimonials from "@/components/home/ArtistTestimonials";
@@ -7,7 +8,7 @@ import ArtistCallout from "@/components/home/ArtistCallout";
 import Testimonials from "@/components/home/Testimonials";
 import CallToAction from "@/components/home/CallToAction";
 import CustomerDashboard from "@/components/customer/CustomerDashboard";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/auth/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";

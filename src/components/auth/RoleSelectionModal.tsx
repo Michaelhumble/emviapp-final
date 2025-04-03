@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -9,8 +8,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Scissors, Building2, User, Briefcase, ShoppingBag, HelpCircle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { UserRole } from "@/context/auth/types";
 
-type Role = "artist" | "salon" | "customer" | "freelancer" | "vendor" | "other";
+type Role = UserRole;
 
 interface RoleSelectionModalProps {
   open: boolean;
@@ -69,7 +69,6 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
     setIsSubmitting(true);
     
     try {
-      // Update user role in Supabase
       const { error } = await supabase
         .from('users')
         .update({ role: selectedRole })
@@ -77,13 +76,11 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
       
       if (error) throw error;
       
-      // Show success toast
       toast({
         title: "Role selected!",
         description: `You're now registered as a ${selectedRole}.`,
       });
       
-      // Redirect to appropriate profile setup page
       switch(selectedRole) {
         case 'artist':
           navigate('/artists/profile-setup');

@@ -1,72 +1,11 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+
+import { createContext, useEffect, useState, ReactNode } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { UserRole, UserProfile, UserMetadata, AuthContextType } from "./types";
 
-export type UserRole = 
-  | 'customer' 
-  | 'artist' 
-  | 'salon' 
-  | 'vendor'
-  | 'freelancer' 
-  | 'other'
-  | 'renter'  // legacy role
-  | 'owner'   // legacy role
-  | 'supplier'  // legacy role
-  | 'nail technician/artist'  // legacy role
-  | 'beauty supplier'  // legacy role
-  | null;
-
-type UserMetadata = {
-  full_name?: string;
-  user_type?: UserRole;
-  [key: string]: any;
-};
-
-// Extended user profile interface to include all possible fields
-interface UserProfile {
-  id: string;
-  full_name: string;
-  email: string;
-  avatar_url: string | null;
-  bio: string | null;
-  specialty: string | null;
-  location: string | null;
-  instagram: string | null;
-  website: string | null;
-  phone: string | null;
-  preferred_language: string | null;
-  credits: number | null;
-  badges: any | null; // Json
-  role: UserRole;
-  created_at: string | null;
-  updated_at: string | null;
-  // Fields for salon owners
-  salon_name?: string | null;
-  business_address?: string | null;
-  license_number?: string | null;
-  // Fields for vendors/suppliers
-  company_name?: string | null;
-  product_type?: string | null;
-  // For extensibility
-  [key: string]: any;
-}
-
-type AuthContextType = {
-  user: User | null;
-  session: Session | null;
-  loading: boolean;
-  userRole: UserRole;
-  userProfile: UserProfile | null;
-  profileComplete: boolean;
-  signUp: (email: string, password: string, metadata?: UserMetadata) => Promise<void>;
-  signIn: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
-  updateUserRole: (role: UserRole) => Promise<void>;
-  refreshUserProfile: () => Promise<void>;
-};
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -251,12 +190,4 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
 };

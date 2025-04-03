@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/auth/useAuth';
 import Layout from '@/components/layout/Layout';
 import ArtistProfileEditor from '@/components/profile/ArtistProfileEditor';
 
@@ -37,7 +37,6 @@ const ProfileEdit = () => {
     }
   }, [userRole]);
   
-  // Display appropriate editor based on user role
   const renderProfileEditor = () => {
     if (loading) {
       return (
@@ -48,13 +47,10 @@ const ProfileEdit = () => {
       );
     }
     
-    // Check user role and display appropriate editor
     switch (userRole) {
       case 'artist':
       case 'nail technician/artist':
         return <ArtistProfileEditor />;
-      // For now we're only implementing the Artist profile editor
-      // Other role types will be added in future updates
       default:
         return (
           <div className="text-center py-8">
