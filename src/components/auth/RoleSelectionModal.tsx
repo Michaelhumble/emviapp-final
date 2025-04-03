@@ -76,26 +76,26 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
         description: `You're now registered as a ${selectedRole}.`,
       });
       
-      // Redirect to appropriate dashboard
+      // Redirect to appropriate profile setup page
       switch(selectedRole) {
         case 'artist':
-          navigate('/dashboard/artist');
+          navigate('/profile/artist/setup');
           break;
         case 'salon':
-          navigate('/dashboard/owner');
+          navigate('/profile/salon/setup');
           break;
         case 'supplier':
-          navigate('/dashboard/supplier');
+          navigate('/profile/supplier/setup');
           break;
         case 'freelancer':
           navigate('/profile/freelancer/setup');
           break;
         case 'other':
-          navigate('/dashboard/customer'); // Default to customer dashboard
+          navigate('/profile/other/setup');
           break;
         case 'customer':
         default:
-          navigate('/dashboard/customer');
+          navigate('/profile/customer/setup');
           break;
       }
     } catch (error) {
