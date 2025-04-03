@@ -39,6 +39,7 @@ const Welcome = () => {
         navigate('/dashboard/artist');
         break;
       case 'salon':
+      case 'owner':
         navigate('/dashboard/owner');
         break;
       case 'supplier':
@@ -48,8 +49,6 @@ const Welcome = () => {
         navigate('/dashboard/freelancer');
         break;
       case 'other':
-        navigate('/dashboard/customer'); // Default to customer dashboard
-        break;
       case 'customer':
       default:
         navigate('/dashboard/customer');

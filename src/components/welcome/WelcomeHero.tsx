@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
 interface WelcomeHeroProps {
-  userRole?: 'artist' | 'owner' | 'renter' | 'supplier' | 'customer' | 'freelancer' | 'other' | null;
+  userRole?: 'artist' | 'owner' | 'renter' | 'supplier' | 'customer' | 'freelancer' | 'salon' | 'other' | null;
   onContinue: () => void;
   onSkip: () => void;
 }
@@ -27,6 +27,8 @@ const WelcomeHero = ({
         return "Supplier";
       case 'freelancer':
         return "Freelancer";
+      case 'salon':
+        return "Salon Business";
       case 'customer':
         return "Beauty Enthusiast";
       default:
@@ -40,6 +42,7 @@ const WelcomeHero = ({
       case 'artist':
         return "Your artistic journey starts here. Find amazing opportunities and showcase your talent.";
       case 'owner':
+      case 'salon':
         return "Grow your salon business with powerful tools designed for success.";
       case 'renter':
         return "Maximize your booth rental income and build your client base with EmviApp.";
@@ -61,6 +64,7 @@ const WelcomeHero = ({
       case 'renter':
         return "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&auto=format&fit=crop";
       case 'owner':
+      case 'salon':
         return "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&auto=format&fit=crop";
       case 'supplier':
         return "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop";

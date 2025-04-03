@@ -1,9 +1,10 @@
+
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
-type UserRole = 'customer' | 'artist' | 'owner' | 'renter' | 'supplier' | 'freelancer' | null;
+type UserRole = 'customer' | 'artist' | 'owner' | 'renter' | 'supplier' | 'freelancer' | 'salon' | 'other' | null;
 
 type UserMetadata = {
   full_name?: string;

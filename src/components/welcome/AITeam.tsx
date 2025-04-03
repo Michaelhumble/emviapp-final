@@ -15,7 +15,7 @@ interface AIAgent {
 }
 
 interface AITeamProps {
-  userRole?: 'artist' | 'owner' | 'renter' | 'supplier' | 'customer' | null;
+  userRole?: 'artist' | 'owner' | 'renter' | 'supplier' | 'customer' | 'freelancer' | 'salon' | 'other' | null;
 }
 
 const AITeam = ({ userRole = 'customer' }: AITeamProps) => {
@@ -79,6 +79,7 @@ const AITeam = ({ userRole = 'customer' }: AITeamProps) => {
         customized[3].description = "Suggests ways to increase your income and build a stronger client base.";
         break;
       case 'owner':
+      case 'salon':
         customized[0].description = "Increases your salon's visibility to potential clients and talented beauty professionals.";
         customized[1].description = "Connects you with qualified professionals who match your salon's style and needs.";
         customized[3].description = "Recommends strategies to boost salon revenue and retain talented staff.";
