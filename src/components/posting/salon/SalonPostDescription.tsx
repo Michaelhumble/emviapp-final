@@ -3,11 +3,10 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { UseFormReturn } from "react-hook-form";
-import { z } from "zod";
-import { formSchema } from "./SalonPostForm";
+import { SalonFormValues } from "./salonFormSchema";
 
 interface SalonPostDescriptionProps {
-  form: UseFormReturn<z.infer<typeof formSchema>>;
+  form: UseFormReturn<SalonFormValues>;
 }
 
 export const SalonPostDescription = ({ form }: SalonPostDescriptionProps) => {

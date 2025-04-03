@@ -5,10 +5,10 @@ import { useToast } from "@/hooks/use-toast";
 import PostWizardLayout from "@/components/posting/PostWizardLayout";
 import PaymentConfirmationModal from "@/components/posting/PaymentConfirmationModal";
 import ThankYouModal from "@/components/posting/ThankYouModal";
-import { SalonPostForm, SalonFormValues } from "@/components/posting/salon/SalonPostForm";
+import { SalonPostForm } from "@/components/posting/salon/SalonPostForm";
+import { SalonFormValues } from "@/components/posting/salon/salonFormSchema";
 import SalonPostOptions from "@/components/posting/salon/SalonPostOptions";
 import { calculateSalonForSalePrice } from "@/utils/posting/salonPricing";
-import { Navigate } from "react-router-dom";
 
 const SalonPost = () => {
   const { user } = useAuth();

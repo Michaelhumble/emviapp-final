@@ -1,13 +1,11 @@
-
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { UseFormReturn } from "react-hook-form";
-import { z } from "zod";
-import { formSchema } from "./SalonPostForm";
+import { SalonFormValues } from "./salonFormSchema";
 
 interface SalonPostBasicInfoProps {
-  form: UseFormReturn<z.infer<typeof formSchema>>;
+  form: UseFormReturn<SalonFormValues>;
 }
 
 export const SalonPostBasicInfo = ({ form }: SalonPostBasicInfoProps) => {
