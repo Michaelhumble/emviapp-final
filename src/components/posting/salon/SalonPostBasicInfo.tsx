@@ -240,7 +240,7 @@ export const SalonPostBasicInfo = ({ form }: SalonPostBasicInfoProps) => {
                   checked={field.value}
                   onCheckedChange={field.onChange}
                 />
-              </Control>
+              </FormControl>
             </FormItem>
           )}
         />
