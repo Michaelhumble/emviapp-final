@@ -173,7 +173,7 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
                   
                   <div 
                     className="h-56 bg-center bg-cover relative" 
-                    style={{ backgroundImage: `url(${salon.image})` }}
+                    style={{ backgroundImage: `url(${salon.image || ''})` }}
                   >
                     <div className="absolute inset-0 bg-black/30 flex items-end">
                       <div className="p-4 w-full flex justify-between items-end">

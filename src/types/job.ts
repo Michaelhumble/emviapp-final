@@ -51,4 +51,5 @@ export interface Job {
   salon_features?: string[];
   boost_status?: 'standard' | 'nationwide';
   emvi_ai_boosted?: boolean;
+  image?: string; // Add missing image property
 }

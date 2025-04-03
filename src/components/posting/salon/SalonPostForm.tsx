@@ -1,4 +1,5 @@
 
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
@@ -54,11 +55,11 @@ export const SalonPostForm = ({
   const fastSalePackage = form.watch("fastSalePackage");
   
   // Update parent component when these values change
-  React.useEffect(() => {
+  useEffect(() => {
     onNationwideChange(isNationwide);
   }, [isNationwide, onNationwideChange]);
   
-  React.useEffect(() => {
+  useEffect(() => {
     onFastSaleChange(fastSalePackage);
   }, [fastSalePackage, onFastSaleChange]);
 

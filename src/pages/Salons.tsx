@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Phone, DollarSign, Users, Building, Star, Calendar } from "lucide-react";
@@ -7,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import SalonListings from "@/components/salons/SalonListings";
+import { Job } from "@/types/job";
 
 // Hiring salons data (jobs)
 const hiringSalons = [
@@ -65,11 +67,14 @@ const hiringSalons = [
 ];
 
 // Enhanced salons for sale data
-const salonsForSale = [
+const salonsForSale: Job[] = [
   {
     id: "101",
+    created_at: new Date().toISOString(),
+    title: "Salon for Sale",
     company: "Elite Nails & Spa",
     location: "Orlando, FL",
+    user_id: "sample-user-1",
     asking_price: "$120,000",
     monthly_rent: "$3,500/month",
     number_of_stations: 6,
@@ -94,8 +99,11 @@ const salonsForSale = [
   },
   {
     id: "102",
+    created_at: new Date().toISOString(),
+    title: "Salon for Sale",
     company: "Golden Nails",
     location: "San Diego, CA",
+    user_id: "sample-user-2",
     asking_price: "$180,000",
     monthly_rent: "$4,200/month",
     number_of_stations: 8,
@@ -119,8 +127,11 @@ const salonsForSale = [
   },
   {
     id: "103",
+    created_at: new Date().toISOString(),
+    title: "Salon for Sale",
     company: "Serenity Nails & Spa",
     location: "Chicago, IL",
+    user_id: "sample-user-3",
     asking_price: "$95,000",
     monthly_rent: "$3,800/month",
     number_of_stations: 5,
@@ -144,8 +155,11 @@ const salonsForSale = [
   },
   {
     id: "104",
+    created_at: new Date().toISOString(),
+    title: "Salon for Sale",
     company: "Bliss Nails",
     location: "Seattle, WA",
+    user_id: "sample-user-4",
     asking_price: "$155,000",
     monthly_rent: "$4,500/month",
     number_of_stations: 7,
@@ -169,8 +183,11 @@ const salonsForSale = [
   },
   {
     id: "105",
+    created_at: new Date().toISOString(),
+    title: "Salon for Sale",
     company: "Pearl Beauty & Nail Spa",
     location: "Miami, FL",
+    user_id: "sample-user-5",
     asking_price: "$210,000",
     monthly_rent: "$5,200/month",
     number_of_stations: 10,
@@ -235,7 +252,7 @@ const Salons = () => {
                       key={salon.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: salon.id * 0.1 }}
+                      transition={{ duration: 0.3, delay: Number(salon.id) * 0.1 }}
                     >
                       <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full">
                         <div 

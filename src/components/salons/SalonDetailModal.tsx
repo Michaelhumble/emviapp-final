@@ -31,7 +31,7 @@ const SalonDetailModal = ({ salon, isOpen, onClose }: SalonDetailModalProps) => 
           <div className="space-y-4">
             <div 
               className="h-64 rounded-md bg-center bg-cover"
-              style={{ backgroundImage: `url(${salon.image})` }}
+              style={{ backgroundImage: `url(${salon.image || ''})` }}
             ></div>
             
             <div className="bg-gray-50 p-4 rounded-md">
