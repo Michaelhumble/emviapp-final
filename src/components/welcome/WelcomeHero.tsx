@@ -70,18 +70,21 @@ const WelcomeHero = ({
     switch(userRole) {
       case 'artist':
       case 'nail technician/artist':
+        return "/lovable-uploads/749e5584-caa4-4229-84a2-93589c7455c2.png";
       case 'renter':
-        return "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&auto=format&fit=crop";
+        return "/lovable-uploads/63331551-d921-46f4-98dc-8404b611ddd3.png";
       case 'owner':
       case 'salon':
-        return "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&auto=format&fit=crop";
+        return "/lovable-uploads/b13a3b43-f6e1-4746-9992-03f6e8fac6bf.png";
       case 'supplier':
       case 'beauty supplier':
-        return "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop";
+        return "/lovable-uploads/b4f117ee-b209-43be-8e30-ecbf1d025c93.png";
       case 'freelancer':
-        return "https://images.unsplash.com/photo-1562259929-b4e1fd3aef09?w=800&auto=format&fit=crop";
+        return "/lovable-uploads/1763ca30-ecb0-409f-8bb0-11b851ea743f.png";
+      case 'customer':
+        return "/lovable-uploads/70c8662a-4525-4854-a529-62616b5b6c81.png";
       default:
-        return "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&auto=format&fit=crop";
+        return "/lovable-uploads/8c7d4688-5f67-42e1-952b-1e4eb4bd4679.png";
     }
   };
 

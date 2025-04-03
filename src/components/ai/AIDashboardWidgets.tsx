@@ -18,7 +18,10 @@ const AIDashboardWidgets = ({ className = "" }: AIDashboardWidgetsProps) => {
   const showPostPerformance = userRole === 'artist' || 
                              userRole === 'salon' || 
                              userRole === 'freelancer' || 
-                             userRole === 'vendor';
+                             userRole === 'vendor' ||
+                             userRole === 'owner' ||
+                             userRole === 'supplier' ||
+                             userRole === 'beauty supplier';
   
   return (
     <div className={`space-y-6 ${className}`}>

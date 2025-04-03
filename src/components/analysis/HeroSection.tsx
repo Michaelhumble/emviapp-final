@@ -7,8 +7,8 @@ const HeroSection = () => {
       <div className="absolute inset-0 w-full h-full overflow-hidden">
         <div className="absolute inset-0 bg-black/10 backdrop-blur-sm z-10" aria-hidden="true" />
         <img 
-          src="https://images.unsplash.com/photo-1562322140-8baeececf3df?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1769&q=80" 
-          alt="" 
+          src="/lovable-uploads/63331551-d921-46f4-98dc-8404b611ddd3.png" 
+          alt="Hair stylist working with client" 
           className="w-full h-full object-cover scale-110 blur-md opacity-20"
           aria-hidden="true"
         />
@@ -34,7 +34,7 @@ const HeroSection = () => {
               transition={{ delay: 0.2, duration: 0.7 }}
             >
               <img 
-                src="/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png" 
+                src="/lovable-uploads/749e5584-caa4-4229-84a2-93589c7455c2.png" 
                 alt="Professional nail technician at work"
                 className="w-full h-64 object-cover hover:scale-105 transition-transform duration-700 ease-in-out"
               />
@@ -52,13 +52,13 @@ const HeroSection = () => {
               transition={{ delay: 0.4, duration: 0.7 }}
             >
               <img 
-                src="/lovable-uploads/68057e27-17e9-4643-941f-d68d048d40ce.png" 
-                alt="Makeup artist applying makeup to client"
+                src="/lovable-uploads/70c8662a-4525-4854-a529-62616b5b6c81.png" 
+                alt="Beauty professional with client"
                 className="w-full h-64 object-cover hover:scale-105 transition-transform duration-700 ease-in-out"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
               <div className="absolute bottom-4 left-4 text-white">
-                <p className="font-medium text-sm">Makeup Artists</p>
+                <p className="font-medium text-sm">Beauty Artists</p>
                 <p className="text-xs opacity-80">Creating beauty with precision</p>
               </div>
             </motion.div>

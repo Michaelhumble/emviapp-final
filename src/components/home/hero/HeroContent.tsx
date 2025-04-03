@@ -25,15 +25,18 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages }: HeroContentPro
     
     if (altText.includes('nail')) return 'Nail Artistry';
     if (altText.includes('makeup')) return 'Makeup Artists';
-    if (altText.includes('tattoo')) return 'Tattoo Artists';
+    if (altText.includes('hair')) return 'Hair Stylists';
+    if (altText.includes('tattoo') || altText.includes('barber')) return 'Tattoo & Barber Artists';
+    if (altText.includes('facial') || altText.includes('spa') || altText.includes('massage')) return 'Spa & Wellness';
     if (altText.includes('beauty')) return 'Beauty Professionals';
     
     // Fallback categories based on index
-    switch (index % 4) {
+    switch (index % 5) {
       case 0: return 'Nail Artists';
       case 1: return 'Makeup Artists';
-      case 2: return 'Beauty Professionals';
-      case 3: return 'Tattoo Artists';
+      case 2: return 'Hair Stylists';
+      case 3: return 'Wellness Professionals';
+      case 4: return 'Beauty Experts';
       default: return 'Beauty Professionals';
     }
   };
@@ -121,7 +124,7 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages }: HeroContentPro
         </motion.div>
         
         <motion.div 
-          className="hidden md:flex mt-12 gap-2 justify-center"
+          className="hidden md:flex mt-12 gap-2 justify-center overflow-x-auto pb-2"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
@@ -164,7 +167,7 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages }: HeroContentPro
             </CarouselContent>
           </Carousel>
           
-          <div className="flex justify-center mt-4 gap-2">
+          <div className="flex justify-center mt-4 gap-2 overflow-x-auto pb-2">
             {heroImages.map((_, index) => (
               <button
                 key={index}
