@@ -47,17 +47,26 @@ const Hero = () => {
             AI-powered. Built with love. Funded by those who care.
           </motion.p>
           <motion.div 
-            className="mt-6"
+            className="flex flex-col sm:flex-row gap-4 mt-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.6 }}
           >
-            <Link to="/auth/signup">
+            <Link to="/jobs">
               <Button 
                 size="lg" 
                 className="font-medium px-8 py-6 text-lg bg-primary hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300"
               >
-                Get Started
+                Explore Jobs & Salons
+              </Button>
+            </Link>
+            <Link to="/posting">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="font-medium px-8 py-6 text-lg border-gray-300 hover:bg-gray-100/80"
+              >
+                Post a Job or Salon Listing
               </Button>
             </Link>
           </motion.div>

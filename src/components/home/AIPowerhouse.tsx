@@ -1,5 +1,5 @@
 
-import { Check, BarChart2, Brain, Bot, Rocket } from "lucide-react";
+import { Check, MessageCircle, Search, RefreshCw, BarChart2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -17,32 +17,32 @@ interface AITool {
 
 const aiTools: AITool[] = [
   {
-    id: "jobmatch",
-    title: "JobMatch AI",
-    tagline: "Finds your perfect match — instantly.",
-    description: "Uses behavior data, specialties, and location to connect beauty artists with jobs they'll actually love — not random posts. No more endless scrolling. One click, and AI handles the rest.",
+    id: "matchmaker",
+    title: "MatchMaker AI",
+    tagline: "The perfect match, every time.",
+    description: "Matches you with the perfect job or artist based on skills, location, and goals. No more wasted interviews or endless scrolling.",
+    icon: Search,
+  },
+  {
+    id: "outreach",
+    title: "Outreach AI",
+    tagline: "Your brand, everywhere.",
+    description: "Automatically promotes your post to social media, search engines, and beauty communities. Your business gets seen by the right people.",
+    icon: RefreshCw,
+  },
+  {
+    id: "insight",
+    title: "Insight AI",
+    tagline: "Data that makes sense.",
+    description: "Shows you analytics: who viewed your post, where they're from, how to improve results. Make decisions based on real data.",
     icon: BarChart2,
   },
   {
-    id: "salonradar",
-    title: "SalonRadar AI",
-    tagline: "Find the right person. Not just a résumé.",
-    description: "AI helps salon owners screen candidates based on profile behavior, review scores, past bookings, and professional fit. Smarter hiring without wasting time.",
-    icon: Brain,
-  },
-  {
-    id: "postbooster",
-    title: "PostBooster AI",
-    tagline: "Get seen everywhere, even outside the app.",
-    description: "Automatically optimizes your job or salon listing for Google SEO, local keywords, and social media sharing. This is how people find your post — even if they're not using EmviApp (yet).",
-    icon: Rocket,
-  },
-  {
-    id: "emvibot",
-    title: "EmviBot Agent",
-    tagline: "Works 24/7, so you don't have to.",
-    description: "Your personal concierge that handles support, follow-ups, upsells, and onboarding. Built with natural language and smart workflows, EmviBot keeps your business running — even while you sleep.",
-    icon: Bot,
+    id: "support",
+    title: "Support AI",
+    tagline: "24/7 service, no coffee breaks.",
+    description: "Handles inquiries, DMs, follow-ups — like a 24/7 receptionist powered by Emvi's soul. Your customers always get a response.",
+    icon: MessageCircle,
   },
 ];
 
@@ -54,8 +54,8 @@ interface TrustBadge {
 
 const trustBadges: TrustBadge[] = [
   { id: "supabase", text: "Verified by Supabase" },
-  { id: "seo", text: "SEO-friendly" },
-  { id: "ai", text: "AI Built, Not Buzzword" },
+  { id: "seo", text: "SEO Optimized" },
+  { id: "ai", text: "AI-Powered" },
   { id: "payments", text: "Secure Payments" },
   { id: "transparent", text: "100% Transparent" },
 ];
@@ -93,10 +93,10 @@ const AIPowerhouse = () => {
           className="text-center mb-12"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-6 font-serif tracking-wide">
-            Meet the AI Powerhouse Behind EmviApp
+            Meet the AI Team That Works for You
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Cutting-edge AI tools working behind the scenes to optimize your beauty business experience.
+            From finding talent to bringing customers to your door — EmviApp is powered by AI agents designed to help your beauty business grow without limits.
           </p>
         </motion.div>
 
@@ -113,7 +113,7 @@ const AIPowerhouse = () => {
               variants={itemVariants}
               className="h-full"
             >
-              <Card className="h-full transition-all hover:shadow-lg hover:scale-[1.02] duration-300">
+              <Card className="h-full backdrop-blur-sm bg-white/80 border border-gray-100 transition-all hover:shadow-lg hover:scale-[1.02] duration-300">
                 <CardContent className="p-6">
                   <div className="flex items-center mb-6">
                     <div className="p-3 bg-primary/10 rounded-full mr-4">
@@ -139,7 +139,7 @@ const AIPowerhouse = () => {
           className="text-center mb-10"
         >
           <p className="text-xl font-bold border-t border-b py-6 max-w-3xl mx-auto">
-            "No fake AI. No gimmicks. Just powerful systems working behind the scenes to help you grow."
+            "Our AI doesn't just find jobs — it builds careers and businesses."
           </p>
         </motion.div>
 
@@ -161,7 +161,7 @@ const AIPowerhouse = () => {
 
           <Link to="/auth/signup">
             <Button size="lg" className="font-medium px-8 py-6">
-              Start using AI the easy way — with EmviApp
+              Join EmviApp Today
             </Button>
           </Link>
         </motion.div>
