@@ -8,18 +8,31 @@ interface EmviLogoProps {
 const EmviLogo: React.FC<EmviLogoProps> = ({ className = "" }) => {
   return (
     <div className={`flex items-center ${className}`}>
-      <div className="font-bold text-2xl tracking-tight">
-        <span className="text-black">Em</span>
-        <span
-          className="bg-clip-text text-transparent"
-          style={{
-            backgroundImage: "linear-gradient(to right, #FF0000, #FF4500)",
-            WebkitBackgroundClip: "text",
-          }}
+      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-orange-400 flex items-center justify-center mr-2">
+        <svg 
+          width="20" 
+          height="20" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          xmlns="http://www.w3.org/2000/svg"
         >
-          V
-        </span>
-        <span className="text-black">iApp</span>
+          <path 
+            d="M5 12L10 17L19 8" 
+            stroke="white" 
+            strokeWidth="3" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+      <div className="font-bold text-2xl tracking-tight">
+        <span style={{
+          backgroundImage: "linear-gradient(to right, #e05d23, #f8b500)",
+          WebkitBackgroundClip: "text",
+          backgroundClip: "text",
+          color: "transparent"
+        }}>Emvi</span>
+        <span className="text-black">.App</span>
       </div>
     </div>
   );
