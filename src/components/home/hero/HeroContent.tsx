@@ -19,6 +19,25 @@ interface HeroContentProps {
 }
 
 const HeroContent = ({ activeIndex, setActiveIndex, heroImages }: HeroContentProps) => {
+  // Helper function to get the appropriate badge text based on the image index/alt text
+  const getImageCategory = (index: number, alt: string): string => {
+    const altText = alt.toLowerCase();
+    
+    if (altText.includes('nail')) return 'Nail Artistry';
+    if (altText.includes('makeup')) return 'Makeup Artists';
+    if (altText.includes('tattoo')) return 'Tattoo Artists';
+    if (altText.includes('beauty')) return 'Beauty Professionals';
+    
+    // Fallback categories based on index
+    switch (index % 4) {
+      case 0: return 'Nail Artists';
+      case 1: return 'Makeup Artists';
+      case 2: return 'Beauty Professionals';
+      case 3: return 'Tattoo Artists';
+      default: return 'Beauty Professionals';
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 relative z-30">
       <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
@@ -136,9 +155,7 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages }: HeroContentPro
                     />
                     <div className="absolute bottom-4 left-4 right-4 z-20">
                       <Badge className="mb-2 bg-white/20 backdrop-blur-sm text-white border-0">
-                        {index === 0 ? "Hairstylists" : 
-                         index === 1 ? "Nail Artists" : 
-                         index === 2 ? "Tattoo Artists" : "Beauty Professionals"}
+                        {getImageCategory(index, image.alt)}
                       </Badge>
                     </div>
                   </div>
