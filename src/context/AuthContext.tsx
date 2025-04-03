@@ -4,7 +4,7 @@ import { Session, User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
-type UserRole = 
+export type UserRole = 
   | 'customer' 
   | 'artist' 
   | 'owner' 

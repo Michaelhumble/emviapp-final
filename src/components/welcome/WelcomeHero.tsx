@@ -1,10 +1,12 @@
+
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { UserRole } from "@/context/AuthContext"; // Import the UserRole type from AuthContext
 
 interface WelcomeHeroProps {
-  userRole?: 'artist' | 'owner' | 'renter' | 'supplier' | 'customer' | 'freelancer' | 'salon' | 'other' | null;
+  userRole?: UserRole;
   onContinue: () => void;
   onSkip: () => void;
 }
@@ -19,12 +21,16 @@ const WelcomeHero = ({
     switch(userRole) {
       case 'artist':
         return "Beauty Professional";
+      case 'nail technician/artist':
+        return "Nail Technician/Artist";
       case 'owner':
         return "Salon Owner";
       case 'renter':
         return "Booth Renter";
       case 'supplier':
         return "Supplier";
+      case 'beauty supplier':
+        return "Beauty Supplier";
       case 'freelancer':
         return "Freelancer";
       case 'salon':
@@ -40,6 +46,7 @@ const WelcomeHero = ({
   const getWelcomeMessage = () => {
     switch(userRole) {
       case 'artist':
+      case 'nail technician/artist':
         return "Your artistic journey starts here. Find amazing opportunities and showcase your talent.";
       case 'owner':
       case 'salon':
@@ -47,6 +54,7 @@ const WelcomeHero = ({
       case 'renter':
         return "Maximize your booth rental income and build your client base with EmviApp.";
       case 'supplier':
+      case 'beauty supplier':
         return "Connect with salons and professionals looking for quality products like yours.";
       case 'freelancer':
         return "Build your independent career with tools designed for success on your own terms.";
@@ -61,12 +69,14 @@ const WelcomeHero = ({
   const getWelcomeImage = () => {
     switch(userRole) {
       case 'artist':
+      case 'nail technician/artist':
       case 'renter':
         return "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&auto=format&fit=crop";
       case 'owner':
       case 'salon':
         return "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&auto=format&fit=crop";
       case 'supplier':
+      case 'beauty supplier':
         return "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop";
       case 'freelancer':
         return "https://images.unsplash.com/photo-1562259929-b4e1fd3aef09?w=800&auto=format&fit=crop";
