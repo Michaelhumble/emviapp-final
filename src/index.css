@@ -111,6 +111,12 @@
   .hover-scale {
     @apply transition-transform duration-200 hover:scale-[1.01];
   }
+  .glass-effect {
+    @apply backdrop-blur-md bg-white/60 border border-white/20 shadow-lg;
+  }
+  .premium-shadow {
+    @apply shadow-lg shadow-primary/10;
+  }
 }
 
 @keyframes blob {
@@ -129,6 +135,40 @@
 }
 
 .animate-blob {
-  animation: blob 7s infinite;
+  animation: blob 15s infinite alternate;
 }
 
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 4s infinite;
+}
