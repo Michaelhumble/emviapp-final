@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/auth";
 import { usePostExpirationCheck } from "@/hooks/usePostExpirationCheck";
 import PaymentConfirmationModal from "@/components/posting/PaymentConfirmationModal";
 import { Job } from "@/types/job";

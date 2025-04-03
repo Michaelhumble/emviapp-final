@@ -1,9 +1,8 @@
-
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { UserRole } from "@/context/AuthContext"; // Import the UserRole type from AuthContext
+import { UserRole } from "@/context/auth/types"; // Import the UserRole type from auth/types
 
 interface WelcomeHeroProps {
   userRole?: UserRole;

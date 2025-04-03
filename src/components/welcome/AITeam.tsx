@@ -1,9 +1,8 @@
-
 import { motion } from "framer-motion";
 import { Search, Users, Shield, TrendingUp, Sun } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { UserRole } from "@/context/AuthContext"; // Import UserRole type
+import { UserRole } from "@/context/auth/types"; // Import UserRole type
 
 // AI agent interface
 interface AIAgent {

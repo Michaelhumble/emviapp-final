@@ -1,5 +1,5 @@
 
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/auth";
 import AIWelcomeAssistant from "./AIWelcomeAssistant";
 import AIRecommendations from "./AIRecommendations";
 import AISmartReminder from "./AISmartReminder";

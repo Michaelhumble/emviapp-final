@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/auth";
 import { Sparkles, Lock, TrendingUp, Gift, Lightbulb } from "lucide-react";
 import AIWelcomeAssistant from "@/components/ai/AIWelcomeAssistant";
 import AISmartReminder from "@/components/ai/AISmartReminder";

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,19 +9,7 @@ import { Edit, Trash2, UserCheck, Clock, Eye, AlertTriangle } from "lucide-react
 import { Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-
-interface Job {
-  id: string;
-  title: string;
-  compensation_type: string;
-  compensation_details: string;
-  created_at: string;
-  expires_at: string;
-  status: string;
-  _count?: {
-    applications: number;
-  }
-}
+import { Job } from "@/types/job";
 
 const ManageJobs = () => {
   const { user } = useAuth();
@@ -70,7 +57,6 @@ const ManageJobs = () => {
         
         if (error) throw error;
         
-        // Filter out the deleted job
         setJobs(jobs.filter(job => job.id !== jobId));
         toast.success("Job deleted successfully.");
       } catch (error) {
