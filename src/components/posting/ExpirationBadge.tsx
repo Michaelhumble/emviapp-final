@@ -23,7 +23,7 @@ const ExpirationBadge = ({ expiresAt, showTooltip = true }: ExpirationBadgeProps
     return (
       <Badge variant="destructive" className="flex items-center gap-1">
         <AlertCircle className="h-3.5 w-3.5" />
-        <span>Expired</span>
+        <span>Đã hết hạn</span>
       </Badge>
     );
   }

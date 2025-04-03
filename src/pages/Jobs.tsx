@@ -12,6 +12,7 @@ import JobsGrid from "@/components/jobs/JobsGrid";
 import VietnameseJobSection from "@/components/jobs/VietnameseJobSection";
 import { useJobsData } from "@/hooks/useJobsData";
 import { useJobRenewal } from "@/hooks/useJobRenewal";
+import { differenceInDays } from 'date-fns';
 
 interface Filters {
   weeklyPay: boolean;
@@ -70,14 +71,17 @@ const Jobs = () => {
   };
 
   const checkExpiration = (job: Job): boolean => {
+    // For sample jobs, check if they're older than 30 days
     if (job.is_sample) {
       const createdDate = new Date(job.created_at);
       const now = new Date();
-      const differenceInMs = now.getTime() - createdDate.getTime();
-      const differenceInDays = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
+      const differenceInDays = Math.floor(
+        (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
       return differenceInDays >= 30;
     }
     
+    // Use the expiration data from the hook for real jobs
     return expirations[job.id] === true;
   };
 

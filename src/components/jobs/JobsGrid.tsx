@@ -3,6 +3,7 @@ import { useState } from "react";
 import JobListingCard from "@/components/jobs/JobListingCard";
 import JobDetailModal from "@/components/jobs/JobDetailModal";
 import { Job } from "@/types/job";
+import { differenceInDays } from 'date-fns';
 
 interface JobsGridProps {
   jobs: Job[];
@@ -26,10 +27,15 @@ const JobsGrid = ({
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
   const isExpired = (job: Job): boolean => {
+    // Use custom checker if provided
     if (checkExpiration) {
       return checkExpiration(job);
     }
-    return expirations[job.id] === true;
+    
+    // Default 30-day expiration logic
+    const createdDate = new Date(job.created_at);
+    const now = new Date();
+    return differenceInDays(now, createdDate) >= 30;
   };
 
   const viewJobDetails = (job: Job) => {

@@ -65,6 +65,7 @@ const JobListingCard = ({
         
         <JobExpirationInfo 
           isExpired={isExpired}
+          createdAt={job.created_at}
           contactInfo={!isExpired ? job.contact_info : undefined}
         />
         
