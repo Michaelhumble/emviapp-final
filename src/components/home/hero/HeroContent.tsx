@@ -37,7 +37,7 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages }: HeroContentPro
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          style={{ textShadow: '0px 2px 4px rgba(0,0,0,0.3)' }}
+          style={{ textShadow: '0px 3px 8px rgba(0,0,0,0.6)' }}
         >
           This Isn't Just an App—It's the Future of the Beauty Industry
         </motion.h1>
@@ -46,7 +46,7 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages }: HeroContentPro
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.3 }}
-          style={{ textShadow: '0px 1px 3px rgba(0,0,0,0.4)' }}
+          style={{ textShadow: '0px 2px 6px rgba(0,0,0,0.6)' }}
         >
           Hair, Nails, Tattoos, Brows, Barbers, Booth Rentals—All in One Powerful App. Finally.
         </motion.p>
@@ -117,7 +117,7 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages }: HeroContentPro
           ))}
         </motion.div>
         
-        {/* Mobile carousel */}
+        {/* Mobile carousel with improved visibility */}
         <motion.div 
           className="mt-12 w-full md:hidden relative z-40"
           initial={{ opacity: 0, scale: 0.95 }}

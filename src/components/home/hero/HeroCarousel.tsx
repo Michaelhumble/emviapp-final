@@ -21,11 +21,13 @@ const HeroCarousel = ({ images, activeIndex }: HeroCarouselProps) => {
           initial={{ opacity: 0, scale: 1 }}
           animate={{ 
             opacity: activeIndex === index ? 1 : 0,
-            scale: activeIndex === index ? 1.05 : 1 // Slow zoom effect
+            scale: activeIndex === index ? 1.05 : 1, // Slow zoom effect
+            y: activeIndex === index ? 0 : 10 // Subtle parallax effect
           }}
           transition={{ 
             opacity: { duration: 1.5, ease: "easeInOut" },
-            scale: { duration: 8, ease: "easeInOut" }
+            scale: { duration: 8, ease: "easeInOut" },
+            y: { duration: 1.2, ease: "easeOut" }
           }}
           aria-hidden={activeIndex !== index}
         >
@@ -35,8 +37,11 @@ const HeroCarousel = ({ images, activeIndex }: HeroCarouselProps) => {
             className="w-full h-full object-cover rounded-lg"
           />
           
-          {/* Semi-transparent overlay for text readability */}
-          <div className="absolute inset-0 bg-black/20 z-10 rounded-lg"></div>
+          {/* Gradient overlay for text readability - darker at bottom */}
+          <div 
+            className="absolute inset-0 bg-gradient-to-t from-black/50 to-black/20 z-10 rounded-lg"
+            style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.3) 30%, rgba(0,0,0,0.2) 100%)' }}
+          ></div>
         </motion.div>
       ))}
     </>
