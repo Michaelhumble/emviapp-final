@@ -40,22 +40,22 @@ const SignUp = () => {
       // Redirect based on user type to the appropriate setup page
       switch (userType) {
         case "artist":
-          navigate("/profile/artist/setup");
+          navigate("/artists/profile-setup");
           break;
         case "salon":
-          navigate("/profile/salon/setup");
+          navigate("/salon/profile-setup");
           break;
         case "freelancer":
-          navigate("/profile/freelancer/setup");
+          navigate("/freelancers/profile-setup");
           break;
         case "supplier":
-          navigate("/profile/supplier/setup");
+          navigate("/vendors/profile-setup");
           break;
         case "other":
-          navigate("/profile/other/setup");
+          navigate("/other/profile-setup");
           break;
         case "customer":
-          navigate("/profile/customer/setup");
+          navigate("/customers/profile-setup");
           break;
         default:
           navigate("/");

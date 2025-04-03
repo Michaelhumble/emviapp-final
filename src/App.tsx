@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -76,35 +75,37 @@ const App = () => (
             <Route path="/post-salon" element={<PostSalon />} />
             <Route path="/welcome" element={<Welcome />} />
             
-            {/* New Feature Routes */}
             <Route path="/nail-jobs" element={<NailJobs />} />
             <Route path="/salon-marketplace" element={<SalonMarketplace />} />
             <Route path="/supplier-directory" element={<SupplierDirectory />} />
             <Route path="/product-promotions" element={<ProductPromotions />} />
             
-            {/* Post Management System Routes */}
             <Route path="/posting" element={<PostingIndex />} />
             <Route path="/posting/job" element={<JobPost />} />
             <Route path="/posting/salon" element={<SalonPost />} />
             <Route path="/posting/booth" element={<BoothPost />} />
             
-            {/* Dashboard Routes */}
             <Route path="/dashboard/customer" element={<CustomerDashboard />} />
             <Route path="/dashboard/artist" element={<ArtistDashboard />} />
             <Route path="/dashboard/owner" element={<OwnerDashboard />} />
             <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
             <Route path="/dashboard/freelancer" element={<FreelancerDashboard />} />
             
-            {/* Profile Setup Routes */}
+            <Route path="/artists/profile-setup" element={<ArtistSetup />} />
+            <Route path="/salon/profile-setup" element={<SalonOwnerSetup />} />
+            <Route path="/freelancers/profile-setup" element={<FreelancerSetup />} />
+            <Route path="/customers/profile-setup" element={<CustomerSetup />} />
+            <Route path="/vendors/profile-setup" element={<SupplierSetup />} />
+            <Route path="/other/profile-setup" element={<OtherRoleSetup />} />
+            <Route path="/profile/renter/setup" element={<BoothRenterSetup />} />
+            
             <Route path="/profile/artist/setup" element={<ArtistSetup />} />
             <Route path="/profile/salon/setup" element={<SalonOwnerSetup />} />
-            <Route path="/profile/renter/setup" element={<BoothRenterSetup />} />
             <Route path="/profile/freelancer/setup" element={<FreelancerSetup />} />
             <Route path="/profile/customer/setup" element={<CustomerSetup />} />
             <Route path="/profile/supplier/setup" element={<SupplierSetup />} />
             <Route path="/profile/other/setup" element={<OtherRoleSetup />} />
             
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
