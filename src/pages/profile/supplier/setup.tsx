@@ -7,9 +7,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Instagram, Facebook, Upload, Loader2 } from "lucide-react"; // Removed TikTok since it's not in lucide-react
+import { Instagram, Facebook, Upload, Loader2 } from "lucide-react"; 
 import { toast } from "sonner";
 import { useAuth } from '@/context/AuthContext';
+import { supabase } from "@/integrations/supabase/client";
 
 const SupplierSetup = () => {
   const [companyName, setCompanyName] = useState('');
@@ -20,7 +21,7 @@ const SupplierSetup = () => {
   const [bio, setBio] = useState('');
   const [images, setImages] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { user, updateUserProfile } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   
   // Handle image selection
@@ -41,17 +42,28 @@ const SupplierSetup = () => {
     setIsSubmitting(true);
 
     try {
+      // Make sure user is logged in
+      if (!user) {
+        toast.error('You must be logged in to set up your profile');
+        return;
+      }
+
       // Upload profile data to Supabase
-      await updateUserProfile({
-        company_name: companyName,
-        product_type: productType,
-        website_url: websiteUrl,
-        instagram_url: instagramUrl,
-        facebook_url: facebookUrl,
-        bio,
-        profile_complete: true
-      });
-      
+      const { error } = await supabase
+        .from('users')
+        .update({
+          company_name: companyName,
+          product_type: productType,
+          website_url: websiteUrl,
+          instagram_url: instagramUrl,
+          facebook_url: facebookUrl,
+          bio,
+          profile_complete: true
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
       // Handle image uploads in a real implementation
       // For now just simulate success
       
