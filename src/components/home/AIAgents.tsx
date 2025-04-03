@@ -18,43 +18,35 @@ interface AIAgent {
 const aiAgents: AIAgent[] = [
   {
     id: "emvimatch",
-    title: "EmviMatch",
+    title: "EmviMatch AI",
     icon: Search,
-    description: "Auto-connects salons & artists based on skills, location, and goals. No more wasted interviews or endless scrolling.",
+    description: "Matches salons with artists based on skills, location, and preferences for perfect fits every time.",
     iconColor: "text-blue-500",
     bgColor: "bg-blue-50",
   },
   {
-    id: "emviboost",
-    title: "EmviBoost",
+    id: "autoboost",
+    title: "AutoBoost AI",
     icon: RefreshCw,
-    description: "Auto-promotes posts across Google & social media, reaching beauty communities. Your business gets seen by the right people.",
+    description: "Automatically promotes your listings across platforms to maximize visibility and opportunities.",
     iconColor: "text-indigo-500",
     bgColor: "bg-indigo-50",
   },
   {
-    id: "emviguard",
-    title: "EmviGuard",
+    id: "trustscan",
+    title: "TrustScan AI",
     icon: MessageCircle,
-    description: "Blocks scams & spam automatically, like a 24/7 security guard powered by Emvi's intelligence. Your business stays protected.",
+    description: "Filters out scams & spam automatically so you can focus on real connections with confidence.",
     iconColor: "text-green-500",
     bgColor: "bg-green-50",
   },
   {
-    id: "emvigrow",
-    title: "EmviGrow",
+    id: "analyticspulse",
+    title: "AnalyticsPulse AI",
     icon: TrendingUp,
-    description: "Suggests perfect gigs and opportunities aligned with your skills and career aspirations. Grow your clientele and expertise effortlessly.",
+    description: "Provides intelligent insights on your performance and suggests improvements for better results.",
     iconColor: "text-orange-500",
     bgColor: "bg-orange-50",
-  },
-  {
-    id: "emvipulse",
-    title: "EmviPulse",
-    icon: BarChart2,
-    description: "Provides live data insights on your posts, showing who views your content, where they're from, and how to improve results.",
-    iconColor: "text-purple-500",
-    bgColor: "bg-purple-50",
   },
 ];
 
@@ -99,10 +91,10 @@ const AIAgents = () => {
           </Badge>
           
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-serif tracking-tight flex items-center justify-center gap-2">
-            <span className="text-3xl">🤖</span> Powered by AI, Built for Artists
+            <span className="text-3xl">🤖</span> Meet the AI That's Got Your Back
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            Our intelligent agents work behind the scenes to make your beauty career or business more successful.
+            Smart, behind-the-scenes intelligence that works 24/7 to make your beauty career more successful.
           </p>
         </motion.div>
 
