@@ -17,7 +17,7 @@ const EmviLogo: React.FC<EmviLogoProps> = ({ className = "" }) => {
           xmlns="http://www.w3.org/2000/svg"
         >
           <path 
-            d="M4 13L9 18L20 7" 
+            d="M5 2 L12 22 L19 2" 
             stroke="white" 
             strokeWidth="3" 
             strokeLinecap="round" 
