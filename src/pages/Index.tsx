@@ -48,21 +48,25 @@ const Index = () => {
           navigate('/dashboard/customer');
           break;
         case 'artist':
+        case 'nail technician/artist':
           navigate('/dashboard/artist');
           break;
+        case 'salon':
         case 'owner':
           navigate('/dashboard/owner');
           break;
-        case 'renter':
-          navigate('/dashboard/artist');
-          break;
         case 'supplier':
+        case 'beauty supplier':
           navigate('/dashboard/supplier');
           break;
         case 'freelancer':
           navigate('/dashboard/freelancer');
           break;
+        case 'other':
+          navigate('/dashboard/customer'); // Fallback to customer dashboard for "other" role
+          break;
         default:
+          // If no valid role is found, stay on the landing page
           break;
       }
     }
@@ -82,7 +86,8 @@ const Index = () => {
       );
     }
     
-    if (user && user.email) {
+    // Only show customer dashboard on index page if user is actually a customer
+    if (user && userRole === 'customer') {
       return <CustomerDashboard />;
     }
     

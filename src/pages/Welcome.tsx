@@ -34,8 +34,10 @@ const Welcome = () => {
   };
   
   const redirectToDashboard = () => {
+    console.log("Redirecting with user role:", userRole);
     switch(userRole) {
       case 'artist':
+      case 'nail technician/artist':
         navigate('/dashboard/artist');
         break;
       case 'salon':
@@ -43,16 +45,21 @@ const Welcome = () => {
         navigate('/dashboard/owner');
         break;
       case 'supplier':
+      case 'beauty supplier':
         navigate('/dashboard/supplier');
         break;
       case 'freelancer':
         navigate('/dashboard/freelancer');
         break;
       case 'other':
-        navigate('/dashboard/customer');
+        navigate('/dashboard/customer'); // Fallback to customer for "other" role
         break;
       case 'customer':
+        navigate('/dashboard/customer');
+        break;
       default:
+        // If role is undefined or not matching any case, redirect to customer dashboard as fallback
+        console.log("Unknown role, defaulting to customer dashboard:", userRole);
         navigate('/dashboard/customer');
         break;
     }
