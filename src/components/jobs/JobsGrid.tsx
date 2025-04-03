@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import JobListingCard from "@/components/jobs/JobListingCard";
 import JobDetailModal from "@/components/jobs/JobDetailModal";
