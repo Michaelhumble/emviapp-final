@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
-import { ArrowDown, ArrowRight } from "lucide-react";
+import { ArrowDown, ArrowRight, Sparkles } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const Hero = () => {
@@ -67,7 +67,7 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            The Future of Hiring for the Beauty Industry
+            The Beauty Industry's Missing Piece — We Just Built It.
           </motion.h1>
           <motion.p 
             className="text-lg md:text-xl text-gray-700 mb-10 max-w-3xl font-sans"
@@ -75,7 +75,7 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
           >
-            AI-powered. Built with love. Funded by those who care.
+            Hair, Nails, Tattoos, Brows, Barbers, Booth Rentals—All in One Powerful App. Finally.
           </motion.p>
           <motion.div 
             className="flex flex-col sm:flex-row gap-6 mt-6"
