@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 
 const HeroSection = () => {
@@ -25,6 +24,44 @@ const HeroSection = () => {
           <p className="text-lg text-gray-600 mb-8 font-sans leading-relaxed">
             Behind the beauty — there's powerful AI, automation, and empathy guiding every experience.
           </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6 mb-10">
+            <motion.div 
+              className="relative rounded-xl overflow-hidden shadow-xl"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.7 }}
+            >
+              <img 
+                src="https://images.unsplash.com/photo-1604902396830-aca29e19b067?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&q=90" 
+                alt="Professional nail technician at work"
+                className="w-full h-64 object-cover hover:scale-105 transition-transform duration-700 ease-in-out"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              <div className="absolute bottom-4 left-4 text-white">
+                <p className="font-medium text-sm">Nail Artists</p>
+                <p className="text-xs opacity-80">Professional artistry</p>
+              </div>
+            </motion.div>
+            
+            <motion.div 
+              className="relative rounded-xl overflow-hidden shadow-xl"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.7 }}
+            >
+              <img 
+                src="https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&q=90" 
+                alt="Makeup artist applying makeup to client"
+                className="w-full h-64 object-cover hover:scale-105 transition-transform duration-700 ease-in-out"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              <div className="absolute bottom-4 left-4 text-white">
+                <p className="font-medium text-sm">Makeup Artists</p>
+                <p className="text-xs opacity-80">Creating beauty with precision</p>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </motion.div>
     </section>
