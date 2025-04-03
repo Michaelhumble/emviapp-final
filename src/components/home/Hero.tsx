@@ -66,7 +66,7 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            This Isn't Just an App—It's the Future of the Beauty Industry
+            The Future of Hiring for the Beauty Industry
           </motion.h1>
           <motion.p 
             className="text-lg md:text-xl text-gray-700 mb-10 max-w-3xl font-sans"
@@ -74,7 +74,7 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
           >
-            Artists Deserve More. That's Why We Built EmviApp.
+            AI-powered. Built with love. Funded by those who care.
           </motion.p>
           <motion.div 
             className="flex flex-col sm:flex-row gap-4 mt-6"
