@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -83,8 +83,8 @@ const JobPost = () => {
   // Monitor changes to the nationwide option
   const watchIsNationwide = form.watch("isNationwide");
   
-  // Update price when nationwide option changes
-  useState(() => {
+  // Fix: Update useState to useEffect
+  useEffect(() => {
     const updatedOptions = {
       ...pricingOptions,
       isNationwide: watchIsNationwide,

@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -89,8 +90,8 @@ const SalonPost = () => {
   const watchIsNationwide = form.watch("isNationwide");
   const watchFastSalePackage = form.watch("fastSalePackage");
   
-  // Update price when options change
-  useState(() => {
+  // Fix: Update useState to useEffect
+  useEffect(() => {
     const updatedOptions = {
       ...pricingOptions,
       isNationwide: watchIsNationwide,

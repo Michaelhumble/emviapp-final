@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -66,18 +67,24 @@ const Jobs = () => {
     setLoading(true);
     try {
       let query = supabase
-        .from("jobs")
+        .from("posts")
         .select("*")
-        .ilike("title", `%${searchTerm}%`);
+        .eq("post_type", "job");
+
+      if (searchTerm) {
+        query = query.ilike("title", `%${searchTerm}%`);
+      }
 
       if (filters.weeklyPay) {
-        query = query.eq("weekly_pay", true);
+        query = query.eq("metadata->weekly_pay", true);
       }
+      
       if (filters.ownerWillTrain) {
-        query = query.eq("owner_will_train", true);
+        query = query.eq("metadata->owner_will_train", true);
       }
+      
       if (filters.employmentType !== "all") {
-        query = query.eq("employment_type", filters.employmentType);
+        query = query.eq("metadata->employment_type", filters.employmentType);
       }
       
       // Fetch only active jobs if showExpired is false
@@ -94,7 +101,23 @@ const Jobs = () => {
         throw error;
       }
 
-      setJobs(data || []);
+      // Transform the posts data to match the Job interface
+      const formattedJobs: Job[] = data?.map(post => ({
+        id: post.id,
+        created_at: post.created_at,
+        title: post.title || '',
+        company: post.metadata?.company || '',
+        location: post.location || '',
+        salary_range: post.metadata?.salary_range || '',
+        description: post.content || '',
+        requirements: post.metadata?.requirements || '',
+        weekly_pay: post.metadata?.weekly_pay || false,
+        owner_will_train: post.metadata?.owner_will_train || false,
+        employment_type: post.metadata?.employment_type || 'full-time',
+        user_id: post.user_id
+      })) || [];
+
+      setJobs(formattedJobs);
     } catch (error: any) {
       toast({
         title: "Error fetching jobs",
@@ -117,7 +140,7 @@ const Jobs = () => {
       const today = new Date();
       
       const { error } = await supabase
-        .from('jobs')
+        .from('posts')
         .update({ created_at: today.toISOString() })
         .eq('id', jobId);
       
@@ -145,7 +168,7 @@ const Jobs = () => {
       weeklyPay: false,
       ownerWillTrain: false,
       employmentType: "all",
-      showExpired: false // Adding the missing property
+      showExpired: false
     });
   };
 
