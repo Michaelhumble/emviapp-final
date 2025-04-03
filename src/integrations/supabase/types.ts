@@ -93,6 +93,57 @@ export type Database = {
         }
         Relationships: []
       }
+      posts: {
+        Row: {
+          contact_info: Json | null
+          content: string
+          created_at: string
+          expires_at: string
+          id: string
+          is_nationwide: boolean
+          location: string
+          metadata: Json | null
+          post_type: string
+          price: number | null
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          contact_info?: Json | null
+          content: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          is_nationwide?: boolean
+          location: string
+          metadata?: Json | null
+          post_type: string
+          price?: number | null
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          contact_info?: Json | null
+          content?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          is_nationwide?: boolean
+          location?: string
+          metadata?: Json | null
+          post_type?: string
+          price?: number | null
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       referrals: {
         Row: {
           created_at: string
@@ -209,7 +260,63 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      post_status_view: {
+        Row: {
+          contact_info: Json | null
+          content: string | null
+          created_at: string | null
+          expires_at: string | null
+          id: string | null
+          is_expired: boolean | null
+          is_expiring_soon: boolean | null
+          is_nationwide: boolean | null
+          location: string | null
+          metadata: Json | null
+          post_type: string | null
+          price: number | null
+          status: string | null
+          title: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          contact_info?: Json | null
+          content?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string | null
+          is_expired?: never
+          is_expiring_soon?: never
+          is_nationwide?: boolean | null
+          location?: string | null
+          metadata?: Json | null
+          post_type?: string | null
+          price?: number | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          contact_info?: Json | null
+          content?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string | null
+          is_expired?: never
+          is_expiring_soon?: never
+          is_nationwide?: boolean | null
+          location?: string | null
+          metadata?: Json | null
+          post_type?: string | null
+          price?: number | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_user_referral_stats: {
@@ -219,6 +326,12 @@ export type Database = {
         Returns: {
           referral_count: number
         }[]
+      }
+      is_post_expired: {
+        Args: {
+          expires_at: string
+        }
+        Returns: boolean
       }
       process_referral: {
         Args: {

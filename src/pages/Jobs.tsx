@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +27,11 @@ import {
 } from "@/components/ui/pagination";
 import { motion } from "framer-motion";
 import { Heart, MapPin, Phone, Clock, DollarSign, Building, Briefcase, Star, MessageSquare } from "lucide-react";
+import { useExpirationCheck } from "@/hooks/useExpirationCheck";
+import ExpirationBadge from "@/components/posting/ExpirationBadge";
+import { usePostExpirationCheck } from "@/hooks/usePostExpirationCheck";
+import PostExpirationWrapper from "@/components/posting/PostExpirationWrapper";
+import { supabase } from "@/integrations/supabase/client";
 
 // Mock data for jobs - would come from API in production
 const jobListings = [
@@ -198,9 +203,50 @@ const Jobs = () => {
     weeklyPay: false,
     ownerWillTrain: false,
     employmentType: "all", // 'all', 'fullTime', 'partTime'
+    showExpired: false, // New filter for showing expired posts
   });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+  const [userId, setUserId] = useState<string | null>(null);
+  
+  // Check for user session on component mount
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session?.user) {
+        setUserId(data.session.user.id);
+      }
+    };
+    
+    checkSession();
+  }, []);
+  
+  // Use the expiration check hook for user's expiring posts
+  useExpirationCheck(userId);
+  
+  // Get the post IDs for expiration checking
+  const postIds = jobListings.map(job => job.id.toString());
+  
+  // Mock expiration data - in a real app, this would come from the database
+  // This simulates 3 expired posts and 2 expiring soon posts
+  const mockExpirations = {
+    "1": false,
+    "2": false,
+    "3": true, // Expired
+    "4": false,
+    "5": true, // Expired
+    "6": false,
+    "7": true, // Expired
+    "8": false,
+    "9": false,
+    "10": false
+  };
+  
+  // In a real implementation, we'd use the hook:
+  // const { expirations, isLoading } = usePostExpirationCheck(postIds);
+  // For this mock, we'll use our predefined data:
+  const expirations = mockExpirations;
+  const isLoading = false;
   
   const handleFilterChange = (filterType, value) => {
     setFilters((prev) => ({
@@ -211,6 +257,9 @@ const Jobs = () => {
   };
   
   const filteredJobs = jobListings.filter(job => {
+    // Filter based on expiration status
+    if (!filters.showExpired && expirations[job.id]) return false;
+    
     if (filters.weeklyPay && !job.hasWeeklyPay) return false;
     if (filters.ownerWillTrain && !job.providesTraining) return false;
     if (filters.employmentType === "fullTime" && !job.isFullTime) return false;
@@ -230,6 +279,11 @@ const Jobs = () => {
 
   const closeJobDetails = () => {
     setSelectedJob(null);
+  };
+  
+  const handlePostRenewed = () => {
+    // In a real app, we'd refetch the posts or update the local state
+    console.log("Post renewed successfully");
   };
   
   const container = {
@@ -288,6 +342,17 @@ const Jobs = () => {
               </label>
             </div>
             
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="showExpired" 
+                checked={filters.showExpired} 
+                onCheckedChange={(checked) => handleFilterChange("showExpired", checked)}
+              />
+              <label htmlFor="showExpired" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Show Expired
+              </label>
+            </div>
+            
             <div className="space-y-2">
               <div className="font-medium text-sm mb-2">Employment Type:</div>
               <RadioGroup 
@@ -340,62 +405,88 @@ const Jobs = () => {
           initial="hidden"
           animate="show"
         >
-          {currentItems.map((job) => (
-            <motion.div key={job.id} variants={item}>
-              <Card className="h-full flex flex-col hover:shadow-lg transition-shadow duration-300">
-                <div className="relative h-48 overflow-hidden rounded-t-lg">
-                  <img 
-                    src={job.image} 
-                    alt={job.salon} 
-                    className="w-full h-full object-cover"
-                  />
-                  {job.urgentLabel && (
-                    <div className="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold">
-                      {job.urgentLabel}
+          {currentItems.map((job) => {
+            // Mock expiration date - in a real app, this would come from the database
+            const mockExpireDate = new Date();
+            // For expired posts
+            if (expirations[job.id]) {
+              mockExpireDate.setDate(mockExpireDate.getDate() - 5); // 5 days ago
+            } else {
+              // For active posts, randomly set between 2 and 25 days in the future
+              mockExpireDate.setDate(mockExpireDate.getDate() + Math.floor(Math.random() * 23) + 2);
+            }
+            
+            const isExpired = expirations[job.id];
+            
+            return (
+              <motion.div key={job.id} variants={item}>
+                <PostExpirationWrapper
+                  postId={job.id.toString()}
+                  postType="job"
+                  expiresAt={mockExpireDate.toISOString()}
+                  isNationwide={false}
+                  isExpired={isExpired}
+                  onRenewed={handlePostRenewed}
+                >
+                  <Card className="h-full flex flex-col hover:shadow-lg transition-shadow duration-300">
+                    <div className="relative h-48 overflow-hidden rounded-t-lg">
+                      <img 
+                        src={job.image} 
+                        alt={job.salon} 
+                        className="w-full h-full object-cover"
+                      />
+                      {job.urgentLabel && (
+                        <div className="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold">
+                          {job.urgentLabel}
+                        </div>
+                      )}
+                      <div className="absolute top-4 left-4">
+                        <ExpirationBadge expiresAt={mockExpireDate.toISOString()} />
+                      </div>
                     </div>
-                  )}
-                </div>
-                <CardHeader className="pb-2">
-                  <div className="space-y-1">
-                    <h3 className="text-xl font-serif font-semibold">{job.title}</h3>
-                    <p className="text-sm text-gray-600 italic">{job.titleVn}</p>
-                  </div>
-                  <p className="text-gray-700 font-medium">{job.salon}</p>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <div className="flex items-center text-gray-600 mb-2">
-                    <MapPin className="h-4 w-4 mr-1" /> 
-                    <span className="text-sm">{job.location}</span>
-                  </div>
-                  <div className="flex items-center text-gray-600 mb-2">
-                    <DollarSign className="h-4 w-4 mr-1" /> 
-                    <span className="text-sm">{job.salary}</span>
-                  </div>
-                  <div className="flex items-center text-gray-600">
-                    <Phone className="h-4 w-4 mr-1" /> 
-                    <span className="text-sm">{job.phone}</span>
-                  </div>
-                </CardContent>
-                <CardFooter className="pt-2 flex flex-col gap-3">
-                  <div className="flex items-center justify-between w-full">
-                    <Button onClick={() => openJobDetails(job)}>
-                      View Details
-                    </Button>
-                    <Button variant="outline" size="icon">
-                      <Heart className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="w-full pt-2 border-t text-center">
-                    <p className="text-xs text-gray-500">Want your ad seen nationwide? 
-                      <Button variant="link" className="text-xs p-0 h-auto" disabled>
-                        Boost your listing
-                      </Button>
-                    </p>
-                  </div>
-                </CardFooter>
-              </Card>
-            </motion.div>
-          ))}
+                    <CardHeader className="pb-2">
+                      <div className="space-y-1">
+                        <h3 className="text-xl font-serif font-semibold">{job.title}</h3>
+                        <p className="text-sm text-gray-600 italic">{job.titleVn}</p>
+                      </div>
+                      <p className="text-gray-700 font-medium">{job.salon}</p>
+                    </CardHeader>
+                    <CardContent className="flex-grow">
+                      <div className="flex items-center text-gray-600 mb-2">
+                        <MapPin className="h-4 w-4 mr-1" /> 
+                        <span className="text-sm">{job.location}</span>
+                      </div>
+                      <div className="flex items-center text-gray-600 mb-2">
+                        <DollarSign className="h-4 w-4 mr-1" /> 
+                        <span className="text-sm">{job.salary}</span>
+                      </div>
+                      <div className="flex items-center text-gray-600">
+                        <Phone className="h-4 w-4 mr-1" /> 
+                        <span className="text-sm">{job.phone}</span>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="pt-2 flex flex-col gap-3">
+                      <div className="flex items-center justify-between w-full">
+                        <Button onClick={() => openJobDetails(job)}>
+                          View Details
+                        </Button>
+                        <Button variant="outline" size="icon">
+                          <Heart className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <div className="w-full pt-2 border-t text-center">
+                        <p className="text-xs text-gray-500">Want your ad seen nationwide? 
+                          <Button variant="link" className="text-xs p-0 h-auto" disabled>
+                            Boost your listing
+                          </Button>
+                        </p>
+                      </div>
+                    </CardFooter>
+                  </Card>
+                </PostExpirationWrapper>
+              </motion.div>
+            )
+          })}
         </motion.div>
         
         {/* Pagination */}
@@ -461,6 +552,19 @@ const Jobs = () => {
                 </DialogTitle>
                 <DialogDescription className="text-base text-gray-700 font-medium">{selectedJob.salon}</DialogDescription>
               </DialogHeader>
+              
+              {/* Add expiration badge to the dialog */}
+              <div className="my-2">
+                {/* Mock expiration date for the selected job */}
+                <ExpirationBadge 
+                  expiresAt={
+                    expirations[selectedJob.id] 
+                      ? new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()  // 5 days ago
+                      : new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString() // 15 days in future
+                  } 
+                />
+              </div>
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <img 

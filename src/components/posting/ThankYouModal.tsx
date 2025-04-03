@@ -1,7 +1,8 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, TrendingUp, Share2 } from "lucide-react";
+import { CheckCircle, TrendingUp, Share2, Calendar } from "lucide-react";
+import { format, addDays } from "date-fns";
 
 interface ThankYouModalProps {
   open: boolean;
@@ -41,6 +42,7 @@ const ThankYouModal = ({ open, onOpenChange, postType, onBoostClick }: ThankYouM
   };
   
   const postTypeText = getPostTypeText();
+  const expirationDate = format(addDays(new Date(), 30), "MMMM d, yyyy");
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -59,6 +61,11 @@ const ThankYouModal = ({ open, onOpenChange, postType, onBoostClick }: ThankYouM
           <p className="text-center text-gray-700 mb-6">
             {postTypeText.message}
           </p>
+          
+          <div className="text-center mb-6 flex items-center justify-center text-sm text-gray-600">
+            <Calendar className="h-4 w-4 mr-2 text-primary" />
+            <span>Your post will be active until {expirationDate}</span>
+          </div>
           
           <div className="grid gap-4">
             <Button onClick={onBoostClick} className="w-full flex items-center justify-center gap-2">

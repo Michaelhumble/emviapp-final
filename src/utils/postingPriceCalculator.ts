@@ -12,12 +12,18 @@ export interface PricingOptions {
   hasActivePost?: boolean;
   bundleWithJobPost?: boolean;
   fastSalePackage?: boolean;
+  isRenewal?: boolean;
 }
 
 export const calculateJobPostPrice = (
   userStats: UserPostingStats,
   options: PricingOptions
 ): number => {
+  // Renewals have a standard price
+  if (options.isRenewal) {
+    return options.isNationwide ? 25 : 20;
+  }
+
   // First post is free (local only) if card is added
   if (options.isFirstPost) {
     // If they want nationwide exposure, it's $5 even for first post
@@ -44,6 +50,11 @@ export const calculateSalonForSalePrice = (
   _userStats: UserPostingStats,
   options: PricingOptions
 ): number => {
+  // Renewals have a standard price
+  if (options.isRenewal) {
+    return options.fastSalePackage ? 50 : (options.isNationwide ? 30 : 20);
+  }
+
   // Base price
   let price = 20;
   
@@ -64,6 +75,14 @@ export const calculateBoothRentalPrice = (
   _userStats: UserPostingStats,
   options: PricingOptions
 ): number => {
+  // Renewals have a standard price
+  if (options.isRenewal) {
+    if (options.bundleWithJobPost) {
+      return options.isNationwide ? 30 : 25;
+    }
+    return options.isNationwide ? 25 : 15;
+  }
+
   // Base price
   let price = 15;
   
@@ -83,4 +102,37 @@ export const calculateBoothRentalPrice = (
   }
   
   return price;
+};
+
+export const getRenewalPrice = (
+  postType: 'job' | 'salon' | 'booth', 
+  isNationwide: boolean, 
+  fastSalePackage: boolean = false,
+  bundleWithJobPost: boolean = false
+): number => {
+  // Create a mock stats object
+  const mockStats: UserPostingStats = {
+    totalJobPosts: 0,
+    totalSalonPosts: 0,
+    totalBoothPosts: 0,
+    referralCount: 0
+  };
+
+  const options: PricingOptions = {
+    isNationwide,
+    isRenewal: true,
+    fastSalePackage,
+    bundleWithJobPost
+  };
+
+  switch (postType) {
+    case 'job':
+      return calculateJobPostPrice(mockStats, options);
+    case 'salon':
+      return calculateSalonForSalePrice(mockStats, options);
+    case 'booth':
+      return calculateBoothRentalPrice(mockStats, options);
+    default:
+      return 0;
+  }
 };
