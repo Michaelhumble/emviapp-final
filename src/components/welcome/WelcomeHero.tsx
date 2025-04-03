@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
 interface WelcomeHeroProps {
-  userRole?: 'artist' | 'owner' | 'renter' | 'supplier' | 'customer' | 'freelancer' | null;
+  userRole?: 'artist' | 'owner' | 'renter' | 'supplier' | 'customer' | 'freelancer' | 'other' | null;
   onContinue: () => void;
   onSkip: () => void;
 }

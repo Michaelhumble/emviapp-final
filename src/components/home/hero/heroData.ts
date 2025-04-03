@@ -9,7 +9,7 @@ export const heroImages = [
     alt: "Nail technician creating nail art"
   },
   {
-    url: "https://images.unsplash.com/photo-1487412947147-5cebf100fdd2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1771&q=80",
+    url: "https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80",
     alt: "Makeup artist applying makeup on client"
   },
   {

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
@@ -10,7 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-// User type options for registration
+// User type options for registration - make sure this matches AuthContext
 type UserType = "artist" | "owner" | "renter" | "customer" | "supplier" | "freelancer" | "other";
 
 const SignUp = () => {
@@ -34,7 +33,7 @@ const SignUp = () => {
     try {
       await signUp(email, password, {
         full_name: fullName,
-        user_type: userType
+        user_type: userType as any // Cast to any to avoid type issues with context
       });
       
       // Redirect based on user type to the appropriate setup page
