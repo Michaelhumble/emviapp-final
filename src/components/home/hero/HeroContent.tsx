@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
@@ -39,7 +38,7 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages }: HeroContentPro
           transition={{ duration: 0.7, delay: 0.2 }}
           style={{ textShadow: '0px 3px 8px rgba(0,0,0,0.6)' }}
         >
-          This Isn't Just an App—It's the Future of the Beauty Industry
+          The Beauty Industry's Missing Piece — We Just Built It.
         </motion.h1>
         <motion.p 
           className="text-lg md:text-xl text-white mb-10 max-w-3xl font-sans"
@@ -50,6 +49,7 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages }: HeroContentPro
         >
           Hair, Nails, Tattoos, Brows, Barbers, Booth Rentals—All in One Powerful App. Finally.
         </motion.p>
+        
         <motion.div 
           className="flex flex-col sm:flex-row gap-6 mt-6"
           initial={{ opacity: 0, y: 20 }}
@@ -100,7 +100,6 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages }: HeroContentPro
           </TooltipProvider>
         </motion.div>
         
-        {/* Desktop carousel indicators */}
         <motion.div 
           className="hidden md:flex mt-12 gap-2 justify-center"
           initial={{ opacity: 0 }}
@@ -117,7 +116,6 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages }: HeroContentPro
           ))}
         </motion.div>
         
-        {/* Mobile carousel with improved visibility */}
         <motion.div 
           className="mt-12 w-full md:hidden relative z-40"
           initial={{ opacity: 0, scale: 0.95 }}
@@ -148,7 +146,6 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages }: HeroContentPro
             </CarouselContent>
           </Carousel>
           
-          {/* Mobile indicators */}
           <div className="flex justify-center mt-4 gap-2">
             {heroImages.map((_, index) => (
               <button
