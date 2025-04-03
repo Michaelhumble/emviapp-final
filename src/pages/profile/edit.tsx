@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import Layout from '@/components/layout/Layout';
 import ArtistProfileEditor from '@/components/profile/ArtistProfileEditor';
+import SalonProfileEditor from '@/components/profile/SalonProfileEditor';
 
 const ProfileEdit = () => {
   const { userProfile, userRole, loading } = useAuth();
@@ -52,6 +53,9 @@ const ProfileEdit = () => {
       case 'artist':
       case 'nail technician/artist':
         return <ArtistProfileEditor />;
+      case 'salon':
+      case 'owner':
+        return <SalonProfileEditor />;
       default:
         return (
           <div className="text-center py-8">

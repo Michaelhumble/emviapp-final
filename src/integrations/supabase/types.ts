@@ -42,6 +42,94 @@ export type Database = {
         }
         Relationships: []
       }
+      job_applications: {
+        Row: {
+          applicant_id: string | null
+          cover_letter: string | null
+          created_at: string | null
+          id: string
+          job_id: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          applicant_id?: string | null
+          cover_letter?: string | null
+          created_at?: string | null
+          id?: string
+          job_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          applicant_id?: string | null
+          cover_letter?: string | null
+          created_at?: string | null
+          id?: string
+          job_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_applications_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jobs: {
+        Row: {
+          compensation_details: string | null
+          compensation_type: string | null
+          created_at: string | null
+          description: string | null
+          expires_at: string | null
+          id: string
+          requirements: string | null
+          salon_id: string | null
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          compensation_details?: string | null
+          compensation_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          requirements?: string | null
+          salon_id?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          compensation_details?: string | null
+          compensation_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          requirements?: string | null
+          salon_id?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jobs_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "salons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       message_likes: {
         Row: {
           id: string
@@ -162,6 +250,80 @@ export type Database = {
           id?: string
           referred_id?: string
           referrer_id?: string
+        }
+        Relationships: []
+      }
+      salon_photos: {
+        Row: {
+          caption: string | null
+          created_at: string | null
+          id: string
+          order_number: number | null
+          photo_url: string
+          salon_id: string | null
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string | null
+          id?: string
+          order_number?: number | null
+          photo_url: string
+          salon_id?: string | null
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string | null
+          id?: string
+          order_number?: number | null
+          photo_url?: string
+          salon_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "salon_photos_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "salons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      salons: {
+        Row: {
+          about: string | null
+          created_at: string | null
+          id: string
+          instagram: string | null
+          location: string | null
+          logo_url: string | null
+          phone: string | null
+          salon_name: string | null
+          updated_at: string | null
+          website: string | null
+        }
+        Insert: {
+          about?: string | null
+          created_at?: string | null
+          id: string
+          instagram?: string | null
+          location?: string | null
+          logo_url?: string | null
+          phone?: string | null
+          salon_name?: string | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          about?: string | null
+          created_at?: string | null
+          id?: string
+          instagram?: string | null
+          location?: string | null
+          logo_url?: string | null
+          phone?: string | null
+          salon_name?: string | null
+          updated_at?: string | null
+          website?: string | null
         }
         Relationships: []
       }

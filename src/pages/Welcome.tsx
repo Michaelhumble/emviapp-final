@@ -40,6 +40,7 @@ const Welcome = () => {
         navigate('/dashboard/artist');
         break;
       case 'salon':
+      case 'owner':
         navigate('/dashboard/owner');
         break;
       case 'vendor':

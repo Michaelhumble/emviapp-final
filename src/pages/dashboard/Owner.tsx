@@ -1,6 +1,6 @@
 
 import { useEffect } from "react";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/auth";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -44,10 +44,10 @@ const OwnerDashboard = () => {
         >
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-serif mb-4">
-              Hi {firstName}! Let's grow your business 💅
+              Hi {firstName}! Your next star hire is waiting 💼
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Quality artists are searching. Let's help them find you.
+              Post jobs, manage your salon, and connect with top artists.
             </p>
           </div>
           
