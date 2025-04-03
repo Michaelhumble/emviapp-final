@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
-import { ArrowDown, ArrowRight, Sparkles } from "lucide-react";
+import { ArrowDown, ArrowRight } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import { useEffect, useState } from "react";
@@ -39,43 +39,48 @@ const Hero = () => {
   }, []);
 
   return (
-    <div className="relative bg-[#FDFDFD] pt-24 pb-28 overflow-hidden">
-      {/* Carousel background with blur effect */}
-      <div className="absolute inset-0 w-full h-full overflow-hidden">
-        <div className="absolute inset-0 bg-black/30 backdrop-blur-md z-10" aria-hidden="true" />
-        
+    <div className="relative pt-24 pb-28 overflow-hidden">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#FDFDFD] to-[#F6F6F6] z-0"></div>
+      
+      {/* Image carousel with layering fixed */}
+      <div className="absolute inset-0 w-full h-full overflow-hidden z-10">
         {heroImages.map((image, index) => (
           <motion.div 
             key={index}
-            className="absolute inset-0 w-full h-full"
-            initial={{ opacity: 0 }}
+            className="absolute inset-0 w-full h-full rounded-md overflow-hidden"
+            initial={{ opacity: 0, scale: 1 }}
             animate={{ 
-              opacity: activeIndex === index ? 1 : 0 
+              opacity: activeIndex === index ? 1 : 0,
+              scale: activeIndex === index ? 1.05 : 1 // Slow zoom effect
             }}
-            transition={{ duration: 1.5, ease: "easeInOut" }}
+            transition={{ 
+              opacity: { duration: 1.5, ease: "easeInOut" },
+              scale: { duration: 8, ease: "easeInOut" }
+            }}
             aria-hidden={activeIndex !== index}
           >
             <img 
               src={image.url} 
               alt={image.alt}
-              className="w-full h-full object-cover scale-110"
-              style={{ opacity: 0.7 }}
+              className="w-full h-full object-cover"
             />
+            
+            {/* Semi-transparent overlay for text readability */}
+            <div className="absolute inset-0 bg-black/20 z-10"></div>
           </motion.div>
         ))}
         
-        <div 
-          className="absolute inset-0 bg-gradient-to-br from-[#FAF0E6]/70 via-[#FFF5EE]/60 to-[#F8E1DE]/70 mix-blend-overlay"
-          aria-hidden="true"
-        />
+        {/* Glass effect as a frame rather than a cover */}
+        <div className="absolute inset-0 backdrop-blur-sm bg-white/10 z-10 md:backdrop-blur-md border border-white/30 rounded-lg md:m-4 shadow-xl"></div>
       </div>
 
       {/* Floating particles animation */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden z-20">
         {[...Array(15)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-3 h-3 rounded-full bg-white/20 backdrop-blur-sm"
+            className="absolute w-3 h-3 rounded-full bg-white/30 backdrop-blur-sm shadow-lg"
             initial={{ 
               x: Math.random() * 100 + (i % 2 === 0 ? -50 : 50), 
               y: Math.random() * 100 + 600,
@@ -95,31 +100,34 @@ const Hero = () => {
         ))}
       </div>
 
-      <div className="container mx-auto px-4 relative z-20">
+      {/* Content container with proper z-index to appear on top */}
+      <div className="container mx-auto px-4 relative z-30">
         <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <Badge variant="outline" className="mb-6 bg-white/20 backdrop-blur-md px-4 py-1.5 text-xs font-medium rounded-full border-white/20 text-gray-800">
+            <Badge variant="outline" className="mb-6 bg-white/30 backdrop-blur-md px-4 py-1.5 text-xs font-medium rounded-full border-white/30 text-gray-800 shadow-sm">
               Revolutionizing Beauty Hiring
             </Badge>
           </motion.div>
           
           <motion.h1 
-            className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif leading-tight mb-6 text-gray-900 drop-shadow-sm tracking-tight"
+            className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif leading-tight mb-6 text-white drop-shadow-lg tracking-tight"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
+            style={{ textShadow: '0px 2px 4px rgba(0,0,0,0.3)' }}
           >
             The Beauty Industry's Missing Piece — We Just Built It.
           </motion.h1>
           <motion.p 
-            className="text-lg md:text-xl text-gray-700 mb-10 max-w-3xl font-sans"
+            className="text-lg md:text-xl text-white mb-10 max-w-3xl font-sans"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
+            style={{ textShadow: '0px 1px 3px rgba(0,0,0,0.4)' }}
           >
             Hair, Nails, Tattoos, Brows, Barbers, Booth Rentals—All in One Powerful App. Finally.
           </motion.p>
@@ -192,7 +200,7 @@ const Hero = () => {
           
           {/* Mobile carousel */}
           <motion.div 
-            className="mt-12 w-full md:hidden relative"
+            className="mt-12 w-full md:hidden relative z-40"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, delay: 0.6 }}
@@ -238,7 +246,7 @@ const Hero = () => {
       
       {/* Scroll down indicator */}
       <motion.div 
-        className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex flex-col items-center text-gray-500"
+        className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex flex-col items-center text-gray-500 z-40"
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.7 }}
         transition={{ delay: 1.5, duration: 0.8 }}
