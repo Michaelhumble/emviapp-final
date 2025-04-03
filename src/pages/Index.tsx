@@ -14,6 +14,7 @@ import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 import { useRoleSelection } from "@/hooks/useRoleSelection";
 import AIPowerhouse from "@/components/home/AIPowerhouse";
 import AIAgents from "@/components/home/AIAgents";
+import AITeam from "@/components/home/AITeam";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
@@ -85,6 +86,7 @@ const Index = () => {
   return (
     <Layout>
       <Hero />
+      <AITeam />
       {renderRoleBasedDashboard()}
       <AIAgents />
       <AIPowerhouse />
