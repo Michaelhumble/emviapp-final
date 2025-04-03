@@ -141,7 +141,7 @@ const AIAgents = () => {
             </motion.div>
           ))}
         </motion.div>
-      </motion.div>
+      </div>
     </section>
   );
 };
