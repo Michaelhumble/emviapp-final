@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
@@ -47,7 +48,7 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages }: HeroContentPro
           transition={{ duration: 0.7, delay: 0.3 }}
           style={{ textShadow: '0px 2px 6px rgba(0,0,0,0.6)' }}
         >
-          Hair, Nails, Tattoos, Brows, Barbers, Booth Rentals—All in One Powerful App. Finally.
+          Hair, Nails, Makeup, Tattoos, Brows, Barbers, Booth Rentals—All in One Powerful App. Finally.
         </motion.p>
         
         <motion.div 
