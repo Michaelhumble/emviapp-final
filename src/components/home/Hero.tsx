@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import EmviLogo from "@/components/branding/EmviLogo";
+import { ArrowDown } from "lucide-react";
 
 const Hero = () => {
   return (
@@ -75,7 +76,7 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            The Future of Hiring for the Beauty Industry
+            This Isn't Just an App—It's the Future of the Beauty Industry
           </motion.h1>
           <motion.p 
             className="text-lg md:text-xl text-gray-700 mb-10 max-w-3xl font-sans"
@@ -83,7 +84,7 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
           >
-            AI-powered. Built with love. Funded by those who care.
+            Artists Deserve More. That's Why We Built EmviApp.
           </motion.p>
           <motion.div 
             className="flex flex-col sm:flex-row gap-4 mt-6"
@@ -91,21 +92,21 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.4 }}
           >
-            <Link to="/jobs">
+            <Link to="/auth/signup">
               <Button 
                 size="lg" 
                 className="font-medium px-8 py-6 text-lg bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300"
               >
-                Explore Jobs & Salons
+                Join The Movement
               </Button>
             </Link>
-            <Link to="/posting">
+            <Link to="/jobs">
               <Button 
                 size="lg" 
                 variant="outline" 
                 className="font-medium px-8 py-6 text-lg border-gray-300 bg-white/80 backdrop-blur-sm hover:bg-gray-100/80 transition-all duration-300"
               >
-                Post a Job or Salon Listing
+                Explore Jobs & Salons
               </Button>
             </Link>
           </motion.div>
@@ -137,13 +138,29 @@ const Hero = () => {
                 <Badge className="bg-white/20 backdrop-blur-md text-white border-white/10 mb-3">
                   Premium Experience
                 </Badge>
-                <h3 className="text-white text-xl md:text-2xl font-serif mb-1">Transforming the Beauty Industry</h3>
+                <h3 className="text-white text-xl md:text-2xl font-serif mb-1">Hiring, Hustling, and Selling—Smarter, Easier, and Together.</h3>
                 <p className="text-white/80 text-sm md:text-base">Join thousands of professionals and businesses</p>
               </motion.div>
             </div>
           </motion.div>
         </div>
       </div>
+      
+      {/* Scroll down indicator */}
+      <motion.div 
+        className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex flex-col items-center text-gray-500"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.7 }}
+        transition={{ delay: 1.5, duration: 0.8 }}
+      >
+        <span className="text-xs mb-2">Scroll to explore</span>
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+        >
+          <ArrowDown size={18} />
+        </motion.div>
+      </motion.div>
     </div>
   );
 };

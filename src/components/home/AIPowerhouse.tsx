@@ -19,33 +19,33 @@ interface AITool {
 const aiTools: AITool[] = [
   {
     id: "matchmaker",
-    title: "MatchMaker AI",
+    title: "EmviMatch",
     tagline: "The perfect match, every time.",
-    description: "Matches you with the perfect job or artist based on skills, location, and goals. No more wasted interviews or endless scrolling.",
+    description: "Connects salons & artists automatically based on skills, location, and goals. No more wasted interviews or endless scrolling.",
     icon: Search,
     delay: 0.1
   },
   {
     id: "outreach",
-    title: "Outreach AI",
+    title: "EmviBoost",
     tagline: "Your brand, everywhere.",
-    description: "Automatically promotes your post to social media, search engines, and beauty communities. Your business gets seen by the right people.",
+    description: "Promotes posts across Google & social media, reaching beauty communities. Your business gets seen by the right people.",
     icon: RefreshCw,
     delay: 0.2
   },
   {
     id: "insight",
-    title: "Insight AI",
+    title: "EmviPulse",
     tagline: "Data that makes sense.",
-    description: "Shows you analytics: who viewed your post, where they're from, how to improve results. Make decisions based on real data.",
+    description: "Tracks real-time data, bookings & performance. Shows you analytics: who viewed your post, where they're from, how to improve results.",
     icon: BarChart2,
     delay: 0.3
   },
   {
     id: "support",
-    title: "Support AI",
-    tagline: "24/7 service, no coffee breaks.",
-    description: "Handles inquiries, DMs, follow-ups — like a 24/7 receptionist powered by Emvi's soul. Your customers always get a response.",
+    title: "EmviGuard",
+    tagline: "Only the good stuff.",
+    description: "Stops scam & spam automatically, like a 24/7 security guard powered by Emvi's intelligence. Your business stays protected.",
     icon: MessageCircle,
     delay: 0.4
   },
@@ -107,7 +107,7 @@ const AIPowerhouse = () => {
           </Badge>
           
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-serif tracking-tight">
-            Meet the AI Team That Works for You
+            Powered by AI, Built for Humans
           </h2>
           <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
             From finding talent to bringing customers to your door — EmviApp is powered by AI agents designed to help your beauty business grow without limits.
