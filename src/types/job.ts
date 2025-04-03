@@ -20,10 +20,17 @@ export interface Job {
   contact_info?: {
     phone?: string;
     email?: string;
+    owner_name?: string;
   };
   trust_indicators?: {
     verified: boolean;
     activelyHiring: boolean;
     chatAvailable: boolean;
   };
+  specialties?: string[];
+  has_housing?: boolean;
+  no_supply_deduction?: boolean;
+  is_sample?: boolean;
+  vietnamese_description?: string;
+  tip_range?: string;
 }

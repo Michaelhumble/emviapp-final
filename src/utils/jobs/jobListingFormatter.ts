@@ -6,9 +6,10 @@ import {
   generatePlaceholderQualifications, 
   generatePlaceholderResponsibilities 
 } from "./placeholderGenerators";
+import { generateVietnameseNailSampleJobs } from "./vietnameseNailJobSamples";
 
 export const formatJobListings = (data: any[]): Job[] => {
-  return data?.map(post => {
+  const formattedJobs = data?.map(post => {
     const metadata = post.metadata as Record<string, any> || {};
     
     // Parse responsibilities, qualifications, and benefits if they exist, or generate placeholders
@@ -62,4 +63,12 @@ export const formatJobListings = (data: any[]): Job[] => {
       }
     };
   }) || [];
+
+  // Add sample Vietnamese nail job listings but only if there are fewer than 5 real jobs
+  if (formattedJobs.length < 5) {
+    const sampleJobs = generateVietnameseNailSampleJobs(15);
+    return [...formattedJobs, ...sampleJobs];
+  }
+  
+  return formattedJobs;
 };

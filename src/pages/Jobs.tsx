@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { useAuth } from "@/context/AuthContext";
@@ -19,6 +18,8 @@ interface Filters {
   ownerWillTrain: boolean;
   employmentType: string;
   showExpired: boolean;
+  hasHousing?: boolean;
+  noSupplyDeduction?: boolean;
 }
 
 const Jobs = () => {
@@ -29,7 +30,9 @@ const Jobs = () => {
     weeklyPay: false,
     ownerWillTrain: false,
     employmentType: "all",
-    showExpired: false
+    showExpired: true,
+    hasHousing: false,
+    noSupplyDeduction: false
   });
   const { user } = useAuth();
   const [isRenewing, setIsRenewing] = useState(false);
@@ -86,7 +89,18 @@ const Jobs = () => {
       }
 
       const formattedJobs = formatJobListings(data || []);
-      setJobs(formattedJobs);
+      
+      let filteredJobs = formattedJobs;
+      
+      if (filters.hasHousing) {
+        filteredJobs = filteredJobs.filter(job => job.has_housing === true);
+      }
+      
+      if (filters.noSupplyDeduction) {
+        filteredJobs = filteredJobs.filter(job => job.no_supply_deduction === true);
+      }
+      
+      setJobs(filteredJobs);
     } catch (error: any) {
       toast({
         title: "Error fetching jobs",
@@ -117,6 +131,20 @@ const Jobs = () => {
     setIsRenewing(true);
     try {
       const today = new Date();
+      
+      if (renewalJobId.startsWith('sample-')) {
+        toast({
+          title: "Success",
+          description: "Sample job post renewed successfully!",
+        });
+        
+        setTimeout(() => {
+          setIsRenewing(false);
+          setRenewalJobId(null);
+          setIsPaymentModalOpen(false);
+        }, 1000);
+        return;
+      }
       
       const { error } = await supabase
         .from('posts')
@@ -149,7 +177,9 @@ const Jobs = () => {
       weeklyPay: false,
       ownerWillTrain: false,
       employmentType: "all",
-      showExpired: false
+      showExpired: true,
+      hasHousing: false,
+      noSupplyDeduction: false
     });
   };
   
@@ -161,14 +191,28 @@ const Jobs = () => {
     setFilters(newFilters);
   };
 
+  const checkExpiration = (job: Job): boolean => {
+    if (job.is_sample) {
+      return true;
+    }
+    
+    return expirations[job.id] === true;
+  };
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8 bg-[#FDFDFD]">
         <div className="max-w-6xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-serif font-bold mb-4">Beauty Industry Job Listings</h1>
+            <h1 className="text-3xl md:text-4xl font-serif font-bold mb-2">
+              Beauty Industry Job Listings
+            </h1>
+            <h2 className="text-xl text-gray-700 font-medium mb-4">
+              Tìm Việc Nail Lương Cao, Bao Lương Nếu Cần
+            </h2>
             <p className="text-gray-600 mb-6">
-              Find your perfect position in top salons across the country. Filter by job type, pay structure, and more.
+              Find your perfect position in top salons across the country or browse our 
+              Vietnamese nail job listings. Filter by job type, pay structure, and more.
             </p>
 
             <JobFilters 
@@ -177,6 +221,7 @@ const Jobs = () => {
               onFiltersChange={handleFiltersChange}
               onSearchChange={handleSearchChange}
               onResetFilters={resetFilters}
+              showVietnameseFilters={true}
             />
           </div>
 
@@ -192,6 +237,7 @@ const Jobs = () => {
               onRenew={prepareRenewal}
               isRenewing={isRenewing}
               renewalJobId={renewalJobId}
+              checkExpiration={checkExpiration}
             />
           )}
         </div>

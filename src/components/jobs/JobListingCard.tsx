@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, MapPin, Briefcase, LockIcon, CheckCircle, Users, MessageSquare } from "lucide-react";
+import { Calendar, Clock, MapPin, Briefcase, LockIcon, CheckCircle, Users, MessageSquare, Home, Shield, Coffee } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Job } from "@/types/job";
 
@@ -49,12 +49,18 @@ const JobListingCard = ({
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
+  
+  const specialtyBadges = job.specialties?.map((specialty, index) => (
+    <Badge key={index} className="bg-pink-100 text-pink-800 border-pink-200">
+      {specialty}
+    </Badge>
+  ));
 
   return (
     <Card 
       className={`overflow-hidden transition-all duration-200 ${
         isHovered ? 'shadow-lg transform translate-y-[-2px]' : 'shadow-md'
-      } h-full flex flex-col`}
+      } h-full flex flex-col ${isExpired ? 'bg-gray-50/80' : ''}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -63,8 +69,9 @@ const JobListingCard = ({
         <div className="mb-4 flex justify-between">
           <div>
             <h2 className="text-xl font-serif font-semibold line-clamp-2 leading-tight mb-1">
-              {job.title} – {job.company}, {job.location}
+              {job.title} – {job.location}
             </h2>
+            <p className="text-gray-700">{job.company}</p>
             
             {/* Trust indicators */}
             <div className="flex flex-wrap gap-2 mt-2">
@@ -128,20 +135,57 @@ const JobListingCard = ({
               Owner Will Train ✨
             </Badge>
           )}
+          {job.has_housing && (
+            <Badge className="bg-indigo-100 text-indigo-800 border-indigo-200 flex items-center gap-1">
+              <Home className="h-3 w-3" /> Housing 🏠
+            </Badge>
+          )}
+          {job.no_supply_deduction && (
+            <Badge className="bg-teal-100 text-teal-800 border-teal-200 flex items-center gap-1">
+              <Shield className="h-3 w-3" /> No Supply Fee ✅
+            </Badge>
+          )}
         </div>
+        
+        {/* Specialties */}
+        {job.specialties && job.specialties.length > 0 && (
+          <div className="mb-4">
+            <div className="text-sm font-medium mb-2">Specialties:</div>
+            <div className="flex flex-wrap gap-2">
+              {specialtyBadges}
+            </div>
+          </div>
+        )}
         
         {/* Job description - truncated */}
         <p className="text-gray-600 line-clamp-3 mb-4 flex-grow">
-          {job.description}
+          {job.vietnamese_description || job.description}
         </p>
+        
+        {/* Tip range */}
+        {job.tip_range && (
+          <div className="mb-4 flex items-center gap-2">
+            <Coffee className="h-4 w-4 text-amber-600" />
+            <span className="text-sm text-amber-700 font-medium">Tips: {job.tip_range}</span>
+          </div>
+        )}
+        
+        {/* Contact info */}
+        {job.contact_info?.owner_name && !isExpired && (
+          <div className="mb-4 text-sm">
+            <span className="font-medium">Contact: </span>
+            {job.contact_info.owner_name}
+            {job.contact_info?.phone && ` - ${job.contact_info.phone}`}
+          </div>
+        )}
         
         {/* Expired warning */}
         {isExpired && (
           <div className="mt-2 mb-4 flex flex-col gap-2">
             <Badge variant="destructive" className="flex items-center justify-center gap-1 w-fit">
-              <LockIcon size={12} /> Expired
+              <LockIcon size={12} /> Đã hết hạn
             </Badge>
-            <p className="text-xs text-gray-500">Contact info is hidden until renewed</p>
+            <p className="text-xs text-gray-500">Thông tin liên hệ bị ẩn cho đến khi được gia hạn</p>
           </div>
         )}
         
@@ -149,9 +193,9 @@ const JobListingCard = ({
         <div className="mt-auto pt-4 flex justify-between items-center">
           <Button 
             onClick={onViewDetails}
-            className="flex-grow mr-2"
+            className={`flex-grow mr-2 ${isExpired ? 'opacity-90' : ''}`}
           >
-            View Details
+            Xem Chi Tiết
           </Button>
           
           {currentUserId === job.user_id && isExpired && (
@@ -162,7 +206,7 @@ const JobListingCard = ({
               disabled={isRenewing}
               className="whitespace-nowrap"
             >
-              {isRenewing ? "Renewing..." : "Renew Post"}
+              {isRenewing ? "Đang gia hạn..." : "Gia Hạn"}
             </Button>
           )}
         </div>

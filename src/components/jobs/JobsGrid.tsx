@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import JobListingCard from "@/components/jobs/JobListingCard";
 import JobDetailModal from "@/components/jobs/JobDetailModal";
@@ -11,6 +10,7 @@ interface JobsGridProps {
   onRenew: (job: Job) => void;
   isRenewing: boolean;
   renewalJobId: string | null;
+  checkExpiration?: (job: Job) => boolean; // Optional custom expiration checker
 }
 
 const JobsGrid = ({ 
@@ -19,20 +19,22 @@ const JobsGrid = ({
   currentUserId, 
   onRenew, 
   isRenewing,
-  renewalJobId
+  renewalJobId,
+  checkExpiration
 }: JobsGridProps) => {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
-  const isExpired = (jobId: string) => {
-    return expirations[jobId] === true;
+  const isExpired = (job: Job): boolean => {
+    if (checkExpiration) {
+      return checkExpiration(job);
+    }
+    return expirations[job.id] === true;
   };
 
-  // View detailed job information
   const viewJobDetails = (job: Job) => {
     setSelectedJob(job);
   };
 
-  // Close job detail modal
   const closeJobDetails = () => {
     setSelectedJob(null);
   };
@@ -44,7 +46,7 @@ const JobsGrid = ({
           <JobListingCard 
             key={job.id}
             job={job}
-            isExpired={isExpired(job.id)}
+            isExpired={isExpired(job)}
             currentUserId={currentUserId}
             onViewDetails={() => viewJobDetails(job)} 
             onRenew={() => onRenew(job)}
