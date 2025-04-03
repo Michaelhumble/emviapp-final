@@ -8,14 +8,29 @@ import { heroImages } from "./hero/heroData";
 
 const Hero = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [randomizedImages, setRandomizedImages] = useState([...heroImages]);
+
+  // Randomize the images on component mount
+  useEffect(() => {
+    const shuffleArray = (array: typeof heroImages) => {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    };
+    
+    setRandomizedImages(shuffleArray(heroImages));
+  }, []);
 
   useEffect(() => {
     // Auto-advance the carousel every 5 seconds
     const interval = setInterval(() => {
-      setActiveIndex(prevIndex => (prevIndex + 1) % heroImages.length);
+      setActiveIndex(prevIndex => (prevIndex + 1) % randomizedImages.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [randomizedImages.length]);
 
   return (
     <div className="relative pt-24 pb-28 overflow-hidden">
@@ -27,7 +42,7 @@ const Hero = () => {
       
       {/* Image carousel placed in front of glass background */}
       <div className="absolute inset-0 w-full h-full overflow-hidden z-20">
-        <HeroCarousel images={heroImages} activeIndex={activeIndex} />
+        <HeroCarousel images={randomizedImages} activeIndex={activeIndex} />
       </div>
 
       {/* Floating particles animation */}
@@ -37,7 +52,7 @@ const Hero = () => {
       <HeroContent 
         activeIndex={activeIndex} 
         setActiveIndex={setActiveIndex} 
-        heroImages={heroImages} 
+        heroImages={randomizedImages} 
       />
       
       {/* Scroll down indicator */}
