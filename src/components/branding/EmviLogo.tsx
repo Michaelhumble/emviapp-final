@@ -8,7 +8,7 @@ interface EmviLogoProps {
 const EmviLogo: React.FC<EmviLogoProps> = ({ className = "" }) => {
   return (
     <div className={`flex items-center ${className}`}>
-      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-orange-400 flex items-center justify-center mr-2">
+      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF4E00] to-[#FF9E00] flex items-center justify-center mr-2">
         <svg 
           width="20" 
           height="20" 
@@ -27,7 +27,7 @@ const EmviLogo: React.FC<EmviLogoProps> = ({ className = "" }) => {
       </div>
       <div className="font-bold text-2xl tracking-tight">
         <span style={{
-          backgroundImage: "linear-gradient(to right, #e05d23, #f8b500)",
+          backgroundImage: "linear-gradient(to right, #FF4E00, #FFCC00)",
           WebkitBackgroundClip: "text",
           backgroundClip: "text",
           color: "transparent"
