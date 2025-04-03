@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/context/auth/useAuth';
+import { useAuth } from '@/context/auth';
 import Layout from '@/components/layout/Layout';
 import ArtistProfileEditor from '@/components/profile/ArtistProfileEditor';
 

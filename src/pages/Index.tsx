@@ -8,7 +8,7 @@ import ArtistCallout from "@/components/home/ArtistCallout";
 import Testimonials from "@/components/home/Testimonials";
 import CallToAction from "@/components/home/CallToAction";
 import CustomerDashboard from "@/components/customer/CustomerDashboard";
-import { useAuth } from "@/context/auth/useAuth";
+import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
