@@ -35,4 +35,5 @@ export interface Job {
     chatAvailable?: boolean;
   };
   is_sample?: boolean;
+  is_nationwide?: boolean; // Added missing property
 }
