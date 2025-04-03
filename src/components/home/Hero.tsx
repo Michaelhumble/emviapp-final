@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -85,7 +84,7 @@ const Hero = () => {
             <Link to="/auth/signup">
               <Button 
                 size="lg" 
-                className="font-medium px-8 py-6 text-lg bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300"
+                className="font-medium px-8 py-6 text-lg bg-gradient-to-r from-[#FF5A5F] to-[#FF7E3F] hover:opacity-90 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 border-0"
               >
                 Join The Movement
               </Button>

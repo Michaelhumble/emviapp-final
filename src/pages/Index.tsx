@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 import { useRoleSelection } from "@/hooks/useRoleSelection";
 import AIPowerhouse from "@/components/home/AIPowerhouse";
+import AIAgents from "@/components/home/AIAgents";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
@@ -85,6 +86,7 @@ const Index = () => {
     <Layout>
       <Hero />
       {renderRoleBasedDashboard()}
+      <AIAgents />
       <AIPowerhouse />
       <FeaturedSalons />
       <JobsHighlight />
