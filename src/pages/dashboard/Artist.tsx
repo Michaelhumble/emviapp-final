@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Briefcase, ImagePlus, LineChart, Sparkles } from "lucide-react";
+import { Briefcase, Heart, ImagePlus, MessageSquare, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import AIDashboardWidgets from "@/components/ai/AIDashboardWidgets";
@@ -44,10 +44,10 @@ const ArtistDashboard = () => {
         >
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-serif mb-4">
-              Hi {firstName}! Let's find you something amazing 💅
+              Hi {firstName}! Let's build your future together 💫
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              You don't have to hustle alone. EmviApp is here.
+              Create your profile, apply for jobs, and start growing your beauty career.
             </p>
           </div>
           
@@ -63,12 +63,29 @@ const ArtistDashboard = () => {
             variants={container}
             initial="hidden"
             animate="show"
-            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
           >
             <motion.div variants={item}>
               <Card className="h-full">
                 <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                  <CardTitle className="text-xl">View Job Listings</CardTitle>
+                  <CardTitle className="text-xl">Create/Edit Profile</CardTitle>
+                  <ImagePlus className="h-5 w-5 text-primary" />
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="mb-4">Customize your professional portfolio</CardDescription>
+                  <Link to="/profile/edit">
+                    <Button variant="default" className="w-full">
+                      Edit Profile
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </motion.div>
+            
+            <motion.div variants={item}>
+              <Card className="h-full">
+                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                  <CardTitle className="text-xl">Jobs for Artists</CardTitle>
                   <Briefcase className="h-5 w-5 text-primary" />
                 </CardHeader>
                 <CardContent>
@@ -85,16 +102,14 @@ const ArtistDashboard = () => {
             <motion.div variants={item}>
               <Card className="h-full">
                 <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                  <CardTitle className="text-xl">Showcase Your Profile</CardTitle>
-                  <ImagePlus className="h-5 w-5 text-primary" />
+                  <CardTitle className="text-xl">Saved Opportunities</CardTitle>
+                  <Heart className="h-5 w-5 text-primary" />
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="mb-4">Make your portfolio stand out</CardDescription>
-                  <Link to="/profile/edit">
-                    <Button variant="default" className="w-full">
-                      Update Portfolio
-                    </Button>
-                  </Link>
+                  <CardDescription className="mb-4">View jobs you've saved for later</CardDescription>
+                  <Button variant="default" className="w-full">
+                    View Saved
+                  </Button>
                 </CardContent>
               </Card>
             </motion.div>
@@ -102,14 +117,16 @@ const ArtistDashboard = () => {
             <motion.div variants={item}>
               <Card className="h-full">
                 <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                  <CardTitle className="text-xl">Track Applications</CardTitle>
-                  <LineChart className="h-5 w-5 text-primary" />
+                  <CardTitle className="text-xl">Messages</CardTitle>
+                  <MessageSquare className="h-5 w-5 text-primary" />
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="mb-4">Manage your job applications</CardDescription>
-                  <Button variant="default" className="w-full">
-                    View Applications
-                  </Button>
+                  <CardDescription className="mb-4">Connect with salons and clients</CardDescription>
+                  <Link to="/messages">
+                    <Button variant="default" className="w-full">
+                      Open Messages
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
             </motion.div>
@@ -119,6 +136,19 @@ const ArtistDashboard = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.5 }}
+            className="mt-10 p-6 bg-primary/5 rounded-lg border border-primary/10"
+          >
+            <div className="text-center">
+              <p className="text-lg italic text-muted-foreground">
+                "Behind every beautiful nail set or tattoo, there's a real hustle. EmviApp is here to back you up."
+              </p>
+            </div>
+          </motion.div>
+          
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8, duration: 0.5 }}
             className="mt-12 p-6 bg-primary/5 rounded-lg border border-primary/10"
           >
             <div className="flex flex-col md:flex-row items-center justify-between">

@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { toast } from "sonner";
@@ -29,26 +28,28 @@ interface UserProfile {
   id: string;
   full_name: string;
   email: string;
-  avatar_url: string;
-  bio: string;
-  specialty: string;
-  location: string;
-  instagram: string;
-  website: string;
-  phone: string;
-  preferred_language: string;
-  credits: number;
-  badges: any; // Json
+  avatar_url: string | null;
+  bio: string | null;
+  specialty: string | null;
+  location: string | null;
+  instagram: string | null;
+  website: string | null;
+  phone: string | null;
+  preferred_language: string | null;
+  credits: number | null;
+  badges: any | null; // Json
   role: UserRole;
-  created_at: string;
+  created_at: string | null;
+  updated_at: string | null;
   // Fields for salon owners
-  salon_name?: string;
-  business_address?: string;
-  license_number?: string;
+  salon_name?: string | null;
+  business_address?: string | null;
+  license_number?: string | null;
   // Fields for vendors/suppliers
-  company_name?: string;
-  product_type?: string;
-  [key: string]: any; // For any additional fields
+  company_name?: string | null;
+  product_type?: string | null;
+  // For extensibility
+  [key: string]: any;
 }
 
 type AuthContextType = {
@@ -95,7 +96,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // Check if profile is complete based on role-specific required fields
         let isComplete = false;
         
-        if (data.role === 'artist' || data.role === 'freelancer') {
+        if (data.role === 'artist' || data.role === 'nail technician/artist' || data.role === 'freelancer') {
           isComplete = !!(data.full_name && data.bio && data.specialty);
         } else if (data.role === 'salon' || data.role === 'owner') {
           isComplete = !!(data.salon_name && data.business_address);
