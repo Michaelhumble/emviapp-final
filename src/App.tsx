@@ -44,6 +44,9 @@ import ArtistSetup from "./pages/profile/artist/setup";
 import SalonOwnerSetup from "./pages/profile/salon/setup";
 import BoothRenterSetup from "./pages/profile/renter/setup";
 import FreelancerSetup from "./pages/profile/freelancer/setup";
+import CustomerSetup from "./pages/profile/customer/setup";
+import SupplierSetup from "./pages/profile/supplier/setup";
+import OtherRoleSetup from "./pages/profile/other/setup";
 
 const queryClient = new QueryClient();
 
@@ -97,6 +100,9 @@ const App = () => (
             <Route path="/profile/salon/setup" element={<SalonOwnerSetup />} />
             <Route path="/profile/renter/setup" element={<BoothRenterSetup />} />
             <Route path="/profile/freelancer/setup" element={<FreelancerSetup />} />
+            <Route path="/profile/customer/setup" element={<CustomerSetup />} />
+            <Route path="/profile/supplier/setup" element={<SupplierSetup />} />
+            <Route path="/profile/other/setup" element={<OtherRoleSetup />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

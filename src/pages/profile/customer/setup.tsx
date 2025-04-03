@@ -10,33 +10,40 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Loader2, Upload, AtSign, Building, MapPin, DollarSign } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+import { Loader2, Upload, Calendar } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
-const specialties = [
-  "Nail Technician",
-  "Hair Stylist",
-  "Makeup Artist",
-  "Barber",
-  "Lash Artist",
-  "Tattoo Artist",
-  "Massage Therapist",
-  "Esthetician",
+const genderOptions = [
+  "Female",
+  "Male",
+  "Non-binary",
+  "Prefer not to say",
   "Other"
 ];
 
-const BoothRenterSetup = () => {
+const serviceOptions = [
+  "Nail Art",
+  "Hair Styling",
+  "Makeup",
+  "Tattoo",
+  "Eyelash Extensions",
+  "Brows",
+  "Barber",
+  "Massage",
+  "Facials",
+  "Other"
+];
+
+const CustomerSetup = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   
   const [fullName, setFullName] = useState("");
-  const [specialty, setSpecialty] = useState<string>("");
-  const [salonName, setSalonName] = useState("");
-  const [location, setLocation] = useState("");
-  const [bio, setBio] = useState("");
-  const [instagram, setInstagram] = useState("");
-  const [rentalRate, setRentalRate] = useState("");
-  const [isLookingForNewBooth, setIsLookingForNewBooth] = useState(false);
+  const [gender, setGender] = useState<string>("");
+  const [zipCode, setZipCode] = useState("");
+  const [birthday, setBirthday] = useState("");
+  const [favoritePlace, setFavoritePlace] = useState("");
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -60,6 +67,14 @@ const BoothRenterSetup = () => {
     }
   };
 
+  const toggleService = (service: string) => {
+    setSelectedServices(current =>
+      current.includes(service)
+        ? current.filter(s => s !== service)
+        : [...current, service]
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -76,7 +91,7 @@ const BoothRenterSetup = () => {
       // Upload avatar if selected
       if (avatarFile) {
         const fileExt = avatarFile.name.split('.').pop();
-        const fileName = `renter-${user.id}-${Date.now()}.${fileExt}`;
+        const fileName = `${user.id}-${Date.now()}.${fileExt}`;
         
         const { error: uploadError, data: uploadData } = await supabase.storage
           .from('avatars')
@@ -98,13 +113,11 @@ const BoothRenterSetup = () => {
         .from('users')
         .update({
           full_name: fullName,
-          specialty,
-          salon_name: salonName,
-          location,
-          bio,
-          instagram,
-          rental_rate: rentalRate,
-          looking_for_booth: isLookingForNewBooth,
+          gender_identity: gender,
+          zip_code: zipCode,
+          birthday,
+          favorite_place: favoritePlace,
+          interested_services: selectedServices,
           avatar_url: avatarUrl,
           updated_at: new Date().toISOString()
         })
@@ -113,7 +126,7 @@ const BoothRenterSetup = () => {
       if (error) throw error;
       
       toast.success("Profile setup complete!");
-      navigate('/dashboard/artist'); // Booth renters use the artist dashboard
+      navigate('/dashboard/customer');
     } catch (error) {
       console.error("Error setting up profile:", error);
       toast.error("Failed to set up your profile. Please try again.");
@@ -127,9 +140,9 @@ const BoothRenterSetup = () => {
       <div className="container max-w-2xl mx-auto">
         <Card className="border border-border/50 shadow-md bg-card/80 backdrop-blur-sm">
           <CardHeader className="text-center space-y-1">
-            <CardTitle className="text-3xl font-serif">Complete Your Booth Renter Profile</CardTitle>
+            <CardTitle className="text-3xl font-serif">Complete Your Customer Profile</CardTitle>
             <CardDescription>
-              Help clients find you and potentially discover new booth opportunities
+              Help us personalize your beauty experience
             </CardDescription>
           </CardHeader>
           
@@ -172,7 +185,7 @@ const BoothRenterSetup = () => {
                   <Label htmlFor="fullName">Full Name</Label>
                   <Input 
                     id="fullName" 
-                    placeholder="Your professional name" 
+                    placeholder="Your name" 
                     value={fullName} 
                     onChange={(e) => setFullName(e.target.value)} 
                     required 
@@ -180,19 +193,18 @@ const BoothRenterSetup = () => {
                 </div>
                 
                 <div className="grid gap-2">
-                  <Label htmlFor="specialty">Specialty</Label>
+                  <Label htmlFor="gender">Gender Identity (optional)</Label>
                   <Select 
-                    value={specialty} 
-                    onValueChange={setSpecialty}
-                    required
+                    value={gender} 
+                    onValueChange={setGender}
                   >
-                    <SelectTrigger id="specialty">
-                      <SelectValue placeholder="Select your specialty" />
+                    <SelectTrigger id="gender">
+                      <SelectValue placeholder="Select your gender identity" />
                     </SelectTrigger>
                     <SelectContent>
-                      {specialties.map((specialtyOption) => (
-                        <SelectItem key={specialtyOption} value={specialtyOption}>
-                          {specialtyOption}
+                      {genderOptions.map((option) => (
+                        <SelectItem key={option} value={option}>
+                          {option}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -200,74 +212,60 @@ const BoothRenterSetup = () => {
                 </div>
                 
                 <div className="grid gap-2">
-                  <Label htmlFor="salonName" className="flex items-center">
-                    <Building className="h-4 w-4 mr-2" /> Current Salon Name
-                  </Label>
+                  <Label htmlFor="zipCode">Zip Code</Label>
                   <Input 
-                    id="salonName" 
-                    placeholder="Where you currently rent a booth" 
-                    value={salonName} 
-                    onChange={(e) => setSalonName(e.target.value)} 
-                  />
-                </div>
-                
-                <div className="grid gap-2">
-                  <Label htmlFor="location" className="flex items-center">
-                    <MapPin className="h-4 w-4 mr-2" /> Location
-                  </Label>
-                  <Input 
-                    id="location" 
-                    placeholder="City, State" 
-                    value={location} 
-                    onChange={(e) => setLocation(e.target.value)} 
+                    id="zipCode" 
+                    placeholder="Your zip code" 
+                    value={zipCode} 
+                    onChange={(e) => setZipCode(e.target.value)} 
                     required 
                   />
                 </div>
-                
+              </div>
+              
+              {/* Services */}
+              <div className="space-y-3">
+                <Label>Services You're Interested In</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  {serviceOptions.map((service) => (
+                    <div key={service} className="flex items-center space-x-2">
+                      <Checkbox 
+                        id={`service-${service}`} 
+                        checked={selectedServices.includes(service)}
+                        onCheckedChange={() => toggleService(service)}
+                      />
+                      <Label 
+                        htmlFor={`service-${service}`}
+                        className="cursor-pointer text-sm"
+                      >
+                        {service}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Optional Info */}
+              <div className="space-y-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="rentalRate" className="flex items-center">
-                    <DollarSign className="h-4 w-4 mr-2" /> Current Rental Rate (optional)
+                  <Label htmlFor="birthday" className="flex items-center">
+                    <Calendar className="h-4 w-4 mr-2" /> Birthday (optional)
                   </Label>
                   <Input 
-                    id="rentalRate" 
-                    placeholder="Example: $200/week" 
-                    value={rentalRate} 
-                    onChange={(e) => setRentalRate(e.target.value)} 
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="isLookingForNewBooth" className="cursor-pointer">
-                    I'm looking for a new booth to rent
-                  </Label>
-                  <Switch
-                    id="isLookingForNewBooth"
-                    checked={isLookingForNewBooth}
-                    onCheckedChange={setIsLookingForNewBooth}
+                    id="birthday" 
+                    type="date"
+                    value={birthday} 
+                    onChange={(e) => setBirthday(e.target.value)} 
                   />
                 </div>
                 
                 <div className="grid gap-2">
-                  <Label htmlFor="bio">Bio</Label>
-                  <Textarea 
-                    id="bio" 
-                    placeholder="Tell clients about your experience, style, and specialties" 
-                    value={bio} 
-                    onChange={(e) => setBio(e.target.value)} 
-                    rows={4}
-                    required
-                  />
-                </div>
-                
-                <div className="grid gap-2">
-                  <Label htmlFor="instagram" className="flex items-center">
-                    <AtSign className="h-4 w-4 mr-2" /> Instagram (optional)
-                  </Label>
-                  <Input
-                    id="instagram"
-                    placeholder="Instagram username (without @)"
-                    value={instagram}
-                    onChange={(e) => setInstagram(e.target.value)}
+                  <Label htmlFor="favoritePlace">Favorite Artist/Salon (optional)</Label>
+                  <Input 
+                    id="favoritePlace" 
+                    placeholder="Name of your favorite salon or artist" 
+                    value={favoritePlace} 
+                    onChange={(e) => setFavoritePlace(e.target.value)} 
                   />
                 </div>
               </div>
@@ -297,4 +295,4 @@ const BoothRenterSetup = () => {
   );
 };
 
-export default BoothRenterSetup;
+export default CustomerSetup;

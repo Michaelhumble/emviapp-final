@@ -11,7 +11,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 // User type options for registration
-type UserType = "artist" | "owner" | "renter" | "customer" | "freelancer";
+type UserType = "artist" | "owner" | "renter" | "customer" | "supplier" | "freelancer" | "other";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -37,7 +37,7 @@ const SignUp = () => {
         user_type: userType
       });
       
-      // Redirect based on user type
+      // Redirect based on user type to the appropriate setup page
       switch (userType) {
         case "artist":
           navigate("/profile/artist/setup");
@@ -51,8 +51,14 @@ const SignUp = () => {
         case "freelancer":
           navigate("/profile/freelancer/setup");
           break;
+        case "supplier":
+          navigate("/profile/supplier/setup");
+          break;
+        case "other":
+          navigate("/profile/other/setup");
+          break;
         case "customer":
-          navigate("/");
+          navigate("/profile/customer/setup");
           break;
         default:
           navigate("/");
@@ -139,6 +145,14 @@ const SignUp = () => {
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="freelancer" id="freelancer" />
                   <Label htmlFor="freelancer" className="cursor-pointer">Freelancer</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="supplier" id="supplier" />
+                  <Label htmlFor="supplier" className="cursor-pointer">Beauty Supplier</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="other" id="other" />
+                  <Label htmlFor="other" className="cursor-pointer">Other</Label>
                 </div>
               </RadioGroup>
             </div>
