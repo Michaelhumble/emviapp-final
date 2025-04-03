@@ -25,6 +25,8 @@ import CustomerDashboard from "./pages/dashboard/Customer";
 import ArtistDashboard from "./pages/dashboard/Artist";
 import OwnerDashboard from "./pages/dashboard/Owner";
 import SupplierDashboard from "./pages/dashboard/Supplier";
+import FreelancerDashboard from "./pages/dashboard/Freelancer";
+import Freelancers from "./pages/Freelancers";
 import NailJobs from "./pages/NailJobs";
 import SalonMarketplace from "./pages/SalonMarketplace";
 import SupplierDirectory from "./pages/SupplierDirectory";
@@ -41,6 +43,7 @@ import BoothPost from "./pages/posting/BoothPost";
 import ArtistSetup from "./pages/profile/artist/setup";
 import SalonOwnerSetup from "./pages/profile/salon/setup";
 import BoothRenterSetup from "./pages/profile/renter/setup";
+import FreelancerSetup from "./pages/profile/freelancer/setup";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +67,7 @@ const App = () => (
             <Route path="/customers" element={<Customers />} />
             <Route path="/artists" element={<Artists />} />
             <Route path="/suppliers" element={<Suppliers />} />
+            <Route path="/freelancers" element={<Freelancers />} />
             <Route path="/analysis" element={<Analysis />} />
             <Route path="/post-job" element={<PostJob />} />
             <Route path="/post-salon" element={<PostSalon />} />
@@ -86,11 +90,13 @@ const App = () => (
             <Route path="/dashboard/artist" element={<ArtistDashboard />} />
             <Route path="/dashboard/owner" element={<OwnerDashboard />} />
             <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
+            <Route path="/dashboard/freelancer" element={<FreelancerDashboard />} />
             
             {/* Profile Setup Routes */}
             <Route path="/profile/artist/setup" element={<ArtistSetup />} />
             <Route path="/profile/salon/setup" element={<SalonOwnerSetup />} />
             <Route path="/profile/renter/setup" element={<BoothRenterSetup />} />
+            <Route path="/profile/freelancer/setup" element={<FreelancerSetup />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

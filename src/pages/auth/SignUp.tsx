@@ -11,7 +11,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 // User type options for registration
-type UserType = "artist" | "owner" | "renter" | "customer";
+type UserType = "artist" | "owner" | "renter" | "customer" | "freelancer";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -47,6 +47,9 @@ const SignUp = () => {
           break;
         case "renter":
           navigate("/profile/renter/setup");
+          break;
+        case "freelancer":
+          navigate("/profile/freelancer/setup");
           break;
         case "customer":
           navigate("/");
@@ -132,6 +135,10 @@ const SignUp = () => {
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="customer" id="customer" />
                   <Label htmlFor="customer" className="cursor-pointer">Customer</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="freelancer" id="freelancer" />
+                  <Label htmlFor="freelancer" className="cursor-pointer">Freelancer</Label>
                 </div>
               </RadioGroup>
             </div>

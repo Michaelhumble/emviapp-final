@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
-type Role = "customer" | "artist" | "owner" | "renter" | "supplier";
+type Role = "customer" | "artist" | "owner" | "renter" | "supplier" | "freelancer";
 
 interface RoleSelectionModalProps {
   open: boolean;
@@ -48,6 +48,11 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
       id: "supplier",
       label: "Supplier",
       description: "Offer beauty products to salons and artists"
+    },
+    {
+      id: "freelancer",
+      label: "Freelancer",
+      description: "I'm an independent artist looking for gigs, bookings, or to build my brand"
     }
   ];
 
@@ -85,6 +90,9 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
           break;
         case 'supplier':
           navigate('/dashboard/supplier');
+          break;
+        case 'freelancer':
+          navigate('/profile/freelancer/setup');
           break;
         case 'customer':
         default:
