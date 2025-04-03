@@ -8,10 +8,11 @@ import { Users, Building2, Store, Briefcase } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import AIDashboardWidgets from "@/components/ai/AIDashboardWidgets";
+import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
 
 const OwnerDashboard = () => {
-  const { user } = useAuth();
-  const firstName = user?.email?.split('@')[0] || 'there';
+  const { userProfile } = useAuth();
+  const firstName = userProfile?.salon_name || userProfile?.full_name?.split(' ')[0] || userProfile?.email?.split('@')[0] || 'Salon Owner';
   
   useEffect(() => {
     document.title = "Salon Owner Dashboard | EmviApp";
@@ -41,13 +42,18 @@ const OwnerDashboard = () => {
           transition={{ duration: 0.5 }}
           className="max-w-4xl mx-auto"
         >
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-serif mb-4">
               Hi {firstName}! Let's grow your business 💅
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Quality artists are searching. Let's help them find you.
             </p>
+          </div>
+          
+          {/* Profile Completion Card */}
+          <div className="mb-6">
+            <ProfileCompletionCard />
           </div>
           
           {/* AI Dashboard Widgets */}
@@ -120,7 +126,7 @@ const OwnerDashboard = () => {
                 <h3 className="text-xl font-medium mb-2">Complete Your Salon Profile</h3>
                 <p className="text-muted-foreground">Showcase your salon to attract top talent and customers</p>
               </div>
-              <Link to="/profile/salon/setup">
+              <Link to="/profile/edit">
                 <Button variant="outline" className="min-w-[140px]">
                   <Building2 className="mr-2 h-4 w-4" /> Update Salon
                 </Button>

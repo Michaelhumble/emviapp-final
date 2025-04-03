@@ -8,10 +8,11 @@ import { Camera, Briefcase, Users, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import AIDashboardWidgets from "@/components/ai/AIDashboardWidgets";
+import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
 
 const FreelancerDashboard = () => {
-  const { user } = useAuth();
-  const firstName = user?.email?.split('@')[0] || 'there';
+  const { userProfile } = useAuth();
+  const firstName = userProfile?.full_name?.split(' ')[0] || userProfile?.email?.split('@')[0] || 'Freelancer';
   
   useEffect(() => {
     document.title = "Freelancer Dashboard | EmviApp";
@@ -41,13 +42,18 @@ const FreelancerDashboard = () => {
           transition={{ duration: 0.5 }}
           className="max-w-4xl mx-auto"
         >
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-serif mb-4">
               Hi {firstName}! Ready to level up your hustle? 💅
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Turn passion into your path — with EmviApp.
             </p>
+          </div>
+          
+          {/* Profile Completion Card */}
+          <div className="mb-6">
+            <ProfileCompletionCard />
           </div>
           
           {/* AI Dashboard Widgets */}
@@ -67,7 +73,7 @@ const FreelancerDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <CardDescription className="mb-4">Showcase your best freelance work</CardDescription>
-                  <Link to="/profile/freelancer/setup">
+                  <Link to="/profile/edit">
                     <Button variant="default" className="w-full">
                       Build Portfolio
                     </Button>
@@ -122,7 +128,7 @@ const FreelancerDashboard = () => {
                 <h3 className="text-xl font-medium mb-2">Complete Your Freelancer Profile</h3>
                 <p className="text-muted-foreground">Stand out and attract more clients to your services</p>
               </div>
-              <Link to="/profile/freelancer/setup">
+              <Link to="/profile/edit">
                 <Button variant="outline" className="min-w-[140px]">
                   <User className="mr-2 h-4 w-4" /> Update Profile
                 </Button>

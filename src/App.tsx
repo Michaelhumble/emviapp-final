@@ -48,6 +48,8 @@ import FreelancerSetup from "./pages/profile/freelancer/setup";
 import CustomerSetup from "./pages/profile/customer/setup";
 import SupplierSetup from "./pages/profile/supplier/setup";
 import OtherRoleSetup from "./pages/profile/other/setup";
+import ProfileEdit from "./pages/profile/edit";
+import UserProfilePage from "./pages/profile/[username]";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +66,8 @@ const App = () => (
             <Route path="/salon-owners" element={<SalonOwners />} />
             <Route path="/jobs" element={<Jobs />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/edit" element={<ProfileEdit />} />
+            <Route path="/profile/:username" element={<UserProfilePage />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/messages" element={<Messaging />} />
             <Route path="/auth/signin" element={<SignIn />} />

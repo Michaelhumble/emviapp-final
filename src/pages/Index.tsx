@@ -1,4 +1,3 @@
-
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
 import ArtistTestimonials from "@/components/home/ArtistTestimonials";
@@ -48,12 +47,16 @@ const Index = () => {
           navigate('/dashboard/customer');
           break;
         case 'artist':
+        case 'nail technician/artist':
           navigate('/dashboard/artist');
           break;
         case 'salon':
+        case 'owner':
           navigate('/dashboard/owner');
           break;
         case 'vendor':
+        case 'supplier':
+        case 'beauty supplier':
           navigate('/dashboard/supplier');
           break;
         case 'freelancer':
@@ -61,17 +64,6 @@ const Index = () => {
           break;
         case 'other':
           navigate('/dashboard/other');
-          break;
-        // Handle legacy roles
-        case 'nail technician/artist':
-          navigate('/dashboard/artist');
-          break;
-        case 'owner':
-          navigate('/dashboard/owner');
-          break;
-        case 'supplier':
-        case 'beauty supplier':
-          navigate('/dashboard/supplier');
           break;
         default:
           // If no valid role is found, stay on the landing page
@@ -94,7 +86,6 @@ const Index = () => {
       );
     }
     
-    // Only show customer dashboard on index page if user is actually a customer
     if (user && userRole === 'customer') {
       return <CustomerDashboard />;
     }

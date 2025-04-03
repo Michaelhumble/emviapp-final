@@ -29,10 +29,13 @@ type AuthContextType = {
   session: Session | null;
   loading: boolean;
   userRole: UserRole;
+  userProfile: any | null;
+  profileComplete: boolean;
   signUp: (email: string, password: string, metadata?: UserMetadata) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   updateUserRole: (role: UserRole) => Promise<void>;
+  refreshUserProfile: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -42,26 +45,51 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState<UserRole>(null);
+  const [userProfile, setUserProfile] = useState<any | null>(null);
+  const [profileComplete, setProfileComplete] = useState(false);
 
-  const fetchUserRole = async (userId: string) => {
+  const fetchUserProfile = async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from('users')
-        .select('role')
+        .select('*')
         .eq('id', userId)
         .single();
       
       if (error) {
-        console.error('Error fetching user role:', error);
+        console.error('Error fetching user profile:', error);
         return;
       }
       
       if (data) {
         setUserRole(data.role as UserRole);
-        console.log("User role fetched from Supabase:", data.role);
+        setUserProfile(data);
+        
+        // Check if profile is complete based on role-specific required fields
+        let isComplete = false;
+        
+        if (data.role === 'artist' || data.role === 'freelancer') {
+          isComplete = !!(data.full_name && data.bio && data.specialty);
+        } else if (data.role === 'salon' || data.role === 'owner') {
+          isComplete = !!(data.salon_name && data.business_address);
+        } else if (data.role === 'vendor' || data.role === 'supplier' || data.role === 'beauty supplier') {
+          isComplete = !!(data.company_name && data.product_type);
+        } else {
+          // For customers and other roles, simpler requirements
+          isComplete = !!(data.full_name);
+        }
+        
+        setProfileComplete(isComplete);
+        console.log("User profile fetched:", data, "Profile complete:", isComplete);
       }
     } catch (error) {
-      console.error('Error in fetchUserRole:', error);
+      console.error('Error in fetchUserProfile:', error);
+    }
+  };
+
+  const refreshUserProfile = async () => {
+    if (user?.id) {
+      await fetchUserProfile(user.id);
     }
   };
 
@@ -74,11 +102,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (event === 'SIGNED_IN') {
           toast.success('Successfully signed in');
           if (session?.user) {
-            fetchUserRole(session.user.id);
+            fetchUserProfile(session.user.id);
           }
         } else if (event === 'SIGNED_OUT') {
           toast.info('Signed out');
           setUserRole(null);
+          setUserProfile(null);
+          setProfileComplete(false);
         }
       }
     );
@@ -88,7 +118,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        fetchUserRole(session.user.id);
+        fetchUserProfile(session.user.id);
       }
       
       setLoading(false);
@@ -182,10 +212,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       session, 
       loading, 
       userRole,
+      userProfile,
+      profileComplete,
       signUp, 
       signIn, 
       signOut,
-      updateUserRole
+      updateUserRole,
+      refreshUserProfile
     }}>
       {children}
     </AuthContext.Provider>

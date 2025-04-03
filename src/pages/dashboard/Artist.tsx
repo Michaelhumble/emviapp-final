@@ -8,10 +8,11 @@ import { Briefcase, ImagePlus, LineChart, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import AIDashboardWidgets from "@/components/ai/AIDashboardWidgets";
+import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
 
 const ArtistDashboard = () => {
-  const { user } = useAuth();
-  const firstName = user?.email?.split('@')[0] || 'there';
+  const { userProfile } = useAuth();
+  const firstName = userProfile?.full_name?.split(' ')[0] || userProfile?.email?.split('@')[0] || 'Artist';
   
   useEffect(() => {
     document.title = "Artist Dashboard | EmviApp";
@@ -41,13 +42,18 @@ const ArtistDashboard = () => {
           transition={{ duration: 0.5 }}
           className="max-w-4xl mx-auto"
         >
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-serif mb-4">
               Hi {firstName}! Let's find you something amazing 💅
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               You don't have to hustle alone. EmviApp is here.
             </p>
+          </div>
+          
+          {/* Profile Completion Card */}
+          <div className="mb-6">
+            <ProfileCompletionCard />
           </div>
           
           {/* AI Dashboard Widgets */}
@@ -84,7 +90,7 @@ const ArtistDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <CardDescription className="mb-4">Make your portfolio stand out</CardDescription>
-                  <Link to="/profile/artist/setup">
+                  <Link to="/profile/edit">
                     <Button variant="default" className="w-full">
                       Update Portfolio
                     </Button>
