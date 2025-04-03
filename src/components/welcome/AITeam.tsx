@@ -1,7 +1,9 @@
+
 import { motion } from "framer-motion";
 import { Search, Users, Shield, TrendingUp, Sun } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { UserRole } from "@/context/AuthContext"; // Import UserRole type
 
 // AI agent interface
 interface AIAgent {
@@ -15,7 +17,7 @@ interface AIAgent {
 }
 
 interface AITeamProps {
-  userRole?: 'artist' | 'owner' | 'renter' | 'supplier' | 'customer' | 'freelancer' | 'salon' | 'other' | null;
+  userRole?: UserRole; // Use the UserRole type from AuthContext
 }
 
 const AITeam = ({ userRole = 'customer' }: AITeamProps) => {
@@ -74,6 +76,7 @@ const AITeam = ({ userRole = 'customer' }: AITeamProps) => {
     
     switch(userRole) {
       case 'artist':
+      case 'nail technician/artist':
         customized[0].description = "Optimizes your profile for discovery by salon owners and clients looking for your skills.";
         customized[1].description = "Matches you with job opportunities and clients that perfectly fit your expertise.";
         customized[3].description = "Suggests ways to increase your income and build a stronger client base.";
@@ -85,6 +88,7 @@ const AITeam = ({ userRole = 'customer' }: AITeamProps) => {
         customized[3].description = "Recommends strategies to boost salon revenue and retain talented staff.";
         break;
       case 'supplier':
+      case 'beauty supplier':
         customized[0].description = "Enhances discovery of your products by salons and beauty professionals.";
         customized[1].description = "Connects your products with salons and professionals most likely to purchase them.";
         customized[3].description = "Suggests pricing strategies and promotions to increase your product sales.";
