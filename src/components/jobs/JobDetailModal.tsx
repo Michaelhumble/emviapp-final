@@ -5,32 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { MapPin, Phone, Mail, Calendar, Clock, Briefcase, CheckCircle, Users, MessageSquare } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-
-interface Job {
-  id: string;
-  created_at: string;
-  title: string;
-  company: string;
-  location: string;
-  salary_range: string;
-  description: string;
-  weekly_pay: boolean;
-  owner_will_train: boolean;
-  employment_type: string;
-  responsibilities?: string[];
-  qualifications?: string[];
-  benefits?: string[];
-  company_description?: string;
-  contact_info?: {
-    phone?: string;
-    email?: string;
-  };
-  trust_indicators?: {
-    verified: boolean;
-    activelyHiring: boolean;
-    chatAvailable: boolean;
-  };
-}
+import { Job } from "@/types/job";
 
 interface JobDetailModalProps {
   job: Job;

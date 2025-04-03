@@ -5,26 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, MapPin, Briefcase, LockIcon, CheckCircle, Users, MessageSquare } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-
-interface Job {
-  id: string;
-  created_at: string;
-  title: string;
-  company: string;
-  location: string;
-  salary_range: string;
-  description: string;
-  employment_type: string;
-  is_nationwide?: boolean;
-  weekly_pay: boolean;
-  owner_will_train: boolean;
-  user_id: string;
-  trust_indicators?: {
-    verified: boolean;
-    activelyHiring: boolean;
-    chatAvailable: boolean;
-  };
-}
+import { Job } from "@/types/job";
 
 interface JobListingCardProps {
   job: Job;
