@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -19,7 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { MapPin, DollarSign, Users, Calendar, Pulse, ArrowRight, Building, Star } from "lucide-react";
+import { MapPin, DollarSign, Users, Calendar, TrendingUp, ArrowRight, Building, Star } from "lucide-react";
 
 const SalonMarketplace = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -128,18 +127,15 @@ const SalonMarketplace = () => {
   ];
 
   const filteredSalons = salons.filter(salon => {
-    // Filter by search term
     const matchesSearch = 
       salon.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       salon.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
       salon.description.en.toLowerCase().includes(searchTerm.toLowerCase()) ||
       salon.description.vi.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // Filter by location
     const matchesLocation = locationFilter === 'all' || 
       salon.location.toLowerCase().includes(locationFilter.toLowerCase());
 
-    // Filter by price
     let matchesPrice = true;
     if (priceFilter === 'under100k') {
       matchesPrice = salon.price < 100000;
@@ -165,7 +161,6 @@ const SalonMarketplace = () => {
     }).format(price);
   };
 
-  // AI price analysis (placeholder)
   const getPriceAnalysis = (salon) => {
     const marketAvg = 180000;
     const priceDiff = (salon.price - marketAvg) / marketAvg * 100;
@@ -197,7 +192,6 @@ const SalonMarketplace = () => {
         <h1 className="text-4xl font-serif font-bold mb-2 text-center">Salon Marketplace</h1>
         <p className="text-center text-gray-600 mb-8">Browse salons for sale across the country</p>
         
-        {/* Search and Filter */}
         <div className="flex flex-col md:flex-row gap-4 mb-8">
           <div className="flex-grow">
             <Input
@@ -237,7 +231,6 @@ const SalonMarketplace = () => {
           </div>
         </div>
 
-        {/* Tabs */}
         <Tabs defaultValue="all" className="mb-8">
           <TabsList className="mb-4">
             <TabsTrigger value="all">All Salons</TabsTrigger>
@@ -272,7 +265,7 @@ const SalonMarketplace = () => {
           <TabsContent value="recent" className="mt-0">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredSalons
-                .slice(0, 3) // Just showing last 3 as "recent" for the demo
+                .slice(0, 3)
                 .map((salon) => (
                   <SalonCard 
                     key={salon.id} 
@@ -285,7 +278,6 @@ const SalonMarketplace = () => {
           </TabsContent>
         </Tabs>
         
-        {/* Salon Details Dialog */}
         <Dialog 
           open={isDialogOpen} 
           onOpenChange={setIsDialogOpen}
@@ -335,7 +327,7 @@ const SalonMarketplace = () => {
                       <div>{selectedSalon.staff} people</div>
                       
                       <div className="flex items-center">
-                        <Pulse className="h-4 w-4 mr-2" /> Monthly Revenue
+                        <TrendingUp className="h-4 w-4 mr-2" /> Monthly Revenue
                       </div>
                       <div>{formatPrice(selectedSalon.revenue)}</div>
                       
@@ -424,7 +416,7 @@ const SalonCard = ({ salon, viewDetails }) => {
             <Building className="h-3 w-3 mr-1 text-gray-500" /> ${salon.monthlyRent}/mo
           </div>
           <div className="flex items-center">
-            <Pulse className="h-3 w-3 mr-1 text-gray-500" /> ${salon.revenue/1000}k Revenue
+            <TrendingUp className="h-3 w-3 mr-1 text-gray-500" /> ${salon.revenue/1000}k Revenue
           </div>
           <div className="flex items-center">
             <Calendar className="h-3 w-3 mr-1 text-gray-500" /> {salon.willTrain ? "Will Train" : "No Training"}
