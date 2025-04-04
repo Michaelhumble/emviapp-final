@@ -14,8 +14,11 @@ export const navigateToRoleDashboard = (
   if (!userRole) {
     // If no role is found, redirect to the home page
     navigate('/');
+    console.log("No user role found, redirecting to home page");
     return;
   }
+  
+  console.log(`Navigating based on role: ${userRole}`);
   
   switch(userRole) {
     case 'customer':
@@ -45,6 +48,7 @@ export const navigateToRoleDashboard = (
       break;
     default:
       // Default fallback to home page
+      console.log(`Unknown role ${userRole}, redirecting to home page`);
       navigate('/');
       break;
   }
@@ -63,21 +67,21 @@ export const getPersonalizedGreeting = (name: string, role?: UserRole | null): s
   switch(role) {
     case 'artist':
     case 'nail technician/artist':
-      return `Welcome back, ${name}! Here's what's next for you as an artist.`;
+      return `Welcome back, ${name}! Here's your artist dashboard.`;
     case 'salon':
     case 'owner':
-      return `Welcome back, ${name}! Here's what's next for you as a salon owner.`;
+      return `Welcome back, ${name}! Here's your salon dashboard.`;
     case 'vendor':
     case 'supplier':
     case 'beauty supplier':
-      return `Welcome back, ${name}! Here's what's next for you as a supplier.`;
+      return `Welcome back, ${name}! Here's your supplier dashboard.`;
     case 'freelancer':
     case 'renter':
-      return `Welcome back, ${name}! Here's what's next for you as a freelancer.`;
+      return `Welcome back, ${name}! Here's your freelancer dashboard.`;
     case 'customer':
-      return `Welcome back, ${name}! Here's what's next for you.`;
+      return `Welcome back, ${name}! Here's your customer dashboard.`;
     case 'other':
-      return `Welcome back, ${name}! Here's what's next for you.`;
+      return `Welcome back, ${name}! Here's your dashboard.`;
     default:
       return `Welcome back, ${name}!`;
   }

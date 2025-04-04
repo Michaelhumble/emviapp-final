@@ -1,52 +1,59 @@
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { Copy, User } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Copy, CheckCircle2, Edit3 } from "lucide-react";
+import { toast } from "sonner";
 import { useAuth } from "@/context/auth";
 
-interface UserActionButtonsProps {
-  className?: string;
-}
-
-const UserActionButtons = ({ className = "" }: UserActionButtonsProps) => {
-  const { toast } = useToast();
+const UserActionButtons = () => {
+  const [copied, setCopied] = useState(false);
   const { user } = useAuth();
   
-  const copyAffiliateLink = () => {
-    // Generate an affiliate link based on user ID
-    const affiliateLink = `${window.location.origin}/?ref=${user?.id}`;
+  // Generate a shareable affiliate link (in production this would come from backend)
+  const affiliateLink = user ? `https://emviapp.com/invite?ref=${user.id?.substring(0, 8)}` : "";
+  
+  const handleCopyLink = () => {
+    if (!affiliateLink) return;
     
-    // Copy to clipboard
     navigator.clipboard.writeText(affiliateLink)
       .then(() => {
-        toast({
-          title: "Affiliate link copied!",
-          description: "Share it with friends to earn rewards.",
-        });
+        setCopied(true);
+        toast.success("Affiliate link copied to clipboard!");
+        setTimeout(() => setCopied(false), 3000);
       })
-      .catch(() => {
-        toast({
-          variant: "destructive",
-          title: "Failed to copy",
-          description: "Please try again or copy manually.",
-        });
+      .catch(err => {
+        console.error("Failed to copy:", err);
+        toast.error("Failed to copy link. Please try again.");
       });
   };
-  
+
   return (
-    <div className={`flex flex-col sm:flex-row gap-4 ${className}`}>
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
       <Link to="/profile/edit" className="flex-1">
-        <Button variant="outline" className="w-full flex items-center justify-center">
-          <User className="mr-2 h-4 w-4" /> Edit Profile
+        <Button variant="outline" className="w-full">
+          <Edit3 className="h-4 w-4 mr-2" />
+          Edit Profile
         </Button>
       </Link>
+      
       <Button 
-        variant="secondary" 
-        className="flex-1 flex items-center justify-center"
-        onClick={copyAffiliateLink}
+        variant="outline" 
+        className="flex-1" 
+        onClick={handleCopyLink}
+        disabled={copied || !affiliateLink}
       >
-        <Copy className="mr-2 h-4 w-4" /> Copy Affiliate Link
+        {copied ? (
+          <>
+            <CheckCircle2 className="h-4 w-4 mr-2 text-green-500" />
+            Copied!
+          </>
+        ) : (
+          <>
+            <Copy className="h-4 w-4 mr-2" />
+            Copy My Affiliate Link
+          </>
+        )}
       </Button>
     </div>
   );
