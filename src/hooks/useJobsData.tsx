@@ -53,19 +53,19 @@ const useJobsData = (searchTerm?: string, filters?: Filters) => {
 
         // Apply filters if provided
         if (filters) {
-          if (filters.weeklyPay) {
+          if (filters.weeklyPay === true) {
             query = query.eq("weekly_pay", true);
           }
           
-          if (filters.ownerWillTrain) {
+          if (filters.ownerWillTrain === true) {
             query = query.eq("owner_will_train", true);
           }
           
-          if (filters.hasHousing) {
+          if (filters.hasHousing === true) {
             query = query.eq("has_housing", true);
           }
           
-          if (filters.noSupplyDeduction) {
+          if (filters.noSupplyDeduction === true) {
             query = query.eq("no_supply_deduction", true);
           }
           

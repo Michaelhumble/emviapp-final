@@ -36,7 +36,7 @@ const Welcome = () => {
   
   const redirectToDashboard = () => {
     console.log("Redirecting with user role:", userRole);
-    navigateToRoleDashboard(userRole, navigate);
+    navigateToRoleDashboard(navigate, userRole);
   };
 
   // Function to handle the "Let's go" button click

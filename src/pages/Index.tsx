@@ -44,7 +44,7 @@ const Index = () => {
       }
       
       // Enhanced role-based dashboard routing
-      navigateToRoleDashboard(userRole, navigate);
+      navigateToRoleDashboard(navigate, userRole);
     }
   }, [user, userRole, hasSelectedRole, loading, isLoading, navigate]);
   

@@ -90,7 +90,7 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
       });
       
       // Use the utility function for consistent role-based navigation
-      navigateToRoleDashboard(selectedRole, navigate);
+      navigateToRoleDashboard(navigate, selectedRole);
     } catch (error) {
       console.error("Error setting user role:", error);
       toast({
