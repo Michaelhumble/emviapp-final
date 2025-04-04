@@ -18,6 +18,7 @@ import AITeam from "@/components/home/AITeam";
 import PricingSection from "@/components/home/PricingSection";
 import FreelancersHighlight from "@/components/home/FreelancersHighlight";
 import { Skeleton } from "@/components/ui/skeleton";
+import { navigateToRoleDashboard } from "@/utils/navigation";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -74,4 +75,3 @@ const Index = () => {
 };
 
 export default Index;
-
