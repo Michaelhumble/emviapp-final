@@ -30,34 +30,40 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
 
       if (apiError) throw apiError;
 
-      // Apply filters in JavaScript instead of database queries to avoid nesting issues
-      let filteredData = data || [];
+      if (!data) {
+        setJobs([]);
+        return;
+      }
+
+      // Format the job data first to ensure all required properties exist
+      const formattedJobs = formatJobListings(data);
+      
+      // Apply filters in JavaScript to the properly formatted jobs
+      let filteredJobs = [...formattedJobs];
       
       if (filters.featured) {
-        filteredData = filteredData.filter(job => job.is_featured === true);
+        filteredJobs = filteredJobs.filter(job => job.is_featured === true);
       }
       
       if (filters.remote) {
-        filteredData = filteredData.filter(job => job.is_remote === true);
+        filteredJobs = filteredJobs.filter(job => job.is_remote === true);
       }
       
       if (filters.fullTime) {
-        filteredData = filteredData.filter(job => job.employment_type === 'Full-time');
+        filteredJobs = filteredJobs.filter(job => job.employment_type === 'Full-time');
       }
       
       if (filters.partTime) {
-        filteredData = filteredData.filter(job => job.employment_type === 'Part-time');
+        filteredJobs = filteredJobs.filter(job => job.employment_type === 'Part-time');
       }
       
       if (filters.location && filters.location !== 'all') {
-        filteredData = filteredData.filter(job => 
+        filteredJobs = filteredJobs.filter(job => 
           job.location && job.location.toLowerCase().includes(filters.location!.toLowerCase())
         );
       }
 
-      // Format the filtered jobs
-      const formattedJobs = formatJobListings(filteredData);
-      setJobs(formattedJobs);
+      setJobs(filteredJobs);
     } catch (err) {
       setError(err instanceof Error ? err : new Error(String(err)));
       console.error("Error fetching jobs:", err);
