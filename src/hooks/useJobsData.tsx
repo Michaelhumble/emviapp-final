@@ -42,11 +42,11 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
       let filteredJobs = [...formattedJobs];
       
       if (filters.featured) {
-        filteredJobs = filteredJobs.filter(job => job.is_featured === true);
+        filteredJobs = filteredJobs.filter(job => job.is_featured);
       }
       
       if (filters.remote) {
-        filteredJobs = filteredJobs.filter(job => job.is_remote === true);
+        filteredJobs = filteredJobs.filter(job => job.is_remote);
       }
       
       if (filters.fullTime) {

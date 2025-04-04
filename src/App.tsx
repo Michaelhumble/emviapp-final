@@ -25,6 +25,7 @@ import Salons from "./pages/Salons";
 import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
 import NotFound from "./pages/NotFound";
+import Analysis from "./pages/Analysis";
 
 // Import contexts
 import { AuthProvider } from "./context/auth";
@@ -55,9 +56,14 @@ function App() {
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/salons" element={<Salons />} />
           
+          {/* Analysis route */}
+          <Route path="/analysis" element={<Analysis />} />
+          
           {/* Authentication routes */}
           <Route path="/auth/signin" element={<SignIn />} />
           <Route path="/auth/signup" element={<SignUp />} />
+          <Route path="/sign-in" element={<SignIn />} /> {/* Alias routes for convenience */}
+          <Route path="/sign-up" element={<SignUp />} /> {/* Alias routes for convenience */}
           
           {/* 404 page */}
           <Route path="/not-found" element={<NotFound />} />

@@ -9,7 +9,8 @@ import {
   Settings, 
   Bell, 
   MessageSquare, 
-  ChevronDown
+  ChevronDown,
+  Activity
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -88,8 +89,9 @@ const Navbar = () => {
           
           <Link 
             to="/analysis" 
-            className={`${isActive('/analysis')} hover:text-primary transition-colors`}
+            className={`${isActive('/analysis')} hover:text-primary transition-colors flex items-center gap-1`}
           >
+            <Activity className="h-4 w-4" />
             Analysis
           </Link>
         </nav>
@@ -166,6 +168,12 @@ const Navbar = () => {
                 >
                   Salons
                 </Link>
+                <Link
+                  to="/analysis"
+                  className="text-gray-600 hover:text-primary transition-colors flex items-center gap-1 py-2"
+                >
+                  <Activity className="h-4 w-4" /> Analysis
+                </Link>
                 <div className="py-2">
                   <p className="font-medium mb-2">Community</p>
                   <div className="pl-4 flex flex-col gap-2">
@@ -195,12 +203,6 @@ const Navbar = () => {
                     </Link>
                   </div>
                 </div>
-                <Link
-                  to="/analysis"
-                  className="text-gray-600 hover:text-primary transition-colors block py-2"
-                >
-                  Analysis
-                </Link>
                 {user ? (
                   <>
                     <Link

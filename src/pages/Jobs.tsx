@@ -12,7 +12,6 @@ import JobsGrid from "@/components/jobs/JobsGrid";
 import VietnameseJobSection from "@/components/jobs/VietnameseJobSection";
 import { useJobsData, JobFilters as JobFilterOptions } from "@/hooks/useJobsData";
 import { useJobRenewal } from "@/hooks/useJobRenewal";
-import { differenceInDays } from 'date-fns';
 
 interface Filters {
   weeklyPay: boolean;
