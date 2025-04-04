@@ -17,6 +17,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isSignedIn, setIsSignedIn] = useState(false);
 
   // Initialize auth state and listen for changes
   useEffect(() => {
@@ -24,6 +25,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
       setUser(session?.user || null);
+      setIsSignedIn(!!session?.user);
       setLoading(false);
     };
 
@@ -34,6 +36,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       async (_event, session) => {
         setSession(session);
         setUser(session?.user || null);
+        setIsSignedIn(!!session?.user);
         setLoading(false);
       }
     );
@@ -60,6 +63,29 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     loadUserProfile();
   }, [user]);
+
+  // Sign in function
+  const signIn = async (email: string, password: string) => {
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        description: "Signed in successfully!",
+      });
+    } catch (error: any) {
+      console.error("Error signing in:", error);
+      toast({
+        variant: "destructive",
+        description: error.message || "Failed to sign in",
+      });
+      throw error;
+    }
+  };
 
   // Sign out function
   const signOut = async () => {
@@ -101,7 +127,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     userRole,
     loading,
     signOut,
-    refreshUserProfile
+    refreshUserProfile,
+    signIn,
+    isSignedIn
   };
 
   return (

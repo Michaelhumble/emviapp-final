@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { Search, CalendarDays, Gift, User } from "lucide-react";
 import ProfileCompletionCard from '@/components/profile/ProfileCompletionCard';
 import AIDashboardWidgets from '@/components/ai/AIDashboardWidgets';
+import AIAffiliateTrackingWidget from '@/components/ai/AIAffiliateTrackingWidget';
 
 const CustomerDashboard = () => {
   const { userProfile } = useAuth();
@@ -57,7 +58,10 @@ const CustomerDashboard = () => {
           </div>
           
           {/* AI Dashboard Widgets */}
-          <AIDashboardWidgets className="mb-12" />
+          <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <AIDashboardWidgets className="col-span-1 md:col-span-2" />
+            <AIAffiliateTrackingWidget />
+          </div>
           
           <motion.div 
             variants={container}

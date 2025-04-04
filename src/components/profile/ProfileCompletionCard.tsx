@@ -1,182 +1,117 @@
 
-import { useState, useEffect } from "react";
-import { useAuth } from "@/context/auth";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/context/auth';
 import { Progress } from "@/components/ui/progress";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { CheckCircle2, CircleDashed, UserCog } from "lucide-react";
+import { CheckCircle2, AlertCircle, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const ProfileCompletionCard = () => {
-  const { userProfile, userRole } = useAuth();
+  const { userProfile } = useAuth();
   const [completionPercentage, setCompletionPercentage] = useState(0);
   const [missingFields, setMissingFields] = useState<string[]>([]);
 
   useEffect(() => {
-    if (!userProfile) return;
-    
-    // Calculate completion percentage based on role and filled fields
-    calculateCompletion();
-  }, [userProfile]);
-  
-  const calculateCompletion = () => {
-    if (!userProfile) return;
-    
-    const missing: string[] = [];
-    let totalFields = 0;
-    let completedFields = 0;
-    
-    // Common fields for all roles
-    const commonFields: Array<{key: keyof typeof userProfile, label: string}> = [
-      { key: 'full_name', label: 'Full Name' },
-      { key: 'avatar_url', label: 'Profile Photo' },
-      { key: 'phone', label: 'Phone Number' },
-      { key: 'location', label: 'Location' }
-    ];
-    
-    // Role-specific fields
-    let roleSpecificFields: Array<{key: keyof typeof userProfile, label: string}> = [];
-    
-    switch(userRole) {
-      case 'artist':
-      case 'nail technician/artist':
-        roleSpecificFields = [
-          { key: 'specialty', label: 'Specialty' },
-          { key: 'bio', label: 'Bio' },
-          { key: 'instagram', label: 'Instagram' }
-        ];
-        break;
-      
-      case 'salon':
-      case 'owner':
-        roleSpecificFields = [
-          { key: 'salon_name', label: 'Salon Name' },
-          { key: 'business_address', label: 'Business Address' },
-          { key: 'website', label: 'Website' }
-        ];
-        break;
-        
-      case 'vendor':
-      case 'supplier':
-      case 'beauty supplier':
-        roleSpecificFields = [
-          { key: 'company_name', label: 'Company Name' },
-          { key: 'product_type', label: 'Product Type' },
-          { key: 'website', label: 'Website' }
-        ];
-        break;
-        
-      case 'freelancer':
-        roleSpecificFields = [
-          { key: 'specialty', label: 'Specialty' },
-          { key: 'bio', label: 'Bio' },
-          { key: 'instagram', label: 'Instagram' }
-        ];
-        break;
-        
-      case 'customer':
-      default:
-        roleSpecificFields = [
-          { key: 'bio', label: 'Personal Preferences' }
-        ];
+    if (!userProfile) {
+      setCompletionPercentage(0);
+      return;
     }
+
+    // Define required fields based on user role
+    const requiredFields: Record<string, string[]> = {
+      'artist': ['full_name', 'email', 'phone', 'specialty', 'bio', 'avatar_url', 'instagram'],
+      'nail technician/artist': ['full_name', 'email', 'phone', 'specialty', 'bio', 'avatar_url', 'instagram'],
+      'salon': ['full_name', 'email', 'phone', 'salon_name', 'location', 'bio'],
+      'owner': ['full_name', 'email', 'phone', 'salon_name', 'location'],
+      'vendor': ['full_name', 'email', 'phone', 'company_name', 'product_type'],
+      'supplier': ['full_name', 'email', 'phone', 'company_name', 'product_type'],
+      'beauty supplier': ['full_name', 'email', 'phone', 'company_name', 'product_type'],
+      'freelancer': ['full_name', 'email', 'phone', 'specialty', 'bio', 'avatar_url'],
+      'renter': ['full_name', 'email', 'phone', 'specialty', 'bio'],
+      'customer': ['full_name', 'email', 'location'],
+      'other': ['full_name', 'email'],
+    };
+
+    // Get the required fields for the user's role
+    const fieldsToCheck = requiredFields[userProfile.role || 'customer'] || requiredFields['customer'];
     
-    // Combine fields and check completion
-    const allFields = [...commonFields, ...roleSpecificFields];
-    totalFields = allFields.length;
-    
-    allFields.forEach(({ key, label }) => {
-      if (userProfile[key]) {
-        completedFields++;
-      } else {
-        missing.push(label);
-      }
+    // Count how many required fields are filled
+    const filledFields = fieldsToCheck.filter(field => {
+      const value = userProfile[field as keyof typeof userProfile];
+      return value !== undefined && value !== null && value !== '';
     });
     
-    // Calculate percentage
-    const percentage = Math.round((completedFields / totalFields) * 100);
+    const missing = fieldsToCheck.filter(field => {
+      const value = userProfile[field as keyof typeof userProfile];
+      return value === undefined || value === null || value === '';
+    });
+    
+    setMissingFields(missing.map(formatFieldName));
+    
+    // Calculate completion percentage
+    const percentage = Math.floor((filledFields.length / fieldsToCheck.length) * 100);
     setCompletionPercentage(percentage);
-    setMissingFields(missing);
-  };
-  
-  const getProfileSetupPath = () => {
-    switch(userRole) {
-      case 'artist':
-      case 'nail technician/artist':
-        return '/profile/artist/setup';
-      case 'salon':
-        return '/profile/salon/setup';
-      case 'owner':
-        return '/profile/salon/setup';
-      case 'freelancer':
-        return '/profile/freelancer/setup';
-      case 'vendor':
-      case 'supplier':
-      case 'beauty supplier':
-        return '/profile/supplier/setup';
-      case 'customer':
-        return '/profile/customer/setup';
+  }, [userProfile]);
+
+  const formatFieldName = (field: string): string => {
+    switch (field) {
+      case 'full_name': return 'Full Name';
+      case 'avatar_url': return 'Profile Photo';
+      case 'salon_name': return 'Salon Name';
+      case 'company_name': return 'Company Name';
+      case 'product_type': return 'Product Type';
       default:
-        return '/profile/edit';
+        // Convert camelCase to words with spaces and capitalize first letter
+        return field.replace(/([A-Z])/g, ' $1')
+          .replace(/_/g, ' ')
+          .replace(/^\w/, c => c.toUpperCase());
     }
   };
 
-  if (!userProfile) return null;
+  if (!userProfile) {
+    return null;
+  }
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center">
-          <UserCog className="mr-2 h-5 w-5 text-primary" />
-          Profile Completion
-        </CardTitle>
-        <CardDescription>Complete your profile to get more visibility</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
+    <Card className={`shadow-sm ${completionPercentage === 100 ? 'bg-green-50' : ''}`}>
+      <CardContent className="p-4">
+        <div className="flex justify-between items-center">
           <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span>{completionPercentage}% Complete</span>
-              <span>{completionPercentage === 100 ? (
-                <span className="text-primary flex items-center">
-                  <CheckCircle2 className="h-4 w-4 mr-1" /> Complete
-                </span>
+            <h3 className="font-medium mb-1">
+              {completionPercentage === 100 ? (
+                <div className="flex items-center text-green-600">
+                  <CheckCircle2 className="h-4 w-4 mr-1" />
+                  Profile Complete
+                </div>
               ) : (
-                <span className="text-muted-foreground">{missingFields.length} items left</span>
-              )}</span>
-            </div>
-            <Progress value={completionPercentage} className="h-2" />
+                <div className="flex items-center">
+                  <AlertCircle className="h-4 w-4 mr-1 text-amber-500" />
+                  Complete Your Profile: {completionPercentage}%
+                </div>
+              )}
+            </h3>
+            
+            {completionPercentage < 100 && (
+              <div className="mb-2">
+                <Progress value={completionPercentage} className="h-2" />
+              </div>
+            )}
+            
+            {missingFields.length > 0 && completionPercentage < 100 && (
+              <p className="text-sm text-gray-500 mt-2">
+                Missing: {missingFields.slice(0, 2).join(', ')}
+                {missingFields.length > 2 ? ` and ${missingFields.length - 2} more` : ''}
+              </p>
+            )}
           </div>
           
-          {completionPercentage < 100 && (
-            <div>
-              <p className="text-sm text-muted-foreground mb-2">Missing information:</p>
-              <ul className="text-sm space-y-1 mb-3">
-                {missingFields.slice(0, 3).map((field, index) => (
-                  <li key={index} className="flex items-center">
-                    <CircleDashed className="h-3 w-3 mr-2 text-muted-foreground" />
-                    {field}
-                  </li>
-                ))}
-                {missingFields.length > 3 && (
-                  <li className="text-xs text-muted-foreground">
-                    +{missingFields.length - 3} more items
-                  </li>
-                )}
-              </ul>
-              <Link to={getProfileSetupPath()}>
-                <Button size="sm" variant="outline" className="w-full">
-                  Complete Profile
-                </Button>
-              </Link>
-            </div>
-          )}
-          
-          {completionPercentage === 100 && (
-            <div className="text-center py-2">
-              <p className="text-sm text-muted-foreground">Your profile looks great!</p>
-            </div>
-          )}
+          <Link to="/profile/edit">
+            <Button variant={completionPercentage === 100 ? "outline" : "default"} size="sm">
+              {completionPercentage === 100 ? "Edit Profile" : "Complete Now"}
+              <ChevronRight className="ml-1 h-4 w-4" />
+            </Button>
+          </Link>
         </div>
       </CardContent>
     </Card>

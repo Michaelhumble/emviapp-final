@@ -46,7 +46,7 @@ const OtherDashboard = () => {
         >
           <div className="text-center mb-12">
             <h1 className="text-3xl md:text-4xl font-serif mb-4">
-              Welcome to EmviApp
+              Welcome to EmviApp, {firstName}
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Tell us more so we can guide your journey

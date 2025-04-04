@@ -1,7 +1,7 @@
 
 import { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
-import { useAuth } from "@/context/auth/useAuth";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +13,7 @@ const SignIn = () => {
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { signIn, user } = useAuth();
+  const navigate = useNavigate();
 
   // Redirect if already logged in
   if (user) {

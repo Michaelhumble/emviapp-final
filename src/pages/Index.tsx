@@ -7,7 +7,6 @@ import JobsHighlight from "@/components/home/JobsHighlight";
 import ArtistCallout from "@/components/home/ArtistCallout";
 import Testimonials from "@/components/home/Testimonials";
 import CallToAction from "@/components/home/CallToAction";
-import CustomerDashboard from "@/components/customer/CustomerDashboard";
 import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
@@ -65,6 +64,9 @@ const Index = () => {
         case 'freelancer':
           navigate('/dashboard/freelancer');
           break;
+        case 'renter':
+          navigate('/dashboard/freelancer');  // Redirect renters to freelancer dashboard
+          break;
         case 'other':
           navigate('/dashboard/other');
           break;
@@ -75,33 +77,11 @@ const Index = () => {
     }
   }, [user, userRole, hasSelectedRole, loading, isLoading, navigate]);
   
-  const renderRoleBasedDashboard = () => {
-    if (loading || isLoading) {
-      return (
-        <div className="py-12 space-y-4">
-          <Skeleton className="h-8 w-3/4 mx-auto" />
-          <Skeleton className="h-32 w-full" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Skeleton className="h-48" />
-            <Skeleton className="h-48" />
-          </div>
-        </div>
-      );
-    }
-    
-    if (user && userRole === 'customer') {
-      return <CustomerDashboard />;
-    }
-    
-    return null;
-  };
-  
   return (
     <Layout>
       <Hero />
       <ArtistTestimonials />
       <AITeam />
-      {renderRoleBasedDashboard()}
       <AIAgents />
       <FreelancersHighlight />
       <PricingSection />

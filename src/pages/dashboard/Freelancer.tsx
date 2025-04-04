@@ -1,6 +1,5 @@
 
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,11 +9,11 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import AIDashboardWidgets from "@/components/ai/AIDashboardWidgets";
 import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
+import AIAffiliateTrackingWidget from "@/components/ai/AIAffiliateTrackingWidget";
 
 const FreelancerDashboard = () => {
   const { userProfile } = useAuth();
   const firstName = userProfile?.full_name?.split(' ')[0] || userProfile?.email?.split('@')[0] || 'Freelancer';
-  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = "Freelancer Dashboard | EmviApp";
@@ -46,7 +45,7 @@ const FreelancerDashboard = () => {
         >
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-serif mb-4">
-              Hi {firstName}! Ready to level up your hustle? 💅
+              Hi {firstName}! Ready to level up your freelance career? 💅
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Turn passion into your path — with EmviApp.
@@ -59,7 +58,10 @@ const FreelancerDashboard = () => {
           </div>
           
           {/* AI Dashboard Widgets */}
-          <AIDashboardWidgets className="mb-12" />
+          <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <AIDashboardWidgets className="col-span-1 md:col-span-2" />
+            <AIAffiliateTrackingWidget />
+          </div>
           
           <motion.div 
             variants={container}

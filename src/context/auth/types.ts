@@ -54,8 +54,8 @@ export interface AuthContextType {
   signOut: () => Promise<void>;
   refreshUserProfile: () => Promise<void>;
   // Add missing properties needed by components
-  signIn?: (email: string, password: string) => Promise<void>;
-  isSignedIn?: boolean;
+  signIn: (email: string, password: string) => Promise<void>;
+  isSignedIn: boolean;
 }
 
 // Import Supabase types to avoid importing them everywhere

@@ -37,6 +37,7 @@ const Welcome = () => {
     console.log("Redirecting with user role:", userRole);
     switch(userRole) {
       case 'artist':
+      case 'nail technician/artist':
         navigate('/dashboard/artist');
         break;
       case 'salon':
@@ -46,9 +47,12 @@ const Welcome = () => {
         navigate('/dashboard/owner');
         break;
       case 'vendor':
+      case 'supplier':
+      case 'beauty supplier':
         navigate('/dashboard/supplier');
         break;
       case 'freelancer':
+      case 'renter':
         navigate('/dashboard/freelancer');
         break;
       case 'other':

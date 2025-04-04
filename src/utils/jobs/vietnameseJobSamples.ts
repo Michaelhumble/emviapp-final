@@ -1,5 +1,7 @@
 
-// Add the missing helper functions
+// Helper functions for generating Vietnamese job samples
+
+// Get a random salary range for job listings
 const getRandomSalaryRange = () => {
   const ranges = [
     "$800-1200/week", 
@@ -11,6 +13,7 @@ const getRandomSalaryRange = () => {
   return ranges[Math.floor(Math.random() * ranges.length)];
 };
 
+// Get random specialties for job listings
 const getRandomSpecialties = () => {
   const specialties = [
     ["Acrylic", "Gel", "Pedicure"],
@@ -26,4 +29,17 @@ export const generateVietnameseNailSamples = () => {
   // Sample function to generate Vietnamese nail job samples
   // Implementation will be added when needed
   return [];
+};
+
+export const generateVietnameseNailJobs = (count = 5) => {
+  const jobs = [];
+  
+  for (let i = 0; i < count; i++) {
+    jobs.push({
+      salary: getRandomSalaryRange(),
+      specialties: getRandomSpecialties()
+    });
+  }
+  
+  return jobs;
 };

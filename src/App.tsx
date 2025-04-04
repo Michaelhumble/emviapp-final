@@ -1,7 +1,7 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AuthProvider } from './context/auth';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Index from './pages/Index';
 import ProfileEdit from './pages/profile/edit';
 import ArtistDashboard from './pages/dashboard/Artist';
@@ -29,6 +29,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/profile/edit" element={<ProfileEdit />} />
+          <Route path="/dashboard" element={<Navigate to="/" replace />} />
           <Route path="/dashboard/artist" element={<ArtistDashboard />} />
           <Route path="/dashboard/owner" element={<OwnerDashboard />} />
           <Route path="/dashboard/salon" element={<SalonDashboard />} />

@@ -39,7 +39,7 @@ export const fetchUserProfile = async (user: User): Promise<UserProfile | null> 
       website: data.website,
       specialty: data.specialty,
       role: role,
-      // Add custom fields that might be in the database but not in the type
+      // Add custom fields that might be in the database
       salon_name: data.salon_name as string | undefined,
       business_address: data.business_address as string | undefined,
       company_name: data.company_name as string | undefined,

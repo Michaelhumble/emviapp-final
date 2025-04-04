@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -50,6 +51,12 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
       icon: <Briefcase className="h-5 w-5 text-primary" />
     },
     {
+      id: "renter",
+      label: "Booth Renter (Independent Contractor)",
+      description: "I rent space in a salon and run my own business.",
+      icon: <Briefcase className="h-5 w-5 text-primary" />
+    },
+    {
       id: "vendor",
       label: "Vendor (Beauty Supplier)",
       description: "I sell products or tools for beauty salons and professionals.",
@@ -89,9 +96,12 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
           navigate('/salon/profile-setup');
           break;
         case 'vendor':
+        case 'supplier':
+        case 'beauty supplier':
           navigate('/vendors/profile-setup');
           break;
         case 'freelancer':
+        case 'renter':
           navigate('/freelancers/profile-setup');
           break;
         case 'other':
