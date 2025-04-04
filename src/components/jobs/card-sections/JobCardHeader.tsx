@@ -1,48 +1,48 @@
 
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle, MessageSquare, Users } from "lucide-react";
 import { Job } from "@/types/job";
+import { Badge } from "@/components/ui/badge";
+import { Verified } from "lucide-react";
 
 interface JobCardHeaderProps {
   job: Job;
 }
 
 export const JobCardHeader = ({ job }: JobCardHeaderProps) => {
+  // Check if it's a job for a salon that's for sale
+  const isSalonForSale = job.employment_type === "For Sale";
+  
   return (
-    <div className="mb-4 flex justify-between">
-      <div>
-        <h2 className="text-xl font-serif font-semibold line-clamp-2 leading-tight mb-1">
-          {job.title} – {job.location}
-        </h2>
-        <p className="text-gray-700">{job.company}</p>
-        
-        {/* Trust indicators */}
-        <div className="flex flex-wrap gap-2 mt-2">
-          {job.trust_indicators?.verified && (
-            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 flex items-center gap-1">
-              <CheckCircle className="h-3 w-3" /> Verified Salon
-            </Badge>
-          )}
-          
-          {job.trust_indicators?.activelyHiring && (
-            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 flex items-center gap-1">
-              <Users className="h-3 w-3" /> Hiring Actively
-            </Badge>
-          )}
-          
-          {job.trust_indicators?.chatAvailable && (
-            <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 flex items-center gap-1">
-              <MessageSquare className="h-3 w-3" /> Chat Available
-            </Badge>
-          )}
-        </div>
-      </div>
-      
-      {job.is_nationwide && (
-        <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-          Nationwide
-        </Badge>
+    <div className="mb-3">
+      {/* If there's a job image or salon image, display it */}
+      {job.image && (
+        <div 
+          className="h-40 bg-center bg-cover rounded-md mb-4" 
+          style={{ backgroundImage: `url(${job.image})` }}
+        />
       )}
+      
+      <div className="flex justify-between items-start gap-2">
+        <div>
+          <h3 className="font-semibold text-lg">
+            {job.title}
+            {job.trust_indicators?.verified && (
+              <Badge className="ml-2 bg-blue-100 text-blue-800 inline-flex items-center">
+                <Verified className="h-3 w-3 mr-1" /> Verified
+              </Badge>
+            )}
+          </h3>
+          <p className="text-gray-600">
+            {job.company}
+          </p>
+        </div>
+        
+        {/* Only show a sale badge for salon sales */}
+        {isSalonForSale && (
+          <Badge className="bg-purple-100 text-purple-800">
+            For Sale
+          </Badge>
+        )}
+      </div>
     </div>
   );
 };

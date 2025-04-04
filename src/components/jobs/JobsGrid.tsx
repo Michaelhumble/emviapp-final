@@ -5,7 +5,7 @@ import JobDetailModal from "@/components/jobs/JobDetailModal";
 import { Job } from "@/types/job";
 import { differenceInDays } from 'date-fns';
 
-interface JobsGridProps {
+export interface JobsGridProps {
   jobs: Job[];
   expirations: Record<string, boolean>;
   currentUserId?: string;
@@ -30,6 +30,16 @@ const JobsGrid = ({
     // Use custom checker if provided
     if (checkExpiration) {
       return checkExpiration(job);
+    }
+    
+    // If the job is already marked as expired in the database
+    if (job.status === 'expired') {
+      return true;
+    }
+    
+    // Check if it's in our expirations record
+    if (expirations && expirations[job.id] !== undefined) {
+      return expirations[job.id];
     }
     
     // Default 30-day expiration logic
