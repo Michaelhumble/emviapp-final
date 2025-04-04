@@ -5,6 +5,10 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import PricingDisplay from '@/components/posting/PricingDisplay';
 import SmartAdOptions from '@/components/posting/SmartAdOptions';
+import { Button } from "@/components/ui/button";
+import { Check, CreditCard } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface ReviewAndPaymentSectionProps {
   details: Partial<Job>;

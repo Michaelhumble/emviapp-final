@@ -1,90 +1,182 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { CheckCircle2, CircleDashed, UserCog } from "lucide-react";
 
 const ProfileCompletionCard = () => {
   const { userProfile, userRole } = useAuth();
   const [completionPercentage, setCompletionPercentage] = useState(0);
   const [missingFields, setMissingFields] = useState<string[]>([]);
-  
+
   useEffect(() => {
     if (!userProfile) return;
     
-    const requiredFields: Record<string, string[]> = {
-      base: ['full_name', 'email', 'avatar_url', 'phone'],
-      artist: ['specialty', 'location', 'bio', 'instagram'],
-      salon: ['salon_name', 'location', 'bio', 'phone', 'instagram', 'website'],
-      customer: ['location'],
-      vendor: ['company_name', 'product_type', 'website', 'phone'],
-      freelancer: ['specialty', 'location', 'bio', 'instagram', 'website'],
-      other: ['bio', 'phone']
-    };
+    // Calculate completion percentage based on role and filled fields
+    calculateCompletion();
+  }, [userProfile]);
+  
+  const calculateCompletion = () => {
+    if (!userProfile) return;
     
-    // Determine which field set to use
-    let fieldSet = ['full_name', 'email'];
-    if (userRole === 'artist' || userRole === 'nail technician/artist') {
-      fieldSet = [...requiredFields.base, ...requiredFields.artist];
-    } else if (userRole === 'salon' || userRole === 'owner') {
-      fieldSet = [...requiredFields.base, ...requiredFields.salon];
-    } else if (userRole === 'vendor' || userRole === 'supplier' || userRole === 'beauty supplier') {
-      fieldSet = [...requiredFields.base, ...requiredFields.vendor];
-    } else if (userRole === 'freelancer') {
-      fieldSet = [...requiredFields.base, ...requiredFields.freelancer];
-    } else if (userRole === 'customer') {
-      fieldSet = [...requiredFields.base, ...requiredFields.customer];
-    } else {
-      fieldSet = [...requiredFields.base, ...requiredFields.other];
+    const missing: string[] = [];
+    let totalFields = 0;
+    let completedFields = 0;
+    
+    // Common fields for all roles
+    const commonFields: Array<{key: keyof typeof userProfile, label: string}> = [
+      { key: 'full_name', label: 'Full Name' },
+      { key: 'avatar_url', label: 'Profile Photo' },
+      { key: 'phone', label: 'Phone Number' },
+      { key: 'location', label: 'Location' }
+    ];
+    
+    // Role-specific fields
+    let roleSpecificFields: Array<{key: keyof typeof userProfile, label: string}> = [];
+    
+    switch(userRole) {
+      case 'artist':
+      case 'nail technician/artist':
+        roleSpecificFields = [
+          { key: 'specialty', label: 'Specialty' },
+          { key: 'bio', label: 'Bio' },
+          { key: 'instagram', label: 'Instagram' }
+        ];
+        break;
+      
+      case 'salon':
+      case 'owner':
+        roleSpecificFields = [
+          { key: 'salon_name', label: 'Salon Name' },
+          { key: 'business_address', label: 'Business Address' },
+          { key: 'website', label: 'Website' }
+        ];
+        break;
+        
+      case 'vendor':
+      case 'supplier':
+      case 'beauty supplier':
+        roleSpecificFields = [
+          { key: 'company_name', label: 'Company Name' },
+          { key: 'product_type', label: 'Product Type' },
+          { key: 'website', label: 'Website' }
+        ];
+        break;
+        
+      case 'freelancer':
+        roleSpecificFields = [
+          { key: 'specialty', label: 'Specialty' },
+          { key: 'bio', label: 'Bio' },
+          { key: 'instagram', label: 'Instagram' }
+        ];
+        break;
+        
+      case 'customer':
+      default:
+        roleSpecificFields = [
+          { key: 'bio', label: 'Personal Preferences' }
+        ];
     }
     
-    // Count completed fields
-    let completedCount = 0;
-    const missing: string[] = [];
+    // Combine fields and check completion
+    const allFields = [...commonFields, ...roleSpecificFields];
+    totalFields = allFields.length;
     
-    fieldSet.forEach(field => {
-      if (userProfile[field as keyof typeof userProfile]) {
-        completedCount++;
+    allFields.forEach(({ key, label }) => {
+      if (userProfile[key]) {
+        completedFields++;
       } else {
-        // Convert field_name to Field Name format
-        const displayName = field
-          .split('_')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(' ');
-        missing.push(displayName);
+        missing.push(label);
       }
     });
     
-    const percentage = Math.round((completedCount / fieldSet.length) * 100);
+    // Calculate percentage
+    const percentage = Math.round((completedFields / totalFields) * 100);
     setCompletionPercentage(percentage);
-    setMissingFields(missing.slice(0, 3)); // Only show first 3 missing fields
-  }, [userProfile, userRole]);
+    setMissingFields(missing);
+  };
   
-  if (!userProfile || completionPercentage >= 100) return null;
-  
+  const getProfileSetupPath = () => {
+    switch(userRole) {
+      case 'artist':
+      case 'nail technician/artist':
+        return '/profile/artist/setup';
+      case 'salon':
+        return '/profile/salon/setup';
+      case 'owner':
+        return '/profile/salon/setup';
+      case 'freelancer':
+        return '/profile/freelancer/setup';
+      case 'vendor':
+      case 'supplier':
+      case 'beauty supplier':
+        return '/profile/supplier/setup';
+      case 'customer':
+        return '/profile/customer/setup';
+      default:
+        return '/profile/edit';
+    }
+  };
+
+  if (!userProfile) return null;
+
   return (
-    <Card className="overflow-hidden border-primary/20">
-      <CardContent className="p-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex-1">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium">Complete your profile</h3>
-              <span className="text-sm font-medium">{completionPercentage}%</span>
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg flex items-center">
+          <UserCog className="mr-2 h-5 w-5 text-primary" />
+          Profile Completion
+        </CardTitle>
+        <CardDescription>Complete your profile to get more visibility</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span>{completionPercentage}% Complete</span>
+              <span>{completionPercentage === 100 ? (
+                <span className="text-primary flex items-center">
+                  <CheckCircle2 className="h-4 w-4 mr-1" /> Complete
+                </span>
+              ) : (
+                <span className="text-muted-foreground">{missingFields.length} items left</span>
+              )}</span>
             </div>
             <Progress value={completionPercentage} className="h-2" />
-            
-            {missingFields.length > 0 && (
-              <p className="text-xs text-muted-foreground mt-2">
-                Missing: {missingFields.join(', ')}
-                {missingFields.length < 3 ? '' : '...'}
-              </p>
-            )}
           </div>
-          <Button variant="secondary" size="sm" asChild>
-            <Link to="/profile/edit">Complete Now</Link>
-          </Button>
+          
+          {completionPercentage < 100 && (
+            <div>
+              <p className="text-sm text-muted-foreground mb-2">Missing information:</p>
+              <ul className="text-sm space-y-1 mb-3">
+                {missingFields.slice(0, 3).map((field, index) => (
+                  <li key={index} className="flex items-center">
+                    <CircleDashed className="h-3 w-3 mr-2 text-muted-foreground" />
+                    {field}
+                  </li>
+                ))}
+                {missingFields.length > 3 && (
+                  <li className="text-xs text-muted-foreground">
+                    +{missingFields.length - 3} more items
+                  </li>
+                )}
+              </ul>
+              <Link to={getProfileSetupPath()}>
+                <Button size="sm" variant="outline" className="w-full">
+                  Complete Profile
+                </Button>
+              </Link>
+            </div>
+          )}
+          
+          {completionPercentage === 100 && (
+            <div className="text-center py-2">
+              <p className="text-sm text-muted-foreground">Your profile looks great!</p>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

@@ -28,6 +28,7 @@ export interface UserProfile {
   website: string | null;
   specialty: string | null;
   role: UserRole | null;
+  // Additional fields that may exist in the database
   skill_level?: string | null;
   skills?: string[] | null;
   salon_name?: string | null;

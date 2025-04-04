@@ -1,92 +1,59 @@
 
-import { supabase } from '@/integrations/supabase/client';
-import { UserProfile, UserRole } from './types';
-import { User as SupabaseUser } from '@supabase/supabase-js';
-import { Json } from '@/integrations/supabase/types';
+import { User } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
+import { UserProfile, UserRole } from "./types";
 
-/**
- * Fetches the user profile data from Supabase
- */
-export async function fetchUserProfile(user: SupabaseUser): Promise<UserProfile | null> {
+// Fetch user profile from Supabase
+export const fetchUserProfile = async (user: User): Promise<UserProfile | null> => {
   try {
-    const { data: userData, error } = await supabase
+    // Get the user from the users table
+    const { data, error } = await supabase
       .from('users')
       .select('*')
       .eq('id', user.id)
       .single();
-
+      
     if (error) {
       console.error("Error fetching user profile:", error);
       return null;
     }
     
-    const userRole = userData?.role as UserRole || 'customer';
+    if (!data) {
+      console.error("No user profile found");
+      return null;
+    }
     
-    // Extract role-specific profile data
-    let profileExtras = {};
-
-    if (userRole === 'owner' || userRole === 'salon') {
-      profileExtras = {
-        salon_name: userData?.salon_name || "",
-        business_address: userData?.business_address || ""
-      };
-    } else if (userRole === 'supplier' || userRole === 'beauty supplier' || userRole === 'vendor') {
-      profileExtras = {
-        company_name: userData?.company_name || "",
-        product_type: userData?.product_type || ""
-      };
-    }
-
-    // Cast userData to include all the possible fields we need
-    interface ExtendedUserData {
-      id: string;
-      email: string;
-      full_name: string;
-      avatar_url: string | null;
-      location: string | null;
-      bio: string | null;
-      phone: string | null;
-      instagram: string | null;
-      website: string | null;
-      specialty: string | null;
-      role: string | null;
-      salon_name?: string | null;
-      business_address?: string | null;
-      company_name?: string | null;
-      product_type?: string | null;
-      skill_level?: string | null;
-      skills?: string[] | null;
-      created_at?: string | null;
-      updated_at?: string | null;
-      badges?: Json | null;
-      credits?: number | null;
-    }
-
-    // Cast userData to include all fields
-    const extendedUserData = userData as ExtendedUserData;
-
-    const profile: UserProfile = {
-      id: extendedUserData.id,
-      email: extendedUserData.email,
-      full_name: extendedUserData.full_name,
-      avatar_url: extendedUserData.avatar_url,
-      location: extendedUserData.location,
-      bio: extendedUserData.bio,
-      phone: extendedUserData.phone,
-      instagram: extendedUserData.instagram,
-      website: extendedUserData.website,
-      specialty: extendedUserData.specialty,
-      role: userRole,
-      skill_level: extendedUserData.skill_level || null,
-      skills: extendedUserData.skills || null,
-      created_at: extendedUserData.created_at || null,
-      updated_at: extendedUserData.updated_at || null,
-      ...profileExtras
+    // Create and return the user profile based on the role
+    const role = data.role as UserRole;
+    
+    // Base profile with common fields
+    const baseProfile: UserProfile = {
+      id: data.id,
+      email: data.email,
+      full_name: data.full_name,
+      avatar_url: data.avatar_url,
+      location: data.location,
+      bio: data.bio,
+      phone: data.phone,
+      instagram: data.instagram,
+      website: data.website,
+      specialty: data.specialty,
+      role: role,
+      // Add custom fields that might be in the database but not in the type
+      salon_name: data.salon_name as string | undefined,
+      business_address: data.business_address as string | undefined,
+      company_name: data.company_name as string | undefined,
+      product_type: data.product_type as string | undefined,
+      skill_level: data.skill_level as string | undefined,
+      skills: data.skills as string[] | undefined,
+      // Add these fields from the database
+      created_at: data.created_at,
+      updated_at: data.updated_at
     };
     
-    return profile;
+    return baseProfile;
   } catch (error) {
-    console.error("Error fetching user profile:", error);
+    console.error("Error in fetchUserProfile:", error);
     return null;
   }
-}
+};

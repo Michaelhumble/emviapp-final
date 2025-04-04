@@ -22,3 +22,8 @@ const getRandomSpecialties = () => {
   return specialties[Math.floor(Math.random() * specialties.length)];
 };
 
+export const generateVietnameseNailSamples = () => {
+  // Sample function to generate Vietnamese nail job samples
+  // Implementation will be added when needed
+  return [];
+};
