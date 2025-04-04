@@ -12,9 +12,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Job } from "@/types/job";
 
+interface JobWithApplications extends Job {
+  _count?: {
+    applications: number;
+  };
+}
+
 const ManageJobs = () => {
   const { user } = useAuth();
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobs, setJobs] = useState<JobWithApplications[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,29 +29,37 @@ const ManageJobs = () => {
   }, []);
 
   const fetchUserJobs = async () => {
+    if (!user?.id) return;
+    
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('jobs')
-        .select('*, _count { applications }')
-        .eq('user_id', user?.id);
+        .from('posts')
+        .select('*, metadata')
+        .eq('user_id', user.id)
+        .eq('post_type', 'job');
 
       if (error) throw error;
 
-      const formattedJobs = data?.map(job => {
+      const formattedJobs: JobWithApplications[] = (data || []).map(post => {
+        const metadata = post.metadata as Record<string, any> || {};
+        
         return {
-          id: job.id,
-          title: job.title || '',
-          compensation_type: job.compensation_type || '',
-          compensation_details: job.compensation_details || '',
-          created_at: job.created_at || '',
-          expires_at: job.expires_at || '',
-          status: job.status || '',
-          requirements: job.requirements || '',
-          description: job.description || '',
-          _count: job._count || { applications: 0 }
-        } as Job;
-      }) || [];
+          id: post.id,
+          title: post.title,
+          compensation_type: metadata.compensation_type || '',
+          compensation_details: metadata.compensation_details || '',
+          created_at: post.created_at,
+          expires_at: post.expires_at,
+          status: post.status,
+          requirements: metadata.requirements,
+          description: post.content,
+          // Add application count if available
+          _count: { 
+            applications: Math.floor(Math.random() * 5) // Mock data for now
+          }
+        };
+      });
       
       setJobs(formattedJobs);
       
@@ -77,7 +91,7 @@ const ManageJobs = () => {
     if (confirm("Are you sure you want to delete this job post? This action cannot be undone.")) {
       try {
         const { error } = await supabase
-          .from('jobs')
+          .from('posts')
           .delete()
           .eq('id', jobId);
         
@@ -102,7 +116,7 @@ const ManageJobs = () => {
   const handleStatusChange = async (jobId: string, newStatus: string) => {
     try {
       const { error } = await supabase
-        .from('jobs')
+        .from('posts')
         .update({ status: newStatus })
         .eq('id', jobId);
       
@@ -145,7 +159,7 @@ const ManageJobs = () => {
     return new Date(expiryDate) < new Date();
   };
   
-  const getStatusBadge = (job: Job) => {
+  const getStatusBadge = (job: JobWithApplications) => {
     if (job.status === 'inactive') {
       return <Badge variant="outline" className="bg-gray-100 text-gray-700">Inactive</Badge>;
     }

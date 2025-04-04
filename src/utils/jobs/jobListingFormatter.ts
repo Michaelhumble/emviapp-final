@@ -12,6 +12,7 @@ const generateRandomSalon = () => {
   };
 };
 
+// Format a single job listing
 export const formatJobListing = (job: Job): Job => {
   const isVietnamese = job.title.toLowerCase().includes('vietnamese') || 
                       (job.description && job.description.toLowerCase().includes('vietnamese'));
@@ -26,6 +27,7 @@ export const formatJobListing = (job: Job): Job => {
         // We don't use salary directly as it's not in the Job type
         // Instead we put it in the compensation_details if needed
         compensation_details: sampleJob.salary || job.compensation_details,
+        specialties: sampleJob.specialties || job.specialties,
         // Any other fields we want to enhance
       };
     }
@@ -40,5 +42,10 @@ export const formatJobListing = (job: Job): Job => {
   };
 };
 
-// Alias for compatibility with other code
-export { formatJobListing as formatJobListings };
+// Format an array of job listings
+export const formatJobListings = (jobs: Job[]): Job[] => {
+  return jobs.map(job => formatJobListing(job));
+};
+
+// Ensure we have the single item function and array function both exported
+export { formatJobListing as formatSingleJobListing };

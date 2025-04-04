@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Job } from '@/types/job';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Check, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { PricingOptions } from '@/utils/postingPriceCalculator';
 
 interface ReviewAndPaymentSectionProps {
   details: Partial<Job>;
@@ -21,6 +23,21 @@ const ReviewAndPaymentSection = ({
   isNationwide,
   setIsNationwide
 }: ReviewAndPaymentSectionProps) => {
+  // Define default pricing options
+  const pricingOptions: PricingOptions = {
+    isNationwide,
+    isFirstPost: true,  // This could be dynamic based on user history
+    showAtTop: false,
+    fastSalePackage: false,
+    isRenewal: false
+  };
+
+  // Mock price - in a real app this would be calculated based on options
+  const price = isNationwide ? 99 : 49;
+
+  // Promotional text
+  const promotionalText = "Post your job listing today and reach thousands of qualified professionals in your area.";
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Review & Payment</h2>
@@ -79,9 +96,18 @@ const ReviewAndPaymentSection = ({
         />
       </div>
       
-      <SmartAdOptions />
+      <SmartAdOptions 
+        postType="job" 
+        isFirstPost={true}
+        onNationwideChange={setIsNationwide}
+      />
       
-      <PricingDisplay />
+      <PricingDisplay 
+        postType="job" 
+        price={price} 
+        options={pricingOptions} 
+        promotionalText={promotionalText} 
+      />
     </div>
   );
 };

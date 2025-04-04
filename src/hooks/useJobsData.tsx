@@ -59,7 +59,35 @@ export const useJobsData = (searchTerm: string, filters: Filters) => {
         throw error;
       }
 
-      const formattedJobs = formatJobListings(data || []);
+      // Transform the post data into Job format
+      const jobsData: Job[] = (data || []).map(post => {
+        const metadata = post.metadata as Record<string, any> || {};
+        
+        return {
+          id: post.id,
+          title: post.title,
+          compensation_type: metadata.compensation_type || '',
+          compensation_details: metadata.compensation_details || '',
+          created_at: post.created_at,
+          expires_at: post.expires_at,
+          status: post.status,
+          requirements: metadata.requirements,
+          description: post.content,
+          salary_range: metadata.salary_range,
+          employment_type: metadata.employment_type,
+          location: post.location,
+          weekly_pay: metadata.weekly_pay === 'true',
+          owner_will_train: metadata.owner_will_train === 'true',
+          has_housing: metadata.has_housing === 'true',
+          no_supply_deduction: metadata.no_supply_deduction === 'true',
+          specialties: metadata.specialties || [],
+          vietnamese_description: metadata.vietnamese_description,
+          contact_info: post.contact_info as Job['contact_info'],
+          user_id: post.user_id
+        };
+      });
+      
+      const formattedJobs = formatJobListings(jobsData);
       
       let filteredJobs = formattedJobs;
       

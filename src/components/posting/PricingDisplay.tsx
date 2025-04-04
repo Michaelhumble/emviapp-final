@@ -5,7 +5,7 @@ import { DollarSign, CheckCircle, TrendingUp, Globe, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
-interface PricingDisplayProps {
+export interface PricingDisplayProps {
   postType: 'job' | 'salon' | 'booth' | 'supply';
   price: number;
   options: PricingOptions;

@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
@@ -11,7 +12,7 @@ import { Job } from '@/types/job';
 
 const JobPost = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { userProfile } = useAuth();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [jobDetails, setJobDetails] = useState<Partial<Job>>({
@@ -23,9 +24,9 @@ const JobPost = () => {
     compensation_type: 'hourly',
     compensation_details: '',
     contact_info: {
-      owner_name: user?.full_name || '',
-      phone: user?.phone || '',
-      email: user?.email || ''
+      owner_name: userProfile?.full_name || '',
+      phone: userProfile?.phone || '',
+      email: userProfile?.email || ''
     }
   });
   const [isNationwide, setIsNationwide] = useState(false);
@@ -54,6 +55,17 @@ const JobPost = () => {
 
   const handleSubmit = async () => {
     navigate('/checkout');
+  };
+
+  // Add type definitions for PostWizardLayout
+  type PostWizardLayoutProps = {
+    children: React.ReactNode;
+    currentStep: number;
+    totalSteps: number;
+    title: string;
+    onNext: () => void;
+    onPrev: () => void;
+    onSubmit: () => Promise<void>;
   };
 
   return (

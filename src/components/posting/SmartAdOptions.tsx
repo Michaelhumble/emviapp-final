@@ -9,7 +9,7 @@ import UserMessages from "./smart-ad-options/UserMessages";
 import EmviFeatures from "./smart-ad-options/EmviFeatures";
 import { getNationwidePrice } from "./smart-ad-options/pricing";
 
-interface SmartAdOptionsProps {
+export interface SmartAdOptionsProps {
   postType: 'job' | 'salon' | 'booth' | 'supply';
   isFirstPost?: boolean;
   hasReferrals?: boolean;

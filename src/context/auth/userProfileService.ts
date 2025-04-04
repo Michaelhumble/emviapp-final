@@ -39,17 +39,17 @@ export const fetchUserProfile = async (user: User): Promise<UserProfile | null> 
       website: data.website,
       specialty: data.specialty,
       role: role,
-      // Add custom fields that might be in the database
-      salon_name: data.salon_name as string | undefined,
-      business_address: data.business_address as string | undefined,
-      company_name: data.company_name as string | undefined,
-      product_type: data.product_type as string | undefined,
-      skill_level: data.skill_level as string | undefined,
-      skills: data.skills as string[] | undefined,
-      // Add these fields from the database
       created_at: data.created_at,
       updated_at: data.updated_at
     };
+    
+    // Add optional fields from the database if they exist
+    if (data.salon_name) baseProfile.salon_name = data.salon_name;
+    if (data.business_address) baseProfile.business_address = data.business_address;
+    if (data.company_name) baseProfile.company_name = data.company_name;
+    if (data.product_type) baseProfile.product_type = data.product_type;
+    if (data.skill_level) baseProfile.skill_level = data.skill_level;
+    if (data.skills) baseProfile.skills = data.skills;
     
     return baseProfile;
   } catch (error) {

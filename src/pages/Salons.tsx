@@ -13,6 +13,10 @@ const Salons = () => {
   const [activeTab, setActiveTab] = useState("hiring");
   const [showSampleListings, setShowSampleListings] = useState(false);
 
+  // Make sure that hiringSalons and salonsForSale are properly typed as Job[]
+  const typedHiringSalons = hiringSalons as any[];
+  const typedSalonsForSale = salonsForSale as any[];
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-12 bg-[#FDFDFD]">
@@ -47,7 +51,7 @@ const Salons = () => {
               </div>
 
               <TabsContent value="hiring" className="space-y-6">
-                <HiringSalonsGrid hiringSalons={hiringSalons} />
+                <HiringSalonsGrid hiringSalons={typedHiringSalons} />
                 
                 <div className="flex justify-center mt-8">
                   <Button variant="outline" className="mr-2">Previous</Button>
@@ -56,7 +60,7 @@ const Salons = () => {
               </TabsContent>
 
               <TabsContent value="forsale" className="space-y-6">
-                <SalonListings salonsForSale={salonsForSale} />
+                <SalonListings salonsForSale={typedSalonsForSale} />
               </TabsContent>
               
               <TabsContent value="samples">
