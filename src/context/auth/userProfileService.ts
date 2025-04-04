@@ -2,6 +2,17 @@
 import { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile, UserRole } from "./types";
+import { Database } from "@/integrations/supabase/types";
+
+// Define a type for the database user row
+type DbUser = Database["public"]["Tables"]["users"]["Row"] & {
+  salon_name?: string;
+  business_address?: string;
+  company_name?: string;
+  product_type?: string;
+  skill_level?: string;
+  skills?: string[];
+};
 
 // Fetch user profile from Supabase
 export const fetchUserProfile = async (user: User): Promise<UserProfile | null> => {
@@ -26,30 +37,33 @@ export const fetchUserProfile = async (user: User): Promise<UserProfile | null> 
     // Create and return the user profile based on the role
     const role = data.role as UserRole;
     
+    // Cast data to our extended DbUser type to handle additional fields
+    const userData = data as unknown as DbUser;
+    
     // Base profile with common fields
     const baseProfile: UserProfile = {
-      id: data.id,
-      email: data.email,
-      full_name: data.full_name,
-      avatar_url: data.avatar_url,
-      location: data.location,
-      bio: data.bio,
-      phone: data.phone,
-      instagram: data.instagram,
-      website: data.website,
-      specialty: data.specialty,
+      id: userData.id,
+      email: userData.email,
+      full_name: userData.full_name,
+      avatar_url: userData.avatar_url,
+      location: userData.location,
+      bio: userData.bio,
+      phone: userData.phone,
+      instagram: userData.instagram,
+      website: userData.website,
+      specialty: userData.specialty,
       role: role,
-      created_at: data.created_at,
-      updated_at: data.updated_at
+      created_at: userData.created_at,
+      updated_at: userData.updated_at
     };
     
     // Add optional fields from the database if they exist
-    if (data.salon_name) baseProfile.salon_name = data.salon_name;
-    if (data.business_address) baseProfile.business_address = data.business_address;
-    if (data.company_name) baseProfile.company_name = data.company_name;
-    if (data.product_type) baseProfile.product_type = data.product_type;
-    if (data.skill_level) baseProfile.skill_level = data.skill_level;
-    if (data.skills) baseProfile.skills = data.skills;
+    if (userData.salon_name) baseProfile.salon_name = userData.salon_name;
+    if (userData.business_address) baseProfile.business_address = userData.business_address;
+    if (userData.company_name) baseProfile.company_name = userData.company_name;
+    if (userData.product_type) baseProfile.product_type = userData.product_type;
+    if (userData.skill_level) baseProfile.skill_level = userData.skill_level;
+    if (userData.skills) baseProfile.skills = userData.skills;
     
     return baseProfile;
   } catch (error) {

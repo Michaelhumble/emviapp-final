@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -79,7 +80,9 @@ const Checkout = () => {
   }, [user, userRole, shouldShowPricingPlans, navigate]);
 
   if (!user) {
-    return <Navigate to="/auth/signin" replace />;
+    // Fix: use navigate instead of Navigate component
+    navigate("/auth/signin", { replace: true });
+    return null;
   }
 
   if (!shouldShowPricingPlans) {
