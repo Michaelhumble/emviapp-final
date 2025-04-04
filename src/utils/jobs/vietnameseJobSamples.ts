@@ -36,7 +36,7 @@ export const generateVietnameseNailJobs = (count = 5) => {
   
   for (let i = 0; i < count; i++) {
     jobs.push({
-      salary: getRandomSalaryRange(),
+      salary_range: getRandomSalaryRange(),
       specialties: getRandomSpecialties()
     });
   }

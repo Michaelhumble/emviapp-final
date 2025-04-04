@@ -60,4 +60,10 @@ export interface Job {
   has_laundry?: boolean;
   emvi_ai_boosted?: boolean;
   work_hours?: string;
+  posted_date?: string;
+  closing_date?: string | null;
+  contact_email?: string;
+  is_featured?: boolean;
+  is_remote?: boolean;
+  experience_level?: string;
 }

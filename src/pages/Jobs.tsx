@@ -35,7 +35,7 @@ const Jobs = () => {
   const { user } = useAuth();
   
   // Custom hooks for job data and renewal
-  const { jobs, loading, fetchJobs } = useJobsData();
+  const { jobs, loading, error, fetchJobs } = useJobsData();
   const { 
     renewJob,
     isRenewing,
@@ -45,7 +45,7 @@ const Jobs = () => {
   } = useJobRenewal({
     jobId: "", // This will be set when a job is selected for renewal
     expiresAt: null,
-    onSuccess: fetchJobs
+    onSuccess: () => fetchJobs()
   });
   
   const [renewalJobId, setRenewalJobId] = useState<string | null>(null);

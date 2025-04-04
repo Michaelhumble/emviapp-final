@@ -26,7 +26,7 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
       // Start with a base query
       let query = supabase.from("jobs").select("*");
 
-      // Apply filters one by one
+      // Apply filters one by one - avoiding deep chaining to prevent "excessively deep" errors
       if (filters.featured) {
         query = query.eq('is_featured', true);
       }
@@ -36,11 +36,11 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
       }
 
       if (filters.fullTime) {
-        query = query.eq('type', 'Full-time');
+        query = query.eq('employment_type', 'Full-time');
       }
 
       if (filters.partTime) {
-        query = query.eq('type', 'Part-time');
+        query = query.eq('employment_type', 'Part-time');
       }
 
       // Location filter
@@ -53,7 +53,7 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
       if (apiError) throw apiError;
 
       // Map the raw database jobs to our Job type with all required properties
-      const formattedJobs = data ? formatJobListings(data as any) : [];
+      const formattedJobs = data ? formatJobListings(data) : [];
       setJobs(formattedJobs);
     } catch (err) {
       setError(err instanceof Error ? err : new Error(String(err)));
