@@ -7,12 +7,11 @@ import { Link } from "react-router-dom";
 import { Progress } from "@/components/ui/progress";
 
 const ProfileCompletionCard = () => {
-  const { userProfile, profileComplete, userRole } = useAuth();
+  const { userProfile, userRole } = useAuth();
   
   // Determine profile completion percentage based on role and filled fields
   const calculateCompletionPercentage = (): number => {
     if (!userProfile) return 0;
-    if (profileComplete) return 100;
 
     let requiredFields: string[] = ['full_name'];
     let completedFields = 0;
@@ -20,14 +19,14 @@ const ProfileCompletionCard = () => {
     if (userRole === 'artist' || userRole === 'freelancer') {
       requiredFields = ['full_name', 'bio', 'specialty', 'location'];
     } else if (userRole === 'salon' || userRole === 'owner') {
-      requiredFields = ['salon_name', 'salon_type', 'business_address'];
+      requiredFields = ['full_name', 'specialty', 'location'];
     } else if (userRole === 'vendor' || userRole === 'supplier' || userRole === 'beauty supplier') {
-      requiredFields = ['company_name', 'product_type', 'website_url'];
+      requiredFields = ['full_name', 'specialty', 'website'];
     }
 
     // Count completed fields
     requiredFields.forEach(field => {
-      if (userProfile[field] && userProfile[field].trim() !== '') {
+      if (userProfile[field as keyof typeof userProfile] && String(userProfile[field as keyof typeof userProfile]).trim() !== '') {
         completedFields++;
       }
     });
@@ -36,6 +35,7 @@ const ProfileCompletionCard = () => {
   };
 
   const completionPercentage = calculateCompletionPercentage();
+  const profileComplete = completionPercentage === 100;
 
   // Determine profile setup path based on user role
   const getProfileSetupPath = (): string => {

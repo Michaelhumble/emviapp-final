@@ -1,63 +1,43 @@
-import { Session, User } from "@supabase/supabase-js";
 
+import { Database } from '@/integrations/supabase/types';
+
+// Defines the possible roles a user can have
 export type UserRole = 
   | 'customer' 
   | 'artist' 
+  | 'nail technician/artist' 
   | 'salon' 
-  | 'vendor'
-  | 'freelancer' 
-  | 'other'
-  | 'renter'  // legacy role
-  | 'owner'   // legacy role
-  | 'supplier'  // legacy role
-  | 'nail technician/artist'  // legacy role
-  | 'beauty supplier'  // legacy role
-  | null;
+  | 'owner' 
+  | 'vendor' 
+  | 'supplier'
+  | 'beauty supplier'
+  | 'freelancer'
+  | 'other';
 
-export type UserMetadata = {
-  full_name?: string;
-  user_type?: UserRole;
-  [key: string]: any;
-};
-
-// Extended user profile interface to include all possible fields
+// Extends the user profile with additional fields
 export interface UserProfile {
   id: string;
   email: string;
   full_name: string;
-  avatar_url?: string;
-  location?: string;
-  bio?: string;
-  phone?: string;
-  instagram?: string;
-  website?: string;
-  specialty?: string;
-  role?: string;
-  skill_level?: string;
-  skills?: string[];
-  salon_name?: string;
-  business_address?: string;
-  company_name?: string;
-  product_type?: string;
-  // Fields for salon owners
-  license_number?: string | null;
-  salon_type?: string | null;
-  // Fields for vendors/suppliers
-  website_url?: string | null;
-  // For extensibility
-  [key: string]: any;
+  avatar_url: string | null;
+  location: string | null;
+  bio: string | null;
+  phone: string | null;
+  instagram: string | null;
+  website: string | null;
+  specialty: string | null;
+  role: UserRole | null;
+  skill_level?: string | null;
+  skills?: string[] | null;
+  salon_name?: string | null;
+  business_address?: string | null;
+  company_name?: string | null;
+  product_type?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
 }
 
-export type AuthContextType = {
-  user: User | null;
-  session: Session | null;
-  loading: boolean;
-  userRole: UserRole;
-  userProfile: UserProfile | null;
+// Add 'profileComplete' property to AuthContextType
+export interface ProfileStatus {
   profileComplete: boolean;
-  signUp: (email: string, password: string, metadata?: UserMetadata) => Promise<void>;
-  signIn: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
-  updateUserRole: (role: UserRole) => Promise<void>;
-  refreshUserProfile: () => Promise<void>;
-};
+}
