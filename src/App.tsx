@@ -1,7 +1,11 @@
-
 import React, { useEffect } from 'react';
 import { AuthProvider } from './context/auth';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
+import { Loader2 } from 'lucide-react';
+import { SubscriptionProvider } from './context/subscription';
+import { Toaster } from '@/components/ui/sonner';
+
 import Index from './pages/Index';
 import ProfileEdit from './pages/profile/edit';
 import ArtistDashboard from './pages/dashboard/Artist';
@@ -24,32 +28,43 @@ import SalonOwners from './pages/SalonOwners';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/profile/edit" element={<ProfileEdit />} />
-          <Route path="/dashboard" element={<Navigate to="/" replace />} />
-          <Route path="/dashboard/artist" element={<ArtistDashboard />} />
-          <Route path="/dashboard/owner" element={<OwnerDashboard />} />
-          <Route path="/dashboard/salon" element={<SalonDashboard />} />
-          <Route path="/dashboard/freelancer" element={<FreelancerDashboard />} />
-          <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
-          <Route path="/dashboard/customer" element={<CustomerDashboard />} />
-          <Route path="/dashboard/other" element={<OtherDashboard />} />
-          <Route path="/auth/signin" element={<SignIn />} />
-          <Route path="/auth/signup" element={<SignUp />} />
-          <Route path="/jobs" element={<Jobs />} />
-          <Route path="/messages" element={<Messages />} />
-          <Route path="/welcome" element={<Welcome />} />
-          <Route path="/profile/salon/setup" element={<SalonOwnerSetup />} />
-          <Route path="/post-job" element={<PostJob />} />
-          <Route path="/manage-jobs" element={<ManageJobs />} />
-          <Route path="/post-salon" element={<PostSalon />} />
-          <Route path="/salon-owners" element={<SalonOwners />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
+    <div className="app relative min-h-screen">
+      <AuthProvider>
+        <SubscriptionProvider>
+          <Router>
+            <Suspense fallback={
+              <div className="flex items-center justify-center min-h-screen">
+                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+              </div>
+            }>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/profile/edit" element={<ProfileEdit />} />
+                <Route path="/dashboard" element={<Navigate to="/" replace />} />
+                <Route path="/dashboard/artist" element={<ArtistDashboard />} />
+                <Route path="/dashboard/owner" element={<OwnerDashboard />} />
+                <Route path="/dashboard/salon" element={<SalonDashboard />} />
+                <Route path="/dashboard/freelancer" element={<FreelancerDashboard />} />
+                <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
+                <Route path="/dashboard/customer" element={<CustomerDashboard />} />
+                <Route path="/dashboard/other" element={<OtherDashboard />} />
+                <Route path="/auth/signin" element={<SignIn />} />
+                <Route path="/auth/signup" element={<SignUp />} />
+                <Route path="/jobs" element={<Jobs />} />
+                <Route path="/messages" element={<Messages />} />
+                <Route path="/welcome" element={<Welcome />} />
+                <Route path="/profile/salon/setup" element={<SalonOwnerSetup />} />
+                <Route path="/post-job" element={<PostJob />} />
+                <Route path="/manage-jobs" element={<ManageJobs />} />
+                <Route path="/post-salon" element={<PostSalon />} />
+                <Route path="/salon-owners" element={<SalonOwners />} />
+              </Routes>
+            </Suspense>
+          </Router>
+          <Toaster position="bottom-right" />
+        </SubscriptionProvider>
+      </AuthProvider>
+    </div>
   );
 }
 

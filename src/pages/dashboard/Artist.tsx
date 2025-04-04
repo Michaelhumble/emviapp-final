@@ -9,6 +9,8 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import AIDashboardWidgets from "@/components/ai/AIDashboardWidgets";
 import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
+import SubscriptionStatusCard from "@/components/dashboard/SubscriptionStatusCard";
+import { FeatureGate } from "@/components/subscription";
 
 const ArtistDashboard = () => {
   const { userProfile } = useAuth();
@@ -51,13 +53,29 @@ const ArtistDashboard = () => {
             </p>
           </div>
           
+          {/* Subscription Status Card */}
+          <div className="mb-6">
+            <SubscriptionStatusCard />
+          </div>
+          
           {/* Profile Completion Card */}
           <div className="mb-6">
             <ProfileCompletionCard />
           </div>
           
           {/* AI Dashboard Widgets */}
-          <AIDashboardWidgets className="mb-12" />
+          <FeatureGate requiredPlan="basic" fallback={
+            <div className="mb-8 p-4 border border-dashed border-primary/50 rounded-lg bg-primary/5 text-center">
+              <p className="text-sm text-muted-foreground">Upgrade to access AI-powered insights and recommendations</p>
+              <Link to="/checkout">
+                <Button variant="outline" size="sm" className="mt-2">
+                  <Sparkles className="mr-2 h-4 w-4" /> Unlock AI Features
+                </Button>
+              </Link>
+            </div>
+          }>
+            <AIDashboardWidgets className="mb-12" />
+          </FeatureGate>
           
           <motion.div 
             variants={container}
@@ -83,52 +101,58 @@ const ArtistDashboard = () => {
             </motion.div>
             
             <motion.div variants={item}>
-              <Card className="h-full">
-                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                  <CardTitle className="text-xl">Jobs for Artists</CardTitle>
-                  <Briefcase className="h-5 w-5 text-primary" />
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="mb-4">Find your next opportunity</CardDescription>
-                  <Link to="/jobs">
-                    <Button variant="default" className="w-full">
-                      Browse Jobs
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
+              <FeatureGate requiredPlan="basic">
+                <Card className="h-full">
+                  <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                    <CardTitle className="text-xl">Jobs for Artists</CardTitle>
+                    <Briefcase className="h-5 w-5 text-primary" />
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="mb-4">Find your next opportunity</CardDescription>
+                    <Link to="/jobs">
+                      <Button variant="default" className="w-full">
+                        Browse Jobs
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              </FeatureGate>
             </motion.div>
             
             <motion.div variants={item}>
-              <Card className="h-full">
-                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                  <CardTitle className="text-xl">Saved Opportunities</CardTitle>
-                  <Heart className="h-5 w-5 text-primary" />
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="mb-4">View jobs you've saved for later</CardDescription>
-                  <Button variant="default" className="w-full">
-                    View Saved
-                  </Button>
-                </CardContent>
-              </Card>
+              <FeatureGate requiredPlan="professional">
+                <Card className="h-full">
+                  <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                    <CardTitle className="text-xl">Saved Opportunities</CardTitle>
+                    <Heart className="h-5 w-5 text-primary" />
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="mb-4">View jobs you've saved for later</CardDescription>
+                    <Button variant="default" className="w-full">
+                      View Saved
+                    </Button>
+                  </CardContent>
+                </Card>
+              </FeatureGate>
             </motion.div>
             
             <motion.div variants={item}>
-              <Card className="h-full">
-                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                  <CardTitle className="text-xl">Messages</CardTitle>
-                  <MessageSquare className="h-5 w-5 text-primary" />
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="mb-4">Connect with salons and clients</CardDescription>
-                  <Link to="/messages">
-                    <Button variant="default" className="w-full">
-                      Open Messages
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
+              <FeatureGate requiredPlan="basic">
+                <Card className="h-full">
+                  <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                    <CardTitle className="text-xl">Messages</CardTitle>
+                    <MessageSquare className="h-5 w-5 text-primary" />
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="mb-4">Connect with salons and clients</CardDescription>
+                    <Link to="/messages">
+                      <Button variant="default" className="w-full">
+                        Open Messages
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              </FeatureGate>
             </motion.div>
           </motion.div>
           
@@ -156,9 +180,11 @@ const ArtistDashboard = () => {
                 <h3 className="text-xl font-medium mb-2">Upgrade to Premium Artist</h3>
                 <p className="text-muted-foreground">Get featured in search results and access exclusive opportunities</p>
               </div>
-              <Button variant="outline" className="min-w-[140px]">
-                <Sparkles className="mr-2 h-4 w-4" /> Upgrade Now
-              </Button>
+              <Link to="/checkout?plan=premium">
+                <Button variant="outline" className="min-w-[140px]">
+                  <Sparkles className="mr-2 h-4 w-4" /> Upgrade Now
+                </Button>
+              </Link>
             </div>
           </motion.div>
         </motion.div>

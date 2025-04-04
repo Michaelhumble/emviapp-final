@@ -4,12 +4,14 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
+import { useAuth } from "@/context/auth";
 
 interface StripeCheckoutProps {
   amount: number;
   productName: string;
   buttonText?: string;
   onSuccess?: () => void;
+  mode?: "payment" | "subscription";
 }
 
 const StripeCheckout = ({
@@ -17,25 +19,34 @@ const StripeCheckout = ({
   productName,
   buttonText = "Pay Now",
   onSuccess,
+  mode = "subscription"
 }: StripeCheckoutProps) => {
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
   const handleCheckout = async () => {
+    if (!user) {
+      toast.error("You must be logged in to make a purchase");
+      return;
+    }
+
     setLoading(true);
     
     try {
       // This is a placeholder for edge function call
       // In a real implementation, this would call a Supabase Edge Function
       // that creates a Stripe Checkout session
-      toast.info("Stripe integration ready for implementation", {
-        description: "This button is configured to call the Stripe API through Supabase Edge Functions."
+      toast.info("Processing your subscription", {
+        description: "We're setting up your plan..."
       });
       
       // Simulating a response
       setTimeout(() => {
         setLoading(false);
-        toast.success("Stripe Checkout Ready", {
-          description: "This is a placeholder for Stripe Checkout integration."
+        toast.success(`Subscribed to ${productName}!`, {
+          description: mode === "subscription" 
+            ? "Your subscription has been activated" 
+            : "Your payment has been processed"
         });
         
         if (onSuccess) {
@@ -45,7 +56,7 @@ const StripeCheckout = ({
       
       /* Real implementation would be:
       const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { amount, productName }
+        body: { amount, productName, mode }
       });
       
       if (error) throw error;

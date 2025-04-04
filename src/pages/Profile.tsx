@@ -6,11 +6,14 @@ import { useAuth } from "@/context/auth";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-// Import our new components
+// Import our components
 import UserAvatar from "@/components/profile/UserAvatar";
 import AccountInfo from "@/components/profile/AccountInfo";
 import ProfileForm from "@/components/profile/ProfileForm";
+import SubscriptionProfile from "@/components/profile/SubscriptionProfile";
+import SubscriptionBadge from "@/components/subscription/SubscriptionBadge";
 
 interface UserProfile {
   id: string;
@@ -33,6 +36,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [formData, setFormData] = useState<Partial<UserProfile>>({});
+  const [activeTab, setActiveTab] = useState("profile");
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -126,36 +130,57 @@ const Profile = () => {
     <Layout>
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold mb-8">Your Profile</h1>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="md:col-span-1">
-              {profile && (
-                <>
-                  <UserAvatar 
-                    avatar_url={profile.avatar_url} 
-                    email={profile.email} 
-                    created_at={profile.created_at} 
-                  />
-                  <AccountInfo 
-                    email={profile.email} 
-                    created_at={profile.created_at} 
-                  />
-                </>
-              )}
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+            <div>
+              <h1 className="text-3xl font-bold mb-1">Your Profile</h1>
+              <div className="flex items-center gap-2">
+                <SubscriptionBadge />
+              </div>
             </div>
-            
-            <div className="md:col-span-2">
-              {profile && (
-                <ProfileForm
-                  formData={formData as UserProfile}
-                  handleChange={handleChange}
-                  handleSubmit={handleSubmit}
-                  updating={updating}
-                />
-              )}
+            <div className="mt-2 md:mt-0">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList>
+                  <TabsTrigger value="profile">Profile</TabsTrigger>
+                  <TabsTrigger value="subscription">Subscription</TabsTrigger>
+                </TabsList>
+              </Tabs>
             </div>
           </div>
+          
+          <TabsContent value="profile" className="mt-0" hidden={activeTab !== "profile"}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="md:col-span-1">
+                {profile && (
+                  <>
+                    <UserAvatar 
+                      avatar_url={profile.avatar_url} 
+                      email={profile.email} 
+                      created_at={profile.created_at} 
+                    />
+                    <AccountInfo 
+                      email={profile.email} 
+                      created_at={profile.created_at} 
+                    />
+                  </>
+                )}
+              </div>
+              
+              <div className="md:col-span-2">
+                {profile && (
+                  <ProfileForm
+                    formData={formData as UserProfile}
+                    handleChange={handleChange}
+                    handleSubmit={handleSubmit}
+                    updating={updating}
+                  />
+                )}
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="subscription" className="mt-0" hidden={activeTab !== "subscription"}>
+            <SubscriptionProfile />
+          </TabsContent>
         </div>
       </div>
     </Layout>

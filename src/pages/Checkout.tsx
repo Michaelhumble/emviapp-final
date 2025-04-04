@@ -6,180 +6,227 @@ import { useAuth } from '@/context/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import StripeCheckout from "@/components/payments/StripeCheckout";
-
-const plans = [
-  {
-    id: "basic",
-    name: "Basic",
-    price: 9.99,
-    features: [
-      "Create a professional profile",
-      "Browse salon listings",
-      "Apply for jobs",
-      "Basic messaging"
-    ]
-  },
-  {
-    id: "pro",
-    name: "Professional",
-    price: 19.99,
-    features: [
-      "Everything in Basic",
-      "Featured profile listing",
-      "Priority job applications",
-      "Advanced messaging",
-      "Client management tools"
-    ],
-    recommended: true
-  },
-  {
-    id: "premium",
-    name: "Premium",
-    price: 29.99,
-    features: [
-      "Everything in Professional",
-      "Verified profile badge",
-      "Marketing toolkit",
-      "Analytics dashboard",
-      "Email notifications",
-      "Priority support"
-    ]
-  }
-];
+import { motion } from "framer-motion";
+import { getPlansForRole } from "@/context/subscription";
+import { useSubscription } from '@/context/subscription';
+import { SubscriptionPlan } from '@/context/subscription/types';
+import { CheckCircle2, AlertCircle } from 'lucide-react';
 
 const Checkout = () => {
   const { user, userRole } = useAuth();
+  const { currentPlan, upgradeSubscription } = useSubscription();
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedPlan, setSelectedPlan] = useState(plans[1]);
+  const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
+  const [processing, setProcessing] = useState(false);
 
-  const shouldShowPricingPlans = userRole === 'artist' || userRole === 'freelancer';
-
+  // Get role-specific plans
+  const plans = getPlansForRole(userRole || undefined);
+  
+  // Set default selected plan to Pro (or current if exists)
   useEffect(() => {
-    if (user && !shouldShowPricingPlans) {
-      let dashboardPath = '/dashboard/customer';
-
-      switch(userRole) {
-        case 'salon':
-          dashboardPath = '/dashboard/owner';
-          break;
-        case 'vendor':
-          dashboardPath = '/dashboard/supplier';
-          break;
-        case 'other':
-          dashboardPath = '/dashboard/other';
-          break;
-        case 'customer':
-        default:
-          dashboardPath = '/dashboard/customer';
-          break;
+    const defaultPlan = currentPlan?.id !== 'free' 
+      ? currentPlan 
+      : plans.find(p => p.recommended) || plans[1];
+    
+    setSelectedPlan(defaultPlan);
+    
+    // Check if a specific plan was requested via URL query param
+    const params = new URLSearchParams(location.search);
+    const planId = params.get('plan');
+    if (planId) {
+      const plan = plans.find(p => p.id === planId);
+      if (plan) {
+        setSelectedPlan(plan);
       }
-
-      navigate(dashboardPath);
     }
-  }, [user, userRole, shouldShowPricingPlans, navigate]);
+  }, [currentPlan, plans, location.search]);
+
+  // Redirect non-artists/freelancers back to their dashboard
+  useEffect(() => {
+    if (user && !userRole) {
+      navigate('/dashboard/customer');
+    }
+  }, [user, userRole, navigate]);
 
   if (!user) {
-    // Fix: use navigate instead of Navigate component
+    // Use navigate for programmatic navigation
     navigate("/auth/signin", { replace: true });
     return null;
   }
 
-  if (!shouldShowPricingPlans) {
+  if (!selectedPlan) {
     return null;
   }
 
-  const handleSuccess = () => {
-    setTimeout(() => {
-      navigate("/profile");
-    }, 1500);
+  const handleSuccess = async () => {
+    setProcessing(true);
+    try {
+      if (selectedPlan) {
+        await upgradeSubscription(selectedPlan);
+      }
+      setTimeout(() => {
+        setProcessing(false);
+        navigate("/profile");
+      }, 1000);
+    } catch (error) {
+      setProcessing(false);
+      console.error("Subscription error:", error);
+    }
+  };
+
+  const isPlanSelected = (plan: SubscriptionPlan) => selectedPlan?.id === plan.id;
+  const isCurrentPlan = (plan: SubscriptionPlan) => currentPlan?.id === plan.id;
+
+  const planContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const planItemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.3 }
+    }
   };
 
   return (
     <Layout>
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold mb-2">Choose Your Plan</h1>
-          <p className="text-gray-600 mb-8">Select the plan that fits your needs.</p>
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-8"
+          >
+            <h1 className="text-3xl font-bold mb-2">Choose Your Plan</h1>
+            <p className="text-gray-600 mb-2">Select the plan that fits your needs as a {userRole || 'professional'}.</p>
+            {currentPlan && currentPlan.id !== 'free' && (
+              <div className="inline-flex items-center bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">
+                <CheckCircle2 className="w-4 h-4 mr-1" />
+                Currently on {currentPlan.name} Plan
+              </div>
+            )}
+          </motion.div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {plans.map((plan) => (
-              <Card 
+          <motion.div 
+            variants={planContainerVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          >
+            {plans.filter(plan => plan.id !== 'free').map((plan) => (
+              <motion.div 
                 key={plan.id}
-                className={`${
-                  selectedPlan.id === plan.id
-                    ? 'border-primary ring-2 ring-primary/20'
-                    : ''
-                } ${
-                  plan.recommended
-                    ? 'relative'
-                    : ''
-                }`}
+                variants={planItemVariants}
+                whileHover={{ y: -5 }}
+                transition={{ duration: 0.2 }}
               >
-                {plan.recommended && (
-                  <div className="absolute top-0 right-0 bg-primary text-white text-xs px-2 py-1 rounded-bl-lg rounded-tr-lg">
-                    Recommended
-                  </div>
-                )}
+                <Card 
+                  className={`${
+                    isPlanSelected(plan)
+                      ? 'border-primary ring-2 ring-primary/20'
+                      : ''
+                  } ${
+                    plan.recommended
+                      ? 'relative'
+                      : ''
+                  } h-full flex flex-col justify-between`}
+                >
+                  {plan.recommended && (
+                    <div className="absolute top-0 right-0 bg-primary text-white text-xs px-2 py-1 rounded-bl-lg rounded-tr-lg">
+                      Recommended
+                    </div>
+                  )}
+                  <CardHeader>
+                    <CardTitle>{plan.name}</CardTitle>
+                    <CardDescription>
+                      <span className="text-3xl font-bold">${plan.price}</span>
+                      <span className="text-gray-500">/month</span>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <ul className="space-y-2">
+                      {plan.features.map((feature, i) => (
+                        <li key={i} className="flex items-start">
+                          <CheckCircle2 className="h-5 w-5 text-primary mr-2 flex-shrink-0 mt-0.5" />
+                          <span className="text-sm">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                  <CardFooter>
+                    <Button
+                      variant={isPlanSelected(plan) ? "default" : "outline"}
+                      className="w-full"
+                      onClick={() => setSelectedPlan(plan)}
+                      disabled={isCurrentPlan(plan)}
+                    >
+                      {isCurrentPlan(plan) ? "Current Plan" : isPlanSelected(plan) ? "Selected" : "Select Plan"}
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
+          
+          {selectedPlan && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="mt-12 max-w-md mx-auto"
+            >
+              <Card>
                 <CardHeader>
-                  <CardTitle>{plan.name}</CardTitle>
-                  <CardDescription>
-                    <span className="text-3xl font-bold">${plan.price}</span>
-                    <span className="text-gray-500">/month</span>
-                  </CardDescription>
+                  <CardTitle>Order Summary</CardTitle>
+                  {isCurrentPlan(selectedPlan) && (
+                    <CardDescription className="flex items-center text-amber-600">
+                      <AlertCircle className="h-4 w-4 mr-1" />
+                      This is your current plan
+                    </CardDescription>
+                  )}
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-2">
-                    {plan.features.map((feature, i) => (
-                      <li key={i} className="flex items-center">
-                        <svg className="h-5 w-5 text-primary mr-2" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="space-y-4">
+                    <div className="flex justify-between">
+                      <span>{selectedPlan.name} Plan</span>
+                      <span>${selectedPlan.price}/month</span>
+                    </div>
+                    <div className="border-t pt-4 flex justify-between font-bold">
+                      <span>Total</span>
+                      <span>${selectedPlan.price}/month</span>
+                    </div>
+                  </div>
                 </CardContent>
                 <CardFooter>
-                  <Button
-                    variant={selectedPlan.id === plan.id ? "default" : "outline"}
-                    className="w-full"
-                    onClick={() => setSelectedPlan(plan)}
-                  >
-                    {selectedPlan.id === plan.id ? "Selected" : "Select Plan"}
-                  </Button>
+                  {isCurrentPlan(selectedPlan) ? (
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => navigate(-1)}
+                    >
+                      Go Back
+                    </Button>
+                  ) : (
+                    <StripeCheckout
+                      amount={selectedPlan.price * 100}
+                      productName={`${selectedPlan.name} Plan Subscription`}
+                      buttonText={processing ? "Processing..." : `Subscribe to ${selectedPlan.name} Plan`}
+                      onSuccess={handleSuccess}
+                    />
+                  )}
                 </CardFooter>
               </Card>
-            ))}
-          </div>
-          
-          <div className="mt-12 max-w-md mx-auto">
-            <Card>
-              <CardHeader>
-                <CardTitle>Order Summary</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between">
-                    <span>{selectedPlan.name} Plan</span>
-                    <span>${selectedPlan.price}/month</span>
-                  </div>
-                  <div className="border-t pt-4 flex justify-between font-bold">
-                    <span>Total</span>
-                    <span>${selectedPlan.price}/month</span>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <StripeCheckout
-                  amount={selectedPlan.price * 100}
-                  productName={`${selectedPlan.name} Plan Subscription`}
-                  buttonText={`Subscribe to ${selectedPlan.name} Plan`}
-                  onSuccess={handleSuccess}
-                />
-              </CardFooter>
-            </Card>
-          </div>
+            </motion.div>
+          )}
         </div>
       </div>
     </Layout>
