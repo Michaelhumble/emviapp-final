@@ -1,3 +1,4 @@
+
 // Add the missing helper functions
 const getRandomSalaryRange = () => {
   const ranges = [
@@ -20,3 +21,4 @@ const getRandomSpecialties = () => {
   ];
   return specialties[Math.floor(Math.random() * specialties.length)];
 };
+

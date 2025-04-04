@@ -12,10 +12,14 @@ import Messages from './pages/messages';
 import Welcome from './pages/Welcome';
 import OwnerDashboard from './pages/dashboard/Owner';
 import SalonDashboard from './pages/dashboard/Salon';
+import FreelancerDashboard from './pages/dashboard/Freelancer';
+import SupplierDashboard from './pages/dashboard/Supplier';
+import CustomerDashboard from './pages/dashboard/Customer';
+import OtherDashboard from './pages/dashboard/Other';
 import SalonOwnerSetup from './pages/profile/salon/setup';
 import PostJob from './pages/PostJob';
 import ManageJobs from './pages/ManageJobs';
-import PostSalon from './pages/PostSalon';
+import PostSalon from './pages/posting/SalonPost';
 import SalonOwners from './pages/SalonOwners';
 
 function App() {
@@ -28,6 +32,10 @@ function App() {
           <Route path="/dashboard/artist" element={<ArtistDashboard />} />
           <Route path="/dashboard/owner" element={<OwnerDashboard />} />
           <Route path="/dashboard/salon" element={<SalonDashboard />} />
+          <Route path="/dashboard/freelancer" element={<FreelancerDashboard />} />
+          <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
+          <Route path="/dashboard/customer" element={<CustomerDashboard />} />
+          <Route path="/dashboard/other" element={<OtherDashboard />} />
           <Route path="/auth/signin" element={<SignIn />} />
           <Route path="/auth/signup" element={<SignUp />} />
           <Route path="/jobs" element={<Jobs />} />
