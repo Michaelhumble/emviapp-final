@@ -1,25 +1,11 @@
 
-import { createContext, useState, useEffect, ReactNode } from 'react';
-import {
-  Session,
-  User as SupabaseUser,
-} from '@supabase/supabase-js';
+import { useState, useEffect, ReactNode } from 'react';
+import { Session, User as SupabaseUser } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { UserProfile } from './types';
+import { UserProfile, UserRole, AuthContextType } from './types';
+import { AuthContext } from './AuthContext';
+import { fetchUserProfile } from './userProfileService';
 import { toast } from '@/hooks/use-toast';
-
-export interface AuthContextType {
-  session: Session | null;
-  user: SupabaseUser | null;
-  userProfile: UserProfile | null;
-  userRole: string | null;
-  loading: boolean;
-  signOut: () => Promise<void>;
-  refreshUserProfile: () => Promise<void>;
-}
-
-// Export the AuthContext so it can be imported by useAuth.tsx
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -29,13 +15,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [userRole, setUserRole] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Initialize auth state and listen for changes
   useEffect(() => {
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-
       setSession(session);
       setUser(session?.user || null);
       setLoading(false);
@@ -43,81 +29,39 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     getSession();
 
-    supabase.auth.onAuthStateChange(async (_event, session) => {
-      setSession(session);
-      setUser(session?.user || null);
-      setLoading(false);
-    });
+    // Set up auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        setSession(session);
+        setUser(session?.user || null);
+        setLoading(false);
+      }
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
+  // Fetch user profile whenever the user changes
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const loadUserProfile = async () => {
       if (!user) {
         setUserProfile(null);
         setUserRole(null);
         return;
       }
 
-      try {
-        const { data: userData, error } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-
-        if (error) {
-          console.error("Error fetching user profile:", error);
-          setUserProfile(null);
-          setUserRole(null);
-          return;
-        }
-        
-        const userRole = userData?.role || 'customer';
-        setUserRole(userRole);
-        
-        let profileExtras = {};
-
-        // Extract role-specific profile data
-        if (userRole === 'owner' || userRole === 'salon') {
-          profileExtras = {
-            salon_name: userData?.salon_name || "",
-            business_address: userData?.business_address || ""
-          };
-        } else if (userRole === 'supplier' || userRole === 'beauty supplier') {
-          profileExtras = {
-            company_name: userData?.company_name || "",
-            product_type: userData?.product_type || ""
-          };
-        }
-
-        const profile: UserProfile = {
-          id: userData.id,
-          email: userData.email,
-          full_name: userData.full_name,
-          avatar_url: userData.avatar_url,
-          location: userData.location,
-          bio: userData.bio,
-          phone: userData.phone,
-          instagram: userData.instagram,
-          website: userData.website,
-          specialty: userData.specialty,
-          role: userData.role,
-          skill_level: userData.skill_level,
-          skills: userData.skills,
-          ...profileExtras
-        };
-        
+      const profile = await fetchUserProfile(user);
+      
+      if (profile) {
         setUserProfile(profile);
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-        setUserProfile(null);
-        setUserRole(null);
+        setUserRole(profile.role);
       }
     };
 
-    fetchUserProfile();
+    loadUserProfile();
   }, [user]);
 
+  // Sign out function
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
@@ -137,62 +81,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
   
+  // Refresh user profile function
   const refreshUserProfile = async () => {
     if (!user) return;
     
-    try {
-      const { data: userData, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-        
-      if (error) {
-        console.error("Error refreshing user profile:", error);
-        return;
-      }
-      
-      const userRole = userData?.role || 'customer';
-      setUserRole(userRole);
-      
-      let profileExtras = {};
-
-      // Extract role-specific profile data
-      if (userRole === 'owner' || userRole === 'salon') {
-        profileExtras = {
-          salon_name: userData?.salon_name || "",
-          business_address: userData?.business_address || ""
-        };
-      } else if (userRole === 'supplier' || userRole === 'beauty supplier') {
-        profileExtras = {
-          company_name: userData?.company_name || "",
-          product_type: userData?.product_type || ""
-        };
-      }
-
-      const profile: UserProfile = {
-        id: userData.id,
-        email: userData.email,
-        full_name: userData.full_name,
-        avatar_url: userData.avatar_url,
-        location: userData.location,
-        bio: userData.bio,
-        phone: userData.phone,
-        instagram: userData.instagram,
-        website: userData.website,
-        specialty: userData.specialty,
-        role: userData.role,
-        skill_level: userData.skill_level,
-        skills: userData.skills,
-        ...profileExtras
-      };
-      
+    const profile = await fetchUserProfile(user);
+    
+    if (profile) {
       setUserProfile(profile);
-    } catch (error) {
-      console.error("Error refreshing user profile:", error);
+      setUserRole(profile.role);
     }
   };
 
+  // Auth context value
   const value: AuthContextType = {
     session,
     user,

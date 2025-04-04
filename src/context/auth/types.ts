@@ -37,7 +37,21 @@ export interface UserProfile {
   updated_at?: string | null;
 }
 
-// Add 'profileComplete' property to AuthContextType
+// Profile status information
 export interface ProfileStatus {
   profileComplete: boolean;
 }
+
+// Auth context type definition
+export interface AuthContextType {
+  session: Session | null;
+  user: SupabaseUser | null;
+  userProfile: UserProfile | null;
+  userRole: UserRole | null;
+  loading: boolean;
+  signOut: () => Promise<void>;
+  refreshUserProfile: () => Promise<void>;
+}
+
+// Import Supabase types to avoid importing them everywhere
+import { Session, User as SupabaseUser } from '@supabase/supabase-js';
