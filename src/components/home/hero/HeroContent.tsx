@@ -125,7 +125,7 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages, isMobile = false
           </TooltipProvider>
         </motion.div>
         
-        {/* Carousel indicators for all devices */}
+        {/* Carousel indicators for all devices - visible on both mobile and desktop */}
         <motion.div 
           className="flex mt-8 sm:mt-12 gap-2 justify-center overflow-x-auto pb-2"
           initial={{ opacity: 0 }}
@@ -141,38 +141,6 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages, isMobile = false
             />
           ))}
         </motion.div>
-        
-        {/* Mobile carousel - only visible on very small screens when needed */}
-        {isMobile && (
-          <motion.div 
-            className="mt-8 w-full relative z-40 block sm:hidden"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.6 }}
-          >
-            <Carousel className="w-full">
-              <CarouselContent>
-                {heroImages.map((image, index) => (
-                  <CarouselItem key={index}>
-                    <div className="relative rounded-xl overflow-hidden shadow-lg h-52 sm:h-64">
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10"></div>
-                      <img 
-                        src={image.url}
-                        alt={image.alt}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute bottom-4 left-4 right-4 z-20">
-                        <Badge className="mb-2 bg-white/20 backdrop-blur-sm text-white border-0">
-                          {getImageCategory(index, image.alt)}
-                        </Badge>
-                      </div>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
-          </motion.div>
-        )}
       </div>
     </div>
   );

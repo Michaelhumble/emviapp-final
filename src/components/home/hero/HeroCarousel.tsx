@@ -35,7 +35,7 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
           <img 
             src={image.url} 
             alt={image.alt}
-            className={`w-full h-full ${isMobile ? 'object-cover object-center' : 'object-cover'} rounded-lg`}
+            className={`w-full h-full object-cover ${isMobile ? 'object-center' : 'object-cover'} rounded-lg`}
           />
           
           {/* Enhanced gradient overlay for text readability - optimized for mobile */}

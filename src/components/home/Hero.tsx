@@ -27,7 +27,7 @@ const Hero = () => {
   }, []);
 
   useEffect(() => {
-    // Auto-advance the carousel every 5 seconds
+    // Auto-advance the carousel every 5 seconds for both mobile and desktop
     const interval = setInterval(() => {
       setActiveIndex(prevIndex => (prevIndex + 1) % randomizedImages.length);
     }, 5000);
