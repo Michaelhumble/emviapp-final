@@ -21,10 +21,6 @@ export const heroImages = [
     alt: "Facial treatment being performed in a spa setting"
   },
   {
-    url: "/lovable-uploads/70c8662a-4525-4854-a529-62616b5b6c81.png",
-    alt: "Woman with flower getting beauty treatment"
-  },
-  {
     url: "/lovable-uploads/b4f117ee-b209-43be-8e30-ecbf1d025c93.png",
     alt: "Makeup brushes arranged in containers near a mirror"
   },
