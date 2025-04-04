@@ -58,6 +58,7 @@ export interface AuthContextType {
   refreshUserProfile: () => Promise<void>;
   // Add missing properties needed by components
   signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>; // Added signUp method
   isSignedIn: boolean;
 }
 

@@ -65,6 +65,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     loadUserProfile();
   }, [user]);
 
+  // Sign up function
+  const signUp = async (email: string, password: string) => {
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+      
+      if (error) throw error;
+      
+      toast.success("Account created successfully! Check your email for verification.");
+    } catch (error: any) {
+      console.error("Error signing up:", error);
+      toast.error(error.message || "Failed to sign up");
+      throw error;
+    }
+  };
+
   // Sign in function
   const signIn = async (email: string, password: string) => {
     try {
@@ -120,6 +138,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     signOut,
     refreshUserProfile,
     signIn,
+    signUp, // Include the signUp function in the context value
     isSignedIn
   };
 
