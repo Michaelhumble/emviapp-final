@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { useAuth } from "@/context/auth";
@@ -10,7 +9,7 @@ import JobLoadingState from "@/components/jobs/JobLoadingState";
 import JobEmptyState from "@/components/jobs/JobEmptyState";
 import JobsGrid from "@/components/jobs/JobsGrid";
 import VietnameseJobSection from "@/components/jobs/VietnameseJobSection";
-import { useJobsData } from "@/hooks/useJobsData";
+import { useJobsData, JobFilters as JobFilterOptions } from "@/hooks/useJobsData";
 import { useJobRenewal } from "@/hooks/useJobRenewal";
 import { differenceInDays } from 'date-fns';
 
@@ -36,7 +35,7 @@ const Jobs = () => {
   const { user } = useAuth();
   
   // Custom hooks for job data and renewal
-  const { jobs, loading, fetchJobs } = useJobsData(searchTerm, filters);
+  const { jobs, loading, fetchJobs } = useJobsData();
   const { 
     renewJob,
     isRenewing,

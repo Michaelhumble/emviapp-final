@@ -1,3 +1,6 @@
+
+import { Job } from "@/types/job";
+
 const getRandomOwnerName = () => {
   const names = [
     "Anh Nguyen", "Tuan Pham", "Kim Le", 
@@ -40,8 +43,6 @@ const generateRandomWorkHours = () => {
   const hours = ["9AM-7PM", "10AM-8PM", "9:30AM-7:30PM", "10AM-6PM"];
   return `${days[Math.floor(Math.random() * days.length)]} ${hours[Math.floor(Math.random() * hours.length)]}`;
 };
-
-import { Job } from "@/types/job";
 
 export const generateVietnameseNailJobs = (count: number): Job[] => {
   const jobTitles = [
@@ -108,23 +109,49 @@ export const generateVietnameseNailJobs = (count: number): Job[] => {
     const sampleJob: Job = {
       id: `vjob-${i + 1}`,
       title: randomTitle,
-      description: randomDescription,
-      requirements: "Không yêu cầu",
-      compensation_type: "Thỏa thuận",
-      compensation_details: "Liên hệ trực tiếp",
-      created_at: new Date().toISOString(),
-      expires_at: new Date(Date.now() + 30 * 86400000).toISOString(),
-      status: "active",
+      company: `Tiệm Nail ${city}`,
       location: randomLocation,
+      type: Math.random() > 0.5 ? 'Full-time' : 'Part-time',
+      description: randomDescription,
+      salary: `$${Math.floor(Math.random() * 500 + 700)}-${Math.floor(Math.random() * 500 + 1200)}/week`,
+      posted_date: new Date(Date.now() - Math.floor(Math.random() * 20) * 86400000).toISOString(),
+      closing_date: Math.random() > 0.3 ? new Date(Date.now() + Math.floor(Math.random() * 30 + 15) * 86400000).toISOString() : null,
+      contact_email: getRandomEmail(),
+      is_featured: Math.random() > 0.8,
+      is_remote: false,
+      experience_level: Math.random() > 0.5 ? "Experienced" : "Entry Level",
+      created_at: new Date(Date.now() - Math.floor(Math.random() * 20) * 86400000).toISOString(),
+      
+      // These are required by Job type from types/job.ts
+      compensation_type: "weekly",
+      compensation_details: `$${Math.floor(Math.random() * 500 + 700)}-${Math.floor(Math.random() * 500 + 1200)}/week`,
+      status: "active",
+      expires_at: new Date(Date.now() + 30 * 86400000).toISOString(),
+      requirements: "Cần có kinh nghiệm làm nails",
       is_sample: true,
+      
+      // Additional properties
+      weekly_pay: Math.random() > 0.5,
+      owner_will_train: Math.random() > 0.7,
+      has_housing: Math.random() > 0.7,
+      no_supply_deduction: Math.random() > 0.6,
+      specialties: ["Dip Powder", "Acrylic", "Gel"].sort(() => 0.5 - Math.random()).slice(0, Math.floor(Math.random() * 3) + 1),
+      vietnamese_description: randomDescription,
+      tip_range: `$${Math.floor(Math.random() * 50 + 100)}-${Math.floor(Math.random() * 100 + 150)}/day`,
       contact_info: {
         owner_name: getRandomOwnerName(),
         phone: getRandomPhone(),
-        email: getRandomEmail()
+        email: getRandomEmail(),
       }
     };
+    
     sampleJobs.push(sampleJob);
   }
 
   return sampleJobs;
+};
+
+// Helper function for other modules 
+export const generateVietnameseNailSamples = () => {
+  return generateVietnameseNailJobs(5);
 };

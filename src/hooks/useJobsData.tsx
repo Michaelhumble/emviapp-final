@@ -2,26 +2,10 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
+import { Job } from "@/types/job";
+import { formatJobListings } from "@/utils/jobs/jobListingFormatter";
 
-export type Job = {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  type: string;
-  description: string;
-  salary: string;
-  posted_date: string;
-  closing_date: string | null;
-  contact_email: string;
-  company_logo?: string;
-  is_featured: boolean;
-  is_remote: boolean;
-  experience_level: string;
-  created_at: string;
-};
-
-interface JobFilters {
+export interface JobFilters {
   featured?: boolean;
   remote?: boolean;
   fullTime?: boolean;
@@ -36,47 +20,50 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
   const [filters, setFilters] = useState<JobFilters>(initialFilters);
   const { user } = useAuth();
 
-  useEffect(() => {
-    const fetchJobs = async () => {
-      setLoading(true);
-      try {
-        // Start with a base query
-        let query = supabase.from("jobs").select("*");
+  const fetchJobs = async () => {
+    setLoading(true);
+    try {
+      // Start with a base query
+      let query = supabase.from("jobs").select("*");
 
-        // Apply filters one by one with explicit type checking
-        if (filters.featured === true) {
-          query = query.eq('is_featured', true);
-        }
-
-        if (filters.remote === true) {
-          query = query.eq('is_remote', true);
-        }
-
-        if (filters.fullTime === true) {
-          query = query.eq('type', 'Full-time');
-        }
-
-        if (filters.partTime === true) {
-          query = query.eq('type', 'Part-time');
-        }
-
-        // Location filter
-        if (filters.location && typeof filters.location === 'string' && filters.location !== 'all') {
-          query = query.ilike('location', `%${filters.location}%`);
-        }
-
-        const { data, error } = await query;
-
-        if (error) throw error;
-        setJobs(data || []);
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error(String(err)));
-        console.error("Error fetching jobs:", err);
-      } finally {
-        setLoading(false);
+      // Apply filters one by one
+      if (filters.featured) {
+        query = query.eq('is_featured', true);
       }
-    };
 
+      if (filters.remote) {
+        query = query.eq('is_remote', true);
+      }
+
+      if (filters.fullTime) {
+        query = query.eq('type', 'Full-time');
+      }
+
+      if (filters.partTime) {
+        query = query.eq('type', 'Part-time');
+      }
+
+      // Location filter
+      if (filters.location && filters.location !== 'all') {
+        query = query.ilike('location', `%${filters.location}%`);
+      }
+
+      const { data, error: apiError } = await query;
+
+      if (apiError) throw apiError;
+
+      // Map the raw database jobs to our Job type with all required properties
+      const formattedJobs = data ? formatJobListings(data as any) : [];
+      setJobs(formattedJobs);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error(String(err)));
+      console.error("Error fetching jobs:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchJobs();
   }, [filters]);
 
@@ -84,5 +71,5 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
     setFilters({ ...filters, ...newFilters });
   };
 
-  return { jobs, loading, error, filters, updateFilters };
+  return { jobs, loading, error, filters, updateFilters, fetchJobs };
 };

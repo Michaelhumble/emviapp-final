@@ -1,6 +1,6 @@
 
 import { Job } from '@/types/job';
-import { generateVietnameseNailJobs } from './vietnameseJobSamples';
+import { generateVietnameseNailJobs } from './vietnameseNailJobSamples';
 
 // Mock function to generate a random salon for jobs without salon info
 const generateRandomSalon = () => {
@@ -12,40 +12,64 @@ const generateRandomSalon = () => {
   };
 };
 
-// Format a single job listing
-export const formatJobListing = (job: Job): Job => {
-  const isVietnamese = job.title.toLowerCase().includes('vietnamese') || 
-                      (job.description && job.description.toLowerCase().includes('vietnamese'));
+// Format a single job listing from database object to our Job type
+export const formatJobListing = (dbJob: any): Job => {
+  // Get basic properties that should exist in database
+  const { id, title, compensation_type, compensation_details, description, requirements, status, created_at, expires_at } = dbJob;
+  
+  // Default values for required properties that might not exist in the database
+  const job: Job = {
+    id: id || `job-${Math.random().toString(36).substring(2, 9)}`,
+    title: title || "Job Title",
+    company: dbJob.company || "Company Name",
+    location: dbJob.location || "Remote",
+    type: dbJob.type || "Full-time",
+    description: description || "",
+    salary: dbJob.salary || compensation_details || "Competitive",
+    posted_date: created_at || new Date().toISOString(),
+    closing_date: dbJob.closing_date || null,
+    contact_email: dbJob.contact_email || "contact@example.com",
+    is_featured: dbJob.is_featured || false,
+    is_remote: dbJob.is_remote || false,
+    experience_level: dbJob.experience_level || "Not specified",
+    created_at: created_at || new Date().toISOString(),
+    compensation_type: compensation_type || "hourly",
+    compensation_details: compensation_details || "",
+    status: status || "active",
+    expires_at: expires_at || new Date(Date.now() + 30 * 86400000).toISOString(),
+    requirements: requirements || "",
+  };
+
+  // If it's a Vietnamese job, enhance with additional data
+  const isVietnamese = title?.toLowerCase().includes('vietnamese') || 
+                     description?.toLowerCase().includes('vietnamese');
 
   if (isVietnamese) {
     const vietnameseJobs = generateVietnameseNailJobs(1);
     if (vietnameseJobs.length > 0) {
       const sampleJob = vietnameseJobs[0];
-      // Return a new job object without modifying the original job
+      // Enhance with Vietnamese-specific fields
       return {
         ...job,
-        // We don't use salary directly as it's not in the Job type
-        // Instead we put it in the compensation_details if needed
-        compensation_details: sampleJob.salary || job.compensation_details,
-        specialties: sampleJob.specialties || job.specialties,
-        // Any other fields we want to enhance
+        specialties: sampleJob.specialties,
+        vietnamese_description: sampleJob.vietnamese_description,
+        contact_info: sampleJob.contact_info,
+        tip_range: sampleJob.tip_range,
+        weekly_pay: sampleJob.weekly_pay,
+        owner_will_train: sampleJob.owner_will_train,
+        has_housing: sampleJob.has_housing,
+        no_supply_deduction: sampleJob.no_supply_deduction
       };
     }
   }
 
-  // Add salon details if missing (we use a separate variable since 'salon' isn't in the Job type)
-  const randomSalonInfo = generateRandomSalon();
-  
-  // Return the original job or enhance it with generated data
-  return {
-    ...job
-  };
+  return job;
 };
 
 // Format an array of job listings
-export const formatJobListings = (jobs: Job[]): Job[] => {
-  return jobs.map(job => formatJobListing(job));
+export const formatJobListings = (dbJobs: any[]): Job[] => {
+  return dbJobs.map(job => formatJobListing(job));
 };
 
-// Ensure we have the single item function and array function both exported
+// Ensure we have the single item function exported
 export { formatJobListing as formatSingleJobListing };
