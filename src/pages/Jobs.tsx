@@ -10,7 +10,7 @@ import JobLoadingState from "@/components/jobs/JobLoadingState";
 import JobEmptyState from "@/components/jobs/JobEmptyState";
 import JobsGrid from "@/components/jobs/JobsGrid";
 import VietnameseJobSection from "@/components/jobs/VietnameseJobSection";
-import useJobsData from "@/hooks/useJobsData"; // Fixed import
+import useJobsData from "@/hooks/useJobsData";
 import { useJobRenewal } from "@/hooks/useJobRenewal";
 import { differenceInDays } from 'date-fns';
 

@@ -17,7 +17,16 @@ interface Job {
   requirements: string;
 }
 
-const useJobsData = (userId?: string) => {
+interface Filters {
+  weeklyPay?: boolean;
+  ownerWillTrain?: boolean;
+  employmentType?: string;
+  showExpired?: boolean;
+  hasHousing?: boolean;
+  noSupplyDeduction?: boolean;
+}
+
+const useJobsData = (searchTerm?: string, filters?: Filters) => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,8 +36,12 @@ const useJobsData = (userId?: string) => {
     setRefreshTrigger((prev) => prev + 1);
   };
 
+  const fetchJobs = () => {
+    refreshJobs();
+  };
+
   useEffect(() => {
-    const fetchJobs = async () => {
+    const getJobs = async () => {
       try {
         setLoading(true);
         setError(null);
@@ -38,12 +51,37 @@ const useJobsData = (userId?: string) => {
           .select("*")
           .order("created_at", { ascending: false });
 
-        // If userId is provided, filter by salon_id
-        if (userId) {
-          query = query.eq("salon_id", userId);
-        } else {
-          // If no userId, only fetch active jobs
-          query = query.eq("status", "active");
+        // Apply filters if provided
+        if (filters) {
+          if (filters.weeklyPay) {
+            query = query.eq("weekly_pay", true);
+          }
+          
+          if (filters.ownerWillTrain) {
+            query = query.eq("owner_will_train", true);
+          }
+          
+          if (filters.hasHousing) {
+            query = query.eq("has_housing", true);
+          }
+          
+          if (filters.noSupplyDeduction) {
+            query = query.eq("no_supply_deduction", true);
+          }
+          
+          if (filters.employmentType && filters.employmentType !== "all") {
+            query = query.eq("employment_type", filters.employmentType);
+          }
+          
+          if (!filters.showExpired) {
+            // Only show non-expired jobs
+            query = query.gt("expires_at", new Date().toISOString());
+          }
+        }
+
+        // Apply search if provided
+        if (searchTerm && searchTerm.trim() !== '') {
+          query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
         }
 
         const { data, error } = await query;
@@ -63,8 +101,8 @@ const useJobsData = (userId?: string) => {
       }
     };
 
-    fetchJobs();
-  }, [userId, refreshTrigger]);
+    getJobs();
+  }, [searchTerm, filters, refreshTrigger]);
 
   const deleteJob = async (jobId: string) => {
     try {
@@ -115,6 +153,7 @@ const useJobsData = (userId?: string) => {
     loading,
     error,
     refreshJobs,
+    fetchJobs,
     deleteJob,
     updateJobStatus,
   };

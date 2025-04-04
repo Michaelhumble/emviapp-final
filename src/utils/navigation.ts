@@ -4,12 +4,12 @@ import { NavigateFunction } from "react-router-dom";
 
 /**
  * Navigates to the appropriate dashboard based on user role
- * @param userRole The role of the current user
  * @param navigate The React Router navigate function
+ * @param userRole The role of the current user
  */
 export const navigateToRoleDashboard = (
-  userRole: UserRole | null,
-  navigate: NavigateFunction
+  navigate: NavigateFunction,
+  userRole: UserRole | null
 ): void => {
   if (!userRole) {
     // If no role is found, redirect to the home page
