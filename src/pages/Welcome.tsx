@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import EmotionalTrust from "@/components/analysis/EmotionalTrust";
 import WelcomeHero from "@/components/welcome/WelcomeHero";
 import AITeam from "@/components/welcome/AITeam";
+import { navigateToRoleDashboard } from "@/utils/navigation";
 
 const Welcome = () => {
   const { user, userRole, loading } = useAuth();
@@ -35,38 +36,7 @@ const Welcome = () => {
   
   const redirectToDashboard = () => {
     console.log("Redirecting with user role:", userRole);
-    switch(userRole) {
-      case 'artist':
-      case 'nail technician/artist':
-        navigate('/dashboard/artist');
-        break;
-      case 'salon':
-        navigate('/dashboard/salon');
-        break;
-      case 'owner':
-        navigate('/dashboard/owner');
-        break;
-      case 'vendor':
-      case 'supplier':
-      case 'beauty supplier':
-        navigate('/dashboard/supplier');
-        break;
-      case 'freelancer':
-      case 'renter':
-        navigate('/dashboard/freelancer');
-        break;
-      case 'other':
-        navigate('/dashboard/other');
-        break;
-      case 'customer':
-        navigate('/dashboard/customer');
-        break;
-      default:
-        // If role is undefined or not matching any case, redirect to customer dashboard as fallback
-        console.log("Unknown role, defaulting to customer dashboard:", userRole);
-        navigate('/dashboard/customer');
-        break;
-    }
+    navigateToRoleDashboard(userRole, navigate);
   };
 
   // Function to handle the "Let's go" button click

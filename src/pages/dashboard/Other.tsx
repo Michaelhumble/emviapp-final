@@ -10,10 +10,11 @@ import { Link } from "react-router-dom";
 import { useRoleSelection } from "@/hooks/useRoleSelection";
 import AISmartReminder from "@/components/ai/AISmartReminder";
 import AIWelcomeAssistant from "@/components/ai/AIWelcomeAssistant";
+import { getPersonalizedGreeting } from "@/utils/navigation";
 
 const OtherDashboard = () => {
-  const { user } = useAuth();
-  const firstName = user?.email?.split('@')[0] || 'there';
+  const { user, userProfile } = useAuth();
+  const firstName = userProfile?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'there';
   const { setIsRoleModalOpen } = useRoleSelection();
   
   useEffect(() => {
@@ -46,7 +47,7 @@ const OtherDashboard = () => {
         >
           <div className="text-center mb-12">
             <h1 className="text-3xl md:text-4xl font-serif mb-4">
-              Welcome to EmviApp, {firstName}
+              {getPersonalizedGreeting(firstName, 'other')}
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Tell us more so we can guide your journey

@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 import AIDashboardWidgets from "@/components/ai/AIDashboardWidgets";
 import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
 import AIAffiliateTrackingWidget from "@/components/ai/AIAffiliateTrackingWidget";
+import { getPersonalizedGreeting } from "@/utils/navigation";
 
 const FreelancerDashboard = () => {
   const { userProfile } = useAuth();
@@ -45,7 +46,7 @@ const FreelancerDashboard = () => {
         >
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-serif mb-4">
-              Hi {firstName}! Ready to level up your freelance career? 💅
+              {getPersonalizedGreeting(firstName, 'freelancer')}
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Turn passion into your path — with EmviApp.

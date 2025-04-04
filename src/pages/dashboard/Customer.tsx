@@ -10,6 +10,7 @@ import { Search, CalendarDays, Gift, User } from "lucide-react";
 import ProfileCompletionCard from '@/components/profile/ProfileCompletionCard';
 import AIDashboardWidgets from '@/components/ai/AIDashboardWidgets';
 import AIAffiliateTrackingWidget from '@/components/ai/AIAffiliateTrackingWidget';
+import { getPersonalizedGreeting } from '@/utils/navigation';
 
 const CustomerDashboard = () => {
   const { userProfile } = useAuth();
@@ -45,7 +46,7 @@ const CustomerDashboard = () => {
         >
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-serif mb-4">
-              Hi {firstName}! Your next look is waiting 💅
+              {getPersonalizedGreeting(firstName, 'customer')}
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Great artists are one click away
@@ -63,6 +64,7 @@ const CustomerDashboard = () => {
             <AIAffiliateTrackingWidget />
           </div>
           
+          {/* Quick Actions Section */}
           <motion.div 
             variants={container}
             initial="hidden"
@@ -121,6 +123,7 @@ const CustomerDashboard = () => {
             </motion.div>
           </motion.div>
           
+          {/* Profile Update CTA */}
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

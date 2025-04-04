@@ -42,38 +42,8 @@ const Index = () => {
         return;
       }
       
-      switch(userRole) {
-        case 'customer':
-          navigate('/dashboard/customer');
-          break;
-        case 'artist':
-        case 'nail technician/artist':
-          navigate('/dashboard/artist');
-          break;
-        case 'salon':
-          navigate('/dashboard/salon');
-          break;
-        case 'owner':
-          navigate('/dashboard/owner');
-          break;
-        case 'vendor':
-        case 'supplier':
-        case 'beauty supplier':
-          navigate('/dashboard/supplier');
-          break;
-        case 'freelancer':
-          navigate('/dashboard/freelancer');
-          break;
-        case 'renter':
-          navigate('/dashboard/freelancer');  // Redirect renters to freelancer dashboard
-          break;
-        case 'other':
-          navigate('/dashboard/other');
-          break;
-        default:
-          // If no valid role is found, stay on the landing page
-          break;
-      }
+      // Enhanced role-based dashboard routing
+      navigateToRoleDashboard(userRole, navigate);
     }
   }, [user, userRole, hasSelectedRole, loading, isLoading, navigate]);
   
@@ -104,3 +74,4 @@ const Index = () => {
 };
 
 export default Index;
+

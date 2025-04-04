@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 import AIDashboardWidgets from "@/components/ai/AIDashboardWidgets";
 import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
 import AIAffiliateTrackingWidget from "@/components/ai/AIAffiliateTrackingWidget";
+import { getPersonalizedGreeting } from "@/utils/navigation";
 
 const OwnerDashboard = () => {
   const { userProfile } = useAuth();
@@ -45,7 +46,7 @@ const OwnerDashboard = () => {
         >
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-serif mb-4">
-              Hi {firstName}! Your next star hire is waiting 💼
+              {getPersonalizedGreeting(firstName, 'owner')}
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Post jobs, manage your salon, and connect with top artists.

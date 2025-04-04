@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Scissors, Building2, User, Briefcase, ShoppingBag, HelpCircle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { UserRole } from "@/context/auth/types";
+import { navigateToRoleDashboard } from "@/utils/navigation";
 
 type Role = UserRole;
 
@@ -88,30 +89,8 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
         description: `You're now registered as a ${selectedRole}.`,
       });
       
-      switch(selectedRole) {
-        case 'artist':
-          navigate('/artists/profile-setup');
-          break;
-        case 'salon':
-          navigate('/salon/profile-setup');
-          break;
-        case 'vendor':
-        case 'supplier':
-        case 'beauty supplier':
-          navigate('/vendors/profile-setup');
-          break;
-        case 'freelancer':
-        case 'renter':
-          navigate('/freelancers/profile-setup');
-          break;
-        case 'other':
-          navigate('/other/profile-setup');
-          break;
-        case 'customer':
-        default:
-          navigate('/customers/profile-setup');
-          break;
-      }
+      // Use the utility function for consistent role-based navigation
+      navigateToRoleDashboard(selectedRole, navigate);
     } catch (error) {
       console.error("Error setting user role:", error);
       toast({
