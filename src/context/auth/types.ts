@@ -37,6 +37,9 @@ export interface UserProfile {
   product_type?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
+  custom_role?: string | null;
+  preferences?: string[] | null;
+  contact_link?: string | null;
 }
 
 // Profile status information

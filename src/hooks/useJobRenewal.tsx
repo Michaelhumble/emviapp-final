@@ -1,88 +1,75 @@
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Job } from "@/types/job";
-import { getRenewalPrice } from "@/utils/postingPriceCalculator";
-import { toast } from "@/components/ui/use-toast";
 
-export const useJobRenewal = (onSuccess: () => void) => {
+interface UseJobRenewalProps {
+  jobId: string;
+  expiresAt: string | null;
+  onSuccess?: () => void;
+}
+
+export const useJobRenewal = ({ jobId, expiresAt, onSuccess }: UseJobRenewalProps) => {
   const [isRenewing, setIsRenewing] = useState(false);
-  const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [renewalPrice, setRenewalPrice] = useState(0);
-  const [renewalOptions, setRenewalOptions] = useState({
-    isNationwide: false,
-    isRenewal: true
-  });
 
-  const prepareRenewal = (job: Job) => {
-    const options = {
-      isNationwide: job.is_nationwide || false,
-      isRenewal: true
-    };
-    
-    setRenewalJobId(job.id);
-    setRenewalOptions(options);
-    setRenewalPrice(getRenewalPrice('job', options.isNationwide));
-    setIsPaymentModalOpen(true);
-  };
-  
-  const handleRenewalPaymentSuccess = async () => {
-    if (!renewalJobId) return;
-    
+  const renewJob = async () => {
+    if (!jobId) {
+      toast.error("Job ID is missing");
+      return;
+    }
+
+    // Calculate new expiration date (30 days from now)
+    const newExpiresAt = new Date();
+    newExpiresAt.setDate(newExpiresAt.getDate() + 30);
+
     setIsRenewing(true);
+
     try {
-      const today = new Date();
-      
-      if (renewalJobId.startsWith('sample-')) {
-        toast({
-          title: "Success",
-          description: "Sample job post renewed successfully!",
-        });
-        
-        setTimeout(() => {
-          setIsRenewing(false);
-          setRenewalJobId(null);
-          setIsPaymentModalOpen(false);
-          onSuccess();
-        }, 1000);
-        return;
-      }
-      
       const { error } = await supabase
-        .from('posts')
-        .update({ created_at: today.toISOString() })
-        .eq('id', renewalJobId);
-      
+        .from("jobs")
+        .update({
+          expires_at: newExpiresAt.toISOString(),
+          status: "active",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", jobId);
+
       if (error) throw error;
-      
-      toast({
-        title: "Success",
-        description: "Job post renewed successfully!",
-      });
-      
-      onSuccess();
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: `Failed to renew job post: ${error.message}`,
-        variant: "destructive",
-      });
+
+      toast.success("Job listing renewed successfully for 30 days");
+
+      // Call the onSuccess callback if provided
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error) {
+      console.error("Error renewing job:", error);
+      toast.error("Failed to renew job listing");
     } finally {
       setIsRenewing(false);
-      setRenewalJobId(null);
-      setIsPaymentModalOpen(false);
     }
   };
 
+  const calculateDaysRemaining = () => {
+    if (!expiresAt) return 0;
+
+    const now = new Date();
+    const expDate = new Date(expiresAt);
+    const diffTime = expDate.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    return diffDays > 0 ? diffDays : 0;
+  };
+
+  const daysRemaining = calculateDaysRemaining();
+  const isExpired = daysRemaining <= 0;
+  const isExpiringSoon = daysRemaining > 0 && daysRemaining <= 5;
+
   return {
+    renewJob,
     isRenewing,
-    renewalJobId,
-    isPaymentModalOpen,
-    renewalPrice,
-    renewalOptions,
-    prepareRenewal,
-    handleRenewalPaymentSuccess,
-    setIsPaymentModalOpen
+    daysRemaining,
+    isExpired,
+    isExpiringSoon,
   };
 };

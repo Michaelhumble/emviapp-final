@@ -1,14 +1,7 @@
 
-import React from 'react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface ArtistBasicInfoProps {
   fullName: string;
@@ -33,66 +26,64 @@ const ArtistBasicInfo = ({
   location,
   setLocation,
   specialties,
-  skillLevels
+  skillLevels,
 }: ArtistBasicInfoProps) => {
   return (
-    <div className="grid gap-4">
-      <div className="grid gap-2">
-        <Label htmlFor="fullName">Full Name</Label>
-        <Input 
-          id="fullName" 
-          placeholder="Your professional name" 
-          value={fullName} 
-          onChange={(e) => setFullName(e.target.value)} 
-        />
-      </div>
+    <div className="space-y-6">
+      <h3 className="text-lg font-medium">Basic Information</h3>
       
-      <div className="grid gap-2">
-        <Label htmlFor="specialty">Specialty</Label>
-        <Select 
-          value={specialty} 
-          onValueChange={setSpecialty}
-        >
-          <SelectTrigger id="specialty">
-            <SelectValue placeholder="Select your specialty" />
-          </SelectTrigger>
-          <SelectContent>
-            {specialties.map((specialtyOption) => (
-              <SelectItem key={specialtyOption} value={specialtyOption}>
-                {specialtyOption}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      
-      <div className="grid gap-2">
-        <Label htmlFor="skillLevel">Experience Level</Label>
-        <Select 
-          value={skillLevel} 
-          onValueChange={setSkillLevel}
-        >
-          <SelectTrigger id="skillLevel">
-            <SelectValue placeholder="Select your experience level" />
-          </SelectTrigger>
-          <SelectContent>
-            {skillLevels.map((level) => (
-              <SelectItem key={level} value={level}>
-                {level}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      
-      <div className="grid gap-2">
-        <Label htmlFor="location">Location</Label>
-        <Input 
-          id="location" 
-          placeholder="City, State" 
-          value={location} 
-          onChange={(e) => setLocation(e.target.value)} 
-        />
+      <div className="grid gap-4">
+        <div className="grid gap-2">
+          <Label htmlFor="fullName">Full Name</Label>
+          <Input
+            id="fullName"
+            placeholder="Your professional name"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+          />
+        </div>
+        
+        <div className="grid gap-2">
+          <Label htmlFor="specialty">Specialty</Label>
+          <Select value={specialty} onValueChange={setSpecialty}>
+            <SelectTrigger id="specialty">
+              <SelectValue placeholder="Select your specialty" />
+            </SelectTrigger>
+            <SelectContent>
+              {specialties.map((specialtyOption) => (
+                <SelectItem key={specialtyOption} value={specialtyOption}>
+                  {specialtyOption}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div className="grid gap-2">
+          <Label htmlFor="skillLevel">Skill Level</Label>
+          <Select value={skillLevel} onValueChange={setSkillLevel}>
+            <SelectTrigger id="skillLevel">
+              <SelectValue placeholder="Select your experience level" />
+            </SelectTrigger>
+            <SelectContent>
+              {skillLevels.map((level) => (
+                <SelectItem key={level} value={level}>
+                  {level}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div className="grid gap-2">
+          <Label htmlFor="location">Location</Label>
+          <Input
+            id="location"
+            placeholder="City, State"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          />
+        </div>
       </div>
     </div>
   );

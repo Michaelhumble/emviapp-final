@@ -4,6 +4,9 @@ import { useAuth } from '@/context/auth';
 import Layout from '@/components/layout/Layout';
 import ArtistProfileEditor from '@/components/profile/ArtistProfileEditor';
 import SalonProfileEditor from '@/components/profile/SalonProfileEditor';
+import CustomerProfileEditor from '@/components/profile/CustomerProfileEditor';
+import OtherProfileEditor from '@/components/profile/OtherProfileEditor';
+import { Loader2 } from 'lucide-react';
 
 const ProfileEdit = () => {
   const { userProfile, userRole, loading } = useAuth();
@@ -25,7 +28,7 @@ const ProfileEdit = () => {
         case 'vendor':
         case 'supplier':
         case 'beauty supplier':
-          title = 'Edit Supplier Profile';
+          title = 'Edit Vendor Profile';
           break;
         case 'freelancer':
           title = 'Edit Freelancer Profile';
@@ -56,13 +59,18 @@ const ProfileEdit = () => {
       case 'salon':
       case 'owner':
         return <SalonProfileEditor />;
+      case 'customer':
+        return <CustomerProfileEditor />;
+      case 'vendor':
+      case 'supplier':
+      case 'beauty supplier':
+        return <SalonProfileEditor />; // Reuse salon editor for now
+      case 'freelancer':
+        return <ArtistProfileEditor />; // Reuse artist editor for freelancers
+      case 'other':
+        return <OtherProfileEditor />;
       default:
-        return (
-          <div className="text-center py-8">
-            <h3 className="text-lg font-medium mb-2">Profile editor for {userRole || 'your role'} coming soon!</h3>
-            <p className="text-muted-foreground">Please check back later for updates.</p>
-          </div>
-        );
+        return <CustomerProfileEditor />; // Default to customer editor
     }
   };
   

@@ -1,245 +1,241 @@
-import { useState } from "react";
-import { Navigate } from "react-router-dom";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { toast } from "@/components/ui/use-toast";
+
+import { useState, FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
+import Layout from "@/components/layout/Layout";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import PostWizardLayout from "@/components/posting/PostWizardLayout";
-
-const formSchema = z.object({
-  title: z.string().min(3, {
-    message: "Title must be at least 3 characters.",
-  }),
-  location: z.string().min(3, {
-    message: "Location must be at least 3 characters.",
-  }),
-  description: z.string().min(10, {
-    message: "Description must be at least 10 characters.",
-  }),
-  price: z.string().refine((value) => {
-    const num = Number(value);
-    return !isNaN(num) && num > 0;
-  }, {
-    message: "Price must be a valid number greater than zero.",
-  }),
-  contactName: z.string().min(3, {
-    message: "Contact name must be at least 3 characters.",
-  }),
-  contactEmail: z.string().email({
-    message: "Invalid email address.",
-  }),
-  contactPhone: z.string().min(10, {
-    message: "Phone number must be at least 10 characters.",
-  }),
-  availability: z.string().min(3, {
-    message: "Availability must be at least 3 characters.",
-  }),
-});
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/context/auth";
+import { toast } from "sonner";
 
 const BoothPost = () => {
-  const [isSubmitSuccessful, setIsSubmitSuccessful] = useState(false);
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-      location: "",
-      description: "",
-      price: "",
-      contactName: "",
-      contactEmail: "",
-      contactPhone: "",
-      availability: "",
-    },
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  
+  const [formData, setFormData] = useState({
+    title: "",
+    location: "",
+    price: "",
+    description: "",
+    boothType: "chair",
+    images: [] as File[],
   });
-
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
-    toast({
-      title: "You've submitted a new booth post!",
-      description: "Redirecting you to your posts page...",
-    });
-
-    setIsSubmitSuccessful(true);
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
-  if (isSubmitSuccessful) {
-    return <Navigate to="/posting" />;
-  }
-
+  
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+  
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    
+    const fileArray = Array.from(e.target.files);
+    setFormData((prev) => ({ ...prev, images: [...prev.images, ...fileArray] }));
+  };
+  
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    
+    if (!user) {
+      toast.error("You must be logged in to post a booth");
+      navigate("/auth/signin");
+      return;
+    }
+    
+    if (!formData.title || !formData.description || !formData.location) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Convert price to numeric
+      const priceNumeric = formData.price ? parseFloat(formData.price) : null;
+      
+      const { data, error } = await supabase
+        .from("posts")
+        .insert([
+          {
+            user_id: user.id,
+            title: formData.title,
+            content: formData.description,
+            location: formData.location,
+            price: priceNumeric,
+            post_type: "booth",
+            metadata: { boothType: formData.boothType },
+            status: "active"
+          }
+        ])
+        .select();
+      
+      if (error) throw error;
+      
+      const postId = data?.[0]?.id;
+      
+      if (postId && formData.images.length > 0) {
+        // Upload images
+        for (let i = 0; i < formData.images.length; i++) {
+          const file = formData.images[i];
+          const fileExt = file.name.split(".").pop();
+          const filePath = `posts/${postId}/${i}-${Date.now()}.${fileExt}`;
+          
+          const { error: uploadError } = await supabase.storage
+            .from("post_images")
+            .upload(filePath, file);
+          
+          if (uploadError) {
+            console.error("Error uploading image:", uploadError);
+          }
+        }
+      }
+      
+      toast.success("Booth post created successfully!");
+      navigate("/dashboard"); // Redirect to dashboard or listing page
+      
+    } catch (error) {
+      console.error("Error creating post:", error);
+      toast.error("Failed to create booth post");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
   return (
-    <PostWizardLayout 
-      title="List a Booth for Rent"
-      subtitle="Provide details about the booth you want to list"
-      showExpirationInfo
-    >
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Title</FormLabel>
-                <FormControl>
-                  <Input placeholder="Booth for rent in upscale salon" {...field} />
-                </FormControl>
-                <FormDescription>
-                  What is the title of your listing?
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="location"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Location</FormLabel>
-                <FormControl>
-                  <Input placeholder="City, State" {...field} />
-                </FormControl>
-                <FormDescription>
-                  Where is the booth located?
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Spacious booth with great lighting and client base"
-                    className="resize-none"
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Describe the booth and its amenities.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="price"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Price</FormLabel>
-                <FormControl>
-                  <Input placeholder="Monthly rent amount" {...field} />
-                </FormControl>
-                <FormDescription>
-                  How much is the monthly rent for the booth?
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="contactName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Contact Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Your Name" {...field} />
-                </FormControl>
-                <FormDescription>
-                  Who should be contacted about this listing?
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="contactEmail"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Contact Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="your.email@example.com" {...field} />
-                </FormControl>
-                <FormDescription>
-                  How can interested parties reach you by email?
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="contactPhone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Contact Phone</FormLabel>
-                <FormControl>
-                  <Input placeholder="555-123-4567" {...field} />
-                </FormControl>
-                <FormDescription>
-                  What is the best phone number to reach you?
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="availability"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Availability</FormLabel>
-                <FormControl>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select availability" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="immediate">Immediate</SelectItem>
-                      <SelectItem value="1-2 weeks">1-2 weeks</SelectItem>
-                      <SelectItem value="3-4 weeks">3-4 weeks</SelectItem>
-                      <SelectItem value="flexible">Flexible</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormDescription>
-                  When will the booth be available?
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit">Submit</Button>
-        </form>
-      </Form>
-    </PostWizardLayout>
+    <Layout>
+      <div className="container mx-auto py-12 px-4">
+        <Card className="max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle className="text-2xl font-serif">Post a Booth/Chair for Rent</CardTitle>
+            <CardDescription>
+              Share details about your available booth or chair rental
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  id="title"
+                  name="title"
+                  placeholder="e.g. Chair for Rent in Downtown Salon"
+                  value={formData.title}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="boothType">Rental Type</Label>
+                <Select
+                  value={formData.boothType}
+                  onValueChange={(value) => handleSelectChange("boothType", value)}
+                >
+                  <SelectTrigger id="boothType">
+                    <SelectValue placeholder="Select rental type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="chair">Chair</SelectItem>
+                      <SelectItem value="booth">Booth/Station</SelectItem>
+                      <SelectItem value="room">Private Room</SelectItem>
+                      <SelectItem value="space">Retail Space</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  name="location"
+                  placeholder="e.g. Los Angeles, CA"
+                  value={formData.location}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="price">Monthly Rent (USD)</Label>
+                <Input
+                  id="price"
+                  name="price"
+                  type="number"
+                  placeholder="e.g. 500"
+                  value={formData.price}
+                  onChange={handleChange}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  name="description"
+                  placeholder="Describe the booth, amenities, required skills, schedule availability, etc."
+                  rows={4}
+                  value={formData.description}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="images">Upload Images (Optional)</Label>
+                <Input
+                  id="images"
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="cursor-pointer"
+                />
+                <div className="text-xs text-muted-foreground">
+                  You can upload multiple images to showcase your space
+                </div>
+                
+                {formData.images.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {formData.images.map((file, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={`Preview ${index}`}
+                          className="h-20 w-20 object-cover rounded border"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              <div className="pt-4">
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Posting..." : "Post Booth/Chair Rental"}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </Layout>
   );
 };
 

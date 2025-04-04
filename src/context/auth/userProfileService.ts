@@ -12,6 +12,9 @@ type DbUser = Database["public"]["Tables"]["users"]["Row"] & {
   product_type?: string;
   skill_level?: string;
   skills?: string[];
+  custom_role?: string;
+  preferences?: string[];
+  contact_link?: string;
 };
 
 // Fetch user profile from Supabase
@@ -64,6 +67,9 @@ export const fetchUserProfile = async (user: User): Promise<UserProfile | null> 
     if (userData.product_type) baseProfile.product_type = userData.product_type;
     if (userData.skill_level) baseProfile.skill_level = userData.skill_level;
     if (userData.skills) baseProfile.skills = userData.skills;
+    if (userData.custom_role) baseProfile.custom_role = userData.custom_role;
+    if (userData.preferences) baseProfile.preferences = userData.preferences;
+    if (userData.contact_link) baseProfile.contact_link = userData.contact_link;
     
     return baseProfile;
   } catch (error) {
