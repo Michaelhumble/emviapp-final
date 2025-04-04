@@ -5,10 +5,12 @@ import FloatingParticles from "./hero/FloatingParticles";
 import HeroContent from "./hero/HeroContent";
 import ScrollIndicator from "./hero/ScrollIndicator";
 import { heroImages } from "./hero/heroData";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Hero = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [randomizedImages, setRandomizedImages] = useState([...heroImages]);
+  const isMobile = useIsMobile();
 
   // Randomize the images on component mount
   useEffect(() => {
@@ -42,7 +44,7 @@ const Hero = () => {
       
       {/* Image carousel placed in front of glass background */}
       <div className="absolute inset-0 w-full h-full overflow-hidden z-20">
-        <HeroCarousel images={randomizedImages} activeIndex={activeIndex} />
+        <HeroCarousel images={randomizedImages} activeIndex={activeIndex} isMobile={isMobile} />
       </div>
 
       {/* Floating particles animation */}
@@ -53,6 +55,7 @@ const Hero = () => {
         activeIndex={activeIndex} 
         setActiveIndex={setActiveIndex} 
         heroImages={randomizedImages} 
+        isMobile={isMobile}
       />
       
       {/* Scroll down indicator */}

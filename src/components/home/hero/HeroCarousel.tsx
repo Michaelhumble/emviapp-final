@@ -9,9 +9,10 @@ interface HeroImage {
 interface HeroCarouselProps {
   images: HeroImage[];
   activeIndex: number;
+  isMobile?: boolean;
 }
 
-const HeroCarousel = ({ images, activeIndex }: HeroCarouselProps) => {
+const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselProps) => {
   return (
     <>
       {images.map((image, index) => (
@@ -34,13 +35,17 @@ const HeroCarousel = ({ images, activeIndex }: HeroCarouselProps) => {
           <img 
             src={image.url} 
             alt={image.alt}
-            className="w-full h-full object-cover rounded-lg"
+            className={`w-full h-full ${isMobile ? 'object-cover object-center' : 'object-cover'} rounded-lg`}
           />
           
-          {/* Enhanced gradient overlay for text readability - darker at bottom */}
+          {/* Enhanced gradient overlay for text readability - optimized for mobile */}
           <div 
-            className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 z-10 rounded-lg"
-            style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,0.2) 100%)' }}
+            className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/20 z-10 rounded-lg"
+            style={{ 
+              background: isMobile 
+                ? 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.3) 100%)' 
+                : 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,0.2) 100%)'
+            }}
             aria-hidden="true"
           ></div>
         </motion.div>
