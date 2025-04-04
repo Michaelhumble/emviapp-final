@@ -82,7 +82,8 @@ const WelcomeHero = ({
       case 'freelancer':
         return "/lovable-uploads/1763ca30-ecb0-409f-8bb0-11b851ea743f.png";
       case 'customer':
-        return "/lovable-uploads/70c8662a-4525-4854-a529-62616b5b6c81.png";
+        // Changed this line to use a different image instead of 70c8662a-4525-4854-a529-62616b5b6c81.png
+        return "/lovable-uploads/f6bb9656-c400-4f28-ba97-69d71c651a97.png";
       default:
         return "/lovable-uploads/8c7d4688-5f67-42e1-952b-1e4eb4bd4679.png";
     }

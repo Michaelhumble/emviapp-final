@@ -52,7 +52,8 @@ const HeroSection = () => {
               transition={{ delay: 0.4, duration: 0.7 }}
             >
               <img 
-                src="/lovable-uploads/70c8662a-4525-4854-a529-62616b5b6c81.png" 
+                // Changed from 70c8662a-4525-4854-a529-62616b5b6c81.png to another image
+                src="/lovable-uploads/b851c5dd-95de-4137-a29c-9833ea410cf4.png" 
                 alt="Beauty professional with client"
                 className="w-full h-64 object-cover hover:scale-105 transition-transform duration-700 ease-in-out"
               />
