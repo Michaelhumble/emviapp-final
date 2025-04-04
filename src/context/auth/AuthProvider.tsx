@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+
+import { createContext, useState, useEffect, ReactNode } from 'react';
 import {
   Session,
   User as SupabaseUser,
@@ -7,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { UserProfile } from './types';
 import { toast } from '@/hooks/use-toast';
 
-interface AuthContextType {
+export interface AuthContextType {
   session: Session | null;
   user: SupabaseUser | null;
   userProfile: UserProfile | null;
@@ -17,7 +18,8 @@ interface AuthContextType {
   refreshUserProfile: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Export the AuthContext so it can be imported by useAuth.tsx
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -75,18 +77,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         
         let profileExtras = {};
 
-      // Extract role-specific profile data
-      if (userRole === 'owner' || userRole === 'salon') {
-        profileExtras = {
-          salon_name: userData?.salon_name || "",
-          business_address: userData?.business_address || ""
-        };
-      } else if (userRole === 'supplier' || userRole === 'beauty supplier') {
-        profileExtras = {
-          company_name: userData?.company_name || "",
-          product_type: userData?.product_type || ""
-        };
-      }
+        // Extract role-specific profile data
+        if (userRole === 'owner' || userRole === 'salon') {
+          profileExtras = {
+            salon_name: userData?.salon_name || "",
+            business_address: userData?.business_address || ""
+          };
+        } else if (userRole === 'supplier' || userRole === 'beauty supplier') {
+          profileExtras = {
+            company_name: userData?.company_name || "",
+            product_type: userData?.product_type || ""
+          };
+        }
 
         const profile: UserProfile = {
           id: userData.id,
@@ -206,12 +208,4 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
 };
