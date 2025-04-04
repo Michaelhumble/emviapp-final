@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { UserProfile, UserRole, AuthContextType } from './types';
 import { AuthContext } from './AuthContext';
 import { fetchUserProfile } from './userProfileService';
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -58,6 +58,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       if (profile) {
         setUserProfile(profile);
         setUserRole(profile.role);
+        console.log("User role set from profile:", profile.role);
       }
     };
 
