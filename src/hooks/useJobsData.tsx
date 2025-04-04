@@ -2,20 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-
-interface Job {
-  id: string;
-  title: string;
-  description: string;
-  salon_id: string;
-  created_at: string;
-  updated_at: string;
-  expires_at: string;
-  status: string;
-  compensation_type: string;
-  compensation_details: string;
-  requirements: string;
-}
+import { Job } from "@/types/job";
 
 interface Filters {
   weeklyPay?: boolean;
@@ -46,13 +33,15 @@ const useJobsData = (searchTerm?: string, filters?: Filters) => {
         setLoading(true);
         setError(null);
 
+        // Create the initial query
         let query = supabase
           .from("jobs")
           .select("*")
           .order("created_at", { ascending: false });
 
-        // Apply filters if provided
+        // Apply filters if provided - fix type issues by using explicit comparisons
         if (filters) {
+          // Only apply boolean filters when they're explicitly true
           if (filters.weeklyPay === true) {
             query = query.eq("weekly_pay", true);
           }
@@ -69,12 +58,13 @@ const useJobsData = (searchTerm?: string, filters?: Filters) => {
             query = query.eq("no_supply_deduction", true);
           }
           
+          // String comparison
           if (filters.employmentType && filters.employmentType !== "all") {
             query = query.eq("employment_type", filters.employmentType);
           }
           
-          if (!filters.showExpired) {
-            // Only show non-expired jobs
+          // Date comparison - only show non-expired jobs
+          if (filters.showExpired === false) {
             query = query.gt("expires_at", new Date().toISOString());
           }
         }
@@ -84,10 +74,11 @@ const useJobsData = (searchTerm?: string, filters?: Filters) => {
           query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
         }
 
-        const { data, error } = await query;
+        // Execute the query
+        const { data, error: queryError } = await query;
 
-        if (error) {
-          throw error;
+        if (queryError) {
+          throw queryError;
         }
 
         if (data) {
