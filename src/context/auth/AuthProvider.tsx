@@ -75,15 +75,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       
       if (error) throw error;
       
-      toast({
-        description: "Signed in successfully!",
-      });
+      toast.success("Signed in successfully!");
     } catch (error: any) {
       console.error("Error signing in:", error);
-      toast({
-        variant: "destructive",
-        description: error.message || "Failed to sign in",
-      });
+      toast.error(error.message || "Failed to sign in");
       throw error;
     }
   };
@@ -96,15 +91,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setUser(null);
       setUserProfile(null);
       setUserRole(null);
-      toast({
-        description: "Signed out successfully!",
-      });
+      toast.success("Signed out successfully!");
     } catch (error) {
       console.error("Error signing out:", error);
-      toast({
-        variant: "destructive",
-        description: "Failed to sign out",
-      });
+      toast.error("Failed to sign out");
     }
   };
   
