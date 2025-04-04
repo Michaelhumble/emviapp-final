@@ -362,14 +362,17 @@ export type Database = {
           avatar_url: string | null
           badges: Json | null
           bio: string | null
+          contact_link: string | null
           created_at: string | null
           credits: number | null
+          custom_role: string | null
           email: string
           full_name: string
           id: string
           instagram: string | null
           location: string | null
           phone: string | null
+          preferences: string[] | null
           preferred_language: string | null
           referral_code: string | null
           referred_by: string | null
@@ -382,14 +385,17 @@ export type Database = {
           avatar_url?: string | null
           badges?: Json | null
           bio?: string | null
+          contact_link?: string | null
           created_at?: string | null
           credits?: number | null
+          custom_role?: string | null
           email: string
           full_name: string
           id?: string
           instagram?: string | null
           location?: string | null
           phone?: string | null
+          preferences?: string[] | null
           preferred_language?: string | null
           referral_code?: string | null
           referred_by?: string | null
@@ -402,14 +408,17 @@ export type Database = {
           avatar_url?: string | null
           badges?: Json | null
           bio?: string | null
+          contact_link?: string | null
           created_at?: string | null
           credits?: number | null
+          custom_role?: string | null
           email?: string
           full_name?: string
           id?: string
           instagram?: string | null
           location?: string | null
           phone?: string | null
+          preferences?: string[] | null
           preferred_language?: string | null
           referral_code?: string | null
           referred_by?: string | null

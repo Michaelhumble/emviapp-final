@@ -5,7 +5,7 @@ import "./App.css";
 // Import pages
 import Index from "./pages/Index";
 import Profile from "./pages/Profile";
-import Dashboard from "./pages/dashboard/Dashboard";
+import Dashboard from "./pages/dashboard/Dashboard"; // Fixed import
 import ArtistDashboard from "./pages/dashboard/Artist";
 import SalonDashboard from "./pages/dashboard/Salon";
 import OwnerDashboard from "./pages/dashboard/Owner";
@@ -19,6 +19,7 @@ import ProfileRedirect from "./pages/profile/ProfileRedirect";
 import OtherRoleSetup from "./pages/profile/other/setup";
 import FreelancerSetup from "./pages/profile/freelancer/setup";
 import SalonOwnerSetup from "./pages/profile/salon/setup";
+import ProfileEditor from "./pages/profile/ProfileEditor"; // Added new profile editor
 
 // Import contexts
 import { AuthProvider } from "./context/auth";
@@ -31,7 +32,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/profile/edit" element={<ProfileEdit />} />
+          <Route path="/profile/edit" element={<ProfileEditor />} />
           <Route path="/profile/setup" element={<ProfileRedirect />} />
           <Route path="/profile/other/setup" element={<OtherRoleSetup />} />
           <Route path="/profile/freelancer/setup" element={<FreelancerSetup />} />

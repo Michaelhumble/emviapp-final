@@ -10,7 +10,7 @@ import JobLoadingState from "@/components/jobs/JobLoadingState";
 import JobEmptyState from "@/components/jobs/JobEmptyState";
 import JobsGrid from "@/components/jobs/JobsGrid";
 import VietnameseJobSection from "@/components/jobs/VietnameseJobSection";
-import { useJobsData } from "@/hooks/useJobsData";
+import useJobsData from "@/hooks/useJobsData"; // Fixed import
 import { useJobRenewal } from "@/hooks/useJobRenewal";
 import { differenceInDays } from 'date-fns';
 
@@ -38,15 +38,18 @@ const Jobs = () => {
   // Custom hooks for job data and renewal
   const { jobs, loading, fetchJobs } = useJobsData(searchTerm, filters);
   const { 
-    isRenewing, 
-    renewalJobId, 
-    isPaymentModalOpen, 
-    renewalPrice, 
-    renewalOptions, 
-    prepareRenewal, 
-    handleRenewalPaymentSuccess, 
-    setIsPaymentModalOpen 
-  } = useJobRenewal(fetchJobs);
+    renewJob,
+    isRenewing,
+    daysRemaining,
+    isExpired,
+    isExpiringSoon
+  } = useJobRenewal({
+    jobId: "", // This will be set when a job is selected for renewal
+    expiresAt: null,
+    onSuccess: fetchJobs
+  });
+  
+  const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
   
   const jobIds = jobs.map((job) => job.id);
   const { expirations, isLoading: isExpirationLoading } = usePostExpirationCheck(jobIds);
@@ -83,6 +86,11 @@ const Jobs = () => {
     
     // Use the expiration data from the hook for real jobs
     return expirations[job.id] === true;
+  };
+  
+  const prepareRenewal = (job: Job) => {
+    setRenewalJobId(job.id);
+    renewJob();
   };
 
   return (
@@ -131,15 +139,6 @@ const Jobs = () => {
           <VietnameseJobSection checkExpiration={checkExpiration} />
         </div>
       </div>
-      
-      <PaymentConfirmationModal
-        open={isPaymentModalOpen}
-        onOpenChange={setIsPaymentModalOpen}
-        postType="job"
-        price={renewalPrice}
-        options={renewalOptions}
-        onSuccess={handleRenewalPaymentSuccess}
-      />
     </Layout>
   );
 };
