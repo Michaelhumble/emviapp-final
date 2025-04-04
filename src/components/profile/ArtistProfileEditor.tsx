@@ -4,31 +4,20 @@ import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/auth';
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { Loader2 } from 'lucide-react';
 import { 
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter
 } from "@/components/ui/card";
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { AtSign, Globe, Upload, ImageOff, Loader2 } from 'lucide-react';
+
+import ArtistBasicInfo from './artist/ArtistBasicInfo';
+import ArtistProfessionalDetails from './artist/ArtistProfessionalDetails';
+import ArtistProfilePhoto from './artist/ArtistProfilePhoto';
 
 // List of specialties for artists to choose from
 const specialties = [
@@ -212,169 +201,42 @@ const ArtistProfileEditor = () => {
             <TabsTrigger value="photo" className="flex-1">Profile Photo</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="basic" className="space-y-4">
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="fullName">Full Name</Label>
-                <Input 
-                  id="fullName" 
-                  placeholder="Your professional name" 
-                  value={fullName} 
-                  onChange={(e) => setFullName(e.target.value)} 
-                />
-              </div>
-              
-              <div className="grid gap-2">
-                <Label htmlFor="specialty">Specialty</Label>
-                <Select 
-                  value={specialty} 
-                  onValueChange={setSpecialty}
-                >
-                  <SelectTrigger id="specialty">
-                    <SelectValue placeholder="Select your specialty" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {specialties.map((specialtyOption) => (
-                      <SelectItem key={specialtyOption} value={specialtyOption}>
-                        {specialtyOption}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="grid gap-2">
-                <Label htmlFor="skillLevel">Experience Level</Label>
-                <Select 
-                  value={skillLevel} 
-                  onValueChange={setSkillLevel}
-                >
-                  <SelectTrigger id="skillLevel">
-                    <SelectValue placeholder="Select your experience level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {skillLevels.map((level) => (
-                      <SelectItem key={level} value={level}>
-                        {level}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="grid gap-2">
-                <Label htmlFor="location">Location</Label>
-                <Input 
-                  id="location" 
-                  placeholder="City, State" 
-                  value={location} 
-                  onChange={(e) => setLocation(e.target.value)} 
-                />
-              </div>
-            </div>
+          <TabsContent value="basic">
+            <ArtistBasicInfo
+              fullName={fullName}
+              setFullName={setFullName}
+              specialty={specialty}
+              setSpecialty={setSpecialty}
+              skillLevel={skillLevel}
+              setSkillLevel={setSkillLevel}
+              location={location}
+              setLocation={setLocation}
+              specialties={specialties}
+              skillLevels={skillLevels}
+            />
           </TabsContent>
           
-          <TabsContent value="details" className="space-y-4">
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="bio">Bio</Label>
-                <Textarea 
-                  id="bio" 
-                  placeholder="Tell clients about your experience, style, and specialties" 
-                  value={bio} 
-                  onChange={(e) => setBio(e.target.value)} 
-                  rows={4}
-                />
-              </div>
-              
-              <div className="grid gap-2">
-                <Label htmlFor="skills">Skills (comma separated)</Label>
-                <Input
-                  id="skills"
-                  placeholder="Acrylic nails, Gel, Nail art, Pedicures"
-                  value={skills}
-                  onChange={(e) => setSkills(e.target.value)}
-                />
-              </div>
-              
-              <div className="grid gap-2">
-                <Label htmlFor="instagram">Instagram</Label>
-                <div className="flex items-center">
-                  <AtSign className="h-5 w-5 mr-2 text-muted-foreground" />
-                  <Input
-                    id="instagram"
-                    placeholder="Username (without @)"
-                    value={instagram}
-                    onChange={(e) => setInstagram(e.target.value)}
-                  />
-                </div>
-              </div>
-              
-              <div className="grid gap-2">
-                <Label htmlFor="website">Website or Portfolio</Label>
-                <div className="flex items-center">
-                  <Globe className="h-5 w-5 mr-2 text-muted-foreground" />
-                  <Input
-                    id="website"
-                    placeholder="https://your-portfolio-site.com"
-                    value={website}
-                    onChange={(e) => setWebsite(e.target.value)}
-                  />
-                </div>
-              </div>
-            </div>
+          <TabsContent value="details">
+            <ArtistProfessionalDetails
+              bio={bio}
+              setBio={setBio}
+              skills={skills}
+              setSkills={setSkills}
+              instagram={instagram}
+              setInstagram={setInstagram}
+              website={website}
+              setWebsite={setWebsite}
+            />
           </TabsContent>
           
           <TabsContent value="photo" className="space-y-6">
-            <div className="flex flex-col items-center space-y-4">
-              <div className="h-40 w-40 rounded-full border-2 border-primary flex items-center justify-center overflow-hidden bg-muted">
-                {avatarPreview ? (
-                  <img src={avatarPreview} alt="Profile preview" className="h-full w-full object-cover" />
-                ) : avatarUrl ? (
-                  <img src={avatarUrl} alt="Profile" className="h-full w-full object-cover" />
-                ) : (
-                  <Upload className="h-12 w-12 text-muted-foreground" />
-                )}
-              </div>
-              
-              <div className="flex gap-4">
-                <Input
-                  id="avatar"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-                <Label 
-                  htmlFor="avatar" 
-                  className="cursor-pointer bg-secondary hover:bg-secondary/80 text-secondary-foreground px-4 py-2 rounded-md text-sm font-medium"
-                >
-                  {avatarUrl || avatarPreview ? "Change Photo" : "Upload Photo"}
-                </Label>
-                
-                {(avatarUrl || avatarPreview) && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="text-destructive"
-                    onClick={removeAvatar}
-                  >
-                    <ImageOff className="h-4 w-4 mr-2" />
-                    Remove
-                  </Button>
-                )}
-              </div>
-            </div>
-            
-            <div className="bg-muted/50 p-4 rounded-md">
-              <h4 className="text-sm font-medium mb-2">Photo Tips:</h4>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• Use good lighting and a neutral background</li>
-                <li>• Show your face clearly</li>
-                <li>• Professional attire builds client trust</li>
-                <li>• Square or portrait orientation works best</li>
-              </ul>
-            </div>
+            <ArtistProfilePhoto
+              avatarUrl={avatarUrl}
+              avatarPreview={avatarPreview}
+              onFileChange={handleFileChange}
+              onRemoveAvatar={removeAvatar}
+              isLoading={isLoading}
+            />
           </TabsContent>
         </Tabs>
         
