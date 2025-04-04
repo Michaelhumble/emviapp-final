@@ -1,39 +1,13 @@
 
 import { useEffect } from "react";
-import { useAuth } from "@/context/auth";
 import Layout from "@/components/layout/Layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Briefcase, Heart, ImagePlus, MessageSquare, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import AIDashboardWidgets from "@/components/ai/AIDashboardWidgets";
-import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
-import SubscriptionStatusCard from "@/components/dashboard/SubscriptionStatusCard";
-import { FeatureGate } from "@/components/subscription";
+import DashboardContent from "@/components/dashboard/DashboardContent";
 
 const ArtistDashboard = () => {
-  const { userProfile } = useAuth();
-  const firstName = userProfile?.full_name?.split(' ')[0] || userProfile?.email?.split('@')[0] || 'Artist';
-  
   useEffect(() => {
     document.title = "Artist Dashboard | EmviApp";
   }, []);
-  
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-  
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
-  };
 
   return (
     <Layout>
@@ -42,151 +16,8 @@ const ArtistDashboard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="max-w-4xl mx-auto"
         >
-          <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-serif mb-4">
-              Hi {firstName}! Let's build your future together 💫
-            </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Create your profile, apply for jobs, and start growing your beauty career.
-            </p>
-          </div>
-          
-          {/* Subscription Status Card */}
-          <div className="mb-6">
-            <SubscriptionStatusCard />
-          </div>
-          
-          {/* Profile Completion Card */}
-          <div className="mb-6">
-            <ProfileCompletionCard />
-          </div>
-          
-          {/* AI Dashboard Widgets */}
-          <FeatureGate requiredPlan="basic" fallback={
-            <div className="mb-8 p-4 border border-dashed border-primary/50 rounded-lg bg-primary/5 text-center">
-              <p className="text-sm text-muted-foreground">Upgrade to access AI-powered insights and recommendations</p>
-              <Link to="/checkout">
-                <Button variant="outline" size="sm" className="mt-2">
-                  <Sparkles className="mr-2 h-4 w-4" /> Unlock AI Features
-                </Button>
-              </Link>
-            </div>
-          }>
-            <AIDashboardWidgets className="mb-12" />
-          </FeatureGate>
-          
-          <motion.div 
-            variants={container}
-            initial="hidden"
-            animate="show"
-            className="grid grid-cols-1 md:grid-cols-2 gap-6"
-          >
-            <motion.div variants={item}>
-              <Card className="h-full">
-                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                  <CardTitle className="text-xl">Create/Edit Profile</CardTitle>
-                  <ImagePlus className="h-5 w-5 text-primary" />
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="mb-4">Customize your professional portfolio</CardDescription>
-                  <Link to="/profile/edit">
-                    <Button variant="default" className="w-full">
-                      Edit Profile
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            </motion.div>
-            
-            <motion.div variants={item}>
-              <FeatureGate requiredPlan="basic">
-                <Card className="h-full">
-                  <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                    <CardTitle className="text-xl">Jobs for Artists</CardTitle>
-                    <Briefcase className="h-5 w-5 text-primary" />
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="mb-4">Find your next opportunity</CardDescription>
-                    <Link to="/jobs">
-                      <Button variant="default" className="w-full">
-                        Browse Jobs
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              </FeatureGate>
-            </motion.div>
-            
-            <motion.div variants={item}>
-              <FeatureGate requiredPlan="professional">
-                <Card className="h-full">
-                  <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                    <CardTitle className="text-xl">Saved Opportunities</CardTitle>
-                    <Heart className="h-5 w-5 text-primary" />
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="mb-4">View jobs you've saved for later</CardDescription>
-                    <Button variant="default" className="w-full">
-                      View Saved
-                    </Button>
-                  </CardContent>
-                </Card>
-              </FeatureGate>
-            </motion.div>
-            
-            <motion.div variants={item}>
-              <FeatureGate requiredPlan="basic">
-                <Card className="h-full">
-                  <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                    <CardTitle className="text-xl">Messages</CardTitle>
-                    <MessageSquare className="h-5 w-5 text-primary" />
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="mb-4">Connect with salons and clients</CardDescription>
-                    <Link to="/messages">
-                      <Button variant="default" className="w-full">
-                        Open Messages
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              </FeatureGate>
-            </motion.div>
-          </motion.div>
-          
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.5 }}
-            className="mt-10 p-6 bg-primary/5 rounded-lg border border-primary/10"
-          >
-            <div className="text-center">
-              <p className="text-lg italic text-muted-foreground">
-                "Behind every beautiful nail set or tattoo, there's a real hustle. EmviApp is here to back you up."
-              </p>
-            </div>
-          </motion.div>
-          
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8, duration: 0.5 }}
-            className="mt-12 p-6 bg-primary/5 rounded-lg border border-primary/10"
-          >
-            <div className="flex flex-col md:flex-row items-center justify-between">
-              <div className="mb-4 md:mb-0">
-                <h3 className="text-xl font-medium mb-2">Upgrade to Premium Artist</h3>
-                <p className="text-muted-foreground">Get featured in search results and access exclusive opportunities</p>
-              </div>
-              <Link to="/checkout?plan=premium">
-                <Button variant="outline" className="min-w-[140px]">
-                  <Sparkles className="mr-2 h-4 w-4" /> Upgrade Now
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
+          <DashboardContent />
         </motion.div>
       </div>
     </Layout>

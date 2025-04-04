@@ -39,38 +39,38 @@ const useJobsData = (searchTerm?: string, filters?: Filters) => {
           .select("*")
           .order("created_at", { ascending: false });
 
-        // Apply filters if provided - fix type issues by using explicit comparisons
+        // Only apply filters if provided
         if (filters) {
-          // Only apply boolean filters when they're explicitly true
-          const weeklyPay = filters.weeklyPay === true;
-          if (weeklyPay) {
+          // Handle boolean filters - using strict equality and local variables
+          const weeklyPayFilter = filters.weeklyPay === true;
+          if (weeklyPayFilter) {
             queryBuilder = queryBuilder.eq("weekly_pay", true);
           }
           
-          const ownerWillTrain = filters.ownerWillTrain === true;
-          if (ownerWillTrain) {
+          const ownerWillTrainFilter = filters.ownerWillTrain === true;
+          if (ownerWillTrainFilter) {
             queryBuilder = queryBuilder.eq("owner_will_train", true);
           }
           
-          const hasHousing = filters.hasHousing === true;
-          if (hasHousing) {
+          const hasHousingFilter = filters.hasHousing === true;
+          if (hasHousingFilter) {
             queryBuilder = queryBuilder.eq("has_housing", true);
           }
           
-          const noSupplyDeduction = filters.noSupplyDeduction === true;
-          if (noSupplyDeduction) {
+          const noSupplyFilter = filters.noSupplyDeduction === true;
+          if (noSupplyFilter) {
             queryBuilder = queryBuilder.eq("no_supply_deduction", true);
           }
           
-          // String comparison - only apply if not empty and not "all"
-          const empType = filters.employmentType;
-          if (empType && empType !== "" && empType !== "all") {
-            queryBuilder = queryBuilder.eq("employment_type", empType);
+          // Handle string filters
+          const employmentType = filters.employmentType;
+          if (typeof employmentType === 'string' && employmentType !== "" && employmentType !== "all") {
+            queryBuilder = queryBuilder.eq("employment_type", employmentType);
           }
           
-          // Date comparison - only show non-expired jobs
-          const hideExpired = filters.showExpired === false;
-          if (hideExpired) {
+          // Handle date comparison
+          const hideExpiredFilter = filters.showExpired === false;
+          if (hideExpiredFilter) {
             queryBuilder = queryBuilder.gt("expires_at", new Date().toISOString());
           }
         }
