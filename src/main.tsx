@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 import { Toaster } from 'sonner';
+import { validateRequiredRoutes } from './utils/routeChecker';
 
 // Define the available routes in the app for logging and verification
 const availableRoutes = [
@@ -50,6 +51,15 @@ const logAvailableRoutes = () => {
         
       console.info(`${route} - ${routeName}`);
     });
+    
+    // Validate the required routes are defined
+    const { isValid, missingRoutes } = validateRequiredRoutes(availableRoutes);
+    if (!isValid) {
+      console.warn('⚠️ Warning: Some required routes are not defined:');
+      missingRoutes.forEach(route => console.warn(`- ${route}`));
+    } else {
+      console.info('✅ All required routes are properly defined!');
+    }
     
     console.info('-----------------------------------------------');
   }

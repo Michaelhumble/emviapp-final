@@ -134,10 +134,10 @@ const Navbar = () => {
             </DropdownMenu>
           ) : (
             <>
-              <Link to="/auth/signin">
+              <Link to="/sign-in">
                 <Button variant="ghost">Sign In</Button>
               </Link>
-              <Link to="/auth/signup">
+              <Link to="/sign-up">
                 <Button>Sign Up</Button>
               </Link>
             </>
@@ -223,10 +223,10 @@ const Navbar = () => {
                   </>
                 ) : (
                   <>
-                    <Link to="/auth/signin">
+                    <Link to="/sign-in">
                       <Button variant="ghost" className="w-full justify-start">Sign In</Button>
                     </Link>
-                    <Link to="/auth/signup">
+                    <Link to="/sign-up">
                       <Button className="w-full justify-start">Sign Up</Button>
                     </Link>
                   </>

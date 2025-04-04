@@ -20,7 +20,7 @@ import OtherRoleSetup from "./pages/profile/other/setup";
 import FreelancerSetup from "./pages/profile/freelancer/setup";
 import SalonOwnerSetup from "./pages/profile/salon/setup";
 import ProfileEditor from "./pages/profile/ProfileEditor";
-import Jobs from "./pages/Jobs";
+import Jobs from "./pages/jobs/index";
 import Salons from "./pages/Salons";
 import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
@@ -69,8 +69,8 @@ function App({ availableRoutes }: AppProps) {
           {/* Authentication routes */}
           <Route path="/auth/signin" element={<SignIn />} />
           <Route path="/auth/signup" element={<SignUp />} />
-          <Route path="/sign-in" element={<SignIn />} /> {/* Alias routes for convenience */}
-          <Route path="/sign-up" element={<SignUp />} /> {/* Alias routes for convenience */}
+          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/sign-up" element={<SignUp />} />
           
           {/* 404 pages */}
           <Route path="/not-found" element={<NotFound />} />

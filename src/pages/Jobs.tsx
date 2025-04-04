@@ -5,8 +5,9 @@ import Layout from '@/components/layout/Layout';
 
 const Jobs = () => {
   useEffect(() => {
-    // Redirect to the implemented jobs page after component mounts
-    console.log("Jobs page loaded, redirecting to jobs index page");
+    // Log page visit
+    console.log("Jobs page accessed, redirecting to jobs index page");
+    document.title = "Job Listings | EmviApp";
   }, []);
 
   // Redirect to the implemented jobs page
