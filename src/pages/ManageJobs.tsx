@@ -1,10 +1,11 @@
+
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 import { Edit, Trash2, UserCheck, Clock, Eye, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -83,10 +84,17 @@ const ManageJobs = () => {
         if (error) throw error;
         
         setJobs(jobs.filter(job => job.id !== jobId));
-        toast.success("Job deleted successfully.");
+        toast({
+          title: "Success",
+          description: "Job deleted successfully."
+        });
       } catch (error) {
         console.error("Error deleting job:", error);
-        toast.error("Failed to delete the job.");
+        toast({
+          title: "Error",
+          description: "Failed to delete the job.",
+          variant: "destructive"
+        });
       }
     }
   };

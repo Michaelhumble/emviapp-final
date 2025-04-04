@@ -12,6 +12,7 @@ export type UserRole =
   | 'supplier'
   | 'beauty supplier'
   | 'freelancer'
+  | 'renter'
   | 'other';
 
 // Extends the user profile with additional fields
@@ -51,6 +52,9 @@ export interface AuthContextType {
   loading: boolean;
   signOut: () => Promise<void>;
   refreshUserProfile: () => Promise<void>;
+  // Add missing properties needed by components
+  signIn?: (email: string, password: string) => Promise<void>;
+  isSignedIn?: boolean;
 }
 
 // Import Supabase types to avoid importing them everywhere

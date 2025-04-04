@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { Job } from '@/types/job';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { PricingDisplay } from '@/components/posting/PricingDisplay';
-import { SmartAdOptions } from '@/components/posting/SmartAdOptions';
+import PricingDisplay from '@/components/posting/PricingDisplay';
+import SmartAdOptions from '@/components/posting/SmartAdOptions';
 
 interface ReviewAndPaymentSectionProps {
   details: Partial<Job>;

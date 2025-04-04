@@ -57,7 +57,7 @@ export const hiringSalons = [
 ];
 
 // Enhanced salons for sale data
-export const salonsForSale: Job[] = [
+export const salonsForSale: Partial<Job>[] = [
   {
     id: "101",
     created_at: new Date().toISOString(),
@@ -85,7 +85,11 @@ export const salonsForSale: Job[] = [
     owner_will_train: true,
     reason_for_selling: "Về hưu / Retirement",
     image: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bmFpbCUyMHNhbG9ufGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60",
-    emvi_ai_boosted: true
+    emvi_ai_boosted: true,
+    compensation_type: "Sale",
+    compensation_details: "$120,000",
+    expires_at: new Date(Date.now() + 30 * 86400000).toISOString(),
+    status: "active"
   },
   {
     id: "102",
@@ -201,6 +205,13 @@ export const salonsForSale: Job[] = [
     emvi_ai_boosted: true
   }
 ];
+
+salonsForSale.forEach(salon => {
+  if (!salon.compensation_type) salon.compensation_type = "Sale";
+  if (!salon.compensation_details) salon.compensation_details = salon.asking_price || "";
+  if (!salon.expires_at) salon.expires_at = new Date(Date.now() + 30 * 86400000).toISOString();
+  if (!salon.status) salon.status = "active";
+});
 
 export const salonListings = [
   {

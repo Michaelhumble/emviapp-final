@@ -1,363 +1,218 @@
+
 import { Job } from "@/types/job";
 
-export const salonListings: Job[] = [
+// Booth rental listings data
+export const boothRentalListings = [
   {
-    id: "sf-1",
-    created_at: "2023-06-15T10:00:00Z",
-    title: "Premium Nail Salon For Sale in San Francisco",
-    company: "SV Salon Brokers",
-    location: "San Francisco, CA",
-    user_id: "broker-124",
-    asking_price: "$185,000",
-    monthly_rent: "$3,200",
-    square_feet: "1,800",
-    vietnamese_description: "Tiệm nail cao cấp trong khu buôn bán sầm uất ở San Francisco. Doanh thu hàng năm $350,000. Tiệm rộng 1,800sf với 8 ghế nail, 6 ghế pedicure, và phòng wax.",
-    description: "Premium nail salon in the bustling commercial district of San Francisco. Annual revenue of $350,000. 1,800sf with 8 nail stations, 6 pedicure chairs, and wax room.",
-    reason_for_selling: "Owner relocating out of state",
-    number_of_stations: 8,
-    salon_features: ["Waxing Room", "Break Room", "Restroom"],
-    image: "https://placekitten.com/600/400",
-    has_wax_room: true,
-    has_housing: false,
-    has_dining_room: true,
-    compensation_type: "fixed",
-    compensation_details: "One-time payment",
-    expires_at: "2023-12-15T10:00:00Z",
-    status: "active"
-  },
-  {
-    id: "sf-2",
-    created_at: "2023-07-01T14:20:00Z",
-    title: "Profitable Salon Business for Sale",
-    company: "Bay Area Realty",
-    location: "Oakland, CA",
-    user_id: "broker-125",
-    asking_price: "$220,000",
-    monthly_rent: "$4,500",
-    square_feet: "2,200",
-    vietnamese_description: "Cơ hội làm chủ tiệm nail sinh lời ở Oakland. Khu vực có lưu lượng truy cập cao. Tiệm rộng 2,200sf với 10 ghế nail, 8 ghế pedicure, và khu vực spa.",
-    description: "Opportunity to own a profitable nail salon in Oakland. High traffic area. 2,200sf with 10 nail stations, 8 pedicure chairs, and spa area.",
-    reason_for_selling: "Retiring after 25 years",
-    number_of_stations: 10,
-    salon_features: ["Spa Area", "Facial Room", "Large Parking"],
-    image: "https://placekitten.com/601/400",
-    has_wax_room: true,
-    has_housing: false,
-    has_dining_room: true,
-    compensation_type: "fixed",
-    compensation_details: "One-time payment",
-    expires_at: "2023-12-30T14:20:00Z",
-    status: "active"
-  },
-  {
-    id: "sf-3",
-    created_at: "2023-07-10T11:15:00Z",
-    title: "Turnkey Nail Salon in Prime Location",
-    company: "Golden Gate Brokers",
-    location: "San Jose, CA",
-    user_id: "broker-126",
-    asking_price: "$150,000",
-    monthly_rent: "$3,800",
-    square_feet: "1,600",
-    vietnamese_description: "Tiệm nail chìa khóa trao tay ở vị trí đắc địa tại San Jose. Khu vực dân cư đông đúc. Tiệm rộng 1,600sf với 7 ghế nail, 5 ghế pedicure, và phòng ăn trưa.",
-    description: "Turnkey nail salon in a prime location in San Jose. Densely populated residential area. 1,600sf with 7 nail stations, 5 pedicure chairs, and lunch room.",
-    reason_for_selling: "Moving out of state",
-    number_of_stations: 7,
-    salon_features: ["Lunch Room", "Storage", "Close to Transit"],
-    image: "https://placekitten.com/602/400",
-    has_wax_room: true,
-    has_housing: false,
-    has_dining_room: true,
-    compensation_type: "fixed",
-    compensation_details: "One-time payment",
-    expires_at: "2024-01-15T11:15:00Z",
-    status: "active"
-  },
-  {
-    id: "sf-4",
-    created_at: "2023-07-18T09:45:00Z",
-    title: "High-End Nail Salon for Sale",
-    company: "Silicon Valley Ventures",
-    location: "Palo Alto, CA",
-    user_id: "broker-127",
-    asking_price: "$250,000",
-    monthly_rent: "$5,200",
-    square_feet: "2,500",
-    vietnamese_description: "Tiệm nail cao cấp sang trọng ở Palo Alto. Khách hàng giàu có. Tiệm rộng 2,500sf với 12 ghế nail, 10 ghế pedicure, và phòng spa.",
-    description: "Luxury high-end nail salon in Palo Alto. Affluent clientele. 2,500sf with 12 nail stations, 10 pedicure chairs, and spa room.",
-    reason_for_selling: "Focusing on other business",
-    number_of_stations: 12,
-    salon_features: ["Spa Room", "Luxury Decor", "High-End Clientele"],
-    image: "https://placekitten.com/603/400",
-    has_wax_room: true,
-    has_housing: false,
-    has_dining_room: true,
-    compensation_type: "fixed",
-    compensation_details: "One-time payment",
-    expires_at: "2024-02-01T09:45:00Z",
-    status: "active"
-  }
-];
-
-export const jobListings: Job[] = [
-  {
-    id: "job-1",
-    created_at: "2023-06-20T08:30:00Z",
-    title: "Experienced Nail Technician Needed",
-    company: "Beauty Nails & Spa",
-    location: "Los Angeles, CA",
-    user_id: "salon-765",
-    salary_range: "$800-$1,200/week",
-    description: "Busy nail salon seeking experienced nail technicians. Guaranteed $800-$1,200 per week plus tips. Full time position.",
-    vietnamese_description: "Tiệm nail đông khách cần thợ nail có kinh nghiệm. Bao lương $800-$1,200 một tuần, tip hậu. Làm full time.",
-    contact_info: {
-      phone: "(323) 555-7890",
-      email: "beautynails@example.com"
-    },
-    weekly_pay: true,
-    owner_will_train: false,
-    has_housing: false,
-    employment_type: "full-time",
-    specialties: ["Acrylic", "Gel", "Dipping Powder"],
-    no_supply_deduction: true,
-    benefits: ["Weekly Pay", "Friendly Environment", "Busy Location"],
-    compensation_type: "hourly",
-    compensation_details: "$25-$35/hour plus tips",
-    expires_at: "2023-09-20T08:30:00Z",
-    status: "active"
-  },
-  {
-    id: "job-2",
-    created_at: "2023-07-05T15:00:00Z",
-    title: "Hair Stylist Wanted - Great Pay!",
-    company: "Hair Studio 54",
-    location: "New York, NY",
-    user_id: "salon-766",
-    salary_range: "$1,000-$1,500/week",
-    description: "Upscale hair salon looking for talented hair stylists. Commission based with high earning potential. Clientele provided.",
-    vietnamese_description: "Tiệm tóc cao cấp tìm thợ tóc giỏi. Ăn chia theo phần trăm, thu nhập cao. Có khách hàng.",
-    contact_info: {
-      phone: "(212) 555-1234",
-      email: "hairstudio@example.com"
-    },
-    weekly_pay: true,
-    owner_will_train: false,
-    has_housing: false,
-    employment_type: "full-time",
-    specialties: ["Color", "Cuts", "Styling"],
-    no_supply_deduction: true,
-    benefits: ["Commission", "Upscale Salon", "Provided Clientele"],
-    compensation_type: "commission",
-    compensation_details: "50% commission plus tips",
-    expires_at: "2023-10-05T15:00:00Z",
-    status: "active"
-  },
-  {
-    id: "job-3",
-    created_at: "2023-07-12T10:45:00Z",
-    title: "Experienced Esthetician Needed",
-    company: "Skin Care Clinic",
+    id: "br1",
+    title: "Premium Booth Space Available",
     location: "Miami, FL",
-    user_id: "salon-767",
-    salary_range: "$900-$1,400/week",
-    description: "Busy skin care clinic seeking experienced estheticians. Hourly plus commission. Must have license.",
-    vietnamese_description: "Phòng khám da liễu đông khách cần chuyên viên thẩm mỹ có kinh nghiệm. Lương giờ cộng hoa hồng. Phải có bằng.",
+    price: "$200/week",
+    features: ["High Traffic Area", "Modern Equipment", "Flexible Hours"],
     contact_info: {
-      phone: "(305) 555-5678",
-      email: "skincare@example.com"
+      owner_name: "Sarah Johnson",
+      phone: "(305) 555-1234"
     },
-    weekly_pay: true,
-    owner_will_train: false,
-    has_housing: false,
-    employment_type: "full-time",
-    specialties: ["Facials", "Waxing", "Microdermabrasion"],
-    no_supply_deduction: true,
-    benefits: ["Hourly Pay", "Commission", "Medical Benefits"],
-    compensation_type: "mixed",
-    compensation_details: "$20/hour plus 30% commission",
-    expires_at: "2023-10-12T10:45:00Z",
-    status: "active"
+    created_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 30 * 86400000).toISOString(),
+    status: "active",
+    compensation_type: "Rental",
+    compensation_details: "$200 weekly"
   },
   {
-    id: "job-4",
-    created_at: "2023-07-20T12:30:00Z",
-    title: "Barber Wanted - Flexible Hours",
-    company: "The Barber Shop",
-    location: "Chicago, IL",
-    user_id: "salon-768",
-    salary_range: "$700-$1,100/week",
-    description: "Traditional barber shop looking for skilled barbers. Flexible hours, commission based. Walk-ins welcome.",
-    vietnamese_description: "Tiệm hớt tóc truyền thống tìm thợ hớt tóc giỏi. Giờ giấc linh hoạt, ăn chia theo phần trăm. Khách vãng lai.",
+    id: "br2",
+    title: "Nail Station for Rent",
+    location: "Atlanta, GA",
+    price: "$180/week",
+    features: ["Private Area", "Supply Storage", "Established Clientele"],
     contact_info: {
-      phone: "(312) 555-9012",
-      email: "barbershop@example.com"
+      owner_name: "Michael Chen",
+      phone: "(404) 555-6789"
     },
-    weekly_pay: true,
-    owner_will_train: false,
-    has_housing: false,
-    employment_type: "full-time",
-    specialties: ["Fades", "Tapers", "Beard Trims"],
-    no_supply_deduction: true,
-    benefits: ["Commission", "Flexible Hours", "Walk-Ins"],
-    compensation_type: "commission",
-    compensation_details: "60% commission plus tips",
-    expires_at: "2023-11-20T12:30:00Z",
-    status: "active"
-  },
-  {
-    id: "job-5",
-    created_at: "2023-07-28T09:00:00Z",
-    title: "Nail Technician - High Traffic Salon",
-    company: "Luxury Nails",
-    location: "Houston, TX",
-    user_id: "salon-769",
-    salary_range: "$850-$1,300/week",
-    description: "Upscale nail salon seeking experienced nail technicians. High traffic location, guaranteed salary plus tips.",
-    vietnamese_description: "Tiệm nail cao cấp tìm thợ nail có kinh nghiệm. Vị trí đông khách, bao lương cộng tip.",
-    contact_info: {
-      phone: "(713) 555-3456",
-      email: "luxurynails@example.com"
-    },
-    weekly_pay: true,
-    owner_will_train: false,
-    has_housing: false,
-    employment_type: "full-time",
-    specialties: ["Acrylic", "Gel", "Nail Art"],
-    no_supply_deduction: true,
-    benefits: ["Guaranteed Salary", "High Traffic", "Tips"],
-    compensation_type: "hourly",
-    compensation_details: "$28-$38/hour plus tips",
-    expires_at: "2023-11-28T09:00:00Z",
-    status: "active"
+    created_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 30 * 86400000).toISOString(),
+    status: "active",
+    compensation_type: "Rental",
+    compensation_details: "$180 weekly"
   }
 ];
 
-export const salonForSaleListings: Job[] = [
+// Hair salon listings data
+export const hairSalonListings = [
   {
-    id: "salon-1",
-    created_at: "2023-06-10T09:00:00Z",
-    title: "Established Nail Salon For Sale in Orange County",
-    company: "OC Salon Brokers",
-    location: "Irvine, CA",
-    user_id: "broker-123",
-    asking_price: "$120,000",
-    monthly_rent: "$2,800",
-    square_feet: "1,500",
-    revenue: "$240,000/year",
-    description: "Well-established nail salon in prime location. 1,500 sq ft with 6 nail stations and 5 pedicure chairs. Excellent reputation with loyal clientele. Selling due to owner's retirement.",
-    vietnamese_description: "Tiệm nail đã hoạt động lâu năm ở vị trí đắc địa. Diện tích 1,500sf với 6 bàn nail và 5 ghế pedicure. Uy tín tốt với khách hàng trung thành. Bán vì chủ về hưu.",
-    image: "/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png",
-    salon_features: ["Waxing Room", "Break Room", "Storage Room"],
-    has_wax_room: true,
-    has_dining_room: false,
-    has_laundry: true,
-    number_of_stations: 6,
-    reason_for_selling: "Owner retiring",
-    contact_info: {
-      owner_name: "John Smith",
-      phone: "(949) 555-1234",
-      email: "john@ocsalonbrokers.com"
-    },
-    owner_will_train: true,
-    compensation_type: "fixed",
-    compensation_details: "One-time payment",
-    expires_at: "2023-12-10T09:00:00Z",
-    status: "active"
-  },
-  {
-    id: "salon-2",
-    created_at: "2023-07-01T11:30:00Z",
-    title: "Profitable Hair Salon For Sale in Los Angeles",
-    company: "LA Business Brokers",
+    id: "hs1",
+    title: "Stylist Position Available",
     location: "Los Angeles, CA",
-    user_id: "broker-124",
-    asking_price: "$150,000",
-    monthly_rent: "$3,500",
-    square_feet: "1,800",
-    revenue: "$280,000/year",
-    description: "Well-established hair salon in a busy area. 1,800 sq ft with 8 styling stations and 3 wash basins. Loyal clientele and great online reviews. Owner is selling due to health reasons.",
-    vietnamese_description: "Tiệm tóc sinh lời ở khu vực sầm uất. Diện tích 1,800sf với 8 trạm tạo kiểu và 3 bồn rửa. Khách hàng trung thành và đánh giá trực tuyến tuyệt vời. Chủ sở hữu đang bán vì lý do sức khỏe.",
-    image: "/lovable-uploads/5def98bc-9b8b-4b00-a4bb-6ea3b6deb483.png",
-    salon_features: ["Styling Stations", "Wash Basins", "Reception Area"],
-    has_wax_room: false,
-    has_dining_room: true,
-    has_laundry: true,
-    number_of_stations: 8,
-    reason_for_selling: "Health reasons",
+    price: "Commission-based",
+    features: ["Upscale Salon", "Product Discounts", "Training Provided"],
     contact_info: {
-      owner_name: "Jane Doe",
-      phone: "(213) 555-5678",
-      email: "jane@labusinessbrokers.com"
+      owner_name: "Emma Roberts",
+      phone: "(213) 555-2345"
     },
-    owner_will_train: true,
-    compensation_type: "fixed",
-    compensation_details: "One-time payment",
-    expires_at: "2024-01-01T11:30:00Z",
-    status: "active"
+    created_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 30 * 86400000).toISOString(),
+    status: "active",
+    compensation_type: "Commission",
+    compensation_details: "60% commission"
   },
   {
-    id: "salon-3",
-    created_at: "2023-07-15T14:45:00Z",
-    title: "Nail and Spa Salon For Sale in San Diego",
-    company: "SD Salon Ventures",
-    location: "San Diego, CA",
-    user_id: "broker-125",
-    asking_price: "$180,000",
-    monthly_rent: "$4,200",
-    square_feet: "2,000",
-    revenue: "$320,000/year",
-    description: "Upscale nail and spa salon in a high-end neighborhood. 2,000 sq ft with 10 nail stations, 6 pedicure chairs, and 2 private spa rooms. Loyal clientele and strong online presence. Selling due to relocation.",
-    vietnamese_description: "Tiệm nail và spa cao cấp ở khu dân cư cao cấp. Diện tích 2,000sf với 10 bàn nail, 6 ghế làm móng chân và 2 phòng spa riêng. Khách hàng trung thành và sự hiện diện trực tuyến mạnh mẽ. Bán do di dời.",
-    image: "/lovable-uploads/6ghi78jk-9b8b-4b00-a4bb-6ea3b6deb483.png",
-    salon_features: ["Spa Rooms", "Nail Stations", "Pedicure Chairs"],
-    has_wax_room: true,
-    has_dining_room: true,
-    has_laundry: true,
-    number_of_stations: 10,
-    reason_for_selling: "Relocation",
+    id: "hs2",
+    title: "Hair Stylist Wanted",
+    location: "Chicago, IL",
+    price: "$25-35/hour",
+    features: ["Full-time", "Benefits Available", "Modern Salon"],
     contact_info: {
-      owner_name: "Alice Johnson",
-      phone: "(619) 555-9012",
-      email: "alice@sdsalonventures.com"
+      owner_name: "David Wilson",
+      phone: "(312) 555-7890"
     },
-    owner_will_train: true,
-    compensation_type: "fixed",
-    compensation_details: "One-time payment",
-    expires_at: "2024-02-15T14:45:00Z",
-    status: "active"
-  },
-  {
-    id: "salon-4",
-    created_at: "2023-07-28T10:00:00Z",
-    title: "Modern Beauty Salon For Sale in San Francisco",
-    company: "SF Business Acquisitions",
-    location: "San Francisco, CA",
-    user_id: "broker-126",
-    asking_price: "$200,000",
-    monthly_rent: "$4,800",
-    square_feet: "2,200",
-    revenue: "$350,000/year",
-    description: "Modern and stylish beauty salon in a trendy area. 2,200 sq ft with 12 styling stations, 4 wash basins, and a reception area. Strong social media presence and loyal clientele. Selling due to partnership dissolution.",
-    vietnamese_description: "Salon làm đẹp hiện đại và phong cách ở khu vực hợp thời trang. Diện tích 2,200sf với 12 trạm tạo kiểu, 4 bồn rửa và khu vực lễ tân. Sự hiện diện mạnh mẽ trên mạng xã hội và khách hàng trung thành. Bán do giải thể quan hệ đối tác.",
-    image: "/lovable-uploads/7lkj89mn-9b8b-4b00-a4bb-6ea3b6deb483.png",
-    salon_features: ["Styling Stations", "Wash Basins", "Reception Area"],
-    has_wax_room: false,
-    has_dining_room: true,
-    has_laundry: true,
-    number_of_stations: 12,
-    reason_for_selling: "Partnership dissolution",
-    contact_info: {
-      owner_name: "Bob Williams",
-      phone: "(415) 555-3456",
-      email: "bob@sfbusinessacquisitions.com"
-    },
-    owner_will_train: true,
-    compensation_type: "fixed",
-    compensation_details: "One-time payment",
-    expires_at: "2024-03-01T10:00:00Z",
-    status: "active"
+    created_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 30 * 86400000).toISOString(),
+    status: "active",
+    compensation_type: "Hourly",
+    compensation_details: "$25-35/hour"
   }
 ];
 
-// Make sure each listing has the required fields
-export const mockJobsData: Job[] = [...jobListings, ...salonListings, ...salonForSaleListings];
+// Barbershop listings data
+export const barbershopListings = [
+  {
+    id: "bs1",
+    title: "Barber Chair for Rent",
+    location: "Brooklyn, NY",
+    price: "$250/week",
+    features: ["High-End Clientele", "Fully Equipped", "Flexible Schedule"],
+    contact_info: {
+      owner_name: "Marcus Johnson",
+      phone: "(718) 555-3456"
+    },
+    created_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 30 * 86400000).toISOString(),
+    status: "active",
+    compensation_type: "Rental",
+    compensation_details: "$250 weekly"
+  },
+  {
+    id: "bs2",
+    title: "Master Barber Needed",
+    location: "Philadelphia, PA",
+    price: "Commission or Booth Rental",
+    features: ["Established Shop", "Great Location", "Walk-ins Available"],
+    contact_info: {
+      owner_name: "Kevin Brown",
+      phone: "(215) 555-8901"
+    },
+    created_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 30 * 86400000).toISOString(),
+    status: "active",
+    compensation_type: "Flexible",
+    compensation_details: "Commission or booth rental options available"
+  }
+];
+
+// Restaurant listings data
+export const restaurantListings = [
+  {
+    id: "r1",
+    title: "Restaurant For Sale",
+    location: "San Francisco, CA",
+    price: "$275,000",
+    features: ["Prime Location", "Fully Equipped", "Established 10 Years"],
+    contact_info: {
+      owner_name: "Jennifer Lee",
+      phone: "(415) 555-4567"
+    },
+    created_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 30 * 86400000).toISOString(),
+    status: "active",
+    compensation_type: "Sale",
+    compensation_details: "$275,000 asking price"
+  },
+  {
+    id: "r2",
+    title: "Restaurant Space for Lease",
+    location: "Austin, TX",
+    price: "$4,500/month",
+    features: ["High Traffic Area", "Move-in Ready", "Large Dining Space"],
+    contact_info: {
+      owner_name: "Robert Garcia",
+      phone: "(512) 555-9012"
+    },
+    created_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 30 * 86400000).toISOString(),
+    status: "active",
+    compensation_type: "Lease",
+    compensation_details: "$4,500 monthly"
+  }
+];
+
+// Tattoo shop listings data
+export const tattooShopListings = [
+  {
+    id: "ts1",
+    title: "Tattoo Artist Position",
+    location: "Seattle, WA",
+    price: "50% Commission",
+    features: ["Award-Winning Shop", "Central Location", "Established Clientele"],
+    contact_info: {
+      owner_name: "Alex Turner",
+      phone: "(206) 555-5678"
+    },
+    created_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 30 * 86400000).toISOString(),
+    status: "active",
+    compensation_type: "Commission",
+    compensation_details: "50% commission"
+  },
+  {
+    id: "ts2",
+    title: "Tattoo Shop For Sale",
+    location: "Portland, OR",
+    price: "$150,000",
+    features: ["Turnkey Operation", "Loyal Customer Base", "All Equipment Included"],
+    contact_info: {
+      owner_name: "Samantha Miller",
+      phone: "(503) 555-0123"
+    },
+    created_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 30 * 86400000).toISOString(),
+    status: "active",
+    compensation_type: "Sale",
+    compensation_details: "$150,000 asking price"
+  }
+];
+
+// Nail salon listings data
+export const nailSalonListings = [
+  {
+    id: "ns1",
+    title: "Nail Technician Needed",
+    location: "Denver, CO",
+    price: "$800-1200/week",
+    features: ["Busy Salon", "Great Tips", "Flexible Hours"],
+    contact_info: {
+      owner_name: "Linda Nguyen",
+      phone: "(303) 555-6789"
+    },
+    created_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 30 * 86400000).toISOString(),
+    status: "active",
+    compensation_type: "Weekly",
+    compensation_details: "$800-1200/week"
+  },
+  {
+    id: "ns2",
+    title: "Nail Salon For Sale",
+    location: "San Diego, CA",
+    price: "$120,000",
+    features: ["Prime Location", "Established 8 Years", "10 Stations"],
+    contact_info: {
+      owner_name: "Kim Lee",
+      phone: "(619) 555-1234"
+    },
+    created_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 30 * 86400000).toISOString(),
+    status: "active",
+    compensation_type: "Sale",
+    compensation_details: "$120,000 asking price"
+  }
+];

@@ -2,6 +2,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile, UserRole } from './types';
 import { User as SupabaseUser } from '@supabase/supabase-js';
+import { Json } from '@/integrations/supabase/types';
 
 /**
  * Fetches the user profile data from Supabase
@@ -36,22 +37,50 @@ export async function fetchUserProfile(user: SupabaseUser): Promise<UserProfile 
       };
     }
 
+    // Cast userData to include all the possible fields we need
+    interface ExtendedUserData {
+      id: string;
+      email: string;
+      full_name: string;
+      avatar_url: string | null;
+      location: string | null;
+      bio: string | null;
+      phone: string | null;
+      instagram: string | null;
+      website: string | null;
+      specialty: string | null;
+      role: string | null;
+      salon_name?: string | null;
+      business_address?: string | null;
+      company_name?: string | null;
+      product_type?: string | null;
+      skill_level?: string | null;
+      skills?: string[] | null;
+      created_at?: string | null;
+      updated_at?: string | null;
+      badges?: Json | null;
+      credits?: number | null;
+    }
+
+    // Cast userData to include all fields
+    const extendedUserData = userData as ExtendedUserData;
+
     const profile: UserProfile = {
-      id: userData.id,
-      email: userData.email,
-      full_name: userData.full_name,
-      avatar_url: userData.avatar_url,
-      location: userData.location,
-      bio: userData.bio,
-      phone: userData.phone,
-      instagram: userData.instagram,
-      website: userData.website,
-      specialty: userData.specialty,
+      id: extendedUserData.id,
+      email: extendedUserData.email,
+      full_name: extendedUserData.full_name,
+      avatar_url: extendedUserData.avatar_url,
+      location: extendedUserData.location,
+      bio: extendedUserData.bio,
+      phone: extendedUserData.phone,
+      instagram: extendedUserData.instagram,
+      website: extendedUserData.website,
+      specialty: extendedUserData.specialty,
       role: userRole,
-      skill_level: userData.skill_level,
-      skills: userData.skills,
-      created_at: userData.created_at,
-      updated_at: userData.updated_at,
+      skill_level: extendedUserData.skill_level || null,
+      skills: extendedUserData.skills || null,
+      created_at: extendedUserData.created_at || null,
+      updated_at: extendedUserData.updated_at || null,
       ...profileExtras
     };
     
