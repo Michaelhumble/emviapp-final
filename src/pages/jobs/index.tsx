@@ -1,10 +1,16 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import { useJobsData } from "@/hooks/useJobsData";
 
 const Jobs = () => {
   const { jobs, loading } = useJobsData();
+  
+  useEffect(() => {
+    // Log page load for monitoring
+    console.log("Jobs index page loaded successfully");
+    document.title = "Job Listings | EmviApp";
+  }, []);
   
   return (
     <Layout>

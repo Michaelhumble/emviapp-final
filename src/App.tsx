@@ -26,15 +26,22 @@ import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
 import NotFound from "./pages/NotFound";
 import Analysis from "./pages/Analysis";
+import RouteLogger from "./components/common/RouteLogger";
 
 // Import contexts
 import { AuthProvider } from "./context/auth";
-import { Toaster } from "sonner";
 
-function App() {
+interface AppProps {
+  availableRoutes?: string[];
+}
+
+function App({ availableRoutes }: AppProps) {
   return (
     <BrowserRouter>
       <AuthProvider>
+        {/* Add RouteLogger to monitor navigation */}
+        <RouteLogger routes={availableRoutes} />
+        
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/profile" element={<Profile />} />
@@ -65,11 +72,10 @@ function App() {
           <Route path="/sign-in" element={<SignIn />} /> {/* Alias routes for convenience */}
           <Route path="/sign-up" element={<SignUp />} /> {/* Alias routes for convenience */}
           
-          {/* 404 page */}
+          {/* 404 pages */}
           <Route path="/not-found" element={<NotFound />} />
           <Route path="*" element={<NotFoundRedirect />} />
         </Routes>
-        <Toaster position="top-right" />
       </AuthProvider>
     </BrowserRouter>
   );

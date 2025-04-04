@@ -1,9 +1,10 @@
 
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Loader2, ArrowLeft, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Layout from "@/components/layout/Layout";
+import { toast } from "sonner";
 
 /**
  * Component that redirects users to home page if they visit a route 
@@ -11,12 +12,18 @@ import Layout from "@/components/layout/Layout";
  */
 const NotFoundRedirect = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [countdown, setCountdown] = useState(5);
   
   // Log all 404 redirects for monitoring
   useEffect(() => {
     const currentPath = window.location.pathname;
-    console.log(`404 redirect triggered for path: ${currentPath}`);
+    console.error(`404 redirect triggered for path: ${currentPath}`);
+    
+    // Show toast notification
+    toast.error(`Page not found: ${currentPath}`, {
+      description: "You'll be redirected to the home page in 5 seconds.",
+    });
     
     document.title = "Page Not Found | EmviApp";
     
@@ -25,7 +32,7 @@ const NotFoundRedirect = () => {
       setCountdown(prev => {
         if (prev <= 1) {
           clearInterval(timer);
-          navigate('/');
+          navigate('/', { state: { from: currentPath } });
           return 0;
         }
         return prev - 1;
@@ -33,7 +40,7 @@ const NotFoundRedirect = () => {
     }, 1000);
     
     return () => clearInterval(timer);
-  }, [navigate]);
+  }, [navigate, location.pathname]);
   
   return (
     <Layout>
