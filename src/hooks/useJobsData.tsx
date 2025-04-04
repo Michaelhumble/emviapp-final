@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/context/auth";
 
 export type Job = {
   id: string;
@@ -21,11 +21,19 @@ export type Job = {
   created_at: string;
 };
 
-export const useJobsData = (initialFilters = {}) => {
+interface JobFilters {
+  featured?: boolean;
+  remote?: boolean;
+  fullTime?: boolean;
+  partTime?: boolean;
+  location?: string;
+}
+
+export const useJobsData = (initialFilters: JobFilters = {}) => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [filters, setFilters] = useState(initialFilters);
+  const [filters, setFilters] = useState<JobFilters>(initialFilters);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -36,19 +44,19 @@ export const useJobsData = (initialFilters = {}) => {
         let query = supabase.from("jobs").select("*");
 
         // Apply filters one by one with explicit type checking
-        if (filters.hasOwnProperty('featured') && filters.featured === true) {
+        if (filters.featured === true) {
           query = query.eq('is_featured', true);
         }
 
-        if (filters.hasOwnProperty('remote') && filters.remote === true) {
+        if (filters.remote === true) {
           query = query.eq('is_remote', true);
         }
 
-        if (filters.hasOwnProperty('fullTime') && filters.fullTime === true) {
+        if (filters.fullTime === true) {
           query = query.eq('type', 'Full-time');
         }
 
-        if (filters.hasOwnProperty('partTime') && filters.partTime === true) {
+        if (filters.partTime === true) {
           query = query.eq('type', 'Part-time');
         }
 
@@ -72,7 +80,7 @@ export const useJobsData = (initialFilters = {}) => {
     fetchJobs();
   }, [filters]);
 
-  const updateFilters = (newFilters) => {
+  const updateFilters = (newFilters: Partial<JobFilters>) => {
     setFilters({ ...filters, ...newFilters });
   };
 
