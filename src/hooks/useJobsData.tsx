@@ -23,37 +23,40 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
   const fetchJobs = async () => {
     setLoading(true);
     try {
-      // Start with a base query
-      let query = supabase.from("jobs").select("*");
-
-      // Apply filters one by one - avoiding deep chaining to prevent "excessively deep" errors
-      if (filters.featured) {
-        query = query.eq('is_featured', true);
-      }
-
-      if (filters.remote) {
-        query = query.eq('is_remote', true);
-      }
-
-      if (filters.fullTime) {
-        query = query.eq('employment_type', 'Full-time');
-      }
-
-      if (filters.partTime) {
-        query = query.eq('employment_type', 'Part-time');
-      }
-
-      // Location filter
-      if (filters.location && filters.location !== 'all') {
-        query = query.ilike('location', `%${filters.location}%`);
-      }
-
-      const { data, error: apiError } = await query;
+      // Execute the base query first
+      const { data, error: apiError } = await supabase
+        .from("jobs")
+        .select("*");
 
       if (apiError) throw apiError;
 
-      // Map the raw database jobs to our Job type with all required properties
-      const formattedJobs = data ? formatJobListings(data) : [];
+      // Apply filters in JavaScript instead of database queries to avoid nesting issues
+      let filteredData = data || [];
+      
+      if (filters.featured) {
+        filteredData = filteredData.filter(job => job.is_featured === true);
+      }
+      
+      if (filters.remote) {
+        filteredData = filteredData.filter(job => job.is_remote === true);
+      }
+      
+      if (filters.fullTime) {
+        filteredData = filteredData.filter(job => job.employment_type === 'Full-time');
+      }
+      
+      if (filters.partTime) {
+        filteredData = filteredData.filter(job => job.employment_type === 'Part-time');
+      }
+      
+      if (filters.location && filters.location !== 'all') {
+        filteredData = filteredData.filter(job => 
+          job.location && job.location.toLowerCase().includes(filters.location!.toLowerCase())
+        );
+      }
+
+      // Format the filtered jobs
+      const formattedJobs = formatJobListings(filteredData);
       setJobs(formattedJobs);
     } catch (err) {
       setError(err instanceof Error ? err : new Error(String(err)));

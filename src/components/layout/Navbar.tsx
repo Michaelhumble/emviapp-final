@@ -1,6 +1,6 @@
 
-import { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { 
   User, 
   X, 
@@ -9,13 +9,9 @@ import {
   Settings, 
   Bell, 
   MessageSquare, 
-  ChevronDown,
-  UserPlus,
-  CreditCard,
-  Calendar
+  ChevronDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/context/auth";
 import EmviLogo from "@/components/branding/EmviLogo";
@@ -37,9 +33,10 @@ import {
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const location = useLocation();
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
+  const isActive = (path: string) => {
+    return location.pathname === path ? "text-primary font-medium" : "text-gray-600";
   };
 
   return (
@@ -53,13 +50,13 @@ const Navbar = () => {
         <nav className="hidden md:flex items-center space-x-6">
           <Link 
             to="/jobs" 
-            className="text-gray-600 hover:text-primary transition-colors"
+            className={`${isActive('/jobs')} hover:text-primary transition-colors`}
           >
             Jobs
           </Link>
           <Link 
             to="/salons" 
-            className="text-gray-600 hover:text-primary transition-colors"
+            className={`${isActive('/salons')} hover:text-primary transition-colors`}
           >
             Salons
           </Link>
@@ -67,8 +64,8 @@ const Navbar = () => {
           {/* Community Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="text-gray-600 hover:text-primary transition-colors">
-                Community
+              <button className="text-gray-600 hover:text-primary transition-colors flex items-center">
+                Community <ChevronDown className="ml-1 h-4 w-4" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="center">
@@ -91,7 +88,7 @@ const Navbar = () => {
           
           <Link 
             to="/analysis" 
-            className="text-gray-600 hover:text-primary transition-colors"
+            className={`${isActive('/analysis')} hover:text-primary transition-colors`}
           >
             Analysis
           </Link>
@@ -150,7 +147,7 @@ const Navbar = () => {
               <Button
                 variant="ghost"
                 className="md:hidden"
-                onClick={toggleMobileMenu}
+                aria-label="Toggle mobile menu"
               >
                 <Menu className="h-4 w-4" />
               </Button>

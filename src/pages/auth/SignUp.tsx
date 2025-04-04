@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
@@ -5,7 +6,8 @@ import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Select,
@@ -13,7 +15,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 
 const SignUp = () => {
@@ -34,10 +36,7 @@ const SignUp = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      toast({
-        variant: "destructive",
-        description: "Passwords do not match"
-      });
+      toast.error("Passwords do not match");
       return;
     }
     
@@ -56,24 +55,15 @@ const SignUp = () => {
       });
       
       if (error) {
-        toast({
-          variant: "destructive",
-          description: error.message
-        });
+        toast.error(error.message);
         return;
       }
       
-      toast({
-        description: "Sign up successful! Check your email to verify your account."
-      });
-      
+      toast.success("Sign up successful! Check your email to verify your account.");
       navigate('/auth/signin');
     } catch (err) {
       console.error("Error during sign up:", err);
-      toast({
-        variant: "destructive",
-        description: "An unexpected error occurred"
-      });
+      toast.error("An unexpected error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -81,98 +71,95 @@ const SignUp = () => {
 
   return (
     <Layout>
-      <div className="container relative grid min-h-screen place-items-center md:px-10">
-        <div className="mx-auto flex w-full max-w-md flex-col justify-center space-y-6 sm:w-[350px]">
-          <div className="flex flex-col space-y-2 text-center">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Create an account
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Enter your email below to create your account
-            </p>
-          </div>
-          <form onSubmit={handleSubmit} className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                placeholder="Enter your full name"
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                placeholder="Enter your email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                placeholder="Enter your password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="confirm-password">Confirm Password</Label>
-              <Input
-                id="confirm-password"
-                placeholder="Confirm your password"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="role">Account Type</Label>
-              <Select onValueChange={setRole}>
-                <SelectTrigger id="role">
-                  <SelectValue placeholder="Select account type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="customer">Customer</SelectItem>
-                  <SelectItem value="artist">Artist</SelectItem>
-                  <SelectItem value="owner">Salon Owner</SelectItem>
-                  <SelectItem value="supplier">Supplier</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Button disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Sign Up
-            </Button>
+      <div className="flex items-center justify-center min-h-[70vh] p-4 bg-background">
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold text-center">Create an account</CardTitle>
+            <CardDescription className="text-center">
+              Enter your details to create your account
+            </CardDescription>
+          </CardHeader>
+          <form onSubmit={handleSubmit}>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input
+                  id="name"
+                  placeholder="Enter your full name"
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  placeholder="Enter your email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  placeholder="Enter your password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirm-password">Confirm Password</Label>
+                <Input
+                  id="confirm-password"
+                  placeholder="Confirm your password"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="role">Account Type</Label>
+                <Select onValueChange={setRole}>
+                  <SelectTrigger id="role">
+                    <SelectValue placeholder="Select account type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="customer">Customer</SelectItem>
+                    <SelectItem value="artist">Artist</SelectItem>
+                    <SelectItem value="owner">Salon Owner</SelectItem>
+                    <SelectItem value="supplier">Supplier</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col space-y-4">
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating Account...
+                  </>
+                ) : (
+                  "Sign Up"
+                )}
+              </Button>
+              <div className="text-sm text-center text-gray-500">
+                Already have an account?{" "}
+                <Link to="/auth/signin" className="text-primary hover:underline">
+                  Sign in
+                </Link>
+              </div>
+            </CardFooter>
           </form>
-          <p className="px-8 text-center text-sm text-muted-foreground">
-            By clicking continue, you agree to our{" "}
-            <Link
-              to="#"
-              className="underline underline-offset-4 hover:text-foreground"
-            >
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link
-              to="#"
-              className="underline underline-offset-4 hover:text-foreground"
-            >
-              Privacy Policy
-            </Link>
-            .
-          </p>
-        </div>
+        </Card>
       </div>
     </Layout>
   );

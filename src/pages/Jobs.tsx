@@ -34,7 +34,6 @@ const Jobs = () => {
   });
   const { user } = useAuth();
   
-  // Custom hooks for job data and renewal
   const { jobs, loading, error, fetchJobs } = useJobsData();
   const { 
     renewJob,
@@ -43,7 +42,7 @@ const Jobs = () => {
     isExpired,
     isExpiringSoon
   } = useJobRenewal({
-    jobId: "", // This will be set when a job is selected for renewal
+    jobId: "", 
     expiresAt: null,
     onSuccess: () => fetchJobs()
   });
@@ -73,7 +72,6 @@ const Jobs = () => {
   };
 
   const checkExpiration = (job: Job): boolean => {
-    // For sample jobs, check if they're older than 30 days
     if (job.is_sample) {
       const createdDate = new Date(job.created_at);
       const now = new Date();
@@ -83,7 +81,6 @@ const Jobs = () => {
       return differenceInDays >= 30;
     }
     
-    // Use the expiration data from the hook for real jobs
     return expirations[job.id] === true;
   };
   
@@ -134,7 +131,6 @@ const Jobs = () => {
             />
           )}
           
-          {/* Vietnamese Job Section */}
           <VietnameseJobSection checkExpiration={checkExpiration} />
         </div>
       </div>
