@@ -4,9 +4,11 @@ import UserProfileBanner from "./UserProfileBanner";
 import ProfileSidebar from "./ProfileSidebar";
 import ProfileTabs from "./ProfileTabs";
 import ProfileLoading from "./ProfileLoading";
+import { getRoleTheme } from "./utils/themeHelpers";
 
 const UserProfile = () => {
-  const { userProfile } = useAuth();
+  const { userProfile, userRole } = useAuth();
+  const theme = getRoleTheme(userRole);
 
   if (!userProfile) {
     return <ProfileLoading />;
@@ -25,7 +27,7 @@ const UserProfile = () => {
           <ProfileTabs userProfile={userProfile} />
         </div>
         
-        <div className="mt-10 text-center text-sm text-gray-500">
+        <div className={`mt-10 text-center text-sm ${theme.textColor}`}>
           <p>The more you complete, the more EmviApp works for you.</p>
         </div>
       </div>

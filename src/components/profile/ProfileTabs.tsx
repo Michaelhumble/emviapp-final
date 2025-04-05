@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { UserProfile as UserProfileType } from "@/types/profile";
 import { useAuth } from "@/context/auth";
 import { getRoleSpecificSection } from "./utils/profileHelpers";
+import { getRoleTheme } from "./utils/themeHelpers";
 
 import ProfileCompletionTracker from "./ProfileCompletionTracker";
 import ProfilePublicPreview from "./ProfilePublicPreview";
@@ -23,6 +24,7 @@ interface ProfileTabsProps {
 const ProfileTabs = ({ userProfile }: ProfileTabsProps) => {
   const { userRole } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
+  const theme = getRoleTheme(userRole);
 
   // Determine which profile section to show based on user role
   const renderRoleSpecificSection = () => {
@@ -45,10 +47,10 @@ const ProfileTabs = ({ userProfile }: ProfileTabsProps) => {
   return (
     <div className="lg:col-span-2">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-        <TabsList>
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="activity">Activity</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
+        <TabsList className={theme.borderColor}>
+          <TabsTrigger value="profile" className={theme.hoverColor}>Profile</TabsTrigger>
+          <TabsTrigger value="activity" className={theme.hoverColor}>Activity</TabsTrigger>
+          <TabsTrigger value="settings" className={theme.hoverColor}>Settings</TabsTrigger>
         </TabsList>
         
         <TabsContent value="profile" className="mt-0">
@@ -66,9 +68,9 @@ const ProfileTabs = ({ userProfile }: ProfileTabsProps) => {
         </TabsContent>
         
         <TabsContent value="activity" className="mt-0">
-          <Card>
+          <Card className={theme.borderColor}>
             <CardHeader>
-              <CardTitle className="font-serif">Recent Activity</CardTitle>
+              <CardTitle className={`font-serif ${theme.textColor}`}>Recent Activity</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-500">Your recent activity will appear here.</p>
@@ -77,9 +79,9 @@ const ProfileTabs = ({ userProfile }: ProfileTabsProps) => {
         </TabsContent>
         
         <TabsContent value="settings" className="mt-0">
-          <Card>
+          <Card className={theme.borderColor}>
             <CardHeader>
-              <CardTitle className="font-serif">Account Settings</CardTitle>
+              <CardTitle className={`font-serif ${theme.textColor}`}>Account Settings</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-500">Manage your account settings and preferences.</p>

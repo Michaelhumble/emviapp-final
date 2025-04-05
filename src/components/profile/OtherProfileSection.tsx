@@ -4,16 +4,18 @@ import { Button } from "@/components/ui/button";
 import { HelpCircle, User, Users } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import { Link } from "react-router-dom";
+import { getRoleTheme } from "./utils/themeHelpers";
 
 const OtherProfileSection = () => {
-  const { userProfile } = useAuth();
+  const { userRole } = useAuth();
+  const theme = getRoleTheme(userRole);
   
   return (
     <div className="space-y-6">
-      <Card className="overflow-hidden border-gray-100 shadow-sm bg-gradient-to-r from-gray-50 to-slate-50">
+      <Card className={`overflow-hidden ${theme.borderColor} shadow-sm bg-gradient-to-r ${theme.lightBg}`}>
         <CardHeader className="pb-2">
-          <CardTitle className="font-serif text-xl flex items-center">
-            <User className="h-5 w-5 text-slate-500 mr-2" />
+          <CardTitle className={`font-serif text-xl flex items-center ${theme.textColor}`}>
+            <User className={`h-5 w-5 ${theme.iconColor} mr-2`} />
             Select Your Role
           </CardTitle>
         </CardHeader>
@@ -23,7 +25,7 @@ const OtherProfileSection = () => {
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <Button variant="outline" className="justify-start h-auto py-3 px-4" asChild>
+            <Button variant="outline" className={`justify-start h-auto py-3 px-4 ${theme.hoverColor}`} asChild>
               <Link to="/profile/role-selection?role=artist">
                 <div className="flex flex-col items-start">
                   <span className="font-medium">Nail Artist</span>
@@ -32,7 +34,7 @@ const OtherProfileSection = () => {
               </Link>
             </Button>
             
-            <Button variant="outline" className="justify-start h-auto py-3 px-4" asChild>
+            <Button variant="outline" className={`justify-start h-auto py-3 px-4 ${theme.hoverColor}`} asChild>
               <Link to="/profile/role-selection?role=salon">
                 <div className="flex flex-col items-start">
                   <span className="font-medium">Salon Owner</span>
@@ -41,7 +43,7 @@ const OtherProfileSection = () => {
               </Link>
             </Button>
             
-            <Button variant="outline" className="justify-start h-auto py-3 px-4" asChild>
+            <Button variant="outline" className={`justify-start h-auto py-3 px-4 ${theme.hoverColor}`} asChild>
               <Link to="/profile/role-selection?role=supplier">
                 <div className="flex flex-col items-start">
                   <span className="font-medium">Supplier</span>
@@ -50,7 +52,7 @@ const OtherProfileSection = () => {
               </Link>
             </Button>
             
-            <Button variant="outline" className="justify-start h-auto py-3 px-4" asChild>
+            <Button variant="outline" className={`justify-start h-auto py-3 px-4 ${theme.hoverColor}`} asChild>
               <Link to="/profile/role-selection?role=customer">
                 <div className="flex flex-col items-start">
                   <span className="font-medium">Beauty Customer</span>
@@ -66,19 +68,19 @@ const OtherProfileSection = () => {
         </CardContent>
       </Card>
       
-      <Card className="border-gray-100 shadow-sm">
+      <Card className={`${theme.borderColor} shadow-sm`}>
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="mb-4 md:mb-0">
-              <h3 className="font-serif text-lg text-gray-800 flex items-center">
-                <HelpCircle className="h-5 w-5 text-purple-500 mr-2" />
+              <h3 className={`font-serif text-lg text-gray-800 flex items-center ${theme.textColor}`}>
+                <HelpCircle className={`h-5 w-5 ${theme.iconColor} mr-2`} />
                 Need Help?
               </h3>
               <p className="text-gray-600 max-w-md">
                 Not sure which role to choose? Your AI Agent can help you decide.
               </p>
             </div>
-            <Button className="bg-purple-600 hover:bg-purple-700">
+            <Button className={theme.accentColor}>
               Chat with AI Agent
             </Button>
           </div>
