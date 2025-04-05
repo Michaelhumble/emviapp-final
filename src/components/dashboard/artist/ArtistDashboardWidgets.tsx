@@ -1,9 +1,9 @@
 
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Scissors, Calendar, Bell, Search } from "lucide-react";
+import { PlusCircle, Scissors, Calendar, Bell, Search, Sparkles, TrendingUp } from "lucide-react";
 import AffiliateReferralCard from "@/components/dashboard/common/AffiliateReferralCard";
 
 const ArtistDashboardWidgets = () => {
@@ -12,6 +12,27 @@ const ArtistDashboardWidgets = () => {
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-serif">Artist Dashboard</h2>
+      
+      {/* Motivational Message Banner */}
+      <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-100">
+        <CardContent className="py-6">
+          <div className="flex items-center gap-3 mb-3">
+            <Sparkles className="h-6 w-6 text-indigo-500" />
+            <h3 className="text-lg font-medium text-indigo-900">Your Artistry Matters!</h3>
+          </div>
+          <p className="text-indigo-700">
+            Your talent deserves to be seen. Complete your profile and showcase your best work to connect with clients looking for your unique style.
+          </p>
+          <div className="mt-4">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-green-500" />
+              <span className="text-sm font-medium text-green-700">
+                Profile views: {userProfile?.profile_views || 0} this week
+              </span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Find Jobs Card */}
@@ -33,23 +54,27 @@ const ArtistDashboardWidgets = () => {
           </CardContent>
         </Card>
         
-        {/* Bookings Card */}
-        <Card>
-          <CardHeader>
+        {/* Post Your Job CTA Card */}
+        <Card className="border-indigo-200 shadow-sm">
+          <CardHeader className="bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-t-lg">
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Calendar className="h-5 w-5 text-indigo-500" />
-              Bookings
+              <PlusCircle className="h-5 w-5 text-indigo-600" />
+              Post Your Job
             </CardTitle>
-            <CardDescription>Manage your upcoming appointments</CardDescription>
+            <CardDescription className="font-medium text-indigo-700">
+              First-time post only $5!
+            </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-4">
             <p className="text-sm text-muted-foreground mb-4">
-              View, accept, or reschedule your upcoming client appointments.
+              Looking for a new opportunity? Post your job request and get seen by salon owners in your area.
             </p>
-            <Button className="w-full" asChild>
-              <Link to="/bookings">Manage Bookings</Link>
-            </Button>
           </CardContent>
+          <CardFooter className="pt-0">
+            <Button className="w-full bg-indigo-600 hover:bg-indigo-700" asChild>
+              <Link to="/post/job">Post a Job Request</Link>
+            </Button>
+          </CardFooter>
         </Card>
         
         {/* Affiliate Referral Card */}

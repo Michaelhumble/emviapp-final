@@ -1,16 +1,15 @@
 
-import { useState, useEffect } from "react";
-
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import NationwideOption from "./smart-ad-options/NationwideOption";
 import FastSalePackage from "./smart-ad-options/FastSalePackage";
 import ShowAtTopOption from "./smart-ad-options/ShowAtTopOption";
 import BundleWithJobOption from "./smart-ad-options/BundleWithJobOption";
-import UserMessages from "./smart-ad-options/UserMessages";
-import EmviFeatures from "./smart-ad-options/EmviFeatures";
-import { getNationwidePrice } from "./smart-ad-options/pricing";
+import { InfoIcon } from "lucide-react";
+import { PostType } from "@/utils/posting/types";
 
-export interface SmartAdOptionsProps {
-  postType: 'job' | 'salon' | 'booth' | 'supply';
+interface SmartAdOptionsProps {
+  postType: PostType;
   isFirstPost?: boolean;
   hasReferrals?: boolean;
   onNationwideChange?: (checked: boolean) => void;
@@ -28,19 +27,18 @@ const SmartAdOptions = ({
   onShowAtTopChange,
   onBundleWithJobChange
 }: SmartAdOptionsProps) => {
-  const [fastSale, setFastSale] = useState(false);
+  const isJobPost = postType === 'job';
+  const isSalonPost = postType === 'salon';
+  const isBoothPost = postType === 'booth';
   
-  const handleFastSaleChange = (checked: boolean) => {
-    setFastSale(checked);
-    if (onFastSaleChange) onFastSaleChange(checked);
-  };
-
-  // Pass through handler for nationwide with default implementation
   const handleNationwideChange = (checked: boolean) => {
     if (onNationwideChange) onNationwideChange(checked);
   };
   
-  // Pass through handlers for other options
+  const handleFastSaleChange = (checked: boolean) => {
+    if (onFastSaleChange) onFastSaleChange(checked);
+  };
+  
   const handleShowAtTopChange = (checked: boolean) => {
     if (onShowAtTopChange) onShowAtTopChange(checked);
   };
@@ -49,41 +47,72 @@ const SmartAdOptions = ({
     if (onBundleWithJobChange) onBundleWithJobChange(checked);
   };
   
-  const nationwidePrice = getNationwidePrice(postType);
-  
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium">Smart Ad Options</h3>
+      <h3 className="text-sm font-medium">Boost Options</h3>
       
-      {/* Nationwide Visibility Option */}
-      <NationwideOption
-        isFirstPost={isFirstPost}
-        price={nationwidePrice}
-        disabled={fastSale}
-        onNationwideChange={handleNationwideChange}
-      />
-      
-      {/* Post Type Specific Options */}
-      {postType === 'salon' && (
-        <FastSalePackage onFastSaleChange={handleFastSaleChange} />
-      )}
-      
-      {postType === 'booth' && (
-        <>
-          <ShowAtTopOption onShowAtTopChange={handleShowAtTopChange} />
-          <BundleWithJobOption onBundleWithJobChange={handleBundleWithJobChange} />
-        </>
-      )}
-      
-      {/* User Messages */}
-      <UserMessages 
-        isFirstPost={isFirstPost}
-        hasReferrals={hasReferrals}
-        postType={postType}
-      />
-      
-      {/* EmviSEO promotion */}
-      <EmviFeatures />
+      <div className="space-y-4">
+        {/* Nationwide Visibility Option */}
+        {(isJobPost || isSalonPost || isBoothPost) && (
+          <NationwideOption 
+            postType={postType} 
+            isFirstPost={isFirstPost}
+            onChange={handleNationwideChange}
+          />
+        )}
+        
+        {/* Fast Sale Package - Only for Salon posts */}
+        {isSalonPost && (
+          <FastSalePackage 
+            onChange={handleFastSaleChange} 
+          />
+        )}
+        
+        {/* Show at Top - Only for Booth posts */}
+        {isBoothPost && (
+          <ShowAtTopOption 
+            onChange={handleShowAtTopChange} 
+          />
+        )}
+        
+        {/* Bundle with Job - For Salon and Booth posts */}
+        {(isSalonPost || isBoothPost) && (
+          <BundleWithJobOption 
+            postType={postType} 
+            onChange={handleBundleWithJobChange} 
+          />
+        )}
+        
+        {/* First Post Information for Job Post */}
+        {isJobPost && isFirstPost && (
+          <div className="bg-blue-50 p-3 rounded-md text-sm text-blue-800 flex items-start">
+            <InfoIcon className="h-4 w-4 mr-2 mt-0.5 text-blue-500" />
+            <div>
+              <p>Your first job post is only $5. We'll need a payment method for verification.</p>
+              {hasReferrals && <p className="mt-1 font-medium">You have referral credit available!</p>}
+            </div>
+          </div>
+        )}
+
+        {/* Second Post Information for Job Post */}
+        {isJobPost && !isFirstPost && !hasReferrals && (
+          <div className="bg-blue-50 p-3 rounded-md text-sm text-blue-800 flex items-start">
+            <InfoIcon className="h-4 w-4 mr-2 mt-0.5 text-blue-500" />
+            <div>
+              <p>Standard job post: $10 (local), $15 (nationwide)</p>
+              <p className="mt-1">Pro tip: Refer a friend and get $5 off your next post!</p>
+            </div>
+          </div>
+        )}
+        
+        {/* First Post Information for Salon Post */}
+        {isSalonPost && isFirstPost && (
+          <div className="bg-green-50 p-3 rounded-md text-sm text-green-800 flex items-start">
+            <InfoIcon className="h-4 w-4 mr-2 mt-0.5 text-green-500" />
+            <p>Your first salon listing is free! We'll need a payment method for verification.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

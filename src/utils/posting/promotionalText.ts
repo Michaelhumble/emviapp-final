@@ -24,9 +24,22 @@ export const generatePromotionalText = (
     return "Your first post is only $5! Just add your payment method.";
   }
   
+  // Second post for artists/jobs
+  if (postType === 'job' && userStats.totalJobPosts === 1 && !options.isRenewal) {
+    if (options.isNationwide) {
+      return "Second post with nationwide visibility: $15";
+    }
+    return "Second post: $10 (local visibility)";
+  }
+  
   // Referral discount for job posts
   if (postType === 'job' && userStats.referralCount >= 1 && !options.isRenewal) {
     return "Special price: $15 (25% off) — thanks for referring friends!";
+  }
+  
+  // Salon first post promotional
+  if (postType === 'salon' && userStats.totalSalonPosts === 0) {
+    return "First salon listing — just add your payment method.";
   }
   
   // Renewal

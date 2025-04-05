@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -123,11 +124,13 @@ const PaymentConfirmationModal = ({
           <>
             <DialogHeader>
               <DialogTitle className="text-xl">
-                {isFree ? 'Confirm Free Post' : `Complete Payment: ${getPostTypeTitle()}`}
+                {isFree ? 'Add Payment Method' : `Complete Payment: ${getPostTypeTitle()}`}
               </DialogTitle>
               <DialogDescription>
                 {isFree 
-                  ? 'Your first post is free. We still need to add your payment method for future posts.'
+                  ? options.isFirstPost 
+                    ? 'Your first post is free. We still need to add your payment method for future posts.'
+                    : 'Please add a payment method to continue.'
                   : 'Please complete payment to publish your post.'}
               </DialogDescription>
             </DialogHeader>
@@ -162,13 +165,13 @@ const PaymentConfirmationModal = ({
 
               <div className="flex flex-col gap-3">
                 {isFree ? (
-                  <Button 
-                    onClick={handleFreePost} 
-                    className="w-full" 
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Processing..." : "Complete Free Post"}
-                  </Button>
+                  <StripeCheckout 
+                    amount={0}
+                    productName={`EmviApp - ${getPostTypeTitle()} (Setup)`}
+                    buttonText="Add Payment Method"
+                    onSuccess={handlePaymentSuccess}
+                    setupOnly={true}
+                  />
                 ) : (
                   <StripeCheckout 
                     amount={price * 100} // Convert to cents for Stripe

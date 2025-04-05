@@ -6,13 +6,14 @@ import DashboardGreeting from "./common/DashboardGreeting";
 import ArtistDashboardWidgets from "./artist/ArtistDashboardWidgets";
 import SalonOwnerDashboardWidgets from "./salon/SalonOwnerDashboardWidgets";
 import CustomerDashboardWidgets from "./customer/CustomerDashboardWidgets";
+import SubscriptionStatusCard from "./SubscriptionStatusCard";
 
 interface DashboardContentProps {
   className?: string;
 }
 
 const DashboardContent = ({ className = "" }: DashboardContentProps) => {
-  const { userRole } = useAuth();
+  const { userRole, userProfile } = useAuth();
 
   const isArtistOrFreelancer = userRole === 'artist' || userRole === 'freelancer' || userRole === 'nail technician/artist' || userRole === 'renter';
   
@@ -33,6 +34,13 @@ const DashboardContent = ({ className = "" }: DashboardContentProps) => {
       <div className="mb-8">
         <AIDashboardWidgets />
       </div>
+      
+      {/* Subscription Status */}
+      {isSalonOrVendor && (
+        <div className="mb-6">
+          <SubscriptionStatusCard />
+        </div>
+      )}
       
       {/* Role-specific dashboard content */}
       {isArtistOrFreelancer && <ArtistDashboardWidgets />}

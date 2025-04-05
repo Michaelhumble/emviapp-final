@@ -1,10 +1,13 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
 import DashboardContent from "@/components/dashboard/DashboardContent";
+import VisibilityNotification from "@/components/dashboard/salon/VisibilityNotification";
 
 const OwnerDashboard = () => {
+  const [showNotification, setShowNotification] = useState(true);
+  
   useEffect(() => {
     document.title = "Salon Owner Dashboard | EmviApp";
   }, []);
@@ -20,6 +23,13 @@ const OwnerDashboard = () => {
           <DashboardContent />
         </motion.div>
       </div>
+      
+      {/* Visibility upgrade notification */}
+      {showNotification && (
+        <VisibilityNotification 
+          onClose={() => setShowNotification(false)} 
+        />
+      )}
     </Layout>
   );
 };

@@ -42,8 +42,13 @@ export const calculateSalonPostPrice = (
   userStats: UserPostingStats,
   options: PricingOptions
 ): number => {
-  // Salon listings start at $49
-  let price = 49;
+  // First salon post is free
+  if (userStats.totalSalonPosts === 0) {
+    return 0;
+  }
+  
+  // Salon listings start at $39 after first post
+  let price = 39;
   
   // Featured listings cost more
   if (options.featuredPost) {
