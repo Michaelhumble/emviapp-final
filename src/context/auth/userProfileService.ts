@@ -108,8 +108,7 @@ const createUserProfile = async (user: User): Promise<UserProfile | null> => {
     updated_at: data.updated_at,
     preferred_language: data.preferred_language || '',
     // Set default values for the additional fields
-    referral_count: data.credits ||
-     0,
+    referral_count: data.credits || 0,
     salon_name: '',
     company_name: '',
     custom_role: '',

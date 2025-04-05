@@ -19,7 +19,7 @@ const SignIn = () => {
 
   // Redirect if already logged in
   if (user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,8 +28,9 @@ const SignIn = () => {
 
     try {
       await signIn(email, password);
-      // No need to redirect here as the AuthContext will update the user state
-      // which will trigger the redirect above
+      // Redirect to dashboard after successful sign-in
+      // AuthContext will update the user state and trigger the redirect above
+      navigate("/dashboard");
     } catch (error) {
       toast.error("Failed to sign in. Please check your credentials.");
     } finally {

@@ -25,8 +25,11 @@ import ArtistDashboard from '@/pages/dashboard/Artist';
 import SupplierDashboard from '@/pages/dashboard/Supplier';
 import FreelancerDashboard from '@/pages/dashboard/Freelancer';
 import OwnerDashboard from '@/pages/dashboard/Owner';
+import Dashboard from '@/pages/dashboard/Dashboard';
+import OtherDashboard from '@/pages/dashboard/Other';
 import NotFound from '@/pages/NotFound';
 import Analysis from '@/pages/Analysis';
+import ProfileRedirect from '@/components/profile/ProfileRedirect';
 
 // Import styles
 import './index.css';
@@ -86,6 +89,10 @@ const router = createBrowserRouter([
         element: <UserProfileByUsername />
       },
       {
+        path: 'dashboard',
+        element: <Dashboard />
+      },
+      {
         path: 'dashboard/customer',
         element: <CustomerDashboard />
       },
@@ -108,6 +115,10 @@ const router = createBrowserRouter([
       {
         path: 'dashboard/owner',
         element: <OwnerDashboard />
+      },
+      {
+        path: 'dashboard/other',
+        element: <OtherDashboard />
       },
       {
         path: '*',
