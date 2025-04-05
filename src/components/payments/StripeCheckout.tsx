@@ -22,7 +22,7 @@ const StripeCheckout = ({
   productName,
   buttonText = "Pay Now",
   onSuccess,
-  mode = "subscription",
+  mode = "payment",
   isSubscription = false,
   subscriptionInterval = "month",
   setupOnly = false
@@ -42,7 +42,7 @@ const StripeCheckout = ({
       // This is a placeholder for edge function call
       // In a real implementation, this would call a Supabase Edge Function
       // that creates a Stripe Checkout session
-      toast.info("Processing your subscription", {
+      toast.info("Processing your payment", {
         description: setupOnly 
           ? "Saving your payment method..."
           : isSubscription 

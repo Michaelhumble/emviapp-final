@@ -1,10 +1,8 @@
 
-import React, { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
-import { useAuth } from "@/context/auth";
 import { SiteConfig } from "@/config/site";
-import { cn } from "@/lib/utils";
 
 // Authentication
 import SignIn from "@/pages/auth/SignIn";
@@ -55,17 +53,11 @@ import BoothPost from "@/pages/posting/BoothPost";
 
 // Context Providers
 import { AuthProvider } from "@/context/auth/AuthProvider";
-import { ProfileProvider } from "@/context/profile";
+import { ProfileProvider } from "@/context/profile/ProfileProvider";
 import { SubscriptionProvider } from "@/context/subscription";
 import { ThemeProvider } from "@/components/theme-provider";
 
-const AppContent = () => {
-  const { user, loading } = useAuth();
-
-  useEffect(() => {
-    document.title = SiteConfig.name;
-  }, []);
-
+const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Index />} />
@@ -124,7 +116,7 @@ const AppContent = () => {
   );
 };
 
-const App = ({ availableRoutes }: { availableRoutes?: string[] } = {}) => {
+const App = () => {
   return (
     <ThemeProvider
       attribute="class"
@@ -137,7 +129,7 @@ const App = ({ availableRoutes }: { availableRoutes?: string[] } = {}) => {
           <ProfileProvider>
             <SubscriptionProvider>
               <Toaster />
-              <AppContent />
+              <AppRoutes />
             </SubscriptionProvider>
           </ProfileProvider>
         </AuthProvider>

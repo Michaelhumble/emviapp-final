@@ -4,14 +4,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from "@/components/ui/button";
 import { CreditCard, CheckCircle, AlertCircle, Zap, Globe, TrendingUp } from "lucide-react";
 import StripeCheckout from "@/components/payments/StripeCheckout";
-import PricingDisplay from "@/components/posting/PricingDisplay";
 import { generatePromotionalText } from "@/utils/posting/promotionalText";
-import { PricingOptions } from "@/utils/posting/types";
+import { PricingOptions, PostType } from "@/utils/posting/types";
 
 interface PaymentConfirmationModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  postType: 'job' | 'salon' | 'booth' | 'supply';
+  postType: PostType;
   price: number;
   options: PricingOptions;
   originalPrice?: number;
@@ -33,11 +32,12 @@ const PaymentConfirmationModal = ({
   
   // Mock user stats for promotional text
   const mockUserStats = {
-    totalJobPosts: 0,
-    totalSalonPosts: 0,
-    totalBoothPosts: 0,
-    totalSupplyPosts: 0,
-    referralCount: options.isFirstPost ? 0 : 1 // Just for demo
+    jobPostCount: 0,
+    salonPostCount: 0,
+    boothPostCount: 0,
+    supplyPostCount: 0,
+    totalPostCount: options.isFirstPost ? 0 : 1,
+    hasReferrals: options.hasReferrals || false
   };
   
   // Reset state when modal opens
@@ -165,13 +165,13 @@ const PaymentConfirmationModal = ({
 
               <div className="flex flex-col gap-3">
                 {isFree ? (
-                  <StripeCheckout 
-                    amount={0}
-                    productName={`EmviApp - ${getPostTypeTitle()} (Setup)`}
-                    buttonText="Add Payment Method"
-                    onSuccess={handlePaymentSuccess}
-                    setupOnly={true}
-                  />
+                  <Button 
+                    onClick={handleFreePost}
+                    disabled={isLoading}
+                    className="w-full"
+                  >
+                    {isLoading ? "Processing..." : "Continue with Free Post"}
+                  </Button>
                 ) : (
                   <StripeCheckout 
                     amount={price * 100} // Convert to cents for Stripe

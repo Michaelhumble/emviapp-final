@@ -120,10 +120,9 @@ const ReviewAndPaymentSection = ({
       <PaymentConfirmationModal
         open={showPaymentModal}
         onOpenChange={setShowPaymentModal}
-        amount={totalPrice}
-        productName={getPostProductName()}
-        formData={formData}
         postType={postType}
+        price={totalPrice}
+        options={pricingOptions}
         onSuccess={handlePaymentSuccess}
       />
     </div>

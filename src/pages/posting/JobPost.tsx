@@ -10,6 +10,7 @@ import ContactInformationSection from '@/components/posting/sections/ContactInfo
 import ReviewAndPaymentSection from '@/components/posting/sections/ReviewAndPaymentSection';
 import AuthPostGuard from '@/components/posting/AuthPostGuard';
 import { Job } from '@/types/job';
+import { PricingOptions } from '@/utils/posting/types';
 
 const JobPost = () => {
   const navigate = useNavigate();
@@ -30,7 +31,14 @@ const JobPost = () => {
       email: userProfile?.email || ''
     }
   });
-  const [isNationwide, setIsNationwide] = useState(false);
+  
+  // Pricing options state
+  const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
+    isFirstPost: true,
+    isNationwide: false,
+    fastSalePackage: false,
+    showAtTop: false
+  });
 
   const totalSteps = 5;
 
@@ -52,6 +60,18 @@ const JobPost = () => {
 
   const handleContactChange = (contactInfo: Job['contact_info']) => {
     setJobDetails({ ...jobDetails, contact_info: contactInfo });
+  };
+  
+  const handleNationwideChange = (checked: boolean) => {
+    setPricingOptions({ ...pricingOptions, isNationwide: checked });
+  };
+  
+  const handleFastSalePackageChange = (checked: boolean) => {
+    setPricingOptions({ ...pricingOptions, fastSalePackage: checked });
+  };
+  
+  const handleShowAtTopChange = (checked: boolean) => {
+    setPricingOptions({ ...pricingOptions, showAtTop: checked });
   };
 
   const handleSubmit = async () => {
@@ -94,9 +114,12 @@ const JobPost = () => {
         )}
         {currentStep === 5 && (
           <ReviewAndPaymentSection 
-            details={jobDetails}
-            isNationwide={isNationwide}
-            setIsNationwide={setIsNationwide}
+            postType="job"
+            formData={jobDetails}
+            onNextStep={nextStep}
+            onPrevStep={prevStep}
+            isFirstPost={pricingOptions.isFirstPost}
+            pricingOptions={pricingOptions}
           />
         )}
       </PostWizardLayout>

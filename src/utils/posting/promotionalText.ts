@@ -1,112 +1,138 @@
 
-import { PostType } from "./types";
+import { PostType, UserPostingStats, PricingOptions } from './types';
 
-// Get basic post price
+// Base prices for different post types (in USD)
 export const getBasePrice = (postType: PostType, isFirstPost: boolean): number => {
   switch (postType) {
     case 'job':
       return isFirstPost ? 5 : 10;
     case 'salon':
+      return isFirstPost ? 0 : 10;
     case 'booth':
-      return isFirstPost ? 0 : 5;
+      return isFirstPost ? 0 : 8;
     case 'supply':
-      return isFirstPost ? 5 : 8;
+      return isFirstPost ? 0 : 5;
     default:
       return 5;
   }
 };
 
-// Get nationwide add-on price
+// Nationwide visibility price (in USD)
 export const getNationwidePrice = (postType: PostType): number => {
   switch (postType) {
     case 'job':
       return 5;
     case 'salon':
-    case 'booth':
-      return 7;
-    case 'supply':
       return 8;
+    case 'booth':
+      return 5;
+    case 'supply':
+      return 3;
     default:
       return 5;
   }
 };
 
-// Get renewal price
-export const getRenewalPrice = (postType: PostType): number => {
-  switch (postType) {
-    case 'job':
-      return 10;
-    case 'salon':
-    case 'booth':
-      return 5;
-    case 'supply':
-      return 8;
-    default:
-      return 5;
-  }
-};
-
-// Get fast sale package price
+// Fast sale package price (in USD)
 export const getFastSalePackagePrice = (postType: PostType): number => {
   switch (postType) {
     case 'job':
-      return 3;
+      return 8;
     case 'salon':
+      return 15;
     case 'booth':
-      return 3;
+      return 10;
     case 'supply':
-      return 4;
+      return 8;
     default:
-      return 3;
+      return 8;
   }
 };
 
-// Get show at top price
+// Show at top price (in USD)
 export const getShowAtTopPrice = (postType: PostType): number => {
   switch (postType) {
     case 'job':
-      return 2;
+      return 7;
     case 'salon':
+      return 12;
     case 'booth':
-      return 2;
+      return 8;
     case 'supply':
-      return 3;
+      return 5;
     default:
-      return 2;
+      return 7;
   }
 };
 
-// Get job post bundle price
+// Job post bundle price (in USD)
 export const getJobPostBundlePrice = (postType: PostType): number => {
   switch (postType) {
     case 'salon':
+      return 12;
     case 'booth':
-      return 4;
+      return 8;
     default:
       return 0;
   }
 };
 
-// Get price with discount
+// Apply discount (e.g., for referrals)
 export const getPriceWithDiscount = (originalPrice: number, hasReferrals: boolean): number => {
-  if (hasReferrals) {
-    // 20% discount for users with referrals
-    return Math.max(1, originalPrice - Math.ceil(originalPrice * 0.2));
-  }
-  return originalPrice;
+  if (!hasReferrals) return originalPrice;
+  return Math.round(originalPrice * 0.8); // 20% discount
 };
 
-// Get promotional text for first post
-export const getFirstPostPromotionalText = (postType: PostType): string => {
+// Generate promotional text based on user stats and post type
+export const generatePromotionalText = (
+  postType: PostType,
+  stats: UserPostingStats,
+  options: PricingOptions
+): string => {
+  const totalPosts = stats.totalPostCount || 0;
+  
+  // First-time post message
+  if (totalPosts === 0 || options.isFirstPost) {
+    switch (postType) {
+      case 'job':
+        return '🎉 Thông báo công việc đầu tiên của bạn! Chúc bạn tìm được đồng đội tuyệt vời.';
+      case 'salon':
+        return '🎉 Bài đăng đầu tiên của bạn! Càng nhiều người thấy salon của bạn, cơ hội bán được càng cao.';
+      case 'booth':
+        return '🎉 Bài đăng booth đầu tiên! Hãy đảm bảo cung cấp đầy đủ thông tin để thu hút người thuê.';
+      case 'supply':
+        return '🎉 Bài đăng sản phẩm đầu tiên! Đăng thêm sản phẩm để tăng doanh thu.';
+    }
+  }
+  
+  // Personalized messages based on options selected
+  if (options.isNationwide) {
+    return '📊 Bài đăng toàn quốc sẽ xuất hiện cho người dùng ở mọi địa điểm. Cơ hội tiếp cận nhiều khách hàng hơn!';
+  }
+  
+  if (options.fastSalePackage && postType === 'salon') {
+    return '⚡ Gói bán nhanh giúp salon của bạn nổi bật và dễ tìm thấy hơn. Thường giúp rút ngắn thời gian bán đến 40%!';
+  }
+  
+  if (options.showAtTop) {
+    return '⭐ Bài đăng được hiển thị ưu tiên sẽ xuất hiện ở vị trí hàng đầu trong kết quả tìm kiếm.';
+  }
+  
+  if (options.bundleWithJobPost && (postType === 'salon' || postType === 'booth')) {
+    return '🔄 Kết hợp bài đăng tuyển dụng giúp bạn tìm kiếm nhân viên mới trong khi bán salon hoặc cho thuê booth.';
+  }
+  
+  // Default messages
   switch (postType) {
     case 'job':
-      return "Special offer: First job post only $5!";
+      return 'Tin tuyển dụng của bạn sẽ được hiển thị đến hàng nghìn nghệ sĩ nail đang tìm việc.';
     case 'salon':
+      return 'Đăng tin salon bán/sang nhượng với nhiều hình ảnh sẽ tăng cơ hội bán nhanh hơn.';
     case 'booth':
-      return "Special offer: First salon listing is FREE!";
+      return 'Booth cho thuê có vị trí thuận lợi và giá cả rõ ràng thường được thuê nhanh hơn.';
     case 'supply':
-      return "Special offer: First supply listing only $5!";
+      return 'Sản phẩm có mô tả chi tiết và giá cả hợp lý sẽ thu hút nhiều khách hàng hơn.';
     default:
-      return "Special offer for your first post!";
+      return 'Cảm ơn bạn đã sử dụng EmviApp để đăng tin!';
   }
 };

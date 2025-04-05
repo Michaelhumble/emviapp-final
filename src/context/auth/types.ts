@@ -46,6 +46,8 @@ export interface UserProfile {
   referred_by?: string | null;
   referral_count?: number;
   credits?: number;
+  // Profile stats
+  profile_views?: number;
 }
 
 // Profile status information

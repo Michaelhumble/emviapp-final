@@ -1,13 +1,17 @@
 
 export const SiteConfig = {
   name: "EmviApp",
-  description: "Connect with nail salons, artists, and customers.",
+  description: "Connect with nail professionals and salons",
   url: "https://emviapp.com",
-  ogImage: "https://emviapp.com/og.png",
+  ogImage: "https://emviapp.com/og-image.png",
   links: {
-    github: "https://github.com/emviapp",
     twitter: "https://twitter.com/emviapp",
-    discord: "https://discord.gg/emviapp",
+    instagram: "https://instagram.com/emviapp",
+    facebook: "https://facebook.com/emviapp"
   },
-  creator: "EmviApp, Inc."
+  creator: "EmviApp",
+  locale: "en-US",
+  analytics: {
+    googleAnalyticsId: ""
+  }
 };
