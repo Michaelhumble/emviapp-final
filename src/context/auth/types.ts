@@ -44,7 +44,7 @@ export interface UserProfile {
   affiliate_link?: string | null;
   affiliate_code?: string | null;
   referred_by?: string | null;
-  referral_count?: number;
+  referral_count: number;
   credits?: number;
   // Profile stats
   profile_views?: number;

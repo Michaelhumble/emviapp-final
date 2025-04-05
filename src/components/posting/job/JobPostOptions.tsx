@@ -32,7 +32,10 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({ pricingOptions, setPric
     setTotalSalonPosts(1);
     setTotalBoothPosts(2);
     setTotalSupplyPosts(0);
-    setReferralCount(userProfile?.referral_count || 0);
+    
+    // Safely get referral count from user profile
+    const userReferralCount = userProfile?.referral_count || 0;
+    setReferralCount(userReferralCount);
     
     // Determine if it's the user's first post
     setIsFirstPost(totalJobPosts + totalSalonPosts + totalBoothPosts + totalSupplyPosts === 0);
@@ -100,14 +103,14 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({ pricingOptions, setPric
           </p>
         </div>
         
-        {postStats.jobPostCount === 0 && (
+        {postStats.salonPostCount === 0 && (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="bundleWithJobPost">Bundle with Salon Post</Label>
+              <Label htmlFor="bundleWithSalonPost">Bundle with Salon Post</Label>
               <Checkbox
-                id="bundleWithJobPost"
-                checked={pricingOptions.bundleWithJobPost || false}
-                onCheckedChange={() => handleCheckboxChange('bundleWithJobPost')}
+                id="bundleWithSalonPost"
+                checked={pricingOptions.bundleWithSalonPost || false}
+                onCheckedChange={() => handleCheckboxChange('bundleWithSalonPost')}
               />
             </div>
             <p className="text-sm text-muted-foreground">
