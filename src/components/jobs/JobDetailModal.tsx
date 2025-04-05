@@ -3,11 +3,12 @@ import React from "react";
 import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Phone, Mail, Clock, CalendarClock, DollarSign, Home, BriefcaseBusiness, Search, Language } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, CalendarClock, DollarSign, Home, BriefcaseBusiness, Search, Languages } from "lucide-react";
 import { Job } from "@/types/job";
 import { Separator } from "@/components/ui/separator";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { useAuth } from "@/context/auth";
+import { Link } from "react-router-dom";
 
 interface JobDetailModalProps {
   job: Job | null;
@@ -108,10 +109,10 @@ const JobDetailModal = ({ job, isOpen, onClose }: JobDetailModalProps) => {
                     <span>Housing Available</span>
                   </div>
                 )}
-                {job.languages && job.languages.length > 0 && (
+                {job.preferred_languages && job.preferred_languages.length > 0 && (
                   <div className="flex items-center">
-                    <Language className="h-4 w-4 mr-2 text-gray-500" />
-                    <span>{job.languages.join(', ')}</span>
+                    <Languages className="h-4 w-4 mr-2 text-gray-500" />
+                    <span>{job.preferred_languages.join(', ')}</span>
                   </div>
                 )}
                 {job.owner_will_train && (

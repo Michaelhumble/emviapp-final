@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Check, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { PricingOptions } from '@/utils/postingPriceCalculator';
+import { PricingOptions } from '@/utils/posting/types';
+import { generatePromotionalText } from '@/utils/posting/promotionalText';
 
 interface ReviewAndPaymentSectionProps {
   details: Partial<Job>;
@@ -33,10 +34,19 @@ const ReviewAndPaymentSection = ({
   };
 
   // Mock price - in a real app this would be calculated based on options
-  const price = isNationwide ? 99 : 49;
+  const price = isNationwide ? 10 : 5;
+  
+  // Mock user stats for promotional text
+  const mockUserStats = {
+    totalJobPosts: 0,
+    totalSalonPosts: 0,
+    totalBoothPosts: 0,
+    totalSupplyPosts: 0,
+    referralCount: 0
+  };
 
-  // Promotional text
-  const promotionalText = "Post your job listing today and reach thousands of qualified professionals in your area.";
+  // Generate promotional text
+  const promotionalText = generatePromotionalText('job', mockUserStats, pricingOptions);
 
   return (
     <div className="space-y-6">
@@ -105,8 +115,8 @@ const ReviewAndPaymentSection = ({
       <PricingDisplay 
         postType="job" 
         price={price} 
-        options={pricingOptions} 
-        promotionalText={promotionalText} 
+        options={pricingOptions}
+        promotionalText={promotionalText}
       />
     </div>
   );

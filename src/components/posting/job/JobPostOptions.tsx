@@ -3,7 +3,8 @@ import { Info } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import SmartAdOptions from "@/components/posting/SmartAdOptions";
 import PricingDisplay from "@/components/posting/PricingDisplay";
-import { PricingOptions, generatePromotionalText } from "@/utils/posting";
+import { PricingOptions } from "@/utils/posting/types";
+import { generatePromotionalText } from "@/utils/posting/promotionalText";
 
 interface JobPostOptionsProps {
   postType: 'job';
@@ -26,7 +27,7 @@ const JobPostOptions = ({
 }: JobPostOptionsProps) => {
   // Mock user stats for promotional text
   const mockUserStats = {
-    totalJobPosts: 0,
+    totalJobPosts: isFirstPost ? 0 : 1,
     totalSalonPosts: 0,
     totalBoothPosts: 0,
     totalSupplyPosts: 0,

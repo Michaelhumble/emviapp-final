@@ -4,13 +4,15 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Check, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { PricingOptions } from "@/utils/posting";
 
 interface PricingDisplayProps {
-  postType: 'job' | 'salon' | 'booth';
+  postType: 'job' | 'salon' | 'booth' | 'supply';
   price: number;
-  isFirstPost?: boolean;
-  isSecondPost?: boolean;
-  onProceed: () => void;
+  options?: PricingOptions;
+  promotionalText?: string;
+  originalPrice?: number;
+  onProceed?: () => void;
   discounts?: {
     label: string;
     amount: number;
@@ -26,15 +28,20 @@ interface PricingDisplayProps {
 const PricingDisplay = ({
   postType,
   price,
-  isFirstPost,
-  isSecondPost,
+  options = {},
+  promotionalText,
+  originalPrice,
   onProceed,
   discounts = [],
   additionalFeatures = []
 }: PricingDisplayProps) => {
   
-  // Calculate original price before discounts
-  const originalPrice = price + discounts.reduce((total, discount) => total + discount.amount, 0);
+  // Calculate original price before discounts if not provided
+  const finalOriginalPrice = originalPrice || 
+    (discounts.length > 0 ? price + discounts.reduce((total, discount) => total + discount.amount, 0) : undefined);
+  
+  const isFirstPost = options?.isFirstPost;
+  const isSecondPost = options?.isFirstPost === false && options?.hasActivePost === false;
   
   return (
     <Card className="w-full shadow-md border-primary/20">
@@ -42,24 +49,25 @@ const PricingDisplay = ({
         <CardTitle className="text-xl font-medium flex items-center justify-between">
           <span>
             {postType === 'job' ? 'Job Post' : 
-             postType === 'salon' ? 'Salon Listing' : 'Booth Rental Post'}
+             postType === 'salon' ? 'Salon Listing' : 
+             postType === 'booth' ? 'Booth Rental Post' : 'Supply Listing'}
           </span>
           <span className="text-2xl font-bold text-primary">${price}</span>
         </CardTitle>
         <CardDescription>
           {isFirstPost && postType === 'job' ? 'Special first-time poster pricing!' : 
            isSecondPost && postType === 'job' ? 'Reduced rate for your second job post!' :
-           'Standard pricing for professional visibility'}
+           promotionalText || 'Standard pricing for professional visibility'}
         </CardDescription>
       </CardHeader>
       
       <CardContent className="pt-4">
         <div className="space-y-4">
           {/* Show original price if there are discounts */}
-          {discounts.length > 0 && (
+          {finalOriginalPrice && finalOriginalPrice > price && (
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">Original Price</span>
-              <span className="line-through text-gray-500">${originalPrice}</span>
+              <span className="line-through text-gray-500">${finalOriginalPrice}</span>
             </div>
           )}
           
@@ -106,6 +114,18 @@ const PricingDisplay = ({
                 "Booth specifications display",
                 "Location map integration",
                 "Rate and terms clarity"
+              ].map((feature, i) => (
+                <li key={i} className="text-sm flex items-start">
+                  <Check className="h-4 w-4 mr-2 text-green-600 shrink-0 mt-0.5" />
+                  <span>{feature}</span>
+                </li>
+              ))}
+              
+              {postType === 'supply' && [
+                "45-day listing period",
+                "Product specifications display",
+                "Business to business visibility",
+                "Direct supplier contact"
               ].map((feature, i) => (
                 <li key={i} className="text-sm flex items-start">
                   <Check className="h-4 w-4 mr-2 text-green-600 shrink-0 mt-0.5" />
@@ -160,14 +180,16 @@ const PricingDisplay = ({
         </div>
       </CardContent>
       
-      <CardFooter className="flex justify-between border-t pt-4">
-        <p className="text-xs text-gray-500">
-          All prices in USD. One-time payment.
-        </p>
-        <Button onClick={onProceed}>
-          Continue to Payment
-        </Button>
-      </CardFooter>
+      {onProceed && (
+        <CardFooter className="flex justify-between border-t pt-4">
+          <p className="text-xs text-gray-500">
+            All prices in USD. One-time payment.
+          </p>
+          <Button onClick={onProceed}>
+            Continue to Payment
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 };

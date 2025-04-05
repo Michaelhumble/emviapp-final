@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from "@/components/ui/button";
 import { Calendar, CreditCard } from "lucide-react";
 import { format, addDays } from "date-fns";
-import { getRenewalPrice } from "@/utils/postingPriceCalculator";
+import { getRenewalPrice } from "@/utils/posting/promotionalText";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import ExpirationBadge from "./ExpirationBadge";

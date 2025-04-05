@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { CreditCard, CheckCircle, AlertCircle, Zap, Globe, TrendingUp } from "lucide-react";
 import StripeCheckout from "@/components/payments/StripeCheckout";
 import PricingDisplay from "@/components/posting/PricingDisplay";
-import { generatePromotionalText, PricingOptions } from "@/utils/postingPriceCalculator";
+import { generatePromotionalText, PricingOptions } from "@/utils/posting/promotionalText";
 
 interface PaymentConfirmationModalProps {
   open: boolean;
