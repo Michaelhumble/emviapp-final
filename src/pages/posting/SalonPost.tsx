@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { SalonPostForm } from "@/components/posting/salon/SalonPostForm";
@@ -5,6 +6,7 @@ import SalonPostOptions from "@/components/posting/salon/SalonPostOptions";
 import PaymentConfirmationModal from "@/components/posting/PaymentConfirmationModal";
 import ThankYouModal from "@/components/posting/ThankYouModal";
 import { toast } from "sonner";
+import { PricingOptions } from "@/utils/posting/types";
 
 const SalonPost = () => {
   const [isNationwide, setIsNationwide] = useState(false);
@@ -35,6 +37,21 @@ const SalonPost = () => {
     toast.info("Redirecting to boost options...");
   };
 
+  // Complete PricingOptions object with all required properties
+  const pricingOptions: PricingOptions = {
+    isFirstPost: false,
+    isNationwide: isNationwide,
+    fastSalePackage: fastSalePackage,
+    showAtTop: false,
+    bundleWithJobPost: false,
+    isHotListing: false,
+    isUrgent: false,
+    bundleWithSalonPost: false,
+    boostVisibility: false,
+    featuredListing: false,
+    extendedDuration: false
+  };
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-12">
@@ -56,13 +73,7 @@ const SalonPost = () => {
         onOpenChange={setIsPaymentModalOpen}
         postType="salon"
         price={99}
-        options={{
-          isFirstPost: false,
-          isNationwide: isNationwide,
-          fastSalePackage: fastSalePackage,
-          showAtTop: false,
-          bundleWithJobPost: false
-        }}
+        options={pricingOptions}
         onSuccess={handlePaymentSuccess}
       />
       

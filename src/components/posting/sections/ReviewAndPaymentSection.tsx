@@ -32,9 +32,8 @@ const ReviewAndPaymentSection = ({
   useEffect(() => {
     // Calculate price based on post type and options
     let price = 0;
-    const options: PricingOptions = {
-      ...pricingOptions,
-      isFirstPost
+    const options = {
+      ...pricingOptions
     };
     
     switch (postType) {

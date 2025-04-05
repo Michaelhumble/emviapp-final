@@ -55,8 +55,8 @@ const SalonPostOptions: React.FC<SalonPostOptionsProps> = ({ pricingOptions, set
       salonPostCount: totalSalonPosts,
       boothPostCount: totalBoothPosts,
       supplyPostCount: totalSupplyPosts,
-      totalPosts: totalJobPosts + totalSalonPosts + totalBoothPosts + totalSupplyPosts,
-      referralCount: referralCount
+      totalPostCount: totalJobPosts + totalSalonPosts + totalBoothPosts + totalSupplyPosts,
+      hasReferrals: referralCount > 0
     };
   };
   

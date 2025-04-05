@@ -55,8 +55,8 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({ pricingOptions, setPric
       salonPostCount: totalSalonPosts,
       boothPostCount: totalBoothPosts,
       supplyPostCount: totalSupplyPosts,
-      totalPosts: totalJobPosts + totalSalonPosts + totalBoothPosts + totalSupplyPosts,
-      referralCount: referralCount
+      totalPostCount: totalJobPosts + totalSalonPosts + totalBoothPosts + totalSupplyPosts,
+      hasReferrals: referralCount > 0
     };
   };
   

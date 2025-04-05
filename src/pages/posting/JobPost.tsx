@@ -32,12 +32,19 @@ const JobPost = () => {
     }
   });
   
-  // Pricing options state
+  // Pricing options state with all required properties
   const [pricingOptions, setPricingOptions] = useState<PricingOptions>({
     isFirstPost: true,
     isNationwide: false,
     fastSalePackage: false,
-    showAtTop: false
+    showAtTop: false,
+    isHotListing: false,
+    isUrgent: false,
+    bundleWithJobPost: false,
+    bundleWithSalonPost: false,
+    boostVisibility: false,
+    featuredListing: false,
+    extendedDuration: false
   });
 
   const totalSteps = 5;

@@ -26,6 +26,7 @@ export const fetchUserProfile = async (user: User): Promise<UserProfile | null> 
       return await createUserProfile(user);
     }
     
+    // Handle database fields safely with fallbacks
     return {
       id: data.id,
       email: data.email || user.email || '',
@@ -41,15 +42,15 @@ export const fetchUserProfile = async (user: User): Promise<UserProfile | null> 
       created_at: data.created_at,
       updated_at: data.updated_at,
       preferred_language: data.preferred_language || '',
-      referral_count: data.referral_count || 0,
+      referral_count: data.referral_count || data.referral_code ? 1 : 0, // Fallback using referral_code
       salon_name: data.salon_name || '',
       company_name: data.company_name || '',
       custom_role: data.custom_role || '',
       contact_link: data.contact_link || '',
-      skills: data.skills || [],
+      skills: Array.isArray(data.skills) ? data.skills : [],
       skill_level: data.skill_level || '',
       profile_views: data.profile_views || 0,
-      preferences: data.preferences || []
+      preferences: Array.isArray(data.preferences) ? data.preferences : []
     };
   } catch (error) {
     console.error('Error in fetchUserProfile:', error);
@@ -89,11 +90,30 @@ const createUserProfile = async (user: User): Promise<UserProfile | null> => {
     return null;
   }
   
+  // Create a full UserProfile from the database response
   return {
-    ...data,
-    role: data.role as UserRole,
+    id: data.id,
+    email: data.email || '',
+    full_name: data.full_name || '',
+    avatar_url: data.avatar_url || '',
+    location: data.location || '',
+    bio: data.bio || '',
+    phone: data.phone || '',
+    instagram: data.instagram || '',
+    website: data.website || '',
+    specialty: data.specialty || '',
+    role: (data.role as UserRole) || 'customer',
+    created_at: data.created_at,
+    updated_at: data.updated_at,
+    preferred_language: data.preferred_language || '',
     referral_count: data.referral_count || 0,
-    skills: data.skills || [],
-    preferences: data.preferences || []
-  } as UserProfile;
+    salon_name: '',
+    company_name: '',
+    custom_role: '',
+    contact_link: '',
+    skills: [],
+    skill_level: '',
+    profile_views: 0,
+    preferences: []
+  };
 };
