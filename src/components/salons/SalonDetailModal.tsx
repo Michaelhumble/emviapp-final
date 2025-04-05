@@ -8,6 +8,8 @@ import {
 } from "lucide-react";
 import { Job } from "@/types/job";
 import { Separator } from "@/components/ui/separator";
+import AuthGuard from "@/components/auth/AuthGuard";
+import { Link } from "react-router-dom";
 
 interface SalonDetailModalProps {
   salon: Job | null;
@@ -135,20 +137,28 @@ const SalonDetailModal = ({ salon, isOpen, onClose }: SalonDetailModalProps) => 
             {!isExpired && (
               <div>
                 <h3 className="font-medium mb-2">Contact Information</h3>
-                <div className="space-y-2">
-                  {salon.contact_info?.phone && (
-                    <div className="flex items-center">
-                      <Phone className="w-4 h-4 mr-2 text-gray-500" />
-                      <span>{salon.contact_info.phone}</span>
+                <AuthGuard
+                  fallback={
+                    <div className="bg-gray-50 p-4 rounded-md text-center">
+                      <p className="text-sm">Sign in to view contact details</p>
                     </div>
-                  )}
-                  {salon.contact_info?.email && (
-                    <div className="flex items-center">
-                      <Mail className="w-4 h-4 mr-2 text-gray-500" />
-                      <span>{salon.contact_info.email}</span>
-                    </div>
-                  )}
-                </div>
+                  }
+                >
+                  <div className="space-y-2">
+                    {salon.contact_info?.phone && (
+                      <div className="flex items-center">
+                        <Phone className="w-4 h-4 mr-2 text-gray-500" />
+                        <span>{salon.contact_info.phone}</span>
+                      </div>
+                    )}
+                    {salon.contact_info?.email && (
+                      <div className="flex items-center">
+                        <Mail className="w-4 h-4 mr-2 text-gray-500" />
+                        <span>{salon.contact_info.email}</span>
+                      </div>
+                    )}
+                  </div>
+                </AuthGuard>
               </div>
             )}
           </div>
@@ -165,10 +175,18 @@ const SalonDetailModal = ({ salon, isOpen, onClose }: SalonDetailModalProps) => 
               <Button variant="outline">Close</Button>
             </DialogClose>
             {!isExpired && (
-              <Button>
-                <Phone className="h-4 w-4 mr-2" />
-                Contact Owner
-              </Button>
+              <AuthGuard
+                fallback={
+                  <Button asChild>
+                    <Link to="/auth/signup">Sign Up to Contact</Link>
+                  </Button>
+                }
+              >
+                <Button>
+                  <Phone className="h-4 w-4 mr-2" />
+                  Contact Owner
+                </Button>
+              </AuthGuard>
             )}
           </div>
         </DialogFooter>

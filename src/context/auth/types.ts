@@ -40,6 +40,12 @@ export interface UserProfile {
   custom_role?: string | null;
   preferences?: string[] | null;
   contact_link?: string | null;
+  // Affiliate system fields
+  affiliate_link?: string | null;
+  affiliate_code?: string | null;
+  referred_by?: string | null;
+  referral_count?: number;
+  credits?: number;
 }
 
 // Profile status information

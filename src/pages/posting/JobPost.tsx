@@ -8,6 +8,7 @@ import RequirementsSection from '@/components/posting/sections/RequirementsSecti
 import CompensationSection from '@/components/posting/sections/CompensationSection';
 import ContactInformationSection from '@/components/posting/sections/ContactInformationSection';
 import ReviewAndPaymentSection from '@/components/posting/sections/ReviewAndPaymentSection';
+import AuthPostGuard from '@/components/posting/AuthPostGuard';
 import { Job } from '@/types/job';
 
 const JobPost = () => {
@@ -57,58 +58,49 @@ const JobPost = () => {
     navigate('/checkout');
   };
 
-  // Add type definitions for PostWizardLayout
-  type PostWizardLayoutProps = {
-    children: React.ReactNode;
-    currentStep: number;
-    totalSteps: number;
-    title: string;
-    onNext: () => void;
-    onPrev: () => void;
-    onSubmit: () => Promise<void>;
-  };
-
   return (
-    <PostWizardLayout 
-      currentStep={currentStep} 
-      totalSteps={totalSteps} 
-      title="Post a Job"
-      onNext={nextStep}
-      onPrev={prevStep}
-      onSubmit={handleSubmit}
-    >
-      {currentStep === 1 && (
-        <JobDetailsSection 
-          details={jobDetails} 
-          onChange={handleDetailsChange} 
-        />
-      )}
-      {currentStep === 2 && (
-        <RequirementsSection 
-          details={jobDetails} 
-          onChange={handleDetailsChange} 
-        />
-      )}
-      {currentStep === 3 && (
-        <CompensationSection 
-          details={jobDetails} 
-          onChange={handleDetailsChange} 
-        />
-      )}
-      {currentStep === 4 && (
-        <ContactInformationSection 
-          contactInfo={jobDetails.contact_info}
-          onChange={handleContactChange}
-        />
-      )}
-      {currentStep === 5 && (
-        <ReviewAndPaymentSection 
-          details={jobDetails}
-          isNationwide={isNationwide}
-          setIsNationwide={setIsNationwide}
-        />
-      )}
-    </PostWizardLayout>
+    <AuthPostGuard>
+      <PostWizardLayout 
+        currentStep={currentStep} 
+        totalSteps={totalSteps} 
+        title="Post a Job"
+        onNext={nextStep}
+        onPrev={prevStep}
+        onSubmit={handleSubmit}
+      >
+        {currentStep === 1 && (
+          <JobDetailsSection 
+            details={jobDetails} 
+            onChange={handleDetailsChange} 
+          />
+        )}
+        {currentStep === 2 && (
+          <RequirementsSection 
+            details={jobDetails} 
+            onChange={handleDetailsChange} 
+          />
+        )}
+        {currentStep === 3 && (
+          <CompensationSection 
+            details={jobDetails} 
+            onChange={handleDetailsChange} 
+          />
+        )}
+        {currentStep === 4 && (
+          <ContactInformationSection 
+            contactInfo={jobDetails.contact_info}
+            onChange={handleContactChange}
+          />
+        )}
+        {currentStep === 5 && (
+          <ReviewAndPaymentSection 
+            details={jobDetails}
+            isNationwide={isNationwide}
+            setIsNationwide={setIsNationwide}
+          />
+        )}
+      </PostWizardLayout>
+    </AuthPostGuard>
   );
 };
 
