@@ -18,6 +18,8 @@ export interface JobFilters {
   showExpired?: boolean;
   hasHousing?: boolean;
   noSupplyDeduction?: boolean;
+  industry?: string;
+  language?: string;
 }
 
 export const useJobsData = (initialFilters: JobFilters = {}) => {
@@ -25,6 +27,9 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [filters, setFilters] = useState<JobFilters>(initialFilters);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [featuredJobs, setFeaturedJobs] = useState<Job[]>([]);
+  const [suggestedKeywords, setSuggestedKeywords] = useState<string[]>([]);
   const { user } = useAuth();
 
   const fetchJobs = useCallback(async () => {
@@ -32,6 +37,18 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
     try {
       // Use mock data for now instead of Supabase
       let filteredJobs = [...mockJobs];
+      
+      // Apply keyword search
+      if (searchTerm) {
+        const query = searchTerm.toLowerCase();
+        filteredJobs = filteredJobs.filter(job => 
+          (job.title && job.title.toLowerCase().includes(query)) ||
+          (job.company && job.company.toLowerCase().includes(query)) ||
+          (job.description && job.description.toLowerCase().includes(query)) ||
+          (job.vietnamese_description && job.vietnamese_description.toLowerCase().includes(query)) ||
+          (job.location && job.location.toLowerCase().includes(query))
+        );
+      }
       
       // Apply filters in JavaScript
       if (filters.featured) {
@@ -76,10 +93,46 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
         filteredJobs = filteredJobs.filter(job => job.employment_type === filters.employmentType);
       }
       
+      // New filters
+      if (filters.industry && filters.industry !== 'all') {
+        filteredJobs = filteredJobs.filter(job => 
+          job.specialties?.some(s => s.toLowerCase() === filters.industry!.toLowerCase())
+        );
+      }
+      
+      if (filters.language && filters.language !== 'all') {
+        if (filters.language === 'vietnamese') {
+          filteredJobs = filteredJobs.filter(job => job.vietnamese_description);
+        } else if (filters.language === 'english') {
+          filteredJobs = filteredJobs.filter(job => job.description && !job.vietnamese_description);
+        } else if (filters.language === 'bilingual') {
+          filteredJobs = filteredJobs.filter(job => job.description && job.vietnamese_description);
+        }
+      }
+      
       // Only show active jobs unless showExpired is true
       if (!filters.showExpired) {
         filteredJobs = filteredJobs.filter(job => job.status !== 'expired');
       }
+
+      // Set featured jobs (top 3 jobs that are featured)
+      const featured = mockJobs.filter(job => job.is_featured).slice(0, 3);
+      setFeaturedJobs(featured);
+      
+      // Generate suggested keywords based on job data
+      const keywords = new Set<string>();
+      mockJobs.forEach(job => {
+        if (job.specialties) {
+          job.specialties.forEach(s => keywords.add(s));
+        }
+        if (job.location) {
+          keywords.add(job.location);
+        }
+        if (job.employment_type) {
+          keywords.add(job.employment_type);
+        }
+      });
+      setSuggestedKeywords(Array.from(keywords));
 
       setJobs(filteredJobs);
     } catch (err) {
@@ -88,7 +141,7 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
     } finally {
       setLoading(false);
     }
-  }, [filters]);
+  }, [filters, searchTerm]);
 
   useEffect(() => {
     fetchJobs();
@@ -98,5 +151,20 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
     setFilters({ ...filters, ...newFilters });
   };
 
-  return { jobs, loading, error, filters, updateFilters, fetchJobs };
+  const updateSearchTerm = (term: string) => {
+    setSearchTerm(term);
+  };
+
+  return { 
+    jobs, 
+    loading, 
+    error, 
+    filters, 
+    searchTerm, 
+    updateFilters, 
+    updateSearchTerm, 
+    fetchJobs, 
+    featuredJobs,
+    suggestedKeywords 
+  };
 };

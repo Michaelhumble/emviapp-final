@@ -7,19 +7,31 @@ import JobFilters from '@/components/jobs/JobFilters';
 import JobEmptyState from '@/components/jobs/JobEmptyState';
 import JobLoadingState from '@/components/jobs/JobLoadingState';
 import JobPostCTA from './JobPostCTA';
+import FeaturedJobsSection from '@/components/jobs/FeaturedJobsSection';
 import { Job } from "@/types/job";
 import { differenceInDays } from 'date-fns';
 import { toast } from "sonner";
 
 const Jobs = () => {
   // Use the hook to fetch jobs data
-  const { jobs, loading, error, filters, updateFilters, fetchJobs } = useJobsData();
+  const { 
+    jobs, 
+    loading, 
+    error, 
+    filters, 
+    searchTerm, 
+    updateFilters, 
+    updateSearchTerm, 
+    fetchJobs, 
+    featuredJobs,
+    suggestedKeywords 
+  } = useJobsData();
   
-  // Track filter and search state
-  const [searchTerm, setSearchTerm] = useState("");
+  // Track expirations and renewals
   const [jobExpirations, setJobExpirations] = useState<Record<string, boolean>>({});
   const [isRenewing, setIsRenewing] = useState(false);
   const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   
   useEffect(() => {
     console.log("Jobs index page loaded successfully");
@@ -50,6 +62,11 @@ const Jobs = () => {
     }, 1500);
   };
   
+  // Handle viewing job details
+  const handleViewJobDetails = (job: Job) => {
+    setSelectedJob(job);
+  };
+  
   // Reset filters function
   const resetFilters = () => {
     updateFilters({
@@ -58,9 +75,12 @@ const Jobs = () => {
       employmentType: 'all',
       showExpired: false,
       hasHousing: false,
-      noSupplyDeduction: false
+      noSupplyDeduction: false,
+      industry: 'all',
+      language: 'all',
+      location: 'all'
     });
-    setSearchTerm("");
+    updateSearchTerm("");
   };
   
   return (
@@ -75,6 +95,13 @@ const Jobs = () => {
             
             <JobPostCTA />
             
+            {featuredJobs.length > 0 && (
+              <FeaturedJobsSection 
+                featuredJobs={featuredJobs} 
+                onViewDetails={handleViewJobDetails} 
+              />
+            )}
+            
             <JobFilters
               filters={{
                 weeklyPay: filters.weeklyPay || false,
@@ -82,13 +109,17 @@ const Jobs = () => {
                 employmentType: filters.employmentType || 'all',
                 showExpired: filters.showExpired || false,
                 hasHousing: filters.hasHousing || false,
-                noSupplyDeduction: filters.noSupplyDeduction || false
+                noSupplyDeduction: filters.noSupplyDeduction || false,
+                industry: filters.industry || 'all',
+                language: filters.language || 'all',
+                location: filters.location || 'all'
               }}
               searchTerm={searchTerm}
               onFiltersChange={updateFilters}
-              onSearchChange={setSearchTerm}
+              onSearchChange={updateSearchTerm}
               onResetFilters={resetFilters}
               showVietnameseFilters={true}
+              suggestedKeywords={suggestedKeywords}
             />
           </div>
           
@@ -101,6 +132,7 @@ const Jobs = () => {
               onRenew={handleRenewJob}
               isRenewing={isRenewing}
               renewalJobId={renewalJobId}
+              currentUserId={undefined}
             />
           ) : (
             <JobEmptyState onResetFilters={resetFilters} />

@@ -16,7 +16,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Search, Filter } from "lucide-react";
+import { Search, Filter, MapPin } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
 
 interface Filters {
   weeklyPay: boolean;
@@ -25,6 +33,9 @@ interface Filters {
   showExpired: boolean;
   hasHousing?: boolean;
   noSupplyDeduction?: boolean;
+  industry?: string;
+  language?: string;
+  location?: string;
 }
 
 interface JobFiltersProps {
@@ -34,6 +45,7 @@ interface JobFiltersProps {
   onSearchChange: (searchTerm: string) => void;
   onResetFilters: () => void;
   showVietnameseFilters?: boolean;
+  suggestedKeywords?: string[];
 }
 
 const JobFilters = ({
@@ -42,7 +54,8 @@ const JobFilters = ({
   onFiltersChange,
   onSearchChange,
   onResetFilters,
-  showVietnameseFilters = false
+  showVietnameseFilters = false,
+  suggestedKeywords = []
 }: JobFiltersProps) => {
   const handleFilterChange = <K extends keyof Filters>(
     key: K,
@@ -53,6 +66,38 @@ const JobFilters = ({
       [key]: value
     });
   };
+
+  const handleKeywordSelect = (keyword: string) => {
+    onSearchChange(keyword);
+  };
+
+  // Sample locations for dropdown
+  const locations = [
+    "All Locations",
+    "New York, NY",
+    "Los Angeles, CA",
+    "Chicago, IL",
+    "Houston, TX",
+    "Philadelphia, PA",
+    "Phoenix, AZ",
+    "San Antonio, TX",
+    "San Diego, CA",
+    "Dallas, TX",
+    "San Jose, CA"
+  ];
+
+  // Sample industries
+  const industries = [
+    "All Industries",
+    "Nails",
+    "Hair",
+    "Tattoo",
+    "Barbershop",
+    "Makeup",
+    "Massage",
+    "Skincare",
+    "Eyelash"
+  ];
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 mb-6">
@@ -66,7 +111,7 @@ const JobFilters = ({
           </AccordionTrigger>
           <AccordionContent>
             <div className="space-y-4">
-              {/* Search Input */}
+              {/* Search Input with Autocomplete */}
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
@@ -75,6 +120,38 @@ const JobFilters = ({
                   onChange={(e) => onSearchChange(e.target.value)}
                   className="pl-10"
                 />
+                {searchTerm && suggestedKeywords.length > 0 && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
+                    {suggestedKeywords
+                      .filter(keyword => 
+                        keyword.toLowerCase().includes(searchTerm.toLowerCase())
+                      )
+                      .map((keyword, index) => (
+                        <div 
+                          key={index}
+                          className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                          onClick={() => handleKeywordSelect(keyword)}
+                        >
+                          {keyword}
+                        </div>
+                      ))
+                    }
+                  </div>
+                )}
+              </div>
+
+              {/* Suggested Keywords */}
+              <div className="flex flex-wrap gap-2">
+                {['Weekly Pay 💰', 'Housing 🏠', 'High Tips 💅', 'Bao Lương ✅', 'Owner Train 👩‍🏫'].map((tag) => (
+                  <Badge 
+                    key={tag} 
+                    variant="outline" 
+                    className="cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleKeywordSelect(tag)}
+                  >
+                    {tag}
+                  </Badge>
+                ))}
               </div>
 
               {/* Filters Grid */}
@@ -94,7 +171,77 @@ const JobFilters = ({
                       <SelectItem value="Full-Time">Full-Time</SelectItem>
                       <SelectItem value="Part-Time">Part-Time</SelectItem>
                       <SelectItem value="Contract">Contract</SelectItem>
-                      <SelectItem value="Internship">Internship</SelectItem>
+                      <SelectItem value="Freelance">Freelance</SelectItem>
+                      <SelectItem value="Bao Lương">Bao Lương</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Industry Type - New */}
+                <div className="space-y-2">
+                  <Label htmlFor="industry">Industry</Label>
+                  <Select 
+                    value={filters.industry || 'all'} 
+                    onValueChange={(value) => handleFilterChange('industry', value)}
+                  >
+                    <SelectTrigger id="industry">
+                      <SelectValue placeholder="Select industry" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {industries.map(industry => (
+                        <SelectItem key={industry} value={industry === "All Industries" ? "all" : industry}>
+                          {industry}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Location - New */}
+                <div className="space-y-2">
+                  <Label htmlFor="location">Location</Label>
+                  <div className="flex gap-2">
+                    <Select 
+                      value={filters.location || 'all'} 
+                      onValueChange={(value) => handleFilterChange('location', value)}
+                    >
+                      <SelectTrigger id="location" className="flex-grow">
+                        <SelectValue placeholder="Select location" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {locations.map(location => (
+                          <SelectItem key={location} value={location === "All Locations" ? "all" : location}>
+                            {location}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button 
+                      variant="outline" 
+                      size="icon" 
+                      className="flex-shrink-0"
+                      title="Use my location"
+                    >
+                      <MapPin className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Language - New */}
+                <div className="space-y-2">
+                  <Label htmlFor="language">Language</Label>
+                  <Select 
+                    value={filters.language || 'all'} 
+                    onValueChange={(value) => handleFilterChange('language', value)}
+                  >
+                    <SelectTrigger id="language">
+                      <SelectValue placeholder="Select language" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Languages</SelectItem>
+                      <SelectItem value="english">English</SelectItem>
+                      <SelectItem value="vietnamese">Vietnamese</SelectItem>
+                      <SelectItem value="bilingual">Bilingual</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -102,7 +249,7 @@ const JobFilters = ({
                 {/* Weekly Pay Filter */}
                 <div className="flex items-center justify-between space-x-2">
                   <Label htmlFor="weeklyPay">
-                    Weekly Pay
+                    Weekly Pay 💰
                   </Label>
                   <Switch 
                     id="weeklyPay"
@@ -114,7 +261,7 @@ const JobFilters = ({
                 {/* Owner Will Train Filter */}
                 <div className="flex items-center justify-between space-x-2">
                   <Label htmlFor="ownerWillTrain">
-                    Owner Will Train
+                    Owner Will Train 👩‍🏫
                   </Label>
                   <Switch 
                     id="ownerWillTrain"
@@ -141,7 +288,7 @@ const JobFilters = ({
                     {/* Has Housing Filter */}
                     <div className="flex items-center justify-between space-x-2">
                       <Label htmlFor="hasHousing">
-                        Has Housing (Có chỗ ở)
+                        Has Housing 🏠 (Có chỗ ở)
                       </Label>
                       <Switch 
                         id="hasHousing"
