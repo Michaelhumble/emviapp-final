@@ -1,23 +1,33 @@
 
-export type PostType = 'job' | 'salon' | 'booth' | 'supply';
-
 export interface PricingOptions {
-  isNationwide?: boolean;
-  showAtTop?: boolean;
-  fastSalePackage?: boolean;
-  bundleWithJobPost?: boolean;
-  bundleWithSalonPost?: boolean;  // Added this property
-  isFirstPost?: boolean;
-  isRenewal?: boolean;
-  hasReferrals?: boolean;
-  featuredPost?: boolean;
+  isHotListing: boolean;
+  isNationwide: boolean;
+  isUrgent: boolean;
+  bundleWithJobPost: boolean;
+  bundleWithSalonPost: boolean;
+  boostVisibility: boolean;
+  featuredListing: boolean;
+  extendedDuration: boolean;
 }
 
-export interface UserPostingStats {
-  jobPostCount: number;
-  salonPostCount: number;
-  boothPostCount: number;
-  supplyPostCount: number;
-  totalPosts: number;
-  referralCount: number;
+export interface PricingItem {
+  name: string;
+  description: string;
+  price: number;
+  recommended?: boolean;
+  default?: boolean;
+}
+
+export interface PostPricingOptions {
+  basePrice: number;
+  options: {
+    isHotListing: PricingItem;
+    isNationwide: PricingItem;
+    isUrgent: PricingItem;
+    bundleWithJobPost: PricingItem;
+    bundleWithSalonPost: PricingItem;
+    boostVisibility: PricingItem;
+    featuredListing: PricingItem;
+    extendedDuration: PricingItem;
+  };
 }

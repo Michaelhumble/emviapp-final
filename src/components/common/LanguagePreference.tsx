@@ -6,14 +6,20 @@ import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+const LANGUAGE_STORAGE_KEY = 'emviapp_preferred_language';
+
 const LanguagePreference = () => {
   const { user, userProfile } = useAuth();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // Check if language is set in localStorage first
+    const storedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    
     // Show language selector for new users who haven't set a preference
-    if (user && userProfile && !userProfile.preferred_language) {
+    // and don't have a preference stored in localStorage
+    if (user && userProfile && !userProfile.preferred_language && !storedLanguage) {
       // Wait a bit to not overwhelm new users with too many modals at once
       const timer = setTimeout(() => {
         setOpen(true);
@@ -27,6 +33,10 @@ const LanguagePreference = () => {
     if (!user) return;
     
     setLoading(true);
+    
+    // Save to localStorage immediately for a responsive experience
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+    
     try {
       const { error } = await supabase
         .from('users')

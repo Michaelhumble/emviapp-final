@@ -1,76 +1,38 @@
 
-import { Database } from '@/integrations/supabase/types';
+import { Session, User as SupabaseUser } from '@supabase/supabase-js';
 
-// Defines the possible roles a user can have
-export type UserRole = 
-  | 'customer' 
-  | 'artist' 
-  | 'nail technician/artist' 
-  | 'salon' 
-  | 'owner' 
-  | 'vendor' 
-  | 'supplier'
-  | 'beauty supplier'
-  | 'freelancer'
-  | 'renter'
-  | 'other';
+// User roles in the application
+export type UserRole = 'customer' | 'artist' | 'salon' | 'supplier' | 'freelancer' | 'owner' | 'other';
 
-// Extends the user profile with additional fields
+// User profile data with extended information
 export interface UserProfile {
   id: string;
   email: string;
   full_name: string;
-  avatar_url: string | null;
-  location: string | null;
-  bio: string | null;
-  phone: string | null;
-  instagram: string | null;
-  website: string | null;
-  specialty: string | null;
-  role: UserRole | null;
-  // Additional fields that may exist in the database
-  skill_level?: string | null;
-  skills?: string[] | null;
-  salon_name?: string | null;
-  business_address?: string | null;
-  company_name?: string | null;
-  product_type?: string | null;
-  created_at?: string | null;
-  updated_at?: string | null;
-  custom_role?: string | null;
-  preferences?: string[] | null;
-  contact_link?: string | null;
-  // Affiliate system fields
-  affiliate_link?: string | null;
-  affiliate_code?: string | null;
-  referred_by?: string | null;
+  avatar_url: string;
+  location: string;
+  bio: string;
+  phone: string;
+  instagram: string;
+  website: string;
+  specialty: string;
+  role: UserRole;
+  created_at: string;
+  updated_at: string;
+  preferred_language?: string;
   referral_count: number;
-  credits?: number;
-  // Profile stats
-  profile_views?: number;
-  // Language preference
-  preferred_language?: 'en' | 'vi' | 'es' | null;
 }
 
-// Profile status information
-export interface ProfileStatus {
-  profileComplete: boolean;
-}
-
-// Auth context type definition
+// Auth context data shape
 export interface AuthContextType {
   session: Session | null;
   user: SupabaseUser | null;
   userProfile: UserProfile | null;
   userRole: UserRole | null;
   loading: boolean;
+  isSignedIn: boolean;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   refreshUserProfile: () => Promise<void>;
-  // Add missing properties needed by components
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>; // Added signUp method
-  isSignedIn: boolean;
 }
-
-// Import Supabase types to avoid importing them everywhere
-import { Session, User as SupabaseUser } from '@supabase/supabase-js';

@@ -26,6 +26,7 @@ import SupplierDashboard from '@/pages/dashboard/Supplier';
 import FreelancerDashboard from '@/pages/dashboard/Freelancer';
 import OwnerDashboard from '@/pages/dashboard/Owner';
 import NotFound from '@/pages/NotFound';
+import Analysis from '@/pages/Analysis';
 
 // Import styles
 import './index.css';
@@ -52,11 +53,24 @@ const router = createBrowserRouter([
         element: <Salons />
       },
       {
+        path: 'analysis',
+        element: <Analysis />
+      },
+      {
         path: 'auth/signin',
         element: <SignIn />
       },
       {
         path: 'auth/signup',
+        element: <SignUp />
+      },
+      // Add direct routes to sign-in and sign-up without auth prefix
+      {
+        path: 'sign-in',
+        element: <SignIn />
+      },
+      {
+        path: 'sign-up',
         element: <SignUp />
       },
       {
