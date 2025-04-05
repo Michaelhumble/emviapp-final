@@ -3,21 +3,24 @@ import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
+import { PostType } from "@/utils/posting/types";
 
 interface BundleWithJobOptionProps {
-  onBundleWithJobChange: (checked: boolean) => void;
+  postType?: PostType;
+  onChange: (checked: boolean) => void;
   defaultChecked?: boolean;
 }
 
 const BundleWithJobOption = ({ 
-  onBundleWithJobChange,
+  postType,
+  onChange,
   defaultChecked = false
 }: BundleWithJobOptionProps) => {
   const [checked, setChecked] = useState(defaultChecked);
   
   const handleChange = (value: boolean) => {
     setChecked(value);
-    onBundleWithJobChange(value);
+    onChange(value);
   };
   
   return (
@@ -29,7 +32,7 @@ const BundleWithJobOption = ({
           </div>
           <div>
             <p className="font-medium">Bundle with Job Post</p>
-            <p className="text-sm text-gray-500">Post a job along with your booth rental</p>
+            <p className="text-sm text-gray-500">Post a job along with your {postType === 'booth' ? 'booth rental' : 'listing'}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">

@@ -1,100 +1,53 @@
 
-import { UserPostingStats, PricingOptions, PostType } from "./types";
+import { PostType, PricingOptions } from "./types";
 
-// Utility function to calculate discount percentage based on original and discounted price
-export const calculateDiscountPercentage = (originalPrice: number, discountedPrice: number): number => {
-  if (originalPrice <= 0) return 0;
-  const discountPercent = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
-  return discountPercent;
-};
+interface UserStats {
+  totalJobPosts: number;
+  totalSalonPosts: number;
+  totalBoothPosts: number;
+  totalSupplyPosts: number;
+  referralCount: number;
+}
 
-// Utility function to generate pricing promotional text
 export const generatePromotionalText = (
-  postType: PostType,
-  userStats: UserPostingStats,
+  postType: PostType, 
+  userStats: UserStats, 
   options: PricingOptions
 ): string => {
-  // First post with nationwide
-  if (options.isFirstPost && options.isNationwide) {
-    return "First post + nationwide visibility for just $10!";
-  }
-  
-  // First post free
-  if (options.isFirstPost && !options.isNationwide) {
-    return "Your first post is only $5! Just add your payment method.";
-  }
-  
-  // Second post for artists/jobs
-  if (postType === 'job' && userStats.totalJobPosts === 1 && !options.isRenewal) {
-    if (options.isNationwide) {
-      return "Second post with nationwide visibility: $15";
+  if (options.isFirstPost) {
+    switch (postType) {
+      case "job":
+        return "Welcome to EmviApp! Your first job post is only $5. Refer a friend and get $5 off your next post!";
+      case "salon":
+        return "Your first salon listing is free! Premium visibility upgrades will get you in front of more buyers.";
+      case "booth":
+        return "First time posting a booth? Get noticed with nationwide visibility for just $5 more!";
+      case "supply":
+        return "Your first supply listing is free! Boost your visibility with nationwide targeting for better results.";
     }
-    return "Second post: $10 (local visibility)";
   }
-  
-  // Referral discount for job posts
-  if (postType === 'job' && userStats.referralCount >= 1 && !options.isRenewal) {
-    return "Special price: $15 (25% off) — thanks for referring friends!";
+
+  if (userStats.referralCount > 0) {
+    return "Thanks for referring others to EmviApp! You're helping build the beauty community.";
   }
-  
-  // Salon first post promotional
-  if (postType === 'salon' && userStats.totalSalonPosts === 0) {
-    return "First salon listing — just add your payment method.";
+
+  if (options.isNationwide) {
+    return "Great choice going nationwide! Your post will reach the entire beauty community across the US.";
   }
-  
-  // Renewal
-  if (options.isRenewal) {
-    return "Renew your listing to keep it visible for another 30 days.";
-  }
-  
-  // Standard posts
+
+  // Generic promotional messages by post type
   switch (postType) {
-    case 'salon':
-      if (options.fastSalePackage) {
-        return "Premium listing package: Get featured at the top with priority visibility!";
-      }
-      return options.isNationwide 
-        ? "Nationwide visibility will help you find buyers faster!" 
-        : "Increase your chances with nationwide visibility (+$5)";
-    
-    case 'booth':
-      return options.showAtTop 
-        ? "Your booth will be shown at the top of search results!" 
-        : "Get more visibility by showing at the top of results (+$10)";
-        
-    case 'supply':
-      return "Reach more salon owners and increase your product visibility!";
-      
-    default:
-      return "Post your listing today!";
+    case "job":
+      return "Did you know? Posts with complete details get 3x more responses. Need help writing your description?";
+    case "salon":
+      return "Salon listings with 5+ photos typically sell 40% faster. Don't forget to add your best shots!";
+    case "booth":
+      return "Pro tip: Booth rentals paired with a job post get 2.5x more inquiries from quality artists.";
+    case "supply":
+      return "Supply listings with detailed specifications receive 85% more buyer inquiries.";
   }
+
+  return "Thanks for using EmviApp, the beauty industry's fastest-growing platform!";
 };
 
-// Function to calculate renewal price
-export const getRenewalPrice = (
-  postType: 'job' | 'salon' | 'booth',
-  isNationwide: boolean,
-  fastSalePackage: boolean = false,
-  bundleWithJobPost: boolean = false
-): number => {
-  switch (postType) {
-    case 'job':
-      return isNationwide ? 25 : 20;
-    case 'salon':
-      let price = 39;
-      if (fastSalePackage) price += 10;
-      if (isNationwide) price += 5;
-      if (bundleWithJobPost) price -= 5;
-      return price;
-    case 'booth':
-      let boothPrice = 29;
-      if (isNationwide) boothPrice += 5;
-      if (bundleWithJobPost) boothPrice -= 5;
-      return boothPrice;
-    default:
-      return 20;
-  }
-};
-
-// Re-export PricingOptions from the types file
-export type { PricingOptions };
+export { type PricingOptions };

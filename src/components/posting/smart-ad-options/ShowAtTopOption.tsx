@@ -5,19 +5,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp } from "lucide-react";
 
 interface ShowAtTopOptionProps {
-  onShowAtTopChange: (checked: boolean) => void;
+  onChange: (checked: boolean) => void;
   defaultChecked?: boolean;
 }
 
 const ShowAtTopOption = ({ 
-  onShowAtTopChange,
+  onChange,
   defaultChecked = false
 }: ShowAtTopOptionProps) => {
   const [checked, setChecked] = useState(defaultChecked);
   
   const handleChange = (value: boolean) => {
     setChecked(value);
-    onShowAtTopChange(value);
+    onChange(value);
   };
   
   return (

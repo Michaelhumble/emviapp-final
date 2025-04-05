@@ -6,19 +6,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Zap } from "lucide-react";
 
 interface FastSalePackageProps {
-  onFastSaleChange: (checked: boolean) => void;
+  onChange: (checked: boolean) => void;
   defaultChecked?: boolean;
 }
 
 const FastSalePackage = ({ 
-  onFastSaleChange,
+  onChange,
   defaultChecked = false 
 }: FastSalePackageProps) => {
   const [checked, setChecked] = useState(defaultChecked);
   
   const handleChange = (value: boolean) => {
     setChecked(value);
-    onFastSaleChange(value);
+    onChange(value);
   };
   
   return (

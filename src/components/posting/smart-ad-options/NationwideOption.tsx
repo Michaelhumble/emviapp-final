@@ -4,27 +4,30 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Globe } from "lucide-react";
+import { PostType } from "@/utils/posting/types";
 
 interface NationwideOptionProps {
+  postType?: PostType;
   isFirstPost?: boolean;
-  price: string;
+  price?: string;
   disabled?: boolean;
-  onNationwideChange: (checked: boolean) => void;
+  onChange: (checked: boolean) => void;
   defaultChecked?: boolean;
 }
 
 const NationwideOption = ({ 
+  postType,
   isFirstPost = false, 
-  price, 
+  price = "+$5", 
   disabled = false,
-  onNationwideChange,
+  onChange,
   defaultChecked = false
 }: NationwideOptionProps) => {
   const [checked, setChecked] = useState(defaultChecked);
   
   const handleChange = (value: boolean) => {
     setChecked(value);
-    onNationwideChange(value);
+    onChange(value);
   };
   
   return (

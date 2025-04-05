@@ -23,10 +23,6 @@ const availableRoutes = [
   '/dashboard/freelancer',
   '/dashboard/other',
   '/profile/edit',
-  '/profile/setup',
-  '/profile/other/setup',
-  '/profile/freelancer/setup',
-  '/profile/salon/setup',
   '/not-found',
   '*' // Catch-all route
 ];

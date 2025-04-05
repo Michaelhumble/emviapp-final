@@ -1,21 +1,31 @@
 
-export interface UserPostingStats {
-  totalJobPosts: number;
-  totalSalonPosts: number;
-  totalBoothPosts: number;
-  totalSupplyPosts: number;
-  referralCount: number;
-}
+export type PostType = 'job' | 'salon' | 'booth' | 'supply';
 
 export interface PricingOptions {
-  isNationwide?: boolean;
   isFirstPost?: boolean;
-  hasActivePost?: boolean;
-  bundleWithJobPost?: boolean;
+  isNationwide?: boolean;
   fastSalePackage?: boolean;
-  isRenewal?: boolean;
-  featuredPost?: boolean;
   showAtTop?: boolean;
+  bundleWithJobPost?: boolean;
+  hasReferrals?: boolean;
 }
 
-export type PostType = 'job' | 'salon' | 'booth' | 'supply';
+export interface PostingFormContextType {
+  formData: any;
+  setFormData: (data: any) => void;
+  step: number;
+  setStep: (step: number) => void;
+  resetForm: () => void;
+  isSubmitting: boolean;
+  setIsSubmitting: (isSubmitting: boolean) => void;
+  pricing: {
+    showNationwide: boolean;
+    setShowNationwide: (show: boolean) => void;
+    fastSalePackage: boolean;
+    setFastSalePackage: (enabled: boolean) => void;
+    showAtTop: boolean;
+    setShowAtTop: (show: boolean) => void;
+    bundleWithJobPost: boolean;
+    setBundleWithJobPost: (bundle: boolean) => void;
+  };
+}

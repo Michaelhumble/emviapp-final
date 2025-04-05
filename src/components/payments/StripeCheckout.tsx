@@ -12,6 +12,9 @@ interface StripeCheckoutProps {
   buttonText?: string;
   onSuccess?: () => void;
   mode?: "payment" | "subscription";
+  isSubscription?: boolean;
+  subscriptionInterval?: "month" | "year";
+  setupOnly?: boolean;
 }
 
 const StripeCheckout = ({
@@ -19,7 +22,10 @@ const StripeCheckout = ({
   productName,
   buttonText = "Pay Now",
   onSuccess,
-  mode = "subscription"
+  mode = "subscription",
+  isSubscription = false,
+  subscriptionInterval = "month",
+  setupOnly = false
 }: StripeCheckoutProps) => {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
@@ -37,17 +43,30 @@ const StripeCheckout = ({
       // In a real implementation, this would call a Supabase Edge Function
       // that creates a Stripe Checkout session
       toast.info("Processing your subscription", {
-        description: "We're setting up your plan..."
+        description: setupOnly 
+          ? "Saving your payment method..."
+          : isSubscription 
+            ? "We're setting up your plan..." 
+            : "Processing your payment..."
       });
       
       // Simulating a response
       setTimeout(() => {
         setLoading(false);
-        toast.success(`Subscribed to ${productName}!`, {
-          description: mode === "subscription" 
-            ? "Your subscription has been activated" 
-            : "Your payment has been processed"
-        });
+        
+        if (setupOnly) {
+          toast.success("Payment method saved!", {
+            description: "Your card has been saved for future purchases"
+          });
+        } else if (isSubscription) {
+          toast.success(`Subscribed to ${productName}!`, {
+            description: `Your ${subscriptionInterval}ly subscription has been activated`
+          });
+        } else {
+          toast.success(`Payment complete for ${productName}!`, {
+            description: "Your payment has been processed"
+          });
+        }
         
         if (onSuccess) {
           onSuccess();
@@ -56,7 +75,14 @@ const StripeCheckout = ({
       
       /* Real implementation would be:
       const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { amount, productName, mode }
+        body: { 
+          amount, 
+          productName, 
+          mode, 
+          isSubscription,
+          subscriptionInterval,
+          setupOnly
+        }
       });
       
       if (error) throw error;

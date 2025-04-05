@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { Toaster } from "sonner";
@@ -20,21 +21,11 @@ import Freelancers from "@/pages/Freelancers";
 import NailJobs from "@/pages/NailJobs";
 import SalonOwners from "@/pages/SalonOwners";
 import Customers from "@/pages/Customers";
-import JobPostCTA from "@/pages/JobPostCTA";
 import Profile from "@/pages/Profile";
 import ProfileEdit from "@/pages/profile/edit";
-import ProfileRedirect from "@/pages/profile/setup";
-import ArtistSetup from "@/pages/profile/ArtistSetup";
-import SalonSetup from "@/pages/profile/SalonSetup";
-import CustomerSetup from "@/pages/profile/CustomerSetup";
-import FreelancerSetup from "@/pages/profile/FreelancerSetup";
-import RenterSetup from "@/pages/profile/RenterSetup";
-import SupplierSetup from "@/pages/profile/SupplierSetup";
-import OtherSetup from "@/pages/profile/OtherSetup";
 import ProfilePage from "@/pages/profile/[username]";
 import ProductPromotions from "@/pages/ProductPromotions";
 import Messaging from "@/pages/Messaging";
-import Messages from "@/pages/Messages";
 import Analysis from "@/pages/Analysis";
 import ManageJobs from "@/pages/ManageJobs";
 import Checkout from "@/pages/Checkout";
@@ -68,7 +59,11 @@ import { ProfileProvider } from "@/context/profile";
 import { SubscriptionProvider } from "@/context/subscription";
 import { ThemeProvider } from "@/components/theme-provider";
 
-const App = () => {
+interface AppProps {
+  availableRoutes?: string[];
+}
+
+const App = ({ availableRoutes }: AppProps = {}) => {
   const { user, loading } = useAuth();
 
   useEffect(() => {
@@ -114,21 +109,11 @@ const App = () => {
               <Route path="/nail-jobs" element={<NailJobs />} />
               <Route path="/salon-owners" element={<SalonOwners />} />
               <Route path="/customers" element={<Customers />} />
-              <Route path="/jobs/post" element={<JobPostCTA />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/profile/edit" element={<ProfileEdit />} />
-              <Route path="/profile/setup" element={<ProfileRedirect />} /> 
-              <Route path="/profile/artist/setup" element={<ArtistSetup />} />
-              <Route path="/profile/salon/setup" element={<SalonSetup />} />
-              <Route path="/profile/customer/setup" element={<CustomerSetup />} />
-              <Route path="/profile/freelancer/setup" element={<FreelancerSetup />} />
-              <Route path="/profile/renter/setup" element={<RenterSetup />} />
-              <Route path="/profile/supplier/setup" element={<SupplierSetup />} />
-              <Route path="/profile/other/setup" element={<OtherSetup />} />
               <Route path="/profile/:username" element={<ProfilePage />} />
               <Route path="/product-promotions" element={<ProductPromotions />} />
               <Route path="/messaging" element={<Messaging />} />
-              <Route path="/messages" element={<Messages />} />
               <Route path="/analysis" element={<Analysis />} />
               <Route path="/manage-jobs" element={<ManageJobs />} />
               <Route path="/checkout" element={<Checkout />} />
@@ -143,7 +128,7 @@ const App = () => {
               <Route path="/posting/salon" element={<SalonPost />} />
               <Route path="/posting/booth" element={<BoothPost />} />
 
-              {/* NEW: Visibility Routes */}
+              {/* Visibility Routes */}
               <Route path="/visibility/upgrade" element={<VisibilityUpgrade />} />
               <Route path="/visibility/stats" element={<VisibilityStats />} />
               
