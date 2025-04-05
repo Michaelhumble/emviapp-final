@@ -2,7 +2,18 @@
 import { Session, User as SupabaseUser } from '@supabase/supabase-js';
 
 // User roles in the application
-export type UserRole = 'customer' | 'artist' | 'salon' | 'supplier' | 'freelancer' | 'owner' | 'other';
+export type UserRole = 
+  | 'customer' 
+  | 'artist' 
+  | 'salon' 
+  | 'supplier' 
+  | 'freelancer' 
+  | 'owner' 
+  | 'other'
+  | 'nail technician/artist'
+  | 'renter'
+  | 'vendor'
+  | 'beauty supplier';
 
 // User profile data with extended information
 export interface UserProfile {
@@ -21,6 +32,15 @@ export interface UserProfile {
   updated_at: string;
   preferred_language?: string;
   referral_count: number;
+  // Additional properties that are being used in the app
+  salon_name?: string;
+  company_name?: string;
+  custom_role?: string;
+  contact_link?: string;
+  skills?: string[];
+  skill_level?: string;
+  profile_views?: number;
+  preferences?: string[];
 }
 
 // Auth context data shape
