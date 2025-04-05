@@ -1,5 +1,5 @@
 
-export type PostType = 'job' | 'salon' | 'booth';
+export type PostType = 'job' | 'salon' | 'booth' | 'supply';
 
 export interface PricingOptions {
   isNationwide?: boolean;
@@ -7,6 +7,9 @@ export interface PricingOptions {
   fastSalePackage?: boolean;
   bundleWithJobPost?: boolean;
   isFirstPost?: boolean;
+  isRenewal?: boolean;
+  hasReferrals?: boolean;
+  featuredPost?: boolean;
 }
 
 export interface UserPostingStats {

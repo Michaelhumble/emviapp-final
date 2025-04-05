@@ -1,72 +1,121 @@
 
-import { createRoot } from 'react-dom/client';
-import App from './App.tsx';
-import './index.css';
-import { Toaster } from 'sonner';
-import { validateRequiredRoutes } from './utils/routeChecker';
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { ThemeProvider } from '@/components/theme-provider'
+import { Toaster } from '@/components/ui/sonner'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import App from './App'
+import './index.css'
+import Analysis from '@/pages/Analysis'
+import Checkout from '@/pages/Checkout'
+import Artists from '@/pages/Artists'
+import Customers from '@/pages/Customers'
+import Freelancers from '@/pages/Freelancers'
+import Jobs from '@/pages/Jobs'
+import Index from '@/pages/Index'
+import NailJobs from '@/pages/NailJobs'
+import NotFound from '@/pages/NotFound'
+import ProductPromotions from '@/pages/ProductPromotions'
+import Profile from '@/pages/Profile'
+import SalonMarketplace from '@/pages/SalonMarketplace'
+import SalonOwners from '@/pages/SalonOwners'
+import Salons from '@/pages/Salons'
+import Suppliers from '@/pages/Suppliers'
+import SupplierDirectory from '@/pages/SupplierDirectory'
+import ManageJobs from '@/pages/ManageJobs'
+import Welcome from '@/pages/Welcome'
+import RouteLogger from '@/components/common/RouteLogger'
+import SignIn from '@/pages/auth/SignIn'
+import SignUp from '@/pages/auth/SignUp'
+import Dashboard from '@/pages/dashboard/Dashboard'
+import ArtistDashboard from '@/pages/dashboard/Artist'
+import CustomerDashboard from '@/pages/dashboard/Customer'
+import FreelancerDashboard from '@/pages/dashboard/Freelancer'
+import OwnerDashboard from '@/pages/dashboard/Owner'
+import SalonDashboard from '@/pages/dashboard/Salon'
+import SupplierDashboard from '@/pages/dashboard/Supplier'
+import OtherDashboard from '@/pages/dashboard/Other'
+import MessageIndex from '@/pages/messages/index'
+import ProfileEditor from '@/pages/profile/ProfileEditor'
+import ProfileRedirect from '@/pages/profile/ProfileRedirect'
+import ArtistSetup from '@/pages/profile/artist/setup'
+import CustomerSetup from '@/pages/profile/customer/setup'
+import FreelancerSetup from '@/pages/profile/freelancer/setup'
+import OtherSetup from '@/pages/profile/other/setup'
+import RenterSetup from '@/pages/profile/renter/setup'
+import SalonSetup from '@/pages/profile/salon/setup'
+import SupplierSetup from '@/pages/profile/supplier/setup'
 
-// Define the available routes in the app for logging and verification
-const availableRoutes = [
-  '/',
-  '/jobs',
-  '/salons',
-  '/analysis',
-  '/auth/signin', '/sign-in',
-  '/auth/signup', '/sign-up',
-  '/profile',
-  '/dashboard',
-  '/dashboard/artist',
-  '/dashboard/salon',
-  '/dashboard/owner',
-  '/dashboard/customer',
-  '/dashboard/supplier',
-  '/dashboard/freelancer',
-  '/dashboard/other',
-  '/profile/edit',
-  '/not-found',
-  '*' // Catch-all route
-];
+import PostingIndex from '@/pages/posting/Index'
+import JobPost from '@/pages/posting/JobPost'
+import SalonPost from '@/pages/posting/SalonPost'
+import BoothPost from '@/pages/posting/BoothPost'
 
-// Create a RouteAvailabilityLogger component to help with debugging routes
-const logAvailableRoutes = () => {
-  if (process.env.NODE_ENV === 'development') {
-    console.info('------- EmviApp Route Availability Check -------');
-    console.info('The following routes are available in the app:');
-    
-    // Log each route with more details
-    availableRoutes.forEach(route => {
-      if (route === '*') {
-        console.info('* - Catch-all route (redirects to 404)');
-        return;
-      }
-      
-      // Get a user-friendly name for the route
-      const routeName = route === '/' 
-        ? 'Home' 
-        : route.split('/').pop()?.charAt(0).toUpperCase() + route.split('/').pop()?.slice(1);
-        
-      console.info(`${route} - ${routeName}`);
-    });
-    
-    // Validate the required routes are defined
-    const { isValid, missingRoutes } = validateRequiredRoutes(availableRoutes);
-    if (!isValid) {
-      console.warn('⚠️ Warning: Some required routes are not defined:');
-      missingRoutes.forEach(route => console.warn(`- ${route}`));
-    } else {
-      console.info('✅ All required routes are properly defined!');
-    }
-    
-    console.info('-----------------------------------------------');
+// Create a query client
+const queryClient = new QueryClient()
+
+// Define the routes
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <App />,
+    errorElement: <NotFound />,
+    children: [
+      { path: '/', element: <Index /> },
+      { path: '/artists', element: <Artists /> },
+      { path: '/customers', element: <Customers /> },
+      { path: '/freelancers', element: <Freelancers /> },
+      { path: '/jobs', element: <Jobs /> },
+      { path: '/jobs/nail', element: <NailJobs /> },
+      { path: '/jobs/manage', element: <ManageJobs /> },
+      { path: '/marketplace', element: <SalonMarketplace /> },
+      { path: '/salons', element: <Salons /> },
+      { path: '/salon-owners', element: <SalonOwners /> },
+      { path: '/suppliers', element: <Suppliers /> },
+      { path: '/supplier-directory', element: <SupplierDirectory /> },
+      { path: '/checkout', element: <Checkout /> },
+      { path: '/profile', element: <Profile /> },
+      { path: '/profile/edit', element: <ProfileEditor /> },
+      { path: '/profile/redirect', element: <ProfileRedirect /> },
+      { path: '/profile/artist/setup', element: <ArtistSetup /> },
+      { path: '/profile/customer/setup', element: <CustomerSetup /> },
+      { path: '/profile/freelancer/setup', element: <FreelancerSetup /> },
+      { path: '/profile/other/setup', element: <OtherSetup /> },
+      { path: '/profile/renter/setup', element: <RenterSetup /> },
+      { path: '/profile/salon/setup', element: <SalonSetup /> },
+      { path: '/profile/supplier/setup', element: <SupplierSetup /> },
+      { path: '/auth/signin', element: <SignIn /> },
+      { path: '/auth/signup', element: <SignUp /> },
+      { path: '/dashboard', element: <Dashboard /> },
+      { path: '/dashboard/artist', element: <ArtistDashboard /> },
+      { path: '/dashboard/customer', element: <CustomerDashboard /> },
+      { path: '/dashboard/freelancer', element: <FreelancerDashboard /> },
+      { path: '/dashboard/owner', element: <OwnerDashboard /> },
+      { path: '/dashboard/salon', element: <SalonDashboard /> },
+      { path: '/dashboard/supplier', element: <SupplierDashboard /> },
+      { path: '/dashboard/other', element: <OtherDashboard /> },
+      { path: '/product-promotions', element: <ProductPromotions /> },
+      { path: '/messages', element: <MessageIndex /> },
+      { path: '/welcome', element: <Welcome /> },
+      { path: '/analysis', element: <Analysis /> },
+      { path: '/posting', element: <PostingIndex /> },
+      { path: '/posting/job', element: <JobPost /> },
+      { path: '/posting/salon', element: <SalonPost /> },
+      { path: '/posting/booth', element: <BoothPost /> }
+    ]
   }
-};
+])
 
-// Log routes in development mode
-logAvailableRoutes();
-
-createRoot(document.getElementById("root")!).render(
-  <>
-    <App availableRoutes={availableRoutes} />
-    <Toaster position="top-right" />
-  </>
-);
+// Render the app
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider defaultTheme="light" storageKey="emvi-theme">
+        <RouterProvider router={router} />
+        <RouteLogger />
+        <Toaster position="top-right" />
+      </ThemeProvider>
+    </QueryClientProvider>
+  </React.StrictMode>
+)

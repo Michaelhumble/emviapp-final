@@ -2,17 +2,12 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-interface RouteLoggerProps {
-  availableRoutes: string[];
-}
-
-const RouteLogger = ({ availableRoutes }: RouteLoggerProps) => {
+const RouteLogger = () => {
   const location = useLocation();
 
   useEffect(() => {
     console.log(`Route changed to: ${location.pathname}`);
-    console.log(`Available routes: ${availableRoutes.join(', ')}`);
-  }, [location, availableRoutes]);
+  }, [location]);
 
   return null;
 };

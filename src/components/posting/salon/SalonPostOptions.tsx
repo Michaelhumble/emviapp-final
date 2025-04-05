@@ -1,11 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
@@ -44,10 +41,10 @@ const SalonPostOptions = ({ pricingOptions, setPricingOptions, isFirstPost }: Sa
         
         if (postsError) throw postsError;
         
-        const jobPosts = posts.filter(post => post.type === 'job').length;
-        const salonPosts = posts.filter(post => post.type === 'salon').length;
-        const boothPosts = posts.filter(post => post.type === 'booth').length;
-        const supplyPosts = posts.filter(post => post.type === 'supply').length;
+        const jobPosts = posts.filter(post => post.post_type === 'job').length;
+        const salonPosts = posts.filter(post => post.post_type === 'salon').length;
+        const boothPosts = posts.filter(post => post.post_type === 'booth').length;
+        const supplyPosts = posts.filter(post => post.post_type === 'supply').length;
         
         setTotalJobPosts(jobPosts);
         setTotalSalonPosts(salonPosts);
@@ -75,20 +72,23 @@ const SalonPostOptions = ({ pricingOptions, setPricingOptions, isFirstPost }: Sa
   }, [user?.id]);
   
   const handleOptionChange = (option: string, value: boolean | number) => {
-    setPricingOptions(prev => ({ ...prev, [option]: value }));
+    setPricingOptions({
+      ...pricingOptions,
+      [option]: value
+    });
   };
 
-const getPostStats = (): UserPostingStats => {
-  // Create an object that matches the UserPostingStats interface
-  return {
-    jobPostCount: totalJobPosts,
-    salonPostCount: totalSalonPosts,
-    boothPostCount: totalBoothPosts,
-    supplyPostCount: totalSupplyPosts,
-    totalPosts: totalJobPosts + totalSalonPosts + totalBoothPosts + totalSupplyPosts,
-    referralCount: referralCount
+  const getPostStats = (): UserPostingStats => {
+    // Create an object that matches the UserPostingStats interface
+    return {
+      jobPostCount: totalJobPosts,
+      salonPostCount: totalSalonPosts,
+      boothPostCount: totalBoothPosts,
+      supplyPostCount: totalSupplyPosts,
+      totalPosts: totalJobPosts + totalSalonPosts + totalBoothPosts + totalSupplyPosts,
+      referralCount: referralCount
+    };
   };
-};
   
   const postStats = getPostStats();
   
@@ -98,7 +98,7 @@ const getPostStats = (): UserPostingStats => {
   
   return (
     <Card>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 pt-6">
         <h3 className="font-medium text-lg">Post Options</h3>
         
         {/* Promotional Text */}

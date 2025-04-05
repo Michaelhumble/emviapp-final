@@ -1,9 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/auth";
 import { useNavigate } from 'react-router-dom';
 import { PricingOptions, UserPostingStats } from '@/utils/posting/types';
@@ -15,7 +14,6 @@ interface JobPostOptionsProps {
 }
 
 const JobPostOptions: React.FC<JobPostOptionsProps> = ({ pricingOptions, setPricingOptions }) => {
-  const { toast } = useToast();
   const { user, userProfile } = useAuth();
   const navigate = useNavigate();
   
@@ -38,13 +36,13 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({ pricingOptions, setPric
     
     // Determine if it's the user's first post
     setIsFirstPost(totalJobPosts + totalSalonPosts + totalBoothPosts + totalSupplyPosts === 0);
-  }, [user, userProfile]);
+  }, [user, userProfile, totalJobPosts, totalSalonPosts, totalBoothPosts, totalSupplyPosts]);
   
   const handleCheckboxChange = (option: keyof PricingOptions) => {
-    setPricingOptions(prev => ({
-      ...prev,
-      [option]: !prev[option]
-    }));
+    setPricingOptions({
+      ...pricingOptions,
+      [option]: !pricingOptions[option]
+    });
   };
   
   const getPostStats = (): UserPostingStats => {
@@ -63,7 +61,7 @@ const JobPostOptions: React.FC<JobPostOptionsProps> = ({ pricingOptions, setPric
   
   return (
     <Card className="border-2">
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 pt-6">
         <h3 className="text-lg font-medium">Job Post Options</h3>
         
         {isFirstPost && (

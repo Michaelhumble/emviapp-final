@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from "@/components/ui/button";
 import { CreditCard, CheckCircle, AlertCircle, Zap, Globe, TrendingUp } from "lucide-react";
 import StripeCheckout from "@/components/payments/StripeCheckout";
-import { generatePromotionalText } from "@/utils/posting/promotionalText";
+import { generatePromotionalText2 } from "@/utils/posting/promotionalText";
 import { PricingOptions, PostType } from "@/utils/posting/types";
 
 interface PaymentConfirmationModalProps {
@@ -72,8 +72,6 @@ const PaymentConfirmationModal = ({
         return 'Salon For Sale Listing';
       case 'booth':
         return 'Booth Rental';
-      case 'supply':
-        return 'Supply Listing';
       default:
         return 'Post';
     }
@@ -106,7 +104,7 @@ const PaymentConfirmationModal = ({
   };
   
   const getPromotionalText = () => {
-    return generatePromotionalText(postType, mockUserStats, options);
+    return generatePromotionalText2(postType, mockUserStats, options);
   };
   
   return (
