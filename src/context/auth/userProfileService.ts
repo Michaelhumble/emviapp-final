@@ -45,7 +45,7 @@ export const fetchUserProfile = async (user: User): Promise<UserProfile | null> 
       preferred_language: data.preferred_language || '',
       // Handle the new fields with appropriate fallbacks
       referral_count: data.credits || 0, // Use credits as fallback for referral_count
-      salon_name: data.salon_name || '',
+      salon_name: data.custom_role || '', // Since salon_name doesn't exist in the DB, use custom_role as a fallback
       company_name: data.custom_role || '', // Use custom_role as fallback for company_name
       custom_role: data.custom_role || '',
       contact_link: data.contact_link || '',
@@ -108,7 +108,8 @@ const createUserProfile = async (user: User): Promise<UserProfile | null> => {
     updated_at: data.updated_at,
     preferred_language: data.preferred_language || '',
     // Set default values for the additional fields
-    referral_count: data.credits || 0,
+    referral_count: data.credits ||
+     0,
     salon_name: '',
     company_name: '',
     custom_role: '',
