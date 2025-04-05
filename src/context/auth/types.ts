@@ -48,6 +48,8 @@ export interface UserProfile {
   credits?: number;
   // Profile stats
   profile_views?: number;
+  // Language preference
+  preferred_language?: 'en' | 'vi' | 'es' | null;
 }
 
 // Profile status information

@@ -1,90 +1,100 @@
 
+import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { AlertCircle } from "lucide-react";
-import { useState } from "react";
-import { PostType } from "@/utils/posting/types";
-import { 
-  getBasePrice, 
-  getNationwidePrice, 
-  getFastSalePackagePrice,
-  getShowAtTopPrice,
-  getRenewalPrice
-} from "@/utils/posting/promotionalText";
+import { toast } from "sonner";
+import { useAuth } from "@/context/auth";
+import StripeCheckout from "../payments/StripeCheckout";
+import { getRenewalPrice } from "@/utils/posting/promotionalText";
 
-interface RenewPostDialogProps {
+export interface RenewPostDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: () => void;
-  postType: PostType;
-  postTitle: string;
+  postId: string;
+  postType: 'salon' | 'job' | 'booth';
+  isNationwide: boolean;
+  expiresAt: string;
+  fastSalePackage: boolean;
+  bundleWithJobPost: boolean;
+  onRenewed: () => void;
 }
 
 const RenewPostDialog = ({
   open,
   onOpenChange,
-  onConfirm,
+  postId,
   postType,
-  postTitle
+  isNationwide,
+  expiresAt,
+  fastSalePackage,
+  bundleWithJobPost,
+  onRenewed
 }: RenewPostDialogProps) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const handleConfirm = () => {
-    setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      onConfirm();
-      onOpenChange(false);
-    }, 1500);
+  const { userProfile } = useAuth();
+  const [processing, setProcessing] = useState(false);
+
+  const getPostTypeName = () => {
+    switch (postType) {
+      case 'job':
+        return 'Job Post';
+      case 'salon':
+        return 'Salon Listing';
+      case 'booth':
+        return 'Booth Rental';
+      default:
+        return 'Post';
+    }
   };
+
+  const renewalPrice = getRenewalPrice(postType, isNationwide, fastSalePackage, bundleWithJobPost);
   
-  const renewalPrice = getRenewalPrice(postType);
-  
+  const handleSuccess = () => {
+    setProcessing(false);
+    toast.success("Post renewal successful!", {
+      description: `Your ${getPostTypeName()} has been renewed for 30 more days.`
+    });
+    onRenewed();
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-amber-500" />
-            Renew Your Post
-          </DialogTitle>
+          <DialogTitle>Renew Your Post</DialogTitle>
           <DialogDescription>
-            Your post "{postTitle}" has expired. Would you like to renew it?
+            Extend your {getPostTypeName()} for an additional 30 days.
           </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-4 py-4">
-          <div className="bg-amber-50 p-3 rounded-md border border-amber-100">
-            <p className="text-amber-800 text-sm">
-              Renewing your post will make it visible again for another 30 days. The renewal fee is ${renewalPrice}.
-            </p>
-          </div>
-          
-          <div className="text-sm space-y-2">
-            <p className="font-medium">What happens when you renew:</p>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>Your post becomes active and visible in search results</li>
-              <li>The post retains all original information and settings</li>
-              <li>30-day visibility period starts immediately</li>
-            </ul>
+        <div className="py-4">
+          <div className="space-y-3">
+            <div className="text-sm">
+              <span className="font-medium">Current expiration:</span> {new Date(expiresAt).toLocaleDateString()}
+            </div>
+            
+            <div className="text-sm">
+              <span className="font-medium">New expiration:</span> {new Date(new Date().setDate(new Date().getDate() + 30)).toLocaleDateString()}
+            </div>
+            
+            <div className="mt-4 bg-gray-50 p-3 rounded-md">
+              <div className="flex justify-between">
+                <span className="font-medium">Renewal price:</span>
+                <span>${renewalPrice}</span>
+              </div>
+            </div>
           </div>
         </div>
         
-        <DialogFooter className="sm:justify-between">
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={isSubmitting}
-          >
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button
-            onClick={handleConfirm}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Processing..." : `Renew for $${renewalPrice}`}
-          </Button>
+          <StripeCheckout
+            amount={renewalPrice}
+            productName={`${getPostTypeName()} Renewal`}
+            buttonText="Renew Now"
+            onSuccess={handleSuccess}
+          />
         </DialogFooter>
       </DialogContent>
     </Dialog>

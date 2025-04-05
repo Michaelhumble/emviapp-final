@@ -7,6 +7,9 @@ import ArtistDashboardWidgets from "./artist/ArtistDashboardWidgets";
 import SalonOwnerDashboardWidgets from "./salon/SalonOwnerDashboardWidgets";
 import CustomerDashboardWidgets from "./customer/CustomerDashboardWidgets";
 import SubscriptionStatusCard from "./SubscriptionStatusCard";
+import FreelancerDashboardWidgets from "./freelancer/FreelancerDashboardWidgets";
+import SupplierDashboardWidgets from "./supplier/SupplierDashboardWidgets";
+import OtherDashboardWidgets from "./other/OtherDashboardWidgets";
 
 interface DashboardContentProps {
   className?: string;
@@ -15,11 +18,17 @@ interface DashboardContentProps {
 const DashboardContent = ({ className = "" }: DashboardContentProps) => {
   const { userRole, userProfile } = useAuth();
 
-  const isArtistOrFreelancer = userRole === 'artist' || userRole === 'freelancer' || userRole === 'nail technician/artist' || userRole === 'renter';
+  const isArtistOrTechnician = userRole === 'artist' || userRole === 'nail technician/artist' || userRole === 'renter';
   
-  const isSalonOrVendor = userRole === 'salon' || userRole === 'owner' || userRole === 'vendor' || userRole === 'supplier' || userRole === 'beauty supplier';
+  const isFreelancer = userRole === 'freelancer';
   
-  const isCustomerOrOther = userRole === 'customer' || userRole === 'other' || !userRole;
+  const isSalon = userRole === 'salon' || userRole === 'owner';
+  
+  const isSupplier = userRole === 'vendor' || userRole === 'supplier' || userRole === 'beauty supplier';
+  
+  const isCustomer = userRole === 'customer';
+  
+  const isOther = userRole === 'other' || !userRole;
   
   return (
     <div className={`max-w-4xl mx-auto ${className}`}>
@@ -36,16 +45,19 @@ const DashboardContent = ({ className = "" }: DashboardContentProps) => {
       </div>
       
       {/* Subscription Status */}
-      {isSalonOrVendor && (
+      {(isSalon || isSupplier) && (
         <div className="mb-6">
           <SubscriptionStatusCard />
         </div>
       )}
       
       {/* Role-specific dashboard content */}
-      {isArtistOrFreelancer && <ArtistDashboardWidgets />}
-      {isSalonOrVendor && <SalonOwnerDashboardWidgets />}
-      {isCustomerOrOther && <CustomerDashboardWidgets />}
+      {isArtistOrTechnician && <ArtistDashboardWidgets />}
+      {isFreelancer && <FreelancerDashboardWidgets />}
+      {isSalon && <SalonOwnerDashboardWidgets />}
+      {isSupplier && <SupplierDashboardWidgets />}
+      {isCustomer && <CustomerDashboardWidgets />}
+      {isOther && <OtherDashboardWidgets />}
     </div>
   );
 };

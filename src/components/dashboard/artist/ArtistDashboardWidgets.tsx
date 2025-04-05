@@ -3,11 +3,33 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Scissors, Calendar, Bell, Search, Sparkles, TrendingUp } from "lucide-react";
+import { PlusCircle, Scissors, Calendar, Bell, Search, Sparkles, TrendingUp, Camera, BookOpen, Award } from "lucide-react";
 import AffiliateReferralCard from "@/components/dashboard/common/AffiliateReferralCard";
+import { Progress } from "@/components/ui/progress";
 
 const ArtistDashboardWidgets = () => {
   const { userProfile } = useAuth();
+  
+  // Calculate profile completion percentage
+  const getProfileCompletion = () => {
+    if (!userProfile) return 30;
+    
+    let totalFields = 8;
+    let completedFields = 0;
+    
+    if (userProfile.full_name) completedFields++;
+    if (userProfile.bio) completedFields++;
+    if (userProfile.specialty) completedFields++;
+    if (userProfile.avatar_url) completedFields++;
+    if (userProfile.instagram) completedFields++;
+    if (userProfile.phone) completedFields++;
+    if (userProfile.location) completedFields++;
+    if (userProfile.skills && userProfile.skills.length > 0) completedFields++;
+    
+    return Math.round((completedFields / totalFields) * 100);
+  };
+  
+  const profileCompletion = getProfileCompletion();
   
   return (
     <div className="space-y-6">
@@ -33,6 +55,40 @@ const ArtistDashboardWidgets = () => {
           </div>
         </CardContent>
       </Card>
+      
+      {/* Profile Completion Card */}
+      {profileCompletion < 100 && (
+        <Card className="border-amber-200">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Award className="h-5 w-5 text-amber-500" />
+              Complete Your Profile
+            </CardTitle>
+            <CardDescription>
+              Artists with complete profiles get up to 3x more client views
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span>Profile completion</span>
+                <span className="font-medium">{profileCompletion}%</span>
+              </div>
+              <Progress value={profileCompletion} className="h-2" />
+              
+              <p className="text-xs text-muted-foreground mt-2">
+                {profileCompletion < 50 
+                  ? "Add your bio, specialty, and upload a profile photo" 
+                  : "Add your skills and social links to complete your profile"}
+              </p>
+            </div>
+            
+            <Button size="sm" className="mt-4 w-full" asChild>
+              <Link to="/profile/edit">Complete Profile</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Find Jobs Card */}
@@ -87,7 +143,7 @@ const ArtistDashboardWidgets = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Scissors className="h-5 w-5 text-indigo-500" />
+              <Camera className="h-5 w-5 text-indigo-500" />
               Portfolio
             </CardTitle>
             <CardDescription>Showcase your best work</CardDescription>
@@ -102,21 +158,21 @@ const ArtistDashboardWidgets = () => {
           </CardContent>
         </Card>
         
-        {/* Notifications Card */}
+        {/* Learning Resources */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Bell className="h-5 w-5 text-indigo-500" />
-              Notifications
+              <BookOpen className="h-5 w-5 text-indigo-500" />
+              Learning Center
             </CardTitle>
-            <CardDescription>Stay updated on important events</CardDescription>
+            <CardDescription>Elevate your skills</CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
-              Receive alerts for new job opportunities, booking requests, and more.
+              Access tutorials, webinars, and resources to help grow your career.
             </p>
             <Button className="w-full" asChild>
-              <Link to="/notifications">View Notifications</Link>
+              <Link to="/resources">Browse Resources</Link>
             </Button>
           </CardContent>
         </Card>

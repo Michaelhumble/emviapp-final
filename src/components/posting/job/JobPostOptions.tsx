@@ -1,68 +1,124 @@
-
-import { Info } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import SmartAdOptions from "@/components/posting/SmartAdOptions";
-import PricingDisplay from "@/components/posting/PricingDisplay";
-import { PricingOptions } from "@/utils/posting/types";
-import { generatePromotionalText } from "@/utils/posting/promotionalText";
+import React, { useState, useEffect } from 'react';
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/auth";
+import { useNavigate } from 'react-router-dom';
+import { PricingOptions, UserPostingStats } from '@/utils/posting/types';
+import { generatePromotionalText, getFirstPostPromotionalText } from '@/utils/posting/promotionalText';
 
 interface JobPostOptionsProps {
-  postType: 'job';
-  isFirstPost: boolean;
-  hasReferrals: boolean;
-  price: number;
-  originalPrice?: number;
   pricingOptions: PricingOptions;
-  onNationwideChange: (checked: boolean) => void;
+  setPricingOptions: (options: PricingOptions) => void;
 }
 
-const JobPostOptions = ({
-  postType,
-  isFirstPost,
-  hasReferrals,
-  price,
-  originalPrice,
-  pricingOptions,
-  onNationwideChange,
-}: JobPostOptionsProps) => {
-  // Mock user stats for promotional text
-  const mockUserStats = {
-    totalJobPosts: isFirstPost ? 0 : 1,
-    totalSalonPosts: 0,
-    totalBoothPosts: 0,
-    totalSupplyPosts: 0,
-    referralCount: hasReferrals ? 1 : 0
+const JobPostOptions: React.FC<JobPostOptionsProps> = ({ pricingOptions, setPricingOptions }) => {
+  const { toast } = useToast();
+  const { user, userProfile } = useAuth();
+  const navigate = useNavigate();
+  
+  const [totalJobPosts, setTotalJobPosts] = useState(0);
+  const [totalSalonPosts, setTotalSalonPosts] = useState(0);
+  const [totalBoothPosts, setTotalBoothPosts] = useState(0);
+  const [totalSupplyPosts, setTotalSupplyPosts] = useState(0);
+  const [referralCount, setReferralCount] = useState(0);
+  const [isFirstPost, setIsFirstPost] = useState(true);
+  
+  useEffect(() => {
+    if (!user) return;
+    
+    // Mock data - replace with actual data fetching from backend
+    setTotalJobPosts(3);
+    setTotalSalonPosts(1);
+    setTotalBoothPosts(2);
+    setTotalSupplyPosts(0);
+    setReferralCount(userProfile?.referral_count || 0);
+    
+    // Determine if it's the user's first post
+    setIsFirstPost(totalJobPosts + totalSalonPosts + totalBoothPosts + totalSupplyPosts === 0);
+  }, [user, userProfile]);
+  
+  const handleCheckboxChange = (option: keyof PricingOptions) => {
+    setPricingOptions(prev => ({
+      ...prev,
+      [option]: !prev[option]
+    }));
   };
   
-  const promotionalText = generatePromotionalText(postType, mockUserStats, pricingOptions);
+  const getPostStats = (): UserPostingStats => {
+    // Create an object that matches the UserPostingStats interface
+    return {
+      jobPostCount: totalJobPosts,
+      salonPostCount: totalSalonPosts,
+      boothPostCount: totalBoothPosts,
+      supplyPostCount: totalSupplyPosts,
+      totalPosts: totalJobPosts + totalSalonPosts + totalBoothPosts + totalSupplyPosts,
+      referralCount: referralCount
+    };
+  };
+  
+  const postStats = getPostStats();
   
   return (
-    <div className="space-y-6">
-      {/* Pricing & Ad Options */}
-      <div className="border rounded-lg p-4 bg-white shadow-sm">
-        <SmartAdOptions 
-          postType={postType}
-          isFirstPost={isFirstPost}
-          hasReferrals={hasReferrals}
-          onNationwideChange={onNationwideChange}
-        />
+    <Card className="border-2">
+      <CardContent className="space-y-4">
+        <h3 className="text-lg font-medium">Job Post Options</h3>
         
-        <Separator className="my-6" />
+        {isFirstPost && (
+          <div className="bg-green-50 border border-green-200 p-3 rounded-md">
+            <p className="text-sm text-green-700 font-medium">
+              {getFirstPostPromotionalText()}
+            </p>
+          </div>
+        )}
         
-        <PricingDisplay
-          postType={postType}
-          price={price}
-          options={pricingOptions}
-          promotionalText={promotionalText}
-          originalPrice={originalPrice}
-        />
-      </div>
-      
-      <div className="bg-yellow-50 border border-yellow-100 rounded-lg p-4 text-sm text-yellow-800 flex items-start">
-        <Info className="h-5 w-5 mr-2 flex-shrink-0 text-yellow-700" />
-        <p>Bài đăng của bạn sẽ được xem bởi hàng trăm thợ trên toàn quốc. Muốn hiện lên top? Chúng tôi sẽ liên hệ để hỗ trợ nâng cấp.</p>
-      </div>
-    </div>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="isNationwide">Nationwide Reach</Label>
+            <Checkbox
+              id="isNationwide"
+              checked={pricingOptions.isNationwide || false}
+              onCheckedChange={() => handleCheckboxChange('isNationwide')}
+            />
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Reach candidates across the country.
+          </p>
+        </div>
+        
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="fastSalePackage">Fast Sale Package</Label>
+            <Checkbox
+              id="fastSalePackage"
+              checked={pricingOptions.fastSalePackage || false}
+              onCheckedChange={() => handleCheckboxChange('fastSalePackage')}
+            />
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Get your job post seen by more candidates faster.
+          </p>
+        </div>
+        
+        {postStats.jobPostCount === 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="bundleWithJobPost">Bundle with Salon Post</Label>
+              <Checkbox
+                id="bundleWithJobPost"
+                checked={pricingOptions.bundleWithJobPost || false}
+                onCheckedChange={() => handleCheckboxChange('bundleWithJobPost')}
+              />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Create a salon post to promote your salon and attract more candidates.
+            </p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 

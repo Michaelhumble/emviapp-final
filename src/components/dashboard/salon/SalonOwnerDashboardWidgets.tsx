@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Users, Store, FileText, Calendar, TrendingUp, Globe, Star, Megaphone } from "lucide-react";
+import { Plus, Users, Store, FileText, Calendar, TrendingUp, Globe, Star, Megaphone, Tag, Gift, Percent } from "lucide-react";
 import AffiliateReferralCard from "@/components/dashboard/common/AffiliateReferralCard";
 import { Progress } from "@/components/ui/progress";
 
@@ -18,6 +18,29 @@ const SalonOwnerDashboardWidgets = () => {
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-serif">Salon Owner Dashboard</h2>
+      
+      {/* Customer Visibility Banner */}
+      <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-100">
+        <CardContent className="py-6">
+          <div className="flex flex-col sm:flex-row justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <Gift className="h-6 w-6 text-amber-500" />
+                <h3 className="text-lg font-medium text-amber-800">Boost Your Business!</h3>
+              </div>
+              <p className="text-amber-700 text-sm">
+                90% of salons who add weekly offers see a 35% increase in new customer visits. 
+                Share a special discount to attract new clients.
+              </p>
+            </div>
+            <div className="flex items-end">
+              <Button className="bg-amber-500 hover:bg-amber-600 text-white" asChild>
+                <Link to="/offers/create">Create Special Offer</Link>
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
       
       {/* Post Reach Stats Card */}
       <Card className="bg-white border">
@@ -55,13 +78,15 @@ const SalonOwnerDashboardWidgets = () => {
                       Unlock Premium Visibility
                     </p>
                     <p className="text-xs text-amber-700 mt-1">
-                      Your offer could be shown to {localReach * 3}+ customers nearby with Premium Visibility.
+                      Your salon could be shown to {localReach * 3}+ customers nearby with Premium Visibility.
                     </p>
                   </div>
                 </div>
-                <Button size="sm" variant="outline" className="mt-2 bg-white border-amber-200 text-amber-800 hover:bg-amber-50 w-full">
-                  <Star className="h-4 w-4 mr-1 text-amber-500" /> 
-                  Upgrade Visibility — $25/mo
+                <Button size="sm" variant="outline" className="mt-2 bg-white border-amber-200 text-amber-800 hover:bg-amber-50 w-full" asChild>
+                  <Link to="/visibility/upgrade">
+                    <Star className="h-4 w-4 mr-1 text-amber-500" /> 
+                    Upgrade Visibility — $25/mo
+                  </Link>
                 </Button>
               </div>
             )}
@@ -89,21 +114,23 @@ const SalonOwnerDashboardWidgets = () => {
           </CardContent>
         </Card>
         
-        {/* Staff Management Card */}
-        <Card>
-          <CardHeader>
+        {/* Create Promotions Card */}
+        <Card className="border-green-200">
+          <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-t-lg">
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Users className="h-5 w-5 text-indigo-500" />
-              Staff
+              <Percent className="h-5 w-5 text-green-600" />
+              Special Offers
             </CardTitle>
-            <CardDescription>Manage your salon team</CardDescription>
+            <CardDescription className="text-green-800">
+              Attract new customers
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
-              Add, remove, or update your salon staff members and their roles.
+              Create special discounts and promotions to bring in new clients.
             </p>
-            <Button className="w-full" asChild>
-              <Link to="/salon/staff">Manage Staff</Link>
+            <Button className="w-full bg-green-600 hover:bg-green-700" asChild>
+              <Link to="/offers/create">Create Offer</Link>
             </Button>
           </CardContent>
         </Card>

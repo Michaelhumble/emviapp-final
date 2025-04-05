@@ -36,7 +36,7 @@ import NotFound from "@/pages/NotFound";
 // Custom Routes - Dashboards
 import Dashboard from "@/pages/dashboard/Dashboard";
 import ArtistDashboard from "@/pages/dashboard/Artist";
-import SalonDashboard from "@/pages/dashboard/Owner";
+import SalonDashboard from "@/pages/dashboard/Salon";
 import CustomerDashboard from "@/pages/dashboard/Customer";
 import SupplierDashboard from "@/pages/dashboard/Supplier";
 import FreelancerDashboard from "@/pages/dashboard/Freelancer";
@@ -56,6 +56,10 @@ import { AuthProvider } from "@/context/auth/AuthProvider";
 import { ProfileProvider } from "@/context/profile/ProfileProvider";
 import { SubscriptionProvider } from "@/context/subscription";
 import { ThemeProvider } from "@/components/theme-provider";
+
+// New components
+import LanguagePreference from "@/components/common/LanguagePreference";
+import SocialNudge from "@/components/dashboard/common/SocialNudge";
 
 const AppRoutes = () => {
   return (
@@ -130,6 +134,8 @@ const App = () => {
             <SubscriptionProvider>
               <Toaster />
               <AppRoutes />
+              <LanguagePreference />
+              <SocialNudge />
             </SubscriptionProvider>
           </ProfileProvider>
         </AuthProvider>
