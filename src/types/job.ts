@@ -1,4 +1,3 @@
-
 export interface Job {
   id: string;
   title: string;
@@ -44,6 +43,7 @@ export interface Job {
   };
   user_id?: string;
   is_nationwide?: boolean;
+  preferred_languages?: string[];
   
   // Salon for sale fields
   image?: string;

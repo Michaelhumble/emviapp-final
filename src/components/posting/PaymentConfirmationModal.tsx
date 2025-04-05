@@ -1,11 +1,11 @@
-
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CreditCard, CheckCircle, AlertCircle, Zap, Globe, TrendingUp } from "lucide-react";
 import StripeCheckout from "@/components/payments/StripeCheckout";
 import PricingDisplay from "@/components/posting/PricingDisplay";
-import { generatePromotionalText, PricingOptions } from "@/utils/posting/promotionalText";
+import { generatePromotionalText } from "@/utils/posting/promotionalText";
+import { PricingOptions } from "@/utils/posting/types";
 
 interface PaymentConfirmationModalProps {
   open: boolean;

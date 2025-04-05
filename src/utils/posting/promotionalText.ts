@@ -82,3 +82,6 @@ export const getRenewalPrice = (
       return 20;
   }
 };
+
+// Re-export PricingOptions from the types file
+export type { PricingOptions };
