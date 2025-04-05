@@ -15,6 +15,7 @@ type DbUser = Database["public"]["Tables"]["users"]["Row"] & {
   custom_role?: string;
   preferences?: string[];
   contact_link?: string;
+  referral_count?: number;
 };
 
 // Fetch user profile from Supabase
@@ -57,7 +58,8 @@ export const fetchUserProfile = async (user: User): Promise<UserProfile | null> 
       specialty: userData.specialty,
       role: role,
       created_at: userData.created_at,
-      updated_at: userData.updated_at
+      updated_at: userData.updated_at,
+      referral_count: userData.referral_count || 0  // Add default value of 0
     };
     
     // Add optional fields from the database if they exist

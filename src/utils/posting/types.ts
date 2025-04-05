@@ -6,6 +6,7 @@ export interface PricingOptions {
   showAtTop?: boolean;
   fastSalePackage?: boolean;
   bundleWithJobPost?: boolean;
+  bundleWithSalonPost?: boolean;  // Added this property
   isFirstPost?: boolean;
   isRenewal?: boolean;
   hasReferrals?: boolean;
