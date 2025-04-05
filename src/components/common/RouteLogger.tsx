@@ -1,22 +1,26 @@
 
-import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { logRouteAccess } from "@/utils/routeChecker";
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useAuth } from '@/context/auth';
+import { logRouteAccess } from '@/utils/routeChecker';
 
-/**
- * RouteLogger - Component that logs route changes to the console
- * Must be used within a Router context
- */
 const RouteLogger = () => {
   const location = useLocation();
-
+  const { user } = useAuth();
+  
   useEffect(() => {
-    // Log the route change
+    // Log route access for analytics
     logRouteAccess(location.pathname);
-    console.log(`Route changed to: ${location.pathname}`);
-  }, [location]);
-
-  // This component doesn't render anything
+    
+    // Add additional info for logged in users
+    if (user) {
+      console.info(`User ${user.id} accessing route: ${location.pathname}`);
+    } else {
+      console.info(`Anonymous user accessing route: ${location.pathname}`);
+    }
+  }, [location.pathname, user]);
+  
+  // This is a utility component that doesn't render anything
   return null;
 };
 

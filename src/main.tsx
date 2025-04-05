@@ -30,6 +30,10 @@ import OtherDashboard from '@/pages/dashboard/Other';
 import NotFound from '@/pages/NotFound';
 import Analysis from '@/pages/Analysis';
 import ProfileRedirect from '@/components/profile/ProfileRedirect';
+import Checkout from '@/pages/Checkout';
+import Messaging from '@/pages/Messaging';
+import SalonMarketplace from '@/pages/SalonMarketplace';
+import ProfileNotFound from '@/components/profile/ProfileNotFound';
 
 // Import styles
 import './index.css';
@@ -54,6 +58,10 @@ const router = createBrowserRouter([
       {
         path: 'salons',
         element: <Salons />
+      },
+      {
+        path: 'salon/:id',
+        element: <SalonMarketplace />
       },
       {
         path: 'analysis',
@@ -86,7 +94,8 @@ const router = createBrowserRouter([
       },
       {
         path: 'profile/:username',
-        element: <UserProfileByUsername />
+        element: <UserProfileByUsername />,
+        errorElement: <ProfileNotFound />
       },
       {
         path: 'dashboard',
@@ -119,6 +128,18 @@ const router = createBrowserRouter([
       {
         path: 'dashboard/other',
         element: <OtherDashboard />
+      },
+      {
+        path: 'checkout',
+        element: <Checkout />
+      },
+      {
+        path: 'messages',
+        element: <Messaging />
+      },
+      {
+        path: 'redirect/profile',
+        element: <ProfileRedirect />
       },
       {
         path: '*',
