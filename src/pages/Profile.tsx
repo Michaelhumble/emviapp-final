@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -217,146 +216,150 @@ const Profile = () => {
               
               <Separator />
               
-              <TabsContent value="profile" className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  <div className="md:col-span-1">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="text-lg">Contact Information</CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        {profile?.email && (
-                          <div className="flex items-center gap-2">
-                            <Mail className="h-4 w-4 text-muted-foreground" />
-                            <span>{profile.email}</span>
-                          </div>
-                        )}
-                        {profile?.phone && (
-                          <div className="flex items-center gap-2">
-                            <Phone className="h-4 w-4 text-muted-foreground" />
-                            <span>{profile.phone}</span>
-                          </div>
-                        )}
-                        {profile?.website && (
-                          <div className="flex items-center gap-2">
-                            <Globe className="h-4 w-4 text-muted-foreground" />
-                            <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                              {profile.website.replace(/^https?:\/\//, '')}
-                            </a>
-                          </div>
-                        )}
-                        {profile?.instagram && (
-                          <div className="flex items-center gap-2">
-                            <Instagram className="h-4 w-4 text-muted-foreground" />
-                            <a href={`https://instagram.com/${profile.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                              {profile.instagram}
-                            </a>
-                          </div>
-                        )}
-                      </CardContent>
-                      <CardFooter>
-                        <Button variant="outline" className="w-full" onClick={() => navigate('/profile/edit')}>
-                          <Edit className="mr-2 h-4 w-4" />
-                          Edit Profile
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                    
-                    <Card className="mt-6">
-                      <CardHeader>
-                        <CardTitle className="text-lg">About</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-muted-foreground">
-                          {profile?.bio || 'No bio information added yet.'}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                  
-                  <div className="md:col-span-2">
-                    {profile?.role === 'artist' || userRole === 'artist' || profile?.role === 'nail technician/artist' || userRole === 'nail technician/artist' ? (
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>Artist Portfolio</CardTitle>
-                          <CardDescription>Showcase your work and skills</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="bg-gray-50 border border-dashed border-gray-200 rounded-md p-8 text-center">
-                            <ExternalLink className="h-10 w-10 text-gray-400 mx-auto mb-4" />
-                            <h3 className="text-lg font-medium">Create Your Portfolio</h3>
-                            <p className="text-gray-500 mb-4">
-                              Showcase your best work and attract more clients
+              <div>
+                <Tabs value={activeTab} onValueChange={setActiveTab}>
+                  <TabsContent value="profile" className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      <div className="md:col-span-1">
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-lg">Contact Information</CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-4">
+                            {profile?.email && (
+                              <div className="flex items-center gap-2">
+                                <Mail className="h-4 w-4 text-muted-foreground" />
+                                <span>{profile.email}</span>
+                              </div>
+                            )}
+                            {profile?.phone && (
+                              <div className="flex items-center gap-2">
+                                <Phone className="h-4 w-4 text-muted-foreground" />
+                                <span>{profile.phone}</span>
+                              </div>
+                            )}
+                            {profile?.website && (
+                              <div className="flex items-center gap-2">
+                                <Globe className="h-4 w-4 text-muted-foreground" />
+                                <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                                  {profile.website.replace(/^https?:\/\//, '')}
+                                </a>
+                              </div>
+                            )}
+                            {profile?.instagram && (
+                              <div className="flex items-center gap-2">
+                                <Instagram className="h-4 w-4 text-muted-foreground" />
+                                <a href={`https://instagram.com/${profile.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                                  {profile.instagram}
+                                </a>
+                              </div>
+                            )}
+                          </CardContent>
+                          <CardFooter>
+                            <Button variant="outline" className="w-full" onClick={() => navigate('/profile/edit')}>
+                              <Edit className="mr-2 h-4 w-4" />
+                              Edit Profile
+                            </Button>
+                          </CardFooter>
+                        </Card>
+                        
+                        <Card className="mt-6">
+                          <CardHeader>
+                            <CardTitle className="text-lg">About</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <p className="text-muted-foreground">
+                              {profile?.bio || 'No bio information added yet.'}
                             </p>
-                            <Button>Get Started</Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ) : profile?.role === 'salon' || userRole === 'salon' || profile?.role === 'owner' || userRole === 'owner' ? (
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>Salon Management</CardTitle>
-                          <CardDescription>Manage your salon and staff</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="bg-gray-50 border border-dashed border-gray-200 rounded-md p-8 text-center">
-                            <ExternalLink className="h-10 w-10 text-gray-400 mx-auto mb-4" />
-                            <h3 className="text-lg font-medium">Configure Your Salon Profile</h3>
-                            <p className="text-gray-500 mb-4">
-                              Add details about your salon and services offered
-                            </p>
-                            <Button>Set Up Salon</Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ) : (
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>Activity</CardTitle>
-                          <CardDescription>Your recent interactions</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="bg-gray-50 border border-dashed border-gray-200 rounded-md p-8 text-center">
-                            <p className="text-gray-500">
-                              No recent activity to display
-                            </p>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    )}
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                      <Card>
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-lg">Profile Visibility</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">Your profile is public</span>
-                            <Button variant="outline" size="sm">Manage</Button>
-                          </div>
-                        </CardContent>
-                      </Card>
+                          </CardContent>
+                        </Card>
+                      </div>
                       
-                      <Card>
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-lg">Account Security</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">Last login: Today</span>
-                            <Button variant="outline" size="sm">Security Settings</Button>
-                          </div>
-                        </CardContent>
-                      </Card>
+                      <div className="md:col-span-2">
+                        {profile?.role === 'artist' || userRole === 'artist' || profile?.role === 'nail technician/artist' || userRole === 'nail technician/artist' ? (
+                          <Card>
+                            <CardHeader>
+                              <CardTitle>Artist Portfolio</CardTitle>
+                              <CardDescription>Showcase your work and skills</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="bg-gray-50 border border-dashed border-gray-200 rounded-md p-8 text-center">
+                                <ExternalLink className="h-10 w-10 text-gray-400 mx-auto mb-4" />
+                                <h3 className="text-lg font-medium">Create Your Portfolio</h3>
+                                <p className="text-gray-500 mb-4">
+                                  Showcase your best work and attract more clients
+                                </p>
+                                <Button>Get Started</Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ) : profile?.role === 'salon' || userRole === 'salon' || profile?.role === 'owner' || userRole === 'owner' ? (
+                          <Card>
+                            <CardHeader>
+                              <CardTitle>Salon Management</CardTitle>
+                              <CardDescription>Manage your salon and staff</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="bg-gray-50 border border-dashed border-gray-200 rounded-md p-8 text-center">
+                                <ExternalLink className="h-10 w-10 text-gray-400 mx-auto mb-4" />
+                                <h3 className="text-lg font-medium">Configure Your Salon Profile</h3>
+                                <p className="text-gray-500 mb-4">
+                                  Add details about your salon and services offered
+                                </p>
+                                <Button>Set Up Salon</Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ) : (
+                          <Card>
+                            <CardHeader>
+                              <CardTitle>Activity</CardTitle>
+                              <CardDescription>Your recent interactions</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="bg-gray-50 border border-dashed border-gray-200 rounded-md p-8 text-center">
+                                <p className="text-gray-500">
+                                  No recent activity to display
+                                </p>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        )}
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                          <Card>
+                            <CardHeader className="pb-2">
+                              <CardTitle className="text-lg">Profile Visibility</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="flex justify-between items-center">
+                                <span className="text-sm text-muted-foreground">Your profile is public</span>
+                                <Button variant="outline" size="sm">Manage</Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                          
+                          <Card>
+                            <CardHeader className="pb-2">
+                              <CardTitle className="text-lg">Account Security</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="flex justify-between items-center">
+                                <span className="text-sm text-muted-foreground">Last login: Today</span>
+                                <Button variant="outline" size="sm">Security Settings</Button>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="subscription" className="p-6">
-                <SubscriptionProfile />
-              </TabsContent>
+                  </TabsContent>
+                  
+                  <TabsContent value="subscription" className="p-6">
+                    <SubscriptionProfile />
+                  </TabsContent>
+                </Tabs>
+              </div>
             </div>
           </div>
         </div>

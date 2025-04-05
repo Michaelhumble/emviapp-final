@@ -1,5 +1,5 @@
 
-import { TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Job } from "@/types/job";
 import ListingCard from "./ListingCard";
 

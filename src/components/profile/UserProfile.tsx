@@ -211,49 +211,49 @@ const UserProfile = () => {
           
           {/* Right Column */}
           <div className="lg:col-span-2">
-            <Tabs defaultValue="profile" value={activeTab} onValueChange={setActiveTab} className="mb-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
               <TabsList>
                 <TabsTrigger value="profile">Profile</TabsTrigger>
                 <TabsTrigger value="activity">Activity</TabsTrigger>
                 <TabsTrigger value="settings">Settings</TabsTrigger>
               </TabsList>
+              
+              <TabsContent value="profile" className="mt-0">
+                <div className="space-y-6">
+                  <ProfileCompletionTracker />
+                  
+                  <ProfilePublicPreview />
+                  
+                  <ProfileMission />
+                  
+                  <Separator className="my-8" />
+                  
+                  {renderRoleSpecificSection()}
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="activity" className="mt-0">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="font-serif">Recent Activity</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-500">Your recent activity will appear here.</p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              
+              <TabsContent value="settings" className="mt-0">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="font-serif">Account Settings</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-500">Manage your account settings and preferences.</p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
             </Tabs>
-            
-            <TabsContent value="profile" className="mt-0">
-              <div className="space-y-6">
-                <ProfileCompletionTracker />
-                
-                <ProfilePublicPreview />
-                
-                <ProfileMission />
-                
-                <Separator className="my-8" />
-                
-                {renderRoleSpecificSection()}
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="activity" className="mt-0">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="font-serif">Recent Activity</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-500">Your recent activity will appear here.</p>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="settings" className="mt-0">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="font-serif">Account Settings</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-500">Manage your account settings and preferences.</p>
-                </CardContent>
-              </Card>
-            </TabsContent>
           </div>
         </div>
         
