@@ -27,6 +27,7 @@ export const fetchUserProfile = async (user: User): Promise<UserProfile | null> 
     }
     
     // Handle database fields safely with fallbacks
+    // Cast data.role to UserRole to ensure type safety
     return {
       id: data.id,
       email: data.email || user.email || '',
@@ -42,14 +43,15 @@ export const fetchUserProfile = async (user: User): Promise<UserProfile | null> 
       created_at: data.created_at,
       updated_at: data.updated_at,
       preferred_language: data.preferred_language || '',
-      referral_count: data.referral_count || data.referral_code ? 1 : 0, // Fallback using referral_code
+      // Handle the new fields with appropriate fallbacks
+      referral_count: data.credits || 0, // Use credits as fallback for referral_count
       salon_name: data.salon_name || '',
-      company_name: data.company_name || '',
+      company_name: data.custom_role || '', // Use custom_role as fallback for company_name
       custom_role: data.custom_role || '',
       contact_link: data.contact_link || '',
-      skills: Array.isArray(data.skills) ? data.skills : [],
-      skill_level: data.skill_level || '',
-      profile_views: data.profile_views || 0,
+      skills: Array.isArray(data.preferences) ? data.preferences : [], // Use preferences array as fallback for skills
+      skill_level: data.specialty || '', // Use specialty as fallback for skill_level
+      profile_views: typeof data.credits === 'number' ? data.credits : 0, // Use credits as fallback for profile_views
       preferences: Array.isArray(data.preferences) ? data.preferences : []
     };
   } catch (error) {
@@ -74,7 +76,6 @@ const createUserProfile = async (user: User): Promise<UserProfile | null> => {
     website: '',
     specialty: '',
     role: 'customer' as UserRole,
-    referral_count: 0,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   };
@@ -106,7 +107,8 @@ const createUserProfile = async (user: User): Promise<UserProfile | null> => {
     created_at: data.created_at,
     updated_at: data.updated_at,
     preferred_language: data.preferred_language || '',
-    referral_count: data.referral_count || 0,
+    // Set default values for the additional fields
+    referral_count: data.credits || 0,
     salon_name: '',
     company_name: '',
     custom_role: '',
