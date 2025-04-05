@@ -30,8 +30,18 @@ const DashboardContent = ({ className = "" }: DashboardContentProps) => {
   
   const isOther = userRole === 'other' || !userRole;
   
+  // Generate theme class based on user role
+  const getRoleThemeClass = () => {
+    if (isArtistOrTechnician) return "bg-gradient-to-br from-purple-50 to-pink-50";
+    if (isSalon) return "bg-gradient-to-br from-blue-50 to-indigo-50";
+    if (isSupplier) return "bg-gradient-to-br from-emerald-50 to-teal-50";
+    if (isFreelancer) return "bg-gradient-to-br from-amber-50 to-yellow-50";
+    if (isCustomer) return "bg-gradient-to-br from-rose-50 to-pink-50";
+    return "bg-gradient-to-br from-gray-50 to-slate-50";
+  };
+  
   return (
-    <div className={`max-w-4xl mx-auto ${className}`}>
+    <div className={`max-w-4xl mx-auto ${className} p-6 rounded-xl shadow-sm ${getRoleThemeClass()} border border-gray-100`}>
       <DashboardGreeting />
       
       {/* Profile Completion Card */}

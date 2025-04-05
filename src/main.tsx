@@ -11,7 +11,7 @@ import { Toaster } from '@/components/ui/sonner';
 // Import pages
 import App from './App';
 import Index from '@/pages/Index';
-import Jobs from '@/pages/Jobs';
+import Jobs from '@/pages/jobs/index';
 import Salons from '@/pages/Salons';
 import SignIn from '@/pages/auth/SignIn';
 import SignUp from '@/pages/auth/SignUp';

@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
 import DashboardContent from "@/components/dashboard/DashboardContent";
+import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
 
 const SupplierDashboard = () => {
   useEffect(() => {
@@ -17,7 +18,9 @@ const SupplierDashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <DashboardContent />
+          <RoleDashboardLayout>
+            <DashboardContent />
+          </RoleDashboardLayout>
         </motion.div>
       </div>
     </Layout>

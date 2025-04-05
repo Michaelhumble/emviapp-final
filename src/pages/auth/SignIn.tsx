@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { Button } from "@/components/ui/button";
@@ -18,12 +18,13 @@ const SignIn = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Get redirect URL from query parameter or default to dashboard
+  // Get redirect URL from query parameter (with fallback)
   const query = new URLSearchParams(location.search);
   const redirectTo = query.get("redirect") || "/dashboard";
 
   // Redirect if already logged in
   if (isSignedIn && user) {
+    // We'll let the Dashboard component handle the role-based redirect
     return <Navigate to={redirectTo} replace />;
   }
 

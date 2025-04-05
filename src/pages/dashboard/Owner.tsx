@@ -4,6 +4,7 @@ import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
 import DashboardContent from "@/components/dashboard/DashboardContent";
 import VisibilityNotification from "@/components/dashboard/salon/VisibilityNotification";
+import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
 
 const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -20,7 +21,9 @@ const OwnerDashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <DashboardContent />
+          <RoleDashboardLayout>
+            <DashboardContent />
+          </RoleDashboardLayout>
         </motion.div>
       </div>
       
