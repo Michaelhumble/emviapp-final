@@ -2,21 +2,21 @@
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Home, UserX, Users, Search } from "lucide-react";
+import { Home, Store, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import ErrorLayout from "@/components/layout/ErrorLayout";
 import { logRouteAccess } from "@/utils/routeChecker";
 
-const ProfileNotFound = () => {
+const SalonNotFound = () => {
   const location = useLocation();
   
   useEffect(() => {
     const currentPath = location.pathname;
-    console.error(`Profile not found: ${currentPath}`);
+    console.error(`Salon not found: ${currentPath}`);
     logRouteAccess(currentPath);
-    document.title = "Profile Not Found | EmviApp";
+    document.title = "Salon Not Found | EmviApp";
   }, [location.pathname]);
-  
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -43,23 +43,23 @@ const ProfileNotFound = () => {
         initial="hidden"
         animate="visible"
       >
-        <motion.div variants={itemVariants} className="bg-blue-50 p-6 rounded-full inline-flex mb-6">
-          <UserX className="h-16 w-16 text-blue-400" />
+        <motion.div variants={itemVariants} className="bg-orange-50 p-6 rounded-full inline-flex mb-6">
+          <Store className="h-16 w-16 text-orange-400" />
         </motion.div>
         
         <motion.h1 variants={itemVariants} className="text-4xl font-bold mb-4">
-          Profile Not Found
+          Salon Not Found
         </motion.h1>
         
         <motion.p variants={itemVariants} className="text-xl text-gray-600 mb-8">
-          The user profile you're looking for doesn't exist or has been removed.
+          We couldn't find the salon you're looking for. It may have been removed or the URL might be incorrect.
         </motion.p>
         
         <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-          <Link to="/jobs">
-            <Button size="lg" className="flex items-center bg-blue-500 hover:bg-blue-600">
-              <Users className="mr-2 h-4 w-4" />
-              Browse Profiles
+          <Link to="/salons">
+            <Button size="lg" className="flex items-center bg-orange-500 hover:bg-orange-600">
+              <Search className="mr-2 h-4 w-4" />
+              Browse Salons
             </Button>
           </Link>
           <Link to="/">
@@ -74,4 +74,4 @@ const ProfileNotFound = () => {
   );
 };
 
-export default ProfileNotFound;
+export default SalonNotFound;

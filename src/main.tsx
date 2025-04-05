@@ -34,6 +34,8 @@ import Checkout from '@/pages/Checkout';
 import Messaging from '@/pages/Messaging';
 import SalonMarketplace from '@/pages/SalonMarketplace';
 import ProfileNotFound from '@/components/profile/ProfileNotFound';
+import SalonNotFound from '@/components/salon/SalonNotFound';
+import MessageNotFound from '@/components/messaging/MessageNotFound';
 
 // Import styles
 import './index.css';
@@ -61,7 +63,8 @@ const router = createBrowserRouter([
       },
       {
         path: 'salon/:id',
-        element: <SalonMarketplace />
+        element: <SalonMarketplace />,
+        errorElement: <SalonNotFound />
       },
       {
         path: 'analysis',
@@ -135,7 +138,13 @@ const router = createBrowserRouter([
       },
       {
         path: 'messages',
-        element: <Messaging />
+        element: <Messaging />,
+        errorElement: <MessageNotFound />
+      },
+      {
+        path: 'messages/:id',
+        element: <Messaging />,
+        errorElement: <MessageNotFound />
       },
       {
         path: 'redirect/profile',
