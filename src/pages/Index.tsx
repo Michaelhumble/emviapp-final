@@ -1,4 +1,5 @@
 
+import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
 import ArtistTestimonials from "@/components/home/ArtistTestimonials";
@@ -9,7 +10,6 @@ import Testimonials from "@/components/home/Testimonials";
 import CallToAction from "@/components/home/CallToAction";
 import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 import { useRoleSelection } from "@/hooks/useRoleSelection";
 import AIPowerhouse from "@/components/home/AIPowerhouse";
@@ -17,8 +17,6 @@ import AIAgents from "@/components/home/AIAgents";
 import AITeam from "@/components/home/AITeam";
 import PricingSection from "@/components/home/PricingSection";
 import FreelancersHighlight from "@/components/home/FreelancersHighlight";
-import { Skeleton } from "@/components/ui/skeleton";
-import { navigateToRoleDashboard } from "@/utils/navigation";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -33,20 +31,9 @@ const Index = () => {
   } = useRoleSelection();
   
   useEffect(() => {
-    if (user && userRole && hasSelectedRole && !loading && !isLoading) {
-      console.log("Redirecting based on user role:", userRole);
-      
-      const welcomeSeen = localStorage.getItem(`emvi_welcome_seen_${user.id}`);
-      
-      if (!welcomeSeen) {
-        navigate('/welcome');
-        return;
-      }
-      
-      // Enhanced role-based dashboard routing
-      navigateToRoleDashboard(navigate, userRole);
-    }
-  }, [user, userRole, hasSelectedRole, loading, isLoading, navigate]);
+    document.title = "EmviApp | The Beauty Industry Platform";
+    console.log("Index page loaded");
+  }, []);
   
   return (
     <Layout>

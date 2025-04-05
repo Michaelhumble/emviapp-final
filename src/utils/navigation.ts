@@ -1,6 +1,7 @@
 
 import { NavigateFunction } from "react-router-dom";
 import { UserRole } from "@/context/auth/types";
+import { toast } from "sonner";
 
 /**
  * Navigates the user to their role-specific dashboard
@@ -11,9 +12,12 @@ export const navigateToRoleDashboard = (
   navigate: NavigateFunction,
   userRole: UserRole | null
 ) => {
+  console.log("Navigating based on role:", userRole);
+  
   if (!userRole) {
     // If no role defined, navigate to profile page to set role
     navigate("/profile/edit");
+    toast.info("Please complete your profile to access your dashboard");
     return;
   }
   
@@ -70,6 +74,10 @@ export const getPersonalizedGreeting = (
   name: string,
   role: UserRole | null
 ): string => {
+  if (!name || name.trim() === '') {
+    name = "there";
+  }
+  
   if (!role) {
     return `Hello, ${name}!`;
   }

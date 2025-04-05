@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { 
   User, 
   X, 
@@ -10,7 +10,8 @@ import {
   Bell, 
   MessageSquare, 
   ChevronDown,
-  Activity
+  Activity,
+  Home
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -30,14 +31,22 @@ import {
   SheetContent,
   SheetTrigger
 } from "@/components/ui/sheet";
+import { toast } from "sonner";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, signOut, userRole } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isActive = (path: string) => {
     return location.pathname === path ? "text-primary font-medium" : "text-gray-600";
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+    toast.success("You've been signed out successfully");
   };
 
   return (
@@ -49,6 +58,13 @@ const Navbar = () => {
 
         {/* Main navigation */}
         <nav className="hidden md:flex items-center space-x-6">
+          <Link 
+            to="/" 
+            className={`${isActive('/')} hover:text-primary transition-colors flex items-center gap-1`}
+          >
+            <Home className="h-4 w-4" />
+            Home
+          </Link>
           <Link 
             to="/jobs" 
             className={`${isActive('/jobs')} hover:text-primary transition-colors`}
@@ -117,17 +133,26 @@ const Navbar = () => {
                     <p className="text-xs leading-none text-muted-foreground">
                       {user.email}
                     </p>
+                    {userRole && (
+                      <p className="text-xs text-primary capitalize">
+                        {userRole}
+                      </p>
+                    )}
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link to="/profile">Profile</Link>
+                  <Link to="/profile" className="cursor-pointer">Profile</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/messages">Messages</Link>
+                  <Link to="/dashboard" className="cursor-pointer">Dashboard</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/messages" className="cursor-pointer">Messages</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => signOut()}>
+                <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+                  <LogOut className="mr-2 h-4 w-4" />
                   Sign Out
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -156,6 +181,12 @@ const Navbar = () => {
             </SheetTrigger>
             <SheetContent side="bottom">
               <div className="grid gap-4 py-4">
+                <Link
+                  to="/"
+                  className="text-gray-600 hover:text-primary transition-colors flex items-center gap-1 py-2"
+                >
+                  <Home className="h-4 w-4" /> Home
+                </Link>
                 <Link
                   to="/jobs"
                   className="text-gray-600 hover:text-primary transition-colors block py-2"
@@ -212,12 +243,19 @@ const Navbar = () => {
                       Profile
                     </Link>
                     <Link
+                      to="/dashboard"
+                      className="text-gray-600 hover:text-primary transition-colors block py-2"
+                    >
+                      Dashboard
+                    </Link>
+                    <Link
                       to="/messages"
                       className="text-gray-600 hover:text-primary transition-colors block py-2"
                     >
                       Messages
                     </Link>
-                    <Button variant="ghost" className="w-full justify-start" onClick={() => signOut()}>
+                    <Button variant="ghost" className="w-full justify-start" onClick={handleSignOut}>
+                      <LogOut className="mr-2 h-4 w-4" />
                       Sign Out
                     </Button>
                   </>

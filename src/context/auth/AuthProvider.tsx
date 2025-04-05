@@ -21,6 +21,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Initialize auth state and listen for changes
   useEffect(() => {
+    console.log("Auth provider initializing");
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
@@ -34,6 +35,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
+        console.log("Auth state changed:", _event);
         setSession(session);
         setUser(session?.user || null);
         setIsSignedIn(!!session?.user);
@@ -138,7 +140,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     signOut,
     refreshUserProfile,
     signIn,
-    signUp, // Include the signUp function in the context value
+    signUp,
     isSignedIn
   };
 

@@ -9,12 +9,14 @@ import Footer from "./Footer";
 
 interface LayoutProps {
   children: ReactNode;
+  hideNavbar?: boolean;
 }
 
-const Layout = ({ children }: LayoutProps) => {
+const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
   const location = useLocation();
   const [showStickyCta, setShowStickyCta] = useState(false);
-  const isAuthPage = location.pathname === "/auth/signin" || location.pathname === "/auth/signup";
+  const isAuthPage = location.pathname === "/auth/signin" || location.pathname === "/auth/signup" ||
+    location.pathname === "/sign-in" || location.pathname === "/sign-up";
   const isHomePage = location.pathname === "/";
 
   // Control visibility of sticky CTA based on scroll position
@@ -33,8 +35,8 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {!isAuthPage && <Navbar />}
-      <main className={`flex-grow ${!isAuthPage ? "pt-16" : ""}`}>
+      {!isAuthPage && !hideNavbar && <Navbar />}
+      <main className={`flex-grow ${!isAuthPage && !hideNavbar ? "pt-16" : ""}`}>
         {children}
       </main>
       <Footer />
