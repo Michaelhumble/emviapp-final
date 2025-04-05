@@ -1,115 +1,102 @@
 
+import { Link } from "react-router-dom";
+import { useAuth } from "@/context/auth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Briefcase, Heart, ImagePlus, User, Sparkles } from "lucide-react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import UserActionButtons from "../common/UserActionButtons";
+import { PlusCircle, Scissors, Calendar, Bell, Search } from "lucide-react";
+import AffiliateReferralCard from "@/components/dashboard/common/AffiliateReferralCard";
 
 const ArtistDashboardWidgets = () => {
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  };
-  
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
-  };
+  const { userProfile } = useAuth();
   
   return (
-    <>
-      <motion.div 
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="grid grid-cols-1 md:grid-cols-2 gap-6"
-      >
-        <motion.div variants={item}>
-          <Card className="h-full">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-xl">New Job Matches</CardTitle>
-              <Briefcase className="h-5 w-5 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="mb-4">Find your next opportunity</CardDescription>
-              <Link to="/jobs">
-                <Button variant="default" className="w-full">
-                  Browse Jobs
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </motion.div>
+    <div className="space-y-6">
+      <h2 className="text-2xl font-serif">Artist Dashboard</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Find Jobs Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Search className="h-5 w-5 text-indigo-500" />
+              Find Jobs
+            </CardTitle>
+            <CardDescription>Discover local job opportunities</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Browse jobs from salons in your area seeking experienced nail technicians.
+            </p>
+            <Button className="w-full" asChild>
+              <Link to="/jobs">View Job Listings</Link>
+            </Button>
+          </CardContent>
+        </Card>
         
-        <motion.div variants={item}>
-          <Card className="h-full">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-xl">Booth Rental Listings</CardTitle>
-              <User className="h-5 w-5 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="mb-4">Find a booth to rent in top salons</CardDescription>
-              <Link to="/booths">
-                <Button variant="default" className="w-full">
-                  Browse Booths
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </motion.div>
+        {/* Bookings Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Calendar className="h-5 w-5 text-indigo-500" />
+              Bookings
+            </CardTitle>
+            <CardDescription>Manage your upcoming appointments</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              View, accept, or reschedule your upcoming client appointments.
+            </p>
+            <Button className="w-full" asChild>
+              <Link to="/bookings">Manage Bookings</Link>
+            </Button>
+          </CardContent>
+        </Card>
         
-        <motion.div variants={item}>
-          <Card className="h-full">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-xl">Upgrade to Premium</CardTitle>
-              <Sparkles className="h-5 w-5 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="mb-4">Get featured in search results and unlock exclusive features</CardDescription>
-              <Link to="/checkout?plan=premium">
-                <Button variant="default" className="w-full">
-                  Upgrade Now
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </motion.div>
+        {/* Affiliate Referral Card */}
+        <AffiliateReferralCard />
+      </div>
+      
+      {/* Second Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Portfolio Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Scissors className="h-5 w-5 text-indigo-500" />
+              Portfolio
+            </CardTitle>
+            <CardDescription>Showcase your best work</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Upload photos of your best work to attract new clients and opportunities.
+            </p>
+            <Button className="w-full" asChild>
+              <Link to="/portfolio">Manage Portfolio</Link>
+            </Button>
+          </CardContent>
+        </Card>
         
-        <motion.div variants={item}>
-          <Card className="h-full">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-xl">My Profile</CardTitle>
-              <ImagePlus className="h-5 w-5 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="mb-4">Customize your professional portfolio</CardDescription>
-              <Link to="/profile/edit">
-                <Button variant="default" className="w-full">
-                  Edit Profile
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </motion.div>
-        
-        <motion.div variants={item} className="md:col-span-2">
-          <Card className="h-full">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-xl">Affiliate Earnings</CardTitle>
-              <Heart className="h-5 w-5 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="mb-4">Share EmviApp and earn rewards for each friend who joins</CardDescription>
-              <UserActionButtons />
-            </CardContent>
-          </Card>
-        </motion.div>
-      </motion.div>
-    </>
+        {/* Notifications Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Bell className="h-5 w-5 text-indigo-500" />
+              Notifications
+            </CardTitle>
+            <CardDescription>Stay updated on important events</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Receive alerts for new job opportunities, booking requests, and more.
+            </p>
+            <Button className="w-full" asChild>
+              <Link to="/notifications">View Notifications</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 };
 

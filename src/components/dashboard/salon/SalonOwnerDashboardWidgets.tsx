@@ -1,115 +1,102 @@
 
+import { Link } from "react-router-dom";
+import { useAuth } from "@/context/auth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Briefcase, User, Store, Heart } from "lucide-react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import UserActionButtons from "../common/UserActionButtons";
+import { Plus, Users, Store, FileText, Calendar } from "lucide-react";
+import AffiliateReferralCard from "@/components/dashboard/common/AffiliateReferralCard";
 
 const SalonOwnerDashboardWidgets = () => {
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  };
-  
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
-  };
+  const { userProfile } = useAuth();
   
   return (
-    <>
-      <motion.div 
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="grid grid-cols-1 md:grid-cols-2 gap-6"
-      >
-        <motion.div variants={item}>
-          <Card className="h-full">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-xl">Hire an Artist</CardTitle>
-              <Users className="h-5 w-5 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="mb-4">Find talented beauty professionals</CardDescription>
-              <Link to="/artists">
-                <Button variant="default" className="w-full">
-                  Browse Artists
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </motion.div>
+    <div className="space-y-6">
+      <h2 className="text-2xl font-serif">Salon Owner Dashboard</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Post Jobs Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Plus className="h-5 w-5 text-indigo-500" />
+              Post Jobs
+            </CardTitle>
+            <CardDescription>Find artists for your salon</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Post job listings to find qualified technicians for your salon.
+            </p>
+            <Button className="w-full" asChild>
+              <Link to="/post/job">Post a Job</Link>
+            </Button>
+          </CardContent>
+        </Card>
         
-        <motion.div variants={item}>
-          <Card className="h-full">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-xl">Post a Job or Booth</CardTitle>
-              <Briefcase className="h-5 w-5 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="mb-4">Create job listings or booth rentals</CardDescription>
-              <Link to="/post-job">
-                <Button variant="default" className="w-full">
-                  Create Listing
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </motion.div>
+        {/* Staff Management Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Users className="h-5 w-5 text-indigo-500" />
+              Staff
+            </CardTitle>
+            <CardDescription>Manage your salon team</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Add, remove, or update your salon staff members and their roles.
+            </p>
+            <Button className="w-full" asChild>
+              <Link to="/salon/staff">Manage Staff</Link>
+            </Button>
+          </CardContent>
+        </Card>
         
-        <motion.div variants={item}>
-          <Card className="h-full">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-xl">Your Applicants</CardTitle>
-              <User className="h-5 w-5 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="mb-4">Review candidates for your positions</CardDescription>
-              <Link to="/manage-jobs">
-                <Button variant="default" className="w-full">
-                  Check Applications
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </motion.div>
+        {/* Affiliate Referral Card */}
+        <AffiliateReferralCard />
+      </div>
+      
+      {/* Second Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Salon Profile Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Store className="h-5 w-5 text-indigo-500" />
+              Salon Profile
+            </CardTitle>
+            <CardDescription>Manage your salon's public profile</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Update your salon's information, photos, services, and operating hours.
+            </p>
+            <Button className="w-full" asChild>
+              <Link to="/salon/profile">Edit Salon Profile</Link>
+            </Button>
+          </CardContent>
+        </Card>
         
-        <motion.div variants={item}>
-          <Card className="h-full">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-xl">Your Profile</CardTitle>
-              <Store className="h-5 w-5 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="mb-4">Manage your salon information</CardDescription>
-              <Link to="/profile/edit">
-                <Button variant="default" className="w-full">
-                  Edit Salon Profile
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </motion.div>
-        
-        <motion.div variants={item} className="md:col-span-2">
-          <Card className="h-full">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-xl">Affiliate Referrals</CardTitle>
-              <Heart className="h-5 w-5 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="mb-4">Refer other salon owners and beauty professionals to earn rewards</CardDescription>
-              <UserActionButtons />
-            </CardContent>
-          </Card>
-        </motion.div>
-      </motion.div>
-    </>
+        {/* Bookings Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Calendar className="h-5 w-5 text-indigo-500" />
+              Bookings
+            </CardTitle>
+            <CardDescription>Manage your salon's appointments</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              View and manage upcoming appointments and client bookings.
+            </p>
+            <Button className="w-full" asChild>
+              <Link to="/salon/bookings">Manage Bookings</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 };
 
