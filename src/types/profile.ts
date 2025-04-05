@@ -29,6 +29,9 @@ export interface UserProfile {
   account_type?: 'free' | 'pro' | 'enterprise';
   affiliate_code?: string;
   referral_count?: number;
+  skill_level?: string;
+  skills?: string[];
+  preferences?: string[];
 }
 
 export interface SocialLinks {

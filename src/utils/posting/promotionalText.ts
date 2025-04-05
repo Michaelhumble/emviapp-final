@@ -1,53 +1,112 @@
 
-import { PostType, PricingOptions } from "./types";
+import { PostType } from "./types";
 
-interface UserStats {
-  totalJobPosts: number;
-  totalSalonPosts: number;
-  totalBoothPosts: number;
-  totalSupplyPosts: number;
-  referralCount: number;
-}
-
-export const generatePromotionalText = (
-  postType: PostType, 
-  userStats: UserStats, 
-  options: PricingOptions
-): string => {
-  if (options.isFirstPost) {
-    switch (postType) {
-      case "job":
-        return "Welcome to EmviApp! Your first job post is only $5. Refer a friend and get $5 off your next post!";
-      case "salon":
-        return "Your first salon listing is free! Premium visibility upgrades will get you in front of more buyers.";
-      case "booth":
-        return "First time posting a booth? Get noticed with nationwide visibility for just $5 more!";
-      case "supply":
-        return "Your first supply listing is free! Boost your visibility with nationwide targeting for better results.";
-    }
-  }
-
-  if (userStats.referralCount > 0) {
-    return "Thanks for referring others to EmviApp! You're helping build the beauty community.";
-  }
-
-  if (options.isNationwide) {
-    return "Great choice going nationwide! Your post will reach the entire beauty community across the US.";
-  }
-
-  // Generic promotional messages by post type
+// Get basic post price
+export const getBasePrice = (postType: PostType, isFirstPost: boolean): number => {
   switch (postType) {
-    case "job":
-      return "Did you know? Posts with complete details get 3x more responses. Need help writing your description?";
-    case "salon":
-      return "Salon listings with 5+ photos typically sell 40% faster. Don't forget to add your best shots!";
-    case "booth":
-      return "Pro tip: Booth rentals paired with a job post get 2.5x more inquiries from quality artists.";
-    case "supply":
-      return "Supply listings with detailed specifications receive 85% more buyer inquiries.";
+    case 'job':
+      return isFirstPost ? 5 : 10;
+    case 'salon':
+    case 'booth':
+      return isFirstPost ? 0 : 5;
+    case 'supply':
+      return isFirstPost ? 5 : 8;
+    default:
+      return 5;
   }
-
-  return "Thanks for using EmviApp, the beauty industry's fastest-growing platform!";
 };
 
-export { type PricingOptions };
+// Get nationwide add-on price
+export const getNationwidePrice = (postType: PostType): number => {
+  switch (postType) {
+    case 'job':
+      return 5;
+    case 'salon':
+    case 'booth':
+      return 7;
+    case 'supply':
+      return 8;
+    default:
+      return 5;
+  }
+};
+
+// Get renewal price
+export const getRenewalPrice = (postType: PostType): number => {
+  switch (postType) {
+    case 'job':
+      return 10;
+    case 'salon':
+    case 'booth':
+      return 5;
+    case 'supply':
+      return 8;
+    default:
+      return 5;
+  }
+};
+
+// Get fast sale package price
+export const getFastSalePackagePrice = (postType: PostType): number => {
+  switch (postType) {
+    case 'job':
+      return 3;
+    case 'salon':
+    case 'booth':
+      return 3;
+    case 'supply':
+      return 4;
+    default:
+      return 3;
+  }
+};
+
+// Get show at top price
+export const getShowAtTopPrice = (postType: PostType): number => {
+  switch (postType) {
+    case 'job':
+      return 2;
+    case 'salon':
+    case 'booth':
+      return 2;
+    case 'supply':
+      return 3;
+    default:
+      return 2;
+  }
+};
+
+// Get job post bundle price
+export const getJobPostBundlePrice = (postType: PostType): number => {
+  switch (postType) {
+    case 'salon':
+    case 'booth':
+      return 4;
+    default:
+      return 0;
+  }
+};
+
+// Get price with discount
+export const getPriceWithDiscount = (originalPrice: number, hasReferrals: boolean): number => {
+  if (hasReferrals) {
+    // 20% discount for users with referrals
+    return Math.max(1, originalPrice - Math.ceil(originalPrice * 0.2));
+  }
+  return originalPrice;
+};
+
+// Get promotional text for first post
+export const getFirstPostPromotionalText = (postType: PostType): string => {
+  switch (postType) {
+    case 'job':
+      return "Special offer: First job post only $5!";
+    case 'salon':
+    case 'booth':
+      return "Special offer: First salon listing is FREE!";
+    case 'supply':
+      return "Special offer: First supply listing only $5!";
+    default:
+      return "Special offer for your first post!";
+  }
+};

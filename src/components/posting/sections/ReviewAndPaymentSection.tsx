@@ -1,122 +1,130 @@
-
-import React from 'react';
-import { Job } from '@/types/job';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import PricingDisplay from '@/components/posting/PricingDisplay';
-import SmartAdOptions from '@/components/posting/SmartAdOptions';
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Check, CreditCard } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
-import { PricingOptions } from '@/utils/posting/types';
-import { generatePromotionalText } from '@/utils/posting/promotionalText';
+import { PricingOptions, PostType } from "@/utils/posting/types";
+import PaymentSummary from "../PaymentSummary";
+import { calculateJobPostPrice } from "@/utils/posting/jobPricing";
+import { calculateSalonPostPrice } from "@/utils/posting/salonPricing";
+import { calculateBoothPostPrice } from "@/utils/posting/boothPricing";
+import { useAuth } from "@/context/auth";
+import PaymentConfirmationModal from "../PaymentConfirmationModal";
 
 interface ReviewAndPaymentSectionProps {
-  details: Partial<Job>;
-  isNationwide: boolean;
-  setIsNationwide: (value: boolean) => void;
+  postType: PostType;
+  formData: any;
+  onNextStep: () => void;
+  onPrevStep: () => void;
+  isFirstPost?: boolean;
+  pricingOptions: PricingOptions;
 }
 
-const ReviewAndPaymentSection = ({ 
-  details,
-  isNationwide,
-  setIsNationwide
+const ReviewAndPaymentSection = ({
+  postType,
+  formData,
+  onNextStep,
+  onPrevStep,
+  isFirstPost = false,
+  pricingOptions
 }: ReviewAndPaymentSectionProps) => {
-  // Define default pricing options
-  const pricingOptions: PricingOptions = {
-    isNationwide,
-    isFirstPost: true,  // This could be dynamic based on user history
-    showAtTop: false,
-    fastSalePackage: false,
-    isRenewal: false
-  };
-
-  // Mock price - in a real app this would be calculated based on options
-  const price = isNationwide ? 10 : 5;
+  const { userProfile } = useAuth();
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   
-  // Mock user stats for promotional text
-  const mockUserStats = {
-    totalJobPosts: 0,
-    totalSalonPosts: 0,
-    totalBoothPosts: 0,
-    totalSupplyPosts: 0,
-    referralCount: 0
+  useEffect(() => {
+    // Calculate price based on post type and options
+    let price = 0;
+    const options: PricingOptions = {
+      ...pricingOptions,
+      isFirstPost
+    };
+    
+    switch (postType) {
+      case "job":
+        price = calculateJobPostPrice(options);
+        break;
+      case "salon":
+        price = calculateSalonPostPrice(options);
+        break;
+      case "booth":
+        price = calculateBoothPostPrice(options);
+        break;
+      default:
+        price = 5;
+    }
+    
+    setTotalPrice(price);
+  }, [postType, pricingOptions, isFirstPost]);
+  
+  const handlePaymentSuccess = () => {
+    onNextStep();
   };
-
-  // Generate promotional text
-  const promotionalText = generatePromotionalText('job', mockUserStats, pricingOptions);
-
+  
+  const getPostProductName = () => {
+    switch (postType) {
+      case "job":
+        return "Job Post";
+      case "salon":
+        return "Salon Listing";
+      case "booth":
+        return "Booth Rental";
+      default:
+        return "Post";
+    }
+  };
+  
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Review & Payment</h2>
-      <p className="text-muted-foreground">Review your job details before posting</p>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle>Job Summary</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm font-medium">Job Title</p>
-              <p className="text-muted-foreground">{details.title || "Not specified"}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Location</p>
-              <p className="text-muted-foreground">{details.location || "Not specified"}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Employment Type</p>
-              <p className="text-muted-foreground">{details.employment_type || "Not specified"}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Compensation</p>
-              <p className="text-muted-foreground">{details.compensation_details || "Not specified"}</p>
-            </div>
-          </div>
-          
-          <div>
-            <p className="text-sm font-medium">Description</p>
-            <p className="text-muted-foreground line-clamp-3">{details.description || "Not provided"}</p>
-          </div>
-          
-          <div>
-            <p className="text-sm font-medium">Requirements</p>
-            <p className="text-muted-foreground line-clamp-3">{details.requirements || "Not provided"}</p>
-          </div>
-          
-          <div>
-            <p className="text-sm font-medium">Contact</p>
-            <p className="text-muted-foreground">{details.contact_info?.owner_name || "Not provided"} - {details.contact_info?.phone || "No phone"}</p>
-          </div>
-        </CardContent>
-      </Card>
-      
-      <div className="flex items-center justify-between bg-muted p-4 rounded-lg">
-        <Label htmlFor="nationwide" className="cursor-pointer">
-          <div className="font-medium">Nationwide Listing</div>
-          <p className="text-sm text-muted-foreground">Make your job visible across all locations</p>
-        </Label>
-        <Switch
-          id="nationwide"
-          checked={isNationwide}
-          onCheckedChange={setIsNationwide}
-        />
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold">Review & Payment</h2>
+        <p className="text-gray-600">
+          Please review your post details and proceed to payment.
+        </p>
       </div>
       
-      <SmartAdOptions 
-        postType="job" 
-        isFirstPost={true}
-        onNationwideChange={setIsNationwide}
+      <div className="space-y-6 bg-gray-50 p-4 rounded-md border">
+        {/* Post summary component would go here */}
+        <h3 className="font-medium">Post Summary</h3>
+        <div className="space-y-3">
+          <div>
+            <span className="font-medium">Title:</span> {formData.title}
+          </div>
+          {formData.location && (
+            <div>
+              <span className="font-medium">Location:</span> {formData.location}
+            </div>
+          )}
+          {/* Other post details */}
+        </div>
+      </div>
+      
+      <PaymentSummary 
+        postType={postType} 
+        pricingOptions={pricingOptions}
+        isFirstPost={isFirstPost}
       />
       
-      <PricingDisplay 
-        postType="job" 
-        price={price} 
-        options={pricingOptions}
-        promotionalText={promotionalText}
+      <div className="flex justify-between pt-4">
+        <Button 
+          variant="outline" 
+          onClick={onPrevStep}
+        >
+          Back
+        </Button>
+        
+        <Button 
+          onClick={() => setShowPaymentModal(true)}
+        >
+          Proceed to Payment
+        </Button>
+      </div>
+      
+      <PaymentConfirmationModal
+        open={showPaymentModal}
+        onOpenChange={setShowPaymentModal}
+        amount={totalPrice}
+        productName={getPostProductName()}
+        formData={formData}
+        postType={postType}
+        onSuccess={handlePaymentSuccess}
       />
     </div>
   );

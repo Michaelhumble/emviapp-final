@@ -54,16 +54,12 @@ import SalonPost from "@/pages/posting/SalonPost";
 import BoothPost from "@/pages/posting/BoothPost";
 
 // Context Providers
-import { AuthProvider } from "@/context/auth";
+import { AuthProvider } from "@/context/auth/AuthProvider";
 import { ProfileProvider } from "@/context/profile";
 import { SubscriptionProvider } from "@/context/subscription";
 import { ThemeProvider } from "@/components/theme-provider";
 
-interface AppProps {
-  availableRoutes?: string[];
-}
-
-const App = ({ availableRoutes }: AppProps = {}) => {
+const AppContent = () => {
   const { user, loading } = useAuth();
 
   useEffect(() => {
@@ -71,73 +67,81 @@ const App = ({ availableRoutes }: AppProps = {}) => {
   }, []);
 
   return (
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route path="/welcome" element={<Welcome />} />
+
+      {/* Authentication Routes */}
+      <Route path="/auth">
+        <Route path="signin" element={<SignIn />} />
+        <Route path="signup" element={<SignUp />} />
+      </Route>
+
+      {/* Dashboard Routes */}
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/dashboard/artist" element={<ArtistDashboard />} />
+      <Route path="/dashboard/owner" element={<SalonDashboard />} />
+      <Route path="/dashboard/customer" element={<CustomerDashboard />} />
+      <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
+      <Route path="/dashboard/freelancer" element={<FreelancerDashboard />} />
+      <Route path="/dashboard/other" element={<OtherDashboard />} />
+
+      {/* Main Content Routes */}
+      <Route path="/jobs" element={<Jobs />} />
+      <Route path="/artists" element={<Artists />} />
+      <Route path="/salons" element={<Salons />} />
+      <Route path="/suppliers" element={<Suppliers />} />
+      <Route path="/freelancers" element={<Freelancers />} />
+      <Route path="/nail-jobs" element={<NailJobs />} />
+      <Route path="/salon-owners" element={<SalonOwners />} />
+      <Route path="/customers" element={<Customers />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/profile/edit" element={<ProfileEdit />} />
+      <Route path="/profile/:username" element={<ProfilePage />} />
+      <Route path="/product-promotions" element={<ProductPromotions />} />
+      <Route path="/messaging" element={<Messaging />} />
+      <Route path="/analysis" element={<Analysis />} />
+      <Route path="/manage-jobs" element={<ManageJobs />} />
+      <Route path="/checkout" element={<Checkout />} />
+      <Route path="/salon-marketplace" element={<SalonMarketplace />} />
+      <Route path="/post/job" element={<PostJob />} />
+      <Route path="/post/salon" element={<PostSalon />} />
+      <Route path="/supplier-directory" element={<SupplierDirectory />} />
+      
+      {/* Posting Routes */}
+      <Route path="/posting" element={<PostingIndex />} />
+      <Route path="/posting/job" element={<JobPost />} />
+      <Route path="/posting/salon" element={<SalonPost />} />
+      <Route path="/posting/booth" element={<BoothPost />} />
+
+      {/* Visibility Routes */}
+      <Route path="/visibility/upgrade" element={<VisibilityUpgrade />} />
+      <Route path="/visibility/stats" element={<VisibilityStats />} />
+      
+      {/* 404 Page */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
+
+const App = ({ availableRoutes }: { availableRoutes?: string[] } = {}) => {
+  return (
     <ThemeProvider
       attribute="class"
       defaultTheme="system"
       enableSystem
       disableTransitionOnChange
     >
-      <AuthProvider>
-        <ProfileProvider>
-          <SubscriptionProvider>
-            <Toaster />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/welcome" element={<Welcome />} />
-
-              {/* Authentication Routes */}
-              <Route path="/auth">
-                <Route path="signin" element={<SignIn />} />
-                <Route path="signup" element={<SignUp />} />
-              </Route>
-
-              {/* Dashboard Routes */}
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/dashboard/artist" element={<ArtistDashboard />} />
-              <Route path="/dashboard/owner" element={<SalonDashboard />} />
-              <Route path="/dashboard/customer" element={<CustomerDashboard />} />
-              <Route path="/dashboard/supplier" element={<SupplierDashboard />} />
-              <Route path="/dashboard/freelancer" element={<FreelancerDashboard />} />
-              <Route path="/dashboard/other" element={<OtherDashboard />} />
-
-              {/* Main Content Routes */}
-              <Route path="/jobs" element={<Jobs />} />
-              <Route path="/artists" element={<Artists />} />
-              <Route path="/salons" element={<Salons />} />
-              <Route path="/suppliers" element={<Suppliers />} />
-              <Route path="/freelancers" element={<Freelancers />} />
-              <Route path="/nail-jobs" element={<NailJobs />} />
-              <Route path="/salon-owners" element={<SalonOwners />} />
-              <Route path="/customers" element={<Customers />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/profile/edit" element={<ProfileEdit />} />
-              <Route path="/profile/:username" element={<ProfilePage />} />
-              <Route path="/product-promotions" element={<ProductPromotions />} />
-              <Route path="/messaging" element={<Messaging />} />
-              <Route path="/analysis" element={<Analysis />} />
-              <Route path="/manage-jobs" element={<ManageJobs />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/salon-marketplace" element={<SalonMarketplace />} />
-              <Route path="/post/job" element={<PostJob />} />
-              <Route path="/post/salon" element={<PostSalon />} />
-              <Route path="/supplier-directory" element={<SupplierDirectory />} />
-              
-              {/* Posting Routes */}
-              <Route path="/posting" element={<PostingIndex />} />
-              <Route path="/posting/job" element={<JobPost />} />
-              <Route path="/posting/salon" element={<SalonPost />} />
-              <Route path="/posting/booth" element={<BoothPost />} />
-
-              {/* Visibility Routes */}
-              <Route path="/visibility/upgrade" element={<VisibilityUpgrade />} />
-              <Route path="/visibility/stats" element={<VisibilityStats />} />
-              
-              {/* 404 Page */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </SubscriptionProvider>
-        </ProfileProvider>
-      </AuthProvider>
+      <Router>
+        <AuthProvider>
+          <ProfileProvider>
+            <SubscriptionProvider>
+              <Toaster />
+              <AppContent />
+            </SubscriptionProvider>
+          </ProfileProvider>
+        </AuthProvider>
+      </Router>
     </ThemeProvider>
   );
 };

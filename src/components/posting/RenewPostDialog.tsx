@@ -1,132 +1,89 @@
 
-import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Calendar, CreditCard } from "lucide-react";
-import { format, addDays } from "date-fns";
-import { getRenewalPrice } from "@/utils/posting/promotionalText";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import ExpirationBadge from "./ExpirationBadge";
+import { AlertCircle } from "lucide-react";
+import { useState } from "react";
+import { PostType } from "@/utils/posting/types";
+import { 
+  getBasePrice, 
+  getNationwidePrice, 
+  getFastSalePackagePrice,
+  getShowAtTopPrice,
+  getRenewalPrice
+} from "@/utils/posting/promotionalText";
 
 interface RenewPostDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  postId: string;
-  postType: 'job' | 'salon' | 'booth';
-  isNationwide: boolean;
-  expiresAt: string;
-  fastSalePackage?: boolean;
-  bundleWithJobPost?: boolean;
-  onRenewed?: () => void;
+  onConfirm: () => void;
+  postType: PostType;
+  postTitle: string;
 }
 
 const RenewPostDialog = ({
   open,
   onOpenChange,
-  postId,
+  onConfirm,
   postType,
-  isNationwide,
-  expiresAt,
-  fastSalePackage = false,
-  bundleWithJobPost = false,
-  onRenewed
+  postTitle
 }: RenewPostDialogProps) => {
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-
-  const renewalPrice = getRenewalPrice(postType, isNationwide, fastSalePackage, bundleWithJobPost);
-  const newExpirationDate = addDays(new Date(), 30);
-
-  const handleRenew = async () => {
-    setIsLoading(true);
-    
-    try {
-      // In a real implementation, we would call a Stripe endpoint here to handle payment
-      // For now, we'll just update the expiration date
-      
-      const { error } = await supabase
-        .from('posts')
-        .update({ 
-          expires_at: newExpirationDate.toISOString(),
-          status: 'active',
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', postId);
-        
-      if (error) throw error;
-        
-      toast({
-        title: "Post renewed successfully!",
-        description: `Your post has been extended until ${format(newExpirationDate, "MMMM d, yyyy")}`,
-      });
-      
-      if (onRenewed) onRenewed();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const handleConfirm = () => {
+    setIsSubmitting(true);
+    // Simulate API call
+    setTimeout(() => {
+      setIsSubmitting(false);
+      onConfirm();
       onOpenChange(false);
-    } catch (error) {
-      console.error("Error renewing post:", error);
-      toast({
-        title: "Renewal failed",
-        description: "There was a problem renewing your post. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    }, 1500);
   };
+  
+  const renewalPrice = getRenewalPrice(postType);
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-2xl">Renew Your Post</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <AlertCircle className="h-5 w-5 text-amber-500" />
+            Renew Your Post
+          </DialogTitle>
           <DialogDescription>
-            Extend your post for another 30 days
+            Your post "{postTitle}" has expired. Would you like to renew it?
           </DialogDescription>
         </DialogHeader>
         
-        <div className="py-4 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-600">Current expiration:</div>
-            <ExpirationBadge expiresAt={expiresAt} showTooltip={false} />
+        <div className="space-y-4 py-4">
+          <div className="bg-amber-50 p-3 rounded-md border border-amber-100">
+            <p className="text-amber-800 text-sm">
+              Renewing your post will make it visible again for another 30 days. The renewal fee is ${renewalPrice}.
+            </p>
           </div>
           
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-600">New expiration after renewal:</div>
-            <div className="flex items-center gap-1 text-sm font-medium text-emerald-700">
-              <Calendar className="h-4 w-4" />
-              {format(newExpirationDate, "MMMM d, yyyy")}
-            </div>
-          </div>
-          
-          <div className="border-t border-b py-4 my-4">
-            <div className="flex items-center justify-between">
-              <div className="font-medium">Renewal fee:</div>
-              <div className="text-xl font-bold">${renewalPrice.toFixed(2)}</div>
-            </div>
-            
-            <div className="text-xs text-gray-500 mt-1">
-              {isNationwide && <span>• Includes nationwide visibility</span>}
-              {fastSalePackage && <span>• Includes Fast Sale Package benefits</span>}
-            </div>
+          <div className="text-sm space-y-2">
+            <p className="font-medium">What happens when you renew:</p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Your post becomes active and visible in search results</li>
+              <li>The post retains all original information and settings</li>
+              <li>30-day visibility period starts immediately</li>
+            </ul>
           </div>
         </div>
         
-        <DialogFooter>
-          <Button 
-            variant="outline" 
+        <DialogFooter className="sm:justify-between">
+          <Button
+            variant="outline"
             onClick={() => onOpenChange(false)}
-            disabled={isLoading}
+            disabled={isSubmitting}
           >
             Cancel
           </Button>
-          <Button 
-            onClick={handleRenew} 
-            disabled={isLoading}
-            className="gap-2"
+          <Button
+            onClick={handleConfirm}
+            disabled={isSubmitting}
           >
-            <CreditCard className="h-4 w-4" />
-            {isLoading ? "Processing..." : `Pay $${renewalPrice.toFixed(2)} & Renew`}
+            {isSubmitting ? "Processing..." : `Renew for $${renewalPrice}`}
           </Button>
         </DialogFooter>
       </DialogContent>

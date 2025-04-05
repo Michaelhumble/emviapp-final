@@ -8,6 +8,17 @@ export interface PricingOptions {
   showAtTop?: boolean;
   bundleWithJobPost?: boolean;
   hasReferrals?: boolean;
+  isRenewal?: boolean;
+  featuredPost?: boolean;
+}
+
+export interface UserPostingStats {
+  jobPostCount: number;
+  salonPostCount: number;
+  boothPostCount: number;
+  supplyPostCount: number;
+  totalPostCount: number;
+  hasReferrals: boolean;
 }
 
 export interface PostingFormContextType {

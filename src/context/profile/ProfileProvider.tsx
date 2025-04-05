@@ -17,7 +17,7 @@ const ProfileContext = createContext<ProfileContextType>({
 export const useProfile = () => useContext(ProfileContext);
 
 export const ProfileProvider = ({ children }: { children: React.ReactNode }) => {
-  const { user, userProfile, refreshUser } = useAuth();
+  const { user, userProfile, refreshUserProfile } = useAuth();
   const [loading, setLoading] = useState(true);
   const [profileData, setProfileData] = useState<any | null>(null);
 
@@ -32,7 +32,7 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
 
   const refreshProfile = async () => {
     setLoading(true);
-    await refreshUser();
+    await refreshUserProfile();
     setLoading(false);
   };
 
