@@ -1,4 +1,3 @@
-
 import { NavigateFunction } from "react-router-dom";
 import { UserRole } from "@/context/auth/types";
 import { toast } from "sonner";
@@ -9,44 +8,42 @@ import { toast } from "sonner";
  * @param userRole The user's role from auth context
  */
 export const navigateToRoleDashboard = (
-  navigate: NavigateFunction,
-  userRole: UserRole | null
+  navigate: (path: string) => void,
+  userRole: string | null | undefined
 ) => {
   console.log("Navigating based on role:", userRole);
-  
+
   if (!userRole) {
-    // If no role defined, navigate to profile page to set role
-    navigate("/profile/edit");
-    toast.info("Please complete your profile to access your dashboard");
+    // Handle missing role - redirect to role selection
+    console.log("No role found, redirecting to role selection");
+    navigate("/select-role");
     return;
   }
-  
-  switch (userRole) {
-    case 'artist':
-    case 'nail technician/artist':
-      navigate('/dashboard/artist');
-      break;
-    case 'salon':
-    case 'owner':
-      navigate('/dashboard/owner');
-      break;
-    case 'customer':
-      navigate('/dashboard/customer');
-      break;
-    case 'supplier':
-    case 'beauty supplier':
-    case 'vendor':
-      navigate('/dashboard/supplier');
-      break;
-    case 'freelancer':
-      navigate('/dashboard/freelancer');
-      break;
-    case 'renter':
-      navigate('/dashboard/artist'); // Renters see artist dashboard
-      break;
-    case 'other':
-    default:
-      navigate('/dashboard/other');
+
+  // Normalize the role to lowercase for case-insensitive matching
+  const normalizedRole = userRole.toLowerCase();
+
+  // Map the role to the appropriate dashboard route
+  if (normalizedRole.includes('artist') || normalizedRole.includes('technician') || normalizedRole === 'renter') {
+    navigate("/dashboard/artist");
+  } else if (normalizedRole === 'salon' || normalizedRole === 'owner') {
+    navigate("/dashboard/owner");
+  } else if (normalizedRole === 'customer') {
+    navigate("/dashboard/customer"); 
+  } else if (normalizedRole === 'freelancer') {
+    navigate("/dashboard/freelancer");
+  } else if (
+    normalizedRole === 'supplier' || 
+    normalizedRole === 'vendor' || 
+    normalizedRole === 'beauty supplier'
+  ) {
+    navigate("/dashboard/supplier");
+  } else if (normalizedRole === 'other') {
+    navigate("/dashboard/other");
+  } else {
+    // Fallback for unknown roles
+    console.warn("Unknown user role:", userRole);
+    navigate("/dashboard/other");
   }
 };
 

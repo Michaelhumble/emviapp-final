@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile, UserRole } from './types';
 import { Json } from '@/integrations/supabase/types';
@@ -92,8 +91,6 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
   }
 };
 
-// Fix for the "Type instantiation is excessively deep and possibly infinite" error
-// We'll simplify the type handling in the update function
 export const updateUserProfileInDb = async (userId: string, updates: Partial<UserProfile>) => {
   try {
     // Create a simple object for database updates without complex type references

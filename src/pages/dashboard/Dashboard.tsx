@@ -7,6 +7,7 @@ import { Loader2, AlertTriangle } from "lucide-react";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 /**
  * This component redirects users to their role-specific dashboard
@@ -18,13 +19,14 @@ const Dashboard = () => {
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [isFetchingRole, setIsFetchingRole] = useState(false);
   
   useEffect(() => {
     // Function to handle redirection logic
     const handleRedirect = async () => {
       console.log("Dashboard redirect - Loading:", loading, "Signed in:", isSignedIn, "User role:", userRole);
       
-      // If still loading, don't do anything yet
+      // If still loading auth state, don't do anything yet
       if (loading) return;
       
       // If user is not signed in, redirect to sign in
@@ -36,14 +38,61 @@ const Dashboard = () => {
       try {
         // If user is new or doesn't have a role, show role selection modal
         if (isNewUser || !userRole) {
-          setShowRoleModal(true);
-          if (isNewUser) {
-            // Clear the new user flag once we've handled it
-            clearIsNewUser();
+          // Before showing role modal, try to fetch role directly from database
+          if (!isFetchingRole && user?.id) {
+            setIsFetchingRole(true);
+            
+            try {
+              const { data, error } = await supabase
+                .from('users')
+                .select('role')
+                .eq('id', user.id)
+                .maybeSingle();
+              
+              if (error) throw error;
+              
+              if (data && data.role) {
+                // User has a role in the database, refresh profile and redirect
+                await refreshUserProfile();
+                navigateToRoleDashboard(navigate, data.role);
+                return;
+              } else {
+                // No role found, show selection modal
+                setShowRoleModal(true);
+                if (isNewUser) {
+                  clearIsNewUser();
+                }
+              }
+            } catch (err) {
+              console.error("Error fetching user role:", err);
+              setError("Unable to fetch your profile. Please try again.");
+            } finally {
+              setIsFetchingRole(false);
+            }
+          } else {
+            // Show role selection if not already fetching
+            setShowRoleModal(true);
+            if (isNewUser) {
+              clearIsNewUser();
+            }
           }
         } else {
-          // Redirect based on existing role
+          // Redirect based on existing role with fallback
+          const redirectTimeout = setTimeout(() => {
+            // Safety timeout - if redirect doesn't happen in 2 seconds, force navigate
+            // This prevents getting stuck in loading state
+            if (userRole) {
+              navigateToRoleDashboard(navigate, userRole);
+            } else {
+              setError("Unable to determine your user type. Please try again.");
+            }
+          }, 2000);
+          
+          // Attempt normal navigation
           navigateToRoleDashboard(navigate, userRole);
+          
+          // Clear timeout if component unmounts
+          return () => clearTimeout(redirectTimeout);
         }
       } catch (err) {
         console.error("Error in dashboard redirect:", err);
@@ -53,7 +102,7 @@ const Dashboard = () => {
     };
     
     handleRedirect();
-  }, [userRole, loading, navigate, isSignedIn, user, isNewUser, clearIsNewUser]);
+  }, [userRole, loading, navigate, isSignedIn, user, isNewUser, clearIsNewUser, refreshUserProfile, isFetchingRole]);
   
   // Handle manual retry
   const handleRetry = async () => {
@@ -63,11 +112,20 @@ const Dashboard = () => {
     try {
       // Attempt to refresh user profile data
       await refreshUserProfile();
-      // Then redirect based on potentially updated role
-      navigateToRoleDashboard(navigate, userRole);
+      
+      // If still no role after refresh, open role selection
+      if (!userRole && user) {
+        setShowRoleModal(true);
+      } else if (userRole) {
+        // Then redirect based on potentially updated role
+        navigateToRoleDashboard(navigate, userRole);
+      } else {
+        throw new Error("Unable to determine user role");
+      }
     } catch (err) {
       console.error("Retry error:", err);
-      setError("Still having trouble. Please try logging out and back in.");
+      setError("Still having trouble. Please try selecting your role or logging out and back in.");
+      setShowRoleModal(true);
     }
   };
   
