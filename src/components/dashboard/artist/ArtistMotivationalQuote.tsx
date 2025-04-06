@@ -1,87 +1,64 @@
 
-import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
+import { useState, useEffect } from "react";
+import { Card } from "@/components/ui/card";
+import { UserRole } from "@/context/auth/types";
 import { useAuth } from "@/context/auth";
-import { toast } from "sonner";
+import { motion } from "framer-motion";
+import { Sparkles } from "lucide-react";
+
+// Predefined quotes per role
+const ROLE_QUOTES: Record<string, string> = {
+  artist: "You've worked hard to build your craft. Now let EmviApp help you get seen. Boost your profile and let your art shine.",
+  freelancer: "You wear many hats. EmviApp is the one partner that gets it. We've got your back.",
+  salon: "Running a business is hard — finding great talent shouldn't be. EmviApp was built to make hiring easy, fast, and beautiful.",
+  supplier: "Your products. Their salons. EmviApp makes the connection effortless. Get your business in front of verified professionals.",
+  other: "Whatever your dream looks like — you belong here. EmviApp was made for you.",
+  "nail technician/artist": "Your artistic talents deserve to be seen. Let EmviApp connect you with clients who appreciate your craft.",
+  renter: "Independence with support. EmviApp helps you build your clientele while maintaining your freedom.",
+  owner: "Your salon deserves the best talent. EmviApp connects you with professionals who match your vision.",
+  customer: "Beauty services tailored to you. EmviApp helps you discover professionals who match your style.",
+  vendor: "Quality products need visibility. EmviApp connects you with the professionals who need what you offer.",
+  "beauty supplier": "Bridge the gap between your products and salon professionals with EmviApp's targeted connections."
+};
+
+// Default quote for fallback
+const DEFAULT_QUOTE = "Whatever your dream looks like — you belong here. EmviApp was made for you.";
 
 const ArtistMotivationalQuote = () => {
-  const [quote, setQuote] = useState<string>("");
   const { userRole } = useAuth();
+  const [quote, setQuote] = useState<string>("");
   
   useEffect(() => {
-    const fetchQuote = async () => {
-      try {
-        // Determine which role to use for the query
-        const roleToQuery = userRole || 'other';
-        
-        // Fetch a motivational quote based on user role
-        const { data, error } = await supabase
-          .from('motivational_quotes')
-          .select('quote_text')
-          .eq('role', roleToQuery)
-          .maybeSingle();
-        
-        if (error) {
-          console.error("Error fetching motivational quote:", error);
-          return;
-        }
-        
-        // If we have a quote for this role, use it
-        if (data && data.quote_text) {
-          setQuote(data.quote_text);
-        } else {
-          // Fallback to the 'other' quote if no specific quote is found
-          const { data: fallbackData } = await supabase
-            .from('motivational_quotes')
-            .select('quote_text')
-            .eq('role', 'other')
-            .maybeSingle();
-            
-          if (fallbackData && fallbackData.quote_text) {
-            setQuote(fallbackData.quote_text);
-          } else {
-            setQuote("Whatever your dream looks like — you belong here. EmviApp was made for you.");
-          }
-        }
-      } catch (err) {
-        console.error("Unexpected error fetching motivational quote:", err);
-        toast.error("Could not load your motivational message");
-        
-        // Set a fallback quote
-        setQuote("Whatever your dream looks like — you belong here. EmviApp was made for you.");
-      }
-    };
+    // Get quote based on role, or use default if not found
+    const roleKey = userRole || "other";
+    const motivationalQuote = ROLE_QUOTES[roleKey] || DEFAULT_QUOTE;
     
-    fetchQuote();
+    setQuote(motivationalQuote);
   }, [userRole]);
-  
+
   if (!quote) return null;
-  
+
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="mb-6"
+      className="mb-8"
     >
-      <Card className="overflow-hidden border-0 shadow-lg">
-        <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-          <CardContent className="p-6 md:p-8">
-            <div className="flex items-start">
-              <Sparkles className="h-6 w-6 mr-3 mt-1 flex-shrink-0" />
-              <div>
-                <h3 className="text-xl md:text-2xl font-serif font-medium mb-2">
-                  Your Emvi Inspiration
-                </h3>
-                <p className="opacity-90">
-                  {quote}
-                </p>
-              </div>
-            </div>
-          </CardContent>
+      <Card className="bg-white shadow-md border border-gray-100 p-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-100 to-purple-200 rounded-bl-full opacity-40"></div>
+        
+        <div className="flex items-start gap-4">
+          <Sparkles className="h-6 w-6 text-purple-500 mt-1 flex-shrink-0" />
+          
+          <div>
+            <h3 className="text-lg font-serif font-medium mb-2">
+              Your Personal Emvi Insight
+            </h3>
+            <p className="text-gray-700 leading-relaxed">
+              {quote}
+            </p>
+          </div>
         </div>
       </Card>
     </motion.div>
