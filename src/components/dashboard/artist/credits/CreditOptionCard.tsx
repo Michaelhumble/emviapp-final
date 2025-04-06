@@ -8,7 +8,7 @@ import { Check, Clock, Sparkles } from "lucide-react";
 
 export interface CreditOptionCardProps {
   option: CreditOption;
-  canAfford: boolean; // Added the missing canAfford prop
+  canAfford: boolean;
   onRedeem: (option: CreditOption) => void;
   isProcessing: boolean;
   isSuccess: boolean;
