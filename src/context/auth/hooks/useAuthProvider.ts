@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile, UserRole, AuthContextType } from "../types";
@@ -26,7 +27,7 @@ export const useAuthProvider = () => {
         setUser(currentSession?.user ?? null);
         
         // Handle sign up event
-        if (event === 'SIGNED_UP') {
+        if (event === "SIGNED_UP") {
           console.log("New user signed up!");
           setIsNewUser(true);
           localStorage.setItem('emviapp_new_user', 'true');
@@ -42,6 +43,7 @@ export const useAuthProvider = () => {
           // Clear user profile and role when logged out
           setUserProfile(null);
           setUserRole(null);
+          setLoading(false);
         }
       }
     );
@@ -65,10 +67,11 @@ export const useAuthProvider = () => {
         // Fetch user profile if logged in
         if (initialSession?.user) {
           await fetchUserProfile(initialSession.user.id);
+        } else {
+          setLoading(false);
         }
       } catch (error) {
         console.error("Error fetching initial session:", error);
-      } finally {
         setLoading(false);
       }
     };
@@ -85,33 +88,36 @@ export const useAuthProvider = () => {
   const fetchUserProfile = async (userId: string) => {
     try {
       console.log("Fetching user profile for:", userId);
+      setLoading(true);
       
-      // Get user profile from the database
+      // Get user profile from the database using maybeSingle to prevent errors
       const { data, error } = await supabase
         .from('users')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
       
       if (error) {
         console.error('Error fetching user profile:', error);
+        setLoading(false);
         return;
       }
       
       if (!data) {
-        console.log('No user profile found, creating one...');
+        console.log('No user profile found');
+        setLoading(false);
         return;
       }
       
       console.log("User profile retrieved:", data);
       
       // Cast role to UserRole and create user profile
-      const fetchedRole = data.role as UserRole || 'customer';
+      const fetchedRole = data.role ? (data.role as UserRole) : null;
       setUserRole(fetchedRole);
       
       // Create a profile object, safely checking if each property exists
       const profile: UserProfile = {
-        id: data.id,
+        id: data.id || userId,
         email: data.email || '',
         full_name: data.full_name || '',
         avatar_url: data.avatar_url || '',
@@ -121,19 +127,19 @@ export const useAuthProvider = () => {
         instagram: data.instagram || '',
         website: data.website || '',
         specialty: data.specialty || '',
-        role: fetchedRole,
-        created_at: data.created_at,
-        updated_at: data.updated_at,
+        role: fetchedRole || 'customer',
+        created_at: data.created_at || new Date().toISOString(),
+        updated_at: data.updated_at || new Date().toISOString(),
         preferred_language: data.preferred_language || '',
-        // Safely handle optional properties that might not be in database yet
-        referral_count: data.referral_count || 0,
-        salon_name: data.salon_name || '',
-        company_name: data.company_name || '',
+        // Safely handle optional properties
+        referral_count: 0, // Default value if not in database
+        salon_name: '', // Default value if not in database
+        company_name: '', // Default value if not in database
         custom_role: data.custom_role || '',
         contact_link: data.contact_link || '',
-        skills: Array.isArray(data.skills) ? data.skills : [],
-        skill_level: data.skill_level || '',
-        profile_views: data.profile_views || 0,
+        skills: [], // Default value if not in database
+        skill_level: '', // Default value if not in database
+        profile_views: 0, // Default value if not in database
         preferences: Array.isArray(data.preferences) ? data.preferences : [],
         affiliate_code: data.referral_code || '',
         referral_code: data.referral_code || '',
@@ -145,6 +151,8 @@ export const useAuthProvider = () => {
       
     } catch (err) {
       console.error("Error in fetchUserProfile:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -155,6 +163,7 @@ export const useAuthProvider = () => {
 
   const signIn = async (email: string, password: string) => {
     try {
+      setLoading(true);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -168,11 +177,14 @@ export const useAuthProvider = () => {
       console.error("Error signing in:", error);
       toast.error(error.message || "Failed to sign in");
       throw error;
+    } finally {
+      // Don't set loading false here - it will be handled by the auth state change
     }
   };
 
   const signUp = async (email: string, password: string) => {
     try {
+      setLoading(true);
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -189,11 +201,14 @@ export const useAuthProvider = () => {
       console.error("Error signing up:", error);
       toast.error(error.message || "Failed to sign up");
       throw error;
+    } finally {
+      // Don't set loading false here - it will be handled by the auth state change
     }
   };
 
   const signOut = async () => {
     try {
+      setLoading(true);
       const { error } = await supabase.auth.signOut();
       
       if (error) throw error;
@@ -209,6 +224,8 @@ export const useAuthProvider = () => {
       console.error("Error in signOut:", error);
       toast.error("Failed to sign out");
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 

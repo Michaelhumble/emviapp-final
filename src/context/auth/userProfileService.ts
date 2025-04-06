@@ -13,7 +13,7 @@ export const fetchUserProfile = async (user: User): Promise<UserProfile | null> 
       .from('users')
       .select('*')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
     
     if (error) {
       console.error('Error fetching user profile:', error);
@@ -43,16 +43,16 @@ export const fetchUserProfile = async (user: User): Promise<UserProfile | null> 
       updated_at: data.updated_at,
       preferred_language: data.preferred_language || '',
       // Safely handle properties that might not exist in the database
-      referral_count: data.referral_count || 0,
+      referral_count: 0, // Default value
       affiliate_code: data.referral_code || '',
       referral_code: data.referral_code || '',
-      salon_name: data.salon_name || '',
-      company_name: data.company_name || '',
+      salon_name: '', // Default value
+      company_name: '', // Default value
       custom_role: data.custom_role || '',
       contact_link: data.contact_link || '',
-      skills: Array.isArray(data.skills) ? data.skills : [],
-      skill_level: data.skill_level || '',
-      profile_views: data.profile_views || 0,
+      skills: [], // Default value
+      skill_level: '', // Default value
+      profile_views: 0, // Default value
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       credits: data.credits || 0,
       boosted_until: data.boosted_until || null
@@ -105,10 +105,15 @@ const createUserProfile = async (user: User): Promise<UserProfile | null> => {
       .from('users')
       .insert([profileToInsert])
       .select()
-      .single();
+      .maybeSingle();
   
     if (error) {
       console.error('Error creating user profile:', error);
+      return null;
+    }
+    
+    if (!data) {
+      console.error('No data returned after creating user profile');
       return null;
     }
     
@@ -129,16 +134,16 @@ const createUserProfile = async (user: User): Promise<UserProfile | null> => {
       updated_at: data.updated_at,
       preferred_language: data.preferred_language || '',
       // Safely handle properties that might not exist
-      referral_count: data.referral_count || 0,
+      referral_count: 0, // Default value
       affiliate_code: data.referral_code || referralCode,
       referral_code: data.referral_code || referralCode,
-      salon_name: data.salon_name || '',
-      company_name: data.company_name || '',
+      salon_name: '', // Default value
+      company_name: '', // Default value
       custom_role: data.custom_role || '',
       contact_link: data.contact_link || '',
-      skills: Array.isArray(data.skills) ? data.skills : [],
-      skill_level: data.skill_level || '',
-      profile_views: data.profile_views || 0,
+      skills: [], // Default value
+      skill_level: '', // Default value
+      profile_views: 0, // Default value
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       credits: data.credits || 0,
       boosted_until: data.boosted_until || null

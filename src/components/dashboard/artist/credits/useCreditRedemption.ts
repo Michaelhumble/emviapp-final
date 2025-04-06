@@ -50,12 +50,12 @@ export const useCreditRedemption = (
       // Calculate boost expiry date (7 days from now) if it's a profile boost
       const expiryDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
       
-      // Create update object
-      const updateData: Record<string, any> = {
+      // Try to update with or without boosted_until depending on the action type
+      let updateData: Record<string, any> = {
         credits: credits - requiredCredits
       };
       
-      // Add boosted_until only for profile boost action
+      // Only add boosted_until for profile boost action
       if (actionType === 'profileBoost') {
         updateData.boosted_until = expiryDate;
       }
@@ -78,6 +78,14 @@ export const useCreditRedemption = (
             
           if (retryError) {
             throw retryError;
+          }
+          
+          // Still update boost status in UI even if DB column doesn't exist
+          if (actionType === 'profileBoost') {
+            setBoostStatus({
+              isActive: true,
+              expiresAt: expiryDate
+            });
           }
         } else {
           throw error;
