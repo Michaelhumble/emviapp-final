@@ -10,16 +10,18 @@ interface DashboardLoadingProps {
 
 const DashboardLoading = ({ onLogout }: DashboardLoadingProps) => {
   const [progress, setProgress] = useState(0);
+  const [timeElapsed, setTimeElapsed] = useState(0);
   
   // Simulate progress
   useEffect(() => {
     const timer = setInterval(() => {
       setProgress(prevProgress => {
-        // Increase progress but cap at 90% to show that we're waiting for the server
-        // This way it doesn't look like it completed but nothing happened
-        return prevProgress >= 90 ? 90 : prevProgress + 10;
+        // Cap at 90% to show we're waiting for server
+        return prevProgress >= 90 ? 90 : prevProgress + 5;
       });
-    }, 800);
+      
+      setTimeElapsed(prev => prev + 1);
+    }, 500);
     
     return () => {
       clearInterval(timer);
@@ -49,10 +51,23 @@ const DashboardLoading = ({ onLogout }: DashboardLoadingProps) => {
         </p>
       </div>
       
-      {/* Emergency logout button to break from loading state */}
-      <Button variant="outline" onClick={onLogout} className="mt-4">
-        Log Out
-      </Button>
+      {/* Show logout option if it's taking too long */}
+      <div className="flex flex-col items-center">
+        {timeElapsed > 10 && (
+          <p className="text-amber-600 text-sm mb-3">
+            Taking longer than expected? Try signing out and back in.
+          </p>
+        )}
+        
+        <Button 
+          variant="outline" 
+          onClick={onLogout} 
+          className="mt-2"
+          size={timeElapsed > 10 ? "default" : "sm"}
+        >
+          {timeElapsed > 10 ? "Sign Out and Try Again" : "Sign Out"}
+        </Button>
+      </div>
     </div>
   );
 };

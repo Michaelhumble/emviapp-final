@@ -75,17 +75,24 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
     setIsSubmitting(true);
     
     try {
+      console.log(`Updating user ${userId} with role ${selectedRole}`);
       const { error } = await supabase
         .from('users')
         .update({ role: selectedRole })
         .eq('id', userId);
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error setting user role:", error);
+        throw error;
+      }
       
       toast.success(`Role selected! You're now registered as a ${selectedRole}.`);
       
-      // Use the utility function for consistent role-based navigation
+      // Close modal and navigate to the appropriate dashboard
       onOpenChange(false);
+      console.log(`Role set successfully to ${selectedRole}, navigating...`);
+      
+      // Use our navigation helper to ensure consistent behavior
       navigateToRoleDashboard(navigate, selectedRole);
     } catch (error) {
       console.error("Error setting user role:", error);

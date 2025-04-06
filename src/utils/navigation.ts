@@ -24,7 +24,7 @@ export const navigateToRoleDashboard = (
   // Normalize the role to lowercase for case-insensitive matching
   const normalizedRole = userRole.toLowerCase();
   
-  if (normalizedRole.includes('artist') || normalizedRole === 'nail technician/artist') {
+  if (normalizedRole.includes('artist') || normalizedRole === 'nail technician/artist' || normalizedRole === 'renter') {
     navigate("/dashboard/artist");
   } else if (normalizedRole === 'salon' || normalizedRole === 'owner') {
     navigate("/dashboard/salon");
@@ -38,9 +38,6 @@ export const navigateToRoleDashboard = (
     normalizedRole === 'beauty supplier'
   ) {
     navigate("/dashboard/supplier");
-  } else if (normalizedRole === 'renter') {
-    // Renter is a type of artist in our system
-    navigate("/dashboard/artist");
   } else if (normalizedRole === 'other') {
     navigate("/dashboard/other");
   } else {
