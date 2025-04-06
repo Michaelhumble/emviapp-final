@@ -3,11 +3,13 @@ import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
 import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
-import SalonOwnerDashboardWidgets from "@/components/dashboard/salon/SalonOwnerDashboardWidgets";
 import { useAuth } from "@/context/auth";
 import SalonDashboardBanner from "@/components/dashboard/salon/SalonDashboardBanner";
 import SalonQuickStats from "@/components/dashboard/salon/SalonQuickStats";
 import SalonReferralCard from "@/components/dashboard/salon/SalonReferralCard";
+import SalonDashboardActionButtons from "@/components/dashboard/salon/SalonDashboardActionButtons";
+import SalonCreditStatus from "@/components/dashboard/salon/SalonCreditStatus";
+import SalonOwnerDashboardWidgets from "@/components/dashboard/salon/SalonOwnerDashboardWidgets";
 
 const SalonDashboard = () => {
   const { userProfile } = useAuth();
@@ -33,11 +35,19 @@ const SalonDashboard = () => {
               {/* Salon Quick Stats */}
               <SalonQuickStats />
               
+              {/* Action Buttons */}
+              <SalonDashboardActionButtons />
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Credit Status Card */}
+                <SalonCreditStatus />
+                
+                {/* Referral Center */}
+                <SalonReferralCard />
+              </div>
+              
               {/* Salon Owner Dashboard Widgets */}
               <SalonOwnerDashboardWidgets />
-              
-              {/* Referral Center adapted for salons */}
-              <SalonReferralCard />
             </div>
           </RoleDashboardLayout>
         </div>

@@ -9,8 +9,8 @@ const SalonReferralCard = () => {
       <CardHeader>
         {/* Vietnamese referral text for salons */}
         <p className="text-gray-500 text-sm italic mb-2">
-          <span className="block">Giới thiệu bạn bè và nhận thưởng từ Emvi.</span>
-          <span className="block">Invite friends and earn rewards from Emvi.</span>
+          <span className="block">Giới thiệu chủ tiệm khác để nhận thưởng.</span>
+          <span className="block">Invite other salon owners and earn rewards.</span>
         </p>
         
         <CardTitle className="text-lg flex items-center">
@@ -20,7 +20,7 @@ const SalonReferralCard = () => {
       </CardHeader>
       <CardContent>
         <p className="text-gray-600 mb-4">
-          Invite other salon owners and beauty professionals to EmviApp and earn rewards!
+          Invite other salons and earn free credits. Help grow our community!
         </p>
         <ArtistReferralCenter />
       </CardContent>
