@@ -21,18 +21,20 @@ interface ServiceFormData {
   is_visible: boolean;
 }
 
+interface Service {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  duration_minutes: number;
+  is_visible: boolean;
+}
+
 interface ArtistServiceFormProps {
   isOpen: boolean;
   onClose: () => void;
   onServiceSaved: () => void;
-  initialData?: {
-    id: string;
-    title: string;
-    description: string;
-    price: number;
-    duration_minutes: number;
-    is_visible: boolean;
-  };
+  initialData?: Service;
 }
 
 const ArtistServiceForm = ({ isOpen, onClose, onServiceSaved, initialData }: ArtistServiceFormProps) => {
@@ -73,7 +75,7 @@ const ArtistServiceForm = ({ isOpen, onClose, onServiceSaved, initialData }: Art
         duration_minutes: parseInt(data.duration_minutes),
         is_visible: data.is_visible,
         user_id: user.id,
-        updated_at: new Date()
+        updated_at: new Date().toISOString()
       };
 
       if (isEditing && initialData) {

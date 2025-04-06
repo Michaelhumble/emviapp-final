@@ -50,7 +50,7 @@ const ArtistServiceCard = ({ service, onServiceUpdated }: ArtistServiceCardProps
     try {
       const { error } = await supabase
         .from("services")
-        .update({ is_visible: !service.is_visible, updated_at: new Date() })
+        .update({ is_visible: !service.is_visible, updated_at: new Date().toISOString() })
         .eq("id", service.id);
 
       if (error) throw error;

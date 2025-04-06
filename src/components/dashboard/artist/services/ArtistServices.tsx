@@ -40,7 +40,7 @@ const ArtistServices = () => {
       
       if (error) throw error;
       
-      setServices(data || []);
+      setServices(data as Service[] || []);
     } catch (error) {
       console.error("Error fetching services:", error);
       toast.error("Failed to load services. Please try again.");
