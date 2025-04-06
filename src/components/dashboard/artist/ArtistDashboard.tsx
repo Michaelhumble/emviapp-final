@@ -14,6 +14,7 @@ import ArtistDailyMotivation from "./ArtistDailyMotivation";
 import ArtistToolkit from "./ArtistToolkit";
 import ArtistWelcomeBanner from "./ArtistWelcomeBanner";
 import ArtistBoostTracker from "./ArtistBoostTracker";
+import ArtistDashboardWidgets from "./ArtistDashboardWidgets";
 import { UserProfile } from "@/context/auth/types";
 
 const ArtistDashboard = () => {
@@ -42,6 +43,9 @@ const ArtistDashboard = () => {
           
           {/* Toolkit Section */}
           <ArtistToolkit />
+          
+          {/* Dashboard Widgets */}
+          <ArtistDashboardWidgets />
           
           {/* Motivational Quote */}
           <ArtistMotivationalQuote />

@@ -1,66 +1,68 @@
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Link, Users, Copy, Gift } from "lucide-react";
-import { useAuth } from "@/context/auth";
+import { Link2, Copy, Users, Gift } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/context/auth";
 
 const AffiliateReferralCard = () => {
-  const { user, userProfile } = useAuth();
+  const { userProfile } = useAuth();
   const [copied, setCopied] = useState(false);
   
-  // Generate a unique affiliate link based on user ID
-  const affiliateLink = user ? 
-    `https://emviapp.com/refer/${user.id.substring(0, 8)}` : 
-    'https://emviapp.com/signup';
+  // Generate a referral code if none exists
+  const referralCode = userProfile?.affiliate_code || `EMVI${Math.floor(1000 + Math.random() * 9000)}`;
+  const referralLink = `https://emviapp.com/join?ref=${referralCode}`;
   
-  const handleCopy = () => {
-    navigator.clipboard.writeText(affiliateLink).then(() => {
-      setCopied(true);
-      toast.success("Affiliate link copied to clipboard");
-      setTimeout(() => setCopied(false), 2000);
-    });
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(referralLink);
+    setCopied(true);
+    toast.success("Referral link copied to clipboard");
+    
+    setTimeout(() => {
+      setCopied(false);
+    }, 3000);
   };
   
   return (
-    <Card className="h-full">
-      <CardHeader>
+    <Card className="border-indigo-100">
+      <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Gift className="h-5 w-5 text-indigo-500" />
-          Invite & Earn
+          <Link2 className="h-5 w-5 text-indigo-500" />
+          Affiliate Rewards
         </CardTitle>
-        <CardDescription>
-          Share EmviApp. Help someone, earn something.
-        </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex items-center space-x-2">
-          <Input 
-            value={affiliateLink}
+      <CardContent>
+        <div className="bg-indigo-50 rounded-lg p-4 flex items-center justify-between mb-4">
+          <div className="flex items-center text-indigo-700">
+            <Gift className="h-5 w-5 mr-2" />
+            <span className="font-medium">$10 per referral</span>
+          </div>
+          <div className="text-center">
+            <div className="text-xl font-bold text-indigo-700">
+              {userProfile?.referral_count || 0}
+            </div>
+            <div className="text-xs text-gray-500">Joined</div>
+          </div>
+        </div>
+        
+        <div className="flex items-center space-x-2 mt-4">
+          <input
+            value={referralLink}
             readOnly
-            className="font-mono text-sm"
+            className="flex-1 font-mono text-xs bg-gray-50 border border-gray-200 rounded-md py-2 px-3"
           />
           <Button 
             size="sm" 
             variant="outline" 
-            onClick={handleCopy}
+            onClick={copyToClipboard}
           >
-            {copied ? "Copied!" : <Copy className="h-4 w-4" />}
+            {copied ? (
+              <CheckCircle className="h-4 w-4 text-green-500" />
+            ) : (
+              <Copy className="h-4 w-4" />
+            )}
           </Button>
-        </div>
-        
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <Users className="h-4 w-4 text-indigo-500" />
-            <span className="text-sm font-medium">
-              Referrals: {userProfile?.referral_count || 0}
-            </span>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Earn $5 off your next post for each friend who signs up.
-          </p>
         </div>
       </CardContent>
     </Card>
