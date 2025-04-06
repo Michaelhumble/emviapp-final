@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile, UserRole } from './types';
 import { Json } from '@/integrations/supabase/types';
@@ -91,19 +92,21 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
   }
 };
 
+// Fixed function to prevent excessive type instantiation
 export const updateUserProfileInDb = async (userId: string, updates: Partial<UserProfile>) => {
   try {
-    // Create a simple object for database updates without complex type references
+    // Create a simple object with basic types for database updates
     const dbUpdates: Record<string, any> = {};
     
-    // Manually map the fields to avoid deep type instantiations
+    // Manually copy fields to avoid deep type instantiation issues
     Object.keys(updates).forEach(key => {
       const k = key as keyof typeof updates;
       if (k === 'user_role') {
+        // Map user_role to role for database
         dbUpdates['role'] = updates[k];
-      } else if (k !== 'facebook' && k !== 'twitter') {
+      } else if (!['facebook', 'twitter'].includes(key)) {
         // Skip fields that don't exist in the database
-        dbUpdates[k] = updates[k];
+        dbUpdates[key] = updates[k];
       }
     });
     

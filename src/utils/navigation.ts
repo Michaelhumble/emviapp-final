@@ -1,3 +1,4 @@
+
 import { NavigateFunction } from "react-router-dom";
 import { UserRole } from "@/context/auth/types";
 import { toast } from "sonner";
@@ -24,7 +25,7 @@ export const navigateToRoleDashboard = (
   const normalizedRole = userRole.toLowerCase();
 
   // Map the role to the appropriate dashboard route
-  if (normalizedRole.includes('artist') || normalizedRole.includes('technician') || normalizedRole === 'renter') {
+  if (normalizedRole.includes('artist') || normalizedRole.includes('technician')) {
     navigate("/dashboard/artist");
   } else if (normalizedRole === 'salon' || normalizedRole === 'owner') {
     navigate("/dashboard/owner");
@@ -38,6 +39,9 @@ export const navigateToRoleDashboard = (
     normalizedRole === 'beauty supplier'
   ) {
     navigate("/dashboard/supplier");
+  } else if (normalizedRole === 'renter') {
+    // Renter is a type of artist in our system
+    navigate("/dashboard/artist");
   } else if (normalizedRole === 'other') {
     navigate("/dashboard/other");
   } else {

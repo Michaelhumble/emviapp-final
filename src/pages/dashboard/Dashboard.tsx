@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
@@ -21,6 +20,30 @@ const Dashboard = () => {
   const [retryCount, setRetryCount] = useState(0);
   const [isFetchingRole, setIsFetchingRole] = useState(false);
   
+  // Direct role fetch function to avoid potential context issues
+  const fetchUserRoleDirectly = async (userId: string) => {
+    try {
+      setIsFetchingRole(true);
+      
+      const { data, error } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', userId)
+        .maybeSingle();
+      
+      if (error) {
+        throw error;
+      }
+      
+      return data?.role || null;
+    } catch (err) {
+      console.error("Error in direct role fetch:", err);
+      return null;
+    } finally {
+      setIsFetchingRole(false);
+    }
+  };
+  
   useEffect(() => {
     // Function to handle redirection logic
     const handleRedirect = async () => {
@@ -36,63 +59,43 @@ const Dashboard = () => {
       }
 
       try {
-        // If user is new or doesn't have a role, show role selection modal
-        if (isNewUser || !userRole) {
-          // Before showing role modal, try to fetch role directly from database
-          if (!isFetchingRole && user?.id) {
-            setIsFetchingRole(true);
-            
-            try {
-              const { data, error } = await supabase
-                .from('users')
-                .select('role')
-                .eq('id', user.id)
-                .maybeSingle();
-              
-              if (error) throw error;
-              
-              if (data && data.role) {
-                // User has a role in the database, refresh profile and redirect
-                await refreshUserProfile();
-                navigateToRoleDashboard(navigate, data.role);
-                return;
-              } else {
-                // No role found, show selection modal
-                setShowRoleModal(true);
-                if (isNewUser) {
-                  clearIsNewUser();
-                }
-              }
-            } catch (err) {
-              console.error("Error fetching user role:", err);
-              setError("Unable to fetch your profile. Please try again.");
-            } finally {
-              setIsFetchingRole(false);
-            }
-          } else {
-            // Show role selection if not already fetching
-            setShowRoleModal(true);
-            if (isNewUser) {
-              clearIsNewUser();
-            }
-          }
-        } else {
-          // Redirect based on existing role with fallback
-          const redirectTimeout = setTimeout(() => {
-            // Safety timeout - if redirect doesn't happen in 2 seconds, force navigate
-            // This prevents getting stuck in loading state
-            if (userRole) {
-              navigateToRoleDashboard(navigate, userRole);
-            } else {
-              setError("Unable to determine your user type. Please try again.");
-            }
-          }, 2000);
+        // If user exists but role is missing, try to fetch it directly from database
+        if (user?.id && !userRole) {
+          const directRole = await fetchUserRoleDirectly(user.id);
           
-          // Attempt normal navigation
+          // If we found a role directly, refresh the profile and redirect
+          if (directRole) {
+            await refreshUserProfile();
+            navigateToRoleDashboard(navigate, directRole);
+            return;
+          }
+          
+          // If no role found directly, show the selection modal
+          setShowRoleModal(true);
+          if (isNewUser) {
+            clearIsNewUser();
+          }
+          return;
+        }
+        
+        // If user is new, show role selection modal
+        if (isNewUser) {
+          setShowRoleModal(true);
+          clearIsNewUser();
+          return;
+        }
+        
+        // If we have a role, redirect to the appropriate dashboard
+        if (userRole) {
           navigateToRoleDashboard(navigate, userRole);
           
-          // Clear timeout if component unmounts
-          return () => clearTimeout(redirectTimeout);
+          // Safety timeout - if redirect doesn't happen in 2 seconds, log an error
+          setTimeout(() => {
+            console.log("Safety timeout triggered. Current role:", userRole);
+          }, 2000);
+        } else {
+          // No role, show modal
+          setShowRoleModal(true);
         }
       } catch (err) {
         console.error("Error in dashboard redirect:", err);
@@ -102,7 +105,7 @@ const Dashboard = () => {
     };
     
     handleRedirect();
-  }, [userRole, loading, navigate, isSignedIn, user, isNewUser, clearIsNewUser, refreshUserProfile, isFetchingRole]);
+  }, [userRole, loading, navigate, isSignedIn, user, isNewUser, clearIsNewUser, refreshUserProfile]);
   
   // Handle manual retry
   const handleRetry = async () => {
@@ -110,17 +113,27 @@ const Dashboard = () => {
     setRetryCount(prev => prev + 1);
     
     try {
-      // Attempt to refresh user profile data
+      // If we have a user but no role, try direct fetch
+      if (user?.id) {
+        const directRole = await fetchUserRoleDirectly(user.id);
+        
+        if (directRole) {
+          // Refresh profile to update context
+          await refreshUserProfile();
+          navigateToRoleDashboard(navigate, directRole);
+          return;
+        }
+      }
+      
+      // Otherwise refresh user profile and try again
       await refreshUserProfile();
       
-      // If still no role after refresh, open role selection
-      if (!userRole && user) {
-        setShowRoleModal(true);
-      } else if (userRole) {
-        // Then redirect based on potentially updated role
+      // Check if we now have a role after refresh
+      if (userRole) {
         navigateToRoleDashboard(navigate, userRole);
       } else {
-        throw new Error("Unable to determine user role");
+        // Still no role, show modal
+        setShowRoleModal(true);
       }
     } catch (err) {
       console.error("Retry error:", err);
