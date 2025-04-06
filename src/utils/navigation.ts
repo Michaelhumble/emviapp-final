@@ -1,4 +1,3 @@
-
 import { NavigateFunction } from "react-router-dom";
 import { UserRole } from "@/context/auth/types";
 import { toast } from "sonner";
@@ -16,7 +15,7 @@ export const navigateToRoleDashboard = (
 
   if (!userRole) {
     // Handle missing role - redirect to role selection
-    console.log("No role found, redirecting to role selection");
+    console.log("No role found, redirecting to select-role");
     navigate("/select-role");
     return;
   }
@@ -25,7 +24,7 @@ export const navigateToRoleDashboard = (
   const normalizedRole = userRole.toLowerCase();
 
   // Map the role to the appropriate dashboard route
-  if (normalizedRole.includes('artist') || normalizedRole.includes('technician')) {
+  if (normalizedRole.includes('artist') || normalizedRole === 'nail technician/artist') {
     navigate("/dashboard/artist");
   } else if (normalizedRole === 'salon' || normalizedRole === 'owner') {
     navigate("/dashboard/owner");
