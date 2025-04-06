@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { ArtistDataContextType, ArtistProfileState } from '../types/ArtistDashboardTypes';
+import { ArtistDataContextType, ArtistProfileState, PortfolioImage } from '../types/ArtistDashboardTypes';
 import { UserProfile } from '@/context/auth/types';
 
 // Create the context with a default value
@@ -18,20 +18,49 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
     error: null
   });
   const [copied, setCopied] = useState(false);
+  const [portfolioImages, setPortfolioImages] = useState<PortfolioImage[]>([]);
+  const [loadingPortfolio, setLoadingPortfolio] = useState(true);
   
   // Fetch user profile data from Supabase
   useEffect(() => {
     fetchArtistProfile();
   }, [user]);
   
+  // Process portfolio URLs into proper format when artist profile changes
+  useEffect(() => {
+    if (state.artistProfile) {
+      processPortfolioImages();
+    }
+  }, [state.artistProfile]);
+  
+  const processPortfolioImages = () => {
+    setLoadingPortfolio(true);
+    
+    const urls = state.artistProfile?.portfolio_urls || [];
+    const formattedImages: PortfolioImage[] = urls.map((url, index) => {
+      // Extract file name from URL
+      const fileName = url.split('/').pop() || `image-${index + 1}`;
+      return {
+        id: `portfolio-${index}`,
+        url: url,
+        name: fileName
+      };
+    });
+    
+    setPortfolioImages(formattedImages);
+    setLoadingPortfolio(false);
+  };
+  
   const fetchArtistProfile = async () => {
     if (!user) {
       setState(prev => ({ ...prev, loading: false }));
+      setLoadingPortfolio(false);
       return;
     }
     
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
+      setLoadingPortfolio(true);
       
       const { data, error } = await supabase
         .from('users')
@@ -101,7 +130,9 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
     copied,
     firstName,
     userCredits,
-    refreshArtistProfile
+    refreshArtistProfile,
+    portfolioImages,
+    loadingPortfolio
   };
   
   return <ArtistDataContext.Provider value={value}>{children}</ArtistDataContext.Provider>;

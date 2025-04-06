@@ -5,16 +5,17 @@ import { Upload, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile } from "@/context/auth/types";
+import { useAuth } from "@/context/auth";
+import { useArtistData } from "../context/ArtistDataContext";
 
 interface ArtistPortfolioUploaderProps {
-  user: { id: string } | null;
-  artistProfile: UserProfile | null;
-  images: { id: string; url: string; name: string }[];
-  onImagesUpdated: () => void;
+  onComplete: () => void;
 }
 
-const ArtistPortfolioUploader = ({ user, artistProfile, images, onImagesUpdated }: ArtistPortfolioUploaderProps) => {
+const ArtistPortfolioUploader = ({ onComplete }: ArtistPortfolioUploaderProps) => {
   const { toast } = useToast();
+  const { user } = useAuth();
+  const { artistProfile, refreshArtistProfile } = useArtistData();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
@@ -23,10 +24,11 @@ const ArtistPortfolioUploader = ({ user, artistProfile, images, onImagesUpdated 
     if (!files || !files.length || !user) return;
 
     // Check if adding these files would exceed the 12 image limit
-    if (images.length + files.length > 12) {
+    const currentImages = artistProfile?.portfolio_urls || [];
+    if (currentImages.length + files.length > 12) {
       toast({
         title: "Upload limit reached",
-        description: `You can only have up to 12 portfolio images. You currently have ${images.length}.`,
+        description: `You can only have up to 12 portfolio images. You currently have ${currentImages.length}.`,
         variant: "destructive"
       });
       return;
@@ -89,8 +91,11 @@ const ArtistPortfolioUploader = ({ user, artistProfile, images, onImagesUpdated 
           description: `Successfully uploaded ${successCount} image${successCount !== 1 ? 's' : ''}.`
         });
         
-        // Notify parent component to refresh images
-        onImagesUpdated();
+        // Refresh artist profile data
+        await refreshArtistProfile();
+        
+        // Call onComplete to notify parent
+        onComplete();
       } catch (error) {
         console.error("Error updating user profile:", error);
         toast({
@@ -117,7 +122,17 @@ const ArtistPortfolioUploader = ({ user, artistProfile, images, onImagesUpdated 
   };
 
   return (
-    <div>
+    <div className="p-4 bg-purple-50/50 rounded-lg border border-purple-100">
+      <h3 className="text-lg font-medium mb-3">Upload Portfolio Images</h3>
+      <p className="text-gray-500 mb-4">
+        Show your best work to attract clients.
+        Images should be clear and high quality.
+        <br/>
+        <span className="text-sm italic mt-1 inline-block">
+          Maximum 12 images total. Files must be JPG, PNG or WEBP format.
+        </span>
+      </p>
+      
       <input
         type="file"
         id="portfolio-upload"
@@ -127,21 +142,29 @@ const ArtistPortfolioUploader = ({ user, artistProfile, images, onImagesUpdated 
         onChange={handleFileUpload}
         disabled={isUploading}
       />
-      <label htmlFor="portfolio-upload">
-        <Button asChild={!isUploading} disabled={isUploading}>
-          {isUploading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Uploading {uploadProgress}%
-            </>
-          ) : (
-            <>
-              <Upload className="mr-2 h-4 w-4" />
-              Upload Images
-            </>
-          )}
-        </Button>
-      </label>
+      <div className="flex items-center gap-4">
+        <label htmlFor="portfolio-upload">
+          <Button asChild={!isUploading} disabled={isUploading} variant="default">
+            {isUploading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Uploading {uploadProgress}%
+              </>
+            ) : (
+              <>
+                <Upload className="mr-2 h-4 w-4" />
+                Select Images
+              </>
+            )}
+          </Button>
+        </label>
+        
+        {!isUploading && (
+          <Button variant="outline" type="button" onClick={onComplete}>
+            Cancel
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

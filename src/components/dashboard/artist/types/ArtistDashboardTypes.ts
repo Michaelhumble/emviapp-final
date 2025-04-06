@@ -1,6 +1,12 @@
 
 import { UserProfile } from "@/context/auth/types";
 
+export interface PortfolioImage {
+  id: string;
+  url: string;
+  name: string;
+}
+
 export interface ArtistProfileState {
   artistProfile: UserProfile | null;
   loading: boolean;
@@ -13,4 +19,6 @@ export interface ArtistDataContextType extends ArtistProfileState {
   copied: boolean;
   handleCopyReferralLink: () => void;
   refreshArtistProfile: () => Promise<void>;
+  portfolioImages: PortfolioImage[];
+  loadingPortfolio: boolean;
 }

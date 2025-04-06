@@ -1,34 +1,25 @@
 
+import { useState } from "react";
 import { Trash2, ZoomIn, Loader2, ImageIcon, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-
-interface PortfolioImage {
-  id: string;
-  url: string;
-  name: string;
-}
+import ArtistPortfolioViewer from "./ArtistPortfolioViewer";
+import { useAuth } from "@/context/auth";
+import { PortfolioImage } from "../types/ArtistDashboardTypes";
 
 interface ArtistPortfolioGridProps {
   images: PortfolioImage[];
   isLoading: boolean;
-  userId: string | undefined;
-  onImageClick: (image: PortfolioImage) => void;
-  onImagesUpdated: () => void;
 }
 
-const ArtistPortfolioGrid = ({ 
-  images, 
-  isLoading, 
-  userId, 
-  onImageClick, 
-  onImagesUpdated 
-}: ArtistPortfolioGridProps) => {
+const ArtistPortfolioGrid = ({ images, isLoading }: ArtistPortfolioGridProps) => {
   const { toast } = useToast();
+  const { user } = useAuth();
+  const [viewImage, setViewImage] = useState<PortfolioImage | null>(null);
 
   const handleDeleteImage = async (imageToDelete: PortfolioImage) => {
-    if (!userId) return;
+    if (!user) return;
 
     try {
       // Get the file path from the URL
@@ -46,7 +37,7 @@ const ArtistPortfolioGrid = ({
       const { data: userData } = await supabase
         .from('users')
         .select('portfolio_urls')
-        .eq('id', userId)
+        .eq('id', user.id)
         .single();
 
       if (userData) {
@@ -55,7 +46,7 @@ const ArtistPortfolioGrid = ({
         const { error } = await supabase
           .from('users')
           .update({ portfolio_urls: updatedUrls })
-          .eq('id', userId);
+          .eq('id', user.id);
 
         if (error) throw error;
         
@@ -64,8 +55,8 @@ const ArtistPortfolioGrid = ({
           description: "The portfolio image has been removed."
         });
         
-        // Refresh images in parent component
-        onImagesUpdated();
+        // Force refresh the current page to update the images
+        window.location.reload();
       }
     } catch (error) {
       console.error("Error deleting image:", error);
@@ -101,35 +92,43 @@ const ArtistPortfolioGrid = ({
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {images.map((image) => (
-        <div key={image.id} className="group relative">
-          <div className="relative aspect-square rounded-md overflow-hidden border bg-muted/20">
-            <img 
-              src={image.url} 
-              alt={image.name}
-              className="object-cover w-full h-full transition-transform group-hover:scale-105 duration-300"
-              onClick={() => onImageClick(image)}
-            />
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-              <button 
-                className="bg-white/90 p-2 rounded-full"
-                onClick={() => onImageClick(image)}
-              >
-                <ZoomIn className="h-5 w-5 text-gray-700" />
-              </button>
+    <>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {images.map((image) => (
+          <div key={image.id} className="group relative">
+            <div className="relative aspect-square rounded-md overflow-hidden border bg-muted/20">
+              <img 
+                src={image.url} 
+                alt={image.name || "Portfolio image"}
+                className="object-cover w-full h-full transition-transform group-hover:scale-105 duration-300"
+                onClick={() => setViewImage(image)}
+              />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                <button 
+                  className="bg-white/90 p-2 rounded-full"
+                  onClick={() => setViewImage(image)}
+                >
+                  <ZoomIn className="h-5 w-5 text-gray-700" />
+                </button>
+              </div>
             </div>
+            
+            <button
+              className="absolute top-2 right-2 p-1 bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={() => handleDeleteImage(image)}
+            >
+              <Trash2 className="h-4 w-4 text-white" />
+            </button>
           </div>
-          
-          <button
-            className="absolute top-2 right-2 p-1 bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={() => handleDeleteImage(image)}
-          >
-            <Trash2 className="h-4 w-4 text-white" />
-          </button>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+      
+      {/* Image Viewer Modal */}
+      <ArtistPortfolioViewer 
+        image={viewImage}
+        onClose={() => setViewImage(null)}
+      />
+    </>
   );
 };
 

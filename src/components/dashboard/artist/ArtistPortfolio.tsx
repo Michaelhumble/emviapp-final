@@ -9,7 +9,7 @@ import { useArtistData } from './context/ArtistDataContext';
 
 const ArtistPortfolio = () => {
   const [showUploader, setShowUploader] = useState(false);
-  const { portfolioImages = [], loadingPortfolio } = useArtistData();
+  const { portfolioImages, loadingPortfolio } = useArtistData();
   
   const hasImages = portfolioImages.length > 0;
   
@@ -28,7 +28,7 @@ const ArtistPortfolio = () => {
         ) : (
           <>
             {hasImages ? (
-              <ArtistPortfolioGrid images={portfolioImages} loading={loadingPortfolio} />
+              <ArtistPortfolioGrid images={portfolioImages} isLoading={loadingPortfolio} />
             ) : (
               <div className="flex flex-col items-center justify-center py-8 text-center">
                 <div className="bg-purple-50 p-4 rounded-full mb-4">
