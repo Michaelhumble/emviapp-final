@@ -22,7 +22,7 @@ export const navigateToRoleDashboard = (
   }
 
   // Normalize the role to lowercase for case-insensitive matching
-  const normalizedRole = userRole.toLowerCase();
+  const normalizedRole = userRole.toLowerCase().trim();
   
   if (normalizedRole.includes('artist') || normalizedRole === 'nail technician/artist' || normalizedRole === 'renter') {
     navigate("/dashboard/artist");
