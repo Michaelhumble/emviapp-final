@@ -31,7 +31,7 @@ const ArtistReferralCenter = () => {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold flex items-center">
               <Users className="h-5 w-5 text-purple-500 mr-2" />
-              Artist Referral Center
+              Referral Center
             </h3>
           </div>
           
@@ -43,14 +43,14 @@ const ArtistReferralCenter = () => {
                   <span className="font-medium">Earn Credits</span>
                 </div>
                 <p className="text-sm text-gray-600 mt-1">
-                  Get $10 for each new artist who joins
+                  Invite friends and earn Emvi Credits you can use to boost your profile, post jobs, or buy supplies in the future.
                 </p>
               </div>
               <div className="text-center">
                 <div className="text-xl font-bold text-purple-700">
                   {userProfile?.referral_count || 0}
                 </div>
-                <div className="text-xs text-gray-500">Artists joined</div>
+                <div className="text-xs text-gray-500">Friends Joined</div>
               </div>
             </div>
           </div>
@@ -96,7 +96,7 @@ const ArtistReferralCenter = () => {
               >
                 <div className="flex items-center">
                   <Share2 className="h-4 w-4 mr-2" /> 
-                  Share with artists
+                  Share with friends
                 </div>
                 <ArrowRight className="h-4 w-4" />
               </Button>
@@ -105,8 +105,8 @@ const ArtistReferralCenter = () => {
             <div className="rounded-lg bg-gray-50 p-4 text-center">
               <p className="text-sm text-gray-600">
                 {userProfile?.referral_count 
-                  ? `You've invited ${userProfile.referral_count} ${userProfile.referral_count === 1 ? 'artist' : 'artists'} so far`
-                  : "Invite fellow artists to earn rewards"}
+                  ? `You've invited ${userProfile.referral_count} ${userProfile.referral_count === 1 ? 'friend' : 'friends'} so far`
+                  : "Invite friends to earn Emvi Credits"}
               </p>
             </div>
           </div>
