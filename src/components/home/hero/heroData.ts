@@ -2,35 +2,79 @@
 // Hero section image data
 export const heroImages = [
   {
-    url: "/lovable-uploads/749e5584-caa4-4229-84a2-93589c7455c2.png",
-    alt: "Professional nail technician at work showcasing artistic designs"
+    url: "/lovable-uploads/ab10c5c2-1b02-4fce-9716-64b090da6a1c.png",
+    alt: "Hair stylist working with client in modern salon"
   },
   {
-    url: "/lovable-uploads/63331551-d921-46f4-98dc-8404b611ddd3.png",
-    alt: "Hair stylist creating elegant hairstyle for client"
+    url: "/lovable-uploads/59d0900b-3b20-488d-a202-c6e5875dd73c.png",
+    alt: "Elegant white spa room with beauty equipment"
   },
   {
-    url: "/lovable-uploads/b851c5dd-95de-4137-a29c-9833ea410cf4.png",
-    alt: "Beauty professional applying makeup with precise technique"
+    url: "/lovable-uploads/c08b7ac4-a0b1-42dd-995d-bf542421f9c5.png",
+    alt: "Modern salon interior with styling stations and mirrors"
   },
   {
-    url: "/lovable-uploads/f6bb9656-c400-4f28-ba97-69d71c651a97.png",
-    alt: "Professional beauty consultation showcasing personalized service"
+    url: "/lovable-uploads/7ab8bbe9-6092-4858-96c0-79d6c606ae67.png",
+    alt: "Barber shaving client's beard with precision tools"
   },
   {
-    url: "/lovable-uploads/b13a3b43-f6e1-4746-9992-03f6e8fac6bf.png",
-    alt: "Modern salon interior with elegant styling stations"
+    url: "/lovable-uploads/ebbcf937-ed1e-41b8-8742-a8884282723d.png",
+    alt: "Essential oil preparation with dropper for spa treatment"
   },
   {
-    url: "/lovable-uploads/b4f117ee-b209-43be-8e30-ecbf1d025c93.png",
-    alt: "Beauty products arranged professionally showcasing quality supplies"
+    url: "/lovable-uploads/45de0b96-6c45-49d8-b08b-5d0064d65b54.png",
+    alt: "Woman doing yoga pose outdoors by the water"
   },
   {
-    url: "/lovable-uploads/1763ca30-ecb0-409f-8bb0-11b851ea743f.png",
-    alt: "Freelance beauty artist working with client in stylish setting"
+    url: "/lovable-uploads/7f063f8f-8dfb-4bad-a28b-df67f89bab32.png",
+    alt: "Urban barbershop interior with vintage aesthetic"
   },
   {
-    url: "/lovable-uploads/8c7d4688-5f67-42e1-952b-1e4eb4bd4679.png",
-    alt: "Beauty professional demonstrating expert techniques"
+    url: "/lovable-uploads/959078c7-a0bc-45ac-a28b-6787a5c04d03.png",
+    alt: "Nail technician applying polish with precision"
+  },
+  {
+    url: "/lovable-uploads/64e4bdb2-afb7-4779-975d-dc64e90f9fd0.png",
+    alt: "Blonde beautician giving client facial treatment"
+  },
+  {
+    url: "/lovable-uploads/67df511e-ec5c-40d2-9ab4-ba29e4e26a5e.png",
+    alt: "Young women doing nail art consultation"
+  },
+  {
+    url: "/lovable-uploads/b5a53aea-5d8d-4bf6-9b0f-5169ae3c5f64.png",
+    alt: "Professional nail application with dark polish"
+  },
+  {
+    url: "/lovable-uploads/3e5aa03d-ad5a-473b-98c5-c94880559392.png",
+    alt: "Woman applying nail polish in white setting"
+  },
+  {
+    url: "/lovable-uploads/86e14798-1dfd-4c15-bd01-a0b36149b072.png",
+    alt: "Close-up of nail painting technique with minimal aesthetic"
+  },
+  {
+    url: "/lovable-uploads/79c43333-c4eb-486b-a224-72dff052ab5c.png",
+    alt: "Professional makeup brushes collection"
+  },
+  {
+    url: "/lovable-uploads/ffb97872-d0d2-4798-99a2-05bf32535c63.png",
+    alt: "Nail technician working with client in modern setting"
+  },
+  {
+    url: "/lovable-uploads/7a990f92-4a3c-428a-a839-0d6748e89983.png",
+    alt: "Woman receiving relaxing massage therapy"
+  },
+  {
+    url: "/lovable-uploads/6f490958-c405-4b2b-9f76-e99206749ad2.png",
+    alt: "Barber giving client precision haircut in professional setting"
+  },
+  {
+    url: "/lovable-uploads/ed693300-7300-49eb-9301-682db359808e.png",
+    alt: "Woman practicing mindfulness during spa treatment"
+  },
+  {
+    url: "/lovable-uploads/2db302dc-3910-41b6-ba5e-e1fa950bc26f.png",
+    alt: "Pedicure specialist working in modern salon"
   }
 ];

@@ -10,6 +10,8 @@ export interface CreditOption {
   creditCost: number;
   icon: React.ReactNode;
   isDisabled?: boolean;
+  actionText?: string;
+  comingSoon?: boolean;
 }
 
 export interface BoostStatus {

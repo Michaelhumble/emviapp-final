@@ -1,125 +1,90 @@
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
-import { addDays, format } from 'date-fns';
-import { BoostStatus } from './types';
 
 export const useProfileBoost = () => {
-  const { user, userProfile, refreshUserProfile } = useAuth();
   const [isBoostLoading, setIsBoostLoading] = useState(false);
-  const [boostStatus, setBoostStatus] = useState<BoostStatus>({
-    isActive: false,
-    expiresAt: null
-  });
-  
-  // Fetch boost status on component mount
-  useEffect(() => {
-    const fetchBoostStatus = async () => {
-      const status = await checkBoostStatus();
-      if (status.isActive) {
-        setBoostStatus({
-          isActive: true,
-          expiresAt: status.expiresAt
-        });
-      }
-    };
-    
-    fetchBoostStatus();
-  }, [user?.id, userProfile]);
-  
-  /**
-   * Check the current boost status
-   */
-  const checkBoostStatus = useCallback(async () => {
-    if (!user?.id || !userProfile) {
-      return { isActive: false, daysRemaining: 0, expiresAt: null };
+  const { user, refreshUserProfile } = useAuth();
+
+  const checkBoostStatus = async () => {
+    if (!user?.id) {
+      return { isActive: false, daysRemaining: 0 };
     }
-    
+
     try {
       const { data, error } = await supabase
         .from('users')
         .select('boosted_until')
         .eq('id', user.id)
         .single();
-      
-      if (error) throw error;
-      
-      if (!data.boosted_until) {
-        return { isActive: false, daysRemaining: 0, expiresAt: null };
+
+      if (error) {
+        console.error('Error checking boost status:', error);
+        return { isActive: false, daysRemaining: 0 };
       }
-      
-      const boostDate = new Date(data.boosted_until);
+
+      if (!data.boosted_until) {
+        return { isActive: false, daysRemaining: 0 };
+      }
+
+      const boostExpiryDate = new Date(data.boosted_until);
       const now = new Date();
       
-      // Check if boost is active
-      if (boostDate > now) {
-        // Calculate days remaining
-        const diffTime = Math.abs(boostDate.getTime() - now.getTime());
+      if (boostExpiryDate > now) {
+        const diffTime = Math.abs(boostExpiryDate.getTime() - now.getTime());
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        return { 
-          isActive: true, 
-          daysRemaining: diffDays,
-          expiresAt: data.boosted_until
-        };
+        return { isActive: true, daysRemaining: diffDays };
       }
-      
-      return { isActive: false, daysRemaining: 0, expiresAt: null };
+
+      return { isActive: false, daysRemaining: 0 };
     } catch (error) {
       console.error('Error checking boost status:', error);
-      return { isActive: false, daysRemaining: 0, expiresAt: null };
+      return { isActive: false, daysRemaining: 0 };
     }
-  }, [user?.id, userProfile]);
-  
-  /**
-   * Activate a profile boost for a specific number of days
-   */
-  const activateBoost = useCallback(async (days: number) => {
+  };
+
+  const activateBoost = async (days: number) => {
     if (!user?.id) {
       toast.error('You must be logged in to boost your profile');
       return false;
     }
-    
+
     setIsBoostLoading(true);
-    
+
     try {
-      // Calculate the new expiration date
-      const boostUntil = format(addDays(new Date(), days), "yyyy-MM-dd'T'HH:mm:ss'Z'");
-      
-      // Update user profile with the new boosted_until date
+      // Calculate the expiry date
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + days);
+
       const { error } = await supabase
         .from('users')
-        .update({ boosted_until: boostUntil })
+        .update({ boosted_until: expiryDate.toISOString() })
         .eq('id', user.id);
-        
-      if (error) throw error;
-      
-      // Update local boost status
-      setBoostStatus({
-        isActive: true,
-        expiresAt: boostUntil
-      });
-      
-      // Refresh the user profile to get the updated information
+
+      if (error) {
+        console.error('Error activating boost:', error);
+        toast.error('Failed to activate profile boost');
+        return false;
+      }
+
+      // Refresh user profile to update the UI
       await refreshUserProfile();
       
-      toast.success(`Your profile has been boosted for ${days} days!`);
       return true;
     } catch (error) {
-      console.error('Error activating profile boost:', error);
-      toast.error('Failed to activate your profile boost. Please try again.');
+      console.error('Error activating boost:', error);
+      toast.error('Failed to activate profile boost');
       return false;
     } finally {
       setIsBoostLoading(false);
     }
-  }, [user?.id, refreshUserProfile]);
-  
+  };
+
   return {
     activateBoost,
     checkBoostStatus,
-    isBoostLoading,
-    boostStatus,
-    setBoostStatus
+    isBoostLoading
   };
 };
