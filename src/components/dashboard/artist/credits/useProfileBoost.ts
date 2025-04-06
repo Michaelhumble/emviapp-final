@@ -1,58 +1,59 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/context/auth";
 import { BoostStatus } from "./types";
-import { isAfter } from "date-fns";
+import { addDays } from "date-fns";
 
 export const useProfileBoost = () => {
-  const { user } = useAuth();
   const [boostStatus, setBoostStatus] = useState<BoostStatus>({
     isActive: false,
     expiresAt: null
   });
+  const [loading, setLoading] = useState(true);
 
-  // Fetch boost status on hook mount
   useEffect(() => {
-    if (user) {
-      fetchBoostStatus();
-    }
-  }, [user]);
+    const fetchBoostStatus = async () => {
+      try {
+        setLoading(true);
+        const { data: userData, error } = await supabase
+          .from('users')
+          .select('boosted_until')
+          .eq('id', supabase.auth.getUser().then(res => res.data.user?.id))
+          .single();
 
-  // Fetch the user's boost status from Supabase
-  const fetchBoostStatus = async () => {
-    if (!user) return;
+        if (error) {
+          console.error('Error fetching boost status:', error);
+          return;
+        }
 
-    try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('boosted_until')
-        .eq('id', user.id)
-        .single();
-      
-      if (error) {
-        console.error("Error fetching boost status:", error);
-        return;
+        // Check if boosted_until exists and is in the future
+        if (userData?.boosted_until) {
+          const boostDate = new Date(userData.boosted_until);
+          const now = new Date();
+          
+          setBoostStatus({
+            isActive: boostDate > now,
+            expiresAt: userData.boosted_until as string
+          });
+        }
+      } catch (err) {
+        console.error('Unexpected error fetching boost status:', err);
+      } finally {
+        setLoading(false);
       }
-      
-      // Check if data has a boosted_until property and if it's not null
-      if (data && 'boosted_until' in data && data.boosted_until) {
-        const boostExpiryDate = new Date(data.boosted_until);
-        const isActive = isAfter(boostExpiryDate, new Date());
-        
-        setBoostStatus({
-          isActive: isActive,
-          expiresAt: isActive ? data.boosted_until : null
-        });
-      }
-    } catch (err) {
-      console.error("Error in fetchBoostStatus:", err);
+    };
+
+    fetchBoostStatus();
+  }, []);
+
+  // Calculate new expiration date (7 days from now or extend existing)
+  const getNewExpirationDate = (): Date => {
+    if (boostStatus.isActive && boostStatus.expiresAt) {
+      // If already boosted, add 7 days to current expiration
+      return addDays(new Date(boostStatus.expiresAt), 7);
     }
+    // Otherwise, 7 days from now
+    return addDays(new Date(), 7);
   };
 
-  return {
-    boostStatus,
-    setBoostStatus,
-    fetchBoostStatus
-  };
+  return { boostStatus, setBoostStatus, loading, getNewExpirationDate };
 };
