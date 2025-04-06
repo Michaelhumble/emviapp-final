@@ -54,7 +54,8 @@ export const fetchUserProfile = async (user: User): Promise<UserProfile | null> 
       skills: Array.isArray(data.preferences) ? data.preferences : [], // Use preferences as fallback
       skill_level: data.specialty || '', // Use specialty as fallback
       profile_views: data.credits || 0, // Use credits as fallback
-      preferences: Array.isArray(data.preferences) ? data.preferences : []
+      preferences: Array.isArray(data.preferences) ? data.preferences : [],
+      credits: data.credits // Add explicit mapping for credits
     };
   } catch (error) {
     console.error('Error in fetchUserProfile:', error);
@@ -83,7 +84,8 @@ const createUserProfile = async (user: User): Promise<UserProfile | null> => {
     role: 'customer' as UserRole,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
-    referral_code: referralCode // Add referral code to new profiles
+    referral_code: referralCode, // Add referral code to new profiles
+    credits: 0 // Initialize credits to 0
   };
   
   const { data, error } = await supabase
@@ -124,6 +126,7 @@ const createUserProfile = async (user: User): Promise<UserProfile | null> => {
     skills: Array.isArray(data.preferences) ? data.preferences : [], // Use preferences as fallback
     skill_level: data.specialty || '', // Use specialty as fallback
     profile_views: data.credits || 0, // Use credits as fallback
-    preferences: Array.isArray(data.preferences) ? data.preferences : []
+    preferences: Array.isArray(data.preferences) ? data.preferences : [],
+    credits: data.credits || 0 // Add explicit mapping for credits with default value
   };
 };

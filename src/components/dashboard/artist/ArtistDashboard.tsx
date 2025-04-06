@@ -127,7 +127,8 @@ const ArtistDashboard = () => {
   
   // Get credits from the user profile data
   // This explicitly uses credits from the database instead of referral_count to ensure accurate credit balance
-  const userCredits = artistProfile?.credits || artistProfile?.referral_count || 0;
+  // Make sure to use fallback values in case credits is undefined
+  const userCredits = artistProfile?.credits !== undefined ? artistProfile.credits : (artistProfile?.referral_count || 0);
   
   return (
     <div className="container mx-auto px-4 pb-20">

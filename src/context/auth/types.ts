@@ -1,3 +1,4 @@
+
 import { Session, User as SupabaseUser } from '@supabase/supabase-js';
 
 // User roles in the application
@@ -42,6 +43,7 @@ export interface UserProfile {
   preferences?: string[];
   affiliate_code?: string; // Added for sharing referral links
   referral_code?: string; // Added for database referral codes
+  credits?: number; // Added to match the database schema
 }
 
 // Auth context data shape
