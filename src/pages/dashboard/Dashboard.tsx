@@ -8,6 +8,7 @@ import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { UserRole } from "@/context/auth/types";
 
 /**
  * Dashboard component that handles redirecting users to role-specific dashboards
@@ -81,8 +82,9 @@ const Dashboard = () => {
       }
       
       // If we have a role, redirect to the appropriate dashboard
+      // Type cast the role as UserRole to satisfy TypeScript
       console.log("Redirecting to dashboard for role:", profile.role);
-      navigateToRoleDashboard(navigate, profile.role);
+      navigateToRoleDashboard(navigate, profile.role as UserRole);
       
     } catch (error) {
       console.error("Error in role check and redirect:", error);
