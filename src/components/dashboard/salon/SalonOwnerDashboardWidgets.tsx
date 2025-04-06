@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Plus, Users, Store, FileText, Calendar, TrendingUp, Globe, Star, Megaphone, Tag, Gift, Percent } from "lucide-react";
 import AffiliateReferralCard from "@/components/dashboard/common/AffiliateReferralCard";
 import { Progress } from "@/components/ui/progress";
+import SalonBoostBanner from "@/components/salon/SalonBoostBanner";
+import { toast } from "sonner";
 
 const SalonOwnerDashboardWidgets = () => {
   const { userProfile } = useAuth();
@@ -15,9 +17,17 @@ const SalonOwnerDashboardWidgets = () => {
   const localReach = 243;
   const isPremium = false;
   
+  const handleBoostClick = () => {
+    toast.info("Redirecting to salon boost options...");
+    // In a real implementation, this would navigate to a boost page or open a modal
+  };
+  
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-serif">Salon Owner Dashboard</h2>
+      
+      {/* Salon Boost Banner */}
+      <SalonBoostBanner onBoostClick={handleBoostClick} />
       
       {/* Customer Visibility Banner */}
       <Card className="bg-gradient-to-r from-amber-50 to-orange-50 border-amber-100">
