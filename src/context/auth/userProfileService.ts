@@ -9,6 +9,7 @@ export const createEmptyProfile = async (userId: string) => {
       .insert({
         id: userId,
         full_name: '',
+        email: '',  // Adding email as required field
         avatar_url: '',
         bio: '',
         contact_link: '',
@@ -58,6 +59,10 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
 
     if (error) {
       console.error('Error fetching user profile:', error);
+      return null;
+    }
+    
+    if (!data) {
       return null;
     }
     
@@ -198,6 +203,10 @@ export const getUserByUserName = async (username: string): Promise<UserProfile |
 
     if (error) {
       console.error('Error fetching user by username:', error);
+      return null;
+    }
+    
+    if (!data) {
       return null;
     }
     

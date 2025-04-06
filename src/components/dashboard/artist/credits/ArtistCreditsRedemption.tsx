@@ -9,6 +9,7 @@ import { ArtistCreditsRedemptionProps } from "./types";
 import { useProfileBoost } from "./useProfileBoost";
 import { useCreditRedemption } from "./useCreditRedemption";
 import BoostStatusBanner from "./BoostStatusBanner";
+import PostJobButton from "./PostJobButton";
 
 const ArtistCreditsRedemption = ({ credits = 0 }: ArtistCreditsRedemptionProps) => {
   const { boostStatus, setBoostStatus, activateBoost, isBoostLoading } = useProfileBoost();
@@ -93,6 +94,23 @@ const ArtistCreditsRedemption = ({ credits = 0 }: ArtistCreditsRedemptionProps) 
                 </Badge>
                 <span className="text-amber-800 font-medium">Credits</span>
               </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Post Job Button Card */}
+      <Card className="mb-6 bg-gradient-to-r from-indigo-50 to-blue-50 border-indigo-200">
+        <CardContent className="p-6">
+          <div className="flex items-start gap-4">
+            <div className="bg-indigo-100 p-2 rounded-full">
+              <RocketIcon className="h-6 w-6 text-indigo-600" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold mb-1">Post a Job for Free!</h3>
+              <p className="text-gray-600 mb-4">Looking for new opportunities? Use your credits to post a job request and get seen by salon owners.</p>
+              
+              <PostJobButton />
             </div>
           </div>
         </CardContent>
