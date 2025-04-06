@@ -1,20 +1,12 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile, UserRole, AuthContextType } from "../types";
 import { Session, User } from "@supabase/supabase-js";
 import { fetchUserProfile, signInWithEmailPassword, signUpWithEmailPassword, signOutUser } from "../services/authService";
 
-// Define the auth event types as string literals instead of using an enum
-// This matches what Supabase's onAuthStateChange actually returns
-type AuthChangeEvent = 
-  | 'SIGNED_IN'
-  | 'SIGNED_OUT'
-  | 'USER_UPDATED'
-  | 'USER_DELETED'
-  | 'PASSWORD_RECOVERY'
-  | 'TOKEN_REFRESHED'
-  | 'SIGNED_UP';
+// Use the correct type that matches Supabase's auth events
+// Imported directly from Supabase's types
+import { AuthChangeEvent } from "@supabase/supabase-js";
 
 /**
  * Custom hook to handle auth provider logic
