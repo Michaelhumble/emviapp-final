@@ -51,13 +51,25 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
         affiliate_code,
         badges,
         credits,
-        boosted_until
+        boosted_until,
+        preferred_language,
+        specialty,
+        phone,
+        referral_code,
+        skill_level,
+        preferences,
+        profile_views
       `)
       .eq('id', userId)
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error('Error fetching user profile:', error);
+      return null;
+    }
+    
+    if (!data) {
+      console.log('No user profile found for user ID:', userId);
       return null;
     }
     
@@ -82,6 +94,15 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
       badges: data.badges,
       credits: data.credits,
       boosted_until: data.boosted_until,
+      preferred_language: data.preferred_language,
+      specialty: data.specialty,
+      phone: data.phone,
+      skills: data.skills,
+      profile_views: data.profile_views,
+      referral_code: data.referral_code,
+      skill_level: data.skill_level,
+      preferences: data.preferences,
+      role: data.role,
     };
     
     return profile;
@@ -191,13 +212,25 @@ export const getUserByUserName = async (username: string): Promise<UserProfile |
         affiliate_code,
         badges,
         credits,
-        boosted_until
+        boosted_until,
+        preferred_language,
+        specialty,
+        phone,
+        referral_code,
+        skill_level,
+        preferences,
+        profile_views
       `)
       .eq('username', username)
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error('Error fetching user by username:', error);
+      return null;
+    }
+    
+    if (!data) {
+      console.log('No user profile found for username:', username);
       return null;
     }
     
@@ -222,6 +255,15 @@ export const getUserByUserName = async (username: string): Promise<UserProfile |
       badges: data.badges,
       credits: data.credits,
       boosted_until: data.boosted_until,
+      preferred_language: data.preferred_language,
+      specialty: data.specialty,
+      phone: data.phone,
+      skills: data.skills,
+      profile_views: data.profile_views,
+      referral_code: data.referral_code,
+      skill_level: data.skill_level,
+      preferences: data.preferences,
+      role: data.role,
     };
     
     return profile;
