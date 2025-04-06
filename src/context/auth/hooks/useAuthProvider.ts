@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -22,6 +21,9 @@ export const useAuthProvider = () => {
       // Set the user role
       if (profile?.user_role) {
         setUserRole(profile.user_role as UserRole);
+      } else if (profile?.role) {
+        // Fallback to role if user_role is not set
+        setUserRole(profile.role as UserRole);
       }
       
       return profile;

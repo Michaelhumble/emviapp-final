@@ -44,6 +44,10 @@ const UserMenu = ({ user, userRole, handleSignOut }: UserMenuProps) => {
         return "Beauty Dashboard";
       case 'freelancer':
         return "Freelancer Hub";
+      case 'supplier':
+      case 'beauty supplier':
+      case 'vendor':
+        return "Supplier Dashboard";
       default:
         return "Dashboard";
     }
