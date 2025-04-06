@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getPreferredLanguage, hasLanguagePreference, setPreferredLanguage } from "@/utils/languagePreference";
 
-const LANGUAGE_STORAGE_KEY = 'emviapp_preferred_language';
+const LANGUAGE_PREFERENCE_SHOWN_KEY = 'emviapp_language_preference_shown';
 
 const LanguagePreference = () => {
   const { user, userProfile } = useAuth();
@@ -14,15 +15,19 @@ const LanguagePreference = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Check if language is set in localStorage first
-    const storedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    // Only show preference dialog if:
+    // 1. User is logged in
+    // 2. User doesn't have a language preference in their profile
+    // 3. User hasn't set a preference in localStorage
+    // 4. The dialog hasn't been shown in this session
+    const hasShownDialog = sessionStorage.getItem(LANGUAGE_PREFERENCE_SHOWN_KEY) === 'true';
     
-    // Show language selector for new users who haven't set a preference
-    // and don't have a preference stored in localStorage
-    if (user && userProfile && !userProfile.preferred_language && !storedLanguage) {
+    if (user && userProfile && !userProfile.preferred_language && !hasLanguagePreference() && !hasShownDialog) {
       // Wait a bit to not overwhelm new users with too many modals at once
       const timer = setTimeout(() => {
         setOpen(true);
+        // Mark as shown for this session
+        sessionStorage.setItem(LANGUAGE_PREFERENCE_SHOWN_KEY, 'true');
       }, 5000);
 
       return () => clearTimeout(timer);
@@ -35,7 +40,7 @@ const LanguagePreference = () => {
     setLoading(true);
     
     // Save to localStorage immediately for a responsive experience
-    localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+    setPreferredLanguage(language);
     
     try {
       const { error } = await supabase

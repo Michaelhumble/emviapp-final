@@ -52,6 +52,8 @@ export interface AuthContextType {
   userRole: UserRole | null;
   loading: boolean;
   isSignedIn: boolean;
+  isNewUser: boolean; // Flag to track if user just signed up
+  clearIsNewUser: () => void; // Function to clear the new user flag
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;

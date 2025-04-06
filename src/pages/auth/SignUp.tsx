@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
@@ -15,11 +14,16 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { signUp, user } = useAuth();
+  const { signUp, user, isNewUser } = useAuth();
   const navigate = useNavigate();
 
   // Redirect if already logged in
   if (user) {
+    // If they're a new user, redirect straight to dashboard to select role
+    if (isNewUser) {
+      return <Navigate to="/dashboard" replace />;
+    }
+    // Otherwise go to home page
     return <Navigate to="/" replace />;
   }
 
@@ -36,8 +40,8 @@ const SignUp = () => {
     try {
       await signUp(email, password);
       toast.success("Account created successfully!");
-      // No need to redirect here as the AuthContext will update the user state
-      // which will trigger the redirect above
+      // User will be redirected automatically via the conditional above
+      // when auth state updates
     } catch (error) {
       toast.error("Failed to sign up. Please try again.");
       console.error("Sign up error:", error);

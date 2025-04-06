@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { useAuth } from "@/context/auth";
+import { Sparkles, ArrowRight } from "lucide-react";
 
 interface LayoutProps {
   children: ReactNode;
@@ -24,6 +25,7 @@ const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
     location.pathname === "/sign-in" || location.pathname === "/sign-up";
   const isHomePage = location.pathname === "/";
   const isDashboardPage = location.pathname.startsWith("/dashboard");
+  const isProfilePage = location.pathname === "/profile" || location.pathname === "/profile/edit";
 
   // Control visibility of sticky CTA based on scroll position
   useEffect(() => {
@@ -45,6 +47,26 @@ const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
   // Redirect to appropriate dashboard
   const goToDashboard = () => {
     navigate("/dashboard");
+  };
+
+  // Get role-specific dashboard button text
+  const getDashboardButtonText = () => {
+    if (!userRole) return "Go to Dashboard";
+    
+    switch (userRole) {
+      case 'artist':
+      case 'nail technician/artist':
+        return "Artist Dashboard";
+      case 'salon':
+      case 'owner':
+        return "Salon Dashboard";
+      case 'customer':
+        return "Beauty Dashboard";
+      case 'freelancer':
+        return "Freelancer Hub";
+      default:
+        return "Go to Dashboard";
+    }
   };
 
   return (
@@ -98,6 +120,21 @@ const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
         </AnimatePresence>
       )}
       
+      {/* Dashboard CTA for signed-in users on profile pages */}
+      {isProfilePage && isSignedIn && !isDashboardPage && (
+        <div className="fixed bottom-6 right-6 z-40">
+          <Button 
+            size="lg" 
+            className="shadow-lg flex items-center gap-2" 
+            onClick={goToDashboard}
+          >
+            <Sparkles className="h-4 w-4 text-yellow-300" />
+            {getDashboardButtonText()}
+            <ArrowRight className="h-4 w-4 ml-1" />
+          </Button>
+        </div>
+      )}
+      
       {/* Dashboard CTA for signed-in users on home page */}
       {isHomePage && isSignedIn && !isDashboardPage && (
         <AnimatePresence>
@@ -112,8 +149,13 @@ const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
               <div className="bg-white/90 backdrop-blur-md shadow-lg p-4 rounded-lg border border-primary/20">
                 <h4 className="font-medium mb-2">Welcome back!</h4>
                 <p className="text-sm text-gray-600 mb-3">Ready to continue where you left off?</p>
-                <Button size="sm" className="w-full" onClick={goToDashboard}>
-                  Go to Dashboard
+                <Button 
+                  size="sm" 
+                  className="w-full flex items-center justify-center gap-2" 
+                  onClick={goToDashboard}
+                >
+                  <Sparkles className="h-4 w-4 text-yellow-300" />
+                  {getDashboardButtonText()}
                 </Button>
               </div>
             </motion.div>

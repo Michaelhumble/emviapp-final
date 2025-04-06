@@ -1,16 +1,19 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { navigateToRoleDashboard } from "@/utils/navigation";
 import { Loader2 } from "lucide-react";
+import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 
 /**
  * This component redirects users to their role-specific dashboard
+ * or shows the role selection modal for new users
  */
 const Dashboard = () => {
-  const { userRole, loading, user, isSignedIn } = useAuth();
+  const { userRole, loading, user, isSignedIn, isNewUser, clearIsNewUser } = useAuth();
   const navigate = useNavigate();
+  const [showRoleModal, setShowRoleModal] = useState(false);
   
   useEffect(() => {
     if (!loading) {
@@ -19,11 +22,20 @@ const Dashboard = () => {
         navigate("/sign-in");
         return;
       }
-      
-      // Redirect based on role
-      navigateToRoleDashboard(navigate, userRole);
+
+      // If user is new or doesn't have a role, show role selection modal
+      if (isNewUser || !userRole) {
+        setShowRoleModal(true);
+        if (isNewUser) {
+          // Clear the new user flag once we've handled it
+          clearIsNewUser();
+        }
+      } else {
+        // Redirect based on existing role
+        navigateToRoleDashboard(navigate, userRole);
+      }
     }
-  }, [userRole, loading, navigate, isSignedIn, user]);
+  }, [userRole, loading, navigate, isSignedIn, user, isNewUser, clearIsNewUser]);
   
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
@@ -32,6 +44,15 @@ const Dashboard = () => {
         <span className="text-lg">Loading your dashboard...</span>
       </div>
       <p className="text-gray-500 text-sm">We're redirecting you to the appropriate dashboard</p>
+      
+      {/* Role selection modal for new users */}
+      {user && showRoleModal && (
+        <RoleSelectionModal
+          open={showRoleModal}
+          onOpenChange={setShowRoleModal}
+          userId={user.id}
+        />
+      )}
     </div>
   );
 };
