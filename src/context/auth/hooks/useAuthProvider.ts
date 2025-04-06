@@ -37,7 +37,7 @@ export const useAuthProvider = () => {
         setUser(currentSession?.user ?? null);
         
         // If the user just signed up, set the new user flag
-        if (event === AuthChangeEvent.SIGNED_UP) {
+        if (event === 'SIGNED_UP') {
           console.log("New user signed up!");
           setIsNewUser(true);
           // Store this in localStorage as well for persistence
