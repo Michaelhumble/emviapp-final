@@ -46,6 +46,7 @@ export const fetchUserProfile = async (user: User): Promise<UserProfile | null> 
       // Handle the new fields with appropriate fallbacks
       referral_count: data.credits || 0, // Use credits for referral count if no dedicated field
       affiliate_code: data.referral_code || '', // Map referral_code to affiliate_code
+      referral_code: data.referral_code || '', // Direct mapping for database value
       salon_name: data.custom_role || '', // Use custom_role as fallback
       company_name: data.custom_role || '', // Use custom_role as fallback
       custom_role: data.custom_role || '',
@@ -65,6 +66,9 @@ export const fetchUserProfile = async (user: User): Promise<UserProfile | null> 
  * Creates a new user profile in Supabase
  */
 const createUserProfile = async (user: User): Promise<UserProfile | null> => {
+  // Generate referral code if needed
+  const referralCode = `EMVI${Math.floor(1000 + Math.random() * 9000)}`;
+  
   const newProfile = {
     id: user.id,
     email: user.email || '',
@@ -78,7 +82,8 @@ const createUserProfile = async (user: User): Promise<UserProfile | null> => {
     specialty: '',
     role: 'customer' as UserRole,
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    updated_at: new Date().toISOString(),
+    referral_code: referralCode // Add referral code to new profiles
   };
   
   const { data, error } = await supabase
@@ -110,7 +115,8 @@ const createUserProfile = async (user: User): Promise<UserProfile | null> => {
     preferred_language: data.preferred_language || '',
     // Set default values for the additional fields
     referral_count: data.credits || 0, // Use credits for referral count
-    affiliate_code: data.referral_code || '', // Map referral_code to affiliate_code
+    affiliate_code: data.referral_code || referralCode, // Map referral_code to affiliate_code
+    referral_code: data.referral_code || referralCode, // Direct mapping for database value
     salon_name: data.custom_role || '', // Use custom_role as fallback
     company_name: data.custom_role || '', // Use custom_role as fallback
     custom_role: data.custom_role || '',

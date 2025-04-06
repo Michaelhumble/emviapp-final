@@ -1,18 +1,62 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, Share2, Gift, ArrowRight, Copy, CheckCircle, CreditCard, Coins } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const ArtistReferralCenter = () => {
-  const { userProfile } = useAuth();
+  const { userProfile, user } = useAuth();
   const [copied, setCopied] = useState(false);
+  const [referralStats, setReferralStats] = useState({
+    count: 0,
+    credits: 0
+  });
   
-  // For demo purposes, generate a referral code if none exists
-  const referralCode = userProfile?.affiliate_code || `EMVI${Math.floor(1000 + Math.random() * 9000)}`;
-  const referralLink = `https://emviapp.com/join?ref=${referralCode}`;
+  // Generate a referral code if none exists
+  const referralCode = userProfile?.affiliate_code || userProfile?.referral_code || `EMVI${Math.floor(1000 + Math.random() * 9000)}`;
+  const referralLink = `https://emviapp.com/sign-up?ref=${referralCode}`;
+  
+  // Fetch referral stats from Supabase
+  useEffect(() => {
+    const fetchReferralStats = async () => {
+      if (!user) return;
+      
+      try {
+        // Use either the database function or direct query to get referral stats
+        const { data, error } = await supabase.rpc('get_user_referral_stats', {
+          user_id: user.id
+        });
+        
+        if (error) {
+          console.error('Error fetching referral stats:', error);
+          return;
+        }
+        
+        if (data && data.length > 0) {
+          // Get user credits (earned from referrals)
+          const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('credits')
+            .eq('id', user.id)
+            .single();
+            
+          if (!userError && userData) {
+            setReferralStats({
+              count: data[0].referral_count || 0,
+              credits: userData.credits || 0
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Unexpected error fetching referral stats:', err);
+      }
+    };
+    
+    fetchReferralStats();
+  }, [user]);
   
   const copyToClipboard = () => {
     navigator.clipboard.writeText(referralLink);
@@ -45,7 +89,7 @@ const ArtistReferralCenter = () => {
                 <div className="text-xs text-purple-600 uppercase font-semibold mb-1">You've Earned</div>
                 <div className="text-2xl font-bold text-purple-800 flex items-center justify-center">
                   <CreditCard className="h-5 w-5 mr-2 text-purple-600" />
-                  💳 {userProfile?.referral_count || 0} <span className="text-base ml-1">Emvi Credits</span>
+                  💳 {referralStats.credits || userProfile?.referral_count || 0} <span className="text-base ml-1">Emvi Credits</span>
                 </div>
               </div>
               
@@ -53,7 +97,7 @@ const ArtistReferralCenter = () => {
                 <div className="text-xs text-purple-600 uppercase font-semibold mb-1">Network Growth</div>
                 <div className="text-2xl font-bold text-purple-800 flex items-center justify-center">
                   <Users className="h-5 w-5 mr-2 text-purple-600" />
-                  👥 {userProfile?.referral_count || 0} <span className="text-base ml-1">Friends Joined</span>
+                  👥 {referralStats.count || userProfile?.referral_count || 0} <span className="text-base ml-1">Friends Joined</span>
                 </div>
               </div>
             </div>
@@ -120,8 +164,8 @@ const ArtistReferralCenter = () => {
               </Button>
               
               <p className="text-sm text-purple-600 mt-3">
-                {userProfile?.referral_count 
-                  ? `You've invited ${userProfile.referral_count} ${userProfile.referral_count === 1 ? 'friend' : 'friends'} so far`
+                {referralStats.count > 0 
+                  ? `You've invited ${referralStats.count} ${referralStats.count === 1 ? 'friend' : 'friends'} so far`
                   : "Start earning credits today! Share your link now."}
               </p>
             </div>

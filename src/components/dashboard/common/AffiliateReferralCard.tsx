@@ -1,18 +1,62 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link2, Copy, Users, Gift, CheckCircle, Coins, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/auth";
+import { supabase } from "@/integrations/supabase/client";
 
 const AffiliateReferralCard = () => {
-  const { userProfile } = useAuth();
+  const { userProfile, user } = useAuth();
   const [copied, setCopied] = useState(false);
+  const [referralStats, setReferralStats] = useState({
+    count: 0,
+    credits: 0
+  });
   
   // Generate a referral code if none exists
-  const referralCode = userProfile?.affiliate_code || `EMVI${Math.floor(1000 + Math.random() * 9000)}`;
-  const referralLink = `https://emviapp.com/join?ref=${referralCode}`;
+  const referralCode = userProfile?.affiliate_code || userProfile?.referral_code || `EMVI${Math.floor(1000 + Math.random() * 9000)}`;
+  const referralLink = `https://emviapp.com/sign-up?ref=${referralCode}`;
+  
+  // Fetch referral stats from Supabase
+  useEffect(() => {
+    const fetchReferralStats = async () => {
+      if (!user) return;
+      
+      try {
+        // Use either the database function or direct query to get referral stats
+        const { data, error } = await supabase.rpc('get_user_referral_stats', {
+          user_id: user.id
+        });
+        
+        if (error) {
+          console.error('Error fetching referral stats:', error);
+          return;
+        }
+        
+        if (data && data.length > 0) {
+          // Get user credits (earned from referrals)
+          const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('credits')
+            .eq('id', user.id)
+            .single();
+            
+          if (!userError && userData) {
+            setReferralStats({
+              count: data[0].referral_count || 0,
+              credits: userData.credits || 0
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Unexpected error fetching referral stats:', err);
+      }
+    };
+    
+    fetchReferralStats();
+  }, [user]);
   
   const copyToClipboard = () => {
     navigator.clipboard.writeText(referralLink);
@@ -41,11 +85,11 @@ const AffiliateReferralCard = () => {
           <div className="text-center grid grid-cols-1 gap-1">
             <div className="flex items-center justify-end text-lg font-bold text-indigo-700">
               <CreditCard className="h-4 w-4 mr-1" />
-              💳 {userProfile?.referral_count || 0}
+              💳 {referralStats.credits || userProfile?.referral_count || 0}
             </div>
             <div className="flex items-center justify-end text-sm text-indigo-600">
               <Users className="h-3 w-3 mr-1" />
-              👥 {userProfile?.referral_count || 0} Friends
+              👥 {referralStats.count || userProfile?.referral_count || 0} Friends
             </div>
           </div>
         </div>

@@ -1,21 +1,34 @@
-import { useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+
+import { useState, useEffect } from "react";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, Gift, Users } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
   const { signUp, user, isNewUser } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Check URL for referral code
+  useEffect(() => {
+    const refFromUrl = searchParams.get('ref');
+    if (refFromUrl) {
+      setReferralCode(refFromUrl);
+      console.log('Referral code detected:', refFromUrl);
+    }
+  }, [searchParams]);
 
   // Redirect if already logged in
   if (user) {
@@ -38,7 +51,45 @@ const SignUp = () => {
     setIsSubmitting(true);
 
     try {
-      await signUp(email, password);
+      // Sign up the user
+      const signUpResponse = await signUp(email, password);
+      
+      if (signUpResponse.error) {
+        toast.error(signUpResponse.error.message || "Failed to sign up");
+        return;
+      }
+      
+      // If there's a referral code, process it
+      if (referralCode && signUpResponse.data?.user?.id) {
+        try {
+          // Option 1: Use custom RPC function
+          const { error: rpcError } = await supabase.rpc('process_referral', {
+            referral_code: referralCode,
+            new_user_id: signUpResponse.data.user.id
+          });
+          
+          if (rpcError) {
+            console.error('Error processing referral:', rpcError);
+          } else {
+            console.log('Referral processed successfully');
+          }
+          
+          // Option 2: Direct update approach (if RPC fails)
+          if (rpcError) {
+            const { error: updateError } = await supabase
+              .from('users')
+              .update({ referred_by: referralCode })
+              .eq('id', signUpResponse.data.user.id);
+              
+            if (updateError) {
+              console.error('Error updating referral data:', updateError);
+            }
+          }
+        } catch (refErr) {
+          console.error('Unexpected error processing referral:', refErr);
+        }
+      }
+      
       toast.success("Account created successfully!");
       // User will be redirected automatically via the conditional above
       // when auth state updates
@@ -59,6 +110,17 @@ const SignUp = () => {
             <CardDescription className="text-center">
               Enter your email and create a password to get started
             </CardDescription>
+            {referralCode && (
+              <div className="mt-2 bg-indigo-50 p-3 rounded-md text-center">
+                <div className="flex items-center justify-center text-indigo-700 mb-1">
+                  <Gift className="h-4 w-4 mr-1" />
+                  <span className="text-sm font-medium">You were invited!</span>
+                </div>
+                <p className="text-xs text-indigo-600">
+                  Signing up with a referral gives you a bonus start.
+                </p>
+              </div>
+            )}
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
