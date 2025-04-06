@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 
 interface HeroImage {
   url: string;
@@ -51,7 +50,7 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages, isMobile = false
           transition={{ duration: 0.5, delay: 0.1 }}
         >
           <Badge variant="outline" className="mb-4 sm:mb-6 bg-white/30 backdrop-blur-md px-3 py-1 sm:px-4 sm:py-1.5 text-xs font-medium rounded-full border-white/30 text-gray-800 shadow-sm">
-            Revolutionizing Beauty Hiring
+            {getImageCategory(activeIndex, heroImages[activeIndex]?.alt || '')}
           </Badge>
         </motion.div>
         

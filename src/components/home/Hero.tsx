@@ -12,25 +12,67 @@ const Hero = () => {
   const [randomizedImages, setRandomizedImages] = useState([...heroImages]);
   const isMobile = useIsMobile();
 
-  // Randomize the images on component mount
+  // Randomize the images on component mount, but prioritize nail images
   useEffect(() => {
-    const shuffleArray = (array: typeof heroImages) => {
-      const shuffled = [...array];
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    const prioritizeNailImages = (array: typeof heroImages) => {
+      // Separate nail-related images and other images
+      const nailImages = array.filter(img => 
+        img.alt.toLowerCase().includes('nail') || 
+        img.alt.toLowerCase().includes('manicure') || 
+        img.alt.toLowerCase().includes('pedicure')
+      );
+      
+      const otherImages = array.filter(img => 
+        !img.alt.toLowerCase().includes('nail') && 
+        !img.alt.toLowerCase().includes('manicure') && 
+        !img.alt.toLowerCase().includes('pedicure')
+      );
+      
+      // Shuffle both arrays
+      const shuffleArray = (arr: typeof heroImages) => {
+        const shuffled = [...arr];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+      };
+      
+      const shuffledNailImages = shuffleArray(nailImages);
+      const shuffledOtherImages = shuffleArray(otherImages);
+      
+      // Interleave the arrays, prioritizing nail images (roughly 50% of the result)
+      const result = [];
+      const maxLength = Math.max(shuffledNailImages.length, shuffledOtherImages.length);
+      
+      for (let i = 0; i < maxLength; i++) {
+        // Add a nail image first (if available)
+        if (i < shuffledNailImages.length) {
+          result.push(shuffledNailImages[i]);
+        }
+        
+        // Add another nail image (to increase nail image ratio, roughly every other slot)
+        if (i + 1 < shuffledNailImages.length && i % 2 === 0) {
+          result.push(shuffledNailImages[i + 1]);
+        }
+        
+        // Add a non-nail image
+        if (i < shuffledOtherImages.length) {
+          result.push(shuffledOtherImages[i]);
+        }
       }
-      return shuffled;
+      
+      return result;
     };
     
-    setRandomizedImages(shuffleArray(heroImages));
+    setRandomizedImages(prioritizeNailImages(heroImages));
   }, []);
 
   useEffect(() => {
-    // Auto-advance the carousel every 5 seconds for both mobile and desktop
+    // Auto-advance the carousel every 7 seconds for both mobile and desktop
     const interval = setInterval(() => {
       setActiveIndex(prevIndex => (prevIndex + 1) % randomizedImages.length);
-    }, 5000);
+    }, 7000);
     return () => clearInterval(interval);
   }, [randomizedImages.length]);
 
