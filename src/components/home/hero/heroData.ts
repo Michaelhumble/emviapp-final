@@ -2,6 +2,22 @@
 // Hero section image data
 export const heroImages = [
   {
+    url: "/lovable-uploads/3dd20dc4-a7af-48a1-ba3d-3d9dbbf28bef.png",
+    alt: "Professional nail technician working on client's manicure with black gloves"
+  },
+  {
+    url: "/lovable-uploads/e7199fcc-35f5-44ea-a6e3-99a9eb91329f.png",
+    alt: "Group of hands with colorful nail designs arranged in a circle on red fabric"
+  },
+  {
+    url: "/lovable-uploads/7e064b71-bc18-42f3-8614-f2e4bf06adb0.png",
+    alt: "Hair stylist working with client in upscale salon with professional lighting"
+  },
+  {
+    url: "/lovable-uploads/f056f323-da4f-47a8-9679-6aa8f19755a8.png",
+    alt: "Nail technician with red hair applying nail treatment with precision"
+  },
+  {
     url: "/lovable-uploads/ab10c5c2-1b02-4fce-9716-64b090da6a1c.png",
     alt: "Hair stylist working with client in modern salon"
   },
@@ -32,10 +48,6 @@ export const heroImages = [
   {
     url: "/lovable-uploads/959078c7-a0bc-45ac-a28b-6787a5c04d03.png",
     alt: "Nail technician applying polish with precision"
-  },
-  {
-    url: "/lovable-uploads/64e4bdb2-afb7-4779-975d-dc64e90f9fd0.png",
-    alt: "Blonde beautician giving client facial treatment"
   },
   {
     url: "/lovable-uploads/67df511e-ec5c-40d2-9ab4-ba29e4e26a5e.png",

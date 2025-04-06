@@ -1,103 +1,116 @@
 
-import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import CreditOptionCard from './CreditOptionCard';
-import { creditOptions } from './creditOptions';
-import { ArtistCreditsRedemptionProps } from './types';
-import { useProfileBoost } from './useProfileBoost';
-import { useCreditRedemption } from './useCreditRedemption';
-import BoostStatusBanner from './BoostStatusBanner';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { RocketIcon } from "lucide-react";
+import CreditOptionCard from "./CreditOptionCard";
+import { creditOptions } from "./creditOptions";
+import { ArtistCreditsRedemptionProps } from "./types";
+import { useProfileBoost } from "./useProfileBoost";
+import { useCreditRedemption } from "./useCreditRedemption";
+import BoostStatusBanner from "./BoostStatusBanner";
 
 const ArtistCreditsRedemption = ({ credits = 0 }: ArtistCreditsRedemptionProps) => {
-  const [redeemedActions, setRedeemedActions] = useState<Record<string, boolean>>({});
-  const { activateBoost, checkBoostStatus, isBoostLoading } = useProfileBoost();
-  const { redeemCredits, isRedeeming } = useCreditRedemption();
-  const [boostStatus, setBoostStatus] = useState<{ isActive: boolean; expiresAt: string | null }>({
-    isActive: false,
-    expiresAt: null
-  });
+  const { boostStatus, setBoostStatus, activateBoost, isBoostLoading } = useProfileBoost();
+  const { isProcessing, redeemSuccess, handleRedeemAction, redeemCredits, isRedeeming } = useCreditRedemption();
+  const [redeemError, setRedeemError] = useState<string | null>(null);
 
-  // Check boost status on mount
-  React.useEffect(() => {
-    const checkStatus = async () => {
-      const status = await checkBoostStatus();
-      setBoostStatus({
-        isActive: status.isActive,
-        expiresAt: status.daysRemaining > 0 ? 
-          new Date(Date.now() + status.daysRemaining * 24 * 60 * 60 * 1000).toISOString() : 
-          null
-      });
-    };
+  // Handle credit redemption for profile boost
+  const handleProfileBoost = async (option: any) => {
+    const { id, creditCost } = option;
     
-    checkStatus();
-  }, [checkBoostStatus]);
-
-  const handleRedeemOption = async (optionId: string) => {
-    const option = creditOptions.find(opt => opt.id === optionId);
-    
-    if (!option) return;
-    
-    if (credits < option.creditCost) {
-      toast.error("Not enough credits to redeem this option");
+    if (credits < creditCost) {
+      setRedeemError("You don't have enough credits for this action");
+      setTimeout(() => setRedeemError(null), 3000);
       return;
     }
     
-    if (optionId === 'profile-boost') {
-      try {
-        const success = await activateBoost(7); // 7 days
+    try {
+      setRedeemError(null);
+      
+      // Handle profile boost specifically - 7 days
+      if (id === 'profile-boost') {
+        const boostDays = 7; // Standard 7-day boost
         
-        if (success) {
-          const success = await redeemCredits(option.creditCost);
-          if (success) {
-            setRedeemedActions(prev => ({ ...prev, [optionId]: true }));
-            toast.success("Profile boost activated successfully!");
-            
-            // Update boost status
-            setBoostStatus({
+        // First redeem the credits
+        const redeemed = await redeemCredits(id, creditCost, boostDays, 'profile_boost');
+        
+        if (redeemed) {
+          // Then activate the boost
+          const activated = await activateBoost(boostDays);
+          
+          if (activated) {
+            // Update the boost status on success
+            setBoostStatus(prev => ({
+              ...prev,
               isActive: true,
-              expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-            });
+              // Calculate new expiration date (7 days from now)
+              expiresAt: new Date(Date.now() + (boostDays * 24 * 60 * 60 * 1000)).toISOString(),
+              daysRemaining: boostDays
+            }));
           }
         }
-      } catch (error) {
-        toast.error("Failed to activate profile boost");
+      } else {
+        // For other redemption options
+        await handleRedeemAction(id, creditCost, option.id);
       }
+    } catch (error) {
+      console.error("Error redeeming credits:", error);
+      setRedeemError("Failed to redeem credits. Please try again.");
     }
   };
 
   return (
-    <div className="space-y-6">
-      {boostStatus.isActive && boostStatus.expiresAt && (
-        <BoostStatusBanner expiresAt={boostStatus.expiresAt} />
+    <div className="w-full max-w-4xl">
+      {/* Error message */}
+      {redeemError && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+          {redeemError}
+        </div>
       )}
       
-      <Card>
+      {/* Boost Status Banner */}
+      {boostStatus.isActive && boostStatus.expiresAt && (
+        <BoostStatusBanner 
+          isActive={boostStatus.isActive} 
+          expiresAt={boostStatus.expiresAt}
+          daysRemaining={boostStatus.daysRemaining}
+        />
+      )}
+      
+      {/* Current Credits Card */}
+      <Card className="mb-6 bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200">
         <CardContent className="p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold">Redeem Your Credits</h2>
-            <div className="bg-primary/10 text-primary font-semibold px-3 py-1 rounded-md">
-              {credits} Credits Available
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold mb-1">Your Credit Balance</h3>
+              <p className="text-gray-600">Use your credits to boost your profile and increase visibility</p>
             </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {creditOptions.map(option => (
-              <CreditOptionCard
-                key={option.id}
-                option={option}
-                onRedeem={handleRedeemOption}
-                isLoading={isRedeeming || (option.id === 'profile-boost' && isBoostLoading)}
-                isRedeemed={
-                  option.id === 'profile-boost' 
-                    ? boostStatus.isActive 
-                    : redeemedActions[option.id]
-                }
-              />
-            ))}
+            <div className="bg-white px-4 py-3 rounded-lg shadow-sm border border-amber-100">
+              <div className="flex items-center">
+                <Badge variant="outline" className="font-bold text-2xl bg-amber-50 text-amber-700 px-2 py-1 mr-2">
+                  {credits}
+                </Badge>
+                <span className="text-amber-800 font-medium">Credits</span>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
+      
+      {/* Credit Options */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+        {creditOptions.map((option) => (
+          <CreditOptionCard
+            key={option.id}
+            option={option}
+            canAfford={credits >= option.creditCost}
+            onRedeem={handleProfileBoost}
+            isProcessing={isRedeeming(option.id) || isBoostLoading}
+            isSuccess={redeemSuccess[option.id] || false}
+          />
+        ))}
+      </div>
     </div>
   );
 };

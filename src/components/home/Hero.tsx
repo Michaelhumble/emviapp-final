@@ -12,31 +12,51 @@ const Hero = () => {
   const [randomizedImages, setRandomizedImages] = useState([...heroImages]);
   const isMobile = useIsMobile();
 
-  // Randomize the images on component mount and ensure high-quality images get priority
+  // Randomize the images on component mount with intelligent categorization
   useEffect(() => {
-    const prioritizeImages = (array: typeof heroImages) => {
+    const categorizeAndRandomize = (array: typeof heroImages) => {
       // Clone the array to avoid mutating the original
       const images = [...array];
       
-      // Sort images to prioritize higher quality ones for initial display
-      // This ensures the most impactful images appear first
-      const sorted = images.sort((a, b) => {
-        // Prioritize images with descriptive alt text (likely to be better quality)
-        const aQuality = a.alt.length > 15 ? 2 : 1;
-        const bQuality = b.alt.length > 15 ? 2 : 1;
-        return bQuality - aQuality;
+      // Group images by category
+      const categories: {[key: string]: typeof heroImages} = {};
+      images.forEach(img => {
+        const alt = img.alt.toLowerCase();
+        let category = 'other';
+        
+        if (alt.includes('nail')) category = 'nail';
+        else if (alt.includes('hair')) category = 'hair';
+        else if (alt.includes('spa') || alt.includes('massage')) category = 'spa';
+        else if (alt.includes('makeup')) category = 'makeup';
+        else if (alt.includes('barber')) category = 'barber';
+        
+        if (!categories[category]) categories[category] = [];
+        categories[category].push(img);
       });
       
-      // Then shuffle them slightly to maintain variety
-      for (let i = sorted.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [sorted[i], sorted[j]] = [sorted[j], sorted[i]];
+      // Create a balanced sequence alternating between categories
+      const result: typeof heroImages = [];
+      const categoryKeys = Object.keys(categories);
+      let maxLength = 0;
+      
+      // Find the category with the most images
+      categoryKeys.forEach(key => {
+        if (categories[key].length > maxLength) maxLength = categories[key].length;
+      });
+      
+      // Create a balanced sequence
+      for (let i = 0; i < maxLength; i++) {
+        for (const key of categoryKeys) {
+          if (categories[key][i]) {
+            result.push(categories[key][i]);
+          }
+        }
       }
       
-      return sorted;
+      return result;
     };
     
-    setRandomizedImages(prioritizeImages(heroImages));
+    setRandomizedImages(categorizeAndRandomize(heroImages));
   }, []);
 
   useEffect(() => {
@@ -50,7 +70,7 @@ const Hero = () => {
   return (
     <div className="relative pt-24 pb-28 overflow-hidden">
       {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#FDFDFD] to-[#F6F6F6] z-0"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-[#1A1F2C] to-[#221F26] z-0"></div>
       
       {/* Enhanced glass frame effect */}
       <div className="absolute inset-0 md:m-4 backdrop-blur-[2px] bg-white/5 border border-white/40 rounded-lg shadow-lg z-10"></div>

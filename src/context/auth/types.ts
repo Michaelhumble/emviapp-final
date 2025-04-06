@@ -39,10 +39,26 @@ export interface UserProfile {
   specialty_tags?: string[];
   referral_count?: number;
   affiliate_code?: string;
+  referral_code?: string;
   profile_views?: number;
   badges?: Json;
   credits?: number;
   boosted_until?: string | null;
+  role?: UserRole;
+  phone?: string;
+  preferences?: string[];
+  specialty?: string;
+  gallery?: string[];
+  verification_status?: 'pending' | 'verified' | 'rejected';
+  account_type?: 'free' | 'pro' | 'enterprise';
+  product_type?: string;
+  social_links?: {
+    instagram?: string;
+    facebook?: string;
+    twitter?: string;
+    website?: string;
+  };
+  preferred_language?: 'en' | 'vi' | 'es';
 }
 
 export interface AuthContextType {
@@ -51,8 +67,9 @@ export interface AuthContextType {
   userRole: UserRole | null;
   session: Session | null;
   isLoading: boolean;
-  signUp: (email: string, password: string) => Promise<{ error: any }>;
-  signIn: (email: string, password: string) => Promise<{ error: any; data: any }>;
+  loading: boolean; // Alias for isLoading for backward compatibility
+  signUp: (email: string, password: string) => Promise<SignUpResponse>;
+  signIn: (email: string, password: string) => Promise<SignInResponse>;
   signOut: () => Promise<void>;
   refreshUserProfile: () => Promise<void>;
   updateUserProfile: (updates: Partial<UserProfile>) => Promise<boolean>;

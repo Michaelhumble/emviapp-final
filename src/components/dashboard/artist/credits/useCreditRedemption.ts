@@ -1,106 +1,86 @@
 
 import { useState } from "react";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
-import { format } from "date-fns";
-import { BoostStatus } from "./types";
+import { toast } from "sonner";
+import { CreditRedemptionHook, RedeemActions } from "./types";
 
-export const useCreditRedemption = (
-  credits: number, 
-  boostStatus: BoostStatus, 
-  setBoostStatus: React.Dispatch<React.SetStateAction<BoostStatus>>,
-  refreshUserProfile: () => Promise<void>
-) => {
-  const { user } = useAuth();
-  const [isProcessing, setIsProcessing] = useState<{ [key: string]: boolean }>({
-    profileBoost: false,
-    jobPost: false,
-    marketplace: false
-  });
-  const [redeemSuccess, setRedeemSuccess] = useState<{ [key: string]: boolean }>({
-    profileBoost: false,
-    jobPost: false,
-    marketplace: false
-  });
+export const useCreditRedemption = (): CreditRedemptionHook => {
+  const { userProfile, updateUserProfile } = useAuth();
+  const [isProcessing, setIsProcessing] = useState<RedeemActions>({});
+  const [redeemSuccess, setRedeemSuccess] = useState<RedeemActions>({});
 
-  // Reset success state after a delay
-  const resetSuccessState = (actionType: string) => {
-    setTimeout(() => {
-      setRedeemSuccess(prev => ({ ...prev, [actionType]: false }));
-    }, 5000);
+  const isRedeeming = (action: string): boolean => {
+    return isProcessing[action] || false;
   };
 
-  const handleRedeemAction = async (action: string, requiredCredits: number, actionType: string) => {
-    if (!user) {
-      toast.error("You must be logged in to redeem credits");
-      return;
+  const redeemCredits = async (
+    action: string, 
+    creditAmount: number, 
+    days: number = 0, 
+    actionType: string
+  ): Promise<boolean> => {
+    if (!userProfile) {
+      toast.error("You need to be logged in to redeem credits");
+      return false;
     }
 
-    // Check if user has enough credits
-    if (credits < requiredCredits) {
-      toast.error(`You need ${requiredCredits} credits to use this feature. You currently have ${credits}.`);
-      return;
+    const currentCredits = userProfile.credits || 0;
+    
+    if (currentCredits < creditAmount) {
+      toast.error("You don't have enough credits for this action");
+      return false;
     }
-
-    // Set processing state
-    setIsProcessing(prev => ({ ...prev, [actionType]: true }));
 
     try {
-      // Calculate boost expiry date (7 days from now) if it's a profile boost
-      const boostUpdate = actionType === 'profileBoost' 
-        ? { boosted_until: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() }
-        : {};
+      // Update user profile with reduced credits
+      const updatedProfile = await updateUserProfile({
+        credits: currentCredits - creditAmount
+      });
 
-      // Update the user's credits in Supabase
-      const { error } = await supabase
-        .from('users')
-        .update({ 
-          credits: credits - requiredCredits,
-          ...boostUpdate
-        })
-        .eq('id', user.id);
-
-      if (error) {
-        console.error("Error updating credits:", error);
-        toast.error("Failed to redeem credits. Please try again.");
-        return;
-      }
-
-      // Set success state and reset after delay
-      setRedeemSuccess(prev => ({ ...prev, [actionType]: true }));
-      resetSuccessState(actionType);
-      
-      // If it's a profile boost, update the local boost status
-      if (actionType === 'profileBoost') {
-        const expiryDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-        setBoostStatus({
-          isActive: true,
-          expiresAt: expiryDate
-        });
-        
-        toast.success("✅ Boost Activated! You'll appear in top results for 7 days.", {
-          description: `Your profile is now boosted until ${format(new Date(expiryDate), 'MMM dd, yyyy')}`
-        });
+      if (updatedProfile) {
+        // Record the successful transaction
+        console.log(`Redeemed ${creditAmount} credits for ${actionType}`);
+        return true;
       } else {
-        toast.success(`Successfully redeemed ${requiredCredits} credits for ${action}!`, {
-          description: `Your new balance is ${credits - requiredCredits} credits.`
-        });
+        toast.error("Failed to update your credits");
+        return false;
       }
+    } catch (error) {
+      console.error("Error redeeming credits:", error);
+      toast.error("An error occurred while redeeming credits");
+      return false;
+    }
+  };
+
+  // Main handler for redeeming actions
+  const handleRedeemAction = async (
+    action: string, 
+    requiredCredits: number, 
+    actionType: string
+  ): Promise<void> => {
+    setIsProcessing(prev => ({ ...prev, [action]: true }));
+    setRedeemSuccess(prev => ({ ...prev, [action]: false }));
+    
+    try {
+      const success = await redeemCredits(action, requiredCredits, 0, actionType);
       
-      // Refresh user profile to get updated credit balance
-      await refreshUserProfile();
-    } catch (err) {
-      console.error("Unexpected error during redemption:", err);
-      toast.error("An unexpected error occurred. Please try again later.");
+      if (success) {
+        setRedeemSuccess(prev => ({ ...prev, [action]: true }));
+        toast.success(`Successfully redeemed ${requiredCredits} credits for ${actionType}`);
+      }
+    } catch (error) {
+      console.error(`Error redeeming ${action}:`, error);
+      toast.error(`Failed to redeem credits for ${actionType}`);
     } finally {
-      setIsProcessing(prev => ({ ...prev, [actionType]: false }));
+      setIsProcessing(prev => ({ ...prev, [action]: false }));
     }
   };
 
   return {
     isProcessing,
     redeemSuccess,
-    handleRedeemAction
+    handleRedeemAction,
+    redeemCredits,
+    isRedeeming
   };
 };
