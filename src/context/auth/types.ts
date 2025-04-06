@@ -1,3 +1,4 @@
+
 import { Session, User as SupabaseUser } from '@supabase/supabase-js';
 
 // User roles in the application

@@ -181,6 +181,27 @@ export type Database = {
         }
         Relationships: []
       }
+      motivational_quotes: {
+        Row: {
+          created_at: string
+          id: string
+          quote_text: string
+          role: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          quote_text: string
+          role: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          quote_text?: string
+          role?: string
+        }
+        Relationships: []
+      }
       posts: {
         Row: {
           contact_info: Json | null
