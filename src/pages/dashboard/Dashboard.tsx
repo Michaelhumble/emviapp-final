@@ -2,18 +2,27 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
-import { navigateToRoleDashboard } from "@/utils/navigation";
 import { Loader2 } from "lucide-react";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
+import { UserRole } from "@/context/auth/types";
 
 /**
  * This component redirects users to their role-specific dashboard
  * or shows the role selection modal for new users
  */
 const Dashboard = () => {
-  const { userRole, loading, user, isSignedIn, isNewUser, clearIsNewUser } = useAuth();
+  const { userRole, loading, user, isSignedIn, isNewUser, clearIsNewUser, refreshUserProfile } = useAuth();
   const navigate = useNavigate();
   const [showRoleModal, setShowRoleModal] = useState(false);
+  
+  const handleRoleSelected = async (role: UserRole) => {
+    // Refresh the user profile to get the updated role
+    await refreshUserProfile();
+    // Clear the new user flag
+    if (isNewUser) {
+      clearIsNewUser();
+    }
+  };
   
   useEffect(() => {
     if (!loading) {
@@ -26,16 +35,46 @@ const Dashboard = () => {
       // If user is new or doesn't have a role, show role selection modal
       if (isNewUser || !userRole) {
         setShowRoleModal(true);
-        if (isNewUser) {
+        if (isNewUser && clearIsNewUser) {
           // Clear the new user flag once we've handled it
           clearIsNewUser();
         }
       } else {
         // Redirect based on existing role
-        navigateToRoleDashboard(navigate, userRole);
+        redirectBasedOnRole(userRole);
       }
     }
   }, [userRole, loading, navigate, isSignedIn, user, isNewUser, clearIsNewUser]);
+  
+  const redirectBasedOnRole = (role: UserRole) => {
+    switch (role) {
+      case 'artist':
+      case 'nail technician/artist':
+        navigate('/dashboard/artist');
+        break;
+      case 'salon':
+      case 'owner':
+        navigate('/dashboard/salon');
+        break;
+      case 'customer':
+        navigate('/dashboard/customer');
+        break;
+      case 'supplier':
+      case 'beauty supplier':
+      case 'vendor':
+        navigate('/dashboard/supplier');
+        break;
+      case 'freelancer':
+        navigate('/dashboard/freelancer');
+        break;
+      case 'renter':
+        navigate('/dashboard/artist'); // Renters see artist dashboard
+        break;
+      case 'other':
+      default:
+        navigate('/dashboard/other');
+    }
+  };
   
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
@@ -51,6 +90,7 @@ const Dashboard = () => {
           open={showRoleModal}
           onOpenChange={setShowRoleModal}
           userId={user.id}
+          onRoleSelected={handleRoleSelected}
         />
       )}
     </div>

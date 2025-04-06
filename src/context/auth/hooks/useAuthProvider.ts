@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile, UserRole } from '../types';
@@ -95,10 +95,10 @@ export const useAuthProvider = () => {
         setIsNewUser(true);
       }
 
-      return { error };
+      return { data, error };
     } catch (error) {
       console.error('Sign up error:', error);
-      return { error };
+      return { data: null, error };
     }
   };
 
@@ -109,10 +109,10 @@ export const useAuthProvider = () => {
         password,
       });
 
-      return { error, data };
+      return { data, error };
     } catch (error) {
       console.error('Sign in error:', error);
-      return { error, data: null };
+      return { data: null, error };
     }
   };
 
