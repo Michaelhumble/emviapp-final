@@ -1,6 +1,6 @@
 
 import { Card } from "@/components/ui/card";
-import { UserProfile } from "@/types/profile";
+import { UserProfile as AuthUserProfile } from "@/context/auth/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Scissors, MapPin, Instagram, Globe, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
 interface ArtistDashboardHeaderProps {
-  profile: UserProfile | null;
+  profile: AuthUserProfile | null;
 }
 
 const ArtistDashboardHeader = ({ profile }: ArtistDashboardHeaderProps) => {
