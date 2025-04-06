@@ -2,29 +2,25 @@
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
-import DashboardContent from "@/components/dashboard/DashboardContent";
-import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
+import ArtistDashboard from "@/components/dashboard/artist/ArtistDashboard";
 
-const ArtistDashboard = () => {
+const ArtistDashboardPage = () => {
   useEffect(() => {
     document.title = "Artist Dashboard | EmviApp";
   }, []);
 
   return (
     <Layout>
-      <div className="container px-4 mx-auto py-12">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <RoleDashboardLayout>
-            <DashboardContent />
-          </RoleDashboardLayout>
-        </motion.div>
-      </div>
+      <motion.div 
+        className="min-h-screen"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <ArtistDashboard />
+      </motion.div>
     </Layout>
   );
 };
 
-export default ArtistDashboard;
+export default ArtistDashboardPage;
