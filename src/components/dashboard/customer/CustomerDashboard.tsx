@@ -8,6 +8,7 @@ import CustomerMotivationalQuote from "./CustomerMotivationalQuote";
 import CustomerReferralCenter from "./CustomerReferralCenter";
 import CustomerWelcomeBanner from "./CustomerWelcomeBanner";
 import CustomerBoostTracker from "./CustomerBoostTracker";
+import CustomerDashboardStats from "./CustomerDashboardStats";
 import { UserProfile } from "@/context/auth/types";
 import CustomerDashboardWidgets from "./CustomerDashboardWidgets";
 
@@ -29,6 +30,11 @@ const CustomerDashboard = () => {
       
       {/* Hero Banner with Cover Photo and Avatar */}
       <CustomerDashboardHeader profile={userProfile as UserProfile} />
+      
+      {/* Customer Dashboard Stats */}
+      <div className="mt-6">
+        <CustomerDashboardStats />
+      </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
         <div className="lg:col-span-2 space-y-8">
