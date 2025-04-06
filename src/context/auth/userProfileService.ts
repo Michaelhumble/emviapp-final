@@ -12,7 +12,7 @@ export const createEmptyProfile = async (userId: string) => {
         avatar_url: '',
         bio: '',
         contact_link: '',
-        user_role: 'customer', // Default role
+        role: 'customer', // Default role
         created_at: new Date().toISOString(),
         credits: 15, // Starting credits for new users
       });
@@ -41,19 +41,12 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
         bio,
         contact_link,
         instagram,
-        facebook,
-        twitter,
         website,
-        user_role,
+        role,
         created_at,
         salon_name,
         company_name,
-        skills,
-        skill_level,
-        service_category,
         location,
-        languages,
-        specialty_tags,
         referral_count,
         affiliate_code,
         badges,
@@ -68,7 +61,30 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
       return null;
     }
     
-    return data;
+    // Map database response to UserProfile
+    const profile: UserProfile = {
+      id: data.id,
+      email: data.email,
+      full_name: data.full_name,
+      avatar_url: data.avatar_url,
+      custom_role: data.custom_role,
+      bio: data.bio,
+      contact_link: data.contact_link,
+      instagram: data.instagram,
+      website: data.website,
+      user_role: data.role,
+      created_at: data.created_at,
+      salon_name: data.salon_name,
+      company_name: data.company_name,
+      location: data.location,
+      referral_count: data.referral_count,
+      affiliate_code: data.affiliate_code,
+      badges: data.badges,
+      credits: data.credits,
+      boosted_until: data.boosted_until,
+    };
+    
+    return profile;
   } catch (error) {
     console.error('Error fetching user profile:', error);
     return null;
@@ -77,10 +93,23 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
 
 export const updateUserProfileInDb = async (userId: string, updates: Partial<UserProfile>) => {
   try {
+    // Map UserProfile fields to database columns
+    const dbUpdates: any = { ...updates };
+    
+    // Handle special case: user_role → role in the database
+    if (updates.user_role !== undefined) {
+      dbUpdates.role = updates.user_role;
+      delete dbUpdates.user_role;
+    }
+    
+    // Remove any fields that don't exist in the database
+    delete dbUpdates.facebook;
+    delete dbUpdates.twitter;
+    
     const { error } = await supabase
       .from('users')
       .update({
-        ...updates,
+        ...dbUpdates,
         updated_at: new Date().toISOString(),
       })
       .eq('id', userId);
@@ -152,19 +181,12 @@ export const getUserByUserName = async (username: string): Promise<UserProfile |
         bio,
         contact_link,
         instagram,
-        facebook,
-        twitter,
         website,
-        user_role,
+        role,
         created_at,
         salon_name,
         company_name,
-        skills,
-        skill_level,
-        service_category,
         location,
-        languages,
-        specialty_tags,
         referral_count,
         affiliate_code,
         badges,
@@ -179,7 +201,30 @@ export const getUserByUserName = async (username: string): Promise<UserProfile |
       return null;
     }
     
-    return data;
+    // Map database response to UserProfile
+    const profile: UserProfile = {
+      id: data.id,
+      email: data.email,
+      full_name: data.full_name,
+      avatar_url: data.avatar_url,
+      custom_role: data.custom_role,
+      bio: data.bio,
+      contact_link: data.contact_link,
+      instagram: data.instagram,
+      website: data.website,
+      user_role: data.role,
+      created_at: data.created_at,
+      salon_name: data.salon_name,
+      company_name: data.company_name,
+      location: data.location,
+      referral_count: data.referral_count,
+      affiliate_code: data.affiliate_code,
+      badges: data.badges,
+      credits: data.credits,
+      boosted_until: data.boosted_until,
+    };
+    
+    return profile;
   } catch (error) {
     console.error('Error fetching user by username:', error);
     return null;

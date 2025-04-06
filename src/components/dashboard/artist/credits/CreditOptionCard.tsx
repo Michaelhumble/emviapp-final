@@ -7,16 +7,18 @@ import { Badge } from '@/components/ui/badge';
 
 interface CreditOptionCardProps {
   option: CreditOption;
-  onRedeem: (optionId: string) => void;
-  isLoading?: boolean;
-  isRedeemed?: boolean;
+  canAfford?: boolean; // Added canAfford prop
+  onRedeem: (option: any) => void;
+  isProcessing?: boolean;
+  isSuccess?: boolean;
 }
 
 const CreditOptionCard = ({ 
   option, 
+  canAfford = true, // Default to true
   onRedeem, 
-  isLoading = false,
-  isRedeemed = false
+  isProcessing = false,
+  isSuccess = false
 }: CreditOptionCardProps) => {
   const { 
     id, 
@@ -30,13 +32,13 @@ const CreditOptionCard = ({
   } = option;
 
   const handleClick = () => {
-    if (!isDisabled && !isLoading && !isRedeemed) {
-      onRedeem(id);
+    if (!isDisabled && !isProcessing && !isSuccess && canAfford) {
+      onRedeem(option);
     }
   };
 
   return (
-    <Card className={`border overflow-hidden h-full transition-all duration-300 ${isDisabled ? 'opacity-70' : 'hover:shadow-md'}`}>
+    <Card className={`border overflow-hidden h-full transition-all duration-300 ${isDisabled || !canAfford ? 'opacity-70' : 'hover:shadow-md'}`}>
       <CardContent className="p-5 pt-6 flex-grow">
         <div className="flex items-start gap-3 mb-4">
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
@@ -54,6 +56,12 @@ const CreditOptionCard = ({
                   Coming Soon
                 </Badge>
               )}
+              
+              {!canAfford && !comingSoon && (
+                <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-500/20">
+                  Not Enough Credits
+                </Badge>
+              )}
             </div>
           </div>
         </div>
@@ -65,12 +73,12 @@ const CreditOptionCard = ({
       
       <CardFooter className="p-5 pt-0">
         <Button 
-          variant={isDisabled || isRedeemed ? "outline" : "default"}
+          variant={isDisabled || isSuccess || !canAfford ? "outline" : "default"}
           className="w-full"
-          disabled={isDisabled || isLoading || isRedeemed}
+          disabled={isDisabled || isProcessing || isSuccess || !canAfford}
           onClick={handleClick}
         >
-          {isLoading ? "Processing..." : isRedeemed ? "Redeemed" : actionText}
+          {isProcessing ? "Processing..." : isSuccess ? "Redeemed" : actionText}
         </Button>
       </CardFooter>
     </Card>

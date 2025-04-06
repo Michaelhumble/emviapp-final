@@ -10,8 +10,14 @@ export const AuthProvider = ({ children }) => {
   // Use the custom hook to get all auth functionality
   const authContextValue = useAuthProvider();
   
+  // Add the loading alias for backward compatibility
+  const contextWithLoadingAlias: AuthContextType = {
+    ...authContextValue,
+    loading: authContextValue.isLoading
+  };
+  
   return (
-    <AuthContext.Provider value={authContextValue}>
+    <AuthContext.Provider value={contextWithLoadingAlias}>
       {children}
     </AuthContext.Provider>
   );
