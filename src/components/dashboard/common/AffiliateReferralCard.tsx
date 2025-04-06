@@ -36,13 +36,13 @@ const AffiliateReferralCard = () => {
         <div className="bg-indigo-50 rounded-lg p-4 flex items-center justify-between mb-4">
           <div className="flex items-center text-indigo-700">
             <Gift className="h-5 w-5 mr-2" />
-            <span className="font-medium">$10 per referral</span>
+            <span className="font-medium">Earn Emvi Credits</span>
           </div>
           <div className="text-center">
             <div className="text-xl font-bold text-indigo-700">
               {userProfile?.referral_count || 0}
             </div>
-            <div className="text-xs text-gray-500">Joined</div>
+            <div className="text-xs text-gray-500">Friends Joined</div>
           </div>
         </div>
         
