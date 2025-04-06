@@ -10,8 +10,8 @@ import { useCreditRedemption } from "./useCreditRedemption";
 import { ArtistCreditsRedemptionProps } from "./types";
 
 const ArtistCreditsRedemption = ({ credits = 0 }: ArtistCreditsRedemptionProps) => {
-  const { user, refreshUserProfile } = useAuth();
-  const { boostStatus, setBoostStatus } = useProfileBoost();
+  const { refreshUserProfile } = useAuth();
+  const { boostStatus, setBoostStatus, isBoostLoading } = useProfileBoost();
   const { isProcessing, redeemSuccess, handleRedeemAction } = useCreditRedemption(
     credits,
     boostStatus,

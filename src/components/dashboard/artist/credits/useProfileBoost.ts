@@ -1,20 +1,40 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 import { addDays, format } from 'date-fns';
+import { BoostStatus } from './types';
 
 export const useProfileBoost = () => {
   const { user, userProfile, refreshUserProfile } = useAuth();
   const [isBoostLoading, setIsBoostLoading] = useState(false);
+  const [boostStatus, setBoostStatus] = useState<BoostStatus>({
+    isActive: false,
+    expiresAt: null
+  });
+  
+  // Fetch boost status on component mount
+  useEffect(() => {
+    const fetchBoostStatus = async () => {
+      const status = await checkBoostStatus();
+      if (status.isActive) {
+        setBoostStatus({
+          isActive: true,
+          expiresAt: status.expiresAt
+        });
+      }
+    };
+    
+    fetchBoostStatus();
+  }, [user?.id, userProfile]);
   
   /**
    * Check the current boost status
    */
   const checkBoostStatus = useCallback(async () => {
     if (!user?.id || !userProfile) {
-      return { isActive: false, daysRemaining: 0 };
+      return { isActive: false, daysRemaining: 0, expiresAt: null };
     }
     
     try {
@@ -27,7 +47,7 @@ export const useProfileBoost = () => {
       if (error) throw error;
       
       if (!data.boosted_until) {
-        return { isActive: false, daysRemaining: 0 };
+        return { isActive: false, daysRemaining: 0, expiresAt: null };
       }
       
       const boostDate = new Date(data.boosted_until);
@@ -38,13 +58,17 @@ export const useProfileBoost = () => {
         // Calculate days remaining
         const diffTime = Math.abs(boostDate.getTime() - now.getTime());
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        return { isActive: true, daysRemaining: diffDays };
+        return { 
+          isActive: true, 
+          daysRemaining: diffDays,
+          expiresAt: data.boosted_until
+        };
       }
       
-      return { isActive: false, daysRemaining: 0 };
+      return { isActive: false, daysRemaining: 0, expiresAt: null };
     } catch (error) {
       console.error('Error checking boost status:', error);
-      return { isActive: false, daysRemaining: 0 };
+      return { isActive: false, daysRemaining: 0, expiresAt: null };
     }
   }, [user?.id, userProfile]);
   
@@ -71,6 +95,12 @@ export const useProfileBoost = () => {
         
       if (error) throw error;
       
+      // Update local boost status
+      setBoostStatus({
+        isActive: true,
+        expiresAt: boostUntil
+      });
+      
       // Refresh the user profile to get the updated information
       await refreshUserProfile();
       
@@ -88,6 +118,8 @@ export const useProfileBoost = () => {
   return {
     activateBoost,
     checkBoostStatus,
-    isBoostLoading
+    isBoostLoading,
+    boostStatus,
+    setBoostStatus
   };
 };

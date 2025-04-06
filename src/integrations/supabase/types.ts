@@ -383,6 +383,7 @@ export type Database = {
           avatar_url: string | null
           badges: Json | null
           bio: string | null
+          boosted_until: string | null
           contact_link: string | null
           created_at: string | null
           credits: number | null
@@ -406,6 +407,7 @@ export type Database = {
           avatar_url?: string | null
           badges?: Json | null
           bio?: string | null
+          boosted_until?: string | null
           contact_link?: string | null
           created_at?: string | null
           credits?: number | null
@@ -429,6 +431,7 @@ export type Database = {
           avatar_url?: string | null
           badges?: Json | null
           bio?: string | null
+          boosted_until?: string | null
           contact_link?: string | null
           created_at?: string | null
           credits?: number | null
