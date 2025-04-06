@@ -101,12 +101,15 @@ export const updateUserProfileInDb = async (userId: string, updates: Partial<Use
     // Manually copy fields to avoid deep type instantiation issues
     Object.keys(updates).forEach(key => {
       const k = key as keyof typeof updates;
-      if (k === 'user_role') {
-        // Map user_role to role for database
-        dbUpdates['role'] = updates[k];
-      } else if (!['facebook', 'twitter'].includes(key)) {
-        // Skip fields that don't exist in the database
-        dbUpdates[key] = updates[k];
+      if (updates[k] !== undefined) {
+        // Skip nested objects/arrays that might cause deep type instantiation
+        if (k === 'user_role') {
+          // Map user_role to role for database
+          dbUpdates['role'] = updates[k];
+        } else if (k !== 'social_links' && !['facebook', 'twitter'].includes(key)) {
+          // Skip fields that don't exist in the database or might cause recursion
+          dbUpdates[key] = updates[k];
+        }
       }
     });
     
