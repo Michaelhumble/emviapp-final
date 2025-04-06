@@ -21,9 +21,9 @@ const CustomerReferralCenter = () => {
   
   // Fetch referral stats from Supabase
   useEffect(() => {
+    if (!user) return;
+    
     const fetchReferralStats = async () => {
-      if (!user) return;
-      
       try {
         // Get referred users count
         const { count: referralCount, error: countError } = await supabase
@@ -58,7 +58,9 @@ const CustomerReferralCenter = () => {
     };
     
     fetchReferralStats();
-  }, [user, referralCode]);
+    
+    // Don't re-run this effect on referralCode changes to prevent fluctuations
+  }, [user]);
   
   const copyToClipboard = () => {
     navigator.clipboard.writeText(referralLink);
@@ -89,7 +91,7 @@ const CustomerReferralCenter = () => {
                   <span className="font-medium">Earn Credits</span>
                 </div>
                 <p className="text-sm text-gray-600 mt-1">
-                  Invite friends and earn Emvi Credits you can use to boost your profile, find premium services, or access exclusive beauty deals in the future.
+                  Invite friends to earn CA$H & Credits you can use to boost your profile, find premium services, or access exclusive beauty deals in the future.
                 </p>
               </div>
               <div className="text-center">

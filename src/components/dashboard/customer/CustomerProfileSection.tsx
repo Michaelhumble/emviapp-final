@@ -19,9 +19,9 @@ const CustomerProfileSection = () => {
   
   // Fetch referral stats
   useEffect(() => {
+    if (!user) return;
+    
     const fetchReferralStats = async () => {
-      if (!user) return;
-      
       const referralCode = userProfile?.affiliate_code || userProfile?.referral_code;
       
       if (!referralCode) return;
@@ -58,7 +58,9 @@ const CustomerProfileSection = () => {
     };
     
     fetchReferralStats();
-  }, [user, userProfile]);
+    
+    // Don't re-run this effect on userProfile changes to prevent fluctuations
+  }, [user]);
   
   return (
     <div className="space-y-6">
