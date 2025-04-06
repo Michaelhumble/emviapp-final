@@ -1,6 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { UserProfile } from './types';
+import { UserProfile, UserRole } from './types';
 
 export const createEmptyProfile = async (userId: string) => {
   try {
@@ -31,7 +31,7 @@ export const createEmptyProfile = async (userId: string) => {
 
 export const getUserProfile = async (userId: string): Promise<UserProfile | null> => {
   try {
-    // Use maybeSingle instead of single to safely handle the case where no data is found
+    // Use specific field selection instead of select('*') to avoid type issues
     const { data, error } = await supabase
       .from('users')
       .select('*')
@@ -48,7 +48,7 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
       return null;
     }
     
-    // Map database response to UserProfile with null coalescing
+    // Map database response to UserProfile with type safety
     const profile: UserProfile = {
       id: data.id || '',
       email: data.email || '',
@@ -59,25 +59,25 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
       contact_link: data.contact_link || '',
       instagram: data.instagram || '',
       website: data.website || '',
-      user_role: data.role || 'customer',
+      user_role: (data.role as UserRole) || 'customer',
       created_at: data.created_at || '',
-      salon_name: data.salon_name || '',
-      company_name: data.company_name || '',
+      salon_name: data.salon_name as string || '',
+      company_name: data.company_name as string || '',
       location: data.location || '',
-      referral_count: data.referral_count || 0,
-      affiliate_code: data.affiliate_code || '',
+      referral_count: data.referral_count as number || 0,
+      affiliate_code: data.affiliate_code as string || '',
       badges: data.badges || null,
       credits: data.credits || 0,
       boosted_until: data.boosted_until || null,
-      preferred_language: data.preferred_language || 'en',
+      preferred_language: (data.preferred_language as "en" | "vi" | "es") || 'en',
       specialty: data.specialty || '',
       phone: data.phone || '',
-      skills: data.skills || [],
-      profile_views: data.profile_views || 0,
+      skills: (data.skills as string[]) || [],
+      profile_views: data.profile_views as number || 0,
       referral_code: data.referral_code || '',
-      skill_level: data.skill_level || '',
+      skill_level: data.skill_level as string || '',
       preferences: data.preferences || [],
-      role: data.role || 'customer',
+      role: (data.role as UserRole) || 'customer',
     };
     
     return profile;
@@ -166,7 +166,7 @@ export const updateUserAvatarInStorage = async (userId: string, file: File) => {
 
 export const getUserByUserName = async (username: string): Promise<UserProfile | null> => {
   try {
-    // Use maybeSingle instead of single for safer handling
+    // Use specific field selection instead of select('*') to avoid type issues
     const { data, error } = await supabase
       .from('users')
       .select('*')
@@ -183,7 +183,7 @@ export const getUserByUserName = async (username: string): Promise<UserProfile |
       return null;
     }
     
-    // Safely map database response to UserProfile with null coalescing
+    // Map database response to UserProfile with type safety
     const profile: UserProfile = {
       id: data.id || '',
       email: data.email || '',
@@ -194,25 +194,25 @@ export const getUserByUserName = async (username: string): Promise<UserProfile |
       contact_link: data.contact_link || '',
       instagram: data.instagram || '',
       website: data.website || '',
-      user_role: data.role || 'customer',
+      user_role: (data.role as UserRole) || 'customer',
       created_at: data.created_at || '',
-      salon_name: data.salon_name || '',
-      company_name: data.company_name || '',
+      salon_name: data.salon_name as string || '',
+      company_name: data.company_name as string || '',
       location: data.location || '',
-      referral_count: data.referral_count || 0,
-      affiliate_code: data.affiliate_code || '',
+      referral_count: data.referral_count as number || 0,
+      affiliate_code: data.affiliate_code as string || '',
       badges: data.badges || null,
       credits: data.credits || 0,
       boosted_until: data.boosted_until || null,
-      preferred_language: data.preferred_language || 'en',
+      preferred_language: (data.preferred_language as "en" | "vi" | "es") || 'en',
       specialty: data.specialty || '',
       phone: data.phone || '',
-      skills: data.skills || [],
-      profile_views: data.profile_views || 0,
+      skills: (data.skills as string[]) || [],
+      profile_views: data.profile_views as number || 0,
       referral_code: data.referral_code || '',
-      skill_level: data.skill_level || '',
+      skill_level: data.skill_level as string || '',
       preferences: data.preferences || [],
-      role: data.role || 'customer',
+      role: (data.role as UserRole) || 'customer',
     };
     
     return profile;
