@@ -1,14 +1,15 @@
 
-import { User } from '@supabase/supabase-js';
+export interface ArtistCreditsRedemptionProps {
+  credits?: number;
+}
 
 export interface CreditOption {
   id: string;
   title: string;
   description: string;
   creditCost: number;
-  icon: React.ComponentType<any>;
-  actionText: string;
-  comingSoon?: boolean;
+  icon: React.ReactNode;
+  isDisabled?: boolean;
 }
 
 export interface BoostStatus {
@@ -16,6 +17,6 @@ export interface BoostStatus {
   expiresAt: string | null;
 }
 
-export interface ArtistCreditsRedemptionProps {
-  credits: number;
+export interface RedeemActions {
+  [key: string]: boolean;
 }
