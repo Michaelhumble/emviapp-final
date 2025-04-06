@@ -27,6 +27,7 @@ export const logActivity = async ({
   metadata = {}
 }: LogActivityParams): Promise<boolean> => {
   try {
+    // Use a raw insert approach to avoid type issues with the new table
     const { error } = await supabase
       .from('activity_log')
       .insert({

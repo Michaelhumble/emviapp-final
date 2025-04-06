@@ -26,18 +26,20 @@ const ArtistActivityFeed = ({ limit = 5 }: ArtistActivityFeedProps) => {
         setLoading(true);
         setError(null);
         
-        const { data, error } = await supabase
+        // Use a raw query approach to avoid type issues with the new table
+        const { data, error: queryError } = await supabase
           .from('activity_log')
           .select('*')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
           .limit(limit);
           
-        if (error) {
-          throw error;
+        if (queryError) {
+          throw queryError;
         }
         
-        setActivities(data as ActivityLog[]);
+        // Type cast the response data to ActivityLog[]
+        setActivities(data as unknown as ActivityLog[]);
       } catch (err) {
         console.error('Error fetching activity logs:', err);
         setError('Failed to load your activity feed');
