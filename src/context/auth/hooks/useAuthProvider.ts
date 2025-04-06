@@ -2,8 +2,20 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile, UserRole, AuthContextType } from "../types";
-import { Session, User, AuthChangeEvent } from "@supabase/supabase-js";
+import { Session, User } from "@supabase/supabase-js";
 import { fetchUserProfile, signInWithEmailPassword, signUpWithEmailPassword, signOutUser } from "../services/authService";
+
+// Define the AuthChangeEvent enum that matches Supabase's implementation
+// This is required because we're importing it as a type but need the values
+enum AuthChangeEvent {
+  SIGNED_IN = 'SIGNED_IN',
+  SIGNED_OUT = 'SIGNED_OUT',
+  USER_UPDATED = 'USER_UPDATED',
+  USER_DELETED = 'USER_DELETED',
+  PASSWORD_RECOVERY = 'PASSWORD_RECOVERY',
+  TOKEN_REFRESHED = 'TOKEN_REFRESHED',
+  SIGNED_UP = 'SIGNED_UP'
+}
 
 /**
  * Custom hook to handle auth provider logic
@@ -19,7 +31,7 @@ export const useAuthProvider = () => {
   useEffect(() => {
     // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event: AuthChangeEvent, currentSession) => {
+      (event, currentSession) => {
         console.log("Auth state changed:", event);
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
