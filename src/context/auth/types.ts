@@ -44,6 +44,7 @@ export interface UserProfile {
   affiliate_code?: string; // Added for sharing referral links
   referral_code?: string; // Added for database referral codes
   credits?: number; // Added to match the database schema
+  boosted_until?: string; // Added for profile boost feature
 }
 
 // Auth context data shape

@@ -55,7 +55,8 @@ export const fetchUserProfile = async (user: User): Promise<UserProfile | null> 
       skill_level: data.specialty || '', // Use specialty as fallback
       profile_views: data.credits || 0, // Use credits as fallback
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
-      credits: data.credits // Add explicit mapping for credits
+      credits: data.credits, // Add explicit mapping for credits
+      boosted_until: data.boosted_until // Add explicit mapping for boosted_until
     };
   } catch (error) {
     console.error('Error in fetchUserProfile:', error);
@@ -85,7 +86,8 @@ const createUserProfile = async (user: User): Promise<UserProfile | null> => {
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     referral_code: referralCode, // Add referral code to new profiles
-    credits: 0 // Initialize credits to 0
+    credits: 0, // Initialize credits to 0
+    boosted_until: null // Initialize boosted_until to null
   };
   
   const { data, error } = await supabase
@@ -127,6 +129,7 @@ const createUserProfile = async (user: User): Promise<UserProfile | null> => {
     skill_level: data.specialty || '', // Use specialty as fallback
     profile_views: data.credits || 0, // Use credits as fallback
     preferences: Array.isArray(data.preferences) ? data.preferences : [],
-    credits: data.credits || 0 // Add explicit mapping for credits with default value
+    credits: data.credits || 0, // Add explicit mapping for credits with default value
+    boosted_until: data.boosted_until || null // Add explicit mapping for boosted_until with default value
   };
 };
