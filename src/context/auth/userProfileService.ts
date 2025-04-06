@@ -48,8 +48,7 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
       return null;
     }
     
-    // Map database response to UserProfile with type assertion
-    // Using "as any" temporarily to bypass TypeScript errors and add proper fallbacks
+    // Use type assertion to handle database response
     const dataAny = data as any;
     
     // Create a base profile with all required fields
@@ -69,12 +68,12 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
       credits: dataAny.credits || 0,
       boosted_until: dataAny.boosted_until || null,
       role: (dataAny.role as UserRole) || 'customer',
-      preferred_language: (dataAny.preferred_language as "en" | "vi" | "es") || 'en',
+      preferred_language: ((dataAny.preferred_language || 'en') as "en" | "vi" | "es"),
       specialty: dataAny.specialty || '',
       phone: dataAny.phone || '',
     };
     
-    // Conditionally add optional fields if they exist in the database response
+    // Conditionally add optional fields that might not exist in the database
     if (dataAny.salon_name) profile.salon_name = dataAny.salon_name;
     if (dataAny.company_name) profile.company_name = dataAny.company_name;
     if (dataAny.referral_count !== undefined) profile.referral_count = dataAny.referral_count;
@@ -93,20 +92,23 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
   }
 };
 
+// Fix for the "Type instantiation is excessively deep and possibly infinite" error
+// We'll simplify the type handling in the update function
 export const updateUserProfileInDb = async (userId: string, updates: Partial<UserProfile>) => {
   try {
-    // Map UserProfile fields to database columns
-    const dbUpdates: any = { ...updates };
+    // Create a simple object for database updates without complex type references
+    const dbUpdates: Record<string, any> = {};
     
-    // Handle special case: user_role → role in the database
-    if (updates.user_role !== undefined) {
-      dbUpdates.role = updates.user_role;
-      delete dbUpdates.user_role;
-    }
-    
-    // Remove any fields that don't exist in the database
-    delete dbUpdates.facebook;
-    delete dbUpdates.twitter;
+    // Manually map the fields to avoid deep type instantiations
+    Object.keys(updates).forEach(key => {
+      const k = key as keyof typeof updates;
+      if (k === 'user_role') {
+        dbUpdates['role'] = updates[k];
+      } else if (k !== 'facebook' && k !== 'twitter') {
+        // Skip fields that don't exist in the database
+        dbUpdates[k] = updates[k];
+      }
+    });
     
     const { error } = await supabase
       .from('users')
@@ -188,8 +190,7 @@ export const getUserByUserName = async (username: string): Promise<UserProfile |
       return null;
     }
     
-    // Map database response to UserProfile with type assertion
-    // Using "as any" temporarily to bypass TypeScript errors and add proper fallbacks
+    // Use type assertion to handle database response
     const dataAny = data as any;
     
     // Create a base profile with all required fields
@@ -209,12 +210,12 @@ export const getUserByUserName = async (username: string): Promise<UserProfile |
       credits: dataAny.credits || 0,
       boosted_until: dataAny.boosted_until || null,
       role: (dataAny.role as UserRole) || 'customer',
-      preferred_language: (dataAny.preferred_language as "en" | "vi" | "es") || 'en',
+      preferred_language: ((dataAny.preferred_language || 'en') as "en" | "vi" | "es"),
       specialty: dataAny.specialty || '',
       phone: dataAny.phone || '',
     };
     
-    // Conditionally add optional fields if they exist in the database response
+    // Conditionally add optional fields that might not exist in the database
     if (dataAny.salon_name) profile.salon_name = dataAny.salon_name;
     if (dataAny.company_name) profile.company_name = dataAny.company_name;
     if (dataAny.referral_count !== undefined) profile.referral_count = dataAny.referral_count;
