@@ -90,8 +90,8 @@ const CustomerReferralCenter = () => {
                 onClick={() => {
                   if (navigator.share) {
                     navigator.share({
-                      title: 'Join me on EmviApp',
-                      text: 'I'm using EmviApp to discover amazing beauty services. Join me!',
+                      title: "Join me on EmviApp",
+                      text: "I'm using EmviApp to discover amazing beauty services. Join me!",
                       url: referralLink,
                     });
                   } else {
