@@ -10,41 +10,43 @@ import { toast } from "sonner";
  */
 export const navigateToRoleDashboard = (
   navigate: NavigateFunction,
-  userRole: string | null | undefined
+  userRole: UserRole | null
 ) => {
   console.log("Navigating based on role:", userRole);
-
+  
   if (!userRole) {
-    // Handle missing role - redirect to role selection
-    console.log("No role found, redirecting to select-role");
-    navigate("/select-role");
+    // If no role defined, navigate to profile page to set role
+    navigate("/profile/edit");
+    toast.info("Please complete your profile to access your dashboard");
     return;
   }
-
-  // Normalize the role to lowercase for case-insensitive matching
-  const normalizedRole = userRole.toLowerCase().trim();
   
-  if (normalizedRole.includes('artist') || normalizedRole === 'nail technician/artist' || normalizedRole === 'renter') {
-    navigate("/dashboard/artist");
-  } else if (normalizedRole === 'salon' || normalizedRole === 'owner') {
-    navigate("/dashboard/salon");
-  } else if (normalizedRole === 'customer') {
-    navigate("/dashboard/customer"); 
-  } else if (normalizedRole === 'freelancer') {
-    navigate("/dashboard/freelancer");
-  } else if (
-    normalizedRole === 'supplier' || 
-    normalizedRole === 'vendor' || 
-    normalizedRole === 'beauty supplier'
-  ) {
-    navigate("/dashboard/supplier");
-  } else if (normalizedRole === 'other') {
-    navigate("/dashboard/other");
-  } else {
-    // Fallback for unknown roles
-    console.warn("Unknown user role:", userRole);
-    toast.error(`Unknown role: ${userRole}. Redirecting to general dashboard.`);
-    navigate("/dashboard/other");
+  switch (userRole) {
+    case 'artist':
+    case 'nail technician/artist':
+      navigate('/dashboard/artist');
+      break;
+    case 'salon':
+    case 'owner':
+      navigate('/dashboard/owner');
+      break;
+    case 'customer':
+      navigate('/dashboard/customer');
+      break;
+    case 'supplier':
+    case 'beauty supplier':
+    case 'vendor':
+      navigate('/dashboard/supplier');
+      break;
+    case 'freelancer':
+      navigate('/dashboard/freelancer');
+      break;
+    case 'renter':
+      navigate('/dashboard/artist'); // Renters see artist dashboard
+      break;
+    case 'other':
+    default:
+      navigate('/dashboard/other');
   }
 };
 

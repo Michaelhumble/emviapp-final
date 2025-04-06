@@ -1,35 +1,37 @@
 
-import React from 'react';
-import { RocketIcon, TrendingUpIcon, ZapIcon } from 'lucide-react';
-import { CreditOption } from './types';
+import { Megaphone, Briefcase, ShoppingBag } from "lucide-react";
+import { CreditOption } from "./types";
 
 export const creditOptions: CreditOption[] = [
   {
-    id: 'profile-boost',
-    title: 'Profile Boost (7 Days)',
-    description: 'Increase your profile visibility for a full week. Get seen by more salon owners and clients.',
+    id: "profileBoost",
+    title: "Profile Boost",
+    description: "Promote your profile to the top of search results for 7 days",
     creditCost: 10,
-    icon: React.createElement(RocketIcon),
-    actionText: 'Boost My Profile'
+    icon: Megaphone,
+    actionText: "Boost My Profile"
   },
   {
-    id: 'featured-listing',
-    title: 'Featured Portfolio',
-    description: 'Highlight your portfolio in search results for 3 days. Perfect for showcasing new work.',
-    creditCost: 8,
-    icon: React.createElement(TrendingUpIcon),
-    isDisabled: true,
-    comingSoon: true,
-    actionText: 'Coming Soon'
+    id: "jobPost",
+    title: "Free Job Post",
+    description: "Post a job listing without paying the regular posting fee",
+    creditCost: 15,
+    icon: Briefcase,
+    actionText: "Post a Job for Free"
   },
   {
-    id: 'instant-notification',
-    title: 'Priority Alerts',
-    description: 'Get instant notifications for new job postings that match your skills for 14 days.',
-    creditCost: 5,
-    icon: React.createElement(ZapIcon),
-    isDisabled: true,
-    comingSoon: true,
-    actionText: 'Coming Soon'
+    id: "marketplace",
+    title: "Marketplace Access",
+    description: "Get exclusive access to special deals in the beauty marketplace",
+    creditCost: 20,
+    icon: ShoppingBag,
+    actionText: "Unlock Marketplace Access",
+    comingSoon: true
   }
 ];
+
+export const getBoostDescription = (isActive: boolean): string => {
+  return isActive 
+    ? "Extend your profile boost for an additional 7 days" 
+    : "Promote your profile to the top of search results for 7 days";
+};

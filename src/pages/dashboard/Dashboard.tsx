@@ -1,116 +1,51 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
-import { toast } from "sonner";
-import DashboardLoading from "@/components/dashboard/redirect/DashboardLoading";
-import DashboardError from "@/components/dashboard/redirect/DashboardError";
+import { navigateToRoleDashboard } from "@/utils/navigation";
+import { Loader2 } from "lucide-react";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 
+/**
+ * This component redirects users to their role-specific dashboard
+ * or shows the role selection modal for new users
+ */
 const Dashboard = () => {
-  const { user, isSignedIn } = useAuth();
+  const { userRole, loading, user, isSignedIn, isNewUser, clearIsNewUser } = useAuth();
   const navigate = useNavigate();
   const [showRoleModal, setShowRoleModal] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
-    const redirectToDashboard = async () => {
-      try {
-        // Step 1: Check if user is signed in
-        if (!isSignedIn || !user) {
-          console.log("User not signed in, redirecting to sign-in page");
-          navigate("/sign-in");
-          return;
-        }
-        
-        // Step 2: Query user profile to get role
-        console.log("Fetching user profile for ID:", user.id);
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('id, email, role')
-          .eq('id', user.id)
-          .maybeSingle();
-        
-        if (userError) {
-          console.error("Error fetching user profile:", userError);
-          setError("Error loading your profile. Please try again.");
-          return;
-        }
-        
-        // Step 3: Handle missing role
-        if (!userData || !userData.role) {
-          console.log("No role found, showing role selection modal");
-          setShowRoleModal(true);
-          setIsLoading(false);
-          toast.info("Please complete your profile to continue.");
-          return;
-        }
-        
-        // Step 4: Redirect based on role
-        console.log("User role found:", userData.role);
-        const role = userData.role.toLowerCase();
-        
-        if (role.includes('artist') || role === 'nail technician/artist' || role === 'renter') {
-          navigate("/dashboard/artist");
-        } else if (role === 'salon' || role === 'owner') {
-          navigate("/dashboard/salon");
-        } else if (role === 'customer') {
-          navigate("/dashboard/customer");
-        } else if (role === 'freelancer') {
-          navigate("/dashboard/freelancer");
-        } else if (role === 'supplier' || role === 'vendor' || role === 'beauty supplier') {
-          navigate("/dashboard/supplier");
-        } else if (role === 'other') {
-          navigate("/dashboard/other");
-        } else {
-          // Fallback for unknown roles
-          console.log("Unknown role, redirecting to general dashboard");
-          navigate("/dashboard/other");
-        }
-      } catch (err) {
-        console.error("Dashboard redirect error:", err);
-        setError("An unexpected error occurred. Please try again.");
-      } finally {
-        setIsLoading(false);
+    if (!loading) {
+      // If user is not signed in, redirect to sign in
+      if (!isSignedIn) {
+        navigate("/sign-in");
+        return;
       }
-    };
-    
-    // Execute the redirect logic
-    redirectToDashboard();
-  }, [user, isSignedIn, navigate]);
-  
-  // Handle manual retry
-  const handleRetry = () => {
-    setError(null);
-    setIsLoading(true);
-    window.location.reload();
-  };
 
-  // Handle emergency logout 
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      navigate("/sign-in");
-      toast.success("Successfully signed out");
-    } catch (err) {
-      console.error("Logout error:", err);
-      // Force reload as a last resort
-      window.location.href = "/sign-in";
+      // If user is new or doesn't have a role, show role selection modal
+      if (isNewUser || !userRole) {
+        setShowRoleModal(true);
+        if (isNewUser) {
+          // Clear the new user flag once we've handled it
+          clearIsNewUser();
+        }
+      } else {
+        // Redirect based on existing role
+        navigateToRoleDashboard(navigate, userRole);
+      }
     }
-  };
-  
-  // Show error state if we've encountered an error
-  if (error) {
-    return <DashboardError error={error} onRetry={handleRetry} onLogout={handleLogout} />;
-  }
+  }, [userRole, loading, navigate, isSignedIn, user, isNewUser, clearIsNewUser]);
   
   return (
-    <>
-      <DashboardLoading onLogout={handleLogout} />
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+      <div className="flex items-center space-x-2 mb-4">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <span className="text-lg">Loading your dashboard...</span>
+      </div>
+      <p className="text-gray-500 text-sm">We're redirecting you to the appropriate dashboard</p>
       
-      {/* Role selection modal for users without role */}
+      {/* Role selection modal for new users */}
       {user && showRoleModal && (
         <RoleSelectionModal
           open={showRoleModal}
@@ -118,7 +53,7 @@ const Dashboard = () => {
           userId={user.id}
         />
       )}
-    </>
+    </div>
   );
 };
 

@@ -1,114 +1,64 @@
 
-import { Session, User } from '@supabase/supabase-js';
-import { Json } from '@/integrations/supabase/types';
+import { Session, User as SupabaseUser } from '@supabase/supabase-js';
 
+// User roles in the application
 export type UserRole = 
-  | 'owner' 
+  | 'customer' 
+  | 'artist' 
   | 'salon' 
   | 'supplier' 
-  | 'beauty supplier' 
-  | 'vendor' 
-  | 'artist' 
-  | 'nail technician/artist' 
-  | 'customer' 
   | 'freelancer' 
-  | 'renter' 
-  | 'other';
+  | 'owner' 
+  | 'other'
+  | 'nail technician/artist'
+  | 'renter'
+  | 'vendor'
+  | 'beauty supplier';
 
+// User profile data with extended information
 export interface UserProfile {
-  id?: string;
-  email?: string;
-  full_name?: string;
-  avatar_url?: string;
-  custom_role?: string;
-  bio?: string;
-  contact_link?: string;
-  instagram?: string;
-  facebook?: string;
-  twitter?: string;
-  website?: string;
-  user_role?: UserRole;
-  created_at?: string;
+  id: string;
+  email: string;
+  full_name: string;
+  avatar_url: string;
+  location: string;
+  bio: string;
+  phone: string;
+  instagram: string;
+  website: string;
+  specialty: string;
+  role: UserRole;
+  created_at: string;
+  updated_at: string;
+  preferred_language?: string;
+  referral_count: number;
+  // Additional properties that are being used in the app
   salon_name?: string;
   company_name?: string;
+  custom_role?: string;
+  contact_link?: string;
   skills?: string[];
   skill_level?: string;
-  service_category?: string;
-  location?: string;
-  languages?: string[];
-  specialty_tags?: string[];
-  referral_count?: number;
-  affiliate_code?: string;
-  referral_code?: string;
   profile_views?: number;
-  badges?: Json;
-  credits?: number;
-  boosted_until?: string | null;
-  role?: UserRole;
-  phone?: string;
   preferences?: string[];
-  specialty?: string;
-  gallery?: string[];
-  verification_status?: 'pending' | 'verified' | 'rejected';
-  account_type?: 'free' | 'pro' | 'enterprise';
-  product_type?: string;
-  social_links?: {
-    instagram?: string;
-    facebook?: string;
-    twitter?: string;
-    website?: string;
-  };
-  preferred_language?: 'en' | 'vi' | 'es';
+  affiliate_code?: string; // Added for sharing referral links
+  referral_code?: string; // Added for database referral codes
+  credits?: number; // Added to match the database schema
+  boosted_until?: string | null; // Added for profile boost feature
 }
 
+// Auth context data shape
 export interface AuthContextType {
-  user: User | null;
+  session: Session | null;
+  user: SupabaseUser | null;
   userProfile: UserProfile | null;
   userRole: UserRole | null;
-  session: Session | null;
-  isLoading: boolean;
-  loading: boolean; // Alias for isLoading for backward compatibility
-  signUp: (email: string, password: string) => Promise<SignUpResponse>;
-  signIn: (email: string, password: string) => Promise<SignInResponse>;
+  loading: boolean;
+  isSignedIn: boolean;
+  isNewUser: boolean; // Flag to track if user just signed up
+  clearIsNewUser: () => void; // Function to clear the new user flag
+  signIn: (email: string, password: string) => Promise<any>; // Updated return type
+  signUp: (email: string, password: string) => Promise<any>; // Updated return type
   signOut: () => Promise<void>;
   refreshUserProfile: () => Promise<void>;
-  updateUserProfile: (updates: Partial<UserProfile>) => Promise<boolean>;
-  updateUserAvatar: (file: File) => Promise<string | null>;
-  isSignedIn: boolean;
-  isNewUser: boolean;
-  clearIsNewUser: () => void;
-}
-
-export interface SignUpResponse {
-  error: any;
-  data?: {
-    user: User | null;
-    session: Session | null;
-  }
-}
-
-export interface SignInResponse {
-  error: any;
-  data?: {
-    user: User | null;
-    session: Session | null;
-  }
-}
-
-export interface UserInfoType {
-  roles: UserRole[];
-  services?: string[];
-  specialties?: string[];
-  skillLevel?: string[];
-}
-
-export interface ThemeColorMap {
-  [key: string]: {
-    light: string;
-    dark: string;
-    gradient: string;
-    textLight: string;
-    textDark: string;
-    patternClass: string;
-  };
 }

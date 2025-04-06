@@ -1,161 +1,135 @@
 
+import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { UserProfile } from './types';
+import { UserProfile, UserRole } from './types';
 
 /**
- * Fetch user profile data
- * @param userId User ID to fetch profile for
- * @returns User profile data
+ * Fetches the user profile data from Supabase
  */
-export const getUserProfile = async (userId: string): Promise<UserProfile | null> => {
+export const fetchUserProfile = async (user: User): Promise<UserProfile | null> => {
   try {
+    // Get the user profile from the database
     const { data, error } = await supabase
       .from('users')
       .select('*')
-      .eq('id', userId)
-      .maybeSingle();
+      .eq('id', user.id)
+      .single();
     
     if (error) {
       console.error('Error fetching user profile:', error);
       return null;
     }
     
-    return data as unknown as UserProfile;
+    if (!data) {
+      console.log('No user profile found, creating one...');
+      // If no profile exists, create one
+      return await createUserProfile(user);
+    }
+    
+    // Handle database fields safely with fallbacks
+    // Cast data.role to UserRole to ensure type safety
+    return {
+      id: data.id,
+      email: data.email || user.email || '',
+      full_name: data.full_name || '',
+      avatar_url: data.avatar_url || '',
+      location: data.location || '',
+      bio: data.bio || '',
+      phone: data.phone || '',
+      instagram: data.instagram || '',
+      website: data.website || '',
+      specialty: data.specialty || '',
+      role: (data.role as UserRole) || 'customer',
+      created_at: data.created_at,
+      updated_at: data.updated_at,
+      preferred_language: data.preferred_language || '',
+      // Handle the new fields with appropriate fallbacks
+      referral_count: data.credits || 0, // Use credits for referral count if no dedicated field
+      affiliate_code: data.referral_code || '', // Map referral_code to affiliate_code
+      referral_code: data.referral_code || '', // Direct mapping for database value
+      salon_name: data.custom_role || '', // Use custom_role as fallback
+      company_name: data.custom_role || '', // Use custom_role as fallback
+      custom_role: data.custom_role || '',
+      contact_link: data.contact_link || '',
+      skills: Array.isArray(data.preferences) ? data.preferences : [], // Use preferences as fallback
+      skill_level: data.specialty || '', // Use specialty as fallback
+      profile_views: data.credits || 0, // Use credits as fallback
+      preferences: Array.isArray(data.preferences) ? data.preferences : [],
+      credits: data.credits || 0, // Add explicit mapping for credits with default value
+      boosted_until: data.boosted_until || null // Safe access with null fallback
+    };
   } catch (error) {
-    console.error('Unexpected error fetching profile:', error);
+    console.error('Error in fetchUserProfile:', error);
     return null;
   }
 };
 
 /**
- * Create an empty profile for a new user
- * @param userId User ID to create profile for
+ * Creates a new user profile in Supabase
  */
-export const createEmptyProfile = async (userId: string): Promise<boolean> => {
-  try {
-    // Get user information from auth schema if available
-    const { data: authUser, error: authError } = await supabase.auth.getUser(userId);
-    
-    if (authError) {
-      console.error('Error getting auth user:', authError);
-    }
-    
-    // Create a basic profile with required fields
-    const { error } = await supabase
-      .from('users')
-      .insert({
-        id: userId,
-        created_at: new Date().toISOString(),
-        // Required fields based on the error message
-        email: authUser?.user?.email || `user-${userId.substring(0, 8)}@placeholder.com`,
-        full_name: authUser?.user?.user_metadata?.full_name || '',
-        // Default role
-        role: 'customer',
-      });
-    
-    if (error) {
-      console.error('Error creating empty profile:', error);
-      return false;
-    }
-    
-    return true;
-  } catch (error) {
-    console.error('Unexpected error creating profile:', error);
-    return false;
-  }
-};
-
-/**
- * Update user profile in database
- * @param userId User ID to update profile for
- * @param updates Profile updates to apply
- */
-export const updateUserProfileInDb = async (
-  userId: string, 
-  updates: Record<string, any>
-): Promise<boolean> => {
-  try {
-    // Create a clean updates object
-    const dbUpdates: Record<string, any> = {};
-    
-    // Map fields from updates to dbUpdates
-    // This avoids the TypeScript circular reference issue
-    Object.keys(updates).forEach(key => {
-      // Handle the special case for role/user_role
-      if (key === 'user_role') {
-        dbUpdates['role'] = updates[key];
-      } else {
-        dbUpdates[key] = updates[key];
-      }
-    });
-    
-    // Update the profile in Supabase
-    const { error } = await supabase
-      .from('users')
-      .update(dbUpdates)
-      .eq('id', userId);
-    
-    if (error) {
-      console.error('Error updating user profile:', error);
-      return false;
-    }
-    
-    return true;
-  } catch (error) {
-    console.error('Unexpected error updating profile:', error);
-    return false;
-  }
-};
-
-/**
- * Update user avatar in storage and profile
- * @param userId User ID to update avatar for
- * @param file File to upload as avatar
- */
-export const updateUserAvatarInStorage = async (
-  userId: string,
-  file: File
-): Promise<string | null> => {
-  try {
-    // Generate a unique file name
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${userId}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
-    const filePath = `avatars/${fileName}`;
-    
-    // Upload to storage
-    const { error: uploadError } = await supabase.storage
-      .from('profiles')
-      .upload(filePath, file);
-    
-    if (uploadError) {
-      console.error('Error uploading avatar:', uploadError);
-      return null;
-    }
-    
-    // Get public URL
-    const { data } = supabase.storage
-      .from('profiles')
-      .getPublicUrl(filePath);
-    
-    if (!data?.publicUrl) {
-      console.error('Could not get public URL for avatar');
-      return null;
-    }
-    
-    // Update profile with new avatar URL
-    const { error: updateError } = await supabase
-      .from('users')
-      .update({ avatar_url: data.publicUrl })
-      .eq('id', userId);
-    
-    if (updateError) {
-      console.error('Error updating profile with avatar URL:', updateError);
-      return null;
-    }
-    
-    return data.publicUrl;
-  } catch (error) {
-    console.error('Unexpected error updating avatar:', error);
+const createUserProfile = async (user: User): Promise<UserProfile | null> => {
+  // Generate referral code if needed
+  const referralCode = `EMVI${Math.floor(1000 + Math.random() * 9000)}`;
+  
+  const newProfile = {
+    id: user.id,
+    email: user.email || '',
+    full_name: '',
+    avatar_url: '',
+    location: '',
+    bio: '',
+    phone: '',
+    instagram: '',
+    website: '',
+    specialty: '',
+    role: 'customer' as UserRole,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    referral_code: referralCode, // Add referral code to new profiles
+    credits: 0, // Initialize credits to 0
+    boosted_until: null // Initialize boosted_until to null
+  };
+  
+  const { data, error } = await supabase
+    .from('users')
+    .insert([newProfile])
+    .select()
+    .single();
+  
+  if (error) {
+    console.error('Error creating user profile:', error);
     return null;
   }
+  
+  // Create a full UserProfile from the database response
+  return {
+    id: data.id,
+    email: data.email || '',
+    full_name: data.full_name || '',
+    avatar_url: data.avatar_url || '',
+    location: data.location || '',
+    bio: data.bio || '',
+    phone: data.phone || '',
+    instagram: data.instagram || '',
+    website: data.website || '',
+    specialty: data.specialty || '',
+    role: (data.role as UserRole) || 'customer',
+    created_at: data.created_at,
+    updated_at: data.updated_at,
+    preferred_language: data.preferred_language || '',
+    // Set default values for the additional fields
+    referral_count: data.credits || 0, // Use credits for referral count
+    affiliate_code: data.referral_code || referralCode, // Map referral_code to affiliate_code
+    referral_code: data.referral_code || referralCode, // Direct mapping for database value
+    salon_name: data.custom_role || '', // Use custom_role as fallback
+    company_name: data.custom_role || '', // Use custom_role as fallback
+    custom_role: data.custom_role || '',
+    contact_link: data.contact_link || '',
+    skills: Array.isArray(data.preferences) ? data.preferences : [], // Use preferences as fallback
+    skill_level: data.specialty || '', // Use specialty as fallback
+    profile_views: data.credits || 0, // Use credits as fallback
+    preferences: Array.isArray(data.preferences) ? data.preferences : [],
+    credits: data.credits || 0, // Add explicit mapping for credits with default value
+    boosted_until: data.boosted_until || null // Safe access with null fallback
+  };
 };

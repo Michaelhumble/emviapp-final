@@ -19,8 +19,6 @@ import {
   Home, BookOpenText, Calendar, 
   Sparkles, ChevronDown 
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 interface UserMenuProps {
   user: User;
@@ -46,37 +44,8 @@ const UserMenu = ({ user, userRole, handleSignOut }: UserMenuProps) => {
         return "Beauty Dashboard";
       case 'freelancer':
         return "Freelancer Hub";
-      case 'supplier':
-      case 'beauty supplier':
-      case 'vendor':
-        return "Supplier Dashboard";
       default:
         return "Dashboard";
-    }
-  };
-
-  // Handle standard logout with fallback
-  const safeSignOut = async () => {
-    try {
-      await handleSignOut();
-    } catch (err) {
-      console.error("Sign out error:", err);
-      toast.error("Error signing out. Trying emergency logout...");
-      await emergencyLogout();
-    }
-  };
-
-  // Emergency logout function as fallback
-  const emergencyLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      navigate("/sign-in");
-      toast.success("You've been signed out successfully");
-    } catch (err) {
-      console.error("Emergency logout error:", err);
-      toast.error("Logout failed. Reloading the page...");
-      // Force reload as a last resort
-      window.location.href = "/sign-in";
     }
   };
   
@@ -135,14 +104,9 @@ const UserMenu = ({ user, userRole, handleSignOut }: UserMenuProps) => {
             <Settings className="mr-2 h-4 w-4" />
             <span>Settings</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={safeSignOut}>
+          <DropdownMenuItem onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
-          </DropdownMenuItem>
-          {/* Emergency logout option */}
-          <DropdownMenuItem onClick={emergencyLogout} className="text-red-500">
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>Force Logout</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

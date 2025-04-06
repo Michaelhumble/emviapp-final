@@ -46,7 +46,6 @@ const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
 
   // Redirect to appropriate dashboard
   const goToDashboard = () => {
-    // Use the dashboard page to trigger role-based redirection
     navigate("/dashboard");
   };
 

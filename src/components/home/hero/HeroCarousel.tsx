@@ -32,19 +32,19 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
           }}
           aria-hidden={activeIndex !== index}
         >
-          <div className="absolute inset-0 flex items-center justify-center">
-            <img 
-              src={image.url} 
-              alt={image.alt}
-              className="w-full h-full object-cover object-center rounded-lg"
-            />
-          </div>
+          <img 
+            src={image.url} 
+            alt={image.alt}
+            className={`w-full h-full object-cover ${isMobile ? 'object-center' : 'object-cover'} rounded-lg`}
+          />
           
-          {/* Enhanced gradient overlay for text readability */}
+          {/* Enhanced gradient overlay for text readability - optimized for mobile */}
           <div 
             className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/20 z-10 rounded-lg"
             style={{ 
-              background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.3) 100%)' 
+              background: isMobile 
+                ? 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.3) 100%)' 
+                : 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,0.2) 100%)'
             }}
             aria-hidden="true"
           ></div>
