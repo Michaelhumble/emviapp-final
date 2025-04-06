@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Link2, Copy, Users, Gift, CheckCircle } from "lucide-react";
+import { Link2, Copy, Users, Gift, CheckCircle, Coins, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/auth";
 
@@ -25,40 +25,48 @@ const AffiliateReferralCard = () => {
   };
   
   return (
-    <Card className="border-indigo-100">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Link2 className="h-5 w-5 text-indigo-500" />
-          Affiliate Rewards
+    <Card className="border-indigo-200 shadow-md hover:shadow-lg transition-shadow">
+      <CardHeader className="pb-3 bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-t-lg">
+        <CardTitle className="flex items-center gap-2 text-lg text-indigo-800">
+          <Coins className="h-5 w-5 text-indigo-600" />
+          💰 Earn Emvi Credits
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="bg-indigo-50 rounded-lg p-4 flex items-center justify-between mb-4">
+        <div className="bg-indigo-50 rounded-lg p-4 flex items-center justify-between mb-4 border border-indigo-100">
           <div className="flex items-center text-indigo-700">
             <Gift className="h-5 w-5 mr-2" />
-            <span className="font-medium">Earn Emvi Credits</span>
+            <span className="font-medium">You've Earned</span>
           </div>
-          <div className="text-center">
-            <div className="text-xl font-bold text-indigo-700">
-              {userProfile?.referral_count || 0}
+          <div className="text-center grid grid-cols-1 gap-1">
+            <div className="flex items-center justify-end text-lg font-bold text-indigo-700">
+              <CreditCard className="h-4 w-4 mr-1" />
+              💳 {userProfile?.credits || 0}
             </div>
-            <div className="text-xs text-gray-500">Friends Joined</div>
+            <div className="flex items-center justify-end text-sm text-indigo-600">
+              <Users className="h-3 w-3 mr-1" />
+              👥 {userProfile?.referral_count || 0} Friends
+            </div>
           </div>
         </div>
+        
+        <p className="text-sm text-indigo-700 italic mb-4">
+          Every friend = more credits. More credits = more exposure, more clients, more money.
+        </p>
         
         <div className="flex items-center space-x-2 mt-4">
           <input
             value={referralLink}
             readOnly
-            className="flex-1 font-mono text-xs bg-gray-50 border border-gray-200 rounded-md py-2 px-3"
+            className="flex-1 font-mono text-xs bg-gray-50 border border-gray-200 rounded-l-md py-2 px-3"
           />
           <Button 
             size="sm" 
-            variant="outline" 
+            className="rounded-l-none bg-indigo-600 hover:bg-indigo-700 text-white" 
             onClick={copyToClipboard}
           >
             {copied ? (
-              <CheckCircle className="h-4 w-4 text-green-500" />
+              <CheckCircle className="h-4 w-4" />
             ) : (
               <Copy className="h-4 w-4" />
             )}
