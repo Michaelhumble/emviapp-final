@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
+import { navigateToRoleDashboard } from "@/utils/navigation";
 
 const DashboardIndex = () => {
   const navigate = useNavigate();
@@ -54,29 +55,9 @@ const DashboardIndex = () => {
           return;
         }
         
-        // Step 4: Safe role-based redirection with normalized role
-        const role = (userData.role || "").toLowerCase().trim();
-        console.log("User role found:", role);
-        
-        if (role.includes('artist') || role === 'nail technician/artist' || role === 'renter') {
-          navigate("/dashboard/artist");
-        } else if (role === 'salon' || role === 'owner') {
-          navigate("/dashboard/salon");
-        } else if (role === 'customer') {
-          navigate("/dashboard/customer");
-        } else if (role === 'freelancer') {
-          navigate("/dashboard/freelancer");
-        } else if (
-          role === 'supplier' || 
-          role === 'vendor' || 
-          role === 'beauty supplier'
-        ) {
-          navigate("/dashboard/supplier");
-        } else {
-          // Fallback for other roles with logging
-          console.log(`Found unknown role: "${role}", redirecting to general dashboard`);
-          navigate("/dashboard/other");
-        }
+        // Step 4: Use our navigation utility for consistent role-based redirection
+        console.log("User role found:", userData.role);
+        navigateToRoleDashboard(navigate, userData.role);
         
       } catch (err) {
         console.error("Dashboard redirect error:", err);
