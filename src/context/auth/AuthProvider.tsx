@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AuthContextType, UserProfile, UserRole } from "./types";
 import { toast } from "sonner";
 import { AuthContext } from "./AuthContext";
+import { AuthChangeEvent } from "@supabase/supabase-js";
 
 // Initial context value
 const initialAuthContext: AuthContextType = {
@@ -40,7 +41,7 @@ export const AuthProvider = ({ children }) => {
         
         // If the user just signed up, set the new user flag
         // Use the correct AuthChangeEvent type from Supabase
-        if (event === 'SIGNED_UP') {
+        if (event === AuthChangeEvent.SIGNED_UP) {
           console.log("New user signed up!");
           setIsNewUser(true);
           // Store this in localStorage as well for persistence
