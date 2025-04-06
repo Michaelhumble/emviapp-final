@@ -1,4 +1,3 @@
-
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
@@ -36,6 +35,7 @@ import SalonMarketplace from '@/pages/SalonMarketplace';
 import ProfileNotFound from '@/components/profile/ProfileNotFound';
 import SalonNotFound from '@/components/salon/SalonNotFound';
 import MessageNotFound from '@/components/messaging/MessageNotFound';
+import ArtistPublicProfile from '@/pages/u/ArtistPublicProfile';
 
 // Import styles
 import './index.css';
@@ -153,7 +153,12 @@ const router = createBrowserRouter([
       {
         path: '*',
         element: <NotFound />
-      }
+      },
+      {
+        path: 'u/:username',
+        element: <ArtistPublicProfile />,
+        errorElement: <ProfileNotFound />
+      },
     ],
   },
 ]);

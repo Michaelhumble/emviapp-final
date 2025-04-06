@@ -1,69 +1,52 @@
 
-import { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Clock } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-
-// Type for welcome banner messages
-interface WelcomeBannerMessage {
-  id: number;
-  text: string;
-}
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useArtistData } from "./context/ArtistDataContext";
 
 interface ArtistWelcomeBannerProps {
   firstName: string;
 }
 
 const ArtistWelcomeBanner = ({ firstName }: ArtistWelcomeBannerProps) => {
-  const [activeMessage, setActiveMessage] = useState(0);
+  const navigate = useNavigate();
+  const { artistProfile } = useArtistData();
   
-  // Motivational messages for the welcome banner
-  const welcomeMessages: WelcomeBannerMessage[] = [
-    { id: 1, text: "Behind every beautiful nail set is a dream. Let's build yours." },
-    { id: 2, text: "You're not alone. EmviApp is your business partner." },
-    { id: 3, text: "The hustle is real—but you've got support now." }
-  ];
-  
-  // Rotate welcome messages
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveMessage(prev => (prev + 1) % welcomeMessages.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [welcomeMessages.length]);
+  const handlePreviewProfile = () => {
+    // Navigate to public profile page using user ID
+    if (artistProfile?.id) {
+      navigate(`/u/${artistProfile.id}`);
+    }
+  };
   
   return (
-    <section className="mb-8">
-      <Card className="border-none bg-gradient-to-r from-purple-50 to-indigo-50 shadow-sm">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-serif font-bold text-purple-900">
-                Welcome back, {firstName}!
-              </h1>
-              <AnimatePresence mode="wait">
-                <motion.p 
-                  key={activeMessage}
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -5 }}
-                  transition={{ duration: 0.5 }}
-                  className="text-purple-700 mt-2"
-                >
-                  {welcomeMessages[activeMessage].text}
-                </motion.p>
-              </AnimatePresence>
-            </div>
-            <div className="hidden md:flex items-center gap-2">
-              <span className="text-sm text-purple-700">
-                <Clock className="h-4 w-4 inline mr-1" /> 
-                {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
-              </span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </section>
+    <motion.div 
+      className="bg-gradient-to-r from-purple-100 to-purple-50 border border-purple-200 rounded-2xl p-6 mb-8"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-serif font-semibold mb-2">
+            Welcome back, {firstName || 'Artist'}!
+          </h1>
+          <p className="text-gray-600">
+            Manage your profile, bookings, and client communications all in one place.
+          </p>
+        </div>
+        
+        <Button 
+          onClick={handlePreviewProfile}
+          className="whitespace-nowrap"
+          variant="outline"
+        >
+          <Eye className="mr-2 h-4 w-4" />
+          Preview My Profile
+        </Button>
+      </div>
+    </motion.div>
   );
 };
 
