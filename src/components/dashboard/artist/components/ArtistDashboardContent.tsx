@@ -11,6 +11,7 @@ import ArtistBookingCalendar from "../ArtistBookingCalendar";
 import ArtistUpgradeSection from "../ArtistUpgradeSection";
 import ArtistMotivationalQuote from "../ArtistMotivationalQuote";
 import ArtistPortfolio from "../ArtistPortfolio";
+import ArtistServices from "../services/ArtistServices";
 import { useArtistData } from "../context/ArtistDataContext";
 
 const ArtistDashboardContent = () => {
@@ -24,25 +25,27 @@ const ArtistDashboardContent = () => {
       {/* 2. Motivational Quote */}
       <ArtistMotivationalQuote />
       
-      {/* 3. Portfolio Section - Added as requested */}
+      {/* 3. Portfolio Section */}
       <div className="mb-8">
         <ArtistPortfolio />
       </div>
       
-      {/* 4. Profile Header */}
+      {/* 4. Services Section - NEW */}
+      <div className="mb-8">
+        <ArtistServices />
+      </div>
+      
+      {/* 5. Profile Header */}
       <ArtistDashboardProfile artistProfile={artistProfile} />
       
-      {/* 5. Performance Metrics */}
+      {/* 6. Performance Metrics */}
       <ArtistPerformanceMetrics profileViews={artistProfile?.profile_views || 245} />
       
-      {/* 6. Artist Toolkit */}
+      {/* 7. Artist Toolkit */}
       <ArtistToolkitSection onCopyReferralLink={handleCopyReferralLink} />
       
-      {/* 7. Dashboard Status Widgets */}
+      {/* 8. Dashboard Status Widgets */}
       <DashboardStatusWidgets />
-      
-      {/* 8. Services Grid */}
-      <ArtistServicesGrid />
       
       {/* 9. Referral Center */}
       <ArtistReferralCenter />
