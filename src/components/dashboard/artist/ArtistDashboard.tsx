@@ -52,7 +52,7 @@ const ArtistDashboard = () => {
           setError('Failed to load your profile data. Please try again later.');
           toast.error('Could not load profile data');
         } else if (data) {
-          // Cast to match UserProfile type, adding missing referral_count property
+          // Cast to match UserProfile type, adding missing referral_count property and affiliate_code
           const profileWithReferrals = {
             ...data,
             referral_count: data.credits || 0,
@@ -126,7 +126,8 @@ const ArtistDashboard = () => {
   }
   
   // Get credits from the user profile data
-  const userCredits = artistProfile?.referral_count || 0;
+  // This explicitly uses credits from the database instead of referral_count to ensure accurate credit balance
+  const userCredits = artistProfile?.credits || artistProfile?.referral_count || 0;
   
   return (
     <div className="container mx-auto px-4 pb-20">

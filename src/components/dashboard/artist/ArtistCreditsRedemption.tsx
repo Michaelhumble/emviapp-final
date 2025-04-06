@@ -2,29 +2,84 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Coins, ArrowRight, Megaphone, Briefcase, ShoppingBag } from "lucide-react";
+import { Coins, ArrowRight, Megaphone, Briefcase, ShoppingBag, Loader } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/context/auth";
 
 interface ArtistCreditsRedemptionProps {
   credits: number;
 }
 
 const ArtistCreditsRedemption = ({ credits = 0 }: ArtistCreditsRedemptionProps) => {
-  const [isRedeeming, setIsRedeeming] = useState(false);
+  const { user, refreshUserProfile } = useAuth();
+  const [isProcessing, setIsProcessing] = useState<{ [key: string]: boolean }>({
+    profileBoost: false,
+    jobPost: false,
+    marketplace: false
+  });
+  const [redeemSuccess, setRedeemSuccess] = useState<{ [key: string]: boolean }>({
+    profileBoost: false,
+    jobPost: false,
+    marketplace: false
+  });
 
-  const handleRedeemAction = (action: string, requiredCredits: number) => {
-    setIsRedeeming(true);
-    
-    // Simulate API call
+  // Reset success state after a delay
+  const resetSuccessState = (actionType: string) => {
     setTimeout(() => {
-      if (credits >= requiredCredits) {
-        toast.success(`Initiated: ${action}`);
-        // In a real implementation, we would call an API to perform the redemption
-      } else {
-        toast.error("Not enough credits for this action");
+      setRedeemSuccess(prev => ({ ...prev, [actionType]: false }));
+    }, 5000);
+  };
+
+  const handleRedeemAction = async (action: string, requiredCredits: number, actionType: string) => {
+    if (!user) {
+      toast.error("You must be logged in to redeem credits");
+      return;
+    }
+
+    // Check if user has enough credits
+    if (credits < requiredCredits) {
+      toast.error(`You need ${requiredCredits} credits to use this feature. You currently have ${credits}.`);
+      return;
+    }
+
+    // Set processing state
+    setIsProcessing(prev => ({ ...prev, [actionType]: true }));
+
+    try {
+      // Update the user's credits in Supabase
+      const { error } = await supabase
+        .from('users')
+        .update({ 
+          credits: credits - requiredCredits,
+          // Here you can add additional data based on action type
+          // For example, if it's a profile boost, you might set a boost_until field
+          ...(actionType === 'profileBoost' ? { profile_boosted_until: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString() } : {})
+        })
+        .eq('id', user.id);
+
+      if (error) {
+        console.error("Error updating credits:", error);
+        toast.error("Failed to redeem credits. Please try again.");
+        return;
       }
-      setIsRedeeming(false);
-    }, 600);
+
+      // Set success state and reset after delay
+      setRedeemSuccess(prev => ({ ...prev, [actionType]: true }));
+      resetSuccessState(actionType);
+      
+      // Refresh user profile to get updated credit balance
+      await refreshUserProfile();
+      
+      toast.success(`Successfully redeemed ${requiredCredits} credits for ${action}!`, {
+        description: `Your new balance is ${credits - requiredCredits} credits.`
+      });
+    } catch (err) {
+      console.error("Unexpected error during redemption:", err);
+      toast.error("An unexpected error occurred. Please try again later.");
+    } finally {
+      setIsProcessing(prev => ({ ...prev, [actionType]: false }));
+    }
   };
 
   return (
@@ -55,19 +110,31 @@ const ArtistCreditsRedemption = ({ credits = 0 }: ArtistCreditsRedemptionProps) 
             <p className="text-sm text-gray-600 mb-4">
               Promote your profile to the top of search results for 3 days
             </p>
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full justify-between bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200 hover:bg-purple-200"
-              disabled={credits < 10 || isRedeeming}
-              onClick={() => handleRedeemAction("Profile Boost", 10)}
-            >
-              <div className="flex items-center">
-                <Megaphone className="h-4 w-4 mr-1" />
-                Boost My Profile
+            {redeemSuccess.profileBoost ? (
+              <div className="w-full bg-green-100 text-green-800 py-2 px-3 rounded-md flex items-center justify-center">
+                <span className="flex items-center font-medium">
+                  ✅ Boost Activated!
+                </span>
               </div>
-              <ArrowRight className="h-3 w-3" />
-            </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full justify-between bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200 hover:bg-purple-200"
+                disabled={credits < 10 || isProcessing.profileBoost}
+                onClick={() => handleRedeemAction("Profile Boost", 10, "profileBoost")}
+              >
+                <div className="flex items-center">
+                  {isProcessing.profileBoost ? (
+                    <Loader className="h-4 w-4 mr-1 animate-spin" />
+                  ) : (
+                    <Megaphone className="h-4 w-4 mr-1" />
+                  )}
+                  {isProcessing.profileBoost ? "Processing..." : "Boost My Profile"}
+                </div>
+                <ArrowRight className="h-3 w-3" />
+              </Button>
+            )}
           </div>
 
           {/* Free Job Post Option */}
@@ -81,19 +148,31 @@ const ArtistCreditsRedemption = ({ credits = 0 }: ArtistCreditsRedemptionProps) 
             <p className="text-sm text-gray-600 mb-4">
               Post a job listing without paying the regular posting fee
             </p>
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full justify-between bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200 hover:bg-purple-200"
-              disabled={credits < 15 || isRedeeming}
-              onClick={() => handleRedeemAction("Free Job Post", 15)}
-            >
-              <div className="flex items-center">
-                <Briefcase className="h-4 w-4 mr-1" />
-                Post a Job for Free
+            {redeemSuccess.jobPost ? (
+              <div className="w-full bg-green-100 text-green-800 py-2 px-3 rounded-md flex items-center justify-center">
+                <span className="flex items-center font-medium">
+                  ✅ Credit Applied!
+                </span>
               </div>
-              <ArrowRight className="h-3 w-3" />
-            </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full justify-between bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200 hover:bg-purple-200"
+                disabled={credits < 15 || isProcessing.jobPost}
+                onClick={() => handleRedeemAction("Free Job Post", 15, "jobPost")}
+              >
+                <div className="flex items-center">
+                  {isProcessing.jobPost ? (
+                    <Loader className="h-4 w-4 mr-1 animate-spin" />
+                  ) : (
+                    <Briefcase className="h-4 w-4 mr-1" />
+                  )}
+                  {isProcessing.jobPost ? "Processing..." : "Post a Job for Free"}
+                </div>
+                <ArrowRight className="h-3 w-3" />
+              </Button>
+            )}
           </div>
 
           {/* Marketplace Access Option */}
