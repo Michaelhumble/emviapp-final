@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { InfoIcon, User, Clock, DollarSign, BookOpen } from "lucide-react";
+import { InfoIcon, User, Clock, DollarSign, BookOpen, Calendar, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 
 import { UserProfile } from "@/types/profile";
@@ -146,6 +146,13 @@ const ArtistPublicProfile = () => {
       ? `${hours} hr ${remainingMinutes} min` 
       : `${hours} hr`;
   };
+
+  // Handle direct booking
+  const handleBooking = () => {
+    if (profile?.booking_url) {
+      window.open(profile.booking_url, '_blank');
+    }
+  };
   
   return (
     <Layout>
@@ -172,21 +179,32 @@ const ArtistPublicProfile = () => {
                 )}
                 
                 <div className="mt-6">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div>
-                          <Button className="bg-purple-600 hover:bg-purple-700" disabled>
-                            <BookOpen className="mr-2 h-4 w-4" />
-                            Booking Coming Soon
-                          </Button>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Online booking will be available soon!</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  {profile.accepts_bookings && profile.booking_url ? (
+                    <Button 
+                      className="bg-purple-600 hover:bg-purple-700"
+                      onClick={handleBooking}
+                    >
+                      <Calendar className="mr-2 h-4 w-4" />
+                      Book Me
+                      <ExternalLink className="ml-2 h-3.5 w-3.5" />
+                    </Button>
+                  ) : (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div>
+                            <Button className="bg-purple-600 hover:bg-purple-700" disabled>
+                              <BookOpen className="mr-2 h-4 w-4" />
+                              Booking Coming Soon
+                            </Button>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Online booking will be available soon!</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
                 </div>
               </div>
             </div>

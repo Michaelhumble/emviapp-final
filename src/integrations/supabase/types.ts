@@ -416,9 +416,11 @@ export type Database = {
       }
       users: {
         Row: {
+          accepts_bookings: boolean | null
           avatar_url: string | null
           badges: Json | null
           bio: string | null
+          booking_url: string | null
           boosted_until: string | null
           contact_link: string | null
           created_at: string | null
@@ -441,9 +443,11 @@ export type Database = {
           website: string | null
         }
         Insert: {
+          accepts_bookings?: boolean | null
           avatar_url?: string | null
           badges?: Json | null
           bio?: string | null
+          booking_url?: string | null
           boosted_until?: string | null
           contact_link?: string | null
           created_at?: string | null
@@ -466,9 +470,11 @@ export type Database = {
           website?: string | null
         }
         Update: {
+          accepts_bookings?: boolean | null
           avatar_url?: string | null
           badges?: Json | null
           bio?: string | null
+          booking_url?: string | null
           boosted_until?: string | null
           contact_link?: string | null
           created_at?: string | null
