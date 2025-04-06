@@ -24,7 +24,7 @@ export interface UserProfile {
   contact_link?: string;
   instagram?: string;
   website?: string;
-  user_role?: UserRole;
+  user_role?: UserRole | null;
   created_at?: string;
   salon_name?: string;
   company_name?: string;
@@ -48,7 +48,7 @@ export interface UserProfile {
   referral_code?: string;
   skill_level?: string;
   preferences?: string[];
-  role?: UserRole; // Alias for user_role for backward compatibility
+  role?: UserRole | null; // Alias for user_role for backward compatibility
 }
 
 export interface AuthContextType {
