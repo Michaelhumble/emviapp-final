@@ -56,7 +56,7 @@ export const fetchUserProfile = async (user: User): Promise<UserProfile | null> 
       profile_views: data.credits || 0, // Use credits as fallback
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       credits: data.credits, // Add explicit mapping for credits
-      boosted_until: data.boosted_until // Add explicit mapping for boosted_until
+      boosted_until: data.boosted_until || null // Add explicit mapping for boosted_until with null fallback
     };
   } catch (error) {
     console.error('Error in fetchUserProfile:', error);

@@ -55,6 +55,7 @@ const ArtistCreditsRedemption = ({ credits = 0 }: ArtistCreditsRedemptionProps) 
         return;
       }
       
+      // Check if boosted_until exists in the data and is not null
       if (data && data.boosted_until) {
         const boostExpiryDate = new Date(data.boosted_until);
         const isActive = isAfter(boostExpiryDate, new Date());
@@ -159,11 +160,11 @@ const ArtistCreditsRedemption = ({ credits = 0 }: ArtistCreditsRedemptionProps) 
           </div>
         </div>
         
-        {boostStatus.isActive && (
+        {boostStatus.isActive && boostStatus.expiresAt && (
           <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-md">
             <p className="text-amber-700 flex items-center font-medium">
               <Flame className="h-5 w-5 text-amber-500 mr-2" />
-              🔥 Your profile is boosted until {format(new Date(boostStatus.expiresAt!), 'MMM dd, yyyy')}
+              🔥 Your profile is boosted until {format(new Date(boostStatus.expiresAt), 'MMM dd, yyyy')}
             </p>
           </div>
         )}
