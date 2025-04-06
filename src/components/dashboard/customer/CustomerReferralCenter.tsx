@@ -12,7 +12,7 @@ const CustomerReferralCenter = () => {
   const [copied, setCopied] = useState(false);
   
   // For demo purposes, generate a referral code if none exists
-  const referralCode = userProfile?.referral_code || `BEAUTY${Math.floor(1000 + Math.random() * 9000)}`;
+  const referralCode = userProfile?.affiliate_code || `BEAUTY${Math.floor(1000 + Math.random() * 9000)}`;
   const referralLink = `https://emviapp.com/join?ref=${referralCode}`;
   
   const copyToClipboard = () => {
