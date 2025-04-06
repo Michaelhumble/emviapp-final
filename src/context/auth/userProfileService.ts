@@ -9,7 +9,6 @@ export const createEmptyProfile = async (userId: string) => {
       .insert({
         id: userId,
         full_name: '',
-        email: '',  // Adding email as required field
         avatar_url: '',
         bio: '',
         contact_link: '',
@@ -52,15 +51,7 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
         affiliate_code,
         badges,
         credits,
-        boosted_until,
-        preferred_language,
-        specialty,
-        phone,
-        skills,
-        profile_views,
-        referral_code,
-        skill_level,
-        preferences
+        boosted_until
       `)
       .eq('id', userId)
       .single();
@@ -70,73 +61,27 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
       return null;
     }
     
-    if (!data) {
-      return null;
-    }
-    
-    // Create a default profile with null/empty values for all fields
-    const defaultProfile: UserProfile = {
-      id: userId,
-      email: '',
-      full_name: '',
-      avatar_url: '',
-      custom_role: '',
-      bio: '',
-      contact_link: '',
-      instagram: '',
-      website: '',
-      user_role: null,
-      role: null,
-      created_at: '',
-      salon_name: '',
-      company_name: '',
-      location: '',
-      referral_count: 0,
-      affiliate_code: '',
-      badges: [],
-      credits: 0,
-      boosted_until: '',
-      preferred_language: '',
-      specialty: '',
-      phone: '',
-      skills: [],
-      profile_views: 0,
-      referral_code: '',
-      skill_level: '',
-      preferences: [],
-    };
-    
-    // Merge the retrieved data with the default profile
+    // Map database response to UserProfile
     const profile: UserProfile = {
-      ...defaultProfile,
       id: data.id,
-      email: data.email || defaultProfile.email,
-      full_name: data.full_name || defaultProfile.full_name,
-      avatar_url: data.avatar_url || defaultProfile.avatar_url,
-      custom_role: data.custom_role || defaultProfile.custom_role,
-      bio: data.bio || defaultProfile.bio,
-      contact_link: data.contact_link || defaultProfile.contact_link,
-      instagram: data.instagram || defaultProfile.instagram,
-      website: data.website || defaultProfile.website,
-      user_role: data.role || defaultProfile.user_role,
-      role: data.role || defaultProfile.role, // Add role as an alias for user_role
-      created_at: data.created_at || defaultProfile.created_at,
-      salon_name: data.salon_name || defaultProfile.salon_name,
-      company_name: data.company_name || defaultProfile.company_name,
-      location: data.location || defaultProfile.location,
-      referral_count: data.referral_count || defaultProfile.referral_count,
-      affiliate_code: data.affiliate_code || defaultProfile.affiliate_code,
-      badges: data.badges || defaultProfile.badges,
-      credits: data.credits || defaultProfile.credits,
-      boosted_until: data.boosted_until || defaultProfile.boosted_until,
-      preferred_language: data.preferred_language || defaultProfile.preferred_language,
-      specialty: data.specialty || defaultProfile.specialty,
-      phone: data.phone || defaultProfile.phone,
-      skills: data.skills || defaultProfile.skills,
-      profile_views: data.profile_views || defaultProfile.profile_views,
-      referral_code: data.referral_code || defaultProfile.referral_code,
-      skill_level: data.skill_level || defaultProfile.skill_level,
-      preferences: data.preferences || defaultProfile.preferences,
+      email: data.email,
+      full_name: data.full_name,
+      avatar_url: data.avatar_url,
+      custom_role: data.custom_role,
+      bio: data.bio,
+      contact_link: data.contact_link,
+      instagram: data.instagram,
+      website: data.website,
+      user_role: data.role,
+      created_at: data.created_at,
+      salon_name: data.salon_name,
+      company_name: data.company_name,
+      location: data.location,
+      referral_count: data.referral_count,
+      affiliate_code: data.affiliate_code,
+      badges: data.badges,
+      credits: data.credits,
+      boosted_until: data.boosted_until,
     };
     
     return profile;
@@ -157,7 +102,7 @@ export const updateUserProfileInDb = async (userId: string, updates: Partial<Use
       delete dbUpdates.user_role;
     }
     
-    // Remove any fields that don't exist in the database or shouldn't be updated directly
+    // Remove any fields that don't exist in the database
     delete dbUpdates.facebook;
     delete dbUpdates.twitter;
     
@@ -246,91 +191,37 @@ export const getUserByUserName = async (username: string): Promise<UserProfile |
         affiliate_code,
         badges,
         credits,
-        boosted_until,
-        preferred_language,
-        specialty,
-        phone,
-        skills,
-        profile_views,
-        referral_code,
-        skill_level,
-        preferences
+        boosted_until
       `)
       .eq('username', username)
-      .maybeSingle();
+      .single();
 
     if (error) {
       console.error('Error fetching user by username:', error);
       return null;
     }
     
-    if (!data) {
-      return null;
-    }
-    
-    // Create a default profile with null/empty values
-    const defaultProfile: UserProfile = {
-      id: '',
-      email: '',
-      full_name: '',
-      avatar_url: '',
-      custom_role: '',
-      bio: '',
-      contact_link: '',
-      instagram: '',
-      website: '',
-      user_role: null,
-      role: null,
-      created_at: '',
-      salon_name: '',
-      company_name: '',
-      location: '',
-      referral_count: 0,
-      affiliate_code: '',
-      badges: [],
-      credits: 0,
-      boosted_until: '',
-      preferred_language: '',
-      specialty: '',
-      phone: '',
-      skills: [],
-      profile_views: 0,
-      referral_code: '',
-      skill_level: '',
-      preferences: [],
-    };
-    
-    // Merge the retrieved data with the default profile
+    // Map database response to UserProfile
     const profile: UserProfile = {
-      ...defaultProfile,
       id: data.id,
-      email: data.email || defaultProfile.email,
-      full_name: data.full_name || defaultProfile.full_name,
-      avatar_url: data.avatar_url || defaultProfile.avatar_url,
-      custom_role: data.custom_role || defaultProfile.custom_role,
-      bio: data.bio || defaultProfile.bio,
-      contact_link: data.contact_link || defaultProfile.contact_link,
-      instagram: data.instagram || defaultProfile.instagram,
-      website: data.website || defaultProfile.website,
-      user_role: data.role || defaultProfile.user_role,
-      role: data.role || defaultProfile.role,
-      created_at: data.created_at || defaultProfile.created_at,
-      salon_name: data.salon_name || defaultProfile.salon_name,
-      company_name: data.company_name || defaultProfile.company_name,
-      location: data.location || defaultProfile.location,
-      referral_count: data.referral_count || defaultProfile.referral_count,
-      affiliate_code: data.affiliate_code || defaultProfile.affiliate_code,
-      badges: data.badges || defaultProfile.badges,
-      credits: data.credits || defaultProfile.credits,
-      boosted_until: data.boosted_until || defaultProfile.boosted_until,
-      preferred_language: data.preferred_language || defaultProfile.preferred_language,
-      specialty: data.specialty || defaultProfile.specialty,
-      phone: data.phone || defaultProfile.phone,
-      skills: data.skills || defaultProfile.skills,
-      profile_views: data.profile_views || defaultProfile.profile_views,
-      referral_code: data.referral_code || defaultProfile.referral_code,
-      skill_level: data.skill_level || defaultProfile.skill_level,
-      preferences: data.preferences || defaultProfile.preferences,
+      email: data.email,
+      full_name: data.full_name,
+      avatar_url: data.avatar_url,
+      custom_role: data.custom_role,
+      bio: data.bio,
+      contact_link: data.contact_link,
+      instagram: data.instagram,
+      website: data.website,
+      user_role: data.role,
+      created_at: data.created_at,
+      salon_name: data.salon_name,
+      company_name: data.company_name,
+      location: data.location,
+      referral_count: data.referral_count,
+      affiliate_code: data.affiliate_code,
+      badges: data.badges,
+      credits: data.credits,
+      boosted_until: data.boosted_until,
     };
     
     return profile;

@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2, Scissors, Building2, User, Briefcase, ShoppingBag, HelpCircle } from "lucide-react";
 import { UserRole } from "@/context/auth/types";
-import { motion } from "framer-motion";
+import { navigateToRoleDashboard } from "@/utils/navigation";
 
 type Role = UserRole;
 
@@ -17,11 +17,10 @@ interface RoleSelectionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   userId: string;
-  onRoleSelected?: (role: Role) => void;
 }
 
-const RoleSelectionModal = ({ open, onOpenChange, userId, onRoleSelected }: RoleSelectionModalProps) => {
-  const [selectedRole, setSelectedRole] = useState<Role | null>(null);
+const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalProps) => {
+  const [selectedRole, setSelectedRole] = useState<Role>("customer");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   
@@ -51,6 +50,12 @@ const RoleSelectionModal = ({ open, onOpenChange, userId, onRoleSelected }: Role
       icon: <Briefcase className="h-5 w-5 text-primary" />
     },
     {
+      id: "renter",
+      label: "Booth Renter (Independent Contractor)",
+      description: "I rent space in a salon and run my own business.",
+      icon: <Briefcase className="h-5 w-5 text-primary" />
+    },
+    {
       id: "vendor",
       label: "Vendor (Beauty Supplier)",
       description: "I sell products or tools for beauty salons and professionals.",
@@ -64,42 +69,12 @@ const RoleSelectionModal = ({ open, onOpenChange, userId, onRoleSelected }: Role
     }
   ];
 
-  const navigateToRoleDashboard = (role: Role) => {
-    console.log("Navigating based on role:", role);
-    
-    switch (role) {
-      case 'artist':
-      case 'nail technician/artist':
-        navigate('/dashboard/artist');
-        break;
-      case 'salon':
-      case 'owner':
-        navigate('/dashboard/salon');
-        break;
-      case 'customer':
-        navigate('/dashboard/customer');
-        break;
-      case 'vendor':
-      case 'supplier':
-      case 'beauty supplier':
-        navigate('/dashboard/supplier');
-        break;
-      case 'freelancer':
-        navigate('/dashboard/freelancer');
-        break;
-      case 'other':
-      default:
-        navigate('/dashboard/other');
-    }
-  };
-
   const handleRoleSelection = async () => {
     if (!selectedRole) return;
     
     setIsSubmitting(true);
     
     try {
-      // Update the user's role in the Supabase database
       const { error } = await supabase
         .from('users')
         .update({ role: selectedRole })
@@ -107,20 +82,11 @@ const RoleSelectionModal = ({ open, onOpenChange, userId, onRoleSelected }: Role
       
       if (error) throw error;
       
-      // Notify that the role was successfully set
       toast.success(`Role selected! You're now registered as a ${selectedRole}.`);
       
-      // If we have an onRoleSelected callback, call it
-      if (onRoleSelected) {
-        onRoleSelected(selectedRole);
-      }
-      
-      // Close the modal
+      // Use the utility function for consistent role-based navigation
       onOpenChange(false);
-      
-      // Navigate to the appropriate dashboard
-      navigateToRoleDashboard(selectedRole);
-      
+      navigateToRoleDashboard(navigate, selectedRole);
     } catch (error) {
       console.error("Error setting user role:", error);
       toast.error("We couldn't save your role. Please try again.");
@@ -141,8 +107,8 @@ const RoleSelectionModal = ({ open, onOpenChange, userId, onRoleSelected }: Role
         
         <div className="py-6">
           <RadioGroup
-            value={selectedRole || ""}
-            onValueChange={(value) => value ? setSelectedRole(value as Role) : null}
+            value={selectedRole}
+            onValueChange={(value) => setSelectedRole(value as Role)}
             className="space-y-4"
           >
             {roles.map((role) => (
@@ -171,26 +137,20 @@ const RoleSelectionModal = ({ open, onOpenChange, userId, onRoleSelected }: Role
         </div>
         
         <div className="flex justify-end">
-          <motion.div 
-            whileTap={{ scale: 0.98 }}
-            transition={{ duration: 0.2 }}
+          <Button 
+            onClick={handleRoleSelection}
+            disabled={isSubmitting}
             className="w-full sm:w-auto"
           >
-            <Button 
-              onClick={handleRoleSelection}
-              disabled={isSubmitting || !selectedRole}
-              className="w-full sm:w-auto"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Setting up...
-                </>
-              ) : (
-                "Continue"
-              )}
-            </Button>
-          </motion.div>
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Setting up...
+              </>
+            ) : (
+              "Continue"
+            )}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

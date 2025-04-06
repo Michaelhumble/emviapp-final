@@ -9,7 +9,6 @@ export interface CreditOption {
   description: string;
   creditCost: number;
   icon: React.ReactNode;
-  duration?: string; // Added duration as optional property
   isDisabled?: boolean;
   actionText?: string;
   comingSoon?: boolean;

@@ -10,7 +10,6 @@ export const creditOptions: CreditOption[] = [
     description: 'Increase your profile visibility for a full week. Get seen by more salon owners and clients.',
     creditCost: 10,
     icon: React.createElement(RocketIcon),
-    duration: '7 days',
     actionText: 'Boost My Profile'
   },
   {
@@ -19,7 +18,6 @@ export const creditOptions: CreditOption[] = [
     description: 'Highlight your portfolio in search results for 3 days. Perfect for showcasing new work.',
     creditCost: 8,
     icon: React.createElement(TrendingUpIcon),
-    duration: '3 days',
     isDisabled: true,
     comingSoon: true,
     actionText: 'Coming Soon'
@@ -30,7 +28,6 @@ export const creditOptions: CreditOption[] = [
     description: 'Get instant notifications for new job postings that match your skills for 14 days.',
     creditCost: 5,
     icon: React.createElement(ZapIcon),
-    duration: '14 days',
     isDisabled: true,
     comingSoon: true,
     actionText: 'Coming Soon'
