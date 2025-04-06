@@ -44,14 +44,15 @@ export const fetchUserProfile = async (user: User): Promise<UserProfile | null> 
       updated_at: data.updated_at,
       preferred_language: data.preferred_language || '',
       // Handle the new fields with appropriate fallbacks
-      referral_count: data.credits || 0, // Use credits as fallback for referral_count
-      salon_name: data.custom_role || '', // Since salon_name doesn't exist in the DB, use custom_role as a fallback
-      company_name: data.custom_role || '', // Use custom_role as fallback for company_name
+      referral_count: data.referral_count || 0,
+      affiliate_code: data.referral_code || '', // Map the DB's referral_code to affiliate_code
+      salon_name: data.salon_name || '', 
+      company_name: data.company_name || '',
       custom_role: data.custom_role || '',
       contact_link: data.contact_link || '',
-      skills: Array.isArray(data.preferences) ? data.preferences : [], // Use preferences array as fallback for skills
-      skill_level: data.specialty || '', // Use specialty as fallback for skill_level
-      profile_views: typeof data.credits === 'number' ? data.credits : 0, // Use credits as fallback for profile_views
+      skills: Array.isArray(data.skills) ? data.skills : [],
+      skill_level: data.skill_level || '',
+      profile_views: data.profile_views || 0,
       preferences: Array.isArray(data.preferences) ? data.preferences : []
     };
   } catch (error) {
@@ -108,14 +109,15 @@ const createUserProfile = async (user: User): Promise<UserProfile | null> => {
     updated_at: data.updated_at,
     preferred_language: data.preferred_language || '',
     // Set default values for the additional fields
-    referral_count: data.credits || 0,
-    salon_name: '',
-    company_name: '',
-    custom_role: '',
-    contact_link: '',
-    skills: [],
-    skill_level: '',
-    profile_views: 0,
-    preferences: []
+    referral_count: data.referral_count || 0,
+    affiliate_code: data.referral_code || '', // Map referral_code to affiliate_code
+    salon_name: data.salon_name || '',
+    company_name: data.company_name || '',
+    custom_role: data.custom_role || '',
+    contact_link: data.contact_link || '',
+    skills: data.skills || [],
+    skill_level: data.skill_level || '',
+    profile_views: data.profile_views || 0,
+    preferences: data.preferences || []
   };
 };

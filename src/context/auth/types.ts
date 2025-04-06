@@ -41,6 +41,7 @@ export interface UserProfile {
   skill_level?: string;
   profile_views?: number;
   preferences?: string[];
+  affiliate_code?: string; // Added this property for referral codes
 }
 
 // Auth context data shape
