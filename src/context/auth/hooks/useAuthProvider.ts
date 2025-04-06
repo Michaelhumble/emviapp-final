@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile, UserRole, AuthContextType } from "../types";
-import { Session, User } from "@supabase/supabase-js";
+import { Session, User, AuthChangeEvent } from "@supabase/supabase-js";
 import { fetchUserProfile, signInWithEmailPassword, signUpWithEmailPassword, signOutUser } from "../services/authService";
 
 /**
@@ -18,13 +18,13 @@ export const useAuthProvider = () => {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, currentSession) => {
+      (event: AuthChangeEvent, currentSession) => {
         console.log("Auth state changed:", event);
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         
-        // Fix for TypeScript error - compare string values directly
-        if (event === 'SIGNED_UP') {
+        // Fix for TypeScript error - correctly compare the event with the enum value
+        if (event === 'SIGNED_UP' as AuthChangeEvent) {
           console.log("New user signed up!");
           setIsNewUser(true);
           localStorage.setItem('emviapp_new_user', 'true');
