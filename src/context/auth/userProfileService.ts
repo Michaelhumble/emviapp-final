@@ -107,7 +107,7 @@ export const updateUserProfileInDb = async (userId: string, updates: Partial<Use
       delete dbUpdates.user_role;
     }
     
-    // Remove any fields that don't exist in the database
+    // Remove any fields that don't exist in the database or shouldn't be updated directly
     delete dbUpdates.facebook;
     delete dbUpdates.twitter;
     
@@ -199,7 +199,7 @@ export const getUserByUserName = async (username: string): Promise<UserProfile |
         boosted_until
       `)
       .eq('username', username)
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error('Error fetching user by username:', error);
