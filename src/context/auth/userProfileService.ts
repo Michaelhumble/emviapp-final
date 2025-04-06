@@ -52,7 +52,15 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
         affiliate_code,
         badges,
         credits,
-        boosted_until
+        boosted_until,
+        preferred_language,
+        specialty,
+        phone,
+        skills,
+        profile_views,
+        referral_code,
+        skill_level,
+        preferences
       `)
       .eq('id', userId)
       .single();
@@ -78,6 +86,7 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
       instagram: data.instagram,
       website: data.website,
       user_role: data.role,
+      role: data.role, // Add role as an alias for user_role
       created_at: data.created_at,
       salon_name: data.salon_name,
       company_name: data.company_name,
@@ -87,6 +96,14 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
       badges: data.badges,
       credits: data.credits,
       boosted_until: data.boosted_until,
+      preferred_language: data.preferred_language,
+      specialty: data.specialty,
+      phone: data.phone,
+      skills: data.skills,
+      profile_views: data.profile_views,
+      referral_code: data.referral_code,
+      skill_level: data.skill_level,
+      preferences: data.preferences,
     };
     
     return profile;
@@ -196,7 +213,15 @@ export const getUserByUserName = async (username: string): Promise<UserProfile |
         affiliate_code,
         badges,
         credits,
-        boosted_until
+        boosted_until,
+        preferred_language,
+        specialty,
+        phone,
+        skills,
+        profile_views,
+        referral_code,
+        skill_level,
+        preferences
       `)
       .eq('username', username)
       .maybeSingle();
@@ -222,6 +247,7 @@ export const getUserByUserName = async (username: string): Promise<UserProfile |
       instagram: data.instagram,
       website: data.website,
       user_role: data.role,
+      role: data.role, // Add role as an alias for user_role
       created_at: data.created_at,
       salon_name: data.salon_name,
       company_name: data.company_name,
@@ -231,6 +257,14 @@ export const getUserByUserName = async (username: string): Promise<UserProfile |
       badges: data.badges,
       credits: data.credits,
       boosted_until: data.boosted_until,
+      preferred_language: data.preferred_language,
+      specialty: data.specialty,
+      phone: data.phone,
+      skills: data.skills,
+      profile_views: data.profile_views,
+      referral_code: data.referral_code,
+      skill_level: data.skill_level,
+      preferences: data.preferences,
     };
     
     return profile;

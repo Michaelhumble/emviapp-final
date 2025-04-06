@@ -38,6 +38,17 @@ export interface UserProfile {
   // Social links that may be added later
   facebook?: string;
   twitter?: string;
+
+  // Additional properties that are referenced in components
+  preferred_language?: string;
+  specialty?: string;
+  phone?: string;
+  skills?: string[];
+  profile_views?: number;
+  referral_code?: string;
+  skill_level?: string;
+  preferences?: string[];
+  role?: UserRole; // Alias for user_role for backward compatibility
 }
 
 export interface AuthContextType {
