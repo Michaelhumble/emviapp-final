@@ -29,9 +29,3 @@ export const creditOptions: CreditOption[] = [
     comingSoon: true
   }
 ];
-
-export const getBoostDescription = (isActive: boolean): string => {
-  return isActive 
-    ? "Extend your profile boost for an additional 7 days" 
-    : "Promote your profile to the top of search results for 7 days";
-};

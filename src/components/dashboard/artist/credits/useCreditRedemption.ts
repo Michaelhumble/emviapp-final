@@ -8,8 +8,7 @@ import { BoostStatus } from "./types";
 
 export const useCreditRedemption = (
   credits: number, 
-  boostStatus: BoostStatus, 
-  setBoostStatus: React.Dispatch<React.SetStateAction<BoostStatus>>,
+  boostStatus: BoostStatus,
   refreshUserProfile: () => Promise<void>
 ) => {
   const { user } = useAuth();
@@ -79,14 +78,6 @@ export const useCreditRedemption = (
           if (retryError) {
             throw retryError;
           }
-          
-          // Still update boost status in UI even if DB column doesn't exist
-          if (actionType === 'profileBoost') {
-            setBoostStatus({
-              isActive: true,
-              expiresAt: expiryDate
-            });
-          }
         } else {
           throw error;
         }
@@ -96,13 +87,8 @@ export const useCreditRedemption = (
       setRedeemSuccess(prev => ({ ...prev, [actionType]: true }));
       resetSuccessState(actionType);
       
-      // If it's a profile boost, update the local boost status
+      // If it's a profile boost, show success message
       if (actionType === 'profileBoost') {
-        setBoostStatus({
-          isActive: true,
-          expiresAt: expiryDate
-        });
-        
         toast.success("✅ Boost Activated! You'll appear in top results for 7 days.", {
           description: `Your profile is now boosted until ${format(new Date(expiryDate), 'MMM dd, yyyy')}`
         });

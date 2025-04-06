@@ -1,9 +1,9 @@
 
-import { useState, useEffect } from "react";
-import { CreditOptionCard } from "./CreditOptionCard";
+import { useState } from "react";
+import CreditOptionCard from "./CreditOptionCard";
 import { creditOptions } from "./creditOptions";
 import { useAuth } from "@/context/auth";
-import { BoostStatusBanner } from "./BoostStatusBanner";
+import BoostStatusBanner from "./BoostStatusBanner";
 import { useProfileBoost } from "./useProfileBoost";
 import { useCreditRedemption } from "./useCreditRedemption";
 
@@ -15,15 +15,14 @@ const ArtistCreditsRedemption = () => {
     boostStatus, 
     loading: boostLoading, 
     error: boostError,
-    activateProfileBoost,
-    setBoostStatus
+    activateProfileBoost
   } = useProfileBoost();
   
   const {
     isProcessing,
     redeemSuccess,
     handleRedeemAction
-  } = useCreditRedemption(credits, boostStatus, setBoostStatus, refreshUserProfile);
+  } = useCreditRedemption(credits, boostStatus, refreshUserProfile);
 
   return (
     <div className="space-y-6">
@@ -40,16 +39,16 @@ const ArtistCreditsRedemption = () => {
             key={option.id}
             title={option.title}
             description={option.description}
-            cost={option.cost}
+            cost={option.creditCost}
             icon={option.icon}
             isDisabled={
-              credits < option.cost || 
+              credits < option.creditCost || 
               (option.id === 'profileBoost' && boostStatus.isActive) ||
               isProcessing[option.id]
             }
             isProcessing={isProcessing[option.id]}
             isSuccess={redeemSuccess[option.id]}
-            onRedeem={() => handleRedeemAction(option.title, option.cost, option.id)}
+            onRedeem={() => handleRedeemAction(option.title, option.creditCost, option.id)}
           />
         ))}
       </div>

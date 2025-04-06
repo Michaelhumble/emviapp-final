@@ -1,12 +1,12 @@
 
-import { User } from '@supabase/supabase-js';
+import { LucideIcon } from "lucide-react";
 
 export interface CreditOption {
   id: string;
   title: string;
   description: string;
   creditCost: number;
-  icon: React.ComponentType<any>;
+  icon: LucideIcon;
   actionText: string;
   comingSoon?: boolean;
 }
@@ -14,8 +14,4 @@ export interface CreditOption {
 export interface BoostStatus {
   isActive: boolean;
   expiresAt: string | null;
-}
-
-export interface ArtistCreditsRedemptionProps {
-  credits: number;
 }

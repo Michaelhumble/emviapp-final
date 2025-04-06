@@ -1,39 +1,35 @@
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Loader } from "lucide-react";
-import { CreditOption } from "./types";
+import { LucideIcon } from "lucide-react";
 
 interface CreditOptionCardProps {
-  option: CreditOption;
-  isSuccess: boolean;
+  title: string;
+  description: string;
+  cost: number;
+  icon: LucideIcon;
+  isDisabled: boolean;
   isProcessing: boolean;
-  userCredits: number;
+  isSuccess: boolean;
   onRedeem: () => void;
 }
 
 const CreditOptionCard = ({ 
-  option, 
-  isSuccess, 
+  title, 
+  description, 
+  cost, 
+  icon: Icon, 
+  isDisabled,
   isProcessing, 
-  userCredits, 
+  isSuccess,
   onRedeem 
 }: CreditOptionCardProps) => {
-  const { 
-    title, 
-    description, 
-    creditCost, 
-    icon: Icon, 
-    actionText, 
-    comingSoon 
-  } = option;
-  
   return (
     <div className="bg-white p-4 rounded-lg border border-purple-100 hover:border-purple-300 transition-all shadow-sm">
       <div className="flex justify-between items-center mb-3">
         <span className="text-purple-800 font-semibold">{title}</span>
         <span className="bg-purple-100 text-purple-700 text-xs font-medium px-2 py-1 rounded-full">
-          {comingSoon ? 'Coming Soon' : `${creditCost} Credits`}
+          {cost} Credits
         </span>
       </div>
       <p className="text-sm text-gray-600 mb-4">
@@ -49,12 +45,8 @@ const CreditOptionCard = ({
         <Button
           variant="outline"
           size="sm"
-          className={`w-full justify-between ${
-            comingSoon 
-              ? 'bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200' 
-              : 'bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200 hover:bg-purple-200'
-          }`}
-          disabled={comingSoon || userCredits < creditCost || isProcessing}
+          className="w-full justify-between bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200 hover:bg-purple-200"
+          disabled={isDisabled || isProcessing}
           onClick={onRedeem}
         >
           <div className="flex items-center">
@@ -63,7 +55,7 @@ const CreditOptionCard = ({
             ) : (
               <Icon className="h-4 w-4 mr-1" />
             )}
-            {isProcessing ? "Processing..." : actionText}
+            {isProcessing ? "Processing..." : "Redeem"}
           </div>
           <ArrowRight className="h-3 w-3" />
         </Button>

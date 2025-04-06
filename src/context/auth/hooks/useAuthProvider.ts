@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile, UserRole, AuthContextType } from "../types";
@@ -26,11 +25,11 @@ export const useAuthProvider = () => {
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         
-        // Handle sign up event
-        if (event === "SIGNED_UP") {
-          console.log("New user signed up!");
-          setIsNewUser(true);
-          localStorage.setItem('emviapp_new_user', 'true');
+        // Handle sign in event
+        if (event === "SIGNED_IN") {
+          console.log("User signed in!");
+          setIsNewUser(false);
+          localStorage.removeItem('emviapp_new_user');
         }
         
         // Fetch user profile on auth state change
