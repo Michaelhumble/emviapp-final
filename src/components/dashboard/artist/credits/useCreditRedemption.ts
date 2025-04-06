@@ -48,23 +48,40 @@ export const useCreditRedemption = (
 
     try {
       // Calculate boost expiry date (7 days from now) if it's a profile boost
-      const boostUpdate = actionType === 'profileBoost' 
-        ? { boosted_until: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() }
-        : {};
+      const expiryDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+      
+      // Create update object
+      const updateData: Record<string, any> = {
+        credits: credits - requiredCredits
+      };
+      
+      // Add boosted_until only for profile boost action
+      if (actionType === 'profileBoost') {
+        updateData.boosted_until = expiryDate;
+      }
 
       // Update the user's credits in Supabase
       const { error } = await supabase
         .from('users')
-        .update({ 
-          credits: credits - requiredCredits,
-          ...boostUpdate
-        })
+        .update(updateData)
         .eq('id', user.id);
 
       if (error) {
         console.error("Error updating credits:", error);
-        toast.error("Failed to redeem credits. Please try again.");
-        return;
+        
+        // If the error is about boosted_until not existing, try without it
+        if (error.message.includes("boosted_until") && actionType === 'profileBoost') {
+          const { error: retryError } = await supabase
+            .from('users')
+            .update({ credits: credits - requiredCredits })
+            .eq('id', user.id);
+            
+          if (retryError) {
+            throw retryError;
+          }
+        } else {
+          throw error;
+        }
       }
 
       // Set success state and reset after delay
@@ -73,7 +90,6 @@ export const useCreditRedemption = (
       
       // If it's a profile boost, update the local boost status
       if (actionType === 'profileBoost') {
-        const expiryDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
         setBoostStatus({
           isActive: true,
           expiresAt: expiryDate

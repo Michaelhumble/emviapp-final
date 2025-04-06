@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile, UserRole, AuthContextType } from "../types";
@@ -110,6 +109,7 @@ export const useAuthProvider = () => {
       const fetchedRole = data.role as UserRole || 'customer';
       setUserRole(fetchedRole);
       
+      // Create a profile object, safely checking if each property exists
       const profile: UserProfile = {
         id: data.id,
         email: data.email || '',
@@ -125,6 +125,7 @@ export const useAuthProvider = () => {
         created_at: data.created_at,
         updated_at: data.updated_at,
         preferred_language: data.preferred_language || '',
+        // Safely handle optional properties that might not be in database yet
         referral_count: data.referral_count || 0,
         salon_name: data.salon_name || '',
         company_name: data.company_name || '',

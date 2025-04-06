@@ -26,8 +26,7 @@ export const fetchUserProfile = async (user: User): Promise<UserProfile | null> 
       return await createUserProfile(user);
     }
     
-    // Handle database fields safely with fallbacks
-    // Cast data.role to UserRole to ensure type safety
+    // Create a profile with safe access to fields that may not exist in the database
     return {
       id: data.id,
       email: data.email || user.email || '',
@@ -43,20 +42,20 @@ export const fetchUserProfile = async (user: User): Promise<UserProfile | null> 
       created_at: data.created_at,
       updated_at: data.updated_at,
       preferred_language: data.preferred_language || '',
-      // Handle the new fields with appropriate fallbacks
-      referral_count: data.credits || 0, // Use credits for referral count if no dedicated field
-      affiliate_code: data.referral_code || '', // Map referral_code to affiliate_code
-      referral_code: data.referral_code || '', // Direct mapping for database value
-      salon_name: data.custom_role || '', // Use custom_role as fallback
-      company_name: data.custom_role || '', // Use custom_role as fallback
+      // Safely handle properties that might not exist in the database
+      referral_count: data.referral_count || 0,
+      affiliate_code: data.referral_code || '',
+      referral_code: data.referral_code || '',
+      salon_name: data.salon_name || '',
+      company_name: data.company_name || '',
       custom_role: data.custom_role || '',
       contact_link: data.contact_link || '',
-      skills: Array.isArray(data.preferences) ? data.preferences : [], // Use preferences as fallback
-      skill_level: data.specialty || '', // Use specialty as fallback
-      profile_views: data.credits || 0, // Use credits as fallback
+      skills: Array.isArray(data.skills) ? data.skills : [],
+      skill_level: data.skill_level || '',
+      profile_views: data.profile_views || 0,
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
-      credits: data.credits || 0, // Add explicit mapping for credits with default value
-      boosted_until: data.boosted_until || null // Safe access with null fallback
+      credits: data.credits || 0,
+      boosted_until: data.boosted_until || null
     };
   } catch (error) {
     console.error('Error in fetchUserProfile:', error);
@@ -85,51 +84,67 @@ const createUserProfile = async (user: User): Promise<UserProfile | null> => {
     role: 'customer' as UserRole,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
-    referral_code: referralCode, // Add referral code to new profiles
-    credits: 0, // Initialize credits to 0
-    boosted_until: null // Initialize boosted_until to null
+    referral_code: referralCode,
+    credits: 0
+    // boosted_until is added conditionally below if it exists in the database
   };
   
-  const { data, error } = await supabase
-    .from('users')
-    .insert([newProfile])
-    .select()
-    .single();
+  try {
+    // Check if boosted_until column exists in users table
+    const { error: schemaError } = await supabase
+      .from('users')
+      .select('boosted_until')
+      .limit(1);
+      
+    // Only add boosted_until to the profile if the column exists
+    const profileToInsert = !schemaError ? 
+      { ...newProfile, boosted_until: null } : 
+      newProfile;
+      
+    const { data, error } = await supabase
+      .from('users')
+      .insert([profileToInsert])
+      .select()
+      .single();
   
-  if (error) {
-    console.error('Error creating user profile:', error);
+    if (error) {
+      console.error('Error creating user profile:', error);
+      return null;
+    }
+    
+    // Create a full UserProfile from the database response
+    return {
+      id: data.id,
+      email: data.email || '',
+      full_name: data.full_name || '',
+      avatar_url: data.avatar_url || '',
+      location: data.location || '',
+      bio: data.bio || '',
+      phone: data.phone || '',
+      instagram: data.instagram || '',
+      website: data.website || '',
+      specialty: data.specialty || '',
+      role: (data.role as UserRole) || 'customer',
+      created_at: data.created_at,
+      updated_at: data.updated_at,
+      preferred_language: data.preferred_language || '',
+      // Safely handle properties that might not exist
+      referral_count: data.referral_count || 0,
+      affiliate_code: data.referral_code || referralCode,
+      referral_code: data.referral_code || referralCode,
+      salon_name: data.salon_name || '',
+      company_name: data.company_name || '',
+      custom_role: data.custom_role || '',
+      contact_link: data.contact_link || '',
+      skills: Array.isArray(data.skills) ? data.skills : [],
+      skill_level: data.skill_level || '',
+      profile_views: data.profile_views || 0,
+      preferences: Array.isArray(data.preferences) ? data.preferences : [],
+      credits: data.credits || 0,
+      boosted_until: data.boosted_until || null
+    };
+  } catch (error) {
+    console.error('Error in createUserProfile:', error);
     return null;
   }
-  
-  // Create a full UserProfile from the database response
-  return {
-    id: data.id,
-    email: data.email || '',
-    full_name: data.full_name || '',
-    avatar_url: data.avatar_url || '',
-    location: data.location || '',
-    bio: data.bio || '',
-    phone: data.phone || '',
-    instagram: data.instagram || '',
-    website: data.website || '',
-    specialty: data.specialty || '',
-    role: (data.role as UserRole) || 'customer',
-    created_at: data.created_at,
-    updated_at: data.updated_at,
-    preferred_language: data.preferred_language || '',
-    // Set default values for the additional fields
-    referral_count: data.credits || 0, // Use credits for referral count
-    affiliate_code: data.referral_code || referralCode, // Map referral_code to affiliate_code
-    referral_code: data.referral_code || referralCode, // Direct mapping for database value
-    salon_name: data.custom_role || '', // Use custom_role as fallback
-    company_name: data.custom_role || '', // Use custom_role as fallback
-    custom_role: data.custom_role || '',
-    contact_link: data.contact_link || '',
-    skills: Array.isArray(data.preferences) ? data.preferences : [], // Use preferences as fallback
-    skill_level: data.specialty || '', // Use specialty as fallback
-    profile_views: data.credits || 0, // Use credits as fallback
-    preferences: Array.isArray(data.preferences) ? data.preferences : [],
-    credits: data.credits || 0, // Add explicit mapping for credits with default value
-    boosted_until: data.boosted_until || null // Safe access with null fallback
-  };
 };

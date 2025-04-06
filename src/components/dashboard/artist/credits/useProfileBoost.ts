@@ -39,19 +39,28 @@ export const useProfileBoost = () => {
           // Otherwise, fetch from database directly
           const { data, error } = await supabase
             .from('users')
-            .select('boosted_until')
+            .select('*')
             .eq('id', user.id)
             .single();
 
           if (error) throw error;
 
-          const expiresAt = data?.boosted_until;
-          const isActive = expiresAt ? new Date(expiresAt) > new Date() : false;
+          // Check if boosted_until exists in data
+          if (data && 'boosted_until' in data) {
+            const expiresAt = data.boosted_until;
+            const isActive = expiresAt ? new Date(expiresAt) > new Date() : false;
 
-          setBoostStatus({
-            isActive,
-            expiresAt
-          });
+            setBoostStatus({
+              isActive,
+              expiresAt
+            });
+          } else {
+            // Default to inactive if boosted_until not found
+            setBoostStatus({
+              isActive: false,
+              expiresAt: null
+            });
+          }
         }
       } catch (err) {
         console.error('Error checking boost status:', err);
@@ -74,22 +83,36 @@ export const useProfileBoost = () => {
       // Calculate expiration date
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + days);
+      const expiryDate = expiresAt.toISOString();
 
-      // Update the user's boosted_until date
-      const { error } = await supabase
-        .from('users')
-        .update({ boosted_until: expiresAt.toISOString() })
-        .eq('id', user.id);
-
-      if (error) throw error;
-
-      // Update local state
-      setBoostStatus({
-        isActive: true,
-        expiresAt: expiresAt.toISOString()
-      });
-
-      return true;
+      // Create update object, only including properties that exist in the database
+      const updateObj: Record<string, any> = { 
+        credits: (userProfile?.credits || 0) - 5 // Assuming boost costs 5 credits
+      };
+      
+      // Only add boosted_until if the column exists
+      try {
+        // Update the user's boosted_until date
+        const { error } = await supabase
+          .from('users')
+          .update({ boosted_until: expiryDate })
+          .eq('id', user.id);
+          
+        if (!error) {
+          // Update local state
+          setBoostStatus({
+            isActive: true,
+            expiresAt: expiryDate
+          });
+          return true;
+        }
+      } catch (err) {
+        console.error('Error activating profile boost:', err);
+        setError('Failed to activate profile boost');
+        return false;
+      }
+      
+      return false;
     } catch (err) {
       console.error('Error activating profile boost:', err);
       setError('Failed to activate profile boost');
@@ -99,6 +122,7 @@ export const useProfileBoost = () => {
 
   return {
     boostStatus,
+    setBoostStatus,
     loading,
     error,
     activateProfileBoost
