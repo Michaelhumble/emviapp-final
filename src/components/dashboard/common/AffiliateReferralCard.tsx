@@ -25,38 +25,40 @@ const AffiliateReferralCard = () => {
       if (!user) return;
       
       try {
-        // Use either the database function or direct query to get referral stats
-        const { data, error } = await supabase.rpc('get_user_referral_stats', {
-          user_id: user.id
-        });
+        // Get referred users count
+        const { count: referralCount, error: countError } = await supabase
+          .from('users')
+          .select('id', { count: 'exact', head: true })
+          .eq('referred_by', referralCode);
         
-        if (error) {
-          console.error('Error fetching referral stats:', error);
+        if (countError) {
+          console.error('Error fetching referral count:', countError);
           return;
         }
         
-        if (data && data.length > 0) {
-          // Get user credits (earned from referrals)
-          const { data: userData, error: userError } = await supabase
-            .from('users')
-            .select('credits')
-            .eq('id', user.id)
-            .single();
-            
-          if (!userError && userData) {
-            setReferralStats({
-              count: data[0].referral_count || 0,
-              credits: userData.credits || 0
-            });
-          }
+        // Get user credits
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('credits')
+          .eq('id', user.id)
+          .single();
+          
+        if (userError) {
+          console.error('Error fetching user credits:', userError);
+          return;
         }
+        
+        setReferralStats({
+          count: referralCount || 0,
+          credits: userData?.credits || 0
+        });
       } catch (err) {
         console.error('Unexpected error fetching referral stats:', err);
       }
     };
     
     fetchReferralStats();
-  }, [user]);
+  }, [user, referralCode]);
   
   const copyToClipboard = () => {
     navigator.clipboard.writeText(referralLink);
@@ -72,7 +74,7 @@ const AffiliateReferralCard = () => {
     <Card className="border-indigo-200 shadow-md hover:shadow-lg transition-shadow">
       <CardHeader className="pb-3 bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-t-lg">
         <CardTitle className="flex items-center gap-2 text-lg text-indigo-800">
-          <Coins className="h-5 w-5 text-indigo-600" />
+          <Users className="h-5 w-5 text-indigo-600" />
           💰 Earn Emvi Credits
         </CardTitle>
       </CardHeader>
@@ -85,17 +87,17 @@ const AffiliateReferralCard = () => {
           <div className="text-center grid grid-cols-1 gap-1">
             <div className="flex items-center justify-end text-lg font-bold text-indigo-700">
               <CreditCard className="h-4 w-4 mr-1" />
-              💳 {referralStats.credits || userProfile?.referral_count || 0}
+              💳 {referralStats.credits || 0}
             </div>
             <div className="flex items-center justify-end text-sm text-indigo-600">
               <Users className="h-3 w-3 mr-1" />
-              👥 {referralStats.count || userProfile?.referral_count || 0} Friends
+              👥 {referralStats.count || 0} Friends
             </div>
           </div>
         </div>
         
         <p className="text-sm text-indigo-700 italic mb-4">
-          Every friend = more credits. More credits = more exposure, more clients, more money.
+          Invite friends and earn Emvi Credits you can use to boost your profile, find premium services, or access exclusive beauty deals in the future.
         </p>
         
         <div className="flex items-center space-x-2 mt-4">
