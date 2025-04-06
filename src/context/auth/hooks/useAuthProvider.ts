@@ -1,10 +1,9 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile, UserRole, AuthContextType } from "../types";
 import { Session, User } from "@supabase/supabase-js";
 import { fetchUserProfile, signInWithEmailPassword, signUpWithEmailPassword, signOutUser } from "../services/authService";
-
-import { AuthChangeEvent } from "@supabase/supabase-js";
 
 /**
  * Custom hook to handle auth provider logic
@@ -24,7 +23,8 @@ export const useAuthProvider = () => {
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         
-        if (event === AuthChangeEvent.SIGNED_UP) {
+        // Use string comparison instead of enum
+        if (event === 'SIGNED_UP') {
           console.log("New user signed up!");
           setIsNewUser(true);
           localStorage.setItem('emviapp_new_user', 'true');

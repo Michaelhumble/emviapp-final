@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
+import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Upload, 
@@ -24,7 +25,8 @@ import {
   ShoppingBag,
   Sparkles,
   ChevronRight,
-  ExternalLink
+  ExternalLink,
+  Loader
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -34,6 +36,7 @@ import { Input } from "@/components/ui/input";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { toast } from "sonner";
 import { getInitials } from "@/utils/userUtils";
+import { UserProfile } from "@/context/auth/types";
 
 // Custom components for the dashboard sections
 import ArtistWelcomeBanner from "./ArtistWelcomeBanner";
@@ -71,11 +74,14 @@ interface ServiceItem {
 }
 
 const ArtistDashboard = () => {
-  const { userProfile } = useAuth();
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [artistProfile, setArtistProfile] = useState<UserProfile | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [bio, setBio] = useState(userProfile?.bio || "");
-  const [instagram, setInstagram] = useState(userProfile?.instagram || "");
-  const [website, setWebsite] = useState(userProfile?.website || "");
+  const [bio, setBio] = useState("");
+  const [instagram, setInstagram] = useState("");
+  const [website, setWebsite] = useState("");
   const [activeMessage, setActiveMessage] = useState(0);
   const [copied, setCopied] = useState(false);
   const [profileCompletionPercentage, setProfileCompletionPercentage] = useState(0);
@@ -143,22 +149,62 @@ const ArtistDashboard = () => {
     { id: 3, text: "The hustle is real—but you've got support now." }
   ];
   
+  // Fetch user profile data from Supabase
+  useEffect(() => {
+    const fetchArtistProfile = async () => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+      
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        
+        if (error) {
+          console.error('Error fetching artist profile:', error);
+          setError('Failed to load your profile data. Please try again later.');
+          toast.error('Could not load profile data');
+        } else if (data) {
+          setArtistProfile(data as UserProfile);
+          setBio(data.bio || '');
+          setInstagram(data.instagram || '');
+          setWebsite(data.website || '');
+        }
+      } catch (err) {
+        console.error('Unexpected error:', err);
+        setError('An unexpected error occurred. Please try again later.');
+        toast.error('Could not load profile data');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchArtistProfile();
+  }, [user]);
+  
   // Calculate profile completion percentage
   useEffect(() => {
-    if (userProfile) {
+    if (artistProfile) {
       let completedFields = 0;
       let totalFields = 6; // Adjust based on your profile fields
       
-      if (userProfile.full_name) completedFields++;
-      if (userProfile.avatar_url) completedFields++;
-      if (userProfile.bio) completedFields++;
-      if (userProfile.instagram) completedFields++;
-      if (userProfile.website) completedFields++;
-      if (userProfile.location) completedFields++;
+      if (artistProfile.full_name) completedFields++;
+      if (artistProfile.avatar_url) completedFields++;
+      if (artistProfile.bio) completedFields++;
+      if (artistProfile.instagram) completedFields++;
+      if (artistProfile.website) completedFields++;
+      if (artistProfile.location) completedFields++;
       
       setProfileCompletionPercentage(Math.round((completedFields / totalFields) * 100));
     }
-  }, [userProfile]);
+  }, [artistProfile]);
   
   // Rotate welcome messages
   useEffect(() => {
@@ -169,15 +215,49 @@ const ArtistDashboard = () => {
   }, [welcomeMessages.length]);
   
   // Save profile changes
-  const handleSaveProfile = () => {
-    // In production, this would update the database
-    setIsEditing(false);
-    toast.success("Profile updated successfully!");
+  const handleSaveProfile = async () => {
+    if (!user) return;
+    
+    try {
+      setLoading(true);
+      
+      const { error } = await supabase
+        .from('users')
+        .update({
+          bio,
+          instagram,
+          website,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+      
+      if (error) {
+        console.error('Error updating profile:', error);
+        toast.error('Failed to update profile');
+      } else {
+        if (artistProfile) {
+          setArtistProfile({
+            ...artistProfile,
+            bio,
+            instagram,
+            website,
+            updated_at: new Date().toISOString()
+          });
+        }
+        setIsEditing(false);
+        toast.success('Profile updated successfully!');
+      }
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      toast.error('Failed to update profile');
+    } finally {
+      setLoading(false);
+    }
   };
   
   // Copy referral link
   const handleCopyReferralLink = () => {
-    const referralCode = userProfile?.affiliate_code || `EMVI${Math.floor(1000 + Math.random() * 9000)}`;
+    const referralCode = artistProfile?.affiliate_code || `EMVI${Math.floor(1000 + Math.random() * 9000)}`;
     const referralLink = `https://emviapp.com/join?ref=${referralCode}`;
     
     navigator.clipboard.writeText(referralLink);
@@ -202,7 +282,42 @@ const ArtistDashboard = () => {
   };
   
   // Format first name for greeting
-  const firstName = userProfile?.full_name ? userProfile.full_name.split(' ')[0] : "Artist";
+  const firstName = artistProfile?.full_name ? artistProfile.full_name.split(' ')[0] : "Artist";
+  
+  // Show loading state
+  if (loading && !artistProfile) {
+    return (
+      <div className="container mx-auto px-4 py-12 flex items-center justify-center">
+        <div className="text-center">
+          <Loader className="h-8 w-8 animate-spin text-purple-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  // Show error state
+  if (error && !artistProfile) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="p-6 text-center">
+            <div className="rounded-full bg-red-100 w-12 h-12 flex items-center justify-center mx-auto mb-4">
+              <Bell className="h-6 w-6 text-red-600" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Couldn't Load Your Dashboard</h3>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <Button 
+              onClick={() => window.location.reload()}
+              variant="outline"
+            >
+              Try Again
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   
   return (
     <div className="container mx-auto px-4 pb-20">
@@ -247,11 +362,11 @@ const ArtistDashboard = () => {
             <div className="flex flex-col md:flex-row gap-6">
               <div className="flex-shrink-0 -mt-16">
                 <Avatar className="h-24 w-24 border-4 border-white shadow-md">
-                  {userProfile?.avatar_url ? (
-                    <AvatarImage src={userProfile.avatar_url} alt={userProfile.full_name || "Artist"} />
+                  {artistProfile?.avatar_url ? (
+                    <AvatarImage src={artistProfile.avatar_url} alt={artistProfile.full_name || "Artist"} />
                   ) : (
                     <AvatarFallback className="text-2xl bg-purple-100 text-purple-600">
-                      {getInitials(userProfile?.full_name || "Nail Artist")}
+                      {getInitials(artistProfile?.full_name || "Nail Artist")}
                     </AvatarFallback>
                   )}
                 </Avatar>
@@ -261,9 +376,13 @@ const ArtistDashboard = () => {
                 <div className="flex justify-between items-start">
                   <div>
                     <h2 className="text-xl font-serif font-semibold">
-                      {userProfile?.full_name || "Nail Artist"}
+                      {artistProfile?.full_name || "Nail Artist"}
                     </h2>
-                    <p className="text-gray-500 text-sm">{userProfile?.specialty || "Nail Technician/Artist"}</p>
+                    <p className="text-gray-500 text-sm">
+                      {artistProfile?.specialty || (
+                        <span className="text-gray-400 italic">Add your specialty to complete your profile</span>
+                      )}
+                    </p>
                   </div>
                   
                   <Button 
@@ -271,6 +390,7 @@ const ArtistDashboard = () => {
                     size="sm" 
                     onClick={() => setIsEditing(!isEditing)}
                     className="flex items-center gap-1"
+                    disabled={loading}
                   >
                     {isEditing ? "Cancel" : <><Edit3 className="h-3 w-3" /> Edit Profile</>}
                   </Button>
@@ -321,38 +441,62 @@ const ArtistDashboard = () => {
                     </div>
                     
                     <div className="flex justify-end">
-                      <Button onClick={handleSaveProfile}>Save Changes</Button>
+                      <Button 
+                        onClick={handleSaveProfile}
+                        disabled={loading}
+                      >
+                        {loading ? (
+                          <>
+                            <Loader className="h-4 w-4 animate-spin mr-2" />
+                            Saving...
+                          </>
+                        ) : (
+                          'Save Changes'
+                        )}
+                      </Button>
                     </div>
                   </div>
                 ) : (
                   <div className="mt-4">
                     <p className="text-gray-700 text-sm">
-                      {userProfile?.bio || bio || "No bio added yet. Click Edit Profile to add one!"}
+                      {artistProfile?.bio || bio || (
+                        <span className="text-gray-400 italic">No bio added yet. Click Edit Profile to add one!</span>
+                      )}
                     </p>
                     
                     <div className="flex flex-wrap gap-3 mt-3">
-                      {(userProfile?.instagram || instagram) && (
+                      {(artistProfile?.instagram || instagram) ? (
                         <a 
-                          href={`https://instagram.com/${(userProfile?.instagram || instagram).replace('@', '')}`} 
+                          href={`https://instagram.com/${(artistProfile?.instagram || instagram).replace('@', '')}`} 
                           target="_blank" 
                           rel="noopener noreferrer"
                           className="flex items-center gap-1 text-sm text-purple-600 hover:text-purple-800"
                         >
                           <Instagram className="h-4 w-4" />
-                          @{(userProfile?.instagram || instagram).replace('@', '')}
+                          @{(artistProfile?.instagram || instagram).replace('@', '')}
                         </a>
+                      ) : (
+                        <span className="flex items-center gap-1 text-sm text-gray-400 italic">
+                          <Instagram className="h-4 w-4" />
+                          Add Instagram profile
+                        </span>
                       )}
                       
-                      {(userProfile?.website || website) && (
+                      {(artistProfile?.website || website) ? (
                         <a 
-                          href={(userProfile?.website || website).startsWith('http') ? (userProfile?.website || website) : `https://${userProfile?.website || website}`} 
+                          href={(artistProfile?.website || website).startsWith('http') ? (artistProfile?.website || website) : `https://${artistProfile?.website || website}`} 
                           target="_blank" 
                           rel="noopener noreferrer"
                           className="flex items-center gap-1 text-sm text-purple-600 hover:text-purple-800"
                         >
                           <Globe className="h-4 w-4" />
-                          {(userProfile?.website || website).replace(/^https?:\/\//, '')}
+                          {(artistProfile?.website || website).replace(/^https?:\/\//, '')}
                         </a>
+                      ) : (
+                        <span className="flex items-center gap-1 text-sm text-gray-400 italic">
+                          <Globe className="h-4 w-4" />
+                          Add your website
+                        </span>
                       )}
                     </div>
                   </div>
@@ -391,7 +535,7 @@ const ArtistDashboard = () => {
                   +12% ↑
                 </span>
               </div>
-              <h3 className="mt-3 text-2xl font-bold">{userProfile?.profile_views || 245}</h3>
+              <h3 className="mt-3 text-2xl font-bold">{artistProfile?.profile_views || 245}</h3>
               <p className="text-sm text-gray-600">Profile Views</p>
               <p className="text-xs text-gray-500 mt-1">Last 30 days</p>
             </CardContent>
@@ -431,6 +575,7 @@ const ArtistDashboard = () => {
         </div>
       </section>
       
+      {/* Remaining sections */}
       {/* 4. Artist Toolkit */}
       <section className="mb-8">
         <h2 className="text-xl font-serif font-semibold mb-4">Artist Toolkit</h2>
@@ -794,4 +939,3 @@ const ArtistDashboard = () => {
 };
 
 export default ArtistDashboard;
-
