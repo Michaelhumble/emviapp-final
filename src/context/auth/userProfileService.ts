@@ -44,15 +44,15 @@ export const fetchUserProfile = async (user: User): Promise<UserProfile | null> 
       updated_at: data.updated_at,
       preferred_language: data.preferred_language || '',
       // Handle the new fields with appropriate fallbacks
-      referral_count: data.referral_count || 0,
-      affiliate_code: data.referral_code || '', // Map the DB's referral_code to affiliate_code
-      salon_name: data.salon_name || '', 
-      company_name: data.company_name || '',
+      referral_count: data.credits || 0, // Use credits for referral count if no dedicated field
+      affiliate_code: data.referral_code || '', // Map referral_code to affiliate_code
+      salon_name: data.custom_role || '', // Use custom_role as fallback
+      company_name: data.custom_role || '', // Use custom_role as fallback
       custom_role: data.custom_role || '',
       contact_link: data.contact_link || '',
-      skills: Array.isArray(data.skills) ? data.skills : [],
-      skill_level: data.skill_level || '',
-      profile_views: data.profile_views || 0,
+      skills: Array.isArray(data.preferences) ? data.preferences : [], // Use preferences as fallback
+      skill_level: data.specialty || '', // Use specialty as fallback
+      profile_views: data.credits || 0, // Use credits as fallback
       preferences: Array.isArray(data.preferences) ? data.preferences : []
     };
   } catch (error) {
@@ -109,15 +109,15 @@ const createUserProfile = async (user: User): Promise<UserProfile | null> => {
     updated_at: data.updated_at,
     preferred_language: data.preferred_language || '',
     // Set default values for the additional fields
-    referral_count: data.referral_count || 0,
+    referral_count: data.credits || 0, // Use credits for referral count
     affiliate_code: data.referral_code || '', // Map referral_code to affiliate_code
-    salon_name: data.salon_name || '',
-    company_name: data.company_name || '',
+    salon_name: data.custom_role || '', // Use custom_role as fallback
+    company_name: data.custom_role || '', // Use custom_role as fallback
     custom_role: data.custom_role || '',
     contact_link: data.contact_link || '',
-    skills: data.skills || [],
-    skill_level: data.skill_level || '',
-    profile_views: data.profile_views || 0,
-    preferences: data.preferences || []
+    skills: Array.isArray(data.preferences) ? data.preferences : [], // Use preferences as fallback
+    skill_level: data.specialty || '', // Use specialty as fallback
+    profile_views: data.credits || 0, // Use credits as fallback
+    preferences: Array.isArray(data.preferences) ? data.preferences : []
   };
 };

@@ -1,6 +1,4 @@
-
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, Share2, Gift, ArrowRight, Copy, CheckCircle } from "lucide-react";
@@ -26,10 +24,8 @@ const CustomerReferralCenter = () => {
   };
   
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.4 }}
+    <div 
+      className="opacity-100"
     >
       <Card className="border-pink-100">
         <CardContent className="p-6">
@@ -117,7 +113,7 @@ const CustomerReferralCenter = () => {
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 };
 
