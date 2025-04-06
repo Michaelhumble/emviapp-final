@@ -65,6 +65,17 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages, isMobile = false
         >
           Hair, Nails, Makeup, Tattoos, Brows, Barbers, Booth Rentals—All in One Powerful App. Finally.
         </motion.p>
+
+        {/* Vietnamese text addition */}
+        <motion.p 
+          className="text-sm sm:text-base text-gray-300 mt-2 mb-6 max-w-2xl font-sans px-2"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.5 }}
+          style={{ textShadow: '0px 1px 4px rgba(0,0,0,0.6)' }}
+        >
+          <em>Chúng tôi nói tiếng Việt — EmviApp là ngôi nhà mới cho cộng đồng làm đẹp của bạn.</em>
+        </motion.p>
         
         <motion.div 
           className="flex flex-col sm:flex-row gap-4 sm:gap-6 mt-4 sm:mt-6 w-full sm:w-auto justify-center"

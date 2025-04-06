@@ -35,6 +35,12 @@ const SalonDashboard = () => {
                 <p className="text-blue-600 mt-2">
                   Manage your salon, team, and grow your business all in one place.
                 </p>
+                
+                {/* Vietnamese welcome text for salon owners */}
+                <p className="text-gray-500 text-sm italic mt-3">
+                  <span className="block">Chúng tôi ở đây để giúp bạn phát triển tiệm salon của bạn.</span>
+                  <span className="block">We're here to help you grow your salon business.</span>
+                </p>
               </div>
               
               {/* Salon Quick Stats */}
@@ -75,6 +81,12 @@ const SalonDashboard = () => {
               {/* Referral Center adapted for salons */}
               <Card className="border-blue-100">
                 <CardHeader>
+                  {/* Vietnamese referral text for salons */}
+                  <p className="text-gray-500 text-sm italic mb-2">
+                    <span className="block">Giới thiệu bạn bè và nhận thưởng từ Emvi.</span>
+                    <span className="block">Invite friends and earn rewards from Emvi.</span>
+                  </p>
+                  
                   <CardTitle className="text-lg flex items-center">
                     <Users className="h-5 w-5 text-blue-500 mr-2" />
                     Salon Referral Program

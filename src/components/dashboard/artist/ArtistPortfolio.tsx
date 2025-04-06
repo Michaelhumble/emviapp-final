@@ -1,71 +1,67 @@
 
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { useAuth } from "@/context/auth";
-import { useArtistData } from "./context/ArtistDataContext";
-import ArtistPortfolioUploader from "./components/ArtistPortfolioUploader";
-import ArtistPortfolioGrid from "./components/ArtistPortfolioGrid";
-import ArtistPortfolioViewer from "./components/ArtistPortfolioViewer";
-
-interface PortfolioImage {
-  id: string;
-  url: string;
-  name: string;
-}
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Plus, Image } from 'lucide-react';
+import ArtistPortfolioGrid from './components/ArtistPortfolioGrid';
+import ArtistPortfolioUploader from './components/ArtistPortfolioUploader';
+import { useArtistData } from './context/ArtistDataContext';
 
 const ArtistPortfolio = () => {
-  const { user } = useAuth();
-  const { artistProfile, refreshArtistProfile } = useArtistData();
-  const [images, setImages] = useState<PortfolioImage[]>([]);
-  const [selectedImage, setSelectedImage] = useState<PortfolioImage | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Load portfolio images from user profile
-  useEffect(() => {
-    if (artistProfile && artistProfile.portfolio_urls) {
-      const loadedImages = (artistProfile.portfolio_urls || []).map((url, index) => ({
-        id: `${index}-${new Date().getTime()}`,
-        url,
-        name: url.split('/').pop() || `image-${index}`
-      }));
-      setImages(loadedImages);
-    }
-    setIsLoading(false);
-  }, [artistProfile]);
-
-  const handleImagesUpdated = async () => {
-    await refreshArtistProfile();
-  };
-
+  const [showUploader, setShowUploader] = useState(false);
+  const { portfolioImages = [], loadingPortfolio } = useArtistData();
+  
+  const hasImages = portfolioImages.length > 0;
+  
   return (
-    <Card className="shadow-sm">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div>
-          <CardTitle className="text-xl font-serif">My Portfolio</CardTitle>
-          <CardDescription>Showcase your best work to attract clients</CardDescription>
-        </div>
-        
-        <ArtistPortfolioUploader 
-          user={user} 
-          artistProfile={artistProfile} 
-          images={images} 
-          onImagesUpdated={handleImagesUpdated} 
-        />
+    <Card className="border-purple-100 overflow-hidden">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-xl font-serif flex items-center">
+          <Image className="h-5 w-5 mr-2 text-purple-500" />
+          Portfolio
+        </CardTitle>
       </CardHeader>
       
       <CardContent>
-        <ArtistPortfolioGrid 
-          images={images}
-          isLoading={isLoading}
-          userId={user?.id}
-          onImageClick={setSelectedImage}
-          onImagesUpdated={handleImagesUpdated}
-        />
-        
-        <ArtistPortfolioViewer 
-          image={selectedImage} 
-          onClose={() => setSelectedImage(null)} 
-        />
+        {showUploader ? (
+          <ArtistPortfolioUploader onComplete={() => setShowUploader(false)} />
+        ) : (
+          <>
+            {hasImages ? (
+              <ArtistPortfolioGrid images={portfolioImages} loading={loadingPortfolio} />
+            ) : (
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <div className="bg-purple-50 p-4 rounded-full mb-4">
+                  <Image className="h-8 w-8 text-purple-400" />
+                </div>
+                <h3 className="text-lg font-medium mb-1">Showcase your work</h3>
+                <p className="text-gray-500 mb-6 max-w-md">
+                  Upload photos of your best work to attract clients and showcase your talent.
+                </p>
+                
+                {/* Vietnamese booking text addition */}
+                <p className="text-gray-500 text-sm italic mb-4">
+                  <span className="block">Bạn có thể nhận lịch hẹn từ khách — tính năng này sắp ra mắt!</span>
+                  <span className="block">You'll be able to take bookings from clients — feature coming soon!</span>
+                </p>
+                
+                <Button onClick={() => setShowUploader(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Upload Portfolio Images
+                </Button>
+              </div>
+            )}
+            
+            {hasImages && (
+              <div className="mt-4 flex justify-center">
+                <Button onClick={() => setShowUploader(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add More Images
+                </Button>
+              </div>
+            )}
+          </>
+        )}
       </CardContent>
     </Card>
   );

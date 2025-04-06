@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 
@@ -15,6 +16,13 @@ const Footer = () => {
               Connecting beauty professionals with clients and salons.
               Built with love for the beauty world.
             </p>
+            
+            {/* Vietnamese support text addition */}
+            <p className="text-gray-500 text-sm italic mb-4">
+              <span className="block">EmviApp hỗ trợ tiếng Việt. Đây là nền tảng dành cho cộng đồng làm đẹp của chúng ta.</span>
+              <span className="block">EmviApp supports Vietnamese. This platform is built for our beauty community.</span>
+            </p>
+            
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-white">
                 <span className="sr-only">Facebook</span>

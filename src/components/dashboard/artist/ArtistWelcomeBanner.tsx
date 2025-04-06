@@ -32,8 +32,14 @@ const ArtistWelcomeBanner = ({ firstName }: ArtistWelcomeBannerProps) => {
           <h1 className="text-2xl md:text-3xl font-serif font-semibold mb-2">
             Welcome back, {firstName || 'Artist'}!
           </h1>
-          <p className="text-gray-600">
+          
+          {/* Vietnamese and English welcome text */}
+          <p className="text-gray-600 mb-2">
             Manage your profile, bookings, and client communications all in one place.
+          </p>
+          <p className="text-gray-500 text-sm italic">
+            <span className="block">Chúng tôi ở đây để giúp bạn phát triển sự nghiệp làm đẹp.</span>
+            <span className="block">We're here to help you grow your beauty career.</span>
           </p>
         </div>
         
