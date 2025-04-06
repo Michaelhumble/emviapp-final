@@ -6,7 +6,7 @@ import { Loader } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Bell } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button"; // Added missing import
+import { Button } from "@/components/ui/button";
 import { UserProfile } from "@/context/auth/types";
 
 // Import all the component sections we've created
@@ -18,6 +18,7 @@ import DashboardStatusWidgets from "./DashboardStatusWidgets";
 import ArtistPortfolioGrid from "./ArtistPortfolioGrid";
 import ArtistServicesGrid from "./ArtistServicesGrid";
 import ArtistReferralCenter from "./ArtistReferralCenter";
+import ArtistCreditsRedemption from "./ArtistCreditsRedemption";
 import ArtistBookingCalendar from "./ArtistBookingCalendar";
 import ArtistUpgradeSection from "./ArtistUpgradeSection";
 
@@ -150,13 +151,19 @@ const ArtistDashboard = () => {
       {/* 8. Referral Center */}
       <ArtistReferralCenter />
       
-      {/* 9. Booking Calendar */}
+      {/* 9. NEW - Credits Redemption Section */}
+      <section className="mb-8" id="credits-redemption">
+        <h2 className="text-xl font-serif font-semibold mb-4">Redeem Emvi Credits</h2>
+        <ArtistCreditsRedemption credits={artistProfile?.credits || 0} />
+      </section>
+      
+      {/* 10. Booking Calendar */}
       <section className="mb-8" id="calendar">
         <h2 className="text-xl font-serif font-semibold mb-4">Booking Calendar</h2>
         <ArtistBookingCalendar />
       </section>
       
-      {/* 10. Upgrade Section */}
+      {/* 11. Upgrade Section */}
       <section id="upgrade">
         <h2 className="text-xl font-serif font-semibold mb-4">Unlock Premium Features</h2>
         <ArtistUpgradeSection />
