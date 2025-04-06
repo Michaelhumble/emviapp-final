@@ -12,7 +12,9 @@ interface SubscriptionProviderProps {
 }
 
 export const SubscriptionProvider = ({ children }: SubscriptionProviderProps) => {
-  const { user, userRole } = useAuth();
+  const auth = useAuth();
+  const { user, userRole } = auth || { user: null, userRole: null };
+  
   const [state, setState] = useState<SubscriptionState>({
     currentPlan: null,
     isLoading: true,
@@ -181,4 +183,3 @@ export const SubscriptionProvider = ({ children }: SubscriptionProviderProps) =>
     </SubscriptionContext.Provider>
   );
 };
-

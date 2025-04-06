@@ -3,6 +3,7 @@ import { useState, useEffect, createContext } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthContextType, UserProfile, UserRole } from "./types";
 import { toast } from "sonner";
+import { AuthContext } from "./AuthContext";
 
 // Initial context value
 const initialAuthContext: AuthContextType = {
@@ -14,14 +15,11 @@ const initialAuthContext: AuthContextType = {
   isSignedIn: false,
   isNewUser: false,
   clearIsNewUser: () => {},
-  signIn: async () => {},
-  signUp: async () => {},
+  signIn: async () => { return undefined; },
+  signUp: async () => { return undefined; },
   signOut: async () => {},
   refreshUserProfile: async () => {},
 };
-
-// Create the auth context
-export const AuthContext = createContext<AuthContextType>(initialAuthContext);
 
 // Auth provider component that wraps the app
 export const AuthProvider = ({ children }) => {
@@ -88,7 +86,7 @@ export const AuthProvider = ({ children }) => {
   const fetchUserProfile = async (userId: string) => {
     try {
       const { data, error } = await supabase
-        .from('profiles')
+        .from('users')  // Use 'users' table instead of 'profiles'
         .select('*')
         .eq('id', userId)
         .single();
@@ -98,8 +96,9 @@ export const AuthProvider = ({ children }) => {
       }
 
       if (data) {
-        setUserProfile(data as UserProfile);
-        setUserRole(data.role);
+        // Cast data to UserProfile with type assertion
+        setUserProfile(data as unknown as UserProfile);
+        setUserRole(data.role as UserRole);
       }
     } catch (error) {
       console.error("Error fetching user profile:", error);

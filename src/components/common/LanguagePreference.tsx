@@ -46,7 +46,7 @@ const LanguagePreference = () => {
     
     try {
       const { error } = await supabase
-        .from('profiles')
+        .from('users')  // Use 'users' table instead of 'profiles'
         .update({ preferred_language: language })
         .eq('id', user.id);
 
