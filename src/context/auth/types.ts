@@ -45,6 +45,7 @@ export interface UserProfile {
   referral_code?: string; // Added for database referral codes
   credits?: number; // Added to match the database schema
   boosted_until?: string | null; // Added for profile boost feature
+  portfolio_urls?: string[]; // Added for artist portfolio images
 }
 
 // Auth context data shape
