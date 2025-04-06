@@ -125,7 +125,7 @@ const ArtistDashboard = () => {
     );
   }
   
-  // Get credits from the raw database data to avoid TypeScript errors
+  // Get credits from the user profile data
   const userCredits = artistProfile?.referral_count || 0;
   
   return (
@@ -154,7 +154,7 @@ const ArtistDashboard = () => {
       {/* 8. Referral Center */}
       <ArtistReferralCenter />
       
-      {/* 9. NEW - Credits Redemption Section */}
+      {/* 9. Credits Redemption Section */}
       <section className="mb-8" id="credits-redemption">
         <h2 className="text-xl font-serif font-semibold mb-4">Redeem Emvi Credits</h2>
         <ArtistCreditsRedemption credits={userCredits} />
