@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -74,7 +73,7 @@ interface ServiceItem {
 }
 
 const ArtistDashboard = () => {
-  const { user } = useAuth();
+  const { user, userProfile: authUserProfile } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [artistProfile, setArtistProfile] = useState<UserProfile | null>(null);
@@ -172,7 +171,14 @@ const ArtistDashboard = () => {
           setError('Failed to load your profile data. Please try again later.');
           toast.error('Could not load profile data');
         } else if (data) {
-          setArtistProfile(data as UserProfile);
+          // Cast to match UserProfile type, adding missing referral_count property
+          const profileWithReferrals = {
+            ...data,
+            referral_count: data.credits || 0,
+            affiliate_code: data.referral_code || '',
+          } as UserProfile;
+          
+          setArtistProfile(profileWithReferrals);
           setBio(data.bio || '');
           setInstagram(data.instagram || '');
           setWebsite(data.website || '');
@@ -795,7 +801,7 @@ const ArtistDashboard = () => {
               </div>
               <div className="text-center">
                 <div className="text-xl font-bold text-purple-700">
-                  {userProfile?.referral_count || 0}
+                  {artistProfile?.referral_count || 0}
                 </div>
                 <div className="text-xs text-gray-500">Artists joined</div>
               </div>
@@ -807,7 +813,7 @@ const ArtistDashboard = () => {
               </label>
               <div className="flex">
                 <div className="flex-1 bg-gray-50 border border-gray-200 rounded-l-md py-2 px-3 text-sm overflow-hidden overflow-ellipsis whitespace-nowrap">
-                  {`https://emviapp.com/join?ref=${userProfile?.affiliate_code || 'EMVI1234'}`}
+                  {`https://emviapp.com/join?ref=${artistProfile?.affiliate_code || 'EMVI1234'}`}
                 </div>
                 <Button 
                   variant="outline"
