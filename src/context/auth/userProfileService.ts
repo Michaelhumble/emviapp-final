@@ -34,34 +34,7 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
     // Use maybeSingle instead of single to safely handle the case where no data is found
     const { data, error } = await supabase
       .from('users')
-      .select(`
-        id,
-        email,
-        full_name,
-        avatar_url,
-        custom_role,
-        bio,
-        contact_link,
-        instagram,
-        website,
-        role,
-        created_at,
-        salon_name,
-        company_name,
-        location,
-        referral_count,
-        affiliate_code,
-        badges,
-        credits,
-        boosted_until,
-        preferred_language,
-        specialty,
-        phone,
-        referral_code,
-        skill_level,
-        preferences,
-        profile_views
-      `)
+      .select('*')
       .eq('id', userId)
       .maybeSingle();
 
@@ -75,8 +48,7 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
       return null;
     }
     
-    // Map database response to UserProfile
-    // Use null coalescing to ensure we don't access properties on undefined
+    // Map database response to UserProfile with null coalescing
     const profile: UserProfile = {
       id: data.id || '',
       email: data.email || '',
@@ -197,34 +169,7 @@ export const getUserByUserName = async (username: string): Promise<UserProfile |
     // Use maybeSingle instead of single for safer handling
     const { data, error } = await supabase
       .from('users')
-      .select(`
-        id,
-        email,
-        full_name,
-        avatar_url,
-        custom_role,
-        bio,
-        contact_link,
-        instagram,
-        website,
-        role,
-        created_at,
-        salon_name,
-        company_name,
-        location,
-        referral_count,
-        affiliate_code,
-        badges,
-        credits,
-        boosted_until,
-        preferred_language,
-        specialty,
-        phone,
-        referral_code,
-        skill_level,
-        preferences,
-        profile_views
-      `)
+      .select('*')
       .eq('username', username)
       .maybeSingle();
 

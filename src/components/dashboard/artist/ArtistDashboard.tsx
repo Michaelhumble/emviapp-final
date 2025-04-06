@@ -166,7 +166,7 @@ const ArtistDashboard = () => {
             <div className="flex">
               <input
                 type="text"
-                value={`https://emviapp.com/join?ref=${profileData?.referral_code || "INVITE_CODE"}`}
+                value={`https://emviapp.com/join?ref=${profileData?.referral_code || userProfile?.referral_code || "INVITE_CODE"}`}
                 className="flex-1 bg-gray-50 border border-gray-200 rounded-l-md py-2 px-3 text-sm font-mono"
                 readOnly
               />
