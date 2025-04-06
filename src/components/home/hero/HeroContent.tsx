@@ -23,22 +23,15 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages, isMobile = false
   const getImageCategory = (index: number, alt: string): string => {
     const altText = alt.toLowerCase();
     
-    if (altText.includes('nail')) return 'Nail Artistry';
-    if (altText.includes('makeup')) return 'Makeup Artists';
-    if (altText.includes('hair')) return 'Hair Stylists';
-    if (altText.includes('tattoo') || altText.includes('barber')) return 'Tattoo & Barber Artists';
-    if (altText.includes('facial') || altText.includes('spa') || altText.includes('massage')) return 'Spa & Wellness';
-    if (altText.includes('beauty')) return 'Beauty Professionals';
+    if (altText.includes('nail') || altText.includes('manicure') || altText.includes('polish')) return 'Nail Artistry';
+    if (altText.includes('makeup') || altText.includes('cosmetic')) return 'Makeup Artists';
+    if (altText.includes('hair') || altText.includes('salon')) return 'Hair Stylists';
+    if (altText.includes('barber') || altText.includes('beard') || altText.includes('groom')) return 'Barbers';
+    if (altText.includes('facial') || altText.includes('spa') || altText.includes('massage') || altText.includes('wellness') || altText.includes('yoga')) return 'Spa & Wellness';
+    if (altText.includes('tattoo')) return 'Tattoo Artists';
     
-    // Fallback categories based on index
-    switch (index % 5) {
-      case 0: return 'Nail Artists';
-      case 1: return 'Makeup Artists';
-      case 2: return 'Hair Stylists';
-      case 3: return 'Wellness Professionals';
-      case 4: return 'Beauty Experts';
-      default: return 'Beauty Professionals';
-    }
+    // Fallback categories
+    return 'Beauty Professionals';
   };
 
   return (
@@ -49,7 +42,7 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages, isMobile = false
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          <Badge variant="outline" className="mb-4 sm:mb-6 bg-white/30 backdrop-blur-md px-3 py-1 sm:px-4 sm:py-1.5 text-xs font-medium rounded-full border-white/30 text-gray-800 shadow-sm">
+          <Badge variant="outline" className="mb-4 sm:mb-6 bg-white/30 backdrop-blur-md px-3 py-1 sm:px-4 sm:py-1.5 text-xs font-medium rounded-full border-white/30 text-gray-100 shadow-sm">
             {getImageCategory(activeIndex, heroImages[activeIndex]?.alt || '')}
           </Badge>
         </motion.div>
@@ -124,7 +117,7 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages, isMobile = false
           </TooltipProvider>
         </motion.div>
         
-        {/* Carousel indicators for all devices - visible on both mobile and desktop */}
+        {/* Carousel indicators */}
         <motion.div 
           className="flex mt-8 sm:mt-12 gap-2 justify-center overflow-x-auto pb-2"
           initial={{ opacity: 0 }}

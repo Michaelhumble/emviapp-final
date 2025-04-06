@@ -19,13 +19,13 @@ const Hero = () => {
       const nailImages = array.filter(img => 
         img.alt.toLowerCase().includes('nail') || 
         img.alt.toLowerCase().includes('manicure') || 
-        img.alt.toLowerCase().includes('pedicure')
+        img.alt.toLowerCase().includes('polish')
       );
       
       const otherImages = array.filter(img => 
         !img.alt.toLowerCase().includes('nail') && 
         !img.alt.toLowerCase().includes('manicure') && 
-        !img.alt.toLowerCase().includes('pedicure')
+        !img.alt.toLowerCase().includes('polish')
       );
       
       // Shuffle both arrays
@@ -45,18 +45,18 @@ const Hero = () => {
       const result = [];
       const maxLength = Math.max(shuffledNailImages.length, shuffledOtherImages.length);
       
+      // First image should always be a nail image to set the right first impression
+      if (shuffledNailImages.length > 0) {
+        result.push(shuffledNailImages[0]);
+      }
+      
       for (let i = 0; i < maxLength; i++) {
-        // Add a nail image first (if available)
-        if (i < shuffledNailImages.length) {
-          result.push(shuffledNailImages[i]);
-        }
-        
-        // Add another nail image (to increase nail image ratio, roughly every other slot)
-        if (i + 1 < shuffledNailImages.length && i % 2 === 0) {
+        // Add a nail image (if available, starting from index 1 since we used index 0 above)
+        if (i + 1 < shuffledNailImages.length) {
           result.push(shuffledNailImages[i + 1]);
         }
         
-        // Add a non-nail image
+        // Add a non-nail image (if available)
         if (i < shuffledOtherImages.length) {
           result.push(shuffledOtherImages[i]);
         }
