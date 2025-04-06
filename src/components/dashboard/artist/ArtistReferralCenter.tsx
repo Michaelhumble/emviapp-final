@@ -1,8 +1,7 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Share2, Gift, ArrowRight, Copy, CheckCircle, CreditCard, Coins, Award, Star, Rocket, Fire } from "lucide-react";
+import { Users, Share2, Gift, ArrowRight, Copy, CheckCircle, CreditCard, Coins, Award, Star, Rocket, Flame } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,17 +16,14 @@ const ArtistReferralCenter = () => {
     credits: 0
   });
   
-  // Generate a referral code if none exists
   const referralCode = userProfile?.affiliate_code || userProfile?.referral_code || `EMVI${Math.floor(1000 + Math.random() * 9000)}`;
   const referralLink = `https://emviapp.com/sign-up?ref=${referralCode}`;
   
-  // Fetch referral stats from Supabase
   useEffect(() => {
     const fetchReferralStats = async () => {
       if (!user) return;
       
       try {
-        // Use either the database function or direct query to get referral stats
         const { data, error } = await supabase.rpc('get_user_referral_stats', {
           user_id: user.id
         });
@@ -38,7 +34,6 @@ const ArtistReferralCenter = () => {
         }
         
         if (data && data.length > 0) {
-          // Get user credits (earned from referrals)
           const { data: userData, error: userError } = await supabase
             .from('users')
             .select('credits')
@@ -60,7 +55,6 @@ const ArtistReferralCenter = () => {
     fetchReferralStats();
   }, [user]);
 
-  // Determine which badge to show based on referral count
   const getReferralBadge = () => {
     const count = referralStats.count;
     
@@ -73,7 +67,7 @@ const ArtistReferralCenter = () => {
       };
     } else if (count >= 5) {
       return {
-        icon: <Fire className="h-3.5 w-3.5 mr-1" />,
+        icon: <Flame className="h-3.5 w-3.5 mr-1" />,
         text: "Community Builder",
         tooltip: "You've invited 5+ artists to EmviApp",
         color: "bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0"
