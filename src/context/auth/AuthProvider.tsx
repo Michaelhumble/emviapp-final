@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AuthContextType, UserProfile, UserRole } from "./types";
 import { toast } from "sonner";
 import { AuthContext } from "./AuthContext";
-import { AuthChangeEvent, Session, User } from "@supabase/supabase-js";
+import { Session, User } from "@supabase/supabase-js";
 
 // Initial context value
 const initialAuthContext: AuthContextType = {
@@ -34,14 +34,14 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event: AuthChangeEvent, currentSession) => {
+      (event, currentSession) => {
         console.log("Auth state changed:", event);
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         
         // If the user just signed up, set the new user flag
-        // Using AuthChangeEvent.SIGNED_UP constant from Supabase
-        if (event === AuthChangeEvent.SIGNED_UP) {
+        // Using the string value directly since AuthChangeEvent is a type, not a value
+        if (event === "SIGNED_UP") {
           console.log("New user signed up!");
           setIsNewUser(true);
           // Store this in localStorage as well for persistence
