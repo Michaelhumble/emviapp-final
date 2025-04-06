@@ -9,7 +9,7 @@ import { toast } from "sonner";
  * @param userRole The user's role from auth context
  */
 export const navigateToRoleDashboard = (
-  navigate: (path: string) => void,
+  navigate: NavigateFunction,
   userRole: string | null | undefined
 ) => {
   console.log("Navigating based on role:", userRole);
@@ -23,12 +23,11 @@ export const navigateToRoleDashboard = (
 
   // Normalize the role to lowercase for case-insensitive matching
   const normalizedRole = userRole.toLowerCase();
-
-  // Map the role to the appropriate dashboard route
+  
   if (normalizedRole.includes('artist') || normalizedRole === 'nail technician/artist') {
     navigate("/dashboard/artist");
   } else if (normalizedRole === 'salon' || normalizedRole === 'owner') {
-    navigate("/dashboard/owner");
+    navigate("/dashboard/salon");
   } else if (normalizedRole === 'customer') {
     navigate("/dashboard/customer"); 
   } else if (normalizedRole === 'freelancer') {

@@ -22,61 +22,56 @@ const DashboardRedirect = () => {
   useEffect(() => {
     const redirectToDashboard = async () => {
       try {
-        // Check if user is signed in
-        if (!isSignedIn) {
+        // Step 1: Check if user is signed in
+        if (!isSignedIn || !user) {
+          console.log("User not signed in, redirecting to sign-in page");
           navigate("/sign-in");
           return;
         }
         
-        if (!user?.id) {
-          setError("Unable to retrieve user information. Please sign in again.");
-          return;
-        }
-        
-        // Fetch user role from the users table
+        // Step 2: Query user profile to get role
+        console.log("Fetching user profile for ID:", user.id);
         const { data: userData, error: userError } = await supabase
           .from('users')
-          .select('role')
+          .select('id, email, role')
           .eq('id', user.id)
           .maybeSingle();
         
         if (userError) {
-          console.error("Error fetching user role:", userError);
+          console.error("Error fetching user profile:", userError);
           setError("Error loading your profile. Please try again.");
           return;
         }
         
-        // Extract role from user data
-        const userRole = userData?.role;
-        
-        // Redirect based on role
-        if (!userRole) {
-          // No role found, show role selection modal
+        // Step 3: Handle missing role
+        if (!userData || !userData.role) {
+          console.log("No role found, showing role selection modal");
           setShowRoleModal(true);
           setIsLoading(false);
           toast.info("Please complete your profile to continue.");
           return;
         }
         
-        // Map role to appropriate dashboard
-        const normalizedRole = userRole.toLowerCase();
+        // Step 4: Redirect based on role
+        console.log("User role found:", userData.role);
+        const role = userData.role.toLowerCase();
         
-        if (normalizedRole.includes('artist') || normalizedRole === 'nail technician/artist' || normalizedRole === 'renter') {
+        if (role.includes('artist') || role === 'nail technician/artist' || role === 'renter') {
           navigate("/dashboard/artist");
-        } else if (normalizedRole === 'salon' || normalizedRole === 'owner') {
+        } else if (role === 'salon' || role === 'owner') {
           navigate("/dashboard/salon");
-        } else if (normalizedRole === 'customer') {
+        } else if (role === 'customer') {
           navigate("/dashboard/customer");
-        } else if (normalizedRole === 'freelancer') {
+        } else if (role === 'freelancer') {
           navigate("/dashboard/freelancer");
-        } else if (normalizedRole === 'supplier' || normalizedRole === 'vendor' || normalizedRole === 'beauty supplier') {
+        } else if (role === 'supplier' || role === 'vendor' || role === 'beauty supplier') {
           navigate("/dashboard/supplier");
-        } else if (normalizedRole === 'other') {
+        } else if (role === 'other') {
           navigate("/dashboard/other");
         } else {
-          // Unknown role, redirect to select role
-          setShowRoleModal(true);
-          toast.info("Please select a role to continue.");
+          // Fallback for unknown roles
+          console.log("Unknown role, redirecting to general dashboard");
+          navigate("/dashboard/other");
         }
       } catch (err) {
         console.error("Dashboard redirect error:", err);
@@ -86,6 +81,7 @@ const DashboardRedirect = () => {
       }
     };
     
+    // Execute the redirect logic
     redirectToDashboard();
   }, [user, isSignedIn, navigate]);
   
