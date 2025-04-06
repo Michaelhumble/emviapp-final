@@ -1,8 +1,10 @@
+
 import { useState, useEffect, createContext } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthContextType, UserProfile, UserRole } from "./types";
 import { toast } from "sonner";
 import { AuthContext } from "./AuthContext";
+import { AuthChangeEvent } from "@supabase/supabase-js";
 
 // Initial context value
 const initialAuthContext: AuthContextType = {
