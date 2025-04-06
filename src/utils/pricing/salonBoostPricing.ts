@@ -64,8 +64,10 @@ export const calculateBoostPricing = (
   const rules: BoostDiscountRules = {
     isLaunchPhase: isInLaunchPhase(),
     referralCount: userProfile?.referral_count || 0,
-    bookingCount: userProfile?.booking_count || 0,
-    milestoneReached: userProfile?.milestone_reached || false,
+    // Since booking_count doesn't exist on UserProfile, use 0 as default
+    bookingCount: 0, 
+    // Since milestone_reached doesn't exist on UserProfile, use false as default
+    milestoneReached: false,
     ...discountRules
   };
 
