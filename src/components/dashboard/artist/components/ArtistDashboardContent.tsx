@@ -4,7 +4,6 @@ import ArtistDashboardProfile from "../ArtistDashboardProfile";
 import ArtistPerformanceMetrics from "../ArtistPerformanceMetrics";
 import ArtistToolkitSection from "../ArtistToolkitSection";
 import DashboardStatusWidgets from "../DashboardStatusWidgets";
-import ArtistPortfolioGrid from "../ArtistPortfolioGrid";
 import ArtistServicesGrid from "../ArtistServicesGrid";
 import ArtistReferralCenter from "../ArtistReferralCenter";
 import ArtistCreditsRedemption from "../ArtistCreditsRedemption";
@@ -42,28 +41,25 @@ const ArtistDashboardContent = () => {
       {/* 7. Dashboard Status Widgets */}
       <DashboardStatusWidgets />
       
-      {/* 8. Portfolio Grid */}
-      <ArtistPortfolioGrid />
-      
-      {/* 9. Services Grid */}
+      {/* 8. Services Grid */}
       <ArtistServicesGrid />
       
-      {/* 10. Referral Center */}
+      {/* 9. Referral Center */}
       <ArtistReferralCenter />
       
-      {/* 11. Credits Redemption Section */}
+      {/* 10. Credits Redemption Section */}
       <section className="mb-8" id="credits-redemption">
         <h2 className="text-xl font-serif font-semibold mb-4">Redeem Emvi Credits</h2>
         <ArtistCreditsRedemption />
       </section>
       
-      {/* 12. Booking Calendar */}
+      {/* 11. Booking Calendar */}
       <section className="mb-8" id="calendar">
         <h2 className="text-xl font-serif font-semibold mb-4">Booking Calendar</h2>
         <ArtistBookingCalendar />
       </section>
       
-      {/* 13. Upgrade Section */}
+      {/* 12. Upgrade Section */}
       <section id="upgrade">
         <h2 className="text-xl font-serif font-semibold mb-4">Unlock Premium Features</h2>
         <ArtistUpgradeSection />
