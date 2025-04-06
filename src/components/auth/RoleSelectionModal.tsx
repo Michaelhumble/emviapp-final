@@ -6,9 +6,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { Loader2, Scissors, Building2, User, Briefcase, ShoppingBag, HelpCircle } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { UserRole } from "@/context/auth/types";
 import { navigateToRoleDashboard } from "@/utils/navigation";
 
@@ -24,7 +23,6 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
   const [selectedRole, setSelectedRole] = useState<Role>("customer");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
   
   const roles: { id: Role; label: string; description: string; icon: React.ReactNode }[] = [
     {
@@ -84,23 +82,16 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
       
       if (error) throw error;
       
-      toast({
-        title: "Role selected!",
-        description: `You're now registered as a ${selectedRole}.`,
-      });
+      toast.success(`Role selected! You're now registered as a ${selectedRole}.`);
       
       // Use the utility function for consistent role-based navigation
+      onOpenChange(false);
       navigateToRoleDashboard(navigate, selectedRole);
     } catch (error) {
       console.error("Error setting user role:", error);
-      toast({
-        variant: "destructive",
-        title: "Something went wrong",
-        description: "We couldn't save your role. Please try again.",
-      });
+      toast.error("We couldn't save your role. Please try again.");
     } finally {
       setIsSubmitting(false);
-      onOpenChange(false);
     }
   };
 
