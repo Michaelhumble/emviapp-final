@@ -4,6 +4,31 @@ import { UserRole } from "@/context/auth/types";
 import { toast } from "sonner";
 
 /**
+ * Normalizes user roles to handle variations and aliases
+ * @param role The raw user role
+ * @returns Normalized role for consistent routing
+ */
+const normalizeRole = (role: UserRole | null): UserRole | null => {
+  if (!role) return null;
+  
+  // Convert role to lowercase for case-insensitive comparison
+  const normalizedRole = role.toLowerCase() as UserRole;
+  
+  // Map role variations to standard roles
+  switch (normalizedRole) {
+    case 'nail technician/artist':
+      return 'artist';
+    case 'owner':
+      return 'salon';
+    case 'beauty supplier':
+    case 'vendor':
+      return 'supplier';
+    default:
+      return normalizedRole as UserRole;
+  }
+};
+
+/**
  * Navigates the user to their role-specific dashboard
  * @param navigate The navigate function from react-router-dom
  * @param userRole The user's role from auth context
@@ -14,28 +39,29 @@ export const navigateToRoleDashboard = (
 ) => {
   console.log("Navigating based on role:", userRole);
   
-  if (!userRole) {
+  // Normalize the role for consistent routing
+  const normalizedRole = normalizeRole(userRole);
+  console.log("Normalized role:", normalizedRole);
+  
+  if (!normalizedRole) {
     // If no role defined, navigate to profile page to set role
     navigate("/profile/edit");
     toast.info("Please complete your profile to access your dashboard");
     return;
   }
   
-  switch (userRole) {
+  // Route based on normalized role
+  switch (normalizedRole) {
     case 'artist':
-    case 'nail technician/artist':
       navigate('/dashboard/artist');
       break;
     case 'salon':
-    case 'owner':
       navigate('/dashboard/owner');
       break;
     case 'customer':
       navigate('/dashboard/customer');
       break;
     case 'supplier':
-    case 'beauty supplier':
-    case 'vendor':
       navigate('/dashboard/supplier');
       break;
     case 'freelancer':
@@ -61,7 +87,12 @@ export const hasRoleAccess = (
   allowedRoles: UserRole[]
 ): boolean => {
   if (!userRole) return false;
-  return allowedRoles.includes(userRole);
+  
+  // Normalize the user's role
+  const normalizedRole = normalizeRole(userRole);
+  
+  // Check if normalized role is in allowed roles
+  return allowedRoles.includes(normalizedRole as UserRole);
 };
 
 /**
@@ -81,19 +112,18 @@ export const getPersonalizedGreeting = (
   if (!role) {
     return `Hello, ${name}!`;
   }
+  
+  // Normalize role for consistent greetings
+  const normalizedRole = normalizeRole(role);
 
-  switch (role) {
+  switch (normalizedRole) {
     case 'artist':
-    case 'nail technician/artist':
       return `Welcome back, ${name}! Ready to showcase your artistry?`;
     case 'salon':
-    case 'owner':
       return `Hello, ${name}! Managing your salon made easy.`;
     case 'customer':
       return `Welcome, ${name}! Discover your perfect beauty experience.`;
     case 'supplier':
-    case 'beauty supplier':
-    case 'vendor':
       return `Welcome, ${name}! Showcase your products to businesses.`;
     case 'freelancer':
       return `Hey ${name}! Find your next gig today.`;

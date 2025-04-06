@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile, UserRole, AuthContextType } from "../types";
 import { Session, User, AuthChangeEvent } from "@supabase/supabase-js";
-import { fetchUserProfile, signInWithEmailPassword, signUpWithEmailPassword, signOutUser } from "../services/authService";
+import { toast } from "sonner";
 
 /**
  * Custom hook to handle auth provider logic
@@ -17,36 +17,55 @@ export const useAuthProvider = () => {
   const [isNewUser, setIsNewUser] = useState(false);
 
   useEffect(() => {
+    // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event: AuthChangeEvent, currentSession) => {
+      async (event: AuthChangeEvent, currentSession) => {
         console.log("Auth state changed:", event);
+        
+        // Update session and user
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         
-        // Fix for TypeScript error - correctly compare the event with the enum value
-        if (event === 'SIGNED_UP' as AuthChangeEvent) {
+        // Handle sign up event
+        if (event === 'SIGNED_UP') {
           console.log("New user signed up!");
           setIsNewUser(true);
           localStorage.setItem('emviapp_new_user', 'true');
         }
+        
+        // Fetch user profile on auth state change
+        if (currentSession?.user) {
+          // Use setTimeout to avoid potential deadlocks with Supabase client
+          setTimeout(() => {
+            fetchUserProfile(currentSession.user.id);
+          }, 0);
+        } else {
+          // Clear user profile and role when logged out
+          setUserProfile(null);
+          setUserRole(null);
+        }
       }
     );
 
+    // Get initial session
     const getInitialSession = async () => {
       try {
         setLoading(true);
         
+        // Get current session
         const { data: { session: initialSession } } = await supabase.auth.getSession();
         setSession(initialSession);
         setUser(initialSession?.user ?? null);
 
+        // Check if user is new from localStorage
         const isNewUserFromStorage = localStorage.getItem('emviapp_new_user') === 'true';
         if (isNewUserFromStorage) {
           setIsNewUser(true);
         }
         
+        // Fetch user profile if logged in
         if (initialSession?.user) {
-          await fetchAndSetUserProfile(initialSession.user.id);
+          await fetchUserProfile(initialSession.user.id);
         }
       } catch (error) {
         console.error("Error fetching initial session:", error);
@@ -57,16 +76,74 @@ export const useAuthProvider = () => {
 
     getInitialSession();
 
+    // Cleanup subscription
     return () => {
       subscription.unsubscribe();
     };
   }, []);
 
-  const fetchAndSetUserProfile = async (userId: string) => {
-    const profile = await fetchUserProfile(userId);
-    if (profile) {
+  // Function to fetch user profile
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      console.log("Fetching user profile for:", userId);
+      
+      // Get user profile from the database
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching user profile:', error);
+        return;
+      }
+      
+      if (!data) {
+        console.log('No user profile found, creating one...');
+        return;
+      }
+      
+      console.log("User profile retrieved:", data);
+      
+      // Cast role to UserRole and create user profile
+      const fetchedRole = data.role as UserRole || 'customer';
+      setUserRole(fetchedRole);
+      
+      const profile: UserProfile = {
+        id: data.id,
+        email: data.email || '',
+        full_name: data.full_name || '',
+        avatar_url: data.avatar_url || '',
+        location: data.location || '',
+        bio: data.bio || '',
+        phone: data.phone || '',
+        instagram: data.instagram || '',
+        website: data.website || '',
+        specialty: data.specialty || '',
+        role: fetchedRole,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+        preferred_language: data.preferred_language || '',
+        referral_count: data.referral_count || 0,
+        salon_name: data.salon_name || '',
+        company_name: data.company_name || '',
+        custom_role: data.custom_role || '',
+        contact_link: data.contact_link || '',
+        skills: Array.isArray(data.skills) ? data.skills : [],
+        skill_level: data.skill_level || '',
+        profile_views: data.profile_views || 0,
+        preferences: Array.isArray(data.preferences) ? data.preferences : [],
+        affiliate_code: data.referral_code || '',
+        referral_code: data.referral_code || '',
+        credits: data.credits || 0,
+        boosted_until: data.boosted_until || null
+      };
+      
       setUserProfile(profile);
-      setUserRole(profile.role as UserRole);
+      
+    } catch (err) {
+      console.error("Error in fetchUserProfile:", err);
     }
   };
 
@@ -76,38 +153,71 @@ export const useAuthProvider = () => {
   };
 
   const signIn = async (email: string, password: string) => {
-    return await signInWithEmailPassword(email, password);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) throw error;
+      
+      toast.success("Signed in successfully!");
+      return data;
+    } catch (error) {
+      console.error("Error signing in:", error);
+      toast.error(error.message || "Failed to sign in");
+      throw error;
+    }
   };
 
   const signUp = async (email: string, password: string) => {
-    const data = await signUpWithEmailPassword(email, password);
-    
-    setIsNewUser(true);
-    localStorage.setItem('emviapp_new_user', 'true');
-    
-    return data;
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+      
+      if (error) throw error;
+      
+      setIsNewUser(true);
+      localStorage.setItem('emviapp_new_user', 'true');
+      
+      toast.success("Account created successfully!");
+      return data;
+    } catch (error) {
+      console.error("Error signing up:", error);
+      toast.error(error.message || "Failed to sign up");
+      throw error;
+    }
   };
 
   const signOut = async () => {
     try {
-      await signOutUser();
+      const { error } = await supabase.auth.signOut();
       
+      if (error) throw error;
+      
+      // Clear user data
       setSession(null);
       setUser(null);
       setUserProfile(null);
       setUserRole(null);
+      
+      toast.success("Successfully signed out");
     } catch (error) {
       console.error("Error in signOut:", error);
+      toast.error("Failed to sign out");
       throw error;
     }
   };
 
   const refreshUserProfile = async () => {
     if (user) {
-      await fetchAndSetUserProfile(user.id);
+      await fetchUserProfile(user.id);
     }
   };
 
+  // Compile context value
   const authContextValue: AuthContextType = {
     session,
     user,
