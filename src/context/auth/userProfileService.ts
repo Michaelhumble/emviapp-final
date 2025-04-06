@@ -33,11 +33,24 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
  */
 export const createEmptyProfile = async (userId: string): Promise<boolean> => {
   try {
+    // Get user information from auth schema if available
+    const { data: authUser, error: authError } = await supabase.auth.getUser(userId);
+    
+    if (authError) {
+      console.error('Error getting auth user:', authError);
+    }
+    
+    // Create a basic profile with required fields
     const { error } = await supabase
       .from('users')
       .insert({
         id: userId,
         created_at: new Date().toISOString(),
+        // Required fields based on the error message
+        email: authUser?.user?.email || `user-${userId.substring(0, 8)}@placeholder.com`,
+        full_name: authUser?.user?.user_metadata?.full_name || '',
+        // Default role
+        role: 'customer',
       });
     
     if (error) {
