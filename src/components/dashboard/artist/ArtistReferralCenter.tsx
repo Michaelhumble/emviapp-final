@@ -45,7 +45,7 @@ const ArtistReferralCenter = () => {
                 <div className="text-xs text-purple-600 uppercase font-semibold mb-1">You've Earned</div>
                 <div className="text-2xl font-bold text-purple-800 flex items-center justify-center">
                   <CreditCard className="h-5 w-5 mr-2 text-purple-600" />
-                  💳 {userProfile?.credits || 0} <span className="text-base ml-1">Emvi Credits</span>
+                  💳 {userProfile?.referral_count || 0} <span className="text-base ml-1">Emvi Credits</span>
                 </div>
               </div>
               

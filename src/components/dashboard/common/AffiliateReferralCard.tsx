@@ -41,7 +41,7 @@ const AffiliateReferralCard = () => {
           <div className="text-center grid grid-cols-1 gap-1">
             <div className="flex items-center justify-end text-lg font-bold text-indigo-700">
               <CreditCard className="h-4 w-4 mr-1" />
-              💳 {userProfile?.credits || 0}
+              💳 {userProfile?.referral_count || 0}
             </div>
             <div className="flex items-center justify-end text-sm text-indigo-600">
               <Users className="h-3 w-3 mr-1" />
