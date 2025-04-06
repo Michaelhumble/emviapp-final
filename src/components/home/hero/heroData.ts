@@ -21,6 +21,26 @@ export const heroImages = [
     url: "/lovable-uploads/68440114-1848-438a-8b69-5667e8d9ec77.png",
     alt: "Close-up of hands with beautiful nail polish application"
   },
+  {
+    url: "/lovable-uploads/264f30fa-7e38-43a5-957e-7171f5e9160e.png", 
+    alt: "Close-up of nail technician with pink gloves applying nail polish"
+  },
+  {
+    url: "/lovable-uploads/9d6f82f3-66a2-4ff3-bdd8-7b7cd561bf8f.png", 
+    alt: "Nail technician with black gloves working on client's nails"
+  },
+  {
+    url: "/lovable-uploads/7d585be5-b70d-4d65-b57f-803de81839ba.png", 
+    alt: "Group of hands with various nail designs arranged in a circle"
+  },
+  {
+    url: "/lovable-uploads/5af131ca-038f-40e6-892a-502d1e822395.png", 
+    alt: "Nail technician preparing client's hand for manicure"
+  },
+  {
+    url: "/lovable-uploads/e603b7f1-096e-4b5f-a826-8d014a9a9446.png", 
+    alt: "Nail professional giving a pedicure with purple gloves"
+  },
   
   // Hair styling images
   {
@@ -34,6 +54,10 @@ export const heroImages = [
   {
     url: "/lovable-uploads/5a1ba245-85f7-4036-95f9-0e08ada34602.png",
     alt: "Collection of professional hair styling tools and equipment"
+  },
+  {
+    url: "/lovable-uploads/b8dd2904-7dc6-412d-89be-c962ca4ae5f8.png",
+    alt: "Modern barbershop interior with stylish decor and equipment"
   },
   
   // Barber images
@@ -49,6 +73,10 @@ export const heroImages = [
     url: "/lovable-uploads/36417782-c139-4dd1-8dc4-e5eea22a01bb.png",
     alt: "Barber providing professional grooming service in a traditional shop"
   },
+  {
+    url: "/lovable-uploads/f7491bd3-25bf-43f9-80e2-d53b137a70d7.png",
+    alt: "Professional barber shaving client's face in upscale salon"
+  },
   
   // Spa & Wellness images
   {
@@ -63,6 +91,14 @@ export const heroImages = [
     url: "/lovable-uploads/0f87e7e4-f896-4c6d-a832-eca65e4b20cd.png",
     alt: "Woman in fitness attire practicing yoga or wellness activity"
   },
+  {
+    url: "/lovable-uploads/1f3cfd40-4041-4545-b71e-5a7f484f86e9.png",
+    alt: "Spa therapist providing facial massage to client in modern spa"
+  },
+  {
+    url: "/lovable-uploads/6bb628b4-8daf-4c22-9c03-4c84a54f36a0.png",
+    alt: "Skincare professional in white uniform performing facial treatment"
+  },
   
   // Makeup & Beauty images
   {
@@ -72,5 +108,9 @@ export const heroImages = [
   {
     url: "/lovable-uploads/1aa3efa7-8ea4-4815-91db-85a50b204ded.png",
     alt: "Modern salon interior with luxurious design elements"
+  },
+  {
+    url: "/lovable-uploads/f7491bd3-25bf-43f9-80e2-d53b137a70d7.png",
+    alt: "Collection of makeup brushes and cosmetic tools in clean organized setting"
   }
 ];
