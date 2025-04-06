@@ -1,4 +1,3 @@
-
 import { Session, User as SupabaseUser } from '@supabase/supabase-js';
 
 // User roles in the application
@@ -46,6 +45,8 @@ export interface UserProfile {
   credits?: number; // Added to match the database schema
   boosted_until?: string | null; // Added for profile boost feature
   portfolio_urls?: string[]; // Added for artist portfolio images
+  accepts_bookings?: boolean; // Added for accepting bookings
+  booking_url?: string; // Added for external booking links
 }
 
 // Auth context data shape
