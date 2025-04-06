@@ -32,7 +32,7 @@ const AffiliateSection = () => {
             Your Affiliate Link
           </CardTitle>
           <CardDescription>
-            Share EmviApp and earn rewards when friends subscribe
+            Share EmviApp and earn Emvi Credits when friends subscribe
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -58,7 +58,7 @@ const AffiliateSection = () => {
             </p>
             
             <div className="text-xs text-muted-foreground">
-              <p>Earn $5 for each friend who subscribes!</p>
+              <p>Earn Emvi Credits for each friend who subscribes!</p>
             </div>
           </div>
         </CardContent>

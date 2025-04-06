@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -44,14 +45,14 @@ const CustomerReferralCenter = () => {
                   <span className="font-medium">Earn Credits</span>
                 </div>
                 <p className="text-sm text-gray-600 mt-1">
-                  Get $10 for each friend who joins
+                  Invite friends and earn Emvi Credits you can use to boost your profile, find premium services, or access exclusive beauty deals in the future.
                 </p>
               </div>
               <div className="text-center">
                 <div className="text-xl font-bold text-pink-700">
                   {userProfile?.referral_count || 0}
                 </div>
-                <div className="text-xs text-gray-500">Friends joined</div>
+                <div className="text-xs text-gray-500">Friends Joined</div>
               </div>
             </div>
           </div>
@@ -107,7 +108,7 @@ const CustomerReferralCenter = () => {
               <p className="text-sm text-gray-600">
                 {userProfile?.referral_count 
                   ? `You've invited ${userProfile.referral_count} ${userProfile.referral_count === 1 ? 'friend' : 'friends'} so far`
-                  : "Invite friends to earn rewards"}
+                  : "Invite friends to earn Emvi Credits"}
               </p>
             </div>
           </div>
