@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Link2, Copy, Users, Gift } from "lucide-react";
+import { Link2, Copy, Users, Gift, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/auth";
 
