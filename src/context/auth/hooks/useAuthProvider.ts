@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile, UserRole, AuthContextType } from "../types";
@@ -5,7 +6,7 @@ import { Session, User } from "@supabase/supabase-js";
 import { fetchUserProfile, signInWithEmailPassword, signUpWithEmailPassword, signOutUser } from "../services/authService";
 
 // Use the correct type that matches Supabase's auth events
-// Imported directly from Supabase's types
+// But the actual value we receive is a string, not the enum itself
 import { AuthChangeEvent } from "@supabase/supabase-js";
 
 /**
@@ -27,7 +28,8 @@ export const useAuthProvider = () => {
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         
-        // If the user just signed up, set the new user flag
+        // Compare event as a string rather than as the enum
+        // 'SIGNED_UP' is the string value that Supabase sends
         if (event === 'SIGNED_UP') {
           console.log("New user signed up!");
           setIsNewUser(true);
