@@ -23,7 +23,7 @@ export const useAuthProvider = () => {
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         
-        // Compare directly to the string value instead of using AuthChangeEvent as a value
+        // Simply compare the event string value
         if (event === 'SIGNED_UP') {
           console.log("New user signed up!");
           setIsNewUser(true);
