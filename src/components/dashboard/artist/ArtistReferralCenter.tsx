@@ -2,10 +2,12 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Share2, Gift, ArrowRight, Copy, CheckCircle, CreditCard, Coins } from "lucide-react";
+import { Users, Share2, Gift, ArrowRight, Copy, CheckCircle, CreditCard, Coins, Award, Star, Rocket, Fire } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const ArtistReferralCenter = () => {
   const { userProfile, user } = useAuth();
@@ -57,6 +59,38 @@ const ArtistReferralCenter = () => {
     
     fetchReferralStats();
   }, [user]);
+
+  // Determine which badge to show based on referral count
+  const getReferralBadge = () => {
+    const count = referralStats.count;
+    
+    if (count >= 10) {
+      return {
+        icon: <Rocket className="h-3.5 w-3.5 mr-1" />,
+        text: "Growth Leader",
+        tooltip: "You've invited 10+ artists to EmviApp",
+        color: "bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-0"
+      };
+    } else if (count >= 5) {
+      return {
+        icon: <Fire className="h-3.5 w-3.5 mr-1" />,
+        text: "Community Builder",
+        tooltip: "You've invited 5+ artists to EmviApp",
+        color: "bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0"
+      };
+    } else if (count >= 1) {
+      return {
+        icon: <Star className="h-3.5 w-3.5 mr-1" />,
+        text: "Emvi Growth Partner",
+        tooltip: "You've started growing the community",
+        color: "bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0"
+      };
+    }
+    
+    return null;
+  };
+  
+  const badge = getReferralBadge();
   
   const copyToClipboard = () => {
     navigator.clipboard.writeText(referralLink);
@@ -77,6 +111,21 @@ const ArtistReferralCenter = () => {
               <Coins className="h-5 w-5 text-purple-600 mr-2" />
               💰 Earn Emvi Credit That Feels Like Cash
             </h3>
+            
+            {badge && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge className={`${badge.color} px-3 py-1 flex items-center`}>
+                      {badge.icon} {badge.text}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{badge.tooltip}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
           </div>
           
           <div className="bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg p-5 mb-6 border border-purple-200">
@@ -89,7 +138,7 @@ const ArtistReferralCenter = () => {
                 <div className="text-xs text-purple-600 uppercase font-semibold mb-1">You've Earned</div>
                 <div className="text-2xl font-bold text-purple-800 flex items-center justify-center">
                   <CreditCard className="h-5 w-5 mr-2 text-purple-600" />
-                  💳 {referralStats.credits || userProfile?.referral_count || 0} <span className="text-base ml-1">Emvi Credits</span>
+                  💳 {referralStats.credits} <span className="text-base ml-1">Emvi Credits</span>
                 </div>
               </div>
               
@@ -97,13 +146,13 @@ const ArtistReferralCenter = () => {
                 <div className="text-xs text-purple-600 uppercase font-semibold mb-1">Network Growth</div>
                 <div className="text-2xl font-bold text-purple-800 flex items-center justify-center">
                   <Users className="h-5 w-5 mr-2 text-purple-600" />
-                  👥 {referralStats.count || userProfile?.referral_count || 0} <span className="text-base ml-1">Friends Joined</span>
+                  👥 {referralStats.count} <span className="text-base ml-1">{referralStats.count === 1 ? 'Artist' : 'Artists'} Joined</span>
                 </div>
               </div>
             </div>
             
             <p className="text-purple-700 text-sm italic mt-3">
-              Every friend = more credits. More credits = more exposure, more clients, more money.
+              🎉 You've invited {referralStats.count} {referralStats.count === 1 ? 'artist' : 'artists'} to EmviApp. Every invite grows your impact. You're helping reshape the industry.
             </p>
           </div>
           
@@ -164,9 +213,7 @@ const ArtistReferralCenter = () => {
               </Button>
               
               <p className="text-sm text-purple-600 mt-3">
-                {referralStats.count > 0 
-                  ? `You've invited ${referralStats.count} ${referralStats.count === 1 ? 'friend' : 'friends'} so far`
-                  : "Start earning credits today! Share your link now."}
+                Every invite grows your impact. You're helping reshape the industry.
               </p>
             </div>
           </div>
