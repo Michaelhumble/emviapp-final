@@ -1,8 +1,8 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
-import { motion } from "framer-motion";
-import { MessageSquare } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { MessageSquare, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface AIWelcomeAssistantProps {
@@ -15,6 +15,7 @@ const AIWelcomeAssistant = ({ className = "" }: AIWelcomeAssistantProps) => {
   const [actionMessage, setActionMessage] = useState("");
   const [actionLabel, setActionLabel] = useState("");
   const [actionPath, setActionPath] = useState("");
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     if (!user) return;
@@ -42,6 +43,7 @@ const AIWelcomeAssistant = ({ className = "" }: AIWelcomeAssistantProps) => {
         break;
         
       case 'salon':
+      case 'owner':
         setWelcomeMessage(`Hi ${firstName}, `);
         
         if (randomNum === 0) {
@@ -123,30 +125,52 @@ const AIWelcomeAssistant = ({ className = "" }: AIWelcomeAssistantProps) => {
     }
   }, [user, userRole]);
 
-  if (!user) return null;
+  const handleClose = () => {
+    setIsVisible(false);
+  };
+
+  if (!user || !isVisible) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className={`bg-white/80 backdrop-blur-sm border border-purple-100 rounded-lg p-4 shadow-sm ${className}`}
-    >
-      <div className="flex items-start gap-3">
-        <div className="bg-gradient-to-br from-purple-100 to-pink-100 p-2 rounded-full">
-          <MessageSquare className="h-5 w-5 text-primary" />
-        </div>
-        <div>
-          <p className="text-sm font-medium">
-            <span className="font-semibold">{welcomeMessage}</span>
-            <span className="text-gray-700">{actionMessage}</span>
-          </p>
-          <Button variant="link" className="h-auto p-0 text-primary text-sm mt-1" asChild>
-            <a href={actionPath}>{actionLabel}</a>
-          </Button>
-        </div>
-      </div>
-    </motion.div>
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.5 }}
+          className={`bg-white backdrop-blur-lg border border-gray-100 rounded-xl p-5 shadow-lg ${className}`}
+        >
+          <div className="relative">
+            <button 
+              onClick={handleClose} 
+              className="absolute top-0 right-0 text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label="Close welcome message"
+            >
+              <X size={18} />
+            </button>
+            
+            <div className="flex items-start gap-4 mt-1">
+              <div className="bg-gradient-to-br from-purple-100 to-pink-100 p-2.5 rounded-full flex-shrink-0">
+                <Sparkles className="h-5 w-5 text-primary" />
+              </div>
+              
+              <div className="flex-1">
+                <h4 className="font-serif text-lg font-medium text-gray-800 mb-1">
+                  {welcomeMessage}
+                </h4>
+                <p className="text-gray-600 mb-3">
+                  {actionMessage}
+                </p>
+                <Button variant="default" size="sm" className="rounded-full px-4 shadow-sm shadow-primary/20" asChild>
+                  <a href={actionPath}>{actionLabel}</a>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

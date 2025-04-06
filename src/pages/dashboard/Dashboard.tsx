@@ -5,6 +5,7 @@ import { useAuth } from "@/context/auth";
 import { Loader2 } from "lucide-react";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 import { UserRole } from "@/context/auth/types";
+import { useToast } from "@/hooks/use-toast";
 
 /**
  * This component redirects users to their role-specific dashboard
@@ -14,13 +15,37 @@ const Dashboard = () => {
   const { userRole, loading, user, isSignedIn, isNewUser, clearIsNewUser, refreshUserProfile } = useAuth();
   const navigate = useNavigate();
   const [showRoleModal, setShowRoleModal] = useState(false);
+  const { toast } = useToast();
   
   const handleRoleSelected = async (role: UserRole) => {
-    // Refresh the user profile to get the updated role
-    await refreshUserProfile();
-    // Clear the new user flag
-    if (isNewUser) {
-      clearIsNewUser();
+    try {
+      // Refresh the user profile to get the updated role
+      await refreshUserProfile();
+      
+      // Show success toast
+      toast({
+        title: "Role updated successfully",
+        description: `Your profile has been updated as ${role}`,
+        duration: 3000,
+      });
+      
+      // Clear the new user flag
+      if (isNewUser) {
+        clearIsNewUser();
+      }
+      
+      // Redirect to the appropriate dashboard
+      setTimeout(() => {
+        redirectBasedOnRole(role);
+      }, 500);
+    } catch (error) {
+      console.error("Error updating role:", error);
+      toast({
+        title: "Error updating role",
+        description: "Please try again",
+        variant: "destructive",
+        duration: 3000,
+      });
     }
   };
   
@@ -77,12 +102,14 @@ const Dashboard = () => {
   };
   
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-      <div className="flex items-center space-x-2 mb-4">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <span className="text-lg">Loading your dashboard...</span>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-purple-50/30">
+      <div className="flex items-center space-x-3 mb-5 bg-white p-5 rounded-xl shadow-lg">
+        <Loader2 className="h-7 w-7 animate-spin text-primary" />
+        <span className="text-xl font-serif font-medium text-gray-800">Loading your dashboard...</span>
       </div>
-      <p className="text-gray-500 text-sm">We're redirecting you to the appropriate dashboard</p>
+      <p className="text-gray-600 text-sm px-6 py-3 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm">
+        We're redirecting you to the appropriate dashboard
+      </p>
       
       {/* Role selection modal for new users */}
       {user && showRoleModal && (
