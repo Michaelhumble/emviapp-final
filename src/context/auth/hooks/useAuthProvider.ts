@@ -23,7 +23,7 @@ export const useAuthProvider = () => {
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         
-        // Simply compare the event string value
+        // Fix for TypeScript error - compare string values directly
         if (event === 'SIGNED_UP') {
           console.log("New user signed up!");
           setIsNewUser(true);

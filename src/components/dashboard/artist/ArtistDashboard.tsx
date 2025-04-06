@@ -6,6 +6,7 @@ import { Loader } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Bell } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button"; // Added missing import
 import { UserProfile } from "@/context/auth/types";
 
 // Import all the component sections we've created
