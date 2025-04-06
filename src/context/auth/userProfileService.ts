@@ -14,6 +14,7 @@ export const createEmptyProfile = async (userId: string) => {
         contact_link: '',
         role: 'customer', // Default role
         created_at: new Date().toISOString(),
+        email: '', // Required field based on the error
         credits: 15, // Starting credits for new users
       });
 
@@ -30,6 +31,7 @@ export const createEmptyProfile = async (userId: string) => {
 
 export const getUserProfile = async (userId: string): Promise<UserProfile | null> => {
   try {
+    // Use maybeSingle instead of single to safely handle the case where no data is found
     const { data, error } = await supabase
       .from('users')
       .select(`
@@ -74,35 +76,36 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
     }
     
     // Map database response to UserProfile
+    // Use null coalescing to ensure we don't access properties on undefined
     const profile: UserProfile = {
-      id: data.id,
-      email: data.email,
-      full_name: data.full_name,
-      avatar_url: data.avatar_url,
-      custom_role: data.custom_role,
-      bio: data.bio,
-      contact_link: data.contact_link,
-      instagram: data.instagram,
-      website: data.website,
-      user_role: data.role,
-      created_at: data.created_at,
-      salon_name: data.salon_name,
-      company_name: data.company_name,
-      location: data.location,
-      referral_count: data.referral_count,
-      affiliate_code: data.affiliate_code,
-      badges: data.badges,
-      credits: data.credits,
-      boosted_until: data.boosted_until,
-      preferred_language: data.preferred_language,
-      specialty: data.specialty,
-      phone: data.phone,
-      skills: data.skills,
-      profile_views: data.profile_views,
-      referral_code: data.referral_code,
-      skill_level: data.skill_level,
-      preferences: data.preferences,
-      role: data.role,
+      id: data.id || '',
+      email: data.email || '',
+      full_name: data.full_name || '',
+      avatar_url: data.avatar_url || '',
+      custom_role: data.custom_role || '',
+      bio: data.bio || '',
+      contact_link: data.contact_link || '',
+      instagram: data.instagram || '',
+      website: data.website || '',
+      user_role: data.role || 'customer',
+      created_at: data.created_at || '',
+      salon_name: data.salon_name || '',
+      company_name: data.company_name || '',
+      location: data.location || '',
+      referral_count: data.referral_count || 0,
+      affiliate_code: data.affiliate_code || '',
+      badges: data.badges || null,
+      credits: data.credits || 0,
+      boosted_until: data.boosted_until || null,
+      preferred_language: data.preferred_language || 'en',
+      specialty: data.specialty || '',
+      phone: data.phone || '',
+      skills: data.skills || [],
+      profile_views: data.profile_views || 0,
+      referral_code: data.referral_code || '',
+      skill_level: data.skill_level || '',
+      preferences: data.preferences || [],
+      role: data.role || 'customer',
     };
     
     return profile;
@@ -191,6 +194,7 @@ export const updateUserAvatarInStorage = async (userId: string, file: File) => {
 
 export const getUserByUserName = async (username: string): Promise<UserProfile | null> => {
   try {
+    // Use maybeSingle instead of single for safer handling
     const { data, error } = await supabase
       .from('users')
       .select(`
@@ -234,36 +238,36 @@ export const getUserByUserName = async (username: string): Promise<UserProfile |
       return null;
     }
     
-    // Map database response to UserProfile
+    // Safely map database response to UserProfile with null coalescing
     const profile: UserProfile = {
-      id: data.id,
-      email: data.email,
-      full_name: data.full_name,
-      avatar_url: data.avatar_url,
-      custom_role: data.custom_role,
-      bio: data.bio,
-      contact_link: data.contact_link,
-      instagram: data.instagram,
-      website: data.website,
-      user_role: data.role,
-      created_at: data.created_at,
-      salon_name: data.salon_name,
-      company_name: data.company_name,
-      location: data.location,
-      referral_count: data.referral_count,
-      affiliate_code: data.affiliate_code,
-      badges: data.badges,
-      credits: data.credits,
-      boosted_until: data.boosted_until,
-      preferred_language: data.preferred_language,
-      specialty: data.specialty,
-      phone: data.phone,
-      skills: data.skills,
-      profile_views: data.profile_views,
-      referral_code: data.referral_code,
-      skill_level: data.skill_level,
-      preferences: data.preferences,
-      role: data.role,
+      id: data.id || '',
+      email: data.email || '',
+      full_name: data.full_name || '',
+      avatar_url: data.avatar_url || '',
+      custom_role: data.custom_role || '',
+      bio: data.bio || '',
+      contact_link: data.contact_link || '',
+      instagram: data.instagram || '',
+      website: data.website || '',
+      user_role: data.role || 'customer',
+      created_at: data.created_at || '',
+      salon_name: data.salon_name || '',
+      company_name: data.company_name || '',
+      location: data.location || '',
+      referral_count: data.referral_count || 0,
+      affiliate_code: data.affiliate_code || '',
+      badges: data.badges || null,
+      credits: data.credits || 0,
+      boosted_until: data.boosted_until || null,
+      preferred_language: data.preferred_language || 'en',
+      specialty: data.specialty || '',
+      phone: data.phone || '',
+      skills: data.skills || [],
+      profile_views: data.profile_views || 0,
+      referral_code: data.referral_code || '',
+      skill_level: data.skill_level || '',
+      preferences: data.preferences || [],
+      role: data.role || 'customer',
     };
     
     return profile;

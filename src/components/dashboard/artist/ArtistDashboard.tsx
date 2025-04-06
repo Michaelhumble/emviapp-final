@@ -28,7 +28,7 @@ const ArtistDashboard = () => {
           .from('users')
           .select('*')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
 
         if (error) {
           console.error("Error fetching profile data:", error);
@@ -68,10 +68,6 @@ const ArtistDashboard = () => {
     // Then check userProfile from context
     if (userProfile && typeof userProfile.credits === 'number') {
       return userProfile.credits;
-    }
-    // Then check referral_count as fallback
-    if (profileData && typeof profileData.referral_count === 'number') {
-      return profileData.referral_count;
     }
     // Default value
     return 0;
