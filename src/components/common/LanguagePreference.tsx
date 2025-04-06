@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { getPreferredLanguage, hasLanguagePreference, setPreferredLanguage } from "@/utils/languagePreference";
 
+// Key for storing the dialog visibility state
 const LANGUAGE_PREFERENCE_SHOWN_KEY = 'emviapp_language_preference_shown';
 
 const LanguagePreference = () => {
@@ -21,8 +22,9 @@ const LanguagePreference = () => {
     // 3. User hasn't set a preference in localStorage
     // 4. The dialog hasn't been shown in this session
     const hasShownDialog = sessionStorage.getItem(LANGUAGE_PREFERENCE_SHOWN_KEY) === 'true';
+    const hasUserLanguagePreference = userProfile?.preferred_language;
     
-    if (user && userProfile && !userProfile.preferred_language && !hasLanguagePreference() && !hasShownDialog) {
+    if (user && !hasUserLanguagePreference && !hasLanguagePreference() && !hasShownDialog) {
       // Wait a bit to not overwhelm new users with too many modals at once
       const timer = setTimeout(() => {
         setOpen(true);
@@ -44,7 +46,7 @@ const LanguagePreference = () => {
     
     try {
       const { error } = await supabase
-        .from('users')
+        .from('profiles')
         .update({ preferred_language: language })
         .eq('id', user.id);
 

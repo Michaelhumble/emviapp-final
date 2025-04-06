@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import { useAuth } from "@/context/auth";
 import { 
   Sparkles, Scissors, Building2, User, Briefcase, 
-  ShoppingBag, HelpCircle, StarIcon, PaintBrush, 
+  ShoppingBag, HelpCircle, Star, Paintbrush, 
   BarChart3, MapPin 
 } from "lucide-react";
 
@@ -20,7 +20,7 @@ const RoleDashboardLayout = ({ children, className = "" }: RoleDashboardLayoutPr
     switch (userRole) {
       case 'artist':
       case 'nail technician/artist':
-        return <PaintBrush className="h-5 w-5 text-purple-500" />;
+        return <Paintbrush className="h-5 w-5 text-purple-500" />;
       case 'renter':
         return <Scissors className="h-5 w-5 text-purple-500" />;
       case 'salon':
@@ -33,7 +33,7 @@ const RoleDashboardLayout = ({ children, className = "" }: RoleDashboardLayoutPr
       case 'freelancer':
         return <Briefcase className="h-5 w-5 text-amber-500" />;
       case 'customer':
-        return <StarIcon className="h-5 w-5 text-rose-500" />;
+        return <Star className="h-5 w-5 text-rose-500" />;
       default:
         return <HelpCircle className="h-5 w-5 text-gray-500" />;
     }
