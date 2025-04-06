@@ -39,7 +39,8 @@ export const AuthProvider = ({ children }) => {
         setUser(currentSession?.user ?? null);
         
         // If the user just signed up, set the new user flag
-        if (event === "SIGNED_UP") {
+        // Use the correct AuthChangeEvent type from Supabase
+        if (event === 'SIGNED_UP') {
           console.log("New user signed up!");
           setIsNewUser(true);
           // Store this in localStorage as well for persistence
