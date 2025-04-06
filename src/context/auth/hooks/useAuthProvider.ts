@@ -5,17 +5,16 @@ import { UserProfile, UserRole, AuthContextType } from "../types";
 import { Session, User } from "@supabase/supabase-js";
 import { fetchUserProfile, signInWithEmailPassword, signUpWithEmailPassword, signOutUser } from "../services/authService";
 
-// Define the AuthChangeEvent enum that matches Supabase's implementation
-// This is required because we're importing it as a type but need the values
-enum AuthChangeEvent {
-  SIGNED_IN = 'SIGNED_IN',
-  SIGNED_OUT = 'SIGNED_OUT',
-  USER_UPDATED = 'USER_UPDATED',
-  USER_DELETED = 'USER_DELETED',
-  PASSWORD_RECOVERY = 'PASSWORD_RECOVERY',
-  TOKEN_REFRESHED = 'TOKEN_REFRESHED',
-  SIGNED_UP = 'SIGNED_UP'
-}
+// Define the auth event types as string literals instead of using an enum
+// This matches what Supabase's onAuthStateChange actually returns
+type AuthChangeEvent = 
+  | 'SIGNED_IN'
+  | 'SIGNED_OUT'
+  | 'USER_UPDATED'
+  | 'USER_DELETED'
+  | 'PASSWORD_RECOVERY'
+  | 'TOKEN_REFRESHED'
+  | 'SIGNED_UP';
 
 /**
  * Custom hook to handle auth provider logic
@@ -37,7 +36,7 @@ export const useAuthProvider = () => {
         setUser(currentSession?.user ?? null);
         
         // If the user just signed up, set the new user flag
-        if (event === AuthChangeEvent.SIGNED_UP) {
+        if (event === 'SIGNED_UP') {
           console.log("New user signed up!");
           setIsNewUser(true);
           // Store this in localStorage as well for persistence
