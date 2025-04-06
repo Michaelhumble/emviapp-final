@@ -1,10 +1,9 @@
-
-import { useState, useEffect, createContext } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthContextType, UserProfile, UserRole } from "./types";
 import { toast } from "sonner";
 import { AuthContext } from "./AuthContext";
-import { AuthChangeEvent } from "@supabase/supabase-js";
+import { AuthChangeEvent, Session, User } from "@supabase/supabase-js";
 
 // Initial context value
 const initialAuthContext: AuthContextType = {
@@ -24,8 +23,8 @@ const initialAuthContext: AuthContextType = {
 
 // Auth provider component that wraps the app
 export const AuthProvider = ({ children }) => {
-  const [session, setSession] = useState(null);
-  const [user, setUser] = useState(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
