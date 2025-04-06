@@ -12,6 +12,7 @@ import ArtistUpgradeSection from "../ArtistUpgradeSection";
 import ArtistMotivationalQuote from "../ArtistMotivationalQuote";
 import ArtistPortfolio from "../ArtistPortfolio";
 import ArtistServices from "../services/ArtistServices";
+import ArtistActivityFeed from "../activity/ArtistActivityFeed";
 import { useArtistData } from "../context/ArtistDataContext";
 
 const ArtistDashboardContent = () => {
@@ -30,7 +31,7 @@ const ArtistDashboardContent = () => {
         <ArtistPortfolio />
       </div>
       
-      {/* 4. Services Section - NEW */}
+      {/* 4. Services Section */}
       <div className="mb-8">
         <ArtistServices />
       </div>
@@ -62,7 +63,13 @@ const ArtistDashboardContent = () => {
         <ArtistBookingCalendar />
       </section>
       
-      {/* 12. Upgrade Section */}
+      {/* 12. Activity Feed - NEW */}
+      <section className="mb-8" id="activity-feed">
+        <h2 className="text-xl font-serif font-semibold mb-4">Recent Activity</h2>
+        <ArtistActivityFeed limit={5} />
+      </section>
+      
+      {/* 13. Upgrade Section */}
       <section id="upgrade">
         <h2 className="text-xl font-serif font-semibold mb-4">Unlock Premium Features</h2>
         <ArtistUpgradeSection />
