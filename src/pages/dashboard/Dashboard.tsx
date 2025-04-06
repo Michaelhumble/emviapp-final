@@ -1,37 +1,25 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { navigateToRoleDashboard } from "@/utils/navigation";
-import { Loader2, AlertTriangle, LogOut } from "lucide-react";
+import { Loader2, AlertTriangle, LogOut, ArrowLeft } from "lucide-react";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Dashboard component that handles redirecting users to role-specific dashboards
  * and shows role selection for new users
  */
 const Dashboard = () => {
-  const { userRole, loading, user, isSignedIn, isNewUser, clearIsNewUser, signOut } = useAuth();
+  const { userRole, loading: authLoading, user, isSignedIn, isNewUser, clearIsNewUser, signOut } = useAuth();
   const navigate = useNavigate();
   const [showRoleModal, setShowRoleModal] = useState(false);
-  const [redirectTimeout, setRedirectTimeout] = useState<NodeJS.Timeout | null>(null);
   const [loadingTime, setLoadingTime] = useState(0);
   const [redirectError, setRedirectError] = useState<string | null>(null);
-  
-  // Increment loading time counter
-  useEffect(() => {
-    if (loading) {
-      const timer = setInterval(() => {
-        setLoadingTime(prev => prev + 1);
-      }, 1000);
-      
-      return () => clearInterval(timer);
-    }
-    
-    return () => {}; // Empty cleanup for when not loading
-  }, [loading]);
+  const [localLoading, setLocalLoading] = useState(true);
   
   // Handle emergency logout for stuck states
   const handleEmergencyLogout = async () => {
@@ -46,52 +34,92 @@ const Dashboard = () => {
       window.location.href = "/sign-in";
     }
   };
+
+  // Redirect back to home
+  const handleGoBack = () => {
+    navigate("/");
+    toast.info("Redirected to home page");
+  };
+  
+  // Function to check user role and redirect
+  const checkUserRoleAndRedirect = useCallback(async () => {
+    if (!isSignedIn || !user) {
+      console.log("User not signed in, redirecting to sign-in page");
+      navigate("/sign-in");
+      return;
+    }
+
+    try {
+      console.log("Checking user role for redirecting:", { userRole, userId: user.id });
+      
+      // First, try to use the role from context if available
+      if (userRole) {
+        console.log("Using role from context:", userRole);
+        navigateToRoleDashboard(navigate, userRole);
+        return;
+      }
+      
+      // If role is not in context, fetch it directly from the database
+      const { data: profile, error } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle();
+        
+      if (error) {
+        console.error("Error fetching user profile:", error);
+        throw new Error(`Failed to fetch user role: ${error.message}`);
+      }
+      
+      if (!profile || !profile.role) {
+        console.log("No role found, showing role selection modal");
+        setShowRoleModal(true);
+        if (isNewUser) {
+          clearIsNewUser();
+        }
+        return;
+      }
+      
+      // If we have a role, redirect to the appropriate dashboard
+      console.log("Redirecting to dashboard for role:", profile.role);
+      navigateToRoleDashboard(navigate, profile.role);
+      
+    } catch (error) {
+      console.error("Error in role check and redirect:", error);
+      setRedirectError("Unable to determine your user role. Please try again or select a role.");
+    } finally {
+      setLocalLoading(false);
+    }
+  }, [user, userRole, isSignedIn, navigate, isNewUser, clearIsNewUser]);
+  
+  // Increment loading time counter
+  useEffect(() => {
+    if (localLoading || authLoading) {
+      const timer = setInterval(() => {
+        setLoadingTime(prev => prev + 1);
+      }, 1000);
+      
+      return () => clearInterval(timer);
+    }
+    
+    return () => {}; // Empty cleanup for when not loading
+  }, [localLoading, authLoading]);
+  
+  // Set timeout for checking role
+  useEffect(() => {
+    if (localLoading && loadingTime > 5) {
+      setLocalLoading(false);
+      setRedirectError("It's taking longer than expected to load your dashboard. Please check your connection and try again.");
+    }
+  }, [loadingTime, localLoading]);
   
   // Main redirect logic
   useEffect(() => {
-    if (!loading) {
+    if (!authLoading) {
       console.log("Dashboard redirect - Auth state:", { isSignedIn, userRole, isNewUser });
-      
-      // Clear any existing timeout
-      if (redirectTimeout) {
-        clearTimeout(redirectTimeout);
-      }
-      
-      // If user is not signed in, redirect to sign in
-      if (!isSignedIn) {
-        navigate("/sign-in");
-        return;
-      }
-
-      // If user is new or doesn't have a role, show role selection modal
-      if (isNewUser || !userRole) {
-        setShowRoleModal(true);
-        if (isNewUser) {
-          // Clear the new user flag once we've handled it
-          clearIsNewUser();
-        }
-      } else {
-        try {
-          // Set a timeout to prevent infinite redirects
-          const timeout = setTimeout(() => {
-            navigateToRoleDashboard(navigate, userRole);
-          }, 100);
-          
-          setRedirectTimeout(timeout);
-        } catch (error) {
-          console.error("Navigation error:", error);
-          setRedirectError("Unable to navigate to your dashboard. Please try again.");
-        }
-      }
+      checkUserRoleAndRedirect();
     }
-    
-    // Cleanup timeout on unmount
-    return () => {
-      if (redirectTimeout) {
-        clearTimeout(redirectTimeout);
-      }
-    };
-  }, [userRole, loading, navigate, isSignedIn, user, isNewUser, clearIsNewUser, redirectTimeout]);
+  }, [authLoading, checkUserRoleAndRedirect, isSignedIn, userRole, isNewUser]);
   
   // Show error state
   if (redirectError) {
@@ -108,10 +136,20 @@ const Dashboard = () => {
               variant="default" 
               onClick={() => {
                 setRedirectError(null);
-                navigateToRoleDashboard(navigate, userRole);
+                setLocalLoading(true);
+                setLoadingTime(0);
+                checkUserRoleAndRedirect();
               }}
             >
               Try Again
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={handleGoBack} 
+              className="mt-2"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Home
             </Button>
             <Button 
               variant="outline" 
@@ -139,7 +177,7 @@ const Dashboard = () => {
       </div>
       <p className="text-gray-500 text-sm max-w-md text-center">
         We're redirecting you to the appropriate dashboard
-        {loadingTime > 10 && (
+        {loadingTime > 3 && (
           <>
             <br />
             <br />
