@@ -45,10 +45,10 @@ const ArtistDashboardContent = () => {
       {/* 9. Referral Center */}
       <ArtistReferralCenter />
       
-      {/* 10. Credits Redemption Section */}
+      {/* 10. Credits Redemption Section - Removed the credits prop */}
       <section className="mb-8" id="credits-redemption">
         <h2 className="text-xl font-serif font-semibold mb-4">Redeem Emvi Credits</h2>
-        <ArtistCreditsRedemption credits={userCredits} />
+        <ArtistCreditsRedemption />
       </section>
       
       {/* 11. Booking Calendar */}

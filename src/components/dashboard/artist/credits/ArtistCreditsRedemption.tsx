@@ -7,6 +7,7 @@ import BoostStatusBanner from "./BoostStatusBanner";
 import { useProfileBoost } from "./useProfileBoost";
 import { useCreditRedemption } from "./useCreditRedemption";
 
+// We'll remove the credits prop as we're getting it from useAuth
 const ArtistCreditsRedemption = () => {
   const { userProfile, refreshUserProfile } = useAuth();
   const credits = userProfile?.credits || 0;
