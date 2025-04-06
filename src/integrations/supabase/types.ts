@@ -394,6 +394,7 @@ export type Database = {
           instagram: string | null
           location: string | null
           phone: string | null
+          portfolio_urls: string[] | null
           preferences: string[] | null
           preferred_language: string | null
           referral_code: string | null
@@ -418,6 +419,7 @@ export type Database = {
           instagram?: string | null
           location?: string | null
           phone?: string | null
+          portfolio_urls?: string[] | null
           preferences?: string[] | null
           preferred_language?: string | null
           referral_code?: string | null
@@ -442,6 +444,7 @@ export type Database = {
           instagram?: string | null
           location?: string | null
           phone?: string | null
+          portfolio_urls?: string[] | null
           preferences?: string[] | null
           preferred_language?: string | null
           referral_code?: string | null

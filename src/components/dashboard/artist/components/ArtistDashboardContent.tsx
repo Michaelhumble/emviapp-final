@@ -11,6 +11,7 @@ import ArtistCreditsRedemption from "../ArtistCreditsRedemption";
 import ArtistBookingCalendar from "../ArtistBookingCalendar";
 import ArtistUpgradeSection from "../ArtistUpgradeSection";
 import ArtistMotivationalQuote from "../ArtistMotivationalQuote";
+import ArtistPortfolio from "../ArtistPortfolio";
 import { useArtistData } from "../context/ArtistDataContext";
 
 const ArtistDashboardContent = () => {
@@ -24,40 +25,45 @@ const ArtistDashboardContent = () => {
       {/* 2. Motivational Quote */}
       <ArtistMotivationalQuote />
       
-      {/* 3. Profile Header */}
+      {/* 3. Portfolio Section - Added as requested */}
+      <div className="mb-8">
+        <ArtistPortfolio />
+      </div>
+      
+      {/* 4. Profile Header */}
       <ArtistDashboardProfile artistProfile={artistProfile} />
       
-      {/* 4. Performance Metrics */}
+      {/* 5. Performance Metrics */}
       <ArtistPerformanceMetrics profileViews={artistProfile?.profile_views || 245} />
       
-      {/* 5. Artist Toolkit */}
+      {/* 6. Artist Toolkit */}
       <ArtistToolkitSection onCopyReferralLink={handleCopyReferralLink} />
       
-      {/* 6. Dashboard Status Widgets */}
+      {/* 7. Dashboard Status Widgets */}
       <DashboardStatusWidgets />
       
-      {/* 7. Portfolio Grid */}
+      {/* 8. Portfolio Grid */}
       <ArtistPortfolioGrid />
       
-      {/* 8. Services Grid */}
+      {/* 9. Services Grid */}
       <ArtistServicesGrid />
       
-      {/* 9. Referral Center */}
+      {/* 10. Referral Center */}
       <ArtistReferralCenter />
       
-      {/* 10. Credits Redemption Section - Removed the credits prop */}
+      {/* 11. Credits Redemption Section */}
       <section className="mb-8" id="credits-redemption">
         <h2 className="text-xl font-serif font-semibold mb-4">Redeem Emvi Credits</h2>
         <ArtistCreditsRedemption />
       </section>
       
-      {/* 11. Booking Calendar */}
+      {/* 12. Booking Calendar */}
       <section className="mb-8" id="calendar">
         <h2 className="text-xl font-serif font-semibold mb-4">Booking Calendar</h2>
         <ArtistBookingCalendar />
       </section>
       
-      {/* 12. Upgrade Section */}
+      {/* 13. Upgrade Section */}
       <section id="upgrade">
         <h2 className="text-xl font-serif font-semibold mb-4">Unlock Premium Features</h2>
         <ArtistUpgradeSection />

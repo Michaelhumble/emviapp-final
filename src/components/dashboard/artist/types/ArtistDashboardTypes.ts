@@ -1,10 +1,6 @@
 
 import { UserProfile } from "@/context/auth/types";
 
-export interface ArtistDashboardProps {
-  // Add any props needed for the dashboard
-}
-
 export interface ArtistProfileState {
   artistProfile: UserProfile | null;
   loading: boolean;
@@ -12,9 +8,9 @@ export interface ArtistProfileState {
 }
 
 export interface ArtistDataContextType extends ArtistProfileState {
-  handleCopyReferralLink: () => void;
-  copied: boolean;
   firstName: string;
   userCredits: number;
+  copied: boolean;
+  handleCopyReferralLink: () => void;
   refreshArtistProfile: () => Promise<void>;
 }
