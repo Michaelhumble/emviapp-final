@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile, UserRole } from './types';
 import { Json } from '@/integrations/supabase/types';
@@ -92,33 +91,47 @@ export const getUserProfile = async (userId: string): Promise<UserProfile | null
   }
 };
 
-// Fixed function to prevent excessive type instantiation
 export const updateUserProfileInDb = async (userId: string, updates: Partial<UserProfile>) => {
   try {
-    // Create a simple object with basic types for database updates
+    // Create a simple object for database updates without complex types
     const dbUpdates: Record<string, any> = {};
     
-    // Manually copy fields to avoid deep type instantiation issues
-    Object.keys(updates).forEach(key => {
-      const k = key as keyof typeof updates;
-      if (updates[k] !== undefined) {
-        // Skip nested objects/arrays that might cause deep type instantiation
-        if (k === 'user_role') {
-          // Map user_role to role for database
-          dbUpdates['role'] = updates[k];
-        } else if (k !== 'social_links' && !['facebook', 'twitter'].includes(key)) {
-          // Skip fields that don't exist in the database or might cause recursion
-          dbUpdates[key] = updates[k];
-        }
-      }
-    });
+    // Only add fields that have values
+    if (updates.full_name !== undefined) dbUpdates.full_name = updates.full_name;
+    if (updates.avatar_url !== undefined) dbUpdates.avatar_url = updates.avatar_url;
+    if (updates.bio !== undefined) dbUpdates.bio = updates.bio;
+    if (updates.contact_link !== undefined) dbUpdates.contact_link = updates.contact_link;
+    if (updates.email !== undefined) dbUpdates.email = updates.email;
+    if (updates.instagram !== undefined) dbUpdates.instagram = updates.instagram;
+    if (updates.website !== undefined) dbUpdates.website = updates.website;
+    if (updates.location !== undefined) dbUpdates.location = updates.location;
+    if (updates.specialty !== undefined) dbUpdates.specialty = updates.specialty;
+    if (updates.phone !== undefined) dbUpdates.phone = updates.phone;
+    if (updates.salon_name !== undefined) dbUpdates.salon_name = updates.salon_name;
+    if (updates.company_name !== undefined) dbUpdates.company_name = updates.company_name;
+    if (updates.preferred_language !== undefined) dbUpdates.preferred_language = updates.preferred_language;
+    if (updates.skill_level !== undefined) dbUpdates.skill_level = updates.skill_level;
+    if (updates.custom_role !== undefined) dbUpdates.custom_role = updates.custom_role;
+    if (updates.skills !== undefined) dbUpdates.skills = updates.skills;
+    if (updates.referral_code !== undefined) dbUpdates.referral_code = updates.referral_code;
+    if (updates.profile_views !== undefined) dbUpdates.profile_views = updates.profile_views;
+    if (updates.credits !== undefined) dbUpdates.credits = updates.credits;
+    if (updates.boosted_until !== undefined) dbUpdates.boosted_until = updates.boosted_until;
+    if (updates.badges !== undefined) dbUpdates.badges = updates.badges;
+    
+    // Map user_role to role for database
+    if (updates.user_role !== undefined) {
+      dbUpdates.role = updates.user_role;
+    } else if (updates.role !== undefined) {
+      dbUpdates.role = updates.role;
+    }
+    
+    // Always add updated_at when updating a profile
+    dbUpdates.updated_at = new Date().toISOString();
     
     const { error } = await supabase
       .from('users')
-      .update({
-        ...dbUpdates,
-        updated_at: new Date().toISOString(),
-      })
+      .update(dbUpdates)
       .eq('id', userId);
 
     if (error) {

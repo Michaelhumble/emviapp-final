@@ -14,38 +14,12 @@ import { supabase } from "@/integrations/supabase/client";
  * or shows the role selection modal for new users
  */
 const Dashboard = () => {
-  const { userRole, loading: authLoading, user, isSignedIn, isNewUser, clearIsNewUser, refreshUserProfile } = useAuth();
+  const { userRole, isLoading: authLoading, user, isSignedIn, isNewUser, clearIsNewUser, refreshUserProfile } = useAuth();
   const navigate = useNavigate();
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [isRedirecting, setIsRedirecting] = useState(false);
-  const [isFetchingRole, setIsFetchingRole] = useState(false);
-  
-  // Direct role fetch function to avoid potential context issues
-  const fetchUserRoleDirectly = async (userId: string) => {
-    try {
-      setIsFetchingRole(true);
-      
-      const { data, error } = await supabase
-        .from('users')
-        .select('role')
-        .eq('id', userId)
-        .maybeSingle();
-      
-      if (error) {
-        console.error("Error fetching role:", error);
-        return null;
-      }
-      
-      return data?.role || null;
-    } catch (err) {
-      console.error("Error in direct role fetch:", err);
-      return null;
-    } finally {
-      setIsFetchingRole(false);
-    }
-  };
   
   useEffect(() => {
     // Function to handle redirection logic
@@ -69,29 +43,31 @@ const Dashboard = () => {
       setIsRedirecting(true);
 
       try {
-        // If user exists but role is missing, try to fetch it directly from database
+        // If no role but user exists, try to fetch role directly
         if (user?.id && !userRole) {
-          const directRole = await fetchUserRoleDirectly(user.id);
+          const { data: userData, error } = await supabase
+            .from('users')
+            .select('role')
+            .eq('id', user.id)
+            .maybeSingle();
           
-          // If we found a role directly, refresh the profile and redirect
-          if (directRole) {
-            console.log("Found role directly:", directRole);
+          // If we found role directly, refresh and redirect
+          if (!error && userData?.role) {
+            console.log("Found role directly:", userData.role);
             await refreshUserProfile();
-            navigateToRoleDashboard(navigate, directRole);
+            navigateToRoleDashboard(navigate, userData.role);
             return;
           }
           
-          // If no role found directly, show the selection modal
-          console.log("No role found, showing selection modal");
+          // No role found, show selection modal
+          console.log("No role found directly, showing modal");
           setShowRoleModal(true);
-          if (isNewUser) {
-            clearIsNewUser();
-          }
+          if (isNewUser) clearIsNewUser();
           setIsRedirecting(false);
           return;
         }
         
-        // If user is new, show role selection modal
+        // If new user, show role selection
         if (isNewUser) {
           console.log("New user, showing role selection modal");
           setShowRoleModal(true);
@@ -100,7 +76,7 @@ const Dashboard = () => {
           return;
         }
         
-        // If we have a role, redirect to the appropriate dashboard
+        // If we have a role, redirect appropriately
         if (userRole) {
           console.log("Redirecting based on role:", userRole);
           navigateToRoleDashboard(navigate, userRole);
@@ -113,7 +89,6 @@ const Dashboard = () => {
       } catch (err) {
         console.error("Error in dashboard redirect:", err);
         setError("Unable to load your dashboard. Please try again.");
-        toast.error("Dashboard redirect error. Please try again.");
         setIsRedirecting(false);
       }
     };
@@ -126,38 +101,10 @@ const Dashboard = () => {
     setError(null);
     setRetryCount(prev => prev + 1);
     setIsRedirecting(false);
-    
-    try {
-      // If we have a user but no role, try direct fetch
-      if (user?.id) {
-        const directRole = await fetchUserRoleDirectly(user.id);
-        
-        if (directRole) {
-          // Refresh profile to update context
-          await refreshUserProfile();
-          navigateToRoleDashboard(navigate, directRole);
-          return;
-        }
-      }
-      
-      // Otherwise refresh user profile and try again
-      await refreshUserProfile();
-      
-      // Check if we now have a role after refresh
-      if (userRole) {
-        navigateToRoleDashboard(navigate, userRole);
-      } else {
-        // Still no role, show modal
-        setShowRoleModal(true);
-      }
-    } catch (err) {
-      console.error("Retry error:", err);
-      setError("Still having trouble. Please try selecting your role or logging out and back in.");
-      setShowRoleModal(true);
-    }
+    await refreshUserProfile();
   };
 
-  // Handle logout 
+  // Handle emergency logout 
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
@@ -165,7 +112,9 @@ const Dashboard = () => {
       navigate("/sign-in");
     } catch (err) {
       console.error("Logout error:", err);
-      toast.error("Failed to log out. Please try again.");
+      toast.error("Failed to log out. Reloading the page...");
+      // Force reload as a last resort
+      window.location.href = "/sign-in";
     }
   };
   
@@ -204,7 +153,7 @@ const Dashboard = () => {
       </div>
       <p className="text-gray-500 text-sm mb-8">We're redirecting you to the appropriate dashboard</p>
       
-      {/* Emergency logout button if stuck in loading state */}
+      {/* Emergency logout button to break from loading state */}
       <Button variant="outline" onClick={handleLogout} className="mt-4">
         Log Out
       </Button>

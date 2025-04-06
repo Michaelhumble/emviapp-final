@@ -55,7 +55,18 @@ const UserMenu = ({ user, userRole, handleSignOut }: UserMenuProps) => {
     }
   };
 
-  // Emergency logout function
+  // Handle standard logout with fallback
+  const safeSignOut = async () => {
+    try {
+      await handleSignOut();
+    } catch (err) {
+      console.error("Sign out error:", err);
+      toast.error("Error signing out. Trying emergency logout...");
+      await emergencyLogout();
+    }
+  };
+
+  // Emergency logout function as fallback
   const emergencyLogout = async () => {
     try {
       await supabase.auth.signOut();
@@ -63,7 +74,7 @@ const UserMenu = ({ user, userRole, handleSignOut }: UserMenuProps) => {
       toast.success("You've been signed out successfully");
     } catch (err) {
       console.error("Emergency logout error:", err);
-      toast.error("Logout error. Please try again.");
+      toast.error("Logout failed. Reloading the page...");
       // Force reload as a last resort
       window.location.href = "/sign-in";
     }
@@ -124,11 +135,11 @@ const UserMenu = ({ user, userRole, handleSignOut }: UserMenuProps) => {
             <Settings className="mr-2 h-4 w-4" />
             <span>Settings</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleSignOut}>
+          <DropdownMenuItem onClick={safeSignOut}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
           </DropdownMenuItem>
-          {/* Emergency logout option if needed */}
+          {/* Emergency logout option */}
           <DropdownMenuItem onClick={emergencyLogout} className="text-red-500">
             <LogOut className="mr-2 h-4 w-4" />
             <span>Force Logout</span>

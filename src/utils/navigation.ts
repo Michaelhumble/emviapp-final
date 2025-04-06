@@ -1,3 +1,4 @@
+
 import { NavigateFunction } from "react-router-dom";
 import { UserRole } from "@/context/auth/types";
 import { toast } from "sonner";
@@ -46,6 +47,7 @@ export const navigateToRoleDashboard = (
   } else {
     // Fallback for unknown roles
     console.warn("Unknown user role:", userRole);
+    toast.error(`Unknown role: ${userRole}. Redirecting to general dashboard.`);
     navigate("/dashboard/other");
   }
 };
