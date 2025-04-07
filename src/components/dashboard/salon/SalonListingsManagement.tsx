@@ -2,17 +2,20 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, PlusCircle, Store } from "lucide-react";
+import { Loader2, PlusCircle, Store, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SalonSale } from "@/types/salonSale";
 import { supabase } from "@/integrations/supabase/client";
 import { FeatureListingButton } from "@/components/sell-salon/FeatureListingButton";
 import { useAuth } from "@/context/auth";
 import { formatCurrency } from "@/utils/salonSales";
+import { checkCredits } from "@/utils/credits";
 
 const SalonListingsManagement = () => {
   const [listings, setListings] = useState<SalonSale[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasCredits, setHasCredits] = useState(false);
+  const [hasFeaturedListing, setHasFeaturedListing] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
   
@@ -34,7 +37,15 @@ const SalonListingsManagement = () => {
         }
         
         // Use type assertion to make TypeScript happy
-        setListings(data as SalonSale[]);
+        const salonData = data as SalonSale[];
+        setListings(salonData);
+        
+        // Check if any listings are featured
+        setHasFeaturedListing(salonData.some(listing => listing.is_featured));
+        
+        // Check if user has credits
+        const userCredits = await checkCredits(user.id);
+        setHasCredits(userCredits >= 10);
       } catch (error) {
         console.error("Exception fetching listings:", error);
       } finally {
@@ -61,7 +72,15 @@ const SalonListingsManagement = () => {
       }
       
       // Use type assertion to make TypeScript happy
-      setListings(data as SalonSale[]);
+      const salonData = data as SalonSale[];
+      setListings(salonData);
+      
+      // Update featured status
+      setHasFeaturedListing(salonData.some(listing => listing.is_featured));
+      
+      // Refresh credit status
+      const userCredits = await checkCredits(user.id);
+      setHasCredits(userCredits >= 10);
     } catch (error) {
       console.error("Exception refreshing listings:", error);
     }
@@ -82,6 +101,20 @@ const SalonListingsManagement = () => {
         </Button>
       </CardHeader>
       <CardContent>
+        {hasCredits && listings.length > 0 && !hasFeaturedListing && (
+          <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-md">
+            <div className="flex items-start">
+              <Star className="h-5 w-5 text-amber-500 mr-2 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="font-medium text-amber-800">Boost Your Listing</p>
+                <p className="text-sm text-amber-700">
+                  Use your credits to feature a listing and get more visibility from potential buyers.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        
         {isLoading ? (
           <div className="flex justify-center py-8">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />

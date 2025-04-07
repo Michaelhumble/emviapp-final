@@ -27,6 +27,12 @@ export const FeatureListingButton = ({
       return;
     }
     
+    // Don't allow featuring a listing that's already featured
+    if (isFeatured) {
+      toast.info("This listing is already featured");
+      return;
+    }
+    
     setIsLoading(true);
     try {
       // First check if the user has enough credits
