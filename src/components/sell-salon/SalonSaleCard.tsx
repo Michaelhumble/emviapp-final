@@ -39,6 +39,8 @@ export const SalonSaleCard = ({
     }
   };
 
+  const isActive = salon.status === 'active';
+
   return (
     <Card 
       className={`overflow-hidden transition-shadow hover:shadow-md ${
@@ -48,13 +50,20 @@ export const SalonSaleCard = ({
       }`}
     >
       <div className="aspect-video bg-gray-200 relative">
+        {!isActive && (
+          <div className="absolute inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-10">
+            <div className="bg-white px-3 py-1 rounded-md text-gray-800 font-medium text-sm">
+              Inactive Listing
+            </div>
+          </div>
+        )}
         {salon.is_urgent && (
-          <div className="absolute top-2 right-2 bg-amber-400 text-white py-1 px-2 rounded-md text-xs font-medium">
+          <div className="absolute top-2 right-2 bg-amber-400 text-white py-1 px-2 rounded-md text-xs font-medium z-20">
             Urgent
           </div>
         )}
         {salon.is_featured && (
-          <div className="absolute top-2 left-2 bg-gradient-to-r from-amber-400 to-yellow-400 text-amber-900 py-1 px-2 rounded-md text-xs font-medium flex items-center shadow-sm">
+          <div className="absolute top-2 left-2 bg-gradient-to-r from-amber-400 to-yellow-400 text-amber-900 py-1 px-2 rounded-md text-xs font-medium flex items-center shadow-sm z-20">
             <Star className="h-3 w-3 mr-1 fill-amber-900" /> Featured
           </div>
         )}

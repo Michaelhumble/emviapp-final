@@ -7,7 +7,7 @@ export async function fetchSalonSales() {
   try {
     const { data, error } = await supabase
       .from('salon_sales')
-      .select('*')
+      .select('*, photos:salon_sale_photos(*)')
       .eq('status', 'active')
       .order('is_featured', { ascending: false })
       .order('created_at', { ascending: false });
@@ -96,6 +96,75 @@ export async function createSalonSale(values: SalonSaleFormValues, userId: strin
   }
 }
 
+export async function updateSalonSale(id: string, values: Partial<SalonSaleFormValues>, userId: string) {
+  try {
+    const { data, error } = await supabase
+      .from('salon_sales')
+      .update({
+        salon_name: values.salon_name,
+        city: values.city,
+        state: values.state,
+        asking_price: values.asking_price ? parseFloat(values.asking_price) : undefined,
+        size: values.size,
+        business_type: values.business_type,
+        description: values.description,
+        is_urgent: values.is_urgent,
+        is_private: values.is_private
+      })
+      .eq('id', id)
+      .eq('user_id', userId) // Security check
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating salon sale:', error);
+      toast.error('Failed to update salon listing');
+      return null;
+    }
+
+    toast.success('Salon listing updated successfully');
+    return data as SalonSale;
+  } catch (error) {
+    console.error('Exception when updating salon sale:', error);
+    toast.error('Failed to update salon listing');
+    return null;
+  }
+}
+
+export async function deleteSalonSale(id: string, userId: string) {
+  try {
+    // First delete associated photos
+    const { error: photosError } = await supabase
+      .from('salon_sale_photos')
+      .delete()
+      .eq('salon_sale_id', id);
+      
+    if (photosError) {
+      console.error('Error deleting salon photos:', photosError);
+    }
+    
+    // Then delete the salon sale record
+    const { error } = await supabase
+      .from('salon_sales')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', userId); // Security check
+
+    if (error) {
+      console.error('Error deleting salon sale:', error);
+      toast.error('Failed to delete salon listing');
+      return false;
+    }
+
+    toast.success('Salon listing deleted successfully');
+    return true;
+  } catch (error) {
+    console.error('Exception when deleting salon sale:', error);
+    toast.error('Failed to delete salon listing');
+    return false;
+  }
+}
+
 export async function uploadSalonPhotos(files: File[], salonSaleId: string) {
   try {
     const results = [];
@@ -143,6 +212,29 @@ export async function uploadSalonPhotos(files: File[], salonSaleId: string) {
   } catch (error) {
     console.error('Exception when uploading salon photos:', error);
     return [];
+  }
+}
+
+export async function changeSalonSaleStatus(id: string, status: 'active' | 'inactive' | 'sold', userId: string) {
+  try {
+    const { error } = await supabase
+      .from('salon_sales')
+      .update({ status })
+      .eq('id', id)
+      .eq('user_id', userId); // Security check
+
+    if (error) {
+      console.error(`Error changing salon sale status to ${status}:`, error);
+      toast.error(`Failed to change listing status to ${status}`);
+      return false;
+    }
+
+    toast.success(`Salon listing status changed to ${status}`);
+    return true;
+  } catch (error) {
+    console.error(`Exception when changing salon sale status to ${status}:`, error);
+    toast.error(`Failed to change listing status to ${status}`);
+    return false;
   }
 }
 
