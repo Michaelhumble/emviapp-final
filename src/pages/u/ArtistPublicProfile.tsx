@@ -99,27 +99,48 @@ const ArtistPublicProfile = () => {
                             (location.pathname.includes('/explore') ? 'directory' :
                              location.pathname.includes('/search') ? 'search' : 'direct');
                              
-            // Use raw SQL query to insert profile view since the types are not yet updated
-            const { error: viewError } = await supabase.rpc('track_profile_view', {
-              p_viewer_id: user.id,
-              p_artist_id: userData.id,
-              p_source_page: sourcePage,
-              p_viewer_role: userRole || 'unknown'
-            });
-            
-            if (viewError && !viewError.message.includes('unique constraint')) {
-              console.error("Error tracking profile view:", viewError);
+            // Track profile view using a direct insert with a try-catch for the unique constraint
+            try {
+              // Check if viewer and artist have matching location/specialty
+              const { data: viewerData } = await supabase
+                .from('users')
+                .select('location, specialty')
+                .eq('id', user.id)
+                .single();
+                
+              const locationMatched = viewerData?.location && userData.location && 
+                                     viewerData.location === userData.location;
+              const specialtyMatched = viewerData?.specialty && userData.specialty && 
+                                     viewerData.specialty === userData.specialty;
+                                     
+              // Insert the view with RETURNING to handle conflict silently
+              await supabase
+                .from('profile_views')
+                .insert({
+                  viewer_id: user.id,
+                  artist_id: userData.id,
+                  source_page: sourcePage,
+                  viewer_role: userRole || 'unknown',
+                  location_matched: locationMatched || false,
+                  specialty_matched: specialtyMatched || false
+                })
+                .select();
+                
+            } catch (viewError) {
+              // Silently handle duplicate view constraint errors
+              console.log("Note: View may already be recorded today");
             }
             
             // Get view count for display (only for artists and salon owners viewing profiles)
             if (isSalonOwner || userRole === 'artist') {
-              // Directly use SQL query to get view count
-              const { data: viewCountData, error: countError } = await supabase.rpc('get_artist_views_count', {
-                artist_id: userData.id
-              });
+              const { count, error: countError } = await supabase
+                .from('profile_views')
+                .select('*', { count: 'exact', head: true })
+                .eq('artist_id', userData.id)
+                .gte('viewed_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
                 
-              if (!countError && viewCountData !== null) {
-                setViewCount(viewCountData);
+              if (!countError && count !== null) {
+                setViewCount(count);
               }
             }
           }

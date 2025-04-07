@@ -27,37 +27,27 @@ export const useSuggestedArtists = (currentArtistId?: string) => {
         if (user) {
           // For authenticated users, fetch based on viewing history
           
-          // 1. Get the top specialties and locations this user has viewed
-          // Note: We can't directly query 'profile_views' until types are updated
-          // Instead, use a direct SQL query to get viewed artists
-          const { data: viewedData, error: viewedError } = await supabase
+          // Get artists the user has viewed in the last 30 days
+          const { data: viewedArtistsData } = await supabase
             .from('users')
-            .select('id')
-            .in('role', ['artist', 'freelancer', 'nail technician/artist'])
-            .limit(10);
+            .select('id, specialty, location')
+            .in('id', (
+              await supabase
+                .from('profile_views')
+                .select('artist_id')
+                .eq('viewer_id', user.id)
+                .limit(10)
+            ).data?.map(v => v.artist_id) || []);
             
-          if (viewedError) throw viewedError;
-          
-          if (viewedData && viewedData.length > 0) {
-            // Get artists similar to those they've viewed
-            const artistIds = viewedData.map(view => view.id);
-            
-            // Get specialty and location data for the viewed artists
-            const { data: viewedArtists, error: artistError } = await supabase
-              .from('users')
-              .select('specialty, location')
-              .in('id', artistIds);
+          if (viewedArtistsData && viewedArtistsData.length > 0) {
+            // Extract specialties and locations from viewed artists
+            const specialties = viewedArtistsData
+              .map(a => a.specialty)
+              .filter(Boolean);
               
-            if (artistError) throw artistError;
-            
-            // Extract specialties and locations
-            const specialties = viewedArtists
-              ?.map(a => a.specialty)
-              .filter(Boolean) || [];
-              
-            const locations = viewedArtists
-              ?.map(a => a.location)
-              .filter(Boolean) || [];
+            const locations = viewedArtistsData
+              .map(a => a.location)
+              .filter(Boolean);
             
             // Build query for suggested artists based on specialties and locations
             query = supabase
@@ -74,11 +64,7 @@ export const useSuggestedArtists = (currentArtistId?: string) => {
             
             // Filter by location if we have location data
             if (locations.length > 0) {
-              // Use ilike for partial matching of locations
-              const locationFilter = locations.length > 1 
-                ? locations.map(loc => `location.ilike.%${loc}%`).join(',') 
-                : `location.ilike.%${locations[0]}%`;
-              query = query.or(locationFilter);
+              query = query.in('location', locations);
             }
             
             // Exclude current artist if viewing a profile
