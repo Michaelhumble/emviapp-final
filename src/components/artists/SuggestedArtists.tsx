@@ -1,13 +1,24 @@
-
-import React from "react";
+import React, { useState } from "react";
 import { UserProfile } from "@/types/profile";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { MapPin } from "lucide-react";
+import { MapPin, Heart, Bell, Mail, SendHorizonal } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSuggestedArtists } from "@/hooks/useSuggestedArtists";
+import { useAuth } from "@/context/auth";
+import { Button } from "@/components/ui/button";
+import { useArtistInteractions } from "@/hooks/useArtistInteractions";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import AuthAction from "@/components/common/AuthAction";
+import OfferModal from "@/components/artists/OfferModal";
+import { getInitials } from "@/utils/userUtils";
 
 interface SuggestedArtistsProps {
   currentArtistId?: string;
@@ -53,22 +64,31 @@ const SuggestedArtists: React.FC<SuggestedArtistsProps> = ({
 
 const ArtistCard: React.FC<{ artist: UserProfile }> = ({ artist }) => {
   const isBoosted = artist.boosted_until && new Date(artist.boosted_until) > new Date();
+  const { userRole } = useAuth();
+  const isSalonOwner = userRole === 'salon' || userRole === 'owner';
+  const [offerModalOpen, setOfferModalOpen] = useState(false);
+  
+  const {
+    isBookmarked,
+    isFollowing,
+    loading,
+    toggleBookmark,
+    toggleFollow,
+    sendOffer
+  } = useArtistInteractions(artist.id);
   
   return (
-    <Link 
-      to={`/u/${artist.id}`} 
-      className="block"
-    >
-      <Card className="h-full hover:shadow-md transition-shadow border-border/60">
-        <CardContent className="p-4">
-          <div className="flex items-center space-x-3">
+    <Card className="h-full hover:shadow-md transition-shadow border-border/60">
+      <CardContent className="p-4">
+        <Link 
+          to={`/u/${artist.id}`} 
+          className="block"
+        >
+          <div className="flex items-center space-x-3 mb-3">
             <Avatar className="h-12 w-12">
               <AvatarImage src={artist.avatar_url || ""} alt={artist.full_name || ""} />
               <AvatarFallback>
-                {artist.full_name?.split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .toUpperCase() || ""}
+                {getInitials(artist.full_name)}
               </AvatarFallback>
             </Avatar>
             
@@ -98,9 +118,93 @@ const ArtistCard: React.FC<{ artist: UserProfile }> = ({ artist }) => {
               )}
             </div>
           </div>
-        </CardContent>
-      </Card>
-    </Link>
+        </Link>
+        
+        {/* Artist interaction buttons */}
+        <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/40">
+          <TooltipProvider>
+            <div className="flex items-center space-x-2">
+              <Tooltip>
+                <AuthAction onAction={toggleBookmark}>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      className="h-8 w-8"
+                      disabled={loading.bookmark}
+                    >
+                      <Heart 
+                        className={`h-4 w-4 ${isBookmarked ? 'fill-red-500 text-red-500' : 'text-muted-foreground'}`} 
+                      />
+                      <span className="sr-only">Save to My List</span>
+                    </Button>
+                  </TooltipTrigger>
+                </AuthAction>
+                <TooltipContent side="bottom">
+                  {isBookmarked ? 'Remove from My List' : 'Save to My List'}
+                </TooltipContent>
+              </Tooltip>
+              
+              <Tooltip>
+                <AuthAction onAction={toggleFollow}>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      className="h-8 w-8"
+                      disabled={loading.follow}
+                    >
+                      <Bell 
+                        className={`h-4 w-4 ${isFollowing ? 'fill-primary/20 text-primary' : 'text-muted-foreground'}`}
+                      />
+                      <span className="sr-only">Follow for Updates</span>
+                    </Button>
+                  </TooltipTrigger>
+                </AuthAction>
+                <TooltipContent side="bottom">
+                  {isFollowing ? 'Unfollow Artist' : 'Follow for Updates'}
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </TooltipProvider>
+          
+          {/* Offer button - only for salon owners */}
+          {isSalonOwner && (
+            <TooltipProvider>
+              <Tooltip>
+                <AuthAction onAction={() => {
+                  setOfferModalOpen(true);
+                  return true;
+                }}>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="text-xs h-8"
+                    >
+                      <SendHorizonal className="h-3 w-3 mr-1" />
+                      Send Offer
+                    </Button>
+                  </TooltipTrigger>
+                </AuthAction>
+                <TooltipContent side="bottom">
+                  Invite this artist to join your salon
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
+        
+        {/* Offer Modal */}
+        <OfferModal
+          artistName={artist.full_name || "this artist"}
+          onSendOffer={sendOffer}
+          open={offerModalOpen}
+          onOpenChange={setOfferModalOpen}
+          isLoading={loading.offer}
+        />
+      </CardContent>
+    </Card>
   );
 };
 

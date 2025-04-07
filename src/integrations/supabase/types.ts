@@ -69,6 +69,27 @@ export type Database = {
         }
         Relationships: []
       }
+      followers: {
+        Row: {
+          artist_id: string
+          followed_at: string | null
+          id: string
+          viewer_id: string
+        }
+        Insert: {
+          artist_id: string
+          followed_at?: string | null
+          id?: string
+          viewer_id: string
+        }
+        Update: {
+          artist_id?: string
+          followed_at?: string | null
+          id?: string
+          viewer_id?: string
+        }
+        Relationships: []
+      }
       job_applications: {
         Row: {
           applicant_id: string | null
@@ -226,6 +247,36 @@ export type Database = {
           id?: string
           quote_text?: string
           role?: string
+        }
+        Relationships: []
+      }
+      offers_sent: {
+        Row: {
+          artist_id: string
+          credits_used: number | null
+          id: string
+          message: string | null
+          sender_id: string
+          sent_at: string | null
+          status: string | null
+        }
+        Insert: {
+          artist_id: string
+          credits_used?: number | null
+          id?: string
+          message?: string | null
+          sender_id: string
+          sent_at?: string | null
+          status?: string | null
+        }
+        Update: {
+          artist_id?: string
+          credits_used?: number | null
+          id?: string
+          message?: string | null
+          sender_id?: string
+          sent_at?: string | null
+          status?: string | null
         }
         Relationships: []
       }
@@ -458,6 +509,27 @@ export type Database = {
           salon_name?: string | null
           updated_at?: string | null
           website?: string | null
+        }
+        Relationships: []
+      }
+      saved_artists: {
+        Row: {
+          artist_id: string
+          id: string
+          saved_at: string | null
+          viewer_id: string
+        }
+        Insert: {
+          artist_id: string
+          id?: string
+          saved_at?: string | null
+          viewer_id: string
+        }
+        Update: {
+          artist_id?: string
+          id?: string
+          saved_at?: string | null
+          viewer_id?: string
         }
         Relationships: []
       }
