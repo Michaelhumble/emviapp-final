@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Loader2 } from "lucide-react";
 import RoleSelectionList from "./roles/RoleSelectionList";
 import { useRoleSelection } from "./roles/useRoleSelection";
+import { useEffect } from "react";
 
 interface RoleSelectionModalProps {
   open: boolean;
@@ -18,6 +19,11 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
     isSubmitting,
     handleRoleSelection
   } = useRoleSelection(userId, onOpenChange);
+  
+  // Debug log to check if the modal is being rendered and its open state
+  useEffect(() => {
+    console.log("Role selection modal rendered with open state:", open, "for user:", userId);
+  }, [open, userId]);
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

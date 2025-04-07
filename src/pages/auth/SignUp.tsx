@@ -3,6 +3,7 @@ import Layout from "@/components/layout/Layout";
 import SignUpForm from "@/components/auth/SignUpForm";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 import { useSignUp } from "@/hooks/useSignUp";
+import { useEffect } from "react";
 
 const SignUp = () => {
   const {
@@ -19,6 +20,14 @@ const SignUp = () => {
     handleRoleModalClose,
     user
   } = useSignUp();
+
+  // Debug log to check auth state in the sign-up page
+  useEffect(() => {
+    console.log("SignUp page rendered with state:", { 
+      userExists: !!user, 
+      showRoleModal 
+    });
+  }, [user, showRoleModal]);
 
   return (
     <Layout>

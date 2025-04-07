@@ -27,16 +27,20 @@ export const useSignUp = () => {
 
   // Redirect based on auth state
   useEffect(() => {
-    // If signed in and role selection completed (not a new user)
-    if (user && !isNewUser) {
-      navigate("/dashboard");
-    }
+    console.log("Auth state in useSignUp:", { user, isNewUser, showRoleModal });
     
     // If signed in but needs to select role (new user)
     if (user && isNewUser) {
+      console.log("New user detected, showing role modal");
       setShowRoleModal(true);
     }
-  }, [user, isNewUser, navigate]);
+    
+    // If signed in and role selection completed (not a new user)
+    if (user && !isNewUser && !showRoleModal) {
+      console.log("User already has role, redirecting to dashboard");
+      navigate("/dashboard");
+    }
+  }, [user, isNewUser, navigate, showRoleModal]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,8 +58,11 @@ export const useSignUp = () => {
       
       if (signUpResponse.error) {
         toast.error(signUpResponse.error.message || "Failed to sign up");
+        setIsSubmitting(false);
         return;
       }
+      
+      console.log("Sign up successful, user created");
       
       // If there's a referral code, process it
       if (referralCode && signUpResponse.data?.user?.id) {
@@ -89,8 +96,9 @@ export const useSignUp = () => {
       }
       
       toast.success("Account created successfully!");
+      // The role modal will be shown automatically via the useEffect above
+      setShowRoleModal(true);
       
-      // Show role selection modal - auth state changes will handle showing the modal
     } catch (error) {
       toast.error("Failed to sign up. Please try again.");
       console.error("Sign up error:", error);
