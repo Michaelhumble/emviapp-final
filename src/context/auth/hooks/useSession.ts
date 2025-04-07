@@ -23,7 +23,7 @@ export const useSession = () => {
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         
-        // Compare event with the string value
+        // Compare event with the enum values - must use string comparison since AuthChangeEvent is an enum
         if (event === 'SIGNED_UP') {
           console.log("New user signed up!");
           setIsNewUser(true);
