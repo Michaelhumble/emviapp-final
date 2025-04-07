@@ -3,16 +3,15 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2, AlertTriangle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
-import { UserRole } from "@/context/auth/types";
 
 /**
  * Dashboard page that handles loading user profile and redirecting to role-specific dashboards
  */
 const DashboardPage = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  const { user, userRole, loading, signOut } = useAuth();
   const [loadingTime, setLoadingTime] = useState(0);
   const [error, setError] = useState<string | null>(null);
   
@@ -20,6 +19,20 @@ const DashboardPage = () => {
   const handleGoBack = () => {
     navigate("/");
     toast.info("Redirected to home page");
+  };
+  
+  // Function to handle emergency logout
+  const handleEmergencyLogout = async () => {
+    try {
+      await signOut();
+      navigate("/sign-in");
+      toast.success("You've been logged out. Please sign in again.");
+    } catch (error) {
+      console.error("Emergency logout failed:", error);
+      // Force clear local storage as last resort
+      localStorage.clear();
+      window.location.href = "/sign-in";
+    }
   };
   
   // Increment loading time counter
@@ -37,87 +50,56 @@ const DashboardPage = () => {
   
   // Set timeout for loading
   useEffect(() => {
-    if (loading && loadingTime > 5) {
-      setLoading(false);
-      setError("It's taking longer than expected to load your dashboard. Please try again.");
+    if (loading && loadingTime > 8) {
+      setError("It's taking longer than expected to load your dashboard. Please try again or sign out.");
     }
   }, [loadingTime, loading]);
   
-  // Main effect to fetch user data and redirect
+  // Main effect to handle redirection based on role
   useEffect(() => {
-    async function fetchUserAndRedirect() {
-      try {
-        // Get the current session
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) throw new Error(`Session error: ${sessionError.message}`);
-        
-        // Check if user is signed in
-        if (!session || !session.user) {
-          console.log("No active session, redirecting to sign-in");
-          navigate("/sign-in");
-          return;
-        }
-        
-        // Fetch user profile from database
-        const { data: profile, error: profileError } = await supabase
-          .from('users')
-          .select('role')
-          .eq('id', session.user.id)
-          .maybeSingle();
-          
-        if (profileError) throw new Error(`Profile error: ${profileError.message}`);
-        
-        // If profile or role is missing, redirect to role selection
-        if (!profile || !profile.role) {
-          console.log("User has no role, redirecting to role selection");
-          navigate("/select-role");
-          return;
-        }
-        
-        // Process role and redirect to appropriate dashboard
-        const role = profile.role as UserRole;
-        console.log("User role found:", role);
-        
-        switch (role) {
-          case "artist":
-          case "nail technician/artist":
-            navigate("/dashboard/artist");
-            break;
-          case "salon":
-          case "owner":
-            navigate("/dashboard/salon");
-            break;
-          case "freelancer":
-            navigate("/dashboard/freelancer");
-            break;
-          case "vendor":
-          case "supplier":
-          case "beauty supplier":
-            navigate("/dashboard/supplier");
-            break;
-          case "customer":
-            navigate("/dashboard/customer");
-            break;
-          case "renter":
-            navigate("/dashboard/artist"); // Renters go to artist dashboard
-            break;
-          case "other":
-          default:
-            navigate("/dashboard/other");
-        }
-      } catch (error) {
-        console.error("Error in dashboard redirect:", error);
-        setError(`Unable to load your dashboard: ${error.message}`);
-        setLoading(false);
-      } finally {
-        // Ensure loading state is set to false in all cases
-        setLoading(false);
-      }
+    if (loading) return;
+    
+    if (!user) {
+      navigate("/sign-in");
+      return;
     }
     
-    fetchUserAndRedirect();
-  }, [navigate]);
+    // If we have a role, redirect to the appropriate dashboard
+    if (userRole) {
+      console.log("Redirecting to dashboard for role:", userRole);
+      
+      switch (userRole) {
+        case 'artist':
+        case 'nail technician/artist':
+          navigate('/dashboard/artist');
+          break;
+        case 'salon':
+        case 'owner':
+          navigate('/dashboard/salon');
+          break;
+        case 'customer':
+          navigate('/dashboard/customer');
+          break;
+        case 'supplier':
+        case 'vendor':
+        case 'beauty supplier':
+          navigate('/dashboard/supplier');
+          break;
+        case 'freelancer':
+          navigate('/dashboard/freelancer');
+          break;
+        case 'renter':
+          navigate('/dashboard/artist'); // Renters see artist dashboard
+          break;
+        case 'other':
+        default:
+          navigate('/dashboard/other');
+      }
+    } else if (!loading && user) {
+      // If no role but user is logged in, redirect to role selection
+      navigate("/select-role");
+    }
+  }, [user, userRole, loading, navigate]);
   
   // Show error state
   if (error) {
@@ -134,8 +116,6 @@ const DashboardPage = () => {
               variant="default" 
               onClick={() => {
                 setError(null);
-                setLoading(true);
-                setLoadingTime(0);
                 window.location.reload();
               }}
             >
@@ -148,6 +128,13 @@ const DashboardPage = () => {
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Home
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleEmergencyLogout} 
+              className="mt-4"
+            >
+              Emergency Sign Out
             </Button>
           </div>
         </div>
@@ -172,7 +159,22 @@ const DashboardPage = () => {
             <br />
             <br />
             <span className="text-amber-600">
-              This is taking longer than expected. 
+              This is taking longer than expected. If you continue to see this message, try 
+              <Button 
+                variant="link" 
+                className="p-0 h-auto font-medium text-primary mx-1" 
+                onClick={() => window.location.reload()}
+              >
+                refreshing the page
+              </Button> 
+              or 
+              <Button 
+                variant="link" 
+                className="p-0 h-auto mx-1 font-medium text-red-500" 
+                onClick={handleEmergencyLogout}
+              >
+                signing out
+              </Button>.
             </span>
           </>
         )}

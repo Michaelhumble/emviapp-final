@@ -1,92 +1,65 @@
 
-import { useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
-import { toast } from "sonner";
-import DashboardLoadingState from "@/components/dashboard/DashboardLoadingState";
-import DashboardErrorState from "@/components/dashboard/DashboardErrorState";
-import DashboardRedirector from "@/components/dashboard/DashboardRedirector";
+import { UserRole } from "@/context/auth/types";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 /**
- * Dashboard component that handles redirecting users to role-specific dashboards
- * and shows role selection for new users
+ * This component serves as a backup for the main dashboard index
+ * It provides role-based redirection
  */
 const Dashboard = () => {
-  const { loading: authLoading, signOut } = useAuth();
+  const { user, userRole, loading } = useAuth();
   const navigate = useNavigate();
-  const [loadingTime, setLoadingTime] = useState(0);
-  const [redirectError, setRedirectError] = useState<string | null>(null);
-  const [localLoading, setLocalLoading] = useState(true);
   
-  // Handle emergency logout for stuck states
-  const handleEmergencyLogout = async () => {
-    try {
-      await signOut();
+  useEffect(() => {
+    if (loading) return;
+    
+    if (!user) {
       navigate("/sign-in");
-      toast.success("You've been logged out. Please sign in again.");
-    } catch (error) {
-      console.error("Emergency logout failed:", error);
-      // Force clear local storage as last resort
-      localStorage.clear();
-      window.location.href = "/sign-in";
-    }
-  };
-
-  // Redirect back to home
-  const handleGoBack = () => {
-    navigate("/");
-    toast.info("Redirected to home page");
-  };
-  
-  // Increment loading time counter
-  useState(() => {
-    if (localLoading || authLoading) {
-      const timer = setInterval(() => {
-        setLoadingTime(prev => prev + 1);
-      }, 1000);
-      
-      return () => clearInterval(timer);
+      return;
     }
     
-    return () => {}; // Empty cleanup for when not loading
-  });
-  
-  // Set timeout for checking role
-  useState(() => {
-    if (localLoading && loadingTime > 5) {
-      setLocalLoading(false);
-      setRedirectError("It's taking longer than expected to load your dashboard. Please check your connection and try again.");
+    // If we have a role, redirect to the appropriate dashboard
+    if (userRole) {
+      console.log("Dashboard.tsx redirecting based on role:", userRole);
+      redirectBasedOnRole(userRole, navigate);
     }
-  });
+  }, [user, userRole, loading, navigate]);
   
-  // Show error state
-  if (redirectError) {
-    return (
-      <DashboardErrorState
-        error={redirectError}
-        onRetry={() => {
-          setRedirectError(null);
-          setLocalLoading(true);
-          setLoadingTime(0);
-        }}
-        onGoBack={handleGoBack}
-        onEmergencyLogout={handleEmergencyLogout}
-      />
-    );
+  // This component doesn't render anything of its own, it just redirects
+  return null;
+};
+
+// Helper function to redirect based on role
+const redirectBasedOnRole = (role: UserRole, navigate: any) => {
+  switch (role) {
+    case 'artist':
+    case 'nail technician/artist':
+      navigate('/dashboard/artist');
+      break;
+    case 'salon':
+    case 'owner':
+      navigate('/dashboard/salon');
+      break;
+    case 'customer':
+      navigate('/dashboard/customer');
+      break;
+    case 'supplier':
+    case 'vendor':
+    case 'beauty supplier':
+      navigate('/dashboard/supplier');
+      break;
+    case 'freelancer':
+      navigate('/dashboard/freelancer');
+      break;
+    case 'renter':
+      navigate('/dashboard/artist'); // Renters see artist dashboard
+      break;
+    case 'other':
+    default:
+      navigate('/dashboard/other');
   }
-  
-  // Show loading state with progress indicator
-  if (localLoading || authLoading) {
-    return (
-      <DashboardLoadingState 
-        loadingTime={loadingTime} 
-        handleEmergencyLogout={handleEmergencyLogout} 
-      />
-    );
-  }
-  
-  // Redirector component handles the actual redirection logic
-  return <DashboardRedirector setRedirectError={setRedirectError} setLocalLoading={setLocalLoading} />;
 };
 
 export default Dashboard;
