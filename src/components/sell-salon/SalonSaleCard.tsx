@@ -5,13 +5,25 @@ import { Button } from "@/components/ui/button";
 import { MapPin, DollarSign, Store, Star } from "lucide-react";
 import { SalonSale } from "@/types/salonSale";
 import { formatCurrency } from "@/utils/salonSales";
+import { FeatureListingButton } from "@/components/sell-salon/FeatureListingButton";
+import { useAuth } from "@/context/auth";
 
 interface SalonSaleCardProps {
   salon: SalonSale;
   onViewDetails: (salon: SalonSale) => void;
+  showFeatureButton?: boolean;
+  onFeatureSuccess?: () => void;
 }
 
-export const SalonSaleCard = ({ salon, onViewDetails }: SalonSaleCardProps) => {
+export const SalonSaleCard = ({ 
+  salon, 
+  onViewDetails, 
+  showFeatureButton = false,
+  onFeatureSuccess
+}: SalonSaleCardProps) => {
+  const { user } = useAuth();
+  const isOwner = user?.id === salon.user_id;
+  
   const getBusinessTypeIcon = (type?: string) => {
     switch (type) {
       case "Nails":
@@ -81,6 +93,17 @@ export const SalonSaleCard = ({ salon, onViewDetails }: SalonSaleCardProps) => {
             View Details
           </Button>
         </div>
+        
+        {showFeatureButton && isOwner && (
+          <div className="mt-3 pt-3 border-t border-gray-100">
+            <FeatureListingButton 
+              salonSaleId={salon.id} 
+              isFeatured={salon.is_featured || false}
+              onFeatureSuccess={onFeatureSuccess}
+              isOwner={true}
+            />
+          </div>
+        )}
       </CardContent>
     </Card>
   );

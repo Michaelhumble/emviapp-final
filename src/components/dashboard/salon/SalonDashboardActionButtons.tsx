@@ -29,13 +29,15 @@ const SalonDashboardActionButtons = () => {
         
         <Button 
           className="bg-indigo-600 hover:bg-indigo-700 h-auto py-3 px-4 flex flex-col items-center justify-center gap-2"
-          onClick={() => handleActionClick("List Salon for Sale")}
+          asChild
         >
-          <Store className="h-8 w-8 mb-1" />
-          <div className="flex flex-col items-center text-center">
-            <span className="font-semibold">List Salon for Sale</span>
-            <span className="text-xs font-normal opacity-90">Marketplace listing</span>
-          </div>
+          <Link to="/sell-salon/new">
+            <Store className="h-8 w-8 mb-1" />
+            <div className="flex flex-col items-center text-center">
+              <span className="font-semibold">List Salon for Sale</span>
+              <span className="text-xs font-normal opacity-90">Đăng bán tiệm của bạn</span>
+            </div>
+          </Link>
         </Button>
         
         <Button 
