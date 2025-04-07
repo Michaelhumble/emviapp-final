@@ -10,7 +10,7 @@ import {
   Store, 
   MapPin, 
   Calendar, 
-  FireIcon,
+  Flame,
   MessageSquare,
   ChevronLeft
 } from 'lucide-react';
@@ -112,7 +112,7 @@ const SalonSaleDetail = () => {
           </div>
           {salon.is_urgent && (
             <Badge className="bg-red-500 hover:bg-red-600">
-              <FireIcon className="h-3 w-3 mr-1" /> Urgent Sale
+              <Flame className="h-3 w-3 mr-1" /> Urgent Sale
             </Badge>
           )}
           {salon.business_type && (
