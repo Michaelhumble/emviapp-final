@@ -1,4 +1,4 @@
 
-import DashboardPage from "./index.tsx";
+import DashboardPage from "./Dashboard";
 
 export default DashboardPage;
