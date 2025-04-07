@@ -30,7 +30,7 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
       try {
         const data = await fetchSalonSaleById(salon.id);
         if (data) {
-          setSalonWithPhotos(data);
+          setSalonWithPhotos(data as SalonSale);
         }
       } catch (error) {
         console.error("Error loading salon details:", error);
