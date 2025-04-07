@@ -39,9 +39,9 @@ export const useTranslation = () => {
             // Check if item is an object and has required properties
             if (typeof item === 'object' && 'key' in item && 'english' in item && 'vietnamese' in item) {
               return {
-                key: String(item.key),
-                english: String(item.english),
-                vietnamese: String(item.vietnamese)
+                key: String(item.key || ''),
+                english: String(item.english || ''),
+                vietnamese: String(item.vietnamese || '')
               };
             }
             

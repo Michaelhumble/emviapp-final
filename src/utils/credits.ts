@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -302,10 +301,10 @@ export const approveCreditEarning = async (earningId: string): Promise<boolean> 
       return false;
     }
     
-    // Ensure earning data has required properties
-    const earning = earningData as any;
-    if (!earning || typeof earning !== 'object' || !('user_id' in earning) || !('amount' in earning)) {
-      console.error("Invalid earning data structure:", earning);
+    // Ensure earning data is valid and has required properties
+    if (!earningData || typeof earningData !== 'object' || 
+        !('user_id' in earningData) || !('amount' in earningData)) {
+      console.error("Invalid earning data structure:", earningData);
       return false;
     }
     
@@ -328,7 +327,7 @@ export const approveCreditEarning = async (earningId: string): Promise<boolean> 
     const { data: userData, error: getUserError } = await supabase
       .from('users')
       .select('credits')
-      .eq('id', earning.user_id)
+      .eq('id', earningData.user_id || '')
       .single();
       
     if (getUserError) {
@@ -337,12 +336,12 @@ export const approveCreditEarning = async (earningId: string): Promise<boolean> 
     }
     
     const currentCredits = userData?.credits || 0;
-    const newCredits = currentCredits + earning.amount;
+    const newCredits = currentCredits + (earningData.amount || 0);
     
     const { error: updateCreditsError } = await supabase
       .from('users')
       .update({ credits: newCredits })
-      .eq('id', earning.user_id);
+      .eq('id', earningData.user_id || '');
       
     if (updateCreditsError) {
       console.error("Error updating user credits:", updateCreditsError);
