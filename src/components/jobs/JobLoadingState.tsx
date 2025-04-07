@@ -1,29 +1,30 @@
 
-import { Skeleton } from "@/components/ui/skeleton";
+import { Loader2 } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 const JobLoadingState = () => {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="border rounded-lg p-6">
-          <Skeleton className="h-8 w-3/4 mb-2" />
-          <Skeleton className="h-4 w-1/2 mb-4" />
-          <div className="space-y-2 mb-4">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-2/3" />
-          </div>
-          <div className="flex gap-2 mb-4">
-            <Skeleton className="h-6 w-20 rounded-full" />
-            <Skeleton className="h-6 w-20 rounded-full" />
-            <Skeleton className="h-6 w-20 rounded-full" />
-          </div>
-          <div className="flex justify-between">
-            <Skeleton className="h-9 w-28" />
-            <Skeleton className="h-9 w-28" />
-          </div>
-        </div>
-      ))}
+    <div className="py-16 flex flex-col items-center justify-center">
+      <Loader2 className="h-10 w-10 text-primary animate-spin mb-4" />
+      <h3 className="text-xl font-medium mb-2">Loading Job Listings</h3>
+      <p className="text-gray-500 max-w-md text-center">
+        We're fetching the latest job opportunities for you...
+      </p>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10 w-full">
+        {[...Array(6)].map((_, i) => (
+          <Card key={i} className="overflow-hidden">
+            <CardContent className="p-6">
+              <div className="h-5 bg-gray-200 rounded-full w-3/4 mb-4 animate-pulse"></div>
+              <div className="h-4 bg-gray-200 rounded-full w-1/2 mb-4 animate-pulse"></div>
+              <div className="h-3 bg-gray-200 rounded-full w-1/3 mb-2 animate-pulse"></div>
+              <div className="h-3 bg-gray-200 rounded-full w-1/4 mb-4 animate-pulse"></div>
+              <div className="h-20 bg-gray-200 rounded w-full mb-4 animate-pulse"></div>
+              <div className="h-10 bg-gray-200 rounded-md w-full animate-pulse"></div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 };

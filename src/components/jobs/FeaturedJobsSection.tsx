@@ -1,10 +1,10 @@
 
 import { Job } from "@/types/job";
-import { Badge } from "@/components/ui/badge";
-import { Sparkles } from "lucide-react";
-import { differenceInDays } from 'date-fns';
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { MapPin, DollarSign, Star, Clock } from "lucide-react";
+import { motion } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
 
 interface FeaturedJobsSectionProps {
   featuredJobs: Job[];
@@ -12,94 +12,64 @@ interface FeaturedJobsSectionProps {
 }
 
 const FeaturedJobsSection = ({ featuredJobs, onViewDetails }: FeaturedJobsSectionProps) => {
-  if (!featuredJobs || featuredJobs.length === 0) {
-    return null;
-  }
+  if (!featuredJobs.length) return null;
 
   return (
-    <div className="mb-8">
-      <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 border border-purple-100">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold flex items-center">
-            <Sparkles className="h-5 w-5 text-purple-500 mr-2" />
-            Featured Job Opportunities
-          </h3>
-          <Badge className="bg-gradient-to-r from-purple-600 to-blue-600">
-            EmviApp AI Featured
-          </Badge>
-        </div>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {featuredJobs.slice(0, 3).map((job) => {
-            const daysSinceCreation = differenceInDays(
-              new Date(), 
-              new Date(job.created_at)
-            );
-            
-            return (
-              <div 
-                key={job.id} 
-                className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow duration-300 cursor-pointer"
+    <motion.section 
+      className="mb-12"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="flex items-center mb-6">
+        <Star className="h-5 w-5 text-yellow-500 mr-2" />
+        <h2 className="text-2xl font-serif font-bold">Featured Opportunities</h2>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {featuredJobs.map((job) => (
+          <Card key={job.id} className="overflow-hidden hover:shadow-md transition-shadow duration-200 border-2 border-yellow-100">
+            <div className="h-1 bg-gradient-to-r from-yellow-400 to-primary"></div>
+            <CardContent className="p-6">
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <h3 className="font-semibold text-lg">{job.title}</h3>
+                  <p className="text-gray-600">{job.company}</p>
+                </div>
+                <Badge className="bg-yellow-100 text-yellow-800 border-none">
+                  Featured
+                </Badge>
+              </div>
+
+              <div className="flex items-center text-sm text-gray-600 mb-2">
+                <MapPin className="h-4 w-4 mr-1" /> {job.location}
+              </div>
+
+              {job.salary_range && (
+                <div className="flex items-center text-sm text-gray-600 mb-2">
+                  <DollarSign className="h-4 w-4 mr-1" /> {job.salary_range}
+                </div>
+              )}
+              
+              <div className="flex items-center text-sm text-gray-600 mb-4">
+                <Clock className="h-4 w-4 mr-1" /> Posted {new Date(job.created_at).toLocaleDateString()}
+              </div>
+
+              <p className="text-gray-700 mb-4 line-clamp-2">
+                {job.description}
+              </p>
+
+              <Button 
+                className="w-full"
                 onClick={() => onViewDetails(job)}
               >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h4 className="font-semibold text-purple-900">{job.title}</h4>
-                    <p className="text-gray-600 text-sm">{job.company}</p>
-                  </div>
-                  {job.is_featured && (
-                    <Badge variant="outline" className="bg-purple-50 text-purple-800 border-purple-200">
-                      Featured
-                    </Badge>
-                  )}
-                </div>
-                
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {job.employment_type && (
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700">
-                      {job.employment_type}
-                    </Badge>
-                  )}
-                  {job.location && (
-                    <Badge variant="outline" className="bg-gray-50">
-                      {job.location}
-                    </Badge>
-                  )}
-                  {job.weekly_pay && (
-                    <Badge variant="outline" className="bg-green-50 text-green-700">
-                      Weekly Pay 💰
-                    </Badge>
-                  )}
-                </div>
-                
-                <p className="mt-3 text-sm text-gray-600 line-clamp-2">
-                  {job.vietnamese_description || job.description}
-                </p>
-                
-                <div className="mt-3 flex justify-between items-center">
-                  <span className="text-xs text-gray-500">
-                    {daysSinceCreation === 0 ? 'Today' : 
-                     daysSinceCreation === 1 ? 'Yesterday' : 
-                     `${daysSinceCreation} days ago`}
-                  </span>
-                  <Button size="sm" variant="ghost" className="text-purple-600 hover:text-purple-800">
-                    View Details
-                  </Button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        
-        <div className="mt-4 text-center">
-          <Link to="/jobs">
-            <Button variant="link" className="text-purple-600 hover:text-purple-800">
-              View all job opportunities →
-            </Button>
-          </Link>
-        </div>
+                View Details
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
       </div>
-    </div>
+    </motion.section>
   );
 };
 
