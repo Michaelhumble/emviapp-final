@@ -1,17 +1,9 @@
 
-import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { Loader2, Scissors, Building2, User, Briefcase, ShoppingBag, HelpCircle } from "lucide-react";
-import { UserRole } from "@/context/auth/types";
-import { navigateToRoleDashboard } from "@/utils/navigation";
-
-type Role = UserRole;
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Loader2 } from "lucide-react";
+import RoleSelectionList from "./roles/RoleSelectionList";
+import { useRoleSelection } from "./roles/useRoleSelection";
 
 interface RoleSelectionModalProps {
   open: boolean;
@@ -20,75 +12,13 @@ interface RoleSelectionModalProps {
 }
 
 const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalProps) => {
-  const [selectedRole, setSelectedRole] = useState<Role>("customer");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
+  const {
+    selectedRole,
+    setSelectedRole,
+    isSubmitting,
+    handleRoleSelection
+  } = useRoleSelection(userId, onOpenChange);
   
-  const roles: { id: Role; label: string; description: string; icon: React.ReactNode }[] = [
-    {
-      id: "customer",
-      label: "Customer",
-      description: "I'm looking for beauty services and offers from top professionals.",
-      icon: <User className="h-5 w-5 text-primary" />
-    },
-    {
-      id: "artist",
-      label: "Artist (Hair, Brows, Lashes, Nails, Tattoo...)",
-      description: "I'm a beauty professional looking for jobs, exposure, or to build my brand.",
-      icon: <Scissors className="h-5 w-5 text-primary" />
-    },
-    {
-      id: "salon",
-      label: "Salon Owner (Business)",
-      description: "I'm a salon owner hiring, managing my team, or selling my salon.",
-      icon: <Building2 className="h-5 w-5 text-primary" />
-    },
-    {
-      id: "freelancer",
-      label: "Freelancer (Makeup Artist, Photographer, etc.)",
-      description: "I'm a solo artist looking for gigs, clients, or to promote my service.",
-      icon: <Briefcase className="h-5 w-5 text-primary" />
-    },
-    {
-      id: "vendor",
-      label: "Vendor (Beauty Supplier)",
-      description: "I sell products or tools for beauty salons and professionals.",
-      icon: <ShoppingBag className="h-5 w-5 text-primary" />
-    },
-    {
-      id: "other",
-      label: "Other",
-      description: "I'm not sure yet — I just want to explore.",
-      icon: <HelpCircle className="h-5 w-5 text-primary" />
-    }
-  ];
-
-  const handleRoleSelection = async () => {
-    if (!selectedRole) return;
-    
-    setIsSubmitting(true);
-    
-    try {
-      const { error } = await supabase
-        .from('users')
-        .update({ role: selectedRole })
-        .eq('id', userId);
-      
-      if (error) throw error;
-      
-      toast.success(`Role selected! You're now registered as a ${selectedRole}.`);
-      
-      // Use the utility function for consistent role-based navigation
-      onOpenChange(false);
-      navigateToRoleDashboard(navigate, selectedRole);
-    } catch (error) {
-      console.error("Error setting user role:", error);
-      toast.error("We couldn't save your role. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -100,36 +30,10 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
           </DialogDescription>
         </DialogHeader>
         
-        <div className="py-6">
-          <RadioGroup
-            value={selectedRole}
-            onValueChange={(value) => setSelectedRole(value as Role)}
-            className="space-y-4"
-          >
-            {roles.map((role) => (
-              <div
-                key={role.id}
-                className={`flex items-start space-x-3 rounded-lg border p-4 transition-all cursor-pointer ${
-                  selectedRole === role.id ? "border-primary bg-primary/5" : "hover:border-primary/50"
-                }`}
-                onClick={() => setSelectedRole(role.id)}
-              >
-                <RadioGroupItem value={role.id} id={role.id} className="mt-1" />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <div className="flex-shrink-0">
-                      {role.icon}
-                    </div>
-                    <Label htmlFor={role.id} className="text-base font-medium">
-                      {role.label}
-                    </Label>
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">{role.description}</p>
-                </div>
-              </div>
-            ))}
-          </RadioGroup>
-        </div>
+        <RoleSelectionList 
+          selectedRole={selectedRole} 
+          onRoleSelect={setSelectedRole} 
+        />
         
         <div className="flex justify-end">
           <Button 
