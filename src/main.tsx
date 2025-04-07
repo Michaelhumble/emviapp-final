@@ -44,6 +44,7 @@ import SalonPost from '@/pages/posting/SalonPost';
 // Import new salon sale pages
 import SellSalonIndex from '@/pages/sell-salon/index';
 import NewSalonSalePage from '@/pages/sell-salon/new';
+import SalonSaleDetail from '@/pages/sell-salon/[id]';
 
 // Import styles
 import './index.css';
@@ -185,6 +186,10 @@ const router = createBrowserRouter([
       {
         path: 'sell-salon/new',
         element: <NewSalonSalePage />
+      },
+      {
+        path: 'sell-salon/:id',
+        element: <SalonSaleDetail />
       },
       {
         path: '*',

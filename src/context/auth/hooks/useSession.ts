@@ -34,14 +34,14 @@ export function useSession() {
       setLoading(false);
 
       // If the user just signed up, set isNewUser to true
-      if (event === 'SIGNED_UP') {
+      if (event === 'SIGNED_UP' as AuthChangeEvent) {
         setIsNewUser(true);
         localStorage.setItem('emviapp_new_user', 'true');
         navigate('/choose-role');
       }
 
       // If the user signs out, reset all states
-      if (event === 'SIGNED_OUT') {
+      if (event === 'SIGNED_OUT' as AuthChangeEvent) {
         setIsNewUser(false);
         localStorage.removeItem('emviapp_new_user');
       }
