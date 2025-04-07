@@ -23,26 +23,21 @@ export const useSession = () => {
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         
-        // Compare event name directly to fix TypeScript error
-        const eventName = event; // This gives access to the string value
-        
-        // Handle sign up event
-        if (eventName === 'SIGNED_UP') {
+        // Use the enum values directly from AuthChangeEvent type
+        if (event === 'SIGNED_UP') {
           console.log("New user signed up!");
           setIsNewUser(true);
           localStorage.setItem('emviapp_new_user', 'true');
         }
         
-        // Handle sign in event
-        if (eventName === 'SIGNED_IN') {
+        if (event === 'SIGNED_IN') {
           console.log("User signed in!");
           // Check if this is a returning user
           const isNewUserFromStorage = localStorage.getItem('emviapp_new_user') === 'true';
           setIsNewUser(isNewUserFromStorage);
         }
         
-        // Clear user data on sign out
-        if (eventName === 'SIGNED_OUT') {
+        if (event === 'SIGNED_OUT') {
           setSession(null);
           setUser(null);
           setIsNewUser(false);
