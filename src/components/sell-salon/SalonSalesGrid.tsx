@@ -10,9 +10,17 @@ interface SalonSalesGridProps {
   salonSales: SalonSale[];
   isLoading: boolean;
   onViewDetails: (salon: SalonSale) => void;
+  showFeatureButton?: boolean;
+  onFeatureSuccess?: () => void;
 }
 
-export const SalonSalesGrid = ({ salonSales, isLoading, onViewDetails }: SalonSalesGridProps) => {
+export const SalonSalesGrid = ({ 
+  salonSales, 
+  isLoading, 
+  onViewDetails,
+  showFeatureButton = false,
+  onFeatureSuccess
+}: SalonSalesGridProps) => {
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -44,7 +52,9 @@ export const SalonSalesGrid = ({ salonSales, isLoading, onViewDetails }: SalonSa
         <SalonSaleCard 
           key={salon.id} 
           salon={salon} 
-          onViewDetails={onViewDetails} 
+          onViewDetails={onViewDetails}
+          showFeatureButton={showFeatureButton}
+          onFeatureSuccess={onFeatureSuccess}
         />
       ))}
     </div>

@@ -55,7 +55,7 @@ const SalonListingsManagement = () => {
     try {
       const { data, error } = await supabase
         .from('salon_sales')
-        .select('*, photos(*)')
+        .select('*, photos:salon_sale_photos(*)')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
         
@@ -65,12 +65,24 @@ const SalonListingsManagement = () => {
         return;
       }
       
-      // Use type assertion to make TypeScript happy
-      const salonData = data as SalonSale[];
-      setListings(salonData);
+      // Process the data to ensure photos are in the correct format
+      const processedData = data?.map(item => {
+        // Normalize photos to make sure they're always an array
+        const photos = Array.isArray(item.photos) 
+          ? item.photos 
+          : (item.photos?.error ? [] : []);
+        
+        return {
+          ...item,
+          photos
+        };
+      }) || [];
+      
+      // Now set listings with the processed data
+      setListings(processedData as SalonSale[]);
       
       // Check if any listings are featured
-      setHasFeaturedListing(salonData.some(listing => listing.is_featured));
+      setHasFeaturedListing(processedData.some(listing => listing.is_featured));
       
       // Check if user has credits
       const userCredits = await checkCredits(user.id);

@@ -40,6 +40,14 @@ export const SalonSaleCard = ({
   };
 
   const isActive = salon.status === 'active';
+  
+  // Safely get thumbnail image URL
+  const getThumbnailUrl = () => {
+    if (salon.photos && Array.isArray(salon.photos) && salon.photos.length > 0) {
+      return salon.photos[0].photo_url;
+    }
+    return "https://placehold.co/600x400/e2e8f0/64748b?text=Salon+Image";
+  };
 
   return (
     <Card 
@@ -68,9 +76,7 @@ export const SalonSaleCard = ({
           </div>
         )}
         <img
-          src={salon.photos && salon.photos.length > 0 
-            ? salon.photos[0].photo_url 
-            : "https://placehold.co/600x400/e2e8f0/64748b?text=Salon+Image"}
+          src={getThumbnailUrl()}
           alt={salon.salon_name}
           className="w-full h-full object-cover"
         />
