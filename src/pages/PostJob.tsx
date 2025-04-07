@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,7 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, CreditCard } from "lucide-react";
+import CreditCheckModal from "@/components/posting/CreditCheckModal";
+import { CREDIT_COSTS, deductCredits, checkCredits } from "@/utils/credits";
 
 const compensationTypes = [
   "Hourly",
@@ -23,7 +25,7 @@ const compensationTypes = [
 ];
 
 const PostJob = () => {
-  const { user, userProfile } = useAuth();
+  const { user, userProfile, refreshUserProfile } = useAuth();
   const navigate = useNavigate();
   
   const [title, setTitle] = useState("");
@@ -32,17 +34,60 @@ const PostJob = () => {
   const [compensationType, setCompensationType] = useState("");
   const [compensationDetails, setCompensationDetails] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  if (!user) {
-    navigate('/auth/signin');
-    return null;
-  }
+  const [showCreditCheck, setShowCreditCheck] = useState(false);
+  const [userCredits, setUserCredits] = useState(0);
+
+  useEffect(() => {
+    // If user is not logged in, redirect to sign in
+    if (!user) {
+      navigate('/auth/signin');
+      return;
+    }
+    
+    // Get initial credit balance
+    if (userProfile) {
+      setUserCredits(userProfile.credits || 0);
+    } else {
+      const fetchCredits = async () => {
+        const credits = await checkCredits(user.id);
+        setUserCredits(credits);
+      };
+      fetchCredits();
+    }
+  }, [user, userProfile]);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check if user has enough credits first
+    if (userCredits < CREDIT_COSTS.JOB_POST) {
+      setShowCreditCheck(true);
+      return;
+    }
+    
+    // Proceed with submission if they have enough credits
+    await submitJob();
+  };
+  
+  const submitJob = async () => {
+    if (!user) return;
+    
     setIsSubmitting(true);
     
     try {
+      // First deduct credits
+      const deductionResult = await deductCredits({
+        userId: user.id,
+        amount: CREDIT_COSTS.JOB_POST,
+        reason: "Posted new job listing"
+      });
+      
+      if (!deductionResult) {
+        toast.error("Failed to deduct credits");
+        return;
+      }
+      
+      // Now post the job
       const { error } = await supabase
         .from('jobs')
         .insert({
@@ -56,8 +101,14 @@ const PostJob = () => {
       
       if (error) throw error;
       
-      toast.success("Job posted successfully!");
-      navigate('/dashboard/owner');
+      // Refresh user profile to get updated credit balance
+      refreshUserProfile();
+      
+      toast.success("Job posted successfully!", {
+        description: `${CREDIT_COSTS.JOB_POST} credits have been deducted from your account.`
+      });
+      
+      navigate('/dashboard/salon');
     } catch (error) {
       console.error("Error posting job:", error);
       toast.error("Failed to post job. Please try again.");
@@ -70,8 +121,20 @@ const PostJob = () => {
     <Layout>
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-serif mb-2">Post a New Job</h1>
-          <p className="text-gray-600 mb-8">Find the perfect artists for your salon</p>
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-serif mb-2">Post a New Job</h1>
+              <p className="text-gray-600 mb-8">Find the perfect artists for your salon</p>
+            </div>
+            
+            <div className="bg-amber-50 px-4 py-2 rounded-md border border-amber-200 flex items-center">
+              <CreditCard className="text-amber-500 h-4 w-4 mr-2" />
+              <div>
+                <span className="text-xs text-gray-500">Cost:</span>
+                <p className="font-medium">{CREDIT_COSTS.JOB_POST} Credits</p>
+              </div>
+            </div>
+          </div>
           
           <Card>
             <CardHeader>
@@ -152,13 +215,17 @@ const PostJob = () => {
               </CardContent>
               
               <CardFooter>
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={isSubmitting}
+                >
                   {isSubmitting ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
                       Posting...
                     </>
-                  ) : "Post Job"}
+                  ) : `Post Job (${CREDIT_COSTS.JOB_POST} Credits)`}
                 </Button>
               </CardFooter>
             </form>
@@ -170,6 +237,14 @@ const PostJob = () => {
           </div>
         </div>
       </div>
+      
+      {/* Credit check modal */}
+      <CreditCheckModal 
+        isOpen={showCreditCheck}
+        onClose={() => setShowCreditCheck(false)}
+        currentCredits={userCredits}
+        requiredCredits={CREDIT_COSTS.JOB_POST}
+      />
     </Layout>
   );
 };
