@@ -1,239 +1,37 @@
 
-import { useState, useEffect, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { UserProfile, UserRole, AuthContextType } from "../types";
-import { Session, User, AuthChangeEvent } from "@supabase/supabase-js";
-import { toast } from "sonner";
+import { useCallback } from "react";
+import { AuthContextType } from "../types";
+import { useSession } from "./useSession";
+import { useUserProfile } from "./useUserProfile";
+import { useAuthMethods } from "./useAuthMethods";
 
 /**
  * Custom hook to handle auth provider logic
  */
 export const useAuthProvider = () => {
-  const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null>(null);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [userRole, setUserRole] = useState<UserRole | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [isNewUser, setIsNewUser] = useState(false);
+  // Use the session hook
+  const { 
+    session, 
+    user, 
+    loading, 
+    isNewUser, 
+    clearIsNewUser, 
+    setLoading 
+  } = useSession();
 
-  useEffect(() => {
-    // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event: AuthChangeEvent, currentSession) => {
-        console.log("Auth state changed:", event);
-        
-        // Update session and user
-        setSession(currentSession);
-        setUser(currentSession?.user ?? null);
-        
-        // Handle sign in event
-        if (event === "SIGNED_IN") {
-          console.log("User signed in!");
-          setIsNewUser(false);
-          localStorage.removeItem('emviapp_new_user');
-        }
-        
-        // Fetch user profile on auth state change
-        if (currentSession?.user) {
-          // Use setTimeout to avoid potential deadlocks with Supabase client
-          setTimeout(() => {
-            fetchUserProfile(currentSession.user.id);
-          }, 0);
-        } else {
-          // Clear user profile and role when logged out
-          setUserProfile(null);
-          setUserRole(null);
-          setLoading(false);
-        }
-      }
-    );
+  // Use the user profile hook
+  const { 
+    userProfile, 
+    userRole, 
+    refreshUserProfile 
+  } = useUserProfile(user, setLoading);
 
-    // Get initial session
-    const getInitialSession = async () => {
-      try {
-        setLoading(true);
-        
-        // Get current session
-        const { data: { session: initialSession } } = await supabase.auth.getSession();
-        setSession(initialSession);
-        setUser(initialSession?.user ?? null);
-
-        // Check if user is new from localStorage
-        const isNewUserFromStorage = localStorage.getItem('emviapp_new_user') === 'true';
-        if (isNewUserFromStorage) {
-          setIsNewUser(true);
-        }
-        
-        // Fetch user profile if logged in
-        if (initialSession?.user) {
-          await fetchUserProfile(initialSession.user.id);
-        } else {
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error("Error fetching initial session:", error);
-        setLoading(false);
-      }
-    };
-
-    getInitialSession();
-
-    // Cleanup subscription
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  // Function to fetch user profile
-  const fetchUserProfile = async (userId: string) => {
-    try {
-      console.log("Fetching user profile for:", userId);
-      setLoading(true);
-      
-      // Get user profile from the database using maybeSingle to prevent errors
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
-      
-      if (error) {
-        console.error('Error fetching user profile:', error);
-        setLoading(false);
-        return;
-      }
-      
-      if (!data) {
-        console.log('No user profile found');
-        setLoading(false);
-        return;
-      }
-      
-      console.log("User profile retrieved:", data);
-      
-      // Cast role to UserRole and create user profile
-      const fetchedRole = data.role ? (data.role as UserRole) : null;
-      setUserRole(fetchedRole);
-      
-      // Create a profile object, safely checking if each property exists
-      const profile: UserProfile = {
-        id: data.id || userId,
-        email: data.email || '',
-        full_name: data.full_name || '',
-        avatar_url: data.avatar_url || '',
-        location: data.location || '',
-        bio: data.bio || '',
-        phone: data.phone || '',
-        instagram: data.instagram || '',
-        website: data.website || '',
-        specialty: data.specialty || '',
-        role: fetchedRole || 'customer',
-        created_at: data.created_at || new Date().toISOString(),
-        updated_at: data.updated_at || new Date().toISOString(),
-        preferred_language: data.preferred_language || '',
-        // Safely handle optional properties
-        referral_count: 0, // Default value if not in database
-        salon_name: '', // Default value if not in database
-        company_name: '', // Default value if not in database
-        custom_role: data.custom_role || '',
-        contact_link: data.contact_link || '',
-        skills: [], // Default value if not in database
-        skill_level: '', // Default value if not in database
-        profile_views: 0, // Default value if not in database
-        preferences: Array.isArray(data.preferences) ? data.preferences : [],
-        affiliate_code: data.referral_code || '',
-        referral_code: data.referral_code || '',
-        credits: data.credits || 0,
-        boosted_until: data.boosted_until || null
-      };
-      
-      setUserProfile(profile);
-      
-    } catch (err) {
-      console.error("Error in fetchUserProfile:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const clearIsNewUser = useCallback(() => {
-    setIsNewUser(false);
-    localStorage.removeItem('emviapp_new_user');
-  }, []);
-
-  const signIn = async (email: string, password: string) => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      
-      if (error) throw error;
-      
-      toast.success("Signed in successfully!");
-      return data;
-    } catch (error) {
-      console.error("Error signing in:", error);
-      toast.error(error.message || "Failed to sign in");
-      throw error;
-    } finally {
-      // Don't set loading false here - it will be handled by the auth state change
-    }
-  };
-
-  const signUp = async (email: string, password: string) => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-      
-      if (error) throw error;
-      
-      setIsNewUser(true);
-      localStorage.setItem('emviapp_new_user', 'true');
-      
-      toast.success("Account created successfully!");
-      return data;
-    } catch (error) {
-      console.error("Error signing up:", error);
-      toast.error(error.message || "Failed to sign up");
-      throw error;
-    } finally {
-      // Don't set loading false here - it will be handled by the auth state change
-    }
-  };
-
-  const signOut = async () => {
-    try {
-      setLoading(true);
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) throw error;
-      
-      // Clear user data
-      setSession(null);
-      setUser(null);
-      setUserProfile(null);
-      setUserRole(null);
-      
-      toast.success("Successfully signed out");
-    } catch (error) {
-      console.error("Error in signOut:", error);
-      toast.error("Failed to sign out");
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const refreshUserProfile = async () => {
-    if (user) {
-      await fetchUserProfile(user.id);
-    }
-  };
+  // Use the auth methods hook
+  const { 
+    signIn, 
+    signUp, 
+    signOut 
+  } = useAuthMethods(setLoading);
 
   // Compile context value
   const authContextValue: AuthContextType = {
