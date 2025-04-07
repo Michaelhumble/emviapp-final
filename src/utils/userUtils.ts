@@ -1,20 +1,20 @@
 
 /**
- * Utility functions for user-related operations
+ * Gets the initials from a full name
+ * @param fullName Full name to get initials from
+ * @returns First and last initials as a string
  */
-
-/**
- * Get initials from a name string
- * @param name Full name to extract initials from
- * @returns The first letter of each word in the name, uppercased
- */
-export const getInitials = (name: string): string => {
-  if (!name) return '';
+export const getInitials = (fullName: string): string => {
+  if (!fullName || typeof fullName !== 'string') return '?';
   
-  return name
-    .split(' ')
-    .map(part => part[0])
-    .join('')
-    .toUpperCase()
-    .substring(0, 2);
+  const names = fullName.trim().split(' ');
+  
+  if (names.length === 0) return '?';
+  if (names.length === 1) return names[0].charAt(0).toUpperCase();
+  
+  // Get first and last name initials
+  const firstInitial = names[0].charAt(0);
+  const lastInitial = names[names.length - 1].charAt(0);
+  
+  return (firstInitial + lastInitial).toUpperCase();
 };
