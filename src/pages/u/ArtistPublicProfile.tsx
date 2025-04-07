@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/layout/Layout";
 import { toast } from "sonner";
@@ -13,6 +13,7 @@ import ServicesSection from "@/components/artist-profile/ServicesSection";
 import ContactSection from "@/components/artist-profile/ContactSection";
 import ProfileLoading from "@/components/artist-profile/ProfileLoading";
 import ProfileNotFound from "@/components/artist-profile/ProfileNotFound";
+import SuggestedArtists from "@/components/artists/SuggestedArtists";
 
 interface Service {
   id: string;
@@ -31,12 +32,14 @@ interface PortfolioImage {
 
 const ArtistPublicProfile = () => {
   const { username } = useParams<{ username: string }>();
+  const location = useLocation();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [services, setServices] = useState<Service[]>([]);
   const [portfolioImages, setPortfolioImages] = useState<PortfolioImage[]>([]);
+  const [viewCount, setViewCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { userRole } = useAuth();
+  const { user, userRole } = useAuth();
   
   const isSalonOwner = userRole === 'salon' || userRole === 'owner';
   
@@ -88,6 +91,41 @@ const ArtistPublicProfile = () => {
             }));
             setPortfolioImages(images);
           }
+          
+          // Track profile view if authenticated
+          if (user && user.id !== userData.id) {
+            // Determine source page from referrer or path
+            const sourcePage = location.state?.source || 
+                            (location.pathname.includes('/explore') ? 'directory' :
+                             location.pathname.includes('/search') ? 'search' : 'direct');
+                               
+            // Track the view in profile_views table
+            const { error: viewError } = await supabase
+              .from('profile_views')
+              .insert({
+                viewer_id: user.id,
+                artist_id: userData.id,
+                source_page: sourcePage,
+                viewer_role: userRole || 'unknown',
+                specialty_matched: userRole === 'artist' && userRole === userData.role,
+                location_matched: user.location === userData.location
+              })
+              .select();
+              
+            if (viewError && !viewError.message.includes('unique constraint')) {
+              console.error("Error tracking profile view:", viewError);
+            }
+            
+            // Get view count for display (only for artists and salon owners viewing profiles)
+            if (isSalonOwner || userRole === 'artist') {
+              const { data: viewCountData, error: countError } = await supabase
+                .rpc('get_artist_views_count', { artist_id: userData.id });
+                
+              if (!countError && viewCountData !== null) {
+                setViewCount(viewCountData);
+              }
+            }
+          }
         }
       } catch (error) {
         console.error("Error fetching profile data:", error);
@@ -99,7 +137,7 @@ const ArtistPublicProfile = () => {
     };
     
     fetchProfileData();
-  }, [username]);
+  }, [username, user, userRole, location, isSalonOwner]);
   
   const handleBooking = () => {
     if (profile?.booking_url) {
@@ -130,12 +168,18 @@ const ArtistPublicProfile = () => {
           <ProfileHeader 
             profile={profile} 
             isSalonOwner={isSalonOwner} 
-            handleBooking={handleBooking} 
+            handleBooking={handleBooking}
+            viewCount={viewCount} 
           />
           
           <PortfolioGallery images={portfolioImages} />
           <ServicesSection services={services} />
           <ContactSection profile={profile} isSalonOwner={isSalonOwner} />
+          
+          {/* Artist suggestions */}
+          <div className="mt-12">
+            <SuggestedArtists currentArtistId={profile.id} />
+          </div>
         </div>
       </div>
     </Layout>

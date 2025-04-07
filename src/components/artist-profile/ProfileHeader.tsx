@@ -1,103 +1,102 @@
 
 import React from "react";
-import { Link } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Calendar, ExternalLink, BookOpen } from 'lucide-react';
-import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import ProAccessGate from "@/components/pro-access/ProAccessGate";
+import { MapPin, Calendar, Eye } from "lucide-react";
 import { UserProfile } from "@/types/profile";
+import { getInitials } from "@/utils/userUtils";
 
 interface ProfileHeaderProps {
   profile: UserProfile;
-  isSalonOwner: boolean;
+  isSalonOwner?: boolean;
   handleBooking: () => void;
+  viewCount?: number | null;
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ 
   profile, 
   isSalonOwner, 
-  handleBooking 
+  handleBooking,
+  viewCount 
 }) => {
+  const isBoosted = profile.boosted_until && new Date(profile.boosted_until) > new Date();
+  const canSeeViewCount = isSalonOwner || profile?.role === 'artist';
+  
   return (
-    <div className="bg-white rounded-lg shadow-sm border p-8 mb-8">
-      <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-        <Avatar className="h-24 w-24 md:h-32 md:w-32">
-          {profile.avatar_url ? (
-            <AvatarImage src={profile.avatar_url} alt={profile.full_name || ""} />
-          ) : (
-            <AvatarFallback className="bg-purple-100 text-purple-800 text-xl">
-              {profile.full_name?.charAt(0) || "A"}
+    <Card className="w-full mb-6 overflow-hidden">
+      <CardContent className="p-6">
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+          <Avatar className="h-24 w-24 md:h-32 md:w-32">
+            <AvatarImage src={profile.avatar_url || ""} alt={profile.full_name || ""} />
+            <AvatarFallback className="text-2xl">
+              {getInitials(profile.full_name)}
             </AvatarFallback>
-          )}
-        </Avatar>
-        
-        <div className="flex-1 text-center md:text-left">
-          <h1 className="text-3xl font-serif font-bold mb-2">{profile.full_name}</h1>
-          <p className="text-purple-700 font-medium">{profile.specialty || "Nail Artist"}</p>
-          {profile.location && (
-            <p className="text-gray-500 mt-1">
-              {isSalonOwner ? (
-                <ProAccessGate blur={false}>
-                  {profile.location}
-                </ProAccessGate>
-              ) : (
-                profile.location
-              )}
-            </p>
-          )}
+          </Avatar>
           
-          <div className="mt-6">
-            {profile.accepts_bookings && profile.booking_url ? (
-              isSalonOwner ? (
-                <ProAccessGate>
-                  <Button 
-                    className="bg-purple-600 hover:bg-purple-700"
-                    onClick={handleBooking}
-                  >
-                    <Calendar className="mr-2 h-4 w-4" />
-                    Book Me
-                    <ExternalLink className="ml-2 h-3.5 w-3.5" />
-                  </Button>
-                </ProAccessGate>
-              ) : (
-                <Button 
-                  className="bg-purple-600 hover:bg-purple-700"
-                  onClick={handleBooking}
-                >
-                  <Calendar className="mr-2 h-4 w-4" />
-                  Book Me
-                  <ExternalLink className="ml-2 h-3.5 w-3.5" />
-                </Button>
-              )
-            ) : (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div>
-                      <Button className="bg-purple-600 hover:bg-purple-700" disabled>
-                        <BookOpen className="mr-2 h-4 w-4" />
-                        Booking Coming Soon
-                      </Button>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Online booking will be available soon!</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+          <div className="flex-1 text-center md:text-left">
+            <div className="flex flex-col md:flex-row items-center gap-2 mb-2">
+              <h1 className="text-2xl font-bold">{profile.full_name}</h1>
+              
+              {isBoosted && (
+                <Badge variant="secondary" className="bg-gradient-to-r from-amber-200 to-amber-100 text-amber-800">
+                  Featured Artist
+                </Badge>
+              )}
+            </div>
+            
+            {profile.specialty && (
+              <p className="text-lg text-muted-foreground mb-2">{profile.specialty}</p>
             )}
+            
+            <div className="flex flex-wrap justify-center md:justify-start gap-3 mb-4">
+              {profile.location && (
+                <div className="flex items-center text-muted-foreground text-sm">
+                  <MapPin className="h-4 w-4 mr-1" />
+                  {profile.location}
+                </div>
+              )}
+              
+              {profile.accepts_bookings && (
+                <div className="flex items-center text-muted-foreground text-sm">
+                  <Calendar className="h-4 w-4 mr-1" />
+                  Available for Booking
+                </div>
+              )}
+              
+              {canSeeViewCount && viewCount !== null && (
+                <div className="flex items-center text-muted-foreground text-sm">
+                  <Eye className="h-4 w-4 mr-1" />
+                  {viewCount} profile views this month
+                </div>
+              )}
+            </div>
+            
+            {profile.bio && (
+              <p className="text-sm text-gray-600 mb-4 line-clamp-3">{profile.bio}</p>
+            )}
+            
+            <div className="flex flex-wrap justify-center md:justify-start gap-2">
+              {profile.accepts_bookings && (
+                <Button onClick={handleBooking} className="bg-primary hover:bg-primary/90">
+                  Book Appointment
+                </Button>
+              )}
+              
+              {profile.instagram && (
+                <Button 
+                  variant="outline" 
+                  onClick={() => window.open(`https://instagram.com/${profile.instagram}`, '_blank')}
+                >
+                  View Instagram
+                </Button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-      
-      {profile.bio && (
-        <div className="mt-8">
-          <h2 className="text-lg font-medium mb-2">About Me</h2>
-          <p className="text-gray-700 whitespace-pre-line">{profile.bio}</p>
-        </div>
-      )}
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

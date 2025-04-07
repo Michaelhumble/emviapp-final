@@ -6,13 +6,16 @@ import Layout from "@/components/layout/Layout";
 import { Helmet } from "react-helmet";
 import ArtistSearchFilters from "@/components/explore/ArtistSearchFilters";
 import ArtistGrid from "@/components/explore/ArtistGrid";
+import SuggestedArtists from "@/components/artists/SuggestedArtists";
 import { UserProfile } from "@/types/profile";
+import { useAuth } from "@/context/auth";
 
 const ArtistDirectory = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [specialty, setSpecialty] = useState("all");
   const [sortBy, setSortBy] = useState("boosted");
   const [location, setLocation] = useState("");
+  const { userRole } = useAuth();
   
   const { data: artists, isLoading, error } = useQuery({
     queryKey: ['artists', specialty, sortBy, location],
@@ -65,6 +68,11 @@ const ArtistDirectory = () => {
     );
   });
   
+  // Only show suggestions if not an artist (for now)
+  const showSuggestions = userRole !== 'artist' && 
+                         userRole !== 'freelancer' && 
+                         userRole !== 'nail technician/artist';
+  
   return (
     <Layout>
       <Helmet>
@@ -83,22 +91,33 @@ const ArtistDirectory = () => {
             </p>
           </div>
           
-          <ArtistSearchFilters 
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            specialty={specialty}
-            setSpecialty={setSpecialty}
-            sortBy={sortBy}
-            setSortBy={setSortBy}
-            location={location}
-            setLocation={setLocation}
-          />
-          
-          <ArtistGrid 
-            artists={filteredArtists || []} 
-            isLoading={isLoading} 
-            error={error}
-          />
+          <div className="grid md:grid-cols-12 gap-6">
+            <div className="md:col-span-9">
+              <ArtistSearchFilters 
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                specialty={specialty}
+                setSpecialty={setSpecialty}
+                sortBy={sortBy}
+                setSortBy={setSortBy}
+                location={location}
+                setLocation={setLocation}
+              />
+              
+              <ArtistGrid 
+                artists={filteredArtists || []} 
+                isLoading={isLoading} 
+                error={error}
+              />
+            </div>
+            
+            {/* Sidebar with suggested artists */}
+            {showSuggestions && (
+              <div className="md:col-span-3">
+                <SuggestedArtists className="sticky top-20" />
+              </div>
+            )}
+          </div>
         </div>
       </section>
     </Layout>
