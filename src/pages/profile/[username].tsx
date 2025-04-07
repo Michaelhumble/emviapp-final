@@ -45,7 +45,7 @@ const UserProfilePage = () => {
           data = nameData;
         }
         
-        setProfile(data);
+        setProfile(data as UserProfile);
       } catch (error) {
         console.error("Error fetching profile:", error);
         setError("Failed to load profile");
