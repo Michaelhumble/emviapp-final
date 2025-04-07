@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -70,7 +69,7 @@ const SalonListingsManagement = () => {
         // Normalize photos to make sure they're always an array
         const photos = Array.isArray(item.photos) 
           ? item.photos 
-          : (item.photos?.error ? [] : []);
+          : (item.photos ? [] : []);
         
         return {
           ...item,
