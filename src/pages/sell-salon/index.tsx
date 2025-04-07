@@ -3,13 +3,12 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { Search, Plus, Store, MapPin, DollarSign, Building, Loader2, Star } from "lucide-react";
+import { Plus } from "lucide-react";
 import { SalonSale } from "@/types/salonSale";
-import { fetchSalonSales, formatCurrency } from "@/utils/salonSales";
+import { fetchSalonSales } from "@/utils/salonSales";
 import SalonListingDetail from "@/components/sell-salon/SalonListingDetail";
 import { SalonSalesFilters } from "@/components/sell-salon/SalonSalesFilters";
+import { SalonSalesGrid } from "@/components/sell-salon/SalonSalesGrid";
 
 // Define filter and sort types
 type SortOption = "newest" | "lowest_price" | "highest_price" | "featured_first";
@@ -134,21 +133,6 @@ const SalonSalesPage = () => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   };
 
-  const getBusinessTypeIcon = (type?: string) => {
-    switch (type) {
-      case "Nails":
-        return <Store className="h-4 w-4" />;
-      case "Hair":
-        return <Store className="h-4 w-4" />;
-      case "Spa":
-        return <Building className="h-4 w-4" />;
-      case "Barbershop":
-        return <Store className="h-4 w-4" />;
-      default:
-        return <Store className="h-4 w-4" />;
-    }
-  };
-
   return (
     <Layout>
       <div className="container mx-auto px-4 py-12">
@@ -173,81 +157,12 @@ const SalonSalesPage = () => {
           onFilterChange={handleFilterChange} 
         />
 
-        {isLoading ? (
-          <div className="flex justify-center items-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
-        ) : filteredSales.length === 0 ? (
-          <div className="text-center py-12 bg-gray-50 rounded-lg">
-            <Store className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-            <h2 className="text-2xl font-medium mb-2">No Salon Listings Found</h2>
-            <p className="text-gray-600 mb-6">
-              There are currently no salon listings that match your search criteria.
-            </p>
-            <Button onClick={() => navigate("/sell-salon/new")}>
-              List Your Salon
-            </Button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredSales.map((salon) => (
-              <Card 
-                key={salon.id} 
-                className={`overflow-hidden transition-shadow hover:shadow-md ${
-                  salon.is_urgent ? "border-amber-400" : ""
-                } ${
-                  salon.is_featured ? "border-2 border-yellow-300 bg-yellow-50" : ""
-                }`}
-              >
-                <div className="aspect-video bg-gray-200 relative">
-                  {salon.is_urgent && (
-                    <div className="absolute top-2 right-2 bg-amber-400 text-white py-1 px-2 rounded-md text-xs font-medium">
-                      Urgent
-                    </div>
-                  )}
-                  {salon.is_featured && (
-                    <div className="absolute top-2 left-2 bg-yellow-400 text-yellow-900 py-1 px-2 rounded-md text-xs font-medium flex items-center">
-                      <Star className="h-3 w-3 mr-1 fill-yellow-900" /> Featured
-                    </div>
-                  )}
-                  <img
-                    src="https://placehold.co/600x400/e2e8f0/64748b?text=Salon+Image"
-                    alt={salon.salon_name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <CardContent className="p-4">
-                  <h3 className="text-xl font-semibold mb-2 truncate">
-                    {salon.salon_name}
-                  </h3>
-                  <div className="flex items-center text-gray-500 mb-1">
-                    <MapPin className="h-4 w-4 mr-1 shrink-0" />
-                    <span className="text-sm truncate">
-                      {salon.city}, {salon.state}
-                    </span>
-                  </div>
-                  <div className="flex items-center text-gray-500 mb-3">
-                    {getBusinessTypeIcon(salon.business_type)}
-                    <span className="text-sm ml-1">{salon.business_type || 'Salon'}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center text-primary font-semibold">
-                      <DollarSign className="h-4 w-4 shrink-0" />
-                      {formatCurrency(salon.asking_price)}
-                    </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => handleViewDetails(salon)}
-                    >
-                      View Details
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+        {/* Grid Component */}
+        <SalonSalesGrid 
+          salonSales={filteredSales} 
+          isLoading={isLoading} 
+          onViewDetails={handleViewDetails} 
+        />
       </div>
 
       {selectedSalon && (
