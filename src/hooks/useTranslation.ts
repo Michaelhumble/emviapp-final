@@ -24,16 +24,30 @@ export const useTranslation = () => {
           return;
         }
         
-        // Make sure the data is in the correct format
-        const typedData = Array.isArray(data) 
-          ? data.map(item => ({
-              key: item.key as string,
-              english: item.english as string,
-              vietnamese: item.vietnamese as string
-            }))
-          : [];
+        // Make sure the data is in the correct format and handle potential errors
+        if (data && Array.isArray(data)) {
+          const typedData = data.map(item => {
+            // Check if item is an object (not an error) and has required properties
+            if (item && typeof item === 'object' && 'key' in item && 'english' in item && 'vietnamese' in item) {
+              return {
+                key: String(item.key),
+                english: String(item.english),
+                vietnamese: String(item.vietnamese)
+              };
+            }
+            // Default values if data is malformed
+            return {
+              key: 'error',
+              english: 'Translation error',
+              vietnamese: 'Lỗi dịch'
+            };
+          });
           
-        setTranslations(typedData);
+          setTranslations(typedData);
+        } else {
+          // Set empty array if data is not as expected
+          setTranslations([]);
+        }
       } catch (err) {
         console.error('Exception fetching translations:', err);
       } finally {

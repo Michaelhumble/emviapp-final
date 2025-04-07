@@ -176,7 +176,7 @@ export const getReferralStats = async (userId: string) => {
   if (!userId) return null;
   
   try {
-    // Use a type assertion and handle the results more carefully
+    // Use a type assertion and better error handling
     const { data, error } = await supabase
       .from('referrals' as any)
       .select('status, milestone_reached')
@@ -187,6 +187,7 @@ export const getReferralStats = async (userId: string) => {
       return null;
     }
     
+    // Verify that data is an array before proceeding
     if (!data || !Array.isArray(data)) {
       return {
         total: 0,
@@ -196,12 +197,17 @@ export const getReferralStats = async (userId: string) => {
       };
     }
     
-    // Calculate stats from the data
+    // Calculate stats from the data with safer access
     const total = data.length;
-    // Use optional chaining and default to false for safety
-    const completed = data.filter(ref => ref?.status === 'completed').length;
-    const pending = data.filter(ref => ref?.status === 'pending' || ref?.status === 'processing').length;
-    const milestoneReached = data.filter(ref => ref?.milestone_reached === true).length;
+    // Filter with type guards to avoid property access errors
+    const completed = data.filter(ref => ref && typeof ref === 'object' && ref.status === 'completed').length;
+    const pending = data.filter(ref => {
+      return ref && typeof ref === 'object' && 
+        (ref.status === 'pending' || ref.status === 'processing');
+    }).length;
+    const milestoneReached = data.filter(ref => 
+      ref && typeof ref === 'object' && ref.milestone_reached === true
+    ).length;
     
     return {
       total,
@@ -252,7 +258,7 @@ export const getPendingCreditEarnings = async (userId: string): Promise<any[]> =
   if (!userId) return [];
   
   try {
-    // Use safety checks and type assertions
+    // Use proper error handling and type checking
     const { data, error } = await supabase
       .from('credit_earnings' as any)
       .select('*')
@@ -265,7 +271,8 @@ export const getPendingCreditEarnings = async (userId: string): Promise<any[]> =
       return [];
     }
     
-    return data || [];
+    // Ensure data is an array
+    return Array.isArray(data) ? data : [];
   } catch (error) {
     console.error("Exception in getPendingCreditEarnings:", error);
     return [];
@@ -277,15 +284,22 @@ export const approveCreditEarning = async (earningId: string): Promise<boolean> 
   if (!earningId) return false;
   
   try {
-    // First get the earning details with safer type handling
-    const { data: earning, error: fetchError } = await supabase
+    // First get the earning details with proper type checking
+    const { data: earningData, error: fetchError } = await supabase
       .from('credit_earnings' as any)
       .select('*')
       .eq('id', earningId)
       .single();
       
-    if (fetchError || !earning) {
+    if (fetchError || !earningData) {
       console.error("Error fetching credit earning:", fetchError);
+      return false;
+    }
+    
+    // Ensure earning data has required properties
+    const earning = earningData as any;
+    if (!earning || typeof earning !== 'object' || !('user_id' in earning) || !('amount' in earning)) {
+      console.error("Invalid earning data structure:", earning);
       return false;
     }
     
