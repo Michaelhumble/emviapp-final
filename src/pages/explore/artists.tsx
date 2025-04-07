@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,7 +13,6 @@ const ArtistDirectory = () => {
   const [sortBy, setSortBy] = useState("boosted");
   const [location, setLocation] = useState("");
   
-  // Fetch artists
   const { data: artists, isLoading, error } = useQuery({
     queryKey: ['artists', specialty, sortBy, location],
     queryFn: async () => {
@@ -25,22 +23,17 @@ const ArtistDirectory = () => {
         .neq('full_name', '')
         .neq('avatar_url', '');
       
-      // Apply specialty filter if selected
       if (specialty !== 'all') {
         query = query.eq('specialty', specialty);
       }
       
-      // Apply location filter if provided
       if (location) {
         query = query.ilike('location', `%${location}%`);
       }
       
-      // Apply sorting
       if (sortBy === 'boosted') {
-        // Sort by boosted status (boosted profiles first)
         query = query.order('boosted_until', { ascending: false, nullsFirst: false });
       } else if (sortBy === 'newest') {
-        // Sort by newest profiles
         query = query.order('created_at', { ascending: false });
       }
       
@@ -54,7 +47,6 @@ const ArtistDirectory = () => {
     }
   });
   
-  // Filter artists based on search query
   const filteredArtists = artists?.filter(artist => {
     if (!searchQuery) return true;
     
