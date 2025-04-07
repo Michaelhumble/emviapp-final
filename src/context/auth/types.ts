@@ -51,6 +51,9 @@ export interface UserProfile {
   // Additional fields for specific roles
   custom_role?: string;
   contact_link?: string;
+  // Timestamps
+  created_at?: string;
+  updated_at?: string;
   // Add other profile fields
 }
 
