@@ -5,13 +5,21 @@ import { motion } from "framer-motion";
 import DashboardContent from "@/components/dashboard/DashboardContent";
 import VisibilityNotification from "@/components/dashboard/salon/VisibilityNotification";
 import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
+import SalonDashboardBanner from "@/components/dashboard/salon/SalonDashboardBanner";
+import SalonQuickStats from "@/components/dashboard/salon/SalonQuickStats";
+import SalonDashboardActionButtons from "@/components/dashboard/salon/SalonDashboardActionButtons";
+import SalonReferralCard from "@/components/dashboard/salon/SalonReferralCard";
+import SalonCreditStatus from "@/components/dashboard/salon/SalonCreditStatus";
+import { useAuth } from "@/context/auth";
 
 const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
+  const { userProfile } = useAuth();
   
   useEffect(() => {
     document.title = "Salon Owner Dashboard | EmviApp";
-  }, []);
+    console.log("Owner Dashboard rendered with profile:", userProfile);
+  }, [userProfile]);
   
   return (
     <Layout>
@@ -22,7 +30,25 @@ const OwnerDashboard = () => {
           transition={{ duration: 0.5 }}
         >
           <RoleDashboardLayout>
-            <DashboardContent />
+            {/* Using explicit salon components instead of generic DashboardContent */}
+            <div className="space-y-8">
+              {/* Salon Welcome Banner with Vietnamese text */}
+              <SalonDashboardBanner userName={userProfile?.salon_name || userProfile?.full_name} />
+              
+              {/* Salon Quick Stats */}
+              <SalonQuickStats />
+              
+              {/* Action Buttons */}
+              <SalonDashboardActionButtons />
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Credit Status Card */}
+                <SalonCreditStatus />
+                
+                {/* Referral Center with Vietnamese text */}
+                <SalonReferralCard />
+              </div>
+            </div>
           </RoleDashboardLayout>
         </motion.div>
       </div>

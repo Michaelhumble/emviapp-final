@@ -16,7 +16,9 @@ const SalonDashboard = () => {
   
   useEffect(() => {
     document.title = "Salon Dashboard | EmviApp";
-  }, []);
+    // Add console log to debug
+    console.log("Salon Dashboard rendered with profile:", userProfile);
+  }, [userProfile]);
   
   return (
     <Layout>
@@ -29,7 +31,7 @@ const SalonDashboard = () => {
         <div className="container px-4 mx-auto py-12">
           <RoleDashboardLayout>
             <div className="space-y-8">
-              {/* Salon Welcome Banner */}
+              {/* Salon Welcome Banner with Vietnamese text */}
               <SalonDashboardBanner userName={userProfile?.salon_name || userProfile?.full_name} />
               
               {/* Salon Quick Stats */}
@@ -42,7 +44,7 @@ const SalonDashboard = () => {
                 {/* Credit Status Card */}
                 <SalonCreditStatus />
                 
-                {/* Referral Center */}
+                {/* Referral Center with Vietnamese text */}
                 <SalonReferralCard />
               </div>
               

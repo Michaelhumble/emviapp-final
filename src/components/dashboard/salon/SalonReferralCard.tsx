@@ -7,7 +7,7 @@ const SalonReferralCard = () => {
   return (
     <Card className="border-blue-100">
       <CardHeader>
-        {/* Vietnamese referral text for salons - explicitly styled */}
+        {/* Vietnamese referral text for salons - making it more prominent */}
         <div className="mb-3 py-2 px-3 bg-blue-50 rounded-md border border-blue-100">
           <p className="text-blue-700 text-sm font-medium">
             Giới thiệu chủ tiệm khác để nhận thưởng.
