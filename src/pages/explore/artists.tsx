@@ -38,7 +38,7 @@ const ArtistDirectory = () => {
       // Apply sorting
       if (sortBy === 'boosted') {
         // Sort by boosted status (boosted profiles first)
-        query = query.order('boosted_until', { ascending: false, nullsLast: true });
+        query = query.order('boosted_until', { ascending: false, nullsFirst: false });
       } else if (sortBy === 'newest') {
         // Sort by newest profiles
         query = query.order('created_at', { ascending: false });
