@@ -170,3 +170,145 @@ export const supportArtist = async (
     return false;
   }
 };
+
+// New function to get referral stats for a user
+export const getReferralStats = async (userId: string) => {
+  if (!userId) return null;
+  
+  try {
+    const { data, error } = await supabase
+      .from('referrals')
+      .select('status, milestone_reached')
+      .eq('referrer_id', userId);
+      
+    if (error) {
+      console.error("Error fetching referral stats:", error);
+      return null;
+    }
+    
+    // Calculate stats from the data
+    const total = data.length;
+    const completed = data.filter(ref => ref.status === 'completed').length;
+    const pending = data.filter(ref => ref.status === 'pending' || ref.status === 'processing').length;
+    const milestoneReached = data.filter(ref => ref.milestone_reached).length;
+    
+    return {
+      total,
+      completed,
+      pending,
+      milestoneReached
+    };
+  } catch (error) {
+    console.error("Exception in getReferralStats:", error);
+    return null;
+  }
+};
+
+// Function to track when milestones are reached in referrals
+export const trackReferralMilestone = async (
+  referralId: string,
+  milestoneType: string,
+  milestoneValue: any = {}
+): Promise<boolean> => {
+  if (!referralId) return false;
+  
+  try {
+    const { error } = await supabase
+      .from('referrals')
+      .update({
+        milestone_reached: true,
+        milestone_type: milestoneType,
+        milestone_value: milestoneValue,
+        verified_at: new Date().toISOString()
+      })
+      .eq('id', referralId);
+      
+    if (error) {
+      console.error("Error updating referral milestone:", error);
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error("Exception in trackReferralMilestone:", error);
+    return false;
+  }
+};
+
+// Function to get pending credit earnings
+export const getPendingCreditEarnings = async (userId: string): Promise<any[]> => {
+  if (!userId) return [];
+  
+  try {
+    const { data, error } = await supabase
+      .from('credit_earnings')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false });
+      
+    if (error) {
+      console.error("Error fetching pending credit earnings:", error);
+      return [];
+    }
+    
+    return data || [];
+  } catch (error) {
+    console.error("Exception in getPendingCreditEarnings:", error);
+    return [];
+  }
+};
+
+// Function to approve a pending credit earning
+export const approveCreditEarning = async (earningId: string): Promise<boolean> => {
+  if (!earningId) return false;
+  
+  try {
+    // First get the earning details
+    const { data: earning, error: fetchError } = await supabase
+      .from('credit_earnings')
+      .select('*')
+      .eq('id', earningId)
+      .single();
+      
+    if (fetchError || !earning) {
+      console.error("Error fetching credit earning:", fetchError);
+      return false;
+    }
+    
+    // Update the earning status
+    const { error: updateError } = await supabase
+      .from('credit_earnings')
+      .update({
+        status: 'approved',
+        validated_at: new Date().toISOString()
+      })
+      .eq('id', earningId);
+      
+    if (updateError) {
+      console.error("Error updating credit earning:", updateError);
+      return false;
+    }
+    
+    // Award the credits to the user
+    const { error: creditsError } = await supabase
+      .from('users')
+      .update({
+        credits: supabase.rpc('increment', { 
+          row_id: earning.user_id,
+          amount: earning.amount 
+        })
+      })
+      .eq('id', earning.user_id);
+      
+    if (creditsError) {
+      console.error("Error awarding credits:", creditsError);
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error("Exception in approveCreditEarning:", error);
+    return false;
+  }
+};

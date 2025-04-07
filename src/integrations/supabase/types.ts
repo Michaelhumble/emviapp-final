@@ -69,6 +69,42 @@ export type Database = {
         }
         Relationships: []
       }
+      credit_earnings: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          metadata: Json | null
+          source_id: string | null
+          status: string
+          type: string
+          user_id: string
+          validated_at: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          source_id?: string | null
+          status?: string
+          type: string
+          user_id: string
+          validated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          source_id?: string | null
+          status?: string
+          type?: string
+          user_id?: string
+          validated_at?: string | null
+        }
+        Relationships: []
+      }
       customer_credits: {
         Row: {
           action_type: string
@@ -362,20 +398,35 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          milestone_reached: boolean | null
+          milestone_type: string | null
+          milestone_value: Json | null
           referred_id: string
           referrer_id: string
+          status: string | null
+          verified_at: string | null
         }
         Insert: {
           created_at?: string
           id?: string
+          milestone_reached?: boolean | null
+          milestone_type?: string | null
+          milestone_value?: Json | null
           referred_id: string
           referrer_id: string
+          status?: string | null
+          verified_at?: string | null
         }
         Update: {
           created_at?: string
           id?: string
+          milestone_reached?: boolean | null
+          milestone_type?: string | null
+          milestone_value?: Json | null
           referred_id?: string
           referrer_id?: string
+          status?: string | null
+          verified_at?: string | null
         }
         Relationships: []
       }
@@ -623,6 +674,33 @@ export type Database = {
           response?: string | null
           timestamp?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      translation_strings: {
+        Row: {
+          context: string | null
+          created_at: string
+          english: string
+          id: string
+          key: string
+          vietnamese: string
+        }
+        Insert: {
+          context?: string | null
+          created_at?: string
+          english: string
+          id?: string
+          key: string
+          vietnamese: string
+        }
+        Update: {
+          context?: string | null
+          created_at?: string
+          english?: string
+          id?: string
+          key?: string
+          vietnamese?: string
         }
         Relationships: []
       }

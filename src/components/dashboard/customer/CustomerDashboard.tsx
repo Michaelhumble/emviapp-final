@@ -5,13 +5,13 @@ import { motion } from "framer-motion";
 import CustomerDashboardHeader from "./CustomerDashboardHeader";
 import CustomerMetricsSection from "./CustomerMetricsSection";
 import CustomerMotivationalQuote from "./CustomerMotivationalQuote";
-import CustomerReferralCenter from "./CustomerReferralCenter";
 import CustomerWelcomeBanner from "./CustomerWelcomeBanner";
 import CustomerBoostTracker from "./CustomerBoostTracker";
 import CustomerDashboardStats from "./CustomerDashboardStats";
 import { UserProfile } from "@/context/auth/types";
 import CustomerDashboardWidgets from "./CustomerDashboardWidgets";
 import CustomerCreditsTracker from "@/components/customer/CustomerCreditsTracker";
+import ReferralTracker from "@/components/referral/ReferralTracker";
 
 const CustomerDashboard = () => {
   const { userProfile } = useAuth();
@@ -56,8 +56,8 @@ const CustomerDashboard = () => {
           {/* Add Credits Tracker */}
           <CustomerCreditsTracker />
           
-          {/* Enhanced Referral Center */}
-          <CustomerReferralCenter />
+          {/* Enhanced Referral Tracker */}
+          <ReferralTracker />
         </div>
       </div>
     </div>
