@@ -13,6 +13,7 @@ import App from './App';
 import Index from '@/pages/Index';
 import Jobs from '@/pages/jobs/index';
 import Salons from '@/pages/Salons';
+import SalonOwners from '@/pages/SalonOwners';
 import SignIn from '@/pages/auth/SignIn';
 import SignUp from '@/pages/auth/SignUp';
 import Profile from '@/pages/Profile';
@@ -37,7 +38,7 @@ import ProfileNotFound from '@/components/profile/ProfileNotFound';
 import SalonNotFound from '@/components/salon/SalonNotFound';
 import MessageNotFound from '@/components/messaging/MessageNotFound';
 import ArtistPublicProfile from '@/pages/u/ArtistPublicProfile';
-import PostJob from '@/pages/post/PostJob'; // Import the new page
+import PostJob from '@/pages/post/PostJob';
 
 // Import styles
 import './index.css';
@@ -62,6 +63,10 @@ const router = createBrowserRouter([
       {
         path: 'salons',
         element: <Salons />
+      },
+      {
+        path: 'salon-owners',
+        element: <SalonOwners />
       },
       {
         path: 'salon/:id',
@@ -128,7 +133,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'dashboard/owner',
-        element: <OwnerDashboard />
+        element: <SalonDashboard />  // Makes the owner route also show the salon dashboard
       },
       {
         path: 'dashboard/other',
