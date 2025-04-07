@@ -41,6 +41,20 @@ const ProAccessGate: React.FC<ProAccessGateProps> = ({
     return <>{children}</>;
   }
   
+  // Mock data - in a real implementation, this would come from a subscription context
+  const isPro = false; // Default to false as requested
+  const creditsSpent = 0; // Mock credits spent
+  const hasReferredSalon = false; // Mock referral status
+  
+  // Check if user qualifies for discount
+  const qualifiesForDiscount = creditsSpent >= 50 || hasReferredSalon;
+  const proPrice = qualifiesForDiscount ? '$49.99' : '$99.99';
+  
+  // If the user is already Pro, show the content without gating
+  if (isPro) {
+    return <>{children}</>;
+  }
+  
   return (
     <Dialog>
       <TooltipProvider>
@@ -104,13 +118,28 @@ const ProAccessGate: React.FC<ProAccessGateProps> = ({
               </li>
             </ul>
           </div>
+          
+          <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg border border-primary/10">
+            <div className="text-center mb-4">
+              <h3 className="font-semibold text-lg">Start 1-Month Pro for {proPrice}</h3>
+              <p className="text-sm text-muted-foreground">Unlock all premium features instantly</p>
+            </div>
+            
+            <Button className="w-full" size="lg">
+              Upgrade to Emvi Pro
+            </Button>
+            
+            {!qualifiesForDiscount && (
+              <p className="text-sm text-center mt-4 text-muted-foreground">
+                Refer a salon or spend 50 credits this month to unlock 50% off ($49.99/month).
+                <br />
+                <span className="text-xs italic">
+                  Giới thiệu chủ tiệm khác hoặc sử dụng 50 điểm để nhận giá ưu đãi.
+                </span>
+              </p>
+            )}
+          </div>
         </div>
-        
-        <DialogFooter className="sm:justify-center">
-          <Button className="w-full sm:w-auto" size="lg">
-            Upgrade to Emvi Pro
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
