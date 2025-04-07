@@ -6,16 +6,20 @@ interface DeductCreditsParams {
   userId: string;
   amount: number;
   reason: string;
+  targetId?: string;
 }
 
 export const CREDIT_COSTS = {
   JOB_POST: 5,
   BOOST_PROFILE: 10,
   FEATURED_JOB: 8,
-  FEATURED_LISTING: 10
+  FEATURED_LISTING: 10,
+  SUPPORT_ARTIST_SMALL: 10,
+  SUPPORT_ARTIST_MEDIUM: 25,
+  SUPPORT_ARTIST_LARGE: 50
 };
 
-export const deductCredits = async ({ userId, amount, reason }: DeductCreditsParams): Promise<boolean> => {
+export const deductCredits = async ({ userId, amount, reason, targetId }: DeductCreditsParams): Promise<boolean> => {
   if (!userId) {
     console.error("No user ID provided for credit deduction");
     return false;
@@ -27,7 +31,8 @@ export const deductCredits = async ({ userId, amount, reason }: DeductCreditsPar
     const { error } = await supabase.rpc('redeem_credits' as any, {
       p_user_id: userId,
       p_amount: amount,
-      p_redemption_type: reason
+      p_redemption_type: reason,
+      p_target_id: targetId
     });
     
     if (error) {
@@ -87,5 +92,80 @@ export const getCreditsHistory = async (userId: string, limit = 10): Promise<any
   } catch (error) {
     console.error("Exception in getCreditsHistory:", error);
     return [];
+  }
+};
+
+// Function to support an artist with credits
+export const supportArtist = async (
+  supporterId: string, 
+  artistId: string, 
+  credits: number,
+  message?: string
+): Promise<boolean> => {
+  if (!supporterId || !artistId) {
+    console.error("Missing user IDs for artist support");
+    return false;
+  }
+  
+  // Don't allow supporting yourself
+  if (supporterId === artistId) {
+    toast.error("You cannot support yourself");
+    return false;
+  }
+  
+  try {
+    // First check if user has enough credits
+    const userCredits = await checkCredits(supporterId);
+    
+    if (userCredits < credits) {
+      toast.error(`You need ${credits - userCredits} more credits to support this artist`);
+      return false;
+    }
+    
+    // Deduct credits from supporter
+    const deducted = await deductCredits({
+      userId: supporterId,
+      amount: credits,
+      reason: 'support_artist',
+      targetId: artistId
+    });
+    
+    if (!deducted) {
+      toast.error("Failed to deduct credits");
+      return false;
+    }
+    
+    // Create support message record
+    const { error: supportError } = await supabase
+      .from('support_messages')
+      .insert({
+        supporter_id: supporterId,
+        artist_id: artistId,
+        credits: credits,
+        message: message || null
+      });
+      
+    if (supportError) {
+      console.error("Error recording support message:", supportError);
+      // Continue anyway as the credits were transferred
+    }
+    
+    // Add credits to the artist (using the award_credits function)
+    const { error: awardError } = await supabase.rpc('award_credits' as any, {
+      p_user_id: artistId,
+      p_action_type: 'received_support',
+      p_value: credits,
+      p_description: `support_from_${supporterId}`
+    });
+    
+    if (awardError) {
+      console.error("Error adding credits to artist:", awardError);
+      // Don't return false here as we've already deducted from the supporter
+    }
+    
+    return true;
+  } catch (error) {
+    console.error("Exception in supportArtist:", error);
+    return false;
   }
 };

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Calendar, Eye } from "lucide-react";
 import { UserProfile } from "@/types/profile";
 import { getInitials } from "@/utils/userUtils";
+import SupportArtistButton from "./SupportArtistButton";
 
 interface ProfileHeaderProps {
   profile: UserProfile;
@@ -92,6 +93,12 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                   View Instagram
                 </Button>
               )}
+              
+              {/* Support Artist Button */}
+              <SupportArtistButton 
+                artistId={profile.id} 
+                artistName={profile.full_name}
+              />
             </div>
           </div>
         </div>
