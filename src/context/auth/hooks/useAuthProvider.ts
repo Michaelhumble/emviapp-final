@@ -1,5 +1,4 @@
 
-import { useCallback } from "react";
 import { AuthContextType } from "../types";
 import { useSession } from "./useSession";
 import { useUserProfile } from "./useUserProfile";
