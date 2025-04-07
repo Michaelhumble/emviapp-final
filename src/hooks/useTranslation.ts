@@ -13,8 +13,10 @@ export const useTranslation = () => {
   useEffect(() => {
     const fetchTranslations = async () => {
       try {
+        // Use a type assertion here since the Supabase TypeScript definitions
+        // might not be updated with the new tables yet
         const { data, error } = await supabase
-          .from('translation_strings')
+          .from('translation_strings' as any)
           .select('key, english, vietnamese');
           
         if (error) {
@@ -22,7 +24,16 @@ export const useTranslation = () => {
           return;
         }
         
-        setTranslations(data || []);
+        // Make sure the data is in the correct format
+        const typedData = Array.isArray(data) 
+          ? data.map(item => ({
+              key: item.key,
+              english: item.english,
+              vietnamese: item.vietnamese
+            }))
+          : [];
+          
+        setTranslations(typedData);
       } catch (err) {
         console.error('Exception fetching translations:', err);
       } finally {

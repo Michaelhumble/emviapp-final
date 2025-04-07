@@ -50,9 +50,10 @@ export const useReferralSystem = () => {
         setReferralCode(code);
         setReferralLink(`https://emviapp.com/signup?ref=${code}`);
         
-        // Fetch referrals
-        const { data: referralsData, error: referralsError } = await supabase
-          .from('referrals')
+        // Fetch referrals using type assertion since the schema might not be updated
+        // in the TypeScript definitions yet
+        const { data: referralsData, error: referralsError } = await (supabase
+          .from('referrals' as any)
           .select(`
             id,
             referred_id,
@@ -64,7 +65,7 @@ export const useReferralSystem = () => {
             users!referred_id(full_name, email)
           `)
           .eq('referrer_id', user.id)
-          .order('created_at', { ascending: false });
+          .order('created_at', { ascending: false }));
           
         if (referralsError) {
           console.error('Error fetching referrals:', referralsError);
@@ -72,16 +73,16 @@ export const useReferralSystem = () => {
           return;
         }
         
-        // Process referrals data
+        // Process referrals data with safeguards against missing fields
         const processedReferrals: ReferralData[] = (referralsData || []).map((ref: any) => ({
-          id: ref.id,
+          id: ref.id || '',
           referredEmail: ref.users?.email || 'hidden@email.com',
           referredName: ref.users?.full_name || 'New User',
           status: ref.status || 'pending',
           milestoneReached: ref.milestone_reached || false,
-          milestoneType: ref.milestone_type,
-          createdAt: ref.created_at,
-          verifiedAt: ref.verified_at,
+          milestoneType: ref.milestone_type || undefined,
+          createdAt: ref.created_at || new Date().toISOString(),
+          verifiedAt: ref.verified_at || undefined,
         }));
         
         setReferrals(processedReferrals);
@@ -127,7 +128,7 @@ export const useReferralSystem = () => {
     
     fetchReferralData();
     
-    // Set up real-time subscription for referral updates
+    // Set up real-time subscription for referral updates with type safety
     const channel = supabase
       .channel('referral-updates')
       .on('postgres_changes', {

@@ -176,14 +176,23 @@ export const getReferralStats = async (userId: string) => {
   if (!userId) return null;
   
   try {
-    const { data, error } = await supabase
-      .from('referrals')
-      .select('status, milestone_reached')
-      .eq('referrer_id', userId);
+    // Use a type assertion to work around the TypeScript issue
+    const { data, error } = await (supabase
+      .from('referrals' as any)
+      .select('status, milestone_reached'));
       
     if (error) {
       console.error("Error fetching referral stats:", error);
       return null;
+    }
+    
+    if (!data || !Array.isArray(data)) {
+      return {
+        total: 0,
+        completed: 0,
+        pending: 0,
+        milestoneReached: 0
+      };
     }
     
     // Calculate stats from the data
@@ -198,8 +207,8 @@ export const getReferralStats = async (userId: string) => {
       pending,
       milestoneReached
     };
-  } catch (error) {
-    console.error("Exception in getReferralStats:", error);
+  } catch (err) {
+    console.error('Unexpected error fetching referral stats:', err);
     return null;
   }
 };
@@ -213,15 +222,16 @@ export const trackReferralMilestone = async (
   if (!referralId) return false;
   
   try {
-    const { error } = await supabase
-      .from('referrals')
+    // Use a type assertion to work around the TypeScript issue
+    const { error } = await (supabase
+      .from('referrals' as any)
       .update({
         milestone_reached: true,
         milestone_type: milestoneType,
         milestone_value: milestoneValue,
         verified_at: new Date().toISOString()
-      })
-      .eq('id', referralId);
+      } as any)
+      .eq('id', referralId));
       
     if (error) {
       console.error("Error updating referral milestone:", error);
@@ -240,12 +250,13 @@ export const getPendingCreditEarnings = async (userId: string): Promise<any[]> =
   if (!userId) return [];
   
   try {
-    const { data, error } = await supabase
-      .from('credit_earnings')
+    // Use a type assertion to work around the TypeScript issue
+    const { data, error } = await (supabase
+      .from('credit_earnings' as any)
       .select('*')
       .eq('user_id', userId)
       .eq('status', 'pending')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false }));
       
     if (error) {
       console.error("Error fetching pending credit earnings:", error);
@@ -265,11 +276,12 @@ export const approveCreditEarning = async (earningId: string): Promise<boolean> 
   
   try {
     // First get the earning details
-    const { data: earning, error: fetchError } = await supabase
-      .from('credit_earnings')
+    // Use a type assertion to work around the TypeScript issue
+    const { data: earning, error: fetchError } = await (supabase
+      .from('credit_earnings' as any)
       .select('*')
       .eq('id', earningId)
-      .single();
+      .single());
       
     if (fetchError || !earning) {
       console.error("Error fetching credit earning:", fetchError);
@@ -277,32 +289,42 @@ export const approveCreditEarning = async (earningId: string): Promise<boolean> 
     }
     
     // Update the earning status
-    const { error: updateError } = await supabase
-      .from('credit_earnings')
+    const { error: updateError } = await (supabase
+      .from('credit_earnings' as any)
       .update({
         status: 'approved',
         validated_at: new Date().toISOString()
       })
-      .eq('id', earningId);
+      .eq('id', earningId));
       
     if (updateError) {
       console.error("Error updating credit earning:", updateError);
       return false;
     }
     
-    // Award the credits to the user
-    const { error: creditsError } = await supabase
+    // Award the credits to the user using a direct update
+    // instead of the unsupported increment RPC
+    const { data: userData, error: getUserError } = await supabase
       .from('users')
-      .update({
-        credits: supabase.rpc('increment', { 
-          row_id: earning.user_id,
-          amount: earning.amount 
-        })
-      })
+      .select('credits')
+      .eq('id', earning.user_id)
+      .single();
+      
+    if (getUserError) {
+      console.error("Error getting user credits:", getUserError);
+      return false;
+    }
+    
+    const currentCredits = userData?.credits || 0;
+    const newCredits = currentCredits + earning.amount;
+    
+    const { error: updateCreditsError } = await supabase
+      .from('users')
+      .update({ credits: newCredits })
       .eq('id', earning.user_id);
       
-    if (creditsError) {
-      console.error("Error awarding credits:", creditsError);
+    if (updateCreditsError) {
+      console.error("Error updating user credits:", updateCreditsError);
       return false;
     }
     
