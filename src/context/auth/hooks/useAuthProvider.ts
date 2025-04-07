@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile, UserRole, AuthContextType } from "../types";
 import { Session, User, AuthChangeEvent } from "@supabase/supabase-js";
@@ -155,10 +156,10 @@ export const useAuthProvider = () => {
     }
   };
 
-  const clearIsNewUser = () => {
+  const clearIsNewUser = useCallback(() => {
     setIsNewUser(false);
     localStorage.removeItem('emviapp_new_user');
-  };
+  }, []);
 
   const signIn = async (email: string, password: string) => {
     try {
