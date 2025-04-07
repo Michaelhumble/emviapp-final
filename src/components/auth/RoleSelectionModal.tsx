@@ -26,6 +26,12 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
   
   const roles: { id: Role; label: string; description: string; icon: React.ReactNode }[] = [
     {
+      id: "customer",
+      label: "Customer",
+      description: "I'm looking for beauty services and offers from top professionals.",
+      icon: <User className="h-5 w-5 text-primary" />
+    },
+    {
       id: "artist",
       label: "Artist (Hair, Brows, Lashes, Nails, Tattoo...)",
       description: "I'm a beauty professional looking for jobs, exposure, or to build my brand.",
@@ -33,26 +39,14 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
     },
     {
       id: "salon",
-      label: "Salon (Business)",
+      label: "Salon Owner (Business)",
       description: "I'm a salon owner hiring, managing my team, or selling my salon.",
       icon: <Building2 className="h-5 w-5 text-primary" />
-    },
-    {
-      id: "customer",
-      label: "Customer",
-      description: "I'm looking for beauty services and offers from top professionals.",
-      icon: <User className="h-5 w-5 text-primary" />
     },
     {
       id: "freelancer",
       label: "Freelancer (Makeup Artist, Photographer, etc.)",
       description: "I'm a solo artist looking for gigs, clients, or to promote my service.",
-      icon: <Briefcase className="h-5 w-5 text-primary" />
-    },
-    {
-      id: "renter",
-      label: "Booth Renter (Independent Contractor)",
-      description: "I rent space in a salon and run my own business.",
       icon: <Briefcase className="h-5 w-5 text-primary" />
     },
     {
@@ -100,8 +94,9 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-2xl font-serif">Welcome to EmviApp!</DialogTitle>
-          <DialogDescription>
-            Tell us how you'd like to use the platform so we can personalize your experience.
+          <DialogDescription className="space-y-2">
+            <p>Tell us how you'd like to use the platform so we can personalize your experience.</p>
+            <p className="text-indigo-600 font-medium text-sm">Bạn làm gì trong ngành làm đẹp?</p>
           </DialogDescription>
         </DialogHeader>
         
@@ -140,7 +135,7 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
           <Button 
             onClick={handleRoleSelection}
             disabled={isSubmitting}
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
           >
             {isSubmitting ? (
               <>

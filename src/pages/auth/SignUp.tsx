@@ -10,6 +10,7 @@ import { Loader2, Gift, Users, Lock } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -17,7 +18,8 @@ const SignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [referralCode, setReferralCode] = useState<string | null>(null);
-  const { signUp, user, isNewUser } = useAuth();
+  const [showRoleModal, setShowRoleModal] = useState(false);
+  const { signUp, user, isNewUser, clearIsNewUser } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -30,15 +32,18 @@ const SignUp = () => {
     }
   }, [searchParams]);
 
-  // Redirect if already logged in
-  if (user) {
-    // If they're a new user, redirect straight to dashboard to select role
-    if (isNewUser) {
-      return <Navigate to="/dashboard" replace />;
+  // Redirect based on auth state
+  useEffect(() => {
+    // If signed in and role selection completed (not a new user)
+    if (user && !isNewUser) {
+      navigate("/dashboard");
     }
-    // Otherwise go to home page
-    return <Navigate to="/" replace />;
-  }
+    
+    // If signed in but needs to select role (new user)
+    if (user && isNewUser) {
+      setShowRoleModal(true);
+    }
+  }, [user, isNewUser, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,13 +96,22 @@ const SignUp = () => {
       }
       
       toast.success("Account created successfully!");
-      // User will be redirected automatically via the conditional above
-      // when auth state updates
+      
+      // Show role selection modal - auth state changes will handle showing the modal
     } catch (error) {
       toast.error("Failed to sign up. Please try again.");
       console.error("Sign up error:", error);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // Only render the role modal if user exists
+  const handleRoleModalClose = (open: boolean) => {
+    setShowRoleModal(open);
+    if (!open) {
+      // Clear new user flag when role modal is manually closed
+      clearIsNewUser();
     }
   };
 
@@ -206,6 +220,15 @@ const SignUp = () => {
           </Card>
         </div>
       </div>
+
+      {/* Role Selection Modal - shown right after signup */}
+      {user && showRoleModal && (
+        <RoleSelectionModal
+          open={showRoleModal}
+          onOpenChange={handleRoleModalClose}
+          userId={user.id}
+        />
+      )}
     </Layout>
   );
 };
