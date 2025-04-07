@@ -23,23 +23,26 @@ export const useSession = () => {
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         
-        // Handle sign up event - using string literal comparison that works with AuthChangeEvent type
-        if (event === 'SIGNED_UP') {
+        // Compare event name directly to fix TypeScript error
+        const eventName = event; // This gives access to the string value
+        
+        // Handle sign up event
+        if (eventName === 'SIGNED_UP') {
           console.log("New user signed up!");
           setIsNewUser(true);
           localStorage.setItem('emviapp_new_user', 'true');
         }
         
-        // Handle sign in event - using string literal comparison that works with AuthChangeEvent type
-        if (event === 'SIGNED_IN') {
+        // Handle sign in event
+        if (eventName === 'SIGNED_IN') {
           console.log("User signed in!");
           // Check if this is a returning user
           const isNewUserFromStorage = localStorage.getItem('emviapp_new_user') === 'true';
           setIsNewUser(isNewUserFromStorage);
         }
         
-        // Clear user data on sign out - using string literal comparison that works with AuthChangeEvent type
-        if (event === 'SIGNED_OUT') {
+        // Clear user data on sign out
+        if (eventName === 'SIGNED_OUT') {
           setSession(null);
           setUser(null);
           setIsNewUser(false);
