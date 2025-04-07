@@ -22,7 +22,7 @@ export interface SalonSale {
   is_urgent: boolean;
   is_private: boolean;
   is_featured?: boolean;
-  status: 'active' | 'sold' | 'inactive';
+  status: 'active' | 'sold' | 'inactive' | string;
   created_at: string;
   updated_at: string;
   photos?: SalonSalePhoto[];

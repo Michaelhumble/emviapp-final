@@ -33,7 +33,8 @@ const SalonListingsManagement = () => {
           return;
         }
         
-        setListings(data || []);
+        // Use type assertion to make TypeScript happy
+        setListings(data as SalonSale[]);
       } catch (error) {
         console.error("Exception fetching listings:", error);
       } finally {
@@ -59,7 +60,8 @@ const SalonListingsManagement = () => {
         return;
       }
       
-      setListings(data || []);
+      // Use type assertion to make TypeScript happy
+      setListings(data as SalonSale[]);
     } catch (error) {
       console.error("Exception refreshing listings:", error);
     }

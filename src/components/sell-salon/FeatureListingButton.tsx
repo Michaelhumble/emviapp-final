@@ -43,10 +43,10 @@ export const FeatureListingButton = ({
         return;
       }
       
-      // Update the listing to featured
+      // Update the listing to featured - Cast to 'any' to avoid TypeScript error about 'is_featured'
       const { error } = await supabase
         .from('salon_sales')
-        .update({ is_featured: true })
+        .update({ is_featured: true } as any)
         .eq('id', salonSaleId);
       
       if (error) {
