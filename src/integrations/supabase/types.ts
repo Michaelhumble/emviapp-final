@@ -336,6 +336,89 @@ export type Database = {
           },
         ]
       }
+      salon_sale_photos: {
+        Row: {
+          created_at: string
+          id: string
+          order_number: number | null
+          photo_url: string
+          salon_sale_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_number?: number | null
+          photo_url: string
+          salon_sale_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_number?: number | null
+          photo_url?: string
+          salon_sale_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "salon_sale_photos_salon_sale_id_fkey"
+            columns: ["salon_sale_id"]
+            isOneToOne: false
+            referencedRelation: "salon_sales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      salon_sales: {
+        Row: {
+          asking_price: number
+          business_type: string | null
+          city: string
+          created_at: string
+          description: string
+          id: string
+          is_private: boolean | null
+          is_urgent: boolean | null
+          salon_name: string
+          size: string | null
+          state: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          asking_price: number
+          business_type?: string | null
+          city: string
+          created_at?: string
+          description: string
+          id?: string
+          is_private?: boolean | null
+          is_urgent?: boolean | null
+          salon_name: string
+          size?: string | null
+          state: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          asking_price?: number
+          business_type?: string | null
+          city?: string
+          created_at?: string
+          description?: string
+          id?: string
+          is_private?: boolean | null
+          is_urgent?: boolean | null
+          salon_name?: string
+          size?: string | null
+          state?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       salons: {
         Row: {
           about: string | null

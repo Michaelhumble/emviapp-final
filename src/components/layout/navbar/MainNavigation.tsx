@@ -1,75 +1,37 @@
 
 import { Link, useLocation } from "react-router-dom";
-import { Home, Activity, ChevronDown } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 const MainNavigation = () => {
   const location = useLocation();
-
+  
   const isActive = (path: string) => {
-    return location.pathname === path ? "text-primary font-medium" : "text-gray-600";
+    return location.pathname.startsWith(path);
   };
-
+  
+  const navItems = [
+    { path: '/jobs', label: 'Jobs' },
+    { path: '/salons', label: 'Salons' },
+    { path: '/sell-salon', label: 'Salon Sales' },
+    { path: '/artists', label: 'Artists' },
+  ];
+  
   return (
-    <nav className="hidden md:flex items-center space-x-6">
-      <Link 
-        to="/" 
-        className={`${isActive('/')} hover:text-primary transition-colors flex items-center gap-1`}
-      >
-        <Home className="h-4 w-4" />
-        Home
-      </Link>
-      <Link 
-        to="/jobs" 
-        className={`${isActive('/jobs')} hover:text-primary transition-colors`}
-      >
-        Jobs
-      </Link>
-      <Link 
-        to="/salons" 
-        className={`${isActive('/salons')} hover:text-primary transition-colors`}
-      >
-        Salons
-      </Link>
-      
-      {/* Community Dropdown */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button className="text-gray-600 hover:text-primary transition-colors flex items-center">
-            Community <ChevronDown className="ml-1 h-4 w-4" />
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="center">
-          <DropdownMenuGroup>
-            <DropdownMenuItem asChild>
-              <Link to="/customers" className="w-full">Customers</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to="/artists" className="w-full">Artists</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to="/salon-owners" className="w-full">Salon Owners</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to="/suppliers" className="w-full">Suppliers</Link>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      
-      <Link 
-        to="/analysis" 
-        className={`${isActive('/analysis')} hover:text-primary transition-colors flex items-center gap-1`}
-      >
-        <Activity className="h-4 w-4" />
-        Analysis
-      </Link>
+    <nav className="hidden md:flex items-center space-x-1">
+      {navItems.map(item => (
+        <Link
+          key={item.path}
+          to={item.path}
+          className={cn(
+            "px-3 py-2 text-sm rounded-md transition-colors hover:text-primary hover:bg-muted",
+            isActive(item.path) 
+              ? "text-primary font-medium" 
+              : "text-muted-foreground"
+          )}
+        >
+          {item.label}
+        </Link>
+      ))}
     </nav>
   );
 };

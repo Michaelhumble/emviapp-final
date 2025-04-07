@@ -39,6 +39,11 @@ import SalonNotFound from '@/components/salon/SalonNotFound';
 import MessageNotFound from '@/components/messaging/MessageNotFound';
 import ArtistPublicProfile from '@/pages/u/ArtistPublicProfile';
 import PostJob from '@/pages/post/PostJob';
+import PostingIndex from '@/pages/posting/Index';
+import SalonPost from '@/pages/posting/SalonPost';
+// Import new salon sale pages
+import SellSalonIndex from '@/pages/sell-salon/index';
+import NewSalonSalePage from '@/pages/sell-salon/new';
 
 // Import styles
 import './index.css';
@@ -163,6 +168,23 @@ const router = createBrowserRouter([
       {
         path: 'post/job',
         element: <PostJob />
+      },
+      {
+        path: 'posting',
+        element: <PostingIndex />
+      },
+      {
+        path: 'posting/salon',
+        element: <SalonPost />
+      },
+      // New routes for salon sales
+      {
+        path: 'sell-salon',
+        element: <SellSalonIndex />
+      },
+      {
+        path: 'sell-salon/new',
+        element: <NewSalonSalePage />
       },
       {
         path: '*',
