@@ -24,6 +24,33 @@ export interface UserProfile {
   location?: string;
   salon_name?: string;
   specialty?: string;
+  // Social media and web presence
+  instagram?: string;
+  website?: string;
+  // Profile media
+  avatar_url?: string;
+  portfolio_urls?: string[];
+  // Professional details
+  skills?: string[];
+  skill_level?: string;
+  // Preferences and statistics
+  preferences?: string[];
+  profile_views?: number;
+  // Booking capabilities
+  accepts_bookings?: boolean;
+  booking_url?: string;
+  // Referral and affiliate program
+  referral_code?: string;
+  referral_count?: number;
+  affiliate_code?: string;
+  credits?: number;
+  // Pro features
+  boosted_until?: string;
+  // Language preferences
+  preferred_language?: string;
+  // Additional fields for specific roles
+  custom_role?: string;
+  contact_link?: string;
   // Add other profile fields
 }
 
