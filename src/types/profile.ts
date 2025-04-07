@@ -1,3 +1,4 @@
+
 export interface UserProfile {
   id: string;
   user_id?: string;
@@ -33,6 +34,7 @@ export interface UserProfile {
   preferences?: string[];
   accepts_bookings?: boolean;
   booking_url?: string;
+  boosted_until?: string;
 }
 
 export interface SocialLinks {

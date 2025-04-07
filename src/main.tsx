@@ -45,6 +45,8 @@ import SalonPost from '@/pages/posting/SalonPost';
 import SellSalonIndex from '@/pages/sell-salon/index';
 import NewSalonSalePage from '@/pages/sell-salon/new';
 import SalonSaleDetail from '@/pages/sell-salon/[id]';
+// Import Artist Directory page
+import ArtistDirectory from '@/pages/explore/artists';
 
 // Import styles
 import './index.css';
@@ -190,6 +192,11 @@ const router = createBrowserRouter([
       {
         path: 'sell-salon/:id',
         element: <SalonSaleDetail />
+      },
+      // New route for Artist Directory
+      {
+        path: 'explore/artists',
+        element: <ArtistDirectory />
       },
       {
         path: '*',
