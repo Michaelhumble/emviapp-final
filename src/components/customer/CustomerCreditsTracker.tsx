@@ -46,7 +46,8 @@ const CustomerCreditsTracker = () => {
     setLoading(true);
     
     try {
-      const { error } = await supabase.rpc('redeem_credits', {
+      // Use type assertion to work around TypeScript issue
+      const { error } = await supabase.rpc('redeem_credits' as any, {
         p_user_id: user.id,
         p_amount: amount,
         p_redemption_type: type

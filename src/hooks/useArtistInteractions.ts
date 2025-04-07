@@ -169,7 +169,8 @@ export const useArtistInteractions = (artistId: string) => {
       if (error) throw error;
       
       // Deduct credits using our new function
-      const { error: deductError } = await supabase.rpc('redeem_credits', {
+      // Use type assertion to work around TypeScript error
+      const { error: deductError } = await supabase.rpc('redeem_credits' as any, {
         p_user_id: user?.id,
         p_amount: creditCost,
         p_redemption_type: 'offer',

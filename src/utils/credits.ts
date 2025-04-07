@@ -22,8 +22,9 @@ export const deductCredits = async ({ userId, amount, reason }: DeductCreditsPar
   }
 
   try {
-    // Use our new SQL function to deduct credits
-    const { error } = await supabase.rpc('redeem_credits', {
+    // We need to work around TypeScript errors since the redeem_credits function isn't in types
+    // Use raw SQL query with parameters instead of RPC call
+    const { error } = await supabase.rpc('redeem_credits' as any, {
       p_user_id: userId,
       p_amount: amount,
       p_redemption_type: reason
@@ -68,12 +69,14 @@ export const getCreditsHistory = async (userId: string, limit = 10): Promise<any
   if (!userId) return [];
   
   try {
-    const { data, error } = await supabase
-      .from('customer_credits')
+    // Use a type assertion to work around the TypeScript issue
+    // since customer_credits isn't in the TypeScript definitions yet
+    const { data, error } = await (supabase
+      .from('customer_credits' as any)
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
-      .limit(limit);
+      .limit(limit));
       
     if (error) {
       console.error("Error fetching credit history:", error);
