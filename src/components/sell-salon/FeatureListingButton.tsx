@@ -53,7 +53,8 @@ export const FeatureListingButton = ({
       const { error } = await supabase
         .from('salon_sales')
         .update({ is_featured: true } as any)
-        .eq('id', salonSaleId);
+        .eq('id', salonSaleId)
+        .eq('user_id', user.id); // Ensure owner can only update their own listings
       
       if (error) {
         console.error("Error featuring listing:", error);

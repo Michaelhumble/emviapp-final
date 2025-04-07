@@ -97,6 +97,12 @@ export const useSalonsData = (initialFilters: SalonFilters = {}) => {
         });
       }
 
+      // Sort by featured status - featured listings first
+      filteredSalons.sort((a, b) => {
+        if (a.is_featured === b.is_featured) return 0;
+        return a.is_featured ? -1 : 1;
+      });
+
       // Set featured salons
       const featured = salonsForSaleJobs
         .filter(salon => salon.is_featured)
