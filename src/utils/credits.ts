@@ -11,7 +11,8 @@ interface DeductCreditsParams {
 export const CREDIT_COSTS = {
   JOB_POST: 5,
   BOOST_PROFILE: 10,
-  FEATURED_JOB: 8
+  FEATURED_JOB: 8,
+  FEATURED_LISTING: 10
 };
 
 export const deductCredits = async ({ userId, amount, reason }: DeductCreditsParams): Promise<boolean> => {

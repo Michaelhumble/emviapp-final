@@ -376,6 +376,7 @@ export type Database = {
           created_at: string
           description: string
           id: string
+          is_featured: boolean | null
           is_private: boolean | null
           is_urgent: boolean | null
           salon_name: string
@@ -392,6 +393,7 @@ export type Database = {
           created_at?: string
           description: string
           id?: string
+          is_featured?: boolean | null
           is_private?: boolean | null
           is_urgent?: boolean | null
           salon_name: string
@@ -408,6 +410,7 @@ export type Database = {
           created_at?: string
           description?: string
           id?: string
+          is_featured?: boolean | null
           is_private?: boolean | null
           is_urgent?: boolean | null
           salon_name?: string

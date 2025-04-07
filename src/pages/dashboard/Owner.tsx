@@ -15,6 +15,7 @@ import SalonAnalyticsCards from "@/components/dashboard/salon/SalonAnalyticsCard
 import SalonNotificationCenter from "@/components/dashboard/salon/SalonNotificationCenter";
 import SalonSuggestionBox from "@/components/dashboard/salon/SalonSuggestionBox";
 import VisibilityNotification from "@/components/dashboard/salon/VisibilityNotification";
+import SalonListingsManagement from "@/components/dashboard/salon/SalonListingsManagement";
 
 const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -47,6 +48,9 @@ const OwnerDashboard = () => {
               
               {/* NEW: Analytics Cards */}
               <SalonAnalyticsCards />
+              
+              {/* NEW: Salon Listings Management */}
+              <SalonListingsManagement />
               
               {/* Action Buttons with Vietnamese text */}
               <SalonDashboardActionButtons />
