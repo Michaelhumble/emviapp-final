@@ -1,4 +1,3 @@
-
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
@@ -25,7 +24,6 @@ import SalonDashboard from '@/pages/dashboard/Salon';
 import ArtistDashboard from '@/pages/dashboard/Artist';
 import SupplierDashboard from '@/pages/dashboard/Supplier';
 import FreelancerDashboard from '@/pages/dashboard/Freelancer';
-import OwnerDashboard from '@/pages/dashboard/Owner';
 import Dashboard from '@/pages/dashboard/Dashboard';
 import OtherDashboard from '@/pages/dashboard/Other';
 import NotFound from '@/pages/NotFound';
@@ -85,7 +83,6 @@ const router = createBrowserRouter([
         path: 'auth/signup',
         element: <SignUp />
       },
-      // Add direct routes to sign-in and sign-up without auth prefix
       {
         path: 'sign-in',
         element: <SignIn />
@@ -133,7 +130,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'dashboard/owner',
-        element: <SalonDashboard />  // Makes the owner route also show the salon dashboard
+        element: <SalonDashboard />
       },
       {
         path: 'dashboard/other',

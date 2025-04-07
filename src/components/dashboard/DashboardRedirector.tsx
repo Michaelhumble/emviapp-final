@@ -31,6 +31,14 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
       // First, try to use the role from context if available
       if (userRole) {
         console.log("Using role from context:", userRole);
+        
+        // Check if role is 'owner', redirect to salon dashboard
+        if (userRole === 'owner') {
+          console.log("Owner role detected, redirecting to salon dashboard");
+          navigate('/dashboard/salon');
+          return;
+        }
+        
         navigateToRoleDashboard(navigate, userRole);
         return;
       }
@@ -58,6 +66,14 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
       
       // If we have a role, redirect to the appropriate dashboard
       console.log("Redirecting to dashboard for role:", profile.role);
+      
+      // Check if role is 'owner', redirect to salon dashboard
+      if (profile.role === 'owner') {
+        console.log("Owner role detected, redirecting to salon dashboard");
+        navigate('/dashboard/salon');
+        return;
+      }
+      
       navigateToRoleDashboard(navigate, profile.role as UserRole);
       
     } catch (error) {

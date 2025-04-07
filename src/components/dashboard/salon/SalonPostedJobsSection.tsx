@@ -20,6 +20,8 @@ const SalonPostedJobsSection = () => {
       
       try {
         setLoading(true);
+        console.log("Fetching jobs for salon owner with ID:", user.id);
+        
         // Get salon jobs from Supabase
         const { data, error } = await supabase
           .from("jobs")
@@ -32,6 +34,7 @@ const SalonPostedJobsSection = () => {
           return;
         }
         
+        console.log("Jobs fetched:", data);
         setJobs(data || []);
       } catch (err) {
         console.error("Error in fetchJobs:", err);

@@ -11,15 +11,21 @@ import SalonDashboardActionButtons from "@/components/dashboard/salon/SalonDashb
 import SalonCreditStatus from "@/components/dashboard/salon/SalonCreditStatus";
 import SalonOwnerDashboardWidgets from "@/components/dashboard/salon/SalonOwnerDashboardWidgets";
 import SalonPostedJobsSection from "@/components/dashboard/salon/SalonPostedJobsSection";
+import { toast } from "sonner";
 
 const SalonDashboard = () => {
-  const { userProfile } = useAuth();
+  const { userProfile, userRole } = useAuth();
   
   useEffect(() => {
     document.title = "Salon Dashboard | EmviApp";
     // Add console log to debug
     console.log("Salon Dashboard rendered with profile:", userProfile);
-  }, [userProfile]);
+    console.log("Current user role:", userRole);
+    
+    if (userRole !== 'salon' && userRole !== 'owner') {
+      toast.info("You're currently viewing the Salon dashboard, but your role is set as " + userRole);
+    }
+  }, [userProfile, userRole]);
   
   return (
     <Layout>

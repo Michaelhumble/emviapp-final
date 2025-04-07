@@ -56,7 +56,7 @@ export const navigateToRoleDashboard = (
       navigate('/dashboard/artist');
       break;
     case 'salon':
-      navigate('/dashboard/salon');  // Changed from /dashboard/owner to /dashboard/salon
+      navigate('/dashboard/salon');
       break;
     case 'customer':
       navigate('/dashboard/customer');

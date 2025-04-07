@@ -6,10 +6,13 @@ interface SalonDashboardBannerProps {
 }
 
 const SalonDashboardBanner = ({ userName }: SalonDashboardBannerProps) => {
+  const { userProfile } = useAuth();
+  const displayName = userName || userProfile?.salon_name || userProfile?.full_name || "Salon Owner";
+  
   return (
     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-100 shadow-sm">
       <h1 className="text-2xl font-bold text-blue-800">
-        Welcome back, {userName || "Salon Owner"}!
+        Welcome back, {displayName}!
       </h1>
       <p className="text-blue-600 mt-2">
         Let's grow your salon today.
