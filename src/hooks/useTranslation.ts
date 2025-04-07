@@ -27,14 +27,24 @@ export const useTranslation = () => {
         // Make sure the data is in the correct format and handle potential errors
         if (data && Array.isArray(data)) {
           const typedData = data.map(item => {
-            // Check if item is an object (not an error) and has required properties
-            if (item && typeof item === 'object' && 'key' in item && 'english' in item && 'vietnamese' in item) {
+            // First check if item is null or undefined
+            if (!item) {
+              return {
+                key: 'error',
+                english: 'Translation error',
+                vietnamese: 'Lỗi dịch'
+              };
+            }
+            
+            // Check if item is an object and has required properties
+            if (typeof item === 'object' && 'key' in item && 'english' in item && 'vietnamese' in item) {
               return {
                 key: String(item.key),
                 english: String(item.english),
                 vietnamese: String(item.vietnamese)
               };
             }
+            
             // Default values if data is malformed
             return {
               key: 'error',

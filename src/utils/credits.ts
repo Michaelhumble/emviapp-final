@@ -199,15 +199,21 @@ export const getReferralStats = async (userId: string) => {
     
     // Calculate stats from the data with safer access
     const total = data.length;
-    // Filter with type guards to avoid property access errors
-    const completed = data.filter(ref => ref && typeof ref === 'object' && ref.status === 'completed').length;
+    
+    // Filter with null checks and type guards to avoid property access errors
+    const completed = data.filter(ref => {
+      return ref !== null && typeof ref === 'object' && 'status' in ref && ref.status === 'completed';
+    }).length;
+    
     const pending = data.filter(ref => {
-      return ref && typeof ref === 'object' && 
+      return ref !== null && typeof ref === 'object' && 'status' in ref && 
         (ref.status === 'pending' || ref.status === 'processing');
     }).length;
-    const milestoneReached = data.filter(ref => 
-      ref && typeof ref === 'object' && ref.milestone_reached === true
-    ).length;
+    
+    const milestoneReached = data.filter(ref => {
+      return ref !== null && typeof ref === 'object' && 
+        'milestone_reached' in ref && ref.milestone_reached === true;
+    }).length;
     
     return {
       total,
