@@ -15,36 +15,36 @@ export const roleOptions: RoleOption[] = [
     id: "customer",
     label: "Customer",
     description: "I'm looking for beauty services and offers from top professionals.",
-    icon: <User className="h-5 w-5 text-primary" />
+    icon: React.createElement(User, { className: "h-5 w-5 text-primary" })
   },
   {
     id: "artist",
     label: "Artist (Hair, Brows, Lashes, Nails, Tattoo...)",
     description: "I'm a beauty professional looking for jobs, exposure, or to build my brand.",
-    icon: <Scissors className="h-5 w-5 text-primary" />
+    icon: React.createElement(Scissors, { className: "h-5 w-5 text-primary" })
   },
   {
     id: "salon",
     label: "Salon Owner (Business)",
     description: "I'm a salon owner hiring, managing my team, or selling my salon.",
-    icon: <Building2 className="h-5 w-5 text-primary" />
+    icon: React.createElement(Building2, { className: "h-5 w-5 text-primary" })
   },
   {
     id: "freelancer",
     label: "Freelancer (Makeup Artist, Photographer, etc.)",
     description: "I'm a solo artist looking for gigs, clients, or to promote my service.",
-    icon: <Briefcase className="h-5 w-5 text-primary" />
+    icon: React.createElement(Briefcase, { className: "h-5 w-5 text-primary" })
   },
   {
     id: "vendor",
     label: "Vendor (Beauty Supplier)",
     description: "I sell products or tools for beauty salons and professionals.",
-    icon: <ShoppingBag className="h-5 w-5 text-primary" />
+    icon: React.createElement(ShoppingBag, { className: "h-5 w-5 text-primary" })
   },
   {
     id: "other",
     label: "Other",
     description: "I'm not sure yet — I just want to explore.",
-    icon: <HelpCircle className="h-5 w-5 text-primary" />
+    icon: React.createElement(HelpCircle, { className: "h-5 w-5 text-primary" })
   }
 ];
