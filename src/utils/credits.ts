@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -135,15 +134,16 @@ export const supportArtist = async (
       return false;
     }
     
-    // Create support message record
+    // Create support message record using a simple insert with type assertion
+    // since the 'support_messages' table is not in the TypeScript definitions
     const { error: supportError } = await supabase
-      .from('support_messages')
+      .from('support_messages' as any)
       .insert({
         supporter_id: supporterId,
         artist_id: artistId,
         credits: credits,
         message: message || null
-      });
+      } as any);
       
     if (supportError) {
       console.error("Error recording support message:", supportError);
