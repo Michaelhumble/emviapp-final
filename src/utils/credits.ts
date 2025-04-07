@@ -176,10 +176,11 @@ export const getReferralStats = async (userId: string) => {
   if (!userId) return null;
   
   try {
-    // Use a type assertion to work around the TypeScript issue
-    const { data, error } = await (supabase
+    // Use a type assertion and handle the results more carefully
+    const { data, error } = await supabase
       .from('referrals' as any)
-      .select('status, milestone_reached'));
+      .select('status, milestone_reached')
+      .eq('referrer_id', userId);
       
     if (error) {
       console.error("Error fetching referral stats:", error);
@@ -197,9 +198,10 @@ export const getReferralStats = async (userId: string) => {
     
     // Calculate stats from the data
     const total = data.length;
-    const completed = data.filter(ref => ref.status === 'completed').length;
-    const pending = data.filter(ref => ref.status === 'pending' || ref.status === 'processing').length;
-    const milestoneReached = data.filter(ref => ref.milestone_reached).length;
+    // Use optional chaining and default to false for safety
+    const completed = data.filter(ref => ref?.status === 'completed').length;
+    const pending = data.filter(ref => ref?.status === 'pending' || ref?.status === 'processing').length;
+    const milestoneReached = data.filter(ref => ref?.milestone_reached === true).length;
     
     return {
       total,
@@ -222,16 +224,16 @@ export const trackReferralMilestone = async (
   if (!referralId) return false;
   
   try {
-    // Use a type assertion to work around the TypeScript issue
-    const { error } = await (supabase
+    // Use a more careful approach with type assertions
+    const { error } = await supabase
       .from('referrals' as any)
       .update({
         milestone_reached: true,
         milestone_type: milestoneType,
         milestone_value: milestoneValue,
         verified_at: new Date().toISOString()
-      } as any)
-      .eq('id', referralId));
+      })
+      .eq('id', referralId);
       
     if (error) {
       console.error("Error updating referral milestone:", error);
@@ -250,13 +252,13 @@ export const getPendingCreditEarnings = async (userId: string): Promise<any[]> =
   if (!userId) return [];
   
   try {
-    // Use a type assertion to work around the TypeScript issue
-    const { data, error } = await (supabase
+    // Use safety checks and type assertions
+    const { data, error } = await supabase
       .from('credit_earnings' as any)
       .select('*')
       .eq('user_id', userId)
       .eq('status', 'pending')
-      .order('created_at', { ascending: false }));
+      .order('created_at', { ascending: false });
       
     if (error) {
       console.error("Error fetching pending credit earnings:", error);
@@ -275,13 +277,12 @@ export const approveCreditEarning = async (earningId: string): Promise<boolean> 
   if (!earningId) return false;
   
   try {
-    // First get the earning details
-    // Use a type assertion to work around the TypeScript issue
-    const { data: earning, error: fetchError } = await (supabase
+    // First get the earning details with safer type handling
+    const { data: earning, error: fetchError } = await supabase
       .from('credit_earnings' as any)
       .select('*')
       .eq('id', earningId)
-      .single());
+      .single();
       
     if (fetchError || !earning) {
       console.error("Error fetching credit earning:", fetchError);
@@ -289,13 +290,13 @@ export const approveCreditEarning = async (earningId: string): Promise<boolean> 
     }
     
     // Update the earning status
-    const { error: updateError } = await (supabase
+    const { error: updateError } = await supabase
       .from('credit_earnings' as any)
       .update({
         status: 'approved',
         validated_at: new Date().toISOString()
       })
-      .eq('id', earningId));
+      .eq('id', earningId);
       
     if (updateError) {
       console.error("Error updating credit earning:", updateError);

@@ -27,9 +27,9 @@ export const useTranslation = () => {
         // Make sure the data is in the correct format
         const typedData = Array.isArray(data) 
           ? data.map(item => ({
-              key: item.key,
-              english: item.english,
-              vietnamese: item.vietnamese
+              key: item.key as string,
+              english: item.english as string,
+              vietnamese: item.vietnamese as string
             }))
           : [];
           
