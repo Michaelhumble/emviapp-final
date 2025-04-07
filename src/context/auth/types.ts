@@ -1,66 +1,49 @@
-import { Session, User as SupabaseUser } from '@supabase/supabase-js';
 
-// User roles in the application
+import { Session, User } from "@supabase/supabase-js";
+
 export type UserRole = 
-  | 'customer' 
   | 'artist' 
   | 'salon' 
-  | 'supplier' 
+  | 'customer' 
   | 'freelancer' 
+  | 'vendor' 
+  | 'supplier' 
+  | 'beauty supplier' 
   | 'owner' 
-  | 'other'
   | 'nail technician/artist'
   | 'renter'
-  | 'vendor'
-  | 'beauty supplier';
+  | 'other';
 
-// User profile data with extended information
 export interface UserProfile {
   id: string;
-  email: string;
-  full_name: string;
-  avatar_url: string;
-  location: string;
-  bio: string;
-  phone: string;
-  instagram: string;
-  website: string;
-  specialty: string;
-  role: UserRole;
-  created_at: string;
-  updated_at: string;
-  preferred_language?: string;
-  referral_count: number;
-  // Additional properties that are being used in the app
+  email?: string;
+  full_name?: string;
+  phone?: string;
+  role?: UserRole;
+  bio?: string;
+  location?: string;
   salon_name?: string;
-  company_name?: string;
-  custom_role?: string;
-  contact_link?: string;
-  skills?: string[];
-  skill_level?: string;
-  profile_views?: number;
-  preferences?: string[];
-  affiliate_code?: string; // Added for sharing referral links
-  referral_code?: string; // Added for database referral codes
-  credits?: number; // Added to match the database schema
-  boosted_until?: string | null; // Added for profile boost feature
-  portfolio_urls?: string[]; // Added for artist portfolio images
-  accepts_bookings?: boolean; // Added for accepting bookings
-  booking_url?: string; // Added for external booking links
+  specialty?: string;
+  // Add other profile fields
 }
 
-// Auth context data shape
 export interface AuthContextType {
   session: Session | null;
-  user: SupabaseUser | null;
+  user: User | null;
   userProfile: UserProfile | null;
   userRole: UserRole | null;
   loading: boolean;
   isSignedIn: boolean;
-  isNewUser: boolean; // Flag to track if user just signed up
-  clearIsNewUser: () => void; // Function to clear the new user flag
-  signIn: (email: string, password: string) => Promise<any>; // Updated return type
-  signUp: (email: string, password: string) => Promise<any>; // Updated return type
+  isNewUser: boolean;
+  clearIsNewUser: () => void;
+  signIn: (email: string, password: string) => Promise<{
+    error: Error | null;
+    data: { user: User | null; session: Session | null } | null;
+  }>;
+  signUp: (email: string, password: string, metadata?: Record<string, any>) => Promise<{
+    error: Error | null;
+    data: { user: User | null; session: Session | null } | null;
+  }>;
   signOut: () => Promise<void>;
   refreshUserProfile: () => Promise<void>;
 }

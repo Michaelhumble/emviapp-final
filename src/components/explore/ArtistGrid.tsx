@@ -10,6 +10,8 @@ import { MapPin, Sparkles } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 import { getInitials } from '@/utils/userUtils';
 import { motion } from 'framer-motion';
+import ProAccessGate from '@/components/pro-access/ProAccessGate';
+import { useAuth } from '@/context/auth';
 
 interface ArtistGridProps {
   artists: UserProfile[];
@@ -18,6 +20,9 @@ interface ArtistGridProps {
 }
 
 const ArtistGrid: React.FC<ArtistGridProps> = ({ artists, isLoading, error }) => {
+  const { userRole } = useAuth();
+  const isSalonOwner = userRole === 'salon' || userRole === 'owner';
+
   if (error) {
     return (
       <div className="text-center py-12">
@@ -122,7 +127,17 @@ const ArtistGrid: React.FC<ArtistGridProps> = ({ artists, isLoading, error }) =>
                   
                   {artist.location && (
                     <div className="flex items-center text-xs text-muted-foreground mt-1">
-                      <MapPin className="h-3 w-3 mr-1" /> {artist.location}
+                      {isSalonOwner ? (
+                        <ProAccessGate>
+                          <div className="flex items-center">
+                            <MapPin className="h-3 w-3 mr-1" /> {artist.location}
+                          </div>
+                        </ProAccessGate>
+                      ) : (
+                        <div className="flex items-center">
+                          <MapPin className="h-3 w-3 mr-1" /> {artist.location}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

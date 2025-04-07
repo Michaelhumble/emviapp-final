@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,8 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { InfoIcon, User, Clock, DollarSign, BookOpen, Calendar, ExternalLink } from "lucide-react";
+import { InfoIcon, User, Clock, DollarSign, BookOpen, Calendar, ExternalLink, Mail, Phone, Instagram, Globe } from 'lucide-react';
 import { toast } from "sonner";
+import ProAccessGate from "@/components/pro-access/ProAccessGate";
+import { useAuth } from "@/context/auth";
 
 import { UserProfile } from "@/types/profile";
 
@@ -35,20 +36,21 @@ const ArtistPublicProfile = () => {
   const [portfolioImages, setPortfolioImages] = useState<PortfolioImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { userRole } = useAuth();
+  
+  const isSalonOwner = userRole === 'salon' || userRole === 'owner';
   
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
         setLoading(true);
         
-        // First try to find user by ID
         let { data: userData, error: userError } = await supabase
           .from('users')
           .select('*')
           .eq('id', username)
           .maybeSingle();
         
-        // If not found by ID, try by name
         if (userError || !userData) {
           const { data: nameData, error: nameError } = await supabase
             .from('users')
@@ -68,7 +70,6 @@ const ArtistPublicProfile = () => {
         
         setProfile(userData as UserProfile);
         
-        // Fetch services
         if (userData) {
           const { data: servicesData, error: servicesError } = await supabase
             .from("services")
@@ -79,7 +80,6 @@ const ArtistPublicProfile = () => {
           if (servicesError) throw servicesError;
           setServices(servicesData as Service[] || []);
           
-          // Create portfolio images from portfolio_urls
           if (userData.portfolio_urls && userData.portfolio_urls.length > 0) {
             const images = userData.portfolio_urls.map((url, index) => ({
               id: `portfolio-${index}`,
@@ -89,7 +89,6 @@ const ArtistPublicProfile = () => {
             setPortfolioImages(images);
           }
         }
-        
       } catch (error) {
         console.error("Error fetching profile data:", error);
         setError("Failed to load artist profile");
@@ -137,7 +136,6 @@ const ArtistPublicProfile = () => {
     );
   }
   
-  // Format duration as hours and minutes
   const formatDuration = (minutes: number) => {
     if (minutes < 60) return `${minutes} min`;
     const hours = Math.floor(minutes / 60);
@@ -147,7 +145,6 @@ const ArtistPublicProfile = () => {
       : `${hours} hr`;
   };
 
-  // Handle direct booking
   const handleBooking = () => {
     if (profile?.booking_url) {
       window.open(profile.booking_url, '_blank');
@@ -158,7 +155,6 @@ const ArtistPublicProfile = () => {
     <Layout>
       <div className="container mx-auto py-12 px-4">
         <div className="max-w-4xl mx-auto">
-          {/* Profile Header */}
           <div className="bg-white rounded-lg shadow-sm border p-8 mb-8">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
               <Avatar className="h-24 w-24 md:h-32 md:w-32">
@@ -175,19 +171,40 @@ const ArtistPublicProfile = () => {
                 <h1 className="text-3xl font-serif font-bold mb-2">{profile.full_name}</h1>
                 <p className="text-purple-700 font-medium">{profile.specialty || "Nail Artist"}</p>
                 {profile.location && (
-                  <p className="text-gray-500 mt-1">{profile.location}</p>
+                  <p className="text-gray-500 mt-1">
+                    {isSalonOwner ? (
+                      <ProAccessGate blur={false}>
+                        {profile.location}
+                      </ProAccessGate>
+                    ) : (
+                      profile.location
+                    )}
+                  </p>
                 )}
                 
                 <div className="mt-6">
                   {profile.accepts_bookings && profile.booking_url ? (
-                    <Button 
-                      className="bg-purple-600 hover:bg-purple-700"
-                      onClick={handleBooking}
-                    >
-                      <Calendar className="mr-2 h-4 w-4" />
-                      Book Me
-                      <ExternalLink className="ml-2 h-3.5 w-3.5" />
-                    </Button>
+                    isSalonOwner ? (
+                      <ProAccessGate>
+                        <Button 
+                          className="bg-purple-600 hover:bg-purple-700"
+                          onClick={handleBooking}
+                        >
+                          <Calendar className="mr-2 h-4 w-4" />
+                          Book Me
+                          <ExternalLink className="ml-2 h-3.5 w-3.5" />
+                        </Button>
+                      </ProAccessGate>
+                    ) : (
+                      <Button 
+                        className="bg-purple-600 hover:bg-purple-700"
+                        onClick={handleBooking}
+                      >
+                        <Calendar className="mr-2 h-4 w-4" />
+                        Book Me
+                        <ExternalLink className="ml-2 h-3.5 w-3.5" />
+                      </Button>
+                    )
                   ) : (
                     <TooltipProvider>
                       <Tooltip>
@@ -217,7 +234,6 @@ const ArtistPublicProfile = () => {
             )}
           </div>
           
-          {/* Portfolio Section */}
           {portfolioImages.length > 0 && (
             <div className="mb-12">
               <h2 className="text-2xl font-serif font-semibold mb-4">Portfolio</h2>
@@ -235,7 +251,6 @@ const ArtistPublicProfile = () => {
             </div>
           )}
           
-          {/* Services Section */}
           <div className="mb-12">
             <h2 className="text-2xl font-serif font-semibold mb-4">Services</h2>
             
@@ -280,18 +295,105 @@ const ArtistPublicProfile = () => {
             )}
           </div>
           
-          {/* Contact Section */}
           <Card className="mb-8">
             <CardHeader>
               <h2 className="text-xl font-serif font-semibold">Get In Touch</h2>
             </CardHeader>
-            <CardContent className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <p className="text-gray-600">
-                Interested in scheduling an appointment with {profile.full_name}?
-              </p>
-              <Button variant="outline" className="md:self-end" disabled>
-                Contact Coming Soon
-              </Button>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <h3 className="font-medium">Contact Information</h3>
+                  
+                  {profile.email && (
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-muted-foreground" />
+                      {isSalonOwner ? (
+                        <ProAccessGate tooltipText="Email is available to Emvi Pro salon owners">
+                          <span>{profile.email}</span>
+                        </ProAccessGate>
+                      ) : (
+                        <span>{profile.email}</span>
+                      )}
+                    </div>
+                  )}
+                  
+                  {profile.phone && (
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-muted-foreground" />
+                      {isSalonOwner ? (
+                        <ProAccessGate tooltipText="Phone number is available to Emvi Pro salon owners">
+                          <span>{profile.phone}</span>
+                        </ProAccessGate>
+                      ) : (
+                        <span>{profile.phone}</span>
+                      )}
+                    </div>
+                  )}
+                  
+                  {profile.instagram && (
+                    <div className="flex items-center gap-2">
+                      <Instagram className="h-4 w-4 text-muted-foreground" />
+                      {isSalonOwner ? (
+                        <ProAccessGate tooltipText="Instagram profile is available to Emvi Pro salon owners">
+                          <a href={`https://instagram.com/${profile.instagram.replace('@', '')}`} 
+                             target="_blank" 
+                             rel="noopener noreferrer"
+                             className="text-blue-600 hover:underline">
+                            @{profile.instagram.replace('@', '')}
+                          </a>
+                        </ProAccessGate>
+                      ) : (
+                        <a href={`https://instagram.com/${profile.instagram.replace('@', '')}`} 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           className="text-blue-600 hover:underline">
+                          @{profile.instagram.replace('@', '')}
+                        </a>
+                      )}
+                    </div>
+                  )}
+                  
+                  {profile.website && (
+                    <div className="flex items-center gap-2">
+                      <Globe className="h-4 w-4 text-muted-foreground" />
+                      {isSalonOwner ? (
+                        <ProAccessGate tooltipText="Website is available to Emvi Pro salon owners">
+                          <a href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`} 
+                             target="_blank" 
+                             rel="noopener noreferrer"
+                             className="text-blue-600 hover:underline truncate">
+                            {profile.website}
+                          </a>
+                        </ProAccessGate>
+                      ) : (
+                        <a href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`} 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           className="text-blue-600 hover:underline truncate">
+                          {profile.website}
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex flex-col justify-center items-center md:items-end space-y-3">
+                  {isSalonOwner ? (
+                    <ProAccessGate tooltipText="Direct messaging is available to Emvi Pro salon owners" blur={false}>
+                      <Button variant="outline" className="w-full md:w-auto">
+                        Send Message
+                      </Button>
+                    </ProAccessGate>
+                  ) : (
+                    <Button variant="outline" className="w-full md:w-auto">
+                      Send Message
+                    </Button>
+                  )}
+                  <p className="text-xs text-muted-foreground text-center md:text-right">
+                    Usually responds within 24 hours
+                  </p>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
