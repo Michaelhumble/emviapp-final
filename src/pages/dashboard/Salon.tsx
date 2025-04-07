@@ -30,7 +30,7 @@ const SalonDashboard = () => {
           <RoleDashboardLayout>
             <div className="space-y-8">
               {/* Salon Welcome Banner */}
-              <SalonDashboardBanner userName={userProfile?.full_name} />
+              <SalonDashboardBanner userName={userProfile?.salon_name || userProfile?.full_name} />
               
               {/* Salon Quick Stats */}
               <SalonQuickStats />

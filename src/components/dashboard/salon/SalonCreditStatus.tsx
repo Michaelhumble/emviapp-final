@@ -1,6 +1,6 @@
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Sparkles, Plus } from "lucide-react";
+import { Sparkles, Plus, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
@@ -22,7 +22,10 @@ const SalonCreditStatus = () => {
         <div className="flex justify-between items-center mb-4">
           <div>
             <p className="text-gray-700 font-medium">Current Balance</p>
-            <p className="text-2xl font-bold">{credits} Credits</p>
+            <p className="text-2xl font-bold flex items-center">
+              {credits} Credits
+              <Award className="h-4 w-4 text-amber-400 ml-1" />
+            </p>
           </div>
           <Button className="bg-amber-500 hover:bg-amber-600" size="sm">
             <Plus className="h-4 w-4 mr-1" />
@@ -30,12 +33,14 @@ const SalonCreditStatus = () => {
           </Button>
         </div>
         
-        <div className="bg-blue-50 p-3 rounded-lg">
+        <div className={isBoosted ? "bg-blue-50 p-3 rounded-lg" : "bg-gray-50 p-3 rounded-lg"}>
           <div className="flex items-center">
-            <div className="relative mr-3">
-              <div className="h-4 w-4 bg-blue-500 rounded-full animate-pulse"></div>
-              <div className="absolute -inset-1 bg-blue-200 rounded-full opacity-30 animate-ping"></div>
-            </div>
+            {isBoosted && (
+              <div className="relative mr-3">
+                <div className="h-4 w-4 bg-blue-500 rounded-full animate-pulse"></div>
+                <div className="absolute -inset-1 bg-blue-200 rounded-full opacity-30 animate-ping"></div>
+              </div>
+            )}
             <div>
               {isBoosted ? (
                 <p className="text-blue-700 font-medium">
