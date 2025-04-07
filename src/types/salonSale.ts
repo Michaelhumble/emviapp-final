@@ -21,6 +21,7 @@ export interface SalonSale {
   description: string;
   is_urgent: boolean;
   is_private: boolean;
+  is_featured?: boolean;
   status: 'active' | 'sold' | 'inactive';
   created_at: string;
   updated_at: string;

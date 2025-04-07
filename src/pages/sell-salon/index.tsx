@@ -5,18 +5,43 @@ import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Plus, Store, MapPin, DollarSign, Building, Loader2 } from "lucide-react";
+import { Search, Plus, Store, MapPin, DollarSign, Building, Loader2, Star } from "lucide-react";
 import { SalonSale } from "@/types/salonSale";
 import { fetchSalonSales, formatCurrency } from "@/utils/salonSales";
 import SalonListingDetail from "@/components/sell-salon/SalonListingDetail";
+import { SalonSalesFilters } from "@/components/sell-salon/SalonSalesFilters";
+
+// Define filter and sort types
+type SortOption = "newest" | "lowest_price" | "highest_price" | "featured_first";
+type BusinessTypeFilter = "all" | "Hair" | "Nails" | "Spa" | "Barbershop" | "Other";
+
+interface FilterState {
+  searchTerm: string;
+  businessType: BusinessTypeFilter;
+  priceRange: {
+    min: string;
+    max: string;
+  };
+  sortBy: SortOption;
+}
 
 const SalonSalesPage = () => {
   const navigate = useNavigate();
   const [salonSales, setSalonSales] = useState<SalonSale[]>([]);
   const [filteredSales, setFilteredSales] = useState<SalonSale[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSalon, setSelectedSalon] = useState<SalonSale | null>(null);
+  
+  // Filter and sort state
+  const [filters, setFilters] = useState<FilterState>({
+    searchTerm: "",
+    businessType: "all",
+    priceRange: {
+      min: "",
+      max: ""
+    },
+    sortBy: "newest"
+  });
 
   useEffect(() => {
     const loadSalonSales = async () => {
@@ -36,24 +61,77 @@ const SalonSalesPage = () => {
   }, []);
 
   useEffect(() => {
-    if (searchTerm.trim() === "") {
-      setFilteredSales(salonSales);
-      return;
+    // Apply filters and sorting
+    let filtered = [...salonSales];
+    
+    // Apply search filter
+    if (filters.searchTerm.trim() !== "") {
+      const term = filters.searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (salon) =>
+          salon.salon_name.toLowerCase().includes(term) ||
+          salon.city.toLowerCase().includes(term) ||
+          salon.state.toLowerCase().includes(term) ||
+          (salon.description && salon.description.toLowerCase().includes(term)) ||
+          (salon.business_type && salon.business_type.toLowerCase().includes(term))
+      );
     }
-
-    const term = searchTerm.toLowerCase();
-    const filtered = salonSales.filter(
-      (salon) =>
-        salon.salon_name.toLowerCase().includes(term) ||
-        salon.city.toLowerCase().includes(term) ||
-        salon.state.toLowerCase().includes(term) ||
-        salon.business_type?.toLowerCase().includes(term)
-    );
+    
+    // Apply business type filter
+    if (filters.businessType !== "all") {
+      filtered = filtered.filter(salon => salon.business_type === filters.businessType);
+    }
+    
+    // Apply price range filter
+    if (filters.priceRange.min) {
+      const minPrice = parseFloat(filters.priceRange.min);
+      filtered = filtered.filter(salon => salon.asking_price >= minPrice);
+    }
+    
+    if (filters.priceRange.max) {
+      const maxPrice = parseFloat(filters.priceRange.max);
+      filtered = filtered.filter(salon => salon.asking_price <= maxPrice);
+    }
+    
+    // Apply sorting
+    switch (filters.sortBy) {
+      case "newest":
+        filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        break;
+      case "lowest_price":
+        filtered.sort((a, b) => a.asking_price - b.asking_price);
+        break;
+      case "highest_price":
+        filtered.sort((a, b) => b.asking_price - a.asking_price);
+        break;
+      case "featured_first":
+        filtered.sort((a, b) => {
+          // First sort by featured status
+          if (a.is_featured && !b.is_featured) return -1;
+          if (!a.is_featured && b.is_featured) return 1;
+          
+          // Then sort by newest
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        });
+        break;
+    }
+    
+    // If not sorting by featured_first, still put featured listings at the top
+    if (filters.sortBy !== "featured_first") {
+      const featured = filtered.filter(salon => salon.is_featured);
+      const nonFeatured = filtered.filter(salon => !salon.is_featured);
+      filtered = [...featured, ...nonFeatured];
+    }
+    
     setFilteredSales(filtered);
-  }, [searchTerm, salonSales]);
+  }, [salonSales, filters]);
 
   const handleViewDetails = (salon: SalonSale) => {
     setSelectedSalon(salon);
+  };
+
+  const handleFilterChange = (newFilters: Partial<FilterState>) => {
+    setFilters(prev => ({ ...prev, ...newFilters }));
   };
 
   const getBusinessTypeIcon = (type?: string) => {
@@ -89,15 +167,11 @@ const SalonSalesPage = () => {
           </Button>
         </div>
 
-        <div className="relative mb-8">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          <Input
-            placeholder="Search by location, salon name, or business type..."
-            className="pl-10"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+        {/* Filter Bar Component */}
+        <SalonSalesFilters 
+          filters={filters} 
+          onFilterChange={handleFilterChange} 
+        />
 
         {isLoading ? (
           <div className="flex justify-center items-center py-12">
@@ -121,12 +195,19 @@ const SalonSalesPage = () => {
                 key={salon.id} 
                 className={`overflow-hidden transition-shadow hover:shadow-md ${
                   salon.is_urgent ? "border-amber-400" : ""
+                } ${
+                  salon.is_featured ? "border-2 border-yellow-300 bg-yellow-50" : ""
                 }`}
               >
                 <div className="aspect-video bg-gray-200 relative">
                   {salon.is_urgent && (
                     <div className="absolute top-2 right-2 bg-amber-400 text-white py-1 px-2 rounded-md text-xs font-medium">
                       Urgent
+                    </div>
+                  )}
+                  {salon.is_featured && (
+                    <div className="absolute top-2 left-2 bg-yellow-400 text-yellow-900 py-1 px-2 rounded-md text-xs font-medium flex items-center">
+                      <Star className="h-3 w-3 mr-1 fill-yellow-900" /> Featured
                     </div>
                   )}
                   <img

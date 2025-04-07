@@ -9,7 +9,7 @@ export async function fetchSalonSales() {
       .from('salon_sales')
       .select('*')
       .eq('status', 'active')
-      .eq('is_private', false)
+      .order('is_featured', { ascending: false })
       .order('created_at', { ascending: false });
 
     if (error) {
