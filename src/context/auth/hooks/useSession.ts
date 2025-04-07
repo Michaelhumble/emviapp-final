@@ -24,14 +24,14 @@ export const useSession = () => {
         setUser(currentSession?.user ?? null);
         
         // Handle sign up event
-        if (event === "SIGNED_UP") {
+        if (event === 'SIGNED_UP') {
           console.log("New user signed up!");
           setIsNewUser(true);
           localStorage.setItem('emviapp_new_user', 'true');
         }
         
         // Handle sign in event
-        if (event === "SIGNED_IN") {
+        if (event === 'SIGNED_IN') {
           console.log("User signed in!");
           // Check if this is a returning user
           const isNewUserFromStorage = localStorage.getItem('emviapp_new_user') === 'true';
@@ -39,7 +39,7 @@ export const useSession = () => {
         }
         
         // Clear user data on sign out
-        if (event === "SIGNED_OUT") {
+        if (event === 'SIGNED_OUT') {
           setSession(null);
           setUser(null);
           setIsNewUser(false);
