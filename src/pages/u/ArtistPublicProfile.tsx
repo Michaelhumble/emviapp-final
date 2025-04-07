@@ -98,28 +98,25 @@ const ArtistPublicProfile = () => {
             const sourcePage = location.state?.source || 
                             (location.pathname.includes('/explore') ? 'directory' :
                              location.pathname.includes('/search') ? 'search' : 'direct');
-                               
-            // Track the view in profile_views table
-            const { error: viewError } = await supabase
-              .from('profile_views')
-              .insert({
-                viewer_id: user.id,
-                artist_id: userData.id,
-                source_page: sourcePage,
-                viewer_role: userRole || 'unknown',
-                specialty_matched: userRole === 'artist' && userRole === userData.role,
-                location_matched: user.location === userData.location
-              })
-              .select();
-              
+                             
+            // Use raw SQL query to insert profile view since the types are not yet updated
+            const { error: viewError } = await supabase.rpc('track_profile_view', {
+              p_viewer_id: user.id,
+              p_artist_id: userData.id,
+              p_source_page: sourcePage,
+              p_viewer_role: userRole || 'unknown'
+            });
+            
             if (viewError && !viewError.message.includes('unique constraint')) {
               console.error("Error tracking profile view:", viewError);
             }
             
             // Get view count for display (only for artists and salon owners viewing profiles)
             if (isSalonOwner || userRole === 'artist') {
-              const { data: viewCountData, error: countError } = await supabase
-                .rpc('get_artist_views_count', { artist_id: userData.id });
+              // Directly use SQL query to get view count
+              const { data: viewCountData, error: countError } = await supabase.rpc('get_artist_views_count', {
+                artist_id: userData.id
+              });
                 
               if (!countError && viewCountData !== null) {
                 setViewCount(viewCountData);
