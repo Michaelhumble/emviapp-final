@@ -32,7 +32,7 @@ export const SalonSaleCard = ({ salon, onViewDetails }: SalonSaleCardProps) => {
       className={`overflow-hidden transition-shadow hover:shadow-md ${
         salon.is_urgent ? "border-amber-400" : ""
       } ${
-        salon.is_featured ? "border-2 border-yellow-300 bg-yellow-50" : ""
+        salon.is_featured ? "border-2 border-amber-300 bg-amber-50" : ""
       }`}
     >
       <div className="aspect-video bg-gray-200 relative">
@@ -42,12 +42,14 @@ export const SalonSaleCard = ({ salon, onViewDetails }: SalonSaleCardProps) => {
           </div>
         )}
         {salon.is_featured && (
-          <div className="absolute top-2 left-2 bg-yellow-400 text-yellow-900 py-1 px-2 rounded-md text-xs font-medium flex items-center">
-            <Star className="h-3 w-3 mr-1 fill-yellow-900" /> Featured
+          <div className="absolute top-2 left-2 bg-gradient-to-r from-amber-400 to-yellow-400 text-amber-900 py-1 px-2 rounded-md text-xs font-medium flex items-center shadow-sm">
+            <Star className="h-3 w-3 mr-1 fill-amber-900" /> Featured
           </div>
         )}
         <img
-          src="https://placehold.co/600x400/e2e8f0/64748b?text=Salon+Image"
+          src={salon.photos && salon.photos.length > 0 
+            ? salon.photos[0].photo_url 
+            : "https://placehold.co/600x400/e2e8f0/64748b?text=Salon+Image"}
           alt={salon.salon_name}
           className="w-full h-full object-cover"
         />

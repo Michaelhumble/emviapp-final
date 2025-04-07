@@ -152,6 +152,7 @@ const SalonListingsManagement = () => {
                       salonSaleId={listing.id} 
                       isFeatured={listing.is_featured || false}
                       onFeatureSuccess={refreshListings}
+                      isOwner={true}
                     />
                     <Button 
                       variant="outline" 
