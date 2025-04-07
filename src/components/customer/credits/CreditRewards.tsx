@@ -5,17 +5,17 @@ import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/comp
 import { Award, ChevronRight, Gift, Heart } from 'lucide-react';
 
 interface CreditRewardsProps {
-  currentCredits: number;
-  loading: boolean;
-  onRedeemCredit: (type: string, amount: number) => Promise<void>;
-  onSupportTabClick: () => void;
+  currentCredits?: number;
+  loading?: boolean;
+  onRedeemCredit?: (type: string, amount: number) => Promise<void>;
+  onSupportTabClick?: () => void;
 }
 
 const CreditRewards: React.FC<CreditRewardsProps> = ({ 
-  currentCredits, 
-  loading, 
-  onRedeemCredit,
-  onSupportTabClick
+  currentCredits = 0, 
+  loading = false, 
+  onRedeemCredit = async () => {},
+  onSupportTabClick = () => {}
 }) => {
   return (
     <TooltipProvider>

@@ -6,19 +6,19 @@ import { ArrowDown, ArrowUp, Heart, Gift } from 'lucide-react';
 import { CreditStats } from './types';
 
 interface CreditWalletOverviewProps {
-  currentCredits: number;
-  progressPercentage: number;
-  rewardsAvailable: number;
-  creditStats: CreditStats;
-  onRedeemClick: () => void;
+  currentCredits?: number;
+  progressPercentage?: number;
+  rewardsAvailable?: number;
+  stats: CreditStats;
+  onRedeemClick?: () => void;
 }
 
 const CreditWalletOverview: React.FC<CreditWalletOverviewProps> = ({
-  currentCredits,
-  progressPercentage,
-  rewardsAvailable,
-  creditStats,
-  onRedeemClick
+  currentCredits = 0,
+  progressPercentage = 0,
+  rewardsAvailable = 0,
+  stats,
+  onRedeemClick = () => {}
 }) => {
   return (
     <div>
@@ -58,7 +58,7 @@ const CreditWalletOverview: React.FC<CreditWalletOverviewProps> = ({
           <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center mb-2">
             <ArrowDown className="h-4 w-4 text-green-600" />
           </div>
-          <div className="text-xl font-medium text-green-600">{creditStats.earned}</div>
+          <div className="text-xl font-medium text-green-600">{stats.earned}</div>
           <div className="text-xs text-muted-foreground">Earned</div>
         </div>
         
@@ -66,7 +66,7 @@ const CreditWalletOverview: React.FC<CreditWalletOverviewProps> = ({
           <div className="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center mb-2">
             <Heart className="h-4 w-4 text-amber-600" />
           </div>
-          <div className="text-xl font-medium text-amber-600">{creditStats.supported}</div>
+          <div className="text-xl font-medium text-amber-600">{stats.supported}</div>
           <div className="text-xs text-muted-foreground">Supported</div>
         </div>
         
@@ -74,7 +74,7 @@ const CreditWalletOverview: React.FC<CreditWalletOverviewProps> = ({
           <div className="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center mb-2">
             <ArrowUp className="h-4 w-4 text-red-600" />
           </div>
-          <div className="text-xl font-medium text-red-600">{creditStats.spent}</div>
+          <div className="text-xl font-medium text-red-600">{stats.spent}</div>
           <div className="text-xs text-muted-foreground">Spent</div>
         </div>
       </div>

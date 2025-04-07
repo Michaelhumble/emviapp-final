@@ -3,10 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CreditWalletOverview } from './credits/CreditWalletOverview';
-import { CreditEarningMethods } from './credits/CreditEarningMethods';
-import { CreditHistory } from './credits/CreditHistory';
-import { CreditRewards } from './credits/CreditRewards';
+import CreditWalletOverview from './credits/CreditWalletOverview';
+import CreditEarningMethods from './credits/CreditEarningMethods';
+import CreditHistory from './credits/CreditHistory';
+import CreditRewards from './credits/CreditRewards';
 import { CreditHistoryItem, CreditStats } from './credits/types';
 import { getCreditsHistory } from '@/utils/credits';
 

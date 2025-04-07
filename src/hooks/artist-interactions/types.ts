@@ -1,6 +1,5 @@
 
-import { User } from "@/context/auth/types";
-
+// Remove the User import since we don't need it
 export type InteractionType = "bookmark" | "follow" | "offer";
 
 export interface InteractionLoadingState {
