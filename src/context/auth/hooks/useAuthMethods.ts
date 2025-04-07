@@ -18,11 +18,11 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
       if (error) throw error;
       
       toast.success("Signed in successfully!");
-      return data;
+      return { data, error: null };
     } catch (error) {
       console.error("Error signing in:", error);
       toast.error(error.message || "Failed to sign in");
-      throw error;
+      return { data: null, error };
     } finally {
       // Don't set loading false here - it will be handled by the auth state change
     }
@@ -38,14 +38,15 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
       
       if (error) throw error;
       
+      // Mark as new user in localStorage
       localStorage.setItem('emviapp_new_user', 'true');
       
       toast.success("Account created successfully!");
-      return data;
+      return { data, error: null };
     } catch (error) {
       console.error("Error signing up:", error);
       toast.error(error.message || "Failed to sign up");
-      throw error;
+      return { data: null, error };
     } finally {
       // Don't set loading false here - it will be handled by the auth state change
     }
