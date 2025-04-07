@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Session, User } from "@supabase/supabase-js";
+import { Session, User, AuthChangeEvent } from "@supabase/supabase-js";
 import { toast } from "sonner";
 
 /**
@@ -23,7 +23,7 @@ export const useSession = () => {
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         
-        // Compare event directly with string values
+        // Type-safe comparison with the enum values
         if (event === 'SIGNED_UP') {
           console.log("New user signed up!");
           setIsNewUser(true);
