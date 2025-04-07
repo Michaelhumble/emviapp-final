@@ -1,7 +1,6 @@
 
 import Layout from "@/components/layout/Layout";
 import SignUpForm from "@/components/auth/SignUpForm";
-import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 import { useSignUp } from "@/hooks/useSignUp";
 import { useEffect } from "react";
 
@@ -15,19 +14,16 @@ const SignUp = () => {
     setConfirmPassword,
     isSubmitting,
     referralCode,
-    showRoleModal,
     handleSubmit,
-    handleRoleModalClose,
     user
   } = useSignUp();
 
   // Debug log to check auth state in the sign-up page
   useEffect(() => {
     console.log("SignUp page rendered with state:", { 
-      userExists: !!user, 
-      showRoleModal 
+      userExists: !!user
     });
-  }, [user, showRoleModal]);
+  }, [user]);
 
   return (
     <Layout>
@@ -52,15 +48,6 @@ const SignUp = () => {
           />
         </div>
       </div>
-
-      {/* Role Selection Modal - shown right after signup */}
-      {user && showRoleModal && (
-        <RoleSelectionModal
-          open={showRoleModal}
-          onOpenChange={handleRoleModalClose}
-          userId={user.id}
-        />
-      )}
     </Layout>
   );
 };

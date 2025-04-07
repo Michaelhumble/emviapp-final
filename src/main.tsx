@@ -15,6 +15,7 @@ import Salons from '@/pages/Salons';
 import SalonOwners from '@/pages/SalonOwners';
 import SignIn from '@/pages/auth/SignIn';
 import SignUp from '@/pages/auth/SignUp';
+import ChooseRole from '@/pages/auth/ChooseRole';
 import Profile from '@/pages/Profile';
 import UserProfilePage from '@/pages/profile/UserProfilePage';
 import ProfileEdit from '@/pages/profile/edit';
@@ -90,6 +91,10 @@ const router = createBrowserRouter([
       {
         path: 'sign-up',
         element: <SignUp />
+      },
+      {
+        path: 'choose-role',
+        element: <ChooseRole />
       },
       {
         path: 'profile',

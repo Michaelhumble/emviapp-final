@@ -23,23 +23,23 @@ export const useSession = () => {
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         
-        // Handle sign up event - use correct enum comparison
-        if (event === 'SIGNED_UP' as AuthChangeEvent) {
+        // Handle sign up event - Using proper type comparison
+        if (event === 'SIGNED_UP') {
           console.log("New user signed up!");
           setIsNewUser(true);
           localStorage.setItem('emviapp_new_user', 'true');
         }
         
-        // Handle sign in event - use correct enum comparison
-        if (event === 'SIGNED_IN' as AuthChangeEvent) {
+        // Handle sign in event - Using proper type comparison
+        if (event === 'SIGNED_IN') {
           console.log("User signed in!");
           // Check if this is a returning user
           const isNewUserFromStorage = localStorage.getItem('emviapp_new_user') === 'true';
           setIsNewUser(isNewUserFromStorage);
         }
         
-        // Clear user data on sign out - use correct enum comparison
-        if (event === 'SIGNED_OUT' as AuthChangeEvent) {
+        // Clear user data on sign out - Using proper type comparison
+        if (event === 'SIGNED_OUT') {
           setSession(null);
           setUser(null);
           setIsNewUser(false);
