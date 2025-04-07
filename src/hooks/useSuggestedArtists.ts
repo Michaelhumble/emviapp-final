@@ -25,31 +25,20 @@ export const useSuggestedArtists = (currentArtistId?: string) => {
         let query;
         
         if (user) {
-          // For authenticated users, fetch based on viewing history
+          // For authenticated users, try to fetch based on viewing patterns
           
-          // Get artists the user has viewed in the last 30 days
-          const { data: viewedArtistsData } = await supabase
+          // We don't use profile_views directly since it might not exist yet
+          // Instead, fetch artists with similar characteristics to the current user
+          
+          // Get user's preferences
+          const { data: userData } = await supabase
             .from('users')
-            .select('id, specialty, location')
-            .in('id', (
-              await supabase
-                .from('profile_views')
-                .select('artist_id')
-                .eq('viewer_id', user.id)
-                .limit(10)
-            ).data?.map(v => v.artist_id) || []);
+            .select('specialty, location')
+            .eq('id', user.id)
+            .single();
             
-          if (viewedArtistsData && viewedArtistsData.length > 0) {
-            // Extract specialties and locations from viewed artists
-            const specialties = viewedArtistsData
-              .map(a => a.specialty)
-              .filter(Boolean);
-              
-            const locations = viewedArtistsData
-              .map(a => a.location)
-              .filter(Boolean);
-            
-            // Build query for suggested artists based on specialties and locations
+          if (userData?.specialty || userData?.location) {
+            // Build query for suggested artists based on user's preferences
             query = supabase
               .from('users')
               .select('*')
@@ -57,14 +46,14 @@ export const useSuggestedArtists = (currentArtistId?: string) => {
               .neq('full_name', '')
               .neq('avatar_url', '');
               
-            // Filter by specialty if we have specialties data
-            if (specialties.length > 0) {
-              query = query.in('specialty', specialties);
+            // Filter by specialty if we have specialty data
+            if (userData.specialty) {
+              query = query.eq('specialty', userData.specialty);
             }
             
             // Filter by location if we have location data
-            if (locations.length > 0) {
-              query = query.in('location', locations);
+            if (userData.location) {
+              query = query.eq('location', userData.location);
             }
             
             // Exclude current artist if viewing a profile
@@ -72,7 +61,7 @@ export const useSuggestedArtists = (currentArtistId?: string) => {
               query = query.neq('id', currentArtistId);
             }
           } else {
-            // Fallback for authenticated users with no viewing history
+            // Fallback for authenticated users with no preferences
             query = getFallbackQuery(currentArtistId);
           }
         } else {
