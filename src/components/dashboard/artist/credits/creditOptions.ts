@@ -7,25 +7,25 @@ export const creditOptions: CreditOption[] = [
     id: "profileBoost",
     title: "Profile Boost",
     description: "Promote your profile to the top of search results for 7 days",
-    creditCost: 10,
+    credits: 10,
     icon: Megaphone,
-    actionText: "Boost My Profile"
+    actionType: "profileBoost"
   },
   {
     id: "jobPost",
     title: "Free Job Post",
     description: "Post a job listing without paying the regular posting fee",
-    creditCost: 15,
+    credits: 15,
     icon: Briefcase,
-    actionText: "Post a Job for Free"
+    actionType: "jobPost"
   },
   {
     id: "marketplace",
     title: "Marketplace Access",
     description: "Get exclusive access to special deals in the beauty marketplace",
-    creditCost: 20,
+    credits: 20,
     icon: ShoppingBag,
-    actionText: "Unlock Marketplace Access",
-    comingSoon: true
+    actionType: "marketplace",
+    disabled: true
   }
 ];

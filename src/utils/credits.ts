@@ -201,16 +201,16 @@ export const getReferralStats = async (userId: string) => {
     
     // Filter with null checks and type guards to avoid property access errors
     const completed = data.filter(ref => {
-      return ref !== null && typeof ref === 'object' && 'status' in ref && ref.status === 'completed';
+      return ref && typeof ref === 'object' && 'status' in ref && ref.status === 'completed';
     }).length;
     
     const pending = data.filter(ref => {
-      return ref !== null && typeof ref === 'object' && 'status' in ref && 
+      return ref && typeof ref === 'object' && 'status' in ref && 
         (ref.status === 'pending' || ref.status === 'processing');
     }).length;
     
     const milestoneReached = data.filter(ref => {
-      return ref !== null && typeof ref === 'object' && 
+      return ref && typeof ref === 'object' && 
         'milestone_reached' in ref && ref.milestone_reached === true;
     }).length;
     
@@ -302,9 +302,17 @@ export const approveCreditEarning = async (earningId: string): Promise<boolean> 
     }
     
     // Ensure earning data is valid and has required properties
-    if (!earningData || typeof earningData !== 'object' || 
-        !('user_id' in earningData) || !('amount' in earningData)) {
+    if (typeof earningData !== 'object') {
       console.error("Invalid earning data structure:", earningData);
+      return false;
+    }
+    
+    // Use optional chaining and nullish coalescing for safe property access
+    const userId = earningData?.user_id ?? '';
+    const amount = earningData?.amount ?? 0;
+    
+    if (!userId) {
+      console.error("No user ID in earning data");
       return false;
     }
     
@@ -327,7 +335,7 @@ export const approveCreditEarning = async (earningId: string): Promise<boolean> 
     const { data: userData, error: getUserError } = await supabase
       .from('users')
       .select('credits')
-      .eq('id', earningData.user_id || '')
+      .eq('id', userId)
       .single();
       
     if (getUserError) {
@@ -336,12 +344,12 @@ export const approveCreditEarning = async (earningId: string): Promise<boolean> 
     }
     
     const currentCredits = userData?.credits || 0;
-    const newCredits = currentCredits + (earningData.amount || 0);
+    const newCredits = currentCredits + amount;
     
     const { error: updateCreditsError } = await supabase
       .from('users')
       .update({ credits: newCredits })
-      .eq('id', earningData.user_id || '');
+      .eq('id', userId);
       
     if (updateCreditsError) {
       console.error("Error updating user credits:", updateCreditsError);

@@ -8,7 +8,7 @@ export interface CreditOption {
   id: string;
   title: string;
   description: string;
-  icon: React.ReactNode;
+  icon: React.ComponentType<any>; // Changed from ReactNode to ComponentType
   credits: number;
   actionType: string;
   disabled?: boolean;

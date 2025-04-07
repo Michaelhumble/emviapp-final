@@ -40,16 +40,16 @@ const ArtistCreditsRedemption = () => {
             key={option.id}
             title={option.title}
             description={option.description}
-            cost={option.creditCost}
+            cost={option.credits}
             icon={option.icon}
             isDisabled={
-              credits < option.creditCost || 
+              credits < option.credits || 
               (option.id === 'profileBoost' && boostStatus.isActive) ||
               isProcessing[option.id]
             }
             isProcessing={isProcessing[option.id]}
             isSuccess={redeemSuccess[option.id]}
-            onRedeem={() => handleRedeemAction(option.title, option.creditCost, option.id)}
+            onRedeem={() => handleRedeemAction(option.title, option.credits, option.id)}
           />
         ))}
       </div>

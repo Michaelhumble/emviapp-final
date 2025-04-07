@@ -1,13 +1,13 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Loader } from "lucide-react";
-import { LucideIcon } from "lucide-react";
+import { ComponentType } from "react";
 
 interface CreditOptionCardProps {
   title: string;
   description: string;
   cost: number;
-  icon: LucideIcon;
+  icon: ComponentType<any>;
   isDisabled: boolean;
   isProcessing: boolean;
   isSuccess: boolean;
