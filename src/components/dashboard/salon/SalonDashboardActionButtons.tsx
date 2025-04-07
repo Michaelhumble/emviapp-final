@@ -8,12 +8,14 @@ const SalonDashboardActionButtons = () => {
     <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
       <h2 className="text-lg font-medium text-gray-800 mb-4">Quick Actions</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Button className="bg-blue-600 hover:bg-blue-700 h-auto py-3 px-4 flex items-center gap-2 justify-center">
-          <PlusCircle className="h-5 w-5" />
-          <div className="flex flex-col items-start">
-            <span>Post a New Job</span>
-            <span className="text-xs font-normal opacity-80">Find nail techs</span>
-          </div>
+        <Button className="bg-blue-600 hover:bg-blue-700 h-auto py-3 px-4 flex items-center gap-2 justify-center" asChild>
+          <Link to="/post/job">
+            <PlusCircle className="h-5 w-5" />
+            <div className="flex flex-col items-start">
+              <span>Post a New Job</span>
+              <span className="text-xs font-normal opacity-80">Find nail techs</span>
+            </div>
+          </Link>
         </Button>
         
         <Button className="bg-indigo-600 hover:bg-indigo-700 h-auto py-3 px-4 flex items-center gap-2 justify-center">

@@ -1,3 +1,4 @@
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
@@ -36,6 +37,7 @@ import ProfileNotFound from '@/components/profile/ProfileNotFound';
 import SalonNotFound from '@/components/salon/SalonNotFound';
 import MessageNotFound from '@/components/messaging/MessageNotFound';
 import ArtistPublicProfile from '@/pages/u/ArtistPublicProfile';
+import PostJob from '@/pages/post/PostJob'; // Import the new page
 
 // Import styles
 import './index.css';
@@ -149,6 +151,10 @@ const router = createBrowserRouter([
       {
         path: 'redirect/profile',
         element: <ProfileRedirect />
+      },
+      {
+        path: 'post/job',
+        element: <PostJob />
       },
       {
         path: '*',
