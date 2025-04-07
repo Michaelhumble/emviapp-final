@@ -3,6 +3,9 @@ import { Outlet, useLocation } from "react-router-dom";
 import { Toaster } from "sonner";
 import { useEffect } from "react";
 import { logRouteAccess } from "@/utils/routeChecker";
+import { AuthProvider } from "./context/auth";
+import { ProfileProvider } from "./context/profile";
+import { SubscriptionProvider } from "./context/subscription";
 
 // Import our components
 import LanguagePreference from "@/components/common/LanguagePreference";
@@ -21,12 +24,15 @@ const App = () => {
   }, [location.pathname]);
   
   return (
-    <>
-      <Outlet />
-      <RouteLogger />
-      <Toaster />
-      <LanguagePreference />
-    </>
+    <AuthProvider>
+      <SubscriptionProvider>
+        <ProfileProvider>
+          <Outlet />
+          <RouteLogger />
+          <LanguagePreference />
+        </ProfileProvider>
+      </SubscriptionProvider>
+    </AuthProvider>
   );
 };
 

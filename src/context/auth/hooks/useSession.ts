@@ -9,7 +9,18 @@ export function useSession() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState(false);
-  const navigate = useNavigate();
+  
+  // Use try/catch to handle the case when hook is called outside Router context
+  let navigate;
+  try {
+    navigate = useNavigate();
+  } catch (error) {
+    // If useNavigate throws an error, we're outside Router context
+    // Provide a no-op function instead
+    navigate = (path: string) => {
+      console.warn('Navigation attempted outside Router context:', path);
+    };
+  }
 
   useEffect(() => {
     // Check for new user status in localStorage

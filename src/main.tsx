@@ -204,17 +204,18 @@ const router = createBrowserRouter([
   },
 ]);
 
+// Define AppWithProviders component to properly nest providers
+const AppWithProviders = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+      <Toaster />
+    </QueryClientProvider>
+  );
+};
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <SubscriptionProvider>
-          <ProfileProvider>
-            <RouterProvider router={router} />
-            <Toaster />
-          </ProfileProvider>
-        </SubscriptionProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <AppWithProviders />
   </React.StrictMode>,
 );
