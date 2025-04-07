@@ -10,7 +10,7 @@ const SalonReferralCard = () => {
         {/* Vietnamese referral text for salons - making it more prominent */}
         <div className="mb-3 py-2 px-3 bg-blue-50 rounded-md border border-blue-100">
           <p className="text-blue-700 text-sm font-medium">
-            Giới thiệu chủ tiệm khác để nhận thưởng.
+            Giới thiệu chủ tiệm khác để nhận thưởng từ Emvi. <span className="text-blue-500 text-xs block mt-1">Invite other salon owners and earn Emvi rewards.</span>
           </p>
         </div>
         

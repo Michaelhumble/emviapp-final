@@ -22,6 +22,7 @@ const SalonDashboardActionButtons = () => {
             <div className="flex flex-col items-center text-center">
               <span className="font-semibold text-lg">Post a New Job</span>
               <span className="text-sm font-normal opacity-90">Find nail techs quickly</span>
+              <span className="text-xs text-blue-100 mt-1">Đăng tuyển dụng để tìm nhân viên phù hợp.</span>
             </div>
           </Link>
         </Button>

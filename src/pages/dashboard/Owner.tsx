@@ -2,8 +2,6 @@
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
-import DashboardContent from "@/components/dashboard/DashboardContent";
-import VisibilityNotification from "@/components/dashboard/salon/VisibilityNotification";
 import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
 import SalonDashboardBanner from "@/components/dashboard/salon/SalonDashboardBanner";
 import SalonQuickStats from "@/components/dashboard/salon/SalonQuickStats";
@@ -11,6 +9,8 @@ import SalonDashboardActionButtons from "@/components/dashboard/salon/SalonDashb
 import SalonReferralCard from "@/components/dashboard/salon/SalonReferralCard";
 import SalonCreditStatus from "@/components/dashboard/salon/SalonCreditStatus";
 import { useAuth } from "@/context/auth";
+import SalonPostedJobsSection from "@/components/dashboard/salon/SalonPostedJobsSection";
+import VisibilityNotification from "@/components/dashboard/salon/VisibilityNotification";
 
 const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -38,8 +38,11 @@ const OwnerDashboard = () => {
               {/* Salon Quick Stats */}
               <SalonQuickStats />
               
-              {/* Action Buttons */}
+              {/* Action Buttons with Vietnamese text */}
               <SalonDashboardActionButtons />
+
+              {/* Posted Jobs Section */}
+              <SalonPostedJobsSection />
               
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Credit Status Card */}

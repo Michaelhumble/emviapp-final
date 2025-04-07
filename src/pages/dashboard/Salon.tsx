@@ -10,6 +10,7 @@ import SalonReferralCard from "@/components/dashboard/salon/SalonReferralCard";
 import SalonDashboardActionButtons from "@/components/dashboard/salon/SalonDashboardActionButtons";
 import SalonCreditStatus from "@/components/dashboard/salon/SalonCreditStatus";
 import SalonOwnerDashboardWidgets from "@/components/dashboard/salon/SalonOwnerDashboardWidgets";
+import SalonPostedJobsSection from "@/components/dashboard/salon/SalonPostedJobsSection";
 
 const SalonDashboard = () => {
   const { userProfile } = useAuth();
@@ -37,8 +38,11 @@ const SalonDashboard = () => {
               {/* Salon Quick Stats */}
               <SalonQuickStats />
               
-              {/* Action Buttons */}
+              {/* Action Buttons with Vietnamese text */}
               <SalonDashboardActionButtons />
+              
+              {/* Posted Jobs Section */}
+              <SalonPostedJobsSection />
               
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Credit Status Card */}

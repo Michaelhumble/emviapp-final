@@ -17,7 +17,7 @@ const SalonDashboardBanner = ({ userName }: SalonDashboardBannerProps) => {
       
       {/* Vietnamese welcome text for salon owners - making it more prominent */}
       <p className="text-blue-700 text-sm font-medium mt-3 bg-blue-50 px-3 py-2 inline-block rounded-md border border-blue-100">
-        Cùng nhau phát triển tiệm làm đẹp của bạn.
+        Cùng nhau phát triển tiệm làm đẹp của bạn. <span className="text-blue-500 ml-1">Let's grow your beauty business together.</span>
       </p>
     </div>
   );
