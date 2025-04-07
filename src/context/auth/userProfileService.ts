@@ -2,6 +2,7 @@
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile, UserRole } from './types';
+import { Json } from '@/integrations/supabase/types';
 
 /**
  * Fetches the user profile data from Supabase
@@ -48,21 +49,21 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       created_at: data.created_at || new Date().toISOString(),
       updated_at: data.updated_at || new Date().toISOString(),
       preferred_language: data.preferred_language || '',
-      // Safely handle optional properties
-      referral_count: data.referral_count || 0,
-      salon_name: data.salon_name || '',
-      company_name: data.company_name || '',
+      // Handle properties that might not exist in the database
+      referral_count: 0, // Default value since it might not exist in the DB
+      salon_name: '', // Default value
+      company_name: '', // Default value
       custom_role: data.custom_role || '',
       contact_link: data.contact_link || '',
-      skills: data.skills || [],
-      skill_level: data.skill_level || '',
-      profile_views: data.profile_views || 0,
+      skills: [], // Default empty array
+      skill_level: '', // Default empty string
+      profile_views: 0, // Default to 0
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       affiliate_code: data.referral_code || '',
       referral_code: data.referral_code || '',
       credits: data.credits || 0,
       boosted_until: data.boosted_until || null,
-      portfolio_urls: data.portfolio_urls || [],
+      portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
       accepts_bookings: data.accepts_bookings || false,
       booking_url: data.booking_url || ''
     };
