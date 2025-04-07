@@ -125,7 +125,10 @@ const ArtistCard: React.FC<{ artist: UserProfile }> = ({ artist }) => {
           <TooltipProvider>
             <div className="flex items-center space-x-2">
               <Tooltip>
-                <AuthAction onAction={toggleBookmark}>
+                <AuthAction 
+                  onAction={toggleBookmark}
+                  creditMessage="Earn 2 credits when you save an artist"
+                >
                   <TooltipTrigger asChild>
                     <Button 
                       variant="ghost" 
@@ -141,12 +144,15 @@ const ArtistCard: React.FC<{ artist: UserProfile }> = ({ artist }) => {
                   </TooltipTrigger>
                 </AuthAction>
                 <TooltipContent side="bottom">
-                  {isBookmarked ? 'Remove from My List' : 'Save to My List'}
+                  {isBookmarked ? 'Remove from My List' : 'Save to My List (+2 credits)'}
                 </TooltipContent>
               </Tooltip>
               
               <Tooltip>
-                <AuthAction onAction={toggleFollow}>
+                <AuthAction 
+                  onAction={toggleFollow}
+                  creditMessage="Earn 5 credits when you follow an artist"
+                >
                   <TooltipTrigger asChild>
                     <Button 
                       variant="ghost" 
@@ -162,7 +168,7 @@ const ArtistCard: React.FC<{ artist: UserProfile }> = ({ artist }) => {
                   </TooltipTrigger>
                 </AuthAction>
                 <TooltipContent side="bottom">
-                  {isFollowing ? 'Unfollow Artist' : 'Follow for Updates'}
+                  {isFollowing ? 'Unfollow Artist' : 'Follow for Updates (+5 credits)'}
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -188,7 +194,7 @@ const ArtistCard: React.FC<{ artist: UserProfile }> = ({ artist }) => {
                   </TooltipTrigger>
                 </AuthAction>
                 <TooltipContent side="bottom">
-                  Invite this artist to join your salon
+                  Invite this artist to join your salon (5 credits)
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

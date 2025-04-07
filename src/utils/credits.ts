@@ -22,43 +22,17 @@ export const deductCredits = async ({ userId, amount, reason }: DeductCreditsPar
   }
 
   try {
-    // First get the current credits
-    const { data: userData, error: fetchError } = await supabase
-      .from('users')
-      .select('credits')
-      .eq('id', userId)
-      .single();
-
-    if (fetchError) {
-      console.error("Error fetching credits:", fetchError);
-      return false;
-    }
-    
-    const currentCredits = userData?.credits || 0;
-    
-    // Check if user has enough credits
-    if (currentCredits < amount) {
-      return false;
-    }
-    
-    // Deduct credits from the user's account
-    const { error: updateError } = await supabase
-      .from('users')
-      .update({ credits: currentCredits - amount })
-      .eq('id', userId);
-      
-    if (updateError) {
-      console.error("Error deducting credits:", updateError);
-      return false;
-    }
-    
-    // Log the activity
-    await supabase.from('activity_log').insert({
-      user_id: userId,
-      activity_type: 'credit_spent',
-      description: reason,
-      metadata: { credits: amount, action: reason }
+    // Use our new SQL function to deduct credits
+    const { error } = await supabase.rpc('redeem_credits', {
+      p_user_id: userId,
+      p_amount: amount,
+      p_redemption_type: reason
     });
+    
+    if (error) {
+      console.error("Error deducting credits:", error);
+      return false;
+    }
     
     return true;
   } catch (error) {
@@ -86,5 +60,29 @@ export const checkCredits = async (userId: string): Promise<number> => {
   } catch (error) {
     console.error("Exception in checkCredits:", error);
     return 0;
+  }
+};
+
+// Function to get recent credit history
+export const getCreditsHistory = async (userId: string, limit = 10): Promise<any[]> => {
+  if (!userId) return [];
+  
+  try {
+    const { data, error } = await supabase
+      .from('customer_credits')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+      
+    if (error) {
+      console.error("Error fetching credit history:", error);
+      return [];
+    }
+    
+    return data || [];
+  } catch (error) {
+    console.error("Exception in getCreditsHistory:", error);
+    return [];
   }
 };

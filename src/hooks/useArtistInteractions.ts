@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
+import { logActivity } from "@/utils/activity";
 
 export type InteractionType = "bookmark" | "follow" | "offer";
 
@@ -23,23 +24,25 @@ export const useArtistInteractions = (artistId: string) => {
     const checkInteractions = async () => {
       try {
         // Check if artist is bookmarked
-        const { data: bookmarkData } = await supabase
+        const { data: bookmarkData, error: bookmarkError } = await supabase
           .from("saved_artists")
           .select("*")
           .eq("viewer_id", user?.id)
           .eq("artist_id", artistId)
-          .single();
+          .maybeSingle();
         
+        if (bookmarkError) throw bookmarkError;
         setIsBookmarked(!!bookmarkData);
         
         // Check if artist is followed
-        const { data: followData } = await supabase
+        const { data: followData, error: followError } = await supabase
           .from("followers")
           .select("*")
           .eq("viewer_id", user?.id)
           .eq("artist_id", artistId)
-          .single();
+          .maybeSingle();
         
+        if (followError) throw followError;
         setIsFollowing(!!followData);
       } catch (error) {
         // It's ok if these fail - just means not bookmarked/following
@@ -60,25 +63,30 @@ export const useArtistInteractions = (artistId: string) => {
       
       if (isBookmarked) {
         // Remove bookmark
-        await supabase
+        const { error } = await supabase
           .from("saved_artists")
           .delete()
           .eq("viewer_id", user?.id)
           .eq("artist_id", artistId);
+          
+        if (error) throw error;
         
         setIsBookmarked(false);
         toast.success("Artist removed from your list");
       } else {
         // Add bookmark
-        await supabase
+        const { error } = await supabase
           .from("saved_artists")
           .insert({
             viewer_id: user?.id,
             artist_id: artistId
           });
+          
+        if (error) throw error;
         
+        // Credits are awarded automatically through a database trigger
         setIsBookmarked(true);
-        toast.success("Artist saved to your list");
+        toast.success("Artist saved to your list (+2 credits)");
       }
       
       return true;
@@ -101,25 +109,30 @@ export const useArtistInteractions = (artistId: string) => {
       
       if (isFollowing) {
         // Unfollow artist
-        await supabase
+        const { error } = await supabase
           .from("followers")
           .delete()
           .eq("viewer_id", user?.id)
           .eq("artist_id", artistId);
+          
+        if (error) throw error;
         
         setIsFollowing(false);
         toast.success("Unfollowed artist");
       } else {
         // Follow artist
-        await supabase
+        const { error } = await supabase
           .from("followers")
           .insert({
             viewer_id: user?.id,
             artist_id: artistId
           });
+          
+        if (error) throw error;
         
+        // Credits are awarded automatically through a database trigger
         setIsFollowing(true);
-        toast.success("You're now following this artist");
+        toast.success("You're now following this artist (+5 credits)");
       }
       
       return true;
@@ -144,7 +157,7 @@ export const useArtistInteractions = (artistId: string) => {
       const creditCost = 5;
       
       // Send offer to artist
-      await supabase
+      const { error } = await supabase
         .from("offers_sent")
         .insert({
           sender_id: user?.id,
@@ -152,8 +165,29 @@ export const useArtistInteractions = (artistId: string) => {
           message,
           credits_used: creditCost
         });
+        
+      if (error) throw error;
       
-      // In a real implementation, you would also deduct credits from the user's account
+      // Deduct credits using our new function
+      const { error: deductError } = await supabase.rpc('redeem_credits', {
+        p_user_id: user?.id,
+        p_amount: creditCost,
+        p_redemption_type: 'offer',
+        p_target_id: artistId
+      });
+      
+      if (deductError) {
+        console.error("Error deducting credits:", deductError);
+        // Still continue as the offer was sent
+      }
+      
+      // Log activity
+      await logActivity({
+        userId: user?.id || '',
+        activityType: 'profile_updated',
+        description: `Sent an offer to an artist`,
+        metadata: { artistId, creditCost }
+      });
       
       toast.success("Offer sent to artist");
       return true;

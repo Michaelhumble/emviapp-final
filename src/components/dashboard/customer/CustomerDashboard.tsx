@@ -11,6 +11,7 @@ import CustomerBoostTracker from "./CustomerBoostTracker";
 import CustomerDashboardStats from "./CustomerDashboardStats";
 import { UserProfile } from "@/context/auth/types";
 import CustomerDashboardWidgets from "./CustomerDashboardWidgets";
+import CustomerCreditsTracker from "@/components/customer/CustomerCreditsTracker";
 
 const CustomerDashboard = () => {
   const { userProfile } = useAuth();
@@ -52,6 +53,9 @@ const CustomerDashboard = () => {
         </div>
         
         <div className="space-y-8">
+          {/* Add Credits Tracker */}
+          <CustomerCreditsTracker />
+          
           {/* Enhanced Referral Center */}
           <CustomerReferralCenter />
         </div>

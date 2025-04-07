@@ -14,9 +14,14 @@ import { Link } from "react-router-dom";
 interface AuthActionProps {
   children: React.ReactNode;
   onAction: () => Promise<boolean> | boolean;
+  creditMessage?: string; // Optional message about credits for this action
 }
 
-const AuthAction: React.FC<AuthActionProps> = ({ children, onAction }) => {
+const AuthAction: React.FC<AuthActionProps> = ({ 
+  children, 
+  onAction,
+  creditMessage 
+}) => {
   const { isSignedIn } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
 
@@ -40,6 +45,11 @@ const AuthAction: React.FC<AuthActionProps> = ({ children, onAction }) => {
             <DialogTitle>Sign in to continue</DialogTitle>
             <DialogDescription>
               Create a free Emvi account to connect with top artists near you.
+              {creditMessage && (
+                <span className="block mt-2 text-pink-600 font-medium">
+                  {creditMessage}
+                </span>
+              )}
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col sm:flex-row gap-3 mt-4">

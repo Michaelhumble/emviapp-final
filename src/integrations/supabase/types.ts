@@ -69,6 +69,33 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_credits: {
+        Row: {
+          action_type: string
+          created_at: string | null
+          description: string | null
+          id: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          action_type: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          action_type?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
       followers: {
         Row: {
           artist_id: string
@@ -744,6 +771,19 @@ export type Database = {
       }
     }
     Functions: {
+      award_credits: {
+        Args: {
+          p_user_id: string
+          p_action_type: string
+          p_value: number
+          p_description?: string
+        }
+        Returns: boolean
+      }
+      award_tip_credits: {
+        Args: { p_user_id: string; p_amount: number; p_transaction_id: string }
+        Returns: boolean
+      }
       get_user_referral_stats: {
         Args: { user_id: string }
         Returns: {
@@ -756,6 +796,29 @@ export type Database = {
       }
       process_referral: {
         Args: { referral_code: string; new_user_id: string }
+        Returns: boolean
+      }
+      process_referral_credits: {
+        Args: { p_referrer_code: string; p_new_user_id: string }
+        Returns: boolean
+      }
+      redeem_credits: {
+        Args: {
+          p_user_id: string
+          p_amount: number
+          p_redemption_type: string
+          p_target_id?: string
+        }
+        Returns: boolean
+      }
+      submit_review_with_credits: {
+        Args: {
+          p_user_id: string
+          p_artist_id: string
+          p_booking_id: string
+          p_rating: number
+          p_review_text: string
+        }
         Returns: boolean
       }
     }
