@@ -1,18 +1,36 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
-import path from 'path'
-import { componentTagger } from 'lovable-tagger'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import path from 'path';
+import { componentTagger } from 'lovable-tagger';
 
 export default defineConfig(({ mode }) => ({
   server: {
     host: '0.0.0.0',
     port: 8080,
+    strictPort: true,
     allowedHosts: [
       'dd2787bb-39ac-4d3f-ad8a-82ffdf26198a.lovableproject.com',
     ],
+    cors: {
+      origin: 'https://dd2787bb-39ac-4d3f-ad8a-82ffdf26198a.lovableproject.com',
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    },
     hmr: {
       host: 'dd2787bb-39ac-4d3f-ad8a-82ffdf26198a.lovableproject.com',
-      protocol: 'wss', // Use 'wss' for SSL-safe preview via Lovable
+      protocol: 'wss',
+    },
+  },
+  preview: {
+    port: 8080,
+    strictPort: true,
+    allowedHosts: [
+      'dd2787bb-39ac-4d3f-ad8a-82ffdf26198a.lovableproject.com',
+    ],
+    cors: {
+      origin: 'https://dd2787bb-39ac-4d3f-ad8a-82ffdf26198a.lovableproject.com',
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
     },
   },
   plugins: [
@@ -24,4 +42,4 @@ export default defineConfig(({ mode }) => ({
       '@': path.resolve(__dirname, './src'),
     },
   },
-}))
+}));
