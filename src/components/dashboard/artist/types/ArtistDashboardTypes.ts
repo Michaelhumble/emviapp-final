@@ -29,3 +29,22 @@ export interface DaySchedule {
   time: string;
   active: boolean;
 }
+
+// Add types for bookings
+export interface Booking {
+  id: string;
+  sender_id: string;
+  recipient_id: string;
+  date_requested: string;
+  time_requested: string;
+  status: 'pending' | 'accepted' | 'declined';
+  note?: string;
+  created_at: string;
+  customer_name?: string;
+  service_name?: string;
+}
+
+export interface BookingCounts {
+  pending: number;
+  upcoming: number;
+}
