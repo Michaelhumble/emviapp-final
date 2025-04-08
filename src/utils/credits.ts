@@ -309,8 +309,8 @@ export const approveCreditEarning = async (earningId: string): Promise<boolean> 
     }
     
     // Use nullish coalescing for safe property access
-    const userId = earningData?.user_id ?? '';
-    const amount = earningData?.amount ?? 0;
+    const userId = earningData && 'user_id' in earningData ? earningData.user_id : '';
+    const amount = earningData && 'amount' in earningData ? earningData.amount : 0;
     
     if (!userId) {
       console.error("No user ID in earning data");
