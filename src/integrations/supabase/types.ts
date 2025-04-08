@@ -44,6 +44,7 @@ export type Database = {
           note: string | null
           recipient_id: string
           sender_id: string
+          service_id: string | null
           status: string | null
           time_requested: string | null
         }
@@ -54,6 +55,7 @@ export type Database = {
           note?: string | null
           recipient_id: string
           sender_id: string
+          service_id?: string | null
           status?: string | null
           time_requested?: string | null
         }
@@ -64,10 +66,19 @@ export type Database = {
           note?: string | null
           recipient_id?: string
           sender_id?: string
+          service_id?: string | null
           status?: string | null
           time_requested?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "bookings_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       credit_earnings: {
         Row: {
@@ -310,6 +321,39 @@ export type Database = {
           id?: string
           quote_text?: string
           role?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          link: string | null
+          message: string
+          metadata: Json | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          message: string
+          metadata?: Json | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          message?: string
+          metadata?: Json | null
+          type?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -861,6 +905,16 @@ export type Database = {
       award_tip_credits: {
         Args: { p_user_id: string; p_amount: number; p_transaction_id: string }
         Returns: boolean
+      }
+      create_notification: {
+        Args: {
+          p_user_id: string
+          p_message: string
+          p_type?: string
+          p_link?: string
+          p_metadata?: Json
+        }
+        Returns: string
       }
       get_user_referral_stats: {
         Args: { user_id: string }

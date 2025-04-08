@@ -12,7 +12,7 @@ const ArtistBookingsPanel = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [counts, setCounts] = useState<BookingCounts>({ pending: 0, upcoming: 0 });
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   
   const fetchBookings = async () => {
     try {
@@ -164,7 +164,7 @@ const ArtistBookingsPanel = () => {
   };
   
   // Define UI text based on Vietnamese preference
-  const isVietnamese = user?.preferred_language === 'vi';
+  const isVietnamese = userProfile?.preferred_language === 'vi';
   
   const translations = {
     title: isVietnamese ? "Lịch Hẹn Của Tôi" : "My Bookings",

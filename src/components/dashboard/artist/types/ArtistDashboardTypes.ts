@@ -42,6 +42,7 @@ export interface Booking {
   created_at: string;
   customer_name?: string;
   service_name?: string;
+  service_id?: string;
 }
 
 export interface BookingCounts {
