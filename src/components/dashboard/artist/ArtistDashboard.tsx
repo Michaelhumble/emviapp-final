@@ -28,6 +28,40 @@ interface ArtistToolkitSectionProps {
   onCopyReferralLink: () => void;
 }
 
+// Interface for database response
+interface UserProfileData {
+  id: string;
+  email?: string;
+  full_name?: string;
+  avatar_url?: string;
+  location?: string;
+  bio?: string;
+  phone?: string;
+  instagram?: string;
+  website?: string;
+  specialty?: string;
+  role?: string;
+  created_at?: string;
+  updated_at?: string;
+  preferred_language?: string;
+  referral_count?: number;
+  credits?: number;
+  salon_name?: string;
+  company_name?: string;
+  custom_role?: string;
+  contact_link?: string;
+  skills?: string[];
+  skill_level?: string;
+  profile_views?: number;
+  preferences?: any[];
+  referral_code?: string;
+  portfolio_urls?: string[];
+  accepts_bookings?: boolean;
+  booking_url?: string;
+  boosted_until?: string | null;
+  badges?: Json;
+}
+
 const ArtistDashboard = () => {
   const { user } = useAuth();
   
@@ -54,7 +88,7 @@ const ArtistDashboard = () => {
       }
       
       console.log('[Artist Dashboard] Artist data fetched successfully');
-      return data;
+      return data as UserProfileData;
     },
     enabled: !!user?.id,
   });
@@ -79,13 +113,13 @@ const ArtistDashboard = () => {
     updated_at: data?.updated_at || '',
     preferred_language: data?.preferred_language || '',
     referral_count: data?.credits || 0,
-    salon_name: data?.salon_name || '', // Default empty string if not present
-    company_name: data?.company_name || '', // Default empty string if not present
+    salon_name: data?.salon_name || '', 
+    company_name: data?.company_name || '', 
     custom_role: data?.custom_role || '',
     contact_link: data?.contact_link || '',
-    skills: data?.skills || [], // Default empty array if not present
-    skill_level: data?.skill_level || '', // Default empty string if not present
-    profile_views: data?.profile_views || 0, // Default to 0 if not present
+    skills: data?.skills || [], 
+    skill_level: data?.skill_level || '', 
+    profile_views: data?.profile_views || 0, 
     preferences: Array.isArray(data?.preferences) ? data.preferences : [],
     affiliate_code: data?.referral_code || '',
     referral_code: data?.referral_code || '',
