@@ -43,6 +43,7 @@ export interface Booking {
   customer_name?: string;
   service_name?: string;
   service_id?: string;
+  artist_name?: string; // Add artist_name property
 }
 
 export interface BookingCounts {

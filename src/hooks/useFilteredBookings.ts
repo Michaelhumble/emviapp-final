@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, parseISO } from 'date-fns';
 import { BookingFilters } from './useBookingFilters';
@@ -93,8 +94,10 @@ export const useFilteredBookings = (
         const serviceNameMatch = booking.service_name?.toLowerCase().includes(searchTerm);
         // Search by note
         const noteMatch = booking.note?.toLowerCase().includes(searchTerm);
+        // Search by artist name if available
+        const artistNameMatch = booking.artist_name?.toLowerCase().includes(searchTerm);
         
-        return customerNameMatch || serviceNameMatch || noteMatch;
+        return customerNameMatch || serviceNameMatch || noteMatch || artistNameMatch;
       });
     }
     

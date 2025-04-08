@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Booking, BookingCounts } from "./types/ArtistDashboardTypes";
 import { format, parseISO } from "date-fns";
 import BookingFilters from "../bookings/BookingFilters";
-import { ServiceTypeFilter } from "@/hooks/useBookingFilters";
+import { ServiceTypeFilter, BookingFilters as BookingFiltersType, BookingStatus, DateFilter, ClientType } from "@/hooks/useBookingFilters";
 import { useFilteredBookings } from "@/hooks/useFilteredBookings";
 
 const ArtistBookingsPanel = () => {
@@ -17,11 +17,11 @@ const ArtistBookingsPanel = () => {
   const [loading, setLoading] = useState(true);
   const { user, userProfile } = useAuth();
   const [serviceTypes, setServiceTypes] = useState<ServiceTypeFilter[]>([]);
-  const [filters, setFilters] = useState({
-    status: 'all',
-    dateFilter: 'all',
+  const [filters, setFilters] = useState<BookingFiltersType>({
+    status: 'all' as BookingStatus,
+    dateFilter: 'all' as DateFilter,
     dateRange: { from: undefined, to: undefined },
-    clientType: 'all',
+    clientType: 'all' as ClientType,
     serviceType: 'all',
     search: '',
     serviceTypes: []

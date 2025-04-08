@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { format, parseISO } from "date-fns";
 import { Booking } from "@/components/dashboard/artist/types/ArtistDashboardTypes";
 import BookingFilters from "../bookings/BookingFilters";
-import { ServiceTypeFilter } from "@/hooks/useBookingFilters";
+import { ServiceTypeFilter, BookingFilters as BookingFiltersType, BookingStatus, DateFilter, ClientType } from "@/hooks/useBookingFilters";
 import { useFilteredBookings } from "@/hooks/useFilteredBookings";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -17,11 +17,11 @@ const CustomerBookingsSection = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [serviceTypes, setServiceTypes] = useState<ServiceTypeFilter[]>([]);
-  const [filters, setFilters] = useState({
-    status: 'all',
-    dateFilter: 'all',
+  const [filters, setFilters] = useState<BookingFiltersType>({
+    status: 'all' as BookingStatus,
+    dateFilter: 'all' as DateFilter,
     dateRange: { from: undefined, to: undefined },
-    clientType: 'all',
+    clientType: 'all' as ClientType,
     serviceType: 'all',
     search: '',
     serviceTypes: []
