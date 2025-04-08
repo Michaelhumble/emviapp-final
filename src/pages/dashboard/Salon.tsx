@@ -4,10 +4,11 @@ import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
-import DashboardBreadcrumb from '@/components/ui/breadcrumb';
-import { Loader2 } from 'lucide-react';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { Loader2, Home } from 'lucide-react';
 import SalonOwnerDashboardContent from '@/components/dashboard/salon/SalonOwnerDashboardContent';
 import { isRoleEquivalent } from '@/utils/roleUtils';
+import { Link } from 'react-router-dom';
 
 const SalonDashboard = () => {
   const { userProfile, userRole, loading } = useAuth();
@@ -56,12 +57,30 @@ const SalonDashboard = () => {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
-        <DashboardBreadcrumb 
-          links={[
-            { name: 'Dashboard', href: '/dashboard' },
-            { name: 'Salon', href: '/dashboard/salon' },
-          ]} 
-        />
+        <Breadcrumb className="mb-6">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to="/">
+                  <Home className="h-4 w-4 mr-1" />
+                  Home
+                </Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to="/dashboard">Dashboard</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            
+            <BreadcrumbItem>
+              <BreadcrumbPage>Salon</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         
         <h1 className="text-3xl font-serif mb-8">
           {salonName} Dashboard

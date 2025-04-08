@@ -8,19 +8,17 @@ export type UserRole =
   | 'salon_owner'
   | 'freelancer'
   | 'supplier'
-  | 'other';
-
-// Legacy role mappings - includes both standard and non-standard roles for backward compatibility
-export type LegacyUserRole = 
-  // Standard normalized roles
-  | UserRole
-  // Legacy/non-standard roles that need mapping
+  | 'other'
+  // Legacy/non-standard roles that need mapping - included directly in the type
   | 'salon'
   | 'owner'
   | 'vendor'
   | 'beauty supplier'
   | 'nail technician/artist'
   | 'renter';
+
+// Legacy role mappings - this is now the same as UserRole for backward compatibility
+export type LegacyUserRole = UserRole;
 
 // Clean user profile data structure with extended properties for backward compatibility
 export interface UserProfile {

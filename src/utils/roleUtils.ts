@@ -65,10 +65,13 @@ export const normalizeUserRole = (role: string | null): UserRole | null => {
 export const isRoleEquivalent = (userRole: UserRole | null, legacyRoles: LegacyUserRole[]): boolean => {
   if (!userRole) return false;
   
+  // Direct comparison first (for exact matches)
+  if (legacyRoles.includes(userRole)) return true;
+  
   // For each legacy role, normalize it and check if it matches the user's normalized role
   return legacyRoles.some(legacyRole => {
     const normalizedLegacyRole = normalizeUserRole(legacyRole);
-    return normalizedLegacyRole === userRole;
+    return normalizedLegacyRole === normalizeUserRole(userRole);
   });
 };
 
@@ -129,7 +132,9 @@ export const hasRoleAccess = (
   console.log(`[Role Access] Checking if ${userRole} has access to route requiring: ${allowedRoles.join(', ')}`);
   
   // Check if normalized role is in allowed roles
-  const hasAccess = allowedRoles.includes(userRole);
+  const hasAccess = allowedRoles.includes(userRole) || 
+    allowedRoles.some(role => isRoleEquivalent(userRole, [role]));
+    
   console.log(`[Role Access] Access granted: ${hasAccess}`);
   
   return hasAccess;
