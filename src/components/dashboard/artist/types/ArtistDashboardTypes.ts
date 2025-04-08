@@ -22,3 +22,10 @@ export interface PortfolioImage {
   url: string;
   name: string;
 }
+
+// Add a type for booking schedule
+export interface DaySchedule {
+  day: string;
+  time: string;
+  active: boolean;
+}
