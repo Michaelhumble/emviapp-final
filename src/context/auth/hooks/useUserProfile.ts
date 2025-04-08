@@ -57,8 +57,8 @@ export const useUserProfile = (
         updated_at: data.updated_at,
         
         // For fields that might not exist in database, use safe defaults
-        referral_count: typeof data.referral_count === 'number' ? data.referral_count : 0,
-        profile_views: typeof data.profile_views === 'number' ? data.profile_views : 0,
+        referral_count: data.referral_count ? Number(data.referral_count) : 0,
+        profile_views: data.profile_views ? Number(data.profile_views) : 0,
         
         // Extended properties
         bio: data.bio || '',
@@ -71,12 +71,12 @@ export const useUserProfile = (
         company_name: data.company_name || '',
         custom_role: data.custom_role || '',
         contact_link: data.contact_link || '',
-        skills: Array.isArray(data.skills) ? data.skills : [],
+        skills: data.skills ? (Array.isArray(data.skills) ? data.skills : []) : [],
         skill_level: data.skill_level || '',
-        portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
-        preferences: Array.isArray(data.preferences) ? data.preferences : [],
+        portfolio_urls: data.portfolio_urls ? (Array.isArray(data.portfolio_urls) ? data.portfolio_urls : []) : [],
+        preferences: data.preferences ? (Array.isArray(data.preferences) ? data.preferences : []) : [],
         boosted_until: data.boosted_until || null,
-        credits: typeof data.credits === 'number' ? data.credits : 0,
+        credits: data.credits ? Number(data.credits) : 0,
         affiliate_code: data.referral_code || '',
         referral_code: data.referral_code || '',
         accepts_bookings: !!data.accepts_bookings,
