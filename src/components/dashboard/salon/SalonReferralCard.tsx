@@ -30,7 +30,7 @@ const SalonReferralCard = () => {
           .rpc('get_user_referral_stats', { user_id: user.id });
         
         if (!error && data) {
-          // The API returns a single object with referral_count property, not an array
+          // Fix: data is a single object, not an array
           setReferralCount(data.referral_count || 0);
         }
       } catch (err) {
