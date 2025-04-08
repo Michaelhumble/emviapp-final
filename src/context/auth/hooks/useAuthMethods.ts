@@ -1,122 +1,97 @@
+
+import { AuthResponse } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 /**
- * Hook to handle authentication methods with improved error handling
+ * Custom hook to handle auth methods
  */
 export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
-  const signIn = async (email: string, password: string) => {
-    try {
-      console.log('[Auth] Signing in user:', email);
-      setLoading(true);
-      
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      
-      if (error) throw error;
-      
-      console.log('[Auth] Sign in successful');
-      toast.success("Signed in successfully!");
-      return { data, error: null };
-    } catch (error) {
-      console.error("Error signing in:", error);
-      toast.error(error.message || "Failed to sign in");
-      return { data: null, error };
-    } finally {
-      // Don't set loading false here - it will be handled by the auth state change
-    }
-  };
-
-  const signUp = async (email: string, password: string) => {
-    try {
-      console.log('[Auth] Signing up new user:', email);
-      setLoading(true);
-      
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-      
-      if (error) throw error;
-      
-      // Mark as new user in localStorage
-      localStorage.setItem('emviapp_new_user', 'true');
-      
-      console.log('[Auth] Sign up successful');
-      toast.success("Account created successfully!");
-      return { data, error: null };
-    } catch (error) {
-      console.error("Error signing up:", error);
-      toast.error(error.message || "Failed to sign up");
-      return { data: null, error };
-    } finally {
-      // Don't set loading false here - it will be handled by the auth state change
-    }
-  };
-
   /**
-   * Completely sign out the user and clear all auth-related data
+   * Sign in with email and password
    */
-  const signOut = async () => {
+  const signIn = async (email: string, password: string): Promise<AuthResponse> => {
+    setLoading(true);
     try {
-      console.log('[Auth] Signing out user');
-      setLoading(true);
+      const response = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
       
-      // Clear any auth-related localStorage items first
-      localStorage.removeItem('emviapp_user_role');
-      localStorage.removeItem('emviapp_new_user');
-      localStorage.removeItem('emviapp_session');
-      localStorage.removeItem('supabase.auth.token');
-      
-      // Other app-specific storage items
-      localStorage.removeItem('lastProfileRefresh');
-      localStorage.removeItem('dashboardPreferences');
-      
-      // First reset all session data to force clear client-side state
-      try {
-        await supabase.auth.setSession({ access_token: '', refresh_token: '' });
-      } catch (err) {
-        console.error("Failed to reset session:", err);
+      if (response.error) {
+        toast.error(response.error.message);
       }
       
-      // Then sign out from Supabase
-      const { error } = await supabase.auth.signOut({ scope: 'global' });
-      
-      if (error) throw error;
-      
-      console.log('[Auth] Sign out successful');
-      toast.success("Successfully signed out");
-      
-      // Force reload the page to clear any remaining state
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 100);
-      
-      return;
+      return response;
     } catch (error) {
-      console.error("Error in signOut:", error);
-      toast.error("Failed to sign out");
-      
-      // Force reset session data even if Supabase signOut fails
-      try {
-        await supabase.auth.setSession({ access_token: '', refresh_token: '' });
-        // Force redirect to homepage
-        window.location.href = '/';
-      } catch (e) {
-        console.error("Failed to reset session:", e);
-      }
-      
+      console.error("Sign in error:", error);
       throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  return {
-    signIn,
-    signUp,
-    signOut
+  /**
+   * Sign up with email and password
+   */
+  const signUp = async (email: string, password: string): Promise<AuthResponse> => {
+    setLoading(true);
+    try {
+      const response = await supabase.auth.signUp({
+        email,
+        password,
+      });
+      
+      if (response.error) {
+        toast.error(response.error.message);
+      } else {
+        toast.success("Verification email sent! Please check your inbox.");
+      }
+      
+      return response;
+    } catch (error) {
+      console.error("Sign up error:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
+
+  /**
+   * Sign out with fallback cleanup
+   */
+  const signOut = async (): Promise<void> => {
+    setLoading(true);
+    try {
+      console.log("[Auth] Signing out user");
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error("[Auth] Sign out error:", error);
+        toast.error("Error signing out. Performing force logout.");
+        
+        // Fallback: Clear local storage manually if signOut fails
+        localStorage.removeItem('sb-supabase-auth-token');
+        localStorage.removeItem('emviapp_user_role');
+        localStorage.removeItem('emviapp_new_user');
+        localStorage.removeItem('emviapp_session');
+        
+        // Force reload to clear all state
+        window.location.href = "/";
+      } else {
+        console.log("[Auth] Sign out successful");
+        // No toast here - will be handled by the redirect component
+      }
+    } catch (error) {
+      console.error("[Auth] Unexpected sign out error:", error);
+      
+      // Emergency fallback
+      localStorage.clear();
+      window.location.href = "/";
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { signIn, signUp, signOut };
 };
