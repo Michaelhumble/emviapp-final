@@ -56,15 +56,15 @@ export const useTranslation = (preferredLanguage: string = 'English') => {
     
     // Add null check before accessing properties
     if (!item) {
-      return defaultText || key;
+      return defaultText || (typeof key === 'string' ? key : '');
     }
     
     if (preferredLanguage.toLowerCase() === 'vietnamese' || 
         preferredLanguage.toLowerCase() === 'tiếng việt') {
-      return item.vietnamese || item.english || defaultText || key;
+      return item.vietnamese || item.english || defaultText || (typeof key === 'string' ? key : '');
     }
     
-    return item.english || defaultText || key;
+    return item.english || defaultText || (typeof key === 'string' ? key : '');
   };
 
   return { t, loading };
