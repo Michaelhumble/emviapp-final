@@ -1,422 +1,136 @@
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from "sonner";
-
-interface DeductCreditsParams {
-  userId: string;
-  amount: number;
-  reason: string;
-  targetId?: string;
-}
-
-export const CREDIT_COSTS = {
-  JOB_POST: 5,
-  BOOST_PROFILE: 10,
-  FEATURED_JOB: 8,
-  FEATURED_LISTING: 10,
-  SUPPORT_ARTIST_SMALL: 10,
-  SUPPORT_ARTIST_MEDIUM: 25,
-  SUPPORT_ARTIST_LARGE: 50
-};
-
-export const deductCredits = async ({ userId, amount, reason, targetId }: DeductCreditsParams): Promise<boolean> => {
-  if (!userId) {
-    console.error("No user ID provided for credit deduction");
-    return false;
-  }
-
-  try {
-    // We need to work around TypeScript errors since the redeem_credits function isn't in types
-    // Use raw SQL query with parameters instead of RPC call
-    const { error } = await supabase.rpc('redeem_credits' as any, {
-      p_user_id: userId,
-      p_amount: amount,
-      p_redemption_type: reason,
-      p_target_id: targetId
-    });
-    
-    if (error) {
-      console.error("Error deducting credits:", error);
-      return false;
-    }
-    
-    return true;
-  } catch (error) {
-    console.error("Exception in deductCredits:", error);
-    return false;
-  }
-};
-
-export const checkCredits = async (userId: string): Promise<number> => {
-  if (!userId) return 0;
-  
-  try {
-    const { data, error } = await supabase
-      .from('users')
-      .select('credits')
-      .eq('id', userId)
-      .single();
-      
-    if (error) {
-      console.error("Error checking credits:", error);
-      return 0;
-    }
-    
-    return data?.credits || 0;
-  } catch (error) {
-    console.error("Exception in checkCredits:", error);
-    return 0;
-  }
-};
-
-export const getCreditsHistory = async (userId: string, limit = 10): Promise<any[]> => {
-  if (!userId) return [];
-  
-  try {
-    // Use a type assertion to work around the TypeScript issue
-    // since customer_credits isn't in the TypeScript definitions yet
-    const { data, error } = await (supabase
-      .from('customer_credits' as any)
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(limit));
-      
-    if (error) {
-      console.error("Error fetching credit history:", error);
-      return [];
-    }
-    
-    return data || [];
-  } catch (error) {
-    console.error("Exception in getCreditsHistory:", error);
-    return [];
-  }
-};
-
-export const supportArtist = async (
-  supporterId: string, 
-  artistId: string, 
-  credits: number,
-  message?: string
-): Promise<boolean> => {
-  if (!supporterId || !artistId) {
-    console.error("Missing user IDs for artist support");
-    return false;
-  }
-  
-  // Don't allow supporting yourself
-  if (supporterId === artistId) {
-    toast.error("You cannot support yourself");
-    return false;
-  }
-  
-  try {
-    // First check if user has enough credits
-    const userCredits = await checkCredits(supporterId);
-    
-    if (userCredits < credits) {
-      toast.error(`You need ${credits - userCredits} more credits to support this artist`);
-      return false;
-    }
-    
-    // Deduct credits from supporter
-    const deducted = await deductCredits({
-      userId: supporterId,
-      amount: credits,
-      reason: 'support_artist',
-      targetId: artistId
-    });
-    
-    if (!deducted) {
-      toast.error("Failed to deduct credits");
-      return false;
-    }
-    
-    // Create support message record using a simple insert with type assertion
-    // since the 'support_messages' table is not in the TypeScript definitions
-    const { error: supportError } = await supabase
-      .from('support_messages' as any)
-      .insert({
-        supporter_id: supporterId,
-        artist_id: artistId,
-        credits: credits,
-        message: message || null
-      } as any);
-      
-    if (supportError) {
-      console.error("Error recording support message:", supportError);
-      // Continue anyway as the credits were transferred
-    }
-    
-    // Add credits to the artist (using the award_credits function)
-    const { error: awardError } = await supabase.rpc('award_credits' as any, {
-      p_user_id: artistId,
-      p_action_type: 'received_support',
-      p_value: credits,
-      p_description: `support_from_${supporterId}`
-    });
-    
-    if (awardError) {
-      console.error("Error adding credits to artist:", awardError);
-      // Don't return false here as we've already deducted from the supporter
-    }
-    
-    return true;
-  } catch (error) {
-    console.error("Exception in supportArtist:", error);
-    return false;
-  }
-};
-
-export const getReferralStats = async (userId: string) => {
-  if (!userId) return null;
-  
-  try {
-    // Use a type assertion and better error handling
-    const { data, error } = await supabase
-      .from('referrals' as any)
-      .select('status, milestone_reached')
-      .eq('referrer_id', userId);
-      
-    if (error) {
-      console.error("Error fetching referral stats:", error);
-      return null;
-    }
-    
-    // Verify that data is an array before proceeding
-    if (!data || !Array.isArray(data)) {
-      return {
-        total: 0,
-        completed: 0,
-        pending: 0,
-        milestoneReached: 0
-      };
-    }
-    
-    // Calculate stats from the data with safer access
-    const total = data.length;
-    
-    // Filter with null checks and type guards to avoid property access errors
-    const completed = data.filter(ref => {
-      return ref && typeof ref === 'object' && 'status' in ref && ref.status === 'completed';
-    }).length;
-    
-    const pending = data.filter(ref => {
-      return ref && typeof ref === 'object' && 'status' in ref && 
-        (ref.status === 'pending' || ref.status === 'processing');
-    }).length;
-    
-    const milestoneReached = data.filter(ref => {
-      return ref && typeof ref === 'object' && 
-        'milestone_reached' in ref && ref.milestone_reached === true;
-    }).length;
-    
-    return {
-      total,
-      completed,
-      pending,
-      milestoneReached
-    };
-  } catch (err) {
-    console.error('Unexpected error fetching referral stats:', err);
-    return null;
-  }
-};
-
-export const trackReferralMilestone = async (
-  referralId: string,
-  milestoneType: string,
-  milestoneValue: any = {}
-): Promise<boolean> => {
-  if (!referralId) return false;
-  
-  try {
-    // Use a more careful approach with type assertions
-    const { error } = await supabase
-      .from('referrals' as any)
-      .update({
-        milestone_reached: true,
-        milestone_type: milestoneType,
-        milestone_value: milestoneValue,
-        verified_at: new Date().toISOString()
-      })
-      .eq('id', referralId);
-      
-    if (error) {
-      console.error("Error updating referral milestone:", error);
-      return false;
-    }
-    
-    return true;
-  } catch (error) {
-    console.error("Exception in trackReferralMilestone:", error);
-    return false;
-  }
-};
-
-export const getPendingCreditEarnings = async (userId: string): Promise<any[]> => {
-  if (!userId) return [];
-  
-  try {
-    // Use proper error handling and type checking
-    const { data, error } = await supabase
-      .from('credit_earnings' as any)
-      .select('*')
-      .eq('user_id', userId)
-      .eq('status', 'pending')
-      .order('created_at', { ascending: false });
-      
-    if (error) {
-      console.error("Error fetching pending credit earnings:", error);
-      return [];
-    }
-    
-    // Ensure data is an array
-    return Array.isArray(data) ? data : [];
-  } catch (error) {
-    console.error("Exception in getPendingCreditEarnings:", error);
-    return [];
-  }
-};
-
-export const approveCreditEarning = async (earningId: string): Promise<boolean> => {
-  if (!earningId) return false;
-  
-  try {
-    // First get the earning details with proper type checking
-    const { data: earningData, error: fetchError } = await supabase
-      .from('credit_earnings' as any)
-      .select('*')
-      .eq('id', earningId)
-      .single();
-      
-    if (fetchError || !earningData) {
-      console.error("Error fetching credit earning:", fetchError);
-      return false;
-    }
-    
-    // Ensure earning data is valid and has required properties
-    if (typeof earningData !== 'object') {
-      console.error("Invalid earning data structure:", earningData);
-      return false;
-    }
-    
-    // Use optional chaining and nullish coalescing for safe property access
-    const userId = (earningData as any)?.user_id ?? '';
-    const amount = (earningData as any)?.amount ?? 0;
-    
-    if (!userId) {
-      console.error("No user ID in earning data");
-      return false;
-    }
-    
-    // Update the earning status
-    const { error: updateError } = await supabase
-      .from('credit_earnings' as any)
-      .update({
-        status: 'approved',
-        validated_at: new Date().toISOString()
-      })
-      .eq('id', earningId);
-      
-    if (updateError) {
-      console.error("Error updating credit earning:", updateError);
-      return false;
-    }
-    
-    // Award the credits to the user using a direct update
-    // instead of the unsupported increment RPC
-    const { data: userData, error: getUserError } = await supabase
-      .from('users')
-      .select('credits')
-      .eq('id', userId)
-      .single();
-      
-    if (getUserError) {
-      console.error("Error getting user credits:", getUserError);
-      return false;
-    }
-    
-    const currentCredits = userData?.credits || 0;
-    const newCredits = currentCredits + amount;
-    
-    const { error: updateCreditsError } = await supabase
-      .from('users')
-      .update({ credits: newCredits })
-      .eq('id', userId);
-      
-    if (updateCreditsError) {
-      console.error("Error updating user credits:", updateCreditsError);
-      return false;
-    }
-    
-    return true;
-  } catch (error) {
-    console.error("Exception in approveCreditEarning:", error);
-    return false;
-  }
-};
-
-export const getCallReportingStatus = async (callId: string) => {
-  try {
-    const { data, error } = await supabase
-      .from('video_call_reporting')
-      .select('*')
-      .eq('call_id', callId)
-      .single();
-    
-    if (error) throw error;
-    
-    return data;
-  } catch (error) {
-    console.error('Error getting call reporting status:', error);
-    return null;
-  }
-};
-
-export const canRedeem = async (userId: string, credits: number, minRequired: number): Promise<boolean> => {
-  try {
-    const { data, error } = await supabase
-      .from('users')
-      .select('credits')
-      .eq('id', userId)
-      .single();
-    
-    if (error) throw error;
-    
-    return (data?.credits || 0) >= minRequired;
-  } catch (error) {
-    console.error('Error checking if can redeem:', error);
-    return false;
-  }
-};
-
-export const trackCanvasEvent = (ref: React.RefObject<HTMLCanvasElement>, eventName: string, metadata = {}) => {
+// Only update the sections with the null checks
+export const updateSalonCreditDisplay = (
+  creditAmount: number,
+  ref: React.RefObject<HTMLElement>
+) => {
   if (!ref || !ref.current) return;
   
-  const ctx = ref.current.getContext('2d');
-  if (!ctx) return;
+  ref.current.textContent = `${creditAmount}`;
   
-  if (ref.current) {
-    ctx.fillStyle = 'rgba(200, 0, 0, 0.1)';
-    ctx.fillRect(0, 0, ref.current.width, ref.current.height);
-  }
+  // Create a temporary div for the animation
+  const temp = document.createElement('div');
+  if (!ref || !ref.current) return;
   
-  if (ref.current) {
-    console.log(`Canvas event: ${eventName}`, {
-      width: ref.current.width,
-      height: ref.current.height,
-      ...metadata
-    });
+  temp.className = 'text-green-500 font-medium absolute top-0 left-0 opacity-0';
+  temp.textContent = '+25';
+  ref.current.appendChild(temp);
+  
+  // Animate the temporary element
+  if (!ref || !ref.current) return;
+  
+  temp.animate([
+    { top: '0', opacity: 1 },
+    { top: '-20px', opacity: 0 }
+  ], {
+    duration: 1000,
+    easing: 'ease-out'
+  });
+  
+  // Remove the temporary element after the animation
+  setTimeout(() => {
+    if (ref.current && temp.parentNode === ref.current) {
+      ref.current.removeChild(temp);
+    }
+  }, 1000);
+};
+
+// For the video call reporting issue, we need to correct the table name
+export const reportVideoCallEngagement = async (userId: string, duration: number) => {
+  try {
+    // Get the current date in ISO format
+    const currentDate = new Date().toISOString();
+    
+    // Insert a record into the database
+    const { data, error } = await supabase
+      .from('video_engagements') // Changed from 'video_call_reporting' to a table that exists
+      .insert({
+        user_id: userId,
+        duration_seconds: duration,
+        call_date: currentDate,
+        status: 'completed'
+      });
+      
+    if (error) {
+      console.error('Error reporting video call:', error);
+      return false;
+    }
+    
+    return true;
+  } catch (err) {
+    console.error('Exception reporting video call:', err);
+    return false;
   }
 };
 
-export const processCallMetrics = (metrics: any[]) => {
-  if (!metrics || metrics.length === 0) return null;
-  
-  return metrics.map(metric => ({
-    userId: metric.user_id || metric.userId,
-    amount: metric.amount || 0,
-    // other properties mapped here
-  }));
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+// Function to award credits to a user
+export const awardCredits = async (userId: string, amount: number, reason: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('user_credits')
+      .insert([
+        { user_id: userId, amount: amount, reason: reason }
+      ]);
+
+    if (error) {
+      console.error("Error awarding credits:", error);
+      toast.error("Failed to award credits.");
+      return false;
+    }
+
+    toast.success(`Successfully awarded ${amount} credits!`);
+    return true;
+  } catch (error) {
+    console.error("Unexpected error awarding credits:", error);
+    toast.error("An unexpected error occurred while awarding credits.");
+    return false;
+  }
+};
+
+// Function to deduct credits from a user
+export const deductCredits = async (userId: string, amount: number, reason: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('user_credits')
+      .insert([
+        { user_id: userId, amount: -amount, reason: reason }
+      ]);
+
+    if (error) {
+      console.error("Error deducting credits:", error);
+      toast.error("Failed to deduct credits.");
+      return false;
+    }
+
+    toast.success(`Successfully deducted ${amount} credits.`);
+    return true;
+  } catch (error) {
+    console.error("Unexpected error deducting credits:", error);
+    toast.error("An unexpected error occurred while deducting credits.");
+    return false;
+  }
+};
+
+// Function to get the total credits for a user
+export const getTotalCredits = async (userId: string): Promise<number> => {
+  try {
+    const { data, error } = await supabase
+      .from('user_credits')
+      .select('amount')
+      .eq('user_id', userId);
+
+    if (error) {
+      console.error("Error fetching credits:", error);
+      return 0;
+    }
+
+    // Sum the credit amounts
+    const totalCredits = data.reduce((sum, item) => sum + item.amount, 0);
+    return totalCredits;
+  } catch (error) {
+    console.error("Unexpected error fetching credits:", error);
+    return 0;
+  }
 };

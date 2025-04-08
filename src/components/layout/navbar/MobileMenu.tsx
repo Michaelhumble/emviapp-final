@@ -1,122 +1,148 @@
 
-import { Link } from "react-router-dom";
-import { Home, Activity, LogOut } from "lucide-react";
+import React, { useState } from "react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger
-} from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+import { Menu, X, Home, Search, LogOut, User, MessageSquare, CreditCard, Users, Briefcase } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/context/auth";
 
 interface MobileMenuProps {
-  user: any;
-  handleSignOut: () => void;
+  handleSignOut: () => Promise<void>;
 }
 
-const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
+const MobileMenu = ({ handleSignOut }: MobileMenuProps) => {
+  const [open, setOpen] = useState(false);
+  const { user, userRole } = useAuth();
+
+  const closeMenu = () => setOpen(false);
+  
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button
-          variant="ghost"
-          className="md:hidden"
-          aria-label="Toggle mobile menu"
-        >
-          <Menu className="h-4 w-4" />
+        <Button variant="ghost" size="icon" className="md:hidden">
+          <Menu className="h-6 w-6" />
+          <span className="sr-only">Toggle menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="bottom">
-        <div className="grid gap-4 py-4">
-          <Link
-            to="/"
-            className="text-gray-600 hover:text-primary transition-colors flex items-center gap-1 py-2"
+      <SheetContent side="right" className="pt-10 flex flex-col">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="absolute top-3 right-3"
+          onClick={() => setOpen(false)}
+        >
+          <X className="h-5 w-5" />
+          <span className="sr-only">Close menu</span>
+        </Button>
+
+        <nav className="flex flex-col gap-2 mt-4">
+          <Link 
+            to="/" 
+            className="flex items-center gap-2 px-4 py-2 text-lg rounded-md hover:bg-gray-100"
+            onClick={closeMenu}
           >
-            <Home className="h-4 w-4" /> Home
+            <Home className="h-5 w-5" />
+            Home
           </Link>
-          <Link
-            to="/jobs"
-            className="text-gray-600 hover:text-primary transition-colors block py-2"
+          
+          <Link 
+            to="/jobs" 
+            className="flex items-center gap-2 px-4 py-2 text-lg rounded-md hover:bg-gray-100"
+            onClick={closeMenu}
           >
+            <Briefcase className="h-5 w-5" />
             Jobs
           </Link>
-          <Link
-            to="/salons"
-            className="text-gray-600 hover:text-primary transition-colors block py-2"
+          
+          <Link 
+            to="/salons" 
+            className="flex items-center gap-2 px-4 py-2 text-lg rounded-md hover:bg-gray-100"
+            onClick={closeMenu}
           >
-            Salons
+            <Search className="h-5 w-5" />
+            Find Salons
           </Link>
-          <Link
-            to="/analysis"
-            className="text-gray-600 hover:text-primary transition-colors flex items-center gap-1 py-2"
+          
+          <Link 
+            to="/explore/artists" 
+            className="flex items-center gap-2 px-4 py-2 text-lg rounded-md hover:bg-gray-100"
+            onClick={closeMenu}
           >
-            <Activity className="h-4 w-4" /> Analysis
+            <Users className="h-5 w-5" />
+            Artists
           </Link>
-          <div className="py-2">
-            <p className="font-medium mb-2">Community</p>
-            <div className="pl-4 flex flex-col gap-2">
-              <Link
-                to="/customers"
-                className="text-gray-600 hover:text-primary transition-colors block py-1"
-              >
-                Customers
-              </Link>
-              <Link
-                to="/artists"
-                className="text-gray-600 hover:text-primary transition-colors block py-1"
-              >
-                Artists
-              </Link>
-              <Link
-                to="/salon-owners"
-                className="text-gray-600 hover:text-primary transition-colors block py-1"
-              >
-                Salon Owners
-              </Link>
-              <Link
-                to="/suppliers"
-                className="text-gray-600 hover:text-primary transition-colors block py-1"
-              >
-                Suppliers
-              </Link>
-            </div>
+        </nav>
+
+        <hr className="my-4" />
+
+        {user ? (
+          <div className="mt-auto flex flex-col gap-2">
+            <Link 
+              to="/dashboard" 
+              className="flex items-center gap-2 px-4 py-2 text-lg rounded-md hover:bg-gray-100"
+              onClick={closeMenu}
+            >
+              Dashboard
+            </Link>
+            
+            <Link 
+              to="/profile" 
+              className="flex items-center gap-2 px-4 py-2 text-lg rounded-md hover:bg-gray-100"
+              onClick={closeMenu}
+            >
+              <User className="h-5 w-5" />
+              Profile
+            </Link>
+            
+            <Link 
+              to="/messages" 
+              className="flex items-center gap-2 px-4 py-2 text-lg rounded-md hover:bg-gray-100"
+              onClick={closeMenu}
+            >
+              <MessageSquare className="h-5 w-5" />
+              Messages
+            </Link>
+            
+            <Link 
+              to="/checkout" 
+              className="flex items-center gap-2 px-4 py-2 text-lg rounded-md hover:bg-gray-100"
+              onClick={closeMenu}
+            >
+              <CreditCard className="h-5 w-5" />
+              Credits
+            </Link>
+            
+            <Button 
+              variant="ghost" 
+              className="flex items-center justify-start gap-2 px-4 py-2 text-lg rounded-md hover:bg-red-50 hover:text-red-500 mt-4"
+              onClick={() => {
+                handleSignOut();
+                closeMenu();
+              }}
+            >
+              <LogOut className="h-5 w-5" />
+              Sign Out
+            </Button>
           </div>
-          {user ? (
-            <>
-              <Link
-                to="/profile"
-                className="text-gray-600 hover:text-primary transition-colors block py-2"
-              >
-                Profile
-              </Link>
-              <Link
-                to="/dashboard"
-                className="text-gray-600 hover:text-primary transition-colors block py-2"
-              >
-                Dashboard
-              </Link>
-              <Link
-                to="/messages"
-                className="text-gray-600 hover:text-primary transition-colors block py-2"
-              >
-                Messages
-              </Link>
-              <Button variant="ghost" className="w-full justify-start" onClick={handleSignOut}>
-                <LogOut className="mr-2 h-4 w-4" />
-                Sign Out
-              </Button>
-            </>
-          ) : (
-            <>
-              <Link to="/sign-in">
-                <Button variant="ghost" className="w-full justify-start">Sign In</Button>
-              </Link>
-              <Link to="/sign-up">
-                <Button className="w-full justify-start">Sign Up</Button>
-              </Link>
-            </>
-          )}
-        </div>
+        ) : (
+          <div className="mt-auto flex flex-col gap-2">
+            <Link 
+              to="/auth/signin" 
+              className="w-full"
+              onClick={closeMenu}
+            >
+              <Button className="w-full" variant="outline">Sign In</Button>
+            </Link>
+            
+            <Link 
+              to="/auth/signup" 
+              className="w-full"
+              onClick={closeMenu}
+            >
+              <Button className="w-full">Join Now</Button>
+            </Link>
+          </div>
+        )}
       </SheetContent>
     </Sheet>
   );

@@ -39,7 +39,7 @@ export const useNotifications = () => {
         createdAt: item.created_at,
         isRead: item.metadata?.is_read || false,
         link: item.metadata?.link,
-        metadata: item.metadata
+        metadata: item.metadata || {}
       }));
 
       // Calculate unread count
@@ -153,7 +153,7 @@ export const useNotifications = () => {
             createdAt: newItem.created_at,
             isRead: newItem.metadata?.is_read || false,
             link: newItem.metadata?.link,
-            metadata: newItem.metadata
+            metadata: newItem.metadata || {}
           };
 
           // Update state with new notification
