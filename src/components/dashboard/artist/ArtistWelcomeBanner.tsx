@@ -4,24 +4,40 @@ import { useNavigate } from "react-router-dom";
 import { Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useArtistData } from "./context/ArtistDataContext";
+import { useAuth } from "@/context/auth";
 
 interface ArtistWelcomeBannerProps {
-  firstName: string;
+  firstName?: string;
 }
 
 const ArtistWelcomeBanner = ({ firstName }: ArtistWelcomeBannerProps) => {
   const navigate = useNavigate();
   const { artistProfile } = useArtistData();
+  const { userProfile } = useAuth();
   
-  // Get the first name from context if available, otherwise use prop
-  const displayName = artistProfile?.full_name 
-    ? artistProfile.full_name.split(' ')[0] 
-    : firstName || 'Artist';
+  // FIXED: Improved name resolution logic to check multiple sources
+  // Get the first name from context or profile data
+  let displayName = "";
+  
+  if (artistProfile?.full_name) {
+    displayName = artistProfile.full_name.split(' ')[0];
+  } else if (userProfile?.full_name) {
+    displayName = userProfile.full_name.split(' ')[0];
+  } else if (firstName) {
+    displayName = firstName;
+  } else {
+    displayName = 'Artist';
+  }
+  
+  console.log("[ArtistWelcomeBanner] Display name:", displayName);
+  console.log("[ArtistWelcomeBanner] Artist profile:", artistProfile);
   
   const handlePreviewProfile = () => {
     // Navigate to public profile page using user ID
     if (artistProfile?.id) {
       navigate(`/u/${artistProfile.id}`);
+    } else if (userProfile?.id) {
+      navigate(`/u/${userProfile.id}`);
     }
   };
   

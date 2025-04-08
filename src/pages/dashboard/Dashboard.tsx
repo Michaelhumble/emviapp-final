@@ -2,7 +2,7 @@
 import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { navigateToRoleDashboard } from "@/utils/navigation";
+import { navigateToRoleDashboard, normalizeUserRole } from "@/utils/navigation";
 import { Loader2, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -32,7 +32,19 @@ const Dashboard = () => {
       // Wait a bit and try navigation again
       setTimeout(() => {
         if (userRole) {
-          navigateToRoleDashboard(navigate, userRole);
+          // FIXED: Use direct navigation based on normalized role
+          const normalizedRole = normalizeUserRole(userRole);
+          console.log("[Dashboard Router] Directing based on normalized role:", normalizedRole);
+          
+          if (normalizedRole === 'artist') {
+            navigate('/dashboard/artist');
+          } else if (normalizedRole === 'salon') {
+            navigate('/dashboard/salon');
+          } else if (normalizedRole === 'customer') {
+            navigate('/dashboard/customer');
+          } else {
+            navigateToRoleDashboard(navigate, userRole);
+          }
         }
       }, 500);
     } catch (error) {
@@ -58,7 +70,20 @@ const Dashboard = () => {
     // If we have a role, redirect to the appropriate dashboard
     if (userRole) {
       console.log("[Dashboard Router] Redirecting based on role:", userRole);
-      navigateToRoleDashboard(navigate, userRole);
+      
+      // FIXED: Use direct navigation based on normalized role
+      const normalizedRole = normalizeUserRole(userRole);
+      console.log("[Dashboard Router] Normalized role for redirect:", normalizedRole);
+      
+      if (normalizedRole === 'artist') {
+        navigate('/dashboard/artist');
+      } else if (normalizedRole === 'salon') {
+        navigate('/dashboard/salon');
+      } else if (normalizedRole === 'customer') {
+        navigate('/dashboard/customer');
+      } else {
+        navigateToRoleDashboard(navigate, userRole);
+      }
     } else {
       console.log("[Dashboard Router] No role found");
       setRedirectError("We couldn't determine your user role. Please refresh or update your profile.");

@@ -62,6 +62,9 @@ const DashboardRouteProtection = ({
       return;
     }
     
+    // FIXED: Log the user role for debugging
+    console.log(`[${dashboardType}] Current user role:`, userRole);
+    
     // If role hasn't loaded yet or is null
     if (!userRole) {
       console.log(`[${dashboardType}] User role not available yet, waiting...`);
@@ -69,10 +72,16 @@ const DashboardRouteProtection = ({
       return;
     }
     
+    // FIXED: Added more detailed logging for role access check
+    console.log(`[${dashboardType}] Checking if user with role ${userRole} can access dashboard for ${allowedRoles.join(', ')}`);
+    
     // Check if user has access to this dashboard - with strict enforcement
     if (!hasRoleAccess(userRole, allowedRoles)) {
       console.warn(`[${dashboardType}] User with role ${userRole} attempted unauthorized access`);
       toast.error(`Access denied: This dashboard is for ${allowedRoles.join(' or ')} accounts only`);
+      
+      // FIXED: Redirect to dashboard selector instead of the current dashboard
+      console.log(`[${dashboardType}] Redirecting to dashboard selector due to unauthorized access`);
       navigate("/dashboard"); // Redirect to the dashboard selector
       return;
     } else {
@@ -122,12 +131,15 @@ const DashboardRouteProtection = ({
     );
   }
   
+  // FIXED: Added more explicit check to prevent unauthorized access
   // If not authorized or not logged in, return nothing (redirect happens in useEffect)
   if (!user || (userRole && !hasRoleAccess(userRole, allowedRoles))) {
+    console.log(`[${dashboardType}] User is not authorized, preventing dashboard render`);
     return null;
   }
   
   // User is authenticated and authorized, show dashboard content
+  console.log(`[${dashboardType}] Rendering dashboard for ${userRole} role`);
   return <>{children}</>;
 };
 

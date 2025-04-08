@@ -7,12 +7,29 @@ import DashboardRouteProtection from "@/components/dashboard/DashboardRouteProte
 import { UserRole } from "@/context/auth/types";
 import { useEffect } from "react";
 import { ArtistDataProvider } from "@/components/dashboard/artist/context/ArtistDataContext";
+import { useAuth } from "@/context/auth";
+import { useNavigate } from "react-router-dom";
+import { normalizeUserRole } from "@/utils/navigation";
 
 const ArtistDashboardPage = () => {
+  const { userRole } = useAuth();
+  const navigate = useNavigate();
+  
   // Set page title
   useEffect(() => {
     document.title = "Artist Dashboard | EmviApp";
-  }, []);
+    
+    // ADDED: Debug check to validate correct routing
+    if (userRole) {
+      const normalizedRole = normalizeUserRole(userRole);
+      console.log(`[Artist Dashboard] Current normalized role: ${normalizedRole}`);
+      
+      // If not artist role, log warning (DashboardRouteProtection will handle redirect)
+      if (normalizedRole !== 'artist') {
+        console.warn(`[Artist Dashboard] Non-artist role (${normalizedRole}) accessed artist dashboard`);
+      }
+    }
+  }, [userRole]);
 
   // Define allowed roles for this dashboard - strictly enforce artist roles only
   const allowedRoles: UserRole[] = ['artist', 'nail technician/artist'];

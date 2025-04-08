@@ -36,12 +36,22 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         const normalizedRole = normalizeUserRole(userRole);
         console.log("[DashboardRedirector] Normalized role:", normalizedRole);
         
+        // FIXED: Direct routing based on normalized role
         if (normalizedRole === 'artist') {
           console.log("[DashboardRedirector] Routing artist to artist dashboard");
           navigate('/dashboard/artist');
           return;
+        } else if (normalizedRole === 'salon') {
+          console.log("[DashboardRedirector] Routing salon to salon dashboard");
+          navigate('/dashboard/salon');
+          return;
+        } else if (normalizedRole === 'customer') {
+          console.log("[DashboardRedirector] Routing customer to customer dashboard");
+          navigate('/dashboard/customer');
+          return;
         }
         
+        // For other roles, use the standard navigation
         navigateToRoleDashboard(navigate, userRole);
         return;
       }
@@ -74,12 +84,22 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
       const normalizedDbRole = normalizeUserRole(profile.role);
       console.log("[DashboardRedirector] Normalized database role:", normalizedDbRole);
       
-      // If artist, directly navigate to artist dashboard
+      // FIXED: Direct routing based on normalized database role
       if (normalizedDbRole === 'artist') {
         console.log("[DashboardRedirector] Routing artist to artist dashboard");
         navigate('/dashboard/artist');
         
         // Refresh user profile to ensure we have the role in context for next time
+        await refreshUserProfile();
+        return;
+      } else if (normalizedDbRole === 'salon') {
+        console.log("[DashboardRedirector] Routing salon to salon dashboard");
+        navigate('/dashboard/salon');
+        await refreshUserProfile();
+        return;
+      } else if (normalizedDbRole === 'customer') {
+        console.log("[DashboardRedirector] Routing customer to customer dashboard");
+        navigate('/dashboard/customer');
         await refreshUserProfile();
         return;
       }
