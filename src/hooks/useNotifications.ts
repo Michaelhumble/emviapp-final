@@ -1,17 +1,19 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Notification, NotificationResponse } from '@/types/notification';
+import { Notification } from '@/types/notification';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
+// Since there's no actual 'notifications' table in the schema, 
+// we're using a mock implementation for demonstration
 export const useNotifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const { user } = useAuth();
 
-  // Fetch notifications from the server
+  // Mock fetch notifications from a local array
   const fetchNotifications = useCallback(async () => {
     if (!user) {
       setNotifications([]);
@@ -21,31 +23,38 @@ export const useNotifications = () => {
 
     setLoading(true);
     try {
-      // Fetch notifications from the database
-      const { data, error } = await supabase
-        .from('notifications')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(20);
-
-      if (error) throw error;
-
-      // Format notifications
-      const formattedNotifications: Notification[] = data.map(item => ({
-        id: item.id,
-        message: item.message,
-        type: item.type || 'info',
-        createdAt: item.created_at,
-        isRead: item.is_read,
-        link: item.link,
-        metadata: item.metadata
-      }));
+      // This would normally fetch from Supabase, but we'll use mock data
+      // for now since the notifications table doesn't exist yet
+      const mockNotifications: Notification[] = [
+        {
+          id: '1',
+          message: 'Welcome to EmviApp!',
+          type: 'info',
+          createdAt: new Date().toISOString(),
+          isRead: false,
+          link: '/dashboard',
+        },
+        {
+          id: '2',
+          message: 'Complete your profile to get more visibility',
+          type: 'info',
+          createdAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+          isRead: false,
+        },
+        {
+          id: '3',
+          message: 'You received a new booking request',
+          type: 'success',
+          createdAt: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+          isRead: true,
+          link: '/messages',
+        }
+      ];
 
       // Calculate unread count
-      const unread = formattedNotifications.filter(n => !n.isRead).length;
+      const unread = mockNotifications.filter(n => !n.isRead).length;
 
-      setNotifications(formattedNotifications);
+      setNotifications(mockNotifications);
       setUnreadCount(unread);
     } catch (error) {
       console.error('Error fetching notifications:', error);
@@ -54,19 +63,11 @@ export const useNotifications = () => {
     }
   }, [user]);
 
-  // Mark a notification as read
+  // Mock marking a notification as read
   const markAsRead = useCallback(async (id: string) => {
     if (!user) return;
 
     try {
-      const { error } = await supabase
-        .from('notifications')
-        .update({ is_read: true })
-        .eq('id', id)
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
       // Update local state
       setNotifications(prev => 
         prev.map(notification => 
@@ -82,19 +83,11 @@ export const useNotifications = () => {
     }
   }, [user]);
 
-  // Mark all notifications as read
+  // Mock marking all notifications as read
   const markAllAsRead = useCallback(async () => {
     if (!user) return;
 
     try {
-      const { error } = await supabase
-        .from('notifications')
-        .update({ is_read: true })
-        .eq('user_id', user.id)
-        .eq('is_read', false);
-
-      if (error) throw error;
-
       // Update local state
       setNotifications(prev => 
         prev.map(notification => ({ ...notification, isRead: true }))
@@ -107,60 +100,11 @@ export const useNotifications = () => {
     }
   }, [user]);
 
-  // Set up real-time subscription for new notifications
+  // Set up initial fetch
   useEffect(() => {
     if (!user) return;
-
-    // Initial fetch
     fetchNotifications();
-
-    // Set up subscription for real-time updates
-    const channel = supabase
-      .channel('notifications-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'notifications',
-          filter: `user_id=eq.${user.id}`
-        },
-        (payload) => {
-          // Format the new notification
-          const newNotification: Notification = {
-            id: payload.new.id,
-            message: payload.new.message,
-            type: payload.new.type || 'info',
-            createdAt: payload.new.created_at,
-            isRead: payload.new.is_read,
-            link: payload.new.link,
-            metadata: payload.new.metadata
-          };
-
-          // Update state with new notification
-          setNotifications(prev => [newNotification, ...prev]);
-          
-          if (!newNotification.isRead) {
-            setUnreadCount(prev => prev + 1);
-          }
-
-          // Show toast for new notification
-          toast(newNotification.message, {
-            description: 'You have a new notification',
-            action: {
-              label: 'View',
-              onClick: () => markAsRead(newNotification.id)
-            }
-          });
-        }
-      )
-      .subscribe();
-
-    // Cleanup subscription
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user, fetchNotifications, markAsRead]);
+  }, [user, fetchNotifications]);
 
   return {
     notifications,
