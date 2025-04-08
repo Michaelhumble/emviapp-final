@@ -1,52 +1,35 @@
+// Extending the existing types file to make sure it has all necessary fields
 
-import { UserProfile } from "@/context/auth/types";
-
-export interface ArtistProfileState {
-  artistProfile: UserProfile | null;
-  loading: boolean;
-  error: string | null;
-}
-
-export interface ArtistDataContextType extends ArtistProfileState {
-  handleCopyReferralLink: () => void;
-  copied: boolean;
-  firstName: string;
-  userCredits: number;
-  refreshArtistProfile: () => Promise<void>;
-  portfolioImages: PortfolioImage[];
-  loadingPortfolio: boolean;
-}
-
-export interface PortfolioImage {
-  id: string;
-  url: string;
-  name: string;
-}
-
-// Add a type for booking schedule
-export interface DaySchedule {
-  day: string;
-  time: string;
-  active: boolean;
-}
-
-// Add types for bookings
 export interface Booking {
   id: string;
   sender_id: string;
   recipient_id: string;
+  service_id?: string;
+  service_name?: string;
   date_requested: string;
   time_requested: string;
-  status: 'pending' | 'accepted' | 'declined';
+  status: string;
   note?: string;
-  created_at: string;
   customer_name?: string;
-  service_name?: string;
-  service_id?: string;
-  artist_name?: string; // Add artist_name property
+  artist_name?: string;
+  created_at?: string;
 }
 
-export interface BookingCounts {
+export interface BookingStats {
+  total: number;
   pending: number;
-  upcoming: number;
+  accepted: number;
+  declined: number;
+  completed: number;
+}
+
+export interface ArtistDashboardData {
+  total_bookings: number;
+  pending_bookings: number;
+  accepted_bookings: number;
+  declined_bookings: number;
+  completed_bookings: number;
+  total_earnings: number;
+  average_rating: number;
+  total_reviews: number;
 }

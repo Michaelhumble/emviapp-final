@@ -1,17 +1,25 @@
 
-import CustomerDashboardHeader from './CustomerDashboardHeader';
-import CustomerDashboardWidgets from './CustomerDashboardWidgets';
-import { Card } from '@/components/ui/card';
-import BookingNotificationsSection from '../notifications/BookingNotificationsSection';
-import CustomerBookingsSection from './CustomerBookingsSection';
+import React from "react";
+import CustomerDashboardHeader from "./CustomerDashboardHeader";
+import CustomerProfileSection from "./CustomerProfileSection"; 
+import CustomerBookingsSection from "./bookings/CustomerBookingsSection";
+import CustomerMetricsSection from "./CustomerMetricsSection";
+import CustomerReferralCenter from "./CustomerReferralCenter";
+import CustomerDashboardWidgets from "./CustomerDashboardWidgets";
+import CustomerWelcomeBanner from "./CustomerWelcomeBanner";
+import InviteSalonSection from "./InviteSalonSection";
 
 const CustomerDashboard = () => {
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-6">
+    <div className="space-y-6">
+      <CustomerWelcomeBanner />
       <CustomerDashboardHeader />
-      <BookingNotificationsSection />
-      <CustomerBookingsSection />
       <CustomerDashboardWidgets />
+      <CustomerBookingsSection />
+      <CustomerProfileSection />
+      <CustomerMetricsSection />
+      <CustomerReferralCenter />
+      <InviteSalonSection />
     </div>
   );
 };
