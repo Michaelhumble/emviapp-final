@@ -1,147 +1,175 @@
 
-import { useAuth } from "@/context/auth";
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { navigateToRoleDashboard, normalizeUserRole } from "@/utils/navigation";
-import { Loader2, RefreshCcw } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Loader2, AlertTriangle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
+import { navigateToRoleDashboard, normalizeUserRole } from "@/utils/navigation";
 
 /**
- * This component serves as a backup for the main dashboard index
- * It provides role-based redirection with validation and debugging
+ * Dashboard page that handles loading user profile and redirecting to role-specific dashboards
  */
-const Dashboard = () => {
-  const { user, userRole, loading, refreshUserProfile } = useAuth();
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [redirectError, setRedirectError] = useState<string | null>(null);
+const DashboardPage = () => {
   const navigate = useNavigate();
+  const { user, userRole, loading, signOut, refreshUserProfile } = useAuth();
+  const [loadingTime, setLoadingTime] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
-  // Function to force refresh user profile
-  const handleRefreshRole = async () => {
-    if (!user) return;
-    
-    setIsRefreshing(true);
-    console.log("[Dashboard Router] Manually refreshing user profile...");
-    
+  // Function to handle going back to home
+  const handleGoBack = () => {
+    navigate("/");
+    toast.info("Redirected to home page");
+  };
+  
+  // Function to handle emergency logout
+  const handleEmergencyLogout = async () => {
     try {
-      await refreshUserProfile();
-      setRedirectError(null);
-      toast.success("Profile refreshed successfully");
-      
-      // Wait a bit and try navigation again
-      setTimeout(() => {
+      await signOut();
+      navigate("/sign-in");
+      toast.success("You've been logged out. Please sign in again.");
+    } catch (error) {
+      console.error("Emergency logout failed:", error);
+      // Force clear local storage as last resort
+      localStorage.clear();
+      window.location.href = "/sign-in";
+    }
+  };
+
+  // Function to force refresh user profile
+  const handleForceRefresh = async () => {
+    if (user && !isRefreshing) {
+      setIsRefreshing(true);
+      try {
+        toast.info("Refreshing your profile data...");
+        await refreshUserProfile();
+        toast.success("Profile refreshed successfully");
+        
+        // After successful refresh, try direct navigation based on role
         if (userRole) {
-          // FIXED: Use direct navigation based on normalized role
           const normalizedRole = normalizeUserRole(userRole);
-          console.log("[Dashboard Router] Directing based on normalized role:", normalizedRole);
+          console.log("[Dashboard] Direct navigation after refresh to:", normalizedRole);
           
           if (normalizedRole === 'artist') {
-            navigate('/dashboard/artist');
+            window.location.href = '/dashboard/artist';
+            return;
           } else if (normalizedRole === 'salon') {
-            navigate('/dashboard/salon');
+            window.location.href = '/dashboard/salon';
+            return;
           } else if (normalizedRole === 'customer') {
-            navigate('/dashboard/customer');
+            window.location.href = '/dashboard/customer';
+            return;
           } else {
-            navigateToRoleDashboard(navigate, userRole);
+            // Use force reload for other role types
+            navigateToRoleDashboard(navigate, normalizedRole);
           }
         }
-      }, 500);
-    } catch (error) {
-      console.error("[Dashboard Router] Error refreshing profile:", error);
-      setRedirectError("Failed to refresh your profile. Please try again.");
-    } finally {
-      setIsRefreshing(false);
+      } catch (error) {
+        console.error("Profile refresh failed:", error);
+        toast.error("Failed to refresh profile");
+      } finally {
+        setIsRefreshing(false);
+      }
     }
   };
   
+  // Increment loading time counter
   useEffect(() => {
-    if (loading) {
-      console.log("[Dashboard Router] Auth is still loading...");
-      return;
+    if (loading || isRefreshing) {
+      const timer = setInterval(() => {
+        setLoadingTime(prev => prev + 1);
+      }, 1000);
+      
+      return () => clearInterval(timer);
     }
     
+    return () => {}; // Empty cleanup for when not loading
+  }, [loading, isRefreshing]);
+  
+  // Set timeout for loading
+  useEffect(() => {
+    if ((loading || isRefreshing) && loadingTime > 8) {
+      setError("It's taking longer than expected to load your dashboard. Please try again or sign out.");
+    }
+  }, [loadingTime, loading, isRefreshing]);
+  
+  // Main effect to handle redirection based on role
+  useEffect(() => {
+    if (loading || isRefreshing) return;
+    
     if (!user) {
-      console.log("[Dashboard Router] No user found, redirecting to sign-in");
       navigate("/sign-in");
       return;
     }
     
     // If we have a role, redirect to the appropriate dashboard
     if (userRole) {
-      console.log("[Dashboard Router] Redirecting based on role:", userRole);
+      console.log("[Dashboard Router] User role detected:", userRole);
       
-      // FIXED: Use direct navigation based on normalized role
+      // Added direct routing with window.location for more reliable redirection
       const normalizedRole = normalizeUserRole(userRole);
       console.log("[Dashboard Router] Normalized role for redirect:", normalizedRole);
       
       if (normalizedRole === 'artist') {
-        navigate('/dashboard/artist');
+        console.log("[Dashboard Router] Direct routing to artist dashboard");
+        window.location.href = '/dashboard/artist';
+        return;
       } else if (normalizedRole === 'salon') {
-        navigate('/dashboard/salon');
+        console.log("[Dashboard Router] Direct routing to salon dashboard");
+        window.location.href = '/dashboard/salon';
+        return;
       } else if (normalizedRole === 'customer') {
-        navigate('/dashboard/customer');
+        console.log("[Dashboard Router] Direct routing to customer dashboard");
+        window.location.href = '/dashboard/customer';
+        return;
       } else {
+        // Use the utility function for other roles
         navigateToRoleDashboard(navigate, userRole);
       }
-    } else {
-      console.log("[Dashboard Router] No role found");
-      setRedirectError("We couldn't determine your user role. Please refresh or update your profile.");
+    } else if (!loading && user) {
+      // If no role but user is logged in, redirect to role selection
+      console.log("[Dashboard Router] No role detected for user, redirecting to role selection");
+      navigate("/choose-role");
+      toast.error("Please select your role to access your dashboard");
     }
-  }, [user, userRole, loading, navigate]);
+  }, [user, userRole, loading, navigate, isRefreshing]);
   
-  // Loading state
-  if (loading) {
+  // Show error state
+  if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-purple-600 mb-4" />
-        <p className="text-gray-600">Loading your dashboard...</p>
-      </div>
-    );
-  }
-  
-  // Error state - no role found but user is logged in
-  if (user && !userRole) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <div className="p-8 bg-white rounded-xl shadow-md max-w-md w-full">
-          <h2 className="text-xl font-semibold mb-4 text-center">Finding Your Dashboard</h2>
-          
-          {redirectError && (
-            <div className="p-3 bg-red-50 border border-red-100 rounded-lg mb-6 text-red-800 text-sm">
-              {redirectError}
-            </div>
-          )}
-          
-          <p className="text-gray-600 mb-6 text-center">
-            We need to know your role to direct you to the right dashboard.
-          </p>
-          
-          <div className="space-y-3">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
+        <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
+          <div className="flex items-center justify-center text-red-500 mb-4">
+            <AlertTriangle size={48} />
+          </div>
+          <h2 className="text-xl font-semibold text-center mb-4">Dashboard Error</h2>
+          <p className="text-gray-600 mb-6 text-center">{error}</p>
+          <div className="flex flex-col gap-2">
             <Button 
-              onClick={handleRefreshRole}
-              className="w-full flex items-center justify-center"
-              disabled={isRefreshing}
+              variant="default" 
+              onClick={() => {
+                setError(null);
+                setLoadingTime(0);
+                handleForceRefresh();
+              }}
             >
-              {isRefreshing ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Refreshing...
-                </>
-              ) : (
-                <>
-                  <RefreshCcw className="mr-2 h-4 w-4" />
-                  Refresh Role Information
-                </>
-              )}
+              Force Refresh Profile
             </Button>
-            
             <Button 
-              variant="outline"
-              onClick={() => navigate("/profile/edit")}
-              className="w-full"
+              variant="outline" 
+              onClick={handleGoBack} 
+              className="mt-2"
             >
-              Update Your Profile
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Home
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleEmergencyLogout} 
+              className="mt-4"
+            >
+              Emergency Sign Out
             </Button>
           </div>
         </div>
@@ -149,13 +177,54 @@ const Dashboard = () => {
     );
   }
   
-  // Fallback - shouldn't render normally as we redirect
+  // Show loading state with progress indicator
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <Loader2 className="h-8 w-8 animate-spin text-purple-600 mb-4" />
-      <p className="text-gray-600">Redirecting to your dashboard...</p>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+      <div className="flex flex-col items-center space-y-4 mb-4">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <div className="flex flex-col items-center">
+          <span className="text-lg font-medium">Loading your dashboard...</span>
+          <span className="text-sm text-gray-500">{loadingTime > 3 ? `(${loadingTime}s)` : ''}</span>
+        </div>
+      </div>
+      <p className="text-gray-500 text-sm max-w-md text-center">
+        We're redirecting you to the appropriate dashboard
+        {loadingTime > 3 && (
+          <>
+            <br />
+            <br />
+            <span className="text-amber-600">
+              This is taking longer than expected. If you continue to see this message, try 
+              <Button 
+                variant="link" 
+                className="p-0 h-auto font-medium text-primary mx-1" 
+                onClick={handleForceRefresh}
+                disabled={isRefreshing}
+              >
+                refreshing your profile
+              </Button> 
+              or 
+              <Button 
+                variant="link" 
+                className="p-0 h-auto mx-1 font-medium text-red-500" 
+                onClick={handleEmergencyLogout}
+              >
+                signing out
+              </Button>.
+            </span>
+          </>
+        )}
+      </p>
+      
+      {/* Progress indicator */}
+      <div className="w-64 h-1 bg-gray-200 rounded-full mt-4 overflow-hidden">
+        <div 
+          className="h-full bg-primary rounded-full animate-pulse" 
+          style={{ width: `${Math.min(loadingTime * 10, 100)}%` }}
+        ></div>
+      </div>
     </div>
   );
 };
 
-export default Dashboard;
+export default DashboardPage;

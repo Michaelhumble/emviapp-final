@@ -91,9 +91,9 @@ const DashboardRouteProtection = ({
       console.warn(`[${dashboardType}] User with role ${userRole} attempted unauthorized access`);
       toast.error(`Access denied: This dashboard is for ${allowedRoles.join(' or ')} accounts only`);
       
-      // CRITICAL FIX: Redirect to main dashboard which will then redirect to the correct dashboard
-      console.log(`[${dashboardType}] Redirecting to dashboard selector due to unauthorized access`);
-      navigate("/dashboard"); 
+      // ENHANCED: Use window.location for more reliable redirect on role mismatch
+      console.log(`[${dashboardType}] Redirecting to main dashboard due to unauthorized access`);
+      window.location.href = "/dashboard"; 
       return;
     } else {
       console.log(`[${dashboardType}] Access granted to ${dashboardType} dashboard for role: ${userRole}`);

@@ -23,6 +23,8 @@ export const normalizeUserRole = (role: string | null): UserRole | null => {
     case 'technician':
     case 'nail tech':
     case 'artist':
+    case 'renter':
+    case 'booth renter':
       console.log('[Role] Normalized to: artist');
       return 'artist';
       
@@ -40,11 +42,6 @@ export const normalizeUserRole = (role: string | null): UserRole | null => {
     case 'beauty vendor':
       console.log('[Role] Normalized to: supplier');
       return 'supplier';
-      
-    case 'renter':
-    case 'booth renter':
-      console.log('[Role] Normalized to: artist');
-      return 'artist';
       
     case 'client':
     case 'customer':
@@ -115,7 +112,8 @@ export const navigateToRoleDashboard = (
   }
 
   console.log("[Dashboard Navigation] Redirecting to:", targetDashboard);
-  navigate(targetDashboard);
+  // Use direct href navigation for more reliable redirection
+  window.location.href = targetDashboard;
 };
 
 /**
