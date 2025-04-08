@@ -12,7 +12,11 @@ const ArtistDataContext = createContext<ArtistDataContextType | undefined>(undef
 // Provider component
 export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { user, refreshUserProfile } = useAuth();
-  const [state, setState] = useState<ArtistProfileState>({
+  const [state, setState] = useState<{
+    artistProfile: ArtistProfileState | null;
+    loading: boolean;
+    error: Error | null;
+  }>({
     artistProfile: null,
     loading: true,
     error: null
@@ -72,24 +76,29 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
         console.error('Error fetching artist profile:', error);
         setState(prev => ({
           ...prev,
-          error: 'Failed to load your profile data. Please try again later.'
+          error: new Error('Failed to load your profile data. Please try again later.')
         }));
         toast.error('Could not load profile data');
       } else if (data) {
-        // Cast to match UserProfile type, adding missing referral_count property and affiliate_code
-        const profileWithReferrals = {
+        // Transform data to match ArtistProfileState
+        const profileData: ArtistProfileState = {
           ...data,
+          id: data.id,
+          user_id: data.id,
+          full_name: data.full_name || '',
+          portfolio_images: [],
+          portfolio_urls: data.portfolio_urls || [],
           referral_count: data.credits || 0,
           affiliate_code: data.referral_code || '',
-        } as UserProfile;
+        };
         
-        setState(prev => ({ ...prev, artistProfile: profileWithReferrals }));
+        setState(prev => ({ ...prev, artistProfile: profileData }));
       }
     } catch (err) {
       console.error('Unexpected error:', err);
       setState(prev => ({
         ...prev,
-        error: 'An unexpected error occurred. Please try again later.'
+        error: new Error('An unexpected error occurred. Please try again later.')
       }));
       toast.error('Could not load profile data');
     } finally {
@@ -123,9 +132,16 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
     await refreshUserProfile();
     await fetchArtistProfile();
   };
+
+  const refreshProfile = () => {
+    fetchArtistProfile();
+  };
   
-  const value = {
-    ...state,
+  const value: ArtistDataContextType = {
+    artistProfile: state.artistProfile,
+    loading: state.loading,
+    error: state.error,
+    refreshProfile,
     handleCopyReferralLink,
     copied,
     firstName,

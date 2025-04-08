@@ -1,3 +1,4 @@
+
 // Extending the existing types file to make sure it has all necessary fields
 
 export interface Booking {
@@ -34,7 +35,7 @@ export interface ArtistDashboardData {
   total_reviews: number;
 }
 
-// Modified BookingCounts interface to include only the fields currently used
+// Modified BookingCounts interface to include all required fields
 export interface BookingCounts {
   total?: number;
   pending: number;
@@ -44,24 +45,33 @@ export interface BookingCounts {
   upcoming: number;
 }
 
-// Add PortfolioImage interface to fix the error
+// Updated PortfolioImage interface to include the name property
 export interface PortfolioImage {
   id: string;
   url: string;
   thumbnail_url?: string;
   alt_text?: string;
   created_at?: string;
+  name?: string; // Added name property
 }
 
-// Add ArtistDataContextType interface to fix the error
+// Updated ArtistDataContextType interface to match what's being used in the components
 export interface ArtistDataContextType {
   artistProfile: ArtistProfileState | null;
   loading: boolean;
   error: Error | null;
   refreshProfile: () => void;
+  // Add additional properties used in components
+  handleCopyReferralLink?: () => void;
+  copied?: boolean;
+  firstName?: string;
+  userCredits?: number;
+  refreshArtistProfile?: () => Promise<void>;
+  portfolioImages: PortfolioImage[];
+  loadingPortfolio: boolean;
 }
 
-// Add ArtistProfileState interface to fix the error
+// Updated ArtistProfileState interface to include all used properties
 export interface ArtistProfileState {
   id: string;
   user_id: string;
@@ -75,6 +85,14 @@ export interface ArtistProfileState {
   total_reviews?: number;
   location?: string;
   is_available?: boolean;
+  // Add properties used in components
+  portfolio_urls?: string[];
+  preferred_language?: string;
+  accepts_bookings?: boolean;
+  preferences?: string[];
+  credits?: number;
+  affiliate_code?: string;
+  referral_count?: number;
 }
 
 // Updating DaySchedule interface to include all required properties
@@ -83,6 +101,6 @@ export interface DaySchedule {
   is_available: boolean;
   start_time?: string;
   end_time?: string;
-  active: boolean; // Added this property which is being used
-  time?: string;   // Added this property which is being used
+  active: boolean;
+  time?: string;
 }
