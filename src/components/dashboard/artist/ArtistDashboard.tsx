@@ -15,6 +15,7 @@ import ArtistServicesSection from './ArtistServicesSection';
 import ArtistMetricsSection from './ArtistMetricsSection';
 import ArtistBoostTracker from './ArtistBoostTracker';
 import { useEffect } from 'react';
+import { UserProfile } from '@/context/auth/types';
 
 // Define proper types for ArtistDashboard components if they don't exist
 interface ArtistBoostTrackerProps {
@@ -59,15 +60,48 @@ const ArtistDashboard = () => {
   if (isLoading) return <ArtistLoadingState />;
   if (error) return <ArtistErrorState error={error as Error} />;
 
+  // Transform the raw data into a UserProfile object with all required properties
+  const userProfileData: UserProfile = {
+    id: data?.id || '',
+    email: data?.email || '',
+    full_name: data?.full_name || '',
+    avatar_url: data?.avatar_url || '',
+    location: data?.location || '',
+    bio: data?.bio || '',
+    phone: data?.phone || '',
+    instagram: data?.instagram || '',
+    website: data?.website || '',
+    specialty: data?.specialty || '',
+    role: data?.role || null,
+    created_at: data?.created_at || '',
+    updated_at: data?.updated_at || '',
+    preferred_language: data?.preferred_language || '',
+    referral_count: data?.referral_count || 0,
+    salon_name: data?.salon_name || '',
+    company_name: data?.company_name || '',
+    custom_role: data?.custom_role || '',
+    contact_link: data?.contact_link || '',
+    skills: data?.skills || [],
+    skill_level: data?.skill_level || '',
+    profile_views: data?.profile_views || 0,
+    preferences: data?.preferences || [],
+    affiliate_code: data?.affiliate_code || '',
+    referral_code: data?.referral_code || '',
+    credits: data?.credits || 0,
+    boosted_until: data?.boosted_until || null,
+    portfolio_urls: data?.portfolio_urls || [],
+    accepts_bookings: data?.accepts_bookings || false,
+    booking_url: data?.booking_url || '',
+  };
+
   // Prepare props for components that need specific data
   const boostTrackerProps: ArtistBoostTrackerProps = {
-    // Default to 0 if profile_views doesn't exist on the data object
-    profileViews: data?.profile_views || 0
+    profileViews: userProfileData.profile_views
   };
   
   const toolkitSectionProps: ArtistToolkitSectionProps = {
     onCopyReferralLink: () => {
-      const referralCode = data?.referral_code || '';
+      const referralCode = userProfileData.referral_code || '';
       if (referralCode) {
         navigator.clipboard.writeText(`https://emviapp.com/join?ref=${referralCode}`);
       }
@@ -80,7 +114,7 @@ const ArtistDashboard = () => {
       <BookingNotificationsSection />
       
       {/* Artist Dashboard Header */}
-      <ArtistDashboardHeader profile={data} />
+      <ArtistDashboardHeader profile={userProfileData} />
       
       {/* Artist Boost Tracker */}
       <ArtistBoostTracker {...boostTrackerProps} />
@@ -88,7 +122,7 @@ const ArtistDashboard = () => {
       {/* Primary content section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <ArtistDashboardContent artistData={data} />
+          <ArtistDashboardContent artistData={userProfileData} />
         </div>
         <div className="lg:col-span-1 space-y-6">
           <ArtistMetricsSection />
