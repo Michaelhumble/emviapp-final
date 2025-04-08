@@ -34,14 +34,14 @@ export interface ArtistDashboardData {
   total_reviews: number;
 }
 
-// Add BookingCounts interface to fix the error
+// Modified BookingCounts interface to include only the fields currently used
 export interface BookingCounts {
-  total: number;
+  total?: number;
   pending: number;
-  accepted: number;
-  declined: number;
-  completed: number;
-  upcoming: number; // Adding the missing 'upcoming' property
+  accepted?: number;
+  declined?: number;
+  completed?: number;
+  upcoming: number;
 }
 
 // Add PortfolioImage interface to fix the error
@@ -77,10 +77,12 @@ export interface ArtistProfileState {
   is_available?: boolean;
 }
 
-// Add DaySchedule interface to fix the error
+// Updating DaySchedule interface to include all required properties
 export interface DaySchedule {
   day: string;
   is_available: boolean;
   start_time?: string;
   end_time?: string;
+  active: boolean; // Added this property which is being used
+  time?: string;   // Added this property which is being used
 }
