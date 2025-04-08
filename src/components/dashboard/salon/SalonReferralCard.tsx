@@ -30,9 +30,9 @@ const SalonReferralCard = () => {
           .rpc('get_user_referral_stats', { user_id: user.id });
         
         if (!error && data) {
-          // Fix: data is a single object with referral_count property
-          const referralStats = data as { referral_count: number };
-          setReferralCount(referralStats.referral_count || 0);
+          // Get the first element if data is an array, otherwise use data directly
+          const statsObject = Array.isArray(data) ? data[0] : data;
+          setReferralCount(statsObject.referral_count || 0);
         }
       } catch (err) {
         console.error("Error fetching referral count:", err);

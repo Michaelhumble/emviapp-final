@@ -17,6 +17,7 @@ import SalonSuggestionBox from "@/components/dashboard/salon/SalonSuggestionBox"
 import VisibilityNotification from "@/components/dashboard/salon/VisibilityNotification";
 import SalonListingsManagement from "@/components/dashboard/salon/SalonListingsManagement";
 import SalonCreditPromotion from "@/components/dashboard/salon/SalonCreditPromotion";
+import TopLocalArtists from "@/components/dashboard/salon/TopLocalArtists";
 
 const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -62,9 +63,14 @@ const OwnerDashboard = () => {
                   <SalonCreditPromotion />
                 </div>
                 
-                {/* Posted Jobs Section - Now in a 2-column span */}
-                <div className="lg:col-span-2">
-                  <SalonPostedJobsSection />
+                {/* NEW: Top Local Artists widget */}
+                <div className="lg:col-span-1">
+                  <TopLocalArtists />
+                </div>
+                
+                {/* Posted Jobs Section - Now in a column span */}
+                <div className="lg:col-span-1">
+                  <SalonReferralCard />
                 </div>
               </div>
               
@@ -79,9 +85,9 @@ const OwnerDashboard = () => {
                   <SalonNotificationCenter />
                 </div>
                 
-                {/* Referral Center with Vietnamese text */}
-                <div id="referral-card" className="lg:col-span-1">
-                  <SalonReferralCard />
+                {/* Jobs Section */}
+                <div className="lg:col-span-1">
+                  <SalonPostedJobsSection />
                 </div>
               </div>
               

@@ -13,6 +13,7 @@ import SalonPostedJobsSection from "@/components/dashboard/salon/SalonPostedJobs
 import SalonBoostStatus from "@/components/dashboard/salon/SalonBoostStatus";
 import { toast } from "sonner";
 import SalonCreditPromotion from "@/components/dashboard/salon/SalonCreditPromotion";
+import TopLocalArtists from "@/components/dashboard/salon/TopLocalArtists";
 
 const SalonDashboard = () => {
   const { userProfile, userRole } = useAuth();
@@ -51,17 +52,24 @@ const SalonDashboard = () => {
               {/* Action Buttons with Vietnamese text */}
               <SalonDashboardActionButtons />
               
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* NEW: Credit Promotion Card */}
-                <SalonCreditPromotion />
+                <div className="lg:col-span-1">
+                  <SalonCreditPromotion />
+                </div>
                 
                 {/* Referral Center with Vietnamese text */}
-                <div id="referral-card">
+                <div id="referral-card" className="lg:col-span-1">
                   <SalonReferralCard />
+                </div>
+                
+                {/* NEW: Top Local Artists widget */}
+                <div className="lg:col-span-1">
+                  <TopLocalArtists />
                 </div>
               </div>
               
-              {/* Credit Status Card - Move to second row */}
+              {/* Credit Status Card */}
               <SalonCreditStatus />
               
               {/* Posted Jobs Section */}

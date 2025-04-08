@@ -43,14 +43,14 @@ const SalonCreditPromotion = () => {
           .rpc('get_user_referral_stats', { user_id: user.id });
         
         if (!error && data) {
-          // Fix: data is a single object with referral_count property
-          const referralStats = data as { referral_count: number };
-          setReferralCount(referralStats.referral_count || 0);
+          // Get the first element if data is an array, otherwise use data directly
+          const statsObject = Array.isArray(data) ? data[0] : data;
+          setReferralCount(statsObject.referral_count || 0);
           
           // Check if user is eligible for discount
           // Eligible if: credits >= 50 OR has referred at least one salon
           const hasEnoughCredits = (userProfile?.credits || 0) >= CREDIT_THRESHOLD;
-          const hasReferredSalon = referralStats.referral_count > 0;
+          const hasReferredSalon = statsObject.referral_count > 0;
           
           setIsDiscountEligible(hasEnoughCredits || hasReferredSalon);
         }

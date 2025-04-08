@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
@@ -25,7 +24,6 @@ export const useReferralSystem = () => {
   const [referrals, setReferrals] = useState<ReferralData[]>([]);
   const [copied, setCopied] = useState(false);
 
-  // Fetch user's referral information and stats
   useEffect(() => {
     if (!user?.id) return;
     
@@ -33,7 +31,6 @@ export const useReferralSystem = () => {
       setLoading(true);
       
       try {
-        // Get user's referral code
         const { data: userData, error: userError } = await supabase
           .from('users')
           .select('referral_code, credits')
@@ -50,8 +47,6 @@ export const useReferralSystem = () => {
         setReferralCode(code);
         setReferralLink(`https://emviapp.com/signup?ref=${code}`);
         
-        // Fetch referrals using type assertion since the schema might not be updated
-        // in the TypeScript definitions yet
         const { data: referralsData, error: referralsError } = await supabase
           .from('referrals')
           .select(`
@@ -73,7 +68,6 @@ export const useReferralSystem = () => {
           return;
         }
         
-        // Process referrals data with safeguards against missing fields
         const processedReferrals: ReferralData[] = (referralsData || []).map((ref: any) => ({
           id: ref.id || '',
           referredEmail: ref.users?.email || 'hidden@email.com',
@@ -87,7 +81,6 @@ export const useReferralSystem = () => {
         
         setReferrals(processedReferrals);
         
-        // Get referral count
         const { data: statsData, error: statsError } = await supabase
           .rpc('get_user_referral_stats', { user_id: user.id });
           
@@ -97,25 +90,20 @@ export const useReferralSystem = () => {
           return;
         }
         
-        // Calculate stats
+        const statsObject = Array.isArray(statsData) ? statsData[0] : statsData;
+        const referralCount = statsObject.referral_count || 0;
+        
         const total = processedReferrals.length;
         const completed = processedReferrals.filter(r => r.status === 'completed').length;
         const pending = total - completed;
         
-        // Get actual referral count from RPC result
-        // Fix: statsData is a single object with referral_count property
-        const referralStats = statsData as { referral_count: number };
-        const referralCount = referralStats.referral_count || 0;
-        
-        // Define target milestone based on user role
-        let targetMilestone = 5; // Default
+        const targetMilestone = 5; // Default
         if (userRole === 'artist' || userRole === 'nail technician/artist') {
           targetMilestone = 3;
         } else if (userRole === 'salon' || userRole === 'owner') {
           targetMilestone = 2;
         }
         
-        // Calculate remaining referrals needed for next milestone
         const currentTier = Math.floor(referralCount / targetMilestone);
         const nextMilestoneIn = targetMilestone - (referralCount % targetMilestone);
         const percentage = ((referralCount % targetMilestone) / targetMilestone) * 100;
@@ -143,7 +131,6 @@ export const useReferralSystem = () => {
     
     fetchReferralData();
     
-    // Set up real-time subscription for referral updates
     const channel = supabase
       .channel('referral-updates')
       .on('postgres_changes', {
@@ -152,7 +139,7 @@ export const useReferralSystem = () => {
         table: 'referrals',
         filter: `referrer_id=eq.${user.id}`,
       }, () => {
-        fetchReferralData(); // Refresh data when changes occur
+        fetchReferralData();
       })
       .subscribe();
       
@@ -161,7 +148,6 @@ export const useReferralSystem = () => {
     };
   }, [user?.id, userRole]);
   
-  // Function to copy referral link
   const copyReferralLink = () => {
     navigator.clipboard.writeText(referralLink)
       .then(() => {
@@ -175,7 +161,6 @@ export const useReferralSystem = () => {
       });
   };
 
-  // Get a motivational message based on progress
   const getMotivationalMessage = (preferred_language: string = 'English') => {
     const isVietnamese = preferred_language?.toLowerCase() === 'vietnamese' || preferred_language?.toLowerCase() === 'tiếng việt';
     
