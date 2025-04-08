@@ -36,27 +36,38 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         const normalizedRole = normalizeUserRole(userRole);
         console.log("[DashboardRedirector] Normalized role:", normalizedRole);
         
-        // FIXED: Direct routing based on normalized role
+        // COMPLETELY REWRITTEN: Direct routing based on normalized role with no fallbacks
         if (normalizedRole === 'artist') {
-          console.log("[DashboardRedirector] Routing artist to artist dashboard");
+          console.log("[DashboardRedirector] DIRECT ROUTING: Artist to artist dashboard");
           navigate('/dashboard/artist');
           return;
         } else if (normalizedRole === 'salon') {
-          console.log("[DashboardRedirector] Routing salon to salon dashboard");
+          console.log("[DashboardRedirector] DIRECT ROUTING: Salon to salon dashboard");
           navigate('/dashboard/salon');
           return;
         } else if (normalizedRole === 'customer') {
-          console.log("[DashboardRedirector] Routing customer to customer dashboard");
+          console.log("[DashboardRedirector] DIRECT ROUTING: Customer to customer dashboard");
           navigate('/dashboard/customer');
           return;
+        } else if (normalizedRole === 'supplier') {
+          console.log("[DashboardRedirector] DIRECT ROUTING: Supplier to supplier dashboard");
+          navigate('/dashboard/supplier');
+          return;
+        } else if (normalizedRole === 'freelancer') {
+          console.log("[DashboardRedirector] DIRECT ROUTING: Freelancer to freelancer dashboard");
+          navigate('/dashboard/freelancer');
+          return;
+        } else {
+          console.log("[DashboardRedirector] DIRECT ROUTING: Other/unknown to profile edit");
+          // For unknown roles, go to profile edit
+          navigate('/profile/edit');
+          toast.error("Your user role needs to be configured. Please update your profile.");
+          return;
         }
-        
-        // For other roles, use the standard navigation
-        navigateToRoleDashboard(navigate, userRole);
-        return;
       }
       
       // If role is not in context, fetch it directly from the database
+      console.log("[DashboardRedirector] No role in context, fetching from database");
       const { data: profile, error } = await supabase
         .from('users')
         .select('role')
@@ -84,28 +95,41 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
       const normalizedDbRole = normalizeUserRole(profile.role);
       console.log("[DashboardRedirector] Normalized database role:", normalizedDbRole);
       
-      // FIXED: Direct routing based on normalized database role
+      // COMPLETELY REWRITTEN: Direct routing based on normalized database role
       if (normalizedDbRole === 'artist') {
-        console.log("[DashboardRedirector] Routing artist to artist dashboard");
+        console.log("[DashboardRedirector] DIRECT ROUTING: Artist to artist dashboard");
         navigate('/dashboard/artist');
-        
         // Refresh user profile to ensure we have the role in context for next time
         await refreshUserProfile();
         return;
       } else if (normalizedDbRole === 'salon') {
-        console.log("[DashboardRedirector] Routing salon to salon dashboard");
+        console.log("[DashboardRedirector] DIRECT ROUTING: Salon to salon dashboard");
         navigate('/dashboard/salon');
         await refreshUserProfile();
         return;
       } else if (normalizedDbRole === 'customer') {
-        console.log("[DashboardRedirector] Routing customer to customer dashboard");
+        console.log("[DashboardRedirector] DIRECT ROUTING: Customer to customer dashboard");
         navigate('/dashboard/customer');
         await refreshUserProfile();
         return;
+      } else if (normalizedDbRole === 'supplier') {
+        console.log("[DashboardRedirector] DIRECT ROUTING: Supplier to supplier dashboard");
+        navigate('/dashboard/supplier');
+        await refreshUserProfile();
+        return;
+      } else if (normalizedDbRole === 'freelancer') {
+        console.log("[DashboardRedirector] DIRECT ROUTING: Freelancer to freelancer dashboard");
+        navigate('/dashboard/freelancer');
+        await refreshUserProfile();
+        return;
+      } else {
+        console.log("[DashboardRedirector] DIRECT ROUTING: Other/unknown to profile edit");
+        // For unknown roles, go to profile edit
+        navigate('/profile/edit');
+        toast.error("Your user role needs to be configured. Please update your profile.");
+        await refreshUserProfile();
+        return;
       }
-      
-      // For other roles, use the standard navigation
-      navigateToRoleDashboard(navigate, profile.role as UserRole);
       
     } catch (error) {
       console.error("[DashboardRedirector] Error in role check and redirect:", error);
@@ -117,6 +141,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
   }, [user, userRole, isSignedIn, navigate, isNewUser, clearIsNewUser, setRedirectError, setLocalLoading, refreshUserProfile]);
 
   useEffect(() => {
+    console.log("[DashboardRedirector] Component mounted or dependencies changed");
     checkUserRoleAndRedirect();
   }, [checkUserRoleAndRedirect]);
 

@@ -29,7 +29,7 @@ const ArtistDashboardPage = () => {
         console.warn(`[Artist Dashboard] Non-artist role (${normalizedRole}) accessed artist dashboard`);
       }
     }
-  }, [userRole]);
+  }, [userRole, navigate]);
 
   // Define allowed roles for this dashboard - strictly enforce artist roles only
   const allowedRoles: UserRole[] = ['artist', 'nail technician/artist'];

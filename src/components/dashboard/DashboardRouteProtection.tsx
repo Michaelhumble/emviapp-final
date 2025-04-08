@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { UserRole } from "@/context/auth/types";
-import { hasRoleAccess } from "@/utils/navigation";
+import { hasRoleAccess, normalizeUserRole } from "@/utils/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCcw } from "lucide-react";
@@ -25,6 +25,7 @@ const DashboardRouteProtection = ({
 }: DashboardRouteProtectionProps) => {
   const { userRole, user, loading, refreshUserProfile, validateUserRole } = useAuth();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [hadInitialRender, setHadInitialRender] = useState(false);
   const navigate = useNavigate();
   
   // Function to force refresh user profile
@@ -62,8 +63,9 @@ const DashboardRouteProtection = ({
       return;
     }
     
-    // FIXED: Log the user role for debugging
+    // Log the user role for debugging
     console.log(`[${dashboardType}] Current user role:`, userRole);
+    console.log(`[${dashboardType}] Allowed roles:`, allowedRoles);
     
     // If role hasn't loaded yet or is null
     if (!userRole) {
@@ -72,22 +74,31 @@ const DashboardRouteProtection = ({
       return;
     }
     
-    // FIXED: Added more detailed logging for role access check
-    console.log(`[${dashboardType}] Checking if user with role ${userRole} can access dashboard for ${allowedRoles.join(', ')}`);
+    // Normalize role for consistent checking
+    const normalizedRole = normalizeUserRole(userRole);
+    console.log(`[${dashboardType}] Normalized role: ${normalizedRole}`);
+    
+    // ENHANCED: Added more detailed logging for role access check
+    console.log(`[${dashboardType}] Checking if user with role ${normalizedRole} can access dashboard for ${allowedRoles.join(', ')}`);
+    
+    // Set that we've had initial render with role
+    setHadInitialRender(true);
     
     // Check if user has access to this dashboard - with strict enforcement
-    if (!hasRoleAccess(userRole, allowedRoles)) {
+    const userHasAccess = hasRoleAccess(userRole, allowedRoles);
+    
+    if (!userHasAccess) {
       console.warn(`[${dashboardType}] User with role ${userRole} attempted unauthorized access`);
       toast.error(`Access denied: This dashboard is for ${allowedRoles.join(' or ')} accounts only`);
       
-      // FIXED: Redirect to dashboard selector instead of the current dashboard
+      // CRITICAL FIX: Redirect to main dashboard which will then redirect to the correct dashboard
       console.log(`[${dashboardType}] Redirecting to dashboard selector due to unauthorized access`);
-      navigate("/dashboard"); // Redirect to the dashboard selector
+      navigate("/dashboard"); 
       return;
     } else {
       console.log(`[${dashboardType}] Access granted to ${dashboardType} dashboard for role: ${userRole}`);
     }
-  }, [user, userRole, loading, navigate, allowedRoles, dashboardType]);
+  }, [user, userRole, loading, navigate, allowedRoles, dashboardType, hadInitialRender]);
   
   // Show loading state while authentication is in progress
   if (loading) {
@@ -131,7 +142,7 @@ const DashboardRouteProtection = ({
     );
   }
   
-  // FIXED: Added more explicit check to prevent unauthorized access
+  // CRITICAL FIX: Added more explicit check to prevent unauthorized access and wrong dashboard rendering
   // If not authorized or not logged in, return nothing (redirect happens in useEffect)
   if (!user || (userRole && !hasRoleAccess(userRole, allowedRoles))) {
     console.log(`[${dashboardType}] User is not authorized, preventing dashboard render`);
