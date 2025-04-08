@@ -5,7 +5,7 @@ import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import EmviLogo from "@/components/branding/EmviLogo";
 import MainNavigation from "./navbar/MainNavigation";
-import { UserMenu } from "./navbar/UserMenu"; // Fixed import to use named export
+import { UserMenu } from "./navbar/UserMenu"; 
 import AuthButtons from "./navbar/AuthButtons";
 import MobileMenu from "./navbar/MobileMenu";
 
@@ -32,11 +32,7 @@ const Navbar = () => {
         {/* Auth buttons or user menu */}
         <div className="flex items-center gap-2">
           {user ? (
-            <UserMenu 
-              user={user} 
-              userRole={userRole} 
-              handleSignOut={handleSignOut} 
-            />
+            <UserMenu />
           ) : (
             <AuthButtons />
           )}

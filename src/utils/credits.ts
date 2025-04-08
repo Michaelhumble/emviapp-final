@@ -1,5 +1,4 @@
-
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 
 interface DeductCreditsParams {
@@ -69,7 +68,6 @@ export const checkCredits = async (userId: string): Promise<number> => {
   }
 };
 
-// Function to get recent credit history
 export const getCreditsHistory = async (userId: string, limit = 10): Promise<any[]> => {
   if (!userId) return [];
   
@@ -95,7 +93,6 @@ export const getCreditsHistory = async (userId: string, limit = 10): Promise<any
   }
 };
 
-// Function to support an artist with credits
 export const supportArtist = async (
   supporterId: string, 
   artistId: string, 
@@ -171,7 +168,6 @@ export const supportArtist = async (
   }
 };
 
-// New function to get referral stats for a user
 export const getReferralStats = async (userId: string) => {
   if (!userId) return null;
   
@@ -227,7 +223,6 @@ export const getReferralStats = async (userId: string) => {
   }
 };
 
-// Function to track when milestones are reached in referrals
 export const trackReferralMilestone = async (
   referralId: string,
   milestoneType: string,
@@ -259,7 +254,6 @@ export const trackReferralMilestone = async (
   }
 };
 
-// Function to get pending credit earnings
 export const getPendingCreditEarnings = async (userId: string): Promise<any[]> => {
   if (!userId) return [];
   
@@ -285,7 +279,6 @@ export const getPendingCreditEarnings = async (userId: string): Promise<any[]> =
   }
 };
 
-// Function to approve a pending credit earning
 export const approveCreditEarning = async (earningId: string): Promise<boolean> => {
   if (!earningId) return false;
   
@@ -362,4 +355,68 @@ export const approveCreditEarning = async (earningId: string): Promise<boolean> 
     console.error("Exception in approveCreditEarning:", error);
     return false;
   }
+};
+
+export const getCallReportingStatus = async (callId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('video_call_reporting')
+      .select('*')
+      .eq('call_id', callId)
+      .single();
+    
+    if (error) throw error;
+    
+    return data;
+  } catch (error) {
+    console.error('Error getting call reporting status:', error);
+    return null;
+  }
+};
+
+export const canRedeem = async (userId: string, credits: number, minRequired: number): Promise<boolean> => {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('credits')
+      .eq('id', userId)
+      .single();
+    
+    if (error) throw error;
+    
+    return (data?.credits || 0) >= minRequired;
+  } catch (error) {
+    console.error('Error checking if can redeem:', error);
+    return false;
+  }
+};
+
+export const trackCanvasEvent = (ref: React.RefObject<HTMLCanvasElement>, eventName: string, metadata = {}) => {
+  if (!ref || !ref.current) return;
+  
+  const ctx = ref.current.getContext('2d');
+  if (!ctx) return;
+  
+  if (ref.current) {
+    ctx.fillStyle = 'rgba(200, 0, 0, 0.1)';
+    ctx.fillRect(0, 0, ref.current.width, ref.current.height);
+  }
+  
+  if (ref.current) {
+    console.log(`Canvas event: ${eventName}`, {
+      width: ref.current.width,
+      height: ref.current.height,
+      ...metadata
+    });
+  }
+};
+
+export const processCallMetrics = (metrics: any[]) => {
+  if (!metrics || metrics.length === 0) return null;
+  
+  return metrics.map(metric => ({
+    userId: metric.user_id || metric.userId,
+    amount: metric.amount || 0,
+    // other properties mapped here
+  }));
 };

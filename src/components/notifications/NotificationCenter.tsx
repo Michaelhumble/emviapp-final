@@ -62,14 +62,14 @@ export function NotificationCenter({
     const now = new Date();
     const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
     
-    if (diffInMinutes < 1) return t('Just now');
-    if (diffInMinutes < 60) return `${diffInMinutes}m ${t('ago')}`;
+    if (diffInMinutes < 1) return "Just now";
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
     
     const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return `${diffInHours}h ${t('ago')}`;
+    if (diffInHours < 24) return `${diffInHours}h ago`;
     
     const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays}d ${t('ago')}`;
+    if (diffInDays < 7) return `${diffInDays}d ago`;
     
     return date.toLocaleDateString();
   };
@@ -119,16 +119,10 @@ export function NotificationCenter({
   const renderEmptyState = () => (
     <div className="py-8 px-4 text-center">
       <p className="text-gray-500 mb-2">
-        {t({
-          english: "No notifications yet",
-          vietnamese: "Chưa có thông báo nào"
-        })}
+        No notifications yet
       </p>
       <p className="text-xs text-gray-400">
-        {t({
-          english: "We'll notify you of important updates",
-          vietnamese: "Chúng tôi sẽ thông báo cho bạn về các cập nhật quan trọng"
-        })}
+        We'll notify you of important updates
       </p>
     </div>
   );
@@ -158,10 +152,7 @@ export function NotificationCenter({
         <PopoverContent className="w-80 p-0" align="end">
           <CardHeader className="px-4 py-3 border-b flex flex-row items-center justify-between">
             <CardTitle className="text-sm font-medium">
-              {t({
-                english: "Notifications",
-                vietnamese: "Thông báo"
-              })}
+              Notifications
             </CardTitle>
             {unreadCount > 0 && (
               <Button 
@@ -170,10 +161,7 @@ export function NotificationCenter({
                 className="h-8 text-xs"
                 onClick={() => markAllAsRead()}
               >
-                {t({
-                  english: "Mark all as read",
-                  vietnamese: "Đánh dấu tất cả đã đọc"
-                })}
+                Mark all as read
               </Button>
             )}
           </CardHeader>
@@ -196,10 +184,7 @@ export function NotificationCenter({
       <CardHeader className="pb-3 flex flex-row items-center justify-between">
         <CardTitle className="text-lg font-medium flex items-center">
           <Bell className="mr-2 h-5 w-5" />
-          {t({
-            english: "Notifications",
-            vietnamese: "Thông báo"
-          })}
+          Notifications
           {unreadCount > 0 && (
             <Badge className="ml-2">
               {unreadCount}
@@ -212,10 +197,7 @@ export function NotificationCenter({
             size="sm"
             onClick={() => markAllAsRead()}
           >
-            {t({
-              english: "Mark all as read",
-              vietnamese: "Đánh dấu tất cả đã đọc"
-            })}
+            Mark all as read
           </Button>
         )}
       </CardHeader>

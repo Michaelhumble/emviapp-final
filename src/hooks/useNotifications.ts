@@ -21,9 +21,9 @@ export const useNotifications = () => {
 
     setLoading(true);
     try {
-      // Fetch notifications from the database
+      // Fetch notifications from the database - using the activity_log table
       const { data, error } = await supabase
-        .from('notifications')
+        .from('activity_log')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
@@ -34,11 +34,11 @@ export const useNotifications = () => {
       // Format notifications
       const formattedNotifications: Notification[] = data.map(item => ({
         id: item.id,
-        message: item.message,
-        type: item.type || 'info',
+        message: item.description,
+        type: item.activity_type as 'info' | 'warning' | 'success' | 'error',
         createdAt: item.created_at,
-        isRead: item.is_read,
-        link: item.link,
+        isRead: item.metadata?.is_read || false,
+        link: item.metadata?.link,
         metadata: item.metadata
       }));
 
@@ -59,9 +59,18 @@ export const useNotifications = () => {
     if (!user) return;
 
     try {
+      const notification = notifications.find(n => n.id === id);
+      if (!notification) return;
+      
+      // Update the metadata field to mark as read
       const { error } = await supabase
-        .from('notifications')
-        .update({ is_read: true })
+        .from('activity_log')
+        .update({ 
+          metadata: { 
+            ...notification.metadata,
+            is_read: true 
+          } 
+        })
         .eq('id', id)
         .eq('user_id', user.id);
 
@@ -80,20 +89,28 @@ export const useNotifications = () => {
     } catch (error) {
       console.error('Error marking notification as read:', error);
     }
-  }, [user]);
+  }, [user, notifications]);
 
   // Mark all notifications as read
   const markAllAsRead = useCallback(async () => {
     if (!user) return;
 
     try {
-      const { error } = await supabase
-        .from('notifications')
-        .update({ is_read: true })
-        .eq('user_id', user.id)
-        .eq('is_read', false);
-
-      if (error) throw error;
+      // Update each unread notification
+      const unreadNotifications = notifications.filter(n => !n.isRead);
+      
+      for (const notification of unreadNotifications) {
+        await supabase
+          .from('activity_log')
+          .update({ 
+            metadata: { 
+              ...notification.metadata,
+              is_read: true 
+            } 
+          })
+          .eq('id', notification.id)
+          .eq('user_id', user.id);
+      }
 
       // Update local state
       setNotifications(prev => 
@@ -105,9 +122,9 @@ export const useNotifications = () => {
     } catch (error) {
       console.error('Error marking all notifications as read:', error);
     }
-  }, [user]);
+  }, [user, notifications]);
 
-  // Set up real-time subscription for new notifications
+  // Set up activity tracking
   useEffect(() => {
     if (!user) return;
 
@@ -116,25 +133,27 @@ export const useNotifications = () => {
 
     // Set up subscription for real-time updates
     const channel = supabase
-      .channel('notifications-changes')
+      .channel('activity-log-changes')
       .on(
         'postgres_changes',
         {
           event: 'INSERT',
           schema: 'public',
-          table: 'notifications',
+          table: 'activity_log',
           filter: `user_id=eq.${user.id}`
         },
         (payload) => {
+          const newItem = payload.new as any;
+          
           // Format the new notification
           const newNotification: Notification = {
-            id: payload.new.id,
-            message: payload.new.message,
-            type: payload.new.type || 'info',
-            createdAt: payload.new.created_at,
-            isRead: payload.new.is_read,
-            link: payload.new.link,
-            metadata: payload.new.metadata
+            id: newItem.id,
+            message: newItem.description,
+            type: newItem.activity_type || 'info',
+            createdAt: newItem.created_at,
+            isRead: newItem.metadata?.is_read || false,
+            link: newItem.metadata?.link,
+            metadata: newItem.metadata
           };
 
           // Update state with new notification
