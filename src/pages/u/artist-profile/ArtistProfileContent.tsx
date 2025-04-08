@@ -7,6 +7,7 @@ import ServicesSection from "@/components/artist-profile/ServicesSection";
 import ContactSection from "@/components/artist-profile/ContactSection";
 import BookingRequestSection from "@/components/artist-profile/BookingRequestSection";
 import SuggestedArtists from "@/components/artists/SuggestedArtists";
+import ReviewsSection from "@/components/reviews/ReviewsSection";
 import { Service, PortfolioImage } from "./types";
 
 interface ArtistProfileContentProps {
@@ -42,6 +43,9 @@ const ArtistProfileContent: React.FC<ArtistProfileContentProps> = ({
         
         <PortfolioGallery images={portfolioImages} />
         <ServicesSection services={services} />
+        
+        {/* Add Reviews Section */}
+        <ReviewsSection artistId={profile.id} />
         
         {/* Add Booking Request Section */}
         <BookingRequestSection profile={profile} services={services} />

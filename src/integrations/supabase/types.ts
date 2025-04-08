@@ -518,6 +518,67 @@ export type Database = {
         }
         Relationships: []
       }
+      reviews: {
+        Row: {
+          artist_id: string | null
+          booking_id: string | null
+          comment: string | null
+          created_at: string | null
+          customer_id: string | null
+          id: string
+          rating: number
+          reported: boolean | null
+          salon_id: string | null
+          status: string | null
+        }
+        Insert: {
+          artist_id?: string | null
+          booking_id?: string | null
+          comment?: string | null
+          created_at?: string | null
+          customer_id?: string | null
+          id?: string
+          rating: number
+          reported?: boolean | null
+          salon_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          artist_id?: string | null
+          booking_id?: string | null
+          comment?: string | null
+          created_at?: string | null
+          customer_id?: string | null
+          id?: string
+          rating?: number
+          reported?: boolean | null
+          salon_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: true
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       salon_photos: {
         Row: {
           caption: string | null
@@ -950,6 +1011,10 @@ export type Database = {
         Args: { p_user_id: string; p_amount: number; p_transaction_id: string }
         Returns: boolean
       }
+      can_review_booking: {
+        Args: { booking_id: string; user_id: string }
+        Returns: boolean
+      }
       create_notification: {
         Args: {
           p_user_id: string
@@ -959,6 +1024,13 @@ export type Database = {
           p_metadata?: Json
         }
         Returns: string
+      }
+      get_artist_rating: {
+        Args: { artist_id: string }
+        Returns: {
+          average_rating: number
+          review_count: number
+        }[]
       }
       get_user_referral_stats: {
         Args: { user_id: string }
