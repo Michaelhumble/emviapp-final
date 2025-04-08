@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -308,8 +309,8 @@ export const approveCreditEarning = async (earningId: string): Promise<boolean> 
     }
     
     // Use optional chaining and nullish coalescing for safe property access
-    const userId = earningData?.user_id ?? '';
-    const amount = earningData?.amount ?? 0;
+    const userId = (earningData as any)?.user_id ?? '';
+    const amount = (earningData as any)?.amount ?? 0;
     
     if (!userId) {
       console.error("No user ID in earning data");
