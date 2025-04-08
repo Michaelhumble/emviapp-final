@@ -12,9 +12,10 @@ import { navigateToRoleDashboard } from "@/utils/navigation";
  */
 const DashboardPage = () => {
   const navigate = useNavigate();
-  const { user, userRole, loading, signOut } = useAuth();
+  const { user, userRole, loading, signOut, refreshUserProfile } = useAuth();
   const [loadingTime, setLoadingTime] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
   // Function to handle going back to home
   const handleGoBack = () => {
@@ -35,10 +36,27 @@ const DashboardPage = () => {
       window.location.href = "/sign-in";
     }
   };
+
+  // Function to force refresh user profile
+  const handleForceRefresh = async () => {
+    if (user && !isRefreshing) {
+      setIsRefreshing(true);
+      try {
+        toast.info("Refreshing your profile data...");
+        await refreshUserProfile();
+        toast.success("Profile refreshed successfully");
+      } catch (error) {
+        console.error("Profile refresh failed:", error);
+        toast.error("Failed to refresh profile");
+      } finally {
+        setIsRefreshing(false);
+      }
+    }
+  };
   
   // Increment loading time counter
   useEffect(() => {
-    if (loading) {
+    if (loading || isRefreshing) {
       const timer = setInterval(() => {
         setLoadingTime(prev => prev + 1);
       }, 1000);
@@ -47,18 +65,18 @@ const DashboardPage = () => {
     }
     
     return () => {}; // Empty cleanup for when not loading
-  }, [loading]);
+  }, [loading, isRefreshing]);
   
   // Set timeout for loading
   useEffect(() => {
-    if (loading && loadingTime > 8) {
+    if ((loading || isRefreshing) && loadingTime > 8) {
       setError("It's taking longer than expected to load your dashboard. Please try again or sign out.");
     }
-  }, [loadingTime, loading]);
+  }, [loadingTime, loading, isRefreshing]);
   
   // Main effect to handle redirection based on role
   useEffect(() => {
-    if (loading) return;
+    if (loading || isRefreshing) return;
     
     if (!user) {
       navigate("/sign-in");
@@ -75,7 +93,7 @@ const DashboardPage = () => {
       navigate("/choose-role");
       toast.error("Please select your role to access your dashboard");
     }
-  }, [user, userRole, loading, navigate]);
+  }, [user, userRole, loading, navigate, isRefreshing]);
   
   // Show error state
   if (error) {
@@ -92,10 +110,11 @@ const DashboardPage = () => {
               variant="default" 
               onClick={() => {
                 setError(null);
-                window.location.reload();
+                setLoadingTime(0);
+                handleForceRefresh();
               }}
             >
-              Try Again
+              Force Refresh Profile
             </Button>
             <Button 
               variant="outline" 
@@ -139,9 +158,10 @@ const DashboardPage = () => {
               <Button 
                 variant="link" 
                 className="p-0 h-auto font-medium text-primary mx-1" 
-                onClick={() => window.location.reload()}
+                onClick={handleForceRefresh}
+                disabled={isRefreshing}
               >
-                refreshing the page
+                refreshing your profile
               </Button> 
               or 
               <Button 

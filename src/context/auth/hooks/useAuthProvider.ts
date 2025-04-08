@@ -33,7 +33,7 @@ export const useAuthProvider = () => {
   } = useAuthMethods(setLoading);
 
   // Compile context value
-  const authContextValue: AuthContextType = {
+  const authContextType: AuthContextType = {
     session,
     user,
     userProfile,
@@ -48,5 +48,5 @@ export const useAuthProvider = () => {
     refreshUserProfile,
   };
 
-  return authContextValue;
+  return authContextType;
 };
