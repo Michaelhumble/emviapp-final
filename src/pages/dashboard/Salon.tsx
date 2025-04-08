@@ -12,6 +12,7 @@ import SalonCreditStatus from "@/components/dashboard/salon/SalonCreditStatus";
 import SalonPostedJobsSection from "@/components/dashboard/salon/SalonPostedJobsSection";
 import SalonBoostStatus from "@/components/dashboard/salon/SalonBoostStatus";
 import { toast } from "sonner";
+import SalonCreditPromotion from "@/components/dashboard/salon/SalonCreditPromotion";
 
 const SalonDashboard = () => {
   const { userProfile, userRole } = useAuth();
@@ -51,12 +52,17 @@ const SalonDashboard = () => {
               <SalonDashboardActionButtons />
               
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Credit Status Card */}
-                <SalonCreditStatus />
+                {/* NEW: Credit Promotion Card */}
+                <SalonCreditPromotion />
                 
                 {/* Referral Center with Vietnamese text */}
-                <SalonReferralCard />
+                <div id="referral-card">
+                  <SalonReferralCard />
+                </div>
               </div>
+              
+              {/* Credit Status Card - Move to second row */}
+              <SalonCreditStatus />
               
               {/* Posted Jobs Section */}
               <SalonPostedJobsSection />

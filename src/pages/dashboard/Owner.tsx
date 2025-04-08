@@ -16,6 +16,7 @@ import SalonNotificationCenter from "@/components/dashboard/salon/SalonNotificat
 import SalonSuggestionBox from "@/components/dashboard/salon/SalonSuggestionBox";
 import VisibilityNotification from "@/components/dashboard/salon/VisibilityNotification";
 import SalonListingsManagement from "@/components/dashboard/salon/SalonListingsManagement";
+import SalonCreditPromotion from "@/components/dashboard/salon/SalonCreditPromotion";
 
 const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -56,25 +57,36 @@ const OwnerDashboard = () => {
               <SalonDashboardActionButtons />
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* NEW: Credit Promotion Card */}
+                <div className="lg:col-span-1">
+                  <SalonCreditPromotion />
+                </div>
+                
                 {/* Posted Jobs Section - Now in a 2-column span */}
                 <div className="lg:col-span-2">
                   <SalonPostedJobsSection />
                 </div>
+              </div>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Credit Status Card */}
+                <div className="lg:col-span-1">
+                  <SalonCreditStatus />
+                </div>
                 
                 {/* NEW: Notification Center and Suggestion Box */}
-                <div className="space-y-6">
+                <div className="lg:col-span-1 space-y-6">
                   <SalonNotificationCenter />
-                  <SalonSuggestionBox />
+                </div>
+                
+                {/* Referral Center with Vietnamese text */}
+                <div id="referral-card" className="lg:col-span-1">
+                  <SalonReferralCard />
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Credit Status Card */}
-                <SalonCreditStatus />
-                
-                {/* Referral Center with Vietnamese text */}
-                <SalonReferralCard />
-              </div>
+              {/* Suggestion Box */}
+              <SalonSuggestionBox />
             </div>
           </RoleDashboardLayout>
         </motion.div>

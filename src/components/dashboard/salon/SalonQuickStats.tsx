@@ -36,6 +36,7 @@ const SalonQuickStats = () => {
         if (jobsData && jobsData.length > 0) {
           const jobIds = jobsData.map(job => job.id);
           
+          // Fix: Pass the array of job IDs correctly
           const { data: applicantsData, error: applicantsError } = await supabase
             .from('job_applications')
             .select('id')
@@ -72,7 +73,7 @@ const SalonQuickStats = () => {
     }, 2000);
     
     return () => clearTimeout(timeout);
-  }, [user]);
+  }, [user, applicantsThisMonth, activeJobPosts, creditsRemaining]);
   
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
