@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { debounce } from 'lodash';
@@ -89,7 +88,7 @@ export const useBookingFilters = ({
     serviceTypes: []
   });
   
-  const [filters, setFilters] = useState<BookingFilters>(getInitialFilters);
+  const [filters, setFilters] = useState<BookingFilters>(getInitialFilters());
   
   // Save filters to localStorage when they change
   useEffect(() => {
@@ -139,6 +138,7 @@ export const useBookingFilters = ({
     debouncedSearchChange(search);
   };
   
+  // Explicitly export the setServiceTypes function to fix the error
   const setServiceTypes = (serviceTypes: ServiceTypeFilter[]) => {
     setFilters(prev => ({ ...prev, serviceTypes }));
   };
