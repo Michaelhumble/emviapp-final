@@ -33,14 +33,18 @@ const SalonQuickStats = () => {
         const today = new Date();
         const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
         
-        const { data: applicantsData, error: applicantsError } = await supabase
-          .from('job_applications')
-          .select('id')
-          .eq('job_id', jobsData?.map(job => job.id) || [])
-          .gte('created_at', firstDayOfMonth.toISOString());
+        if (jobsData && jobsData.length > 0) {
+          const jobIds = jobsData.map(job => job.id);
           
-        if (!applicantsError) {
-          setApplicantsThisMonth(applicantsData?.length || 0);
+          const { data: applicantsData, error: applicantsError } = await supabase
+            .from('job_applications')
+            .select('id')
+            .in('job_id', jobIds)
+            .gte('created_at', firstDayOfMonth.toISOString());
+            
+          if (!applicantsError) {
+            setApplicantsThisMonth(applicantsData?.length || 0);
+          }
         }
         
         // Fetch user credits

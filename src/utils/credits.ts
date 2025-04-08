@@ -8,7 +8,12 @@ export const CREDIT_COSTS = {
   FEATURED_LISTING: 10,
   SEND_DIRECT_MESSAGE: 5,
   PREMIUM_SEARCH: 2,
-  EARLY_ACCESS: 15
+  EARLY_ACCESS: 15,
+  // Add the missing constants
+  SUPPORT_ARTIST_SMALL: 10,
+  SUPPORT_ARTIST_MEDIUM: 25,
+  SUPPORT_ARTIST_LARGE: 50,
+  JOB_POST: 0 // Free for now
 };
 
 export interface CreditHistoryItem {
@@ -103,13 +108,14 @@ export const deductCredits = async ({
 };
 
 // Get credit history for a user
-export const getCreditsHistory = async (userId: string): Promise<CreditFormattedItem[]> => {
+export const getCreditsHistory = async (userId: string, limit: number = 10): Promise<CreditFormattedItem[]> => {
   try {
     const { data, error } = await supabase
       .from('customer_credits')
       .select('*')
       .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(limit);
     
     if (error) {
       console.error('Error fetching credit history:', error);
@@ -148,17 +154,12 @@ const getActionLabel = (actionType: string): string => {
 };
 
 // Support an artist (send credits/tip)
-export const supportArtist = async ({
-  senderId,
-  artistId,
-  amount,
-  message
-}: {
-  senderId: string;
-  artistId: string;
-  amount: number;
-  message?: string;
-}): Promise<boolean> => {
+export const supportArtist = async (
+  senderId: string,
+  artistId: string,
+  amount: number,
+  message?: string
+): Promise<boolean> => {
   try {
     // Check if sender has enough credits
     const senderCredits = await checkCredits(senderId);
@@ -179,15 +180,24 @@ export const supportArtist = async ({
       return false;
     }
     
-    // Add to artist
+    // Add to artist - Fix the RPC call issue
+    const { data: artistData, error: fetchError } = await supabase
+      .from('users')
+      .select('credits')
+      .eq('id', artistId)
+      .single();
+      
+    if (fetchError) {
+      console.error('Error fetching artist credits:', fetchError);
+      return false;
+    }
+    
+    // Calculate new credit amount and update
+    const newCreditAmount = (artistData?.credits || 0) + amount;
+    
     const { error: updateError } = await supabase
       .from('users')
-      .update({ 
-        credits: supabase.rpc('add', { 
-          x: amount,
-          y: 0  // Use 0 as fallback if null
-        })
-      })
+      .update({ credits: newCreditAmount })
       .eq('id', artistId);
     
     if (updateError) {
@@ -222,5 +232,23 @@ export const supportArtist = async ({
   } catch (err) {
     console.error('Error in supportArtist:', err);
     return false;
+  }
+};
+
+// Add missing getReferralStats function
+export const getReferralStats = async (userId: string) => {
+  try {
+    const { data, error } = await supabase
+      .rpc('get_user_referral_stats', { user_id: userId });
+    
+    if (error) {
+      console.error('Error fetching referral stats:', error);
+      return { referral_count: 0, pending_count: 0, verified_count: 0 };
+    }
+    
+    return data || { referral_count: 0, pending_count: 0, verified_count: 0 };
+  } catch (err) {
+    console.error('Error in getReferralStats:', err);
+    return { referral_count: 0, pending_count: 0, verified_count: 0 };
   }
 };

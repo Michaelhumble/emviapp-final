@@ -31,7 +31,8 @@ const CustomerCreditsTracker: React.FC = () => {
       try {
         setLoading(true);
         const creditHistory = await getCreditsHistory(user.id, 50);
-        setHistory(creditHistory as CreditHistoryItem[]);
+        // Type casting here to satisfy TypeScript
+        setHistory(creditHistory as unknown as CreditHistoryItem[]);
         
         // Calculate credit statistics
         let earned = 0;
