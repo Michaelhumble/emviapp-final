@@ -1,273 +1,291 @@
 
 import { useState, useEffect } from "react";
-import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Booking, BookingCounts } from "./types/ArtistDashboardTypes";
-import { CheckCircle2, XCircle, Clock, Calendar, MessageSquare } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Textarea } from "@/components/ui/textarea";
+import { Booking, BookingCounts } from "./types/ArtistDashboardTypes";
+import { format, parseISO } from "date-fns";
 
 const ArtistBookingsPanel = () => {
-  const { user, userProfile } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
   const [counts, setCounts] = useState<BookingCounts>({ pending: 0, upcoming: 0 });
-  const [expandedNote, setExpandedNote] = useState<string | null>(null);
-  const [isVietamese, setIsVietnamese] = useState(userProfile?.preferred_language === "Vietnamese");
-
-  useEffect(() => {
-    if (user) {
-      fetchBookings();
-    }
-  }, [user]);
-
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  
   const fetchBookings = async () => {
     try {
       setLoading(true);
       
-      if (!user?.id) return;
+      if (!user) return;
       
-      // Fetch bookings where artist is the recipient
-      const { data: bookingsData, error } = await supabase
-        .from("bookings")
-        .select("*, sender:sender_id(full_name)")
-        .eq("recipient_id", user.id)
-        .order("created_at", { ascending: false });
+      // Get bookings where the artist is the recipient
+      const { data, error } = await supabase
+        .from('bookings')
+        .select(`*`)
+        .eq('recipient_id', user.id)
+        .order('created_at', { ascending: false });
       
       if (error) throw error;
       
-      // Prepare the bookings with customer names
-      const formattedBookings = bookingsData.map(booking => ({
-        ...booking,
-        customer_name: booking.sender?.full_name || "Unknown Customer",
-      }));
-      
-      setBookings(formattedBookings);
-      
-      // Calculate counts
-      const pendingCount = formattedBookings.filter(b => b.status === "pending").length;
-      const upcomingCount = formattedBookings.filter(b => b.status === "accepted").length;
-      
-      setCounts({
-        pending: pendingCount,
-        upcoming: upcomingCount
-      });
+      if (data) {
+        // Transform data to include customer names
+        const bookingsWithUserDetails = await Promise.all(
+          data.map(async (booking) => {
+            // Get customer name
+            const { data: userData, error: userError } = await supabase
+              .from('users')
+              .select('full_name')
+              .eq('id', booking.sender_id)
+              .single();
+            
+            // Check for errors but don't throw
+            if (userError) {
+              console.error("Error fetching customer details:", userError);
+            }
+            
+            // Get service details if possible
+            let serviceName = "";
+            if (booking.service_id) {
+              const { data: serviceData, error: serviceError } = await supabase
+                .from('services')
+                .select('title')
+                .eq('id', booking.service_id)
+                .single();
+                
+              if (!serviceError && serviceData) {
+                serviceName = serviceData.title;
+              }
+            }
+            
+            return {
+              ...booking,
+              customer_name: userData?.full_name || "Unknown",
+              service_name: serviceName
+            } as Booking;
+          })
+        );
+        
+        setBookings(bookingsWithUserDetails);
+        
+        // Calculate counts
+        const pendingCount = bookingsWithUserDetails.filter(b => b.status === 'pending').length;
+        const upcomingCount = bookingsWithUserDetails.filter(b => 
+          b.status === 'accepted' && 
+          new Date(b.date_requested) >= new Date()
+        ).length;
+        
+        setCounts({
+          pending: pendingCount,
+          upcoming: upcomingCount
+        });
+      }
     } catch (error) {
       console.error("Error fetching bookings:", error);
-      toast.error("Failed to load your bookings");
+      toast.error("Failed to load bookings");
     } finally {
       setLoading(false);
     }
   };
-
-  const updateBookingStatus = async (bookingId: string, status: 'accepted' | 'declined') => {
+  
+  useEffect(() => {
+    fetchBookings();
+  }, [user]);
+  
+  const handleAccept = async (bookingId: string) => {
     try {
       const { error } = await supabase
-        .from("bookings")
-        .update({ status })
-        .eq("id", bookingId);
+        .from('bookings')
+        .update({ status: 'accepted' })
+        .eq('id', bookingId);
       
       if (error) throw error;
       
-      // Update local state
-      setBookings(prevBookings => 
-        prevBookings.map(booking => 
-          booking.id === bookingId ? { ...booking, status } : booking
+      toast.success("Booking accepted");
+      
+      // Update the local state
+      setBookings(prev => 
+        prev.map(booking => 
+          booking.id === bookingId 
+            ? { ...booking, status: 'accepted' as const } 
+            : booking
         )
       );
       
       // Update counts
-      if (status === 'accepted') {
-        setCounts(prev => ({ 
-          pending: prev.pending - 1, 
-          upcoming: prev.upcoming + 1 
-        }));
-      } else {
-        setCounts(prev => ({ 
-          pending: prev.pending - 1, 
-          upcoming: prev.upcoming 
-        }));
-      }
-      
-      // Show success message
-      toast.success(
-        status === 'accepted' 
-          ? (isVietamese ? "Đã chấp nhận lịch hẹn" : "Booking accepted") 
-          : (isVietamese ? "Đã từ chối lịch hẹn" : "Booking declined")
-      );
+      setCounts(prev => ({
+        pending: Math.max(0, prev.pending - 1),
+        upcoming: prev.upcoming + 1
+      }));
     } catch (error) {
-      console.error(`Error ${status} booking:`, error);
-      toast.error("Failed to update booking status");
+      console.error("Error accepting booking:", error);
+      toast.error("Failed to accept booking");
     }
   };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
-          <Clock className="w-3 h-3 mr-1" />
-          {isVietamese ? "Đang chờ" : "Pending"}
-        </Badge>;
-      case 'accepted':
-        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-          <CheckCircle2 className="w-3 h-3 mr-1" />
-          {isVietamese ? "Đã chấp nhận" : "Accepted"}
-        </Badge>;
-      case 'declined':
-        return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
-          <XCircle className="w-3 h-3 mr-1" />
-          {isVietamese ? "Đã từ chối" : "Declined"}
-        </Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
-  };
-
-  const formatDate = (dateStr: string) => {
-    if (!dateStr) return "N/A";
-    
+  
+  const handleDecline = async (bookingId: string) => {
     try {
-      const date = new Date(dateStr);
-      return new Intl.DateTimeFormat('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      }).format(date);
-    } catch (e) {
-      return dateStr; // If parsing fails, return original string
+      const { error } = await supabase
+        .from('bookings')
+        .update({ status: 'declined' })
+        .eq('id', bookingId);
+      
+      if (error) throw error;
+      
+      toast.success("Booking declined");
+      
+      // Update the local state
+      setBookings(prev => 
+        prev.map(booking => 
+          booking.id === bookingId 
+            ? { ...booking, status: 'declined' as const } 
+            : booking
+        )
+      );
+      
+      // Update counts
+      setCounts(prev => ({
+        pending: Math.max(0, prev.pending - 1),
+        upcoming: prev.upcoming
+      }));
+    } catch (error) {
+      console.error("Error declining booking:", error);
+      toast.error("Failed to decline booking");
     }
   };
-
-  if (loading) {
-    return (
-      <Card className="w-full shadow-sm bg-white/70 backdrop-blur-sm border border-purple-100">
-        <CardHeader>
-          <CardTitle>{isVietamese ? "Lịch Hẹn Của Tôi" : "My Bookings"}</CardTitle>
-          <CardDescription>
-            {isVietamese ? "Đang tải..." : "Loading your bookings..."}
-          </CardDescription>
-        </CardHeader>
-      </Card>
-    );
-  }
-
+  
+  const formatDate = (dateStr: string) => {
+    try {
+      return format(parseISO(dateStr), "MMM dd, yyyy");
+    } catch (error) {
+      return dateStr;
+    }
+  };
+  
+  // Define UI text based on Vietnamese preference
+  const isVietnamese = user?.preferred_language === 'vi';
+  
+  const translations = {
+    title: isVietnamese ? "Lịch Hẹn Của Tôi" : "My Bookings",
+    pending: isVietnamese ? "Đang Chờ" : "Pending",
+    upcoming: isVietnamese ? "Sắp Tới" : "Upcoming",
+    accept: isVietnamese ? "Chấp Nhận" : "Accept",
+    decline: isVietnamese ? "Từ Chối" : "Decline",
+    noBookings: isVietnamese ? "Chưa có lịch hẹn nào" : "No bookings yet",
+    customer: isVietnamese ? "Khách Hàng" : "Customer",
+    service: isVietnamese ? "Dịch Vụ" : "Service",
+    date: isVietnamese ? "Ngày" : "Date",
+    time: isVietnamese ? "Giờ" : "Time",
+    status: isVietnamese ? "Trạng Thái" : "Status",
+    note: isVietnamese ? "Ghi Chú" : "Note",
+    actions: isVietnamese ? "Hành Động" : "Actions"
+  };
+  
+  const statusLabels = {
+    pending: isVietnamese ? "Đang Chờ" : "Pending",
+    accepted: isVietnamese ? "Đã Chấp Nhận" : "Accepted",
+    declined: isVietnamese ? "Đã Từ Chối" : "Declined"
+  };
+  
   return (
-    <Card className="w-full shadow-sm bg-white/70 backdrop-blur-sm border border-purple-100 hover:shadow-md transition-shadow">
-      <CardHeader>
-        <CardTitle className="flex justify-between items-center">
-          <span>{isVietamese ? "Lịch Hẹn Của Tôi" : "My Bookings"}</span>
-          <div className="flex space-x-3">
-            <Badge variant="outline" className="bg-yellow-50 text-yellow-600 border-yellow-200 flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              {isVietamese ? "Đang chờ" : "Pending"}: {counts.pending}
-            </Badge>
-            <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200 flex items-center gap-1">
-              <Calendar className="w-3 h-3" />
-              {isVietamese ? "Xác nhận" : "Upcoming"}: {counts.upcoming}
-            </Badge>
+    <Card className="overflow-hidden bg-white/85 backdrop-blur-sm shadow-md border-0 mb-8">
+      <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 border-b pb-4">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center">
+          <h2 className="text-lg font-serif font-semibold">{translations.title}</h2>
+          
+          <div className="flex gap-4 mt-2 md:mt-0">
+            <div className="bg-amber-50 px-3 py-1 rounded-full border border-amber-200 text-amber-800 text-sm">
+              {translations.pending}: {counts.pending}
+            </div>
+            <div className="bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 text-emerald-800 text-sm">
+              {translations.upcoming}: {counts.upcoming}
+            </div>
           </div>
-        </CardTitle>
-        <CardDescription>
-          {isVietamese 
-            ? "Xem và quản lý tất cả các yêu cầu đặt lịch từ khách hàng" 
-            : "View and manage all booking requests from customers"}
-        </CardDescription>
+        </div>
       </CardHeader>
-      <CardContent>
-        {bookings.length === 0 ? (
+      
+      <CardContent className="p-4">
+        {loading ? (
+          <div className="flex justify-center py-8">
+            <div className="h-8 w-8 border-4 border-t-transparent border-purple-500 rounded-full animate-spin"></div>
+          </div>
+        ) : bookings.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            {isVietamese 
-              ? "Bạn chưa có yêu cầu đặt lịch nào" 
-              : "You don't have any booking requests yet"}
+            {translations.noBookings}
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{isVietamese ? "Khách hàng" : "Customer"}</TableHead>
-                  <TableHead>{isVietamese ? "Dịch vụ" : "Service"}</TableHead>
-                  <TableHead>{isVietamese ? "Ngày" : "Date"}</TableHead>
-                  <TableHead>{isVietamese ? "Thời gian" : "Time"}</TableHead>
-                  <TableHead>{isVietamese ? "Trạng thái" : "Status"}</TableHead>
-                  <TableHead>{isVietamese ? "Ghi chú" : "Note"}</TableHead>
-                  <TableHead>{isVietamese ? "Tác vụ" : "Actions"}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            <table className="w-full">
+              <thead>
+                <tr className="text-left border-b">
+                  <th className="pb-2 font-medium text-gray-600">{translations.customer}</th>
+                  <th className="pb-2 font-medium text-gray-600">{translations.service}</th>
+                  <th className="pb-2 font-medium text-gray-600">{translations.date}</th>
+                  <th className="pb-2 font-medium text-gray-600">{translations.time}</th>
+                  <th className="pb-2 font-medium text-gray-600">{translations.status}</th>
+                  <th className="pb-2 font-medium text-gray-600">{translations.actions}</th>
+                </tr>
+              </thead>
+              <tbody>
                 {bookings.map((booking) => (
-                  <TableRow key={booking.id} className="hover:bg-purple-50/40">
-                    <TableCell className="font-medium">{booking.customer_name}</TableCell>
-                    <TableCell>{booking.service_name || "Not specified"}</TableCell>
-                    <TableCell>{formatDate(booking.date_requested)}</TableCell>
-                    <TableCell>{booking.time_requested || "Not specified"}</TableCell>
-                    <TableCell>{getStatusBadge(booking.status)}</TableCell>
-                    <TableCell>
-                      {booking.note ? (
-                        <div className="relative">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="p-0 h-auto" 
-                            onClick={() => setExpandedNote(expandedNote === booking.id ? null : booking.id)}
-                          >
-                            <MessageSquare className="w-4 h-4 text-gray-500" />
-                          </Button>
-                          
-                          {expandedNote === booking.id && (
-                            <div className="absolute z-50 bg-white rounded-md shadow-lg p-3 w-64 mt-1 border border-gray-200">
-                              <Textarea 
-                                readOnly 
-                                value={booking.note} 
-                                className="w-full text-sm resize-none"
-                              />
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="mt-2 w-full text-xs"
-                                onClick={() => setExpandedNote(null)}
-                              >
-                                {isVietamese ? "Đóng" : "Close"}
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <span className="text-gray-400 text-sm">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
+                  <tr key={booking.id} className="border-b hover:bg-gray-50">
+                    <td className="py-3">{booking.customer_name}</td>
+                    <td className="py-3">{booking.service_name || "Not specified"}</td>
+                    <td className="py-3">{formatDate(booking.date_requested)}</td>
+                    <td className="py-3">{booking.time_requested}</td>
+                    <td className="py-3">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        booking.status === 'pending' ? 'bg-amber-100 text-amber-800' :
+                        booking.status === 'accepted' ? 'bg-emerald-100 text-emerald-800' :
+                        'bg-red-100 text-red-800'
+                      }`}>
+                        {statusLabels[booking.status]}
+                      </span>
+                    </td>
+                    <td className="py-3">
                       {booking.status === 'pending' && (
-                        <div className="flex space-x-2">
+                        <div className="flex gap-2">
                           <Button 
                             size="sm" 
-                            variant="outline"
-                            className="bg-green-50 hover:bg-green-100 text-green-600 border-green-200"
-                            onClick={() => updateBookingStatus(booking.id, 'accepted')}
+                            className="bg-emerald-500 hover:bg-emerald-600 text-white"
+                            onClick={() => handleAccept(booking.id)}
                           >
-                            <CheckCircle2 className="w-3 h-3 mr-1" />
-                            {isVietamese ? "Chấp Nhận" : "Accept"}
+                            {translations.accept}
                           </Button>
                           <Button 
                             size="sm" 
                             variant="outline"
-                            className="bg-red-50 hover:bg-red-100 text-red-600 border-red-200"
-                            onClick={() => updateBookingStatus(booking.id, 'declined')}
+                            className="text-red-500 border-red-200 hover:bg-red-50"
+                            onClick={() => handleDecline(booking.id)}
                           >
-                            <XCircle className="w-3 h-3 mr-1" />
-                            {isVietamese ? "Từ Chối" : "Decline"}
+                            {translations.decline}
                           </Button>
                         </div>
                       )}
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ))}
-              </TableBody>
-            </Table>
+              </tbody>
+            </table>
+          </div>
+        )}
+        
+        {/* Note section */}
+        {bookings.some(b => b.note) && (
+          <div className="mt-6">
+            <h3 className="font-medium mb-2">{translations.note}</h3>
+            <div className="space-y-3">
+              {bookings
+                .filter(b => b.note)
+                .slice(0, 3)
+                .map(b => (
+                  <div key={`note-${b.id}`} className="p-3 bg-gray-50 rounded-md">
+                    <div className="font-medium text-sm">{b.customer_name} - {formatDate(b.date_requested)}</div>
+                    <div className="text-gray-600 text-sm mt-1">{b.note}</div>
+                  </div>
+                ))}
+            </div>
           </div>
         )}
       </CardContent>
