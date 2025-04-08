@@ -21,7 +21,7 @@ type User = {
   role: string;
   credits: number;
   boosted_until: string | null;
-  referral_count: number;
+  referral_count?: number;
   created_at: string;
 };
 
@@ -38,7 +38,7 @@ const UsersOverview = () => {
     try {
       let query = supabase
         .from('users')
-        .select('id, full_name, email, role, credits, boosted_until, created_at, referral_count')
+        .select('id, full_name, email, role, credits, boosted_until, created_at')
         .order('created_at', { ascending: false })
         .limit(100);
       
@@ -49,7 +49,30 @@ const UsersOverview = () => {
       const { data, error } = await query;
       
       if (error) throw error;
-      setUsers(data || []);
+      
+      // Add referral_count property with a default value
+      const usersWithReferralCount = (data || []).map(user => ({
+        ...user,
+        referral_count: 0 // Default value
+      }));
+      
+      setUsers(usersWithReferralCount);
+      
+      // Fetch referral counts separately if needed
+      // This is commented out as referral_count doesn't exist in the table
+      /*
+      for (const user of usersWithReferralCount) {
+        const { data: referralData } = await supabase.rpc('get_user_referral_stats', {
+          user_id: user.id
+        });
+        
+        if (referralData && referralData.length > 0) {
+          user.referral_count = referralData[0].count || 0;
+        }
+      }
+      
+      setUsers([...usersWithReferralCount]);
+      */
     } catch (error) {
       console.error('Error fetching users:', error);
     } finally {

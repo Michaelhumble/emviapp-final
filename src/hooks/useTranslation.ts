@@ -10,6 +10,8 @@ interface TranslationString {
   context?: string;
 }
 
+export type TranslationValue = string | { english: string; vietnamese: string };
+
 export const useTranslation = (preferredLanguage: string = 'English') => {
   const [translations, setTranslations] = useState<TranslationString[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,16 +40,15 @@ export const useTranslation = (preferredLanguage: string = 'English') => {
   }, []);
 
   // Translation function with proper type handling
-  const t = (key: string, defaultText?: string): string => {
+  const t = (key: string | TranslationValue, defaultText?: string): string => {
     if (!key) return defaultText || "";
     
     // Handle the case where key is an object with english/vietnamese properties
     if (typeof key === 'object' && key !== null) {
-      const translationObj = key as {english: string, vietnamese: string};
       return preferredLanguage.toLowerCase() === 'vietnamese' || 
              preferredLanguage.toLowerCase() === 'tiếng việt'
-             ? translationObj.vietnamese
-             : translationObj.english;
+             ? key.vietnamese
+             : key.english;
     }
     
     // Use optional chaining and nullish coalescing for safety

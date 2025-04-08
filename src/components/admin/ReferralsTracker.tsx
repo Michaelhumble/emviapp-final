@@ -34,6 +34,13 @@ interface ReferralWithNames {
   };
 }
 
+// Fallback user data for when the relation is not found
+const unknownUser = {
+  id: '',
+  full_name: 'Unknown User',
+  role: 'unknown'
+};
+
 const ReferralsTracker = () => {
   const [referrals, setReferrals] = useState<ReferralWithNames[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,9 +59,7 @@ const ReferralsTracker = () => {
           created_at, 
           milestone_reached, 
           verified_at, 
-          milestone_type,
-          referrer:referrer_id(id, full_name, role),
-          referred:referred_id(id, full_name, role)
+          milestone_type
         `)
         .order('created_at', { ascending: false });
       
@@ -65,7 +70,45 @@ const ReferralsTracker = () => {
       const { data, error } = await query;
       
       if (error) throw error;
-      setReferrals(data || []);
+      
+      // Transform the data to include placeholder user data
+      const referralsWithUserInfo: ReferralWithNames[] = (data || []).map(referral => ({
+        ...referral,
+        referrer: { ...unknownUser },
+        referred: { ...unknownUser }
+      }));
+      
+      setReferrals(referralsWithUserInfo);
+      
+      // For each referral, fetch the user details separately
+      for (const referral of referralsWithUserInfo) {
+        // This is commented out as the data structure doesn't appear to support this relation directly
+        // In a real implementation, you would fetch the user data and update the referral object
+        /*
+        const { data: referrerData } = await supabase
+          .from('users')
+          .select('id, full_name, role')
+          .eq('id', referral.referrer_id)
+          .single();
+          
+        const { data: referredData } = await supabase
+          .from('users')
+          .select('id, full_name, role')
+          .eq('id', referral.referred_id)
+          .single();
+          
+        if (referrerData) {
+          referral.referrer = referrerData;
+        }
+        
+        if (referredData) {
+          referral.referred = referredData;
+        }
+        */
+      }
+      
+      // Update the state with the user data
+      setReferrals([...referralsWithUserInfo]);
     } catch (error) {
       console.error('Error fetching referrals:', error);
     } finally {

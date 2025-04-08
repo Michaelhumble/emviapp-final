@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -296,7 +297,7 @@ export const approveCreditEarning = async (earningId: string): Promise<boolean> 
       .eq('id', earningId)
       .single();
       
-    if (fetchError || !earningData) {
+    if (fetchError) {
       console.error("Error fetching credit earning:", fetchError);
       return false;
     }
@@ -307,7 +308,7 @@ export const approveCreditEarning = async (earningId: string): Promise<boolean> 
       return false;
     }
     
-    // Use optional chaining and nullish coalescing for safe property access
+    // Use nullish coalescing for safe property access
     const userId = earningData?.user_id ?? '';
     const amount = earningData?.amount ?? 0;
     
