@@ -5,7 +5,7 @@ import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import EmviLogo from "@/components/branding/EmviLogo";
 import MainNavigation from "./navbar/MainNavigation";
-import UserMenu from "./navbar/UserMenu";
+import { UserMenu } from "./navbar/UserMenu"; // Fixed import to use named export
 import AuthButtons from "./navbar/AuthButtons";
 import MobileMenu from "./navbar/MobileMenu";
 
