@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
@@ -102,8 +103,9 @@ export const useReferralSystem = () => {
         const pending = total - completed;
         
         // Get actual referral count from RPC result
-        // Fix: statsData is a single object, not an array
-        const referralCount = statsData?.referral_count || 0;
+        // Fix: statsData is a single object with referral_count property
+        const referralStats = statsData as { referral_count: number };
+        const referralCount = referralStats.referral_count || 0;
         
         // Define target milestone based on user role
         let targetMilestone = 5; // Default
