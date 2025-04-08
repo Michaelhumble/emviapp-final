@@ -56,9 +56,9 @@ export const useUserProfile = (
         created_at: data.created_at,
         updated_at: data.updated_at,
         
-        // Handle potentially missing fields with fallbacks
-        referral_count: data.referral_count !== undefined ? data.referral_count : 0,
-        profile_views: data.profile_views !== undefined ? data.profile_views : 0,
+        // For fields that might not exist in database, use safe defaults
+        referral_count: typeof data.referral_count === 'number' ? data.referral_count : 0,
+        profile_views: typeof data.profile_views === 'number' ? data.profile_views : 0,
         
         // Extended properties
         bio: data.bio || '',
@@ -76,8 +76,8 @@ export const useUserProfile = (
         portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
         preferences: Array.isArray(data.preferences) ? data.preferences : [],
         boosted_until: data.boosted_until || null,
-        credits: data.credits !== undefined ? data.credits : 0,
-        affiliate_code: data.affiliate_code || data.referral_code || '',
+        credits: typeof data.credits === 'number' ? data.credits : 0,
+        affiliate_code: data.referral_code || '',
         referral_code: data.referral_code || '',
         accepts_bookings: !!data.accepts_bookings,
         booking_url: data.booking_url || '',
@@ -114,9 +114,8 @@ export const useUserProfile = (
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         // Add default values for required fields
-        referral_count: 0,
-        profile_views: 0,
         referral_code: `EMVI${Math.floor(1000 + Math.random() * 9000)}`,
+        credits: 0
       };
 
       const { error } = await supabase.from("users").insert(newProfile);
