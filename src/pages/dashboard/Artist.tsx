@@ -29,9 +29,11 @@ const ArtistDashboardPage = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <RoleDashboardLayout>
-          <ArtistDashboard />
-        </RoleDashboardLayout>
+        <div className="container px-4 mx-auto py-12">
+          <RoleDashboardLayout>
+            <ArtistDashboard />
+          </RoleDashboardLayout>
+        </div>
       </motion.div>
     </Layout>
   );

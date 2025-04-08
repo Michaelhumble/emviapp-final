@@ -29,9 +29,11 @@ const CustomerDashboardPage = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <RoleDashboardLayout>
-          <CustomerDashboard />
-        </RoleDashboardLayout>
+        <div className="container px-4 mx-auto py-12">
+          <RoleDashboardLayout>
+            <CustomerDashboard />
+          </RoleDashboardLayout>
+        </div>
       </motion.div>
     </Layout>
   );
