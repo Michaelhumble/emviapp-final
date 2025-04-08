@@ -26,13 +26,28 @@ export const useCanReview = (bookingId?: string) => {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.rpc("can_review_booking", {
-        booking_id: bookingId,
-        user_id: user.id
-      });
+      // Use a more type-safe approach for calling RPC functions
+      const { data, error } = await supabase
+        .from('bookings')
+        .select('*')
+        .eq('id', bookingId)
+        .eq('sender_id', user.id)
+        .eq('status', 'completed')
+        .single();
 
       if (error) throw error;
-      setCanReview(!!data);
+      
+      // Check if there's already a review for this booking
+      const { data: existingReview, error: reviewError } = await supabase
+        .from('reviews')
+        .select('id')
+        .eq('booking_id', bookingId)
+        .maybeSingle();
+        
+      if (reviewError) throw reviewError;
+      
+      // Can review if booking exists (from first query) and no review exists yet
+      setCanReview(!!data && !existingReview);
     } catch (error) {
       console.error("Error checking if user can review:", error);
       setCanReview(false);
