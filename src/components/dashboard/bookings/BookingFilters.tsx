@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { BookingFilters as BookingFiltersType, ServiceTypeFilter } from '@/hooks/useBookingFilters';
+import { BookingFilters as BookingFiltersType } from '@/hooks/useBookingFilters';
 import { useTranslation } from '@/hooks/useTranslation';
 import StatusFilter from './filters/StatusFilter';
 import DateFilter from './filters/DateFilter';
@@ -9,11 +9,12 @@ import ServiceTypeFilter from './filters/ServiceTypeFilter';
 import SearchFilter from './filters/SearchFilter';
 import ActiveFilterIndicator from './filters/ActiveFilterIndicator';
 import { useActiveFilterCount } from './filters/useActiveFilterCount';
+import { useBookingFilters } from '@/hooks/useBookingFilters';
 
 export interface BookingFiltersProps {
   onFilterChange?: (filters: BookingFiltersType) => void;
   initialFilters?: Partial<BookingFiltersType>;
-  serviceTypes?: ServiceTypeFilter[];
+  serviceTypes?: { id: string; label: string }[];
   className?: string;
 }
 
@@ -36,7 +37,8 @@ const BookingFilters: React.FC<BookingFiltersProps> = ({
     getStatusOptions,
     getDateFilterOptions,
     getClientTypeOptions,
-    getServiceTypeOptions
+    getServiceTypeOptions,
+    setServiceTypes
   } = useBookingFilters({
     onFilterChange,
     initialFilters: { ...initialFilters, serviceTypes }
@@ -49,7 +51,7 @@ const BookingFilters: React.FC<BookingFiltersProps> = ({
     if (serviceTypes.length > 0) {
       setServiceTypes(serviceTypes);
     }
-  }, [serviceTypes]);
+  }, [serviceTypes, setServiceTypes]);
   
   // Get active filter count
   const activeFilterCount = useActiveFilterCount(filters);
@@ -107,7 +109,3 @@ const BookingFilters: React.FC<BookingFiltersProps> = ({
 };
 
 export default BookingFilters;
-
-function setServiceTypes(serviceTypes: ServiceTypeFilter[]) {
-  // This is intentionally left blank as it will be provided by useBookingFilters
-}

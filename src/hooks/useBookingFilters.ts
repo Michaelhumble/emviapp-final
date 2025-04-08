@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { debounce } from 'lodash';
@@ -138,7 +139,7 @@ export const useBookingFilters = ({
     debouncedSearchChange(search);
   };
   
-  // Explicitly export the setServiceTypes function to fix the error
+  // Explicitly export the setServiceTypes function
   const setServiceTypes = (serviceTypes: ServiceTypeFilter[]) => {
     setFilters(prev => ({ ...prev, serviceTypes }));
   };

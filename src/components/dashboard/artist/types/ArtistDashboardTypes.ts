@@ -1,4 +1,3 @@
-
 // Extending the existing types file to make sure it has all necessary fields
 
 export interface Booking {
@@ -42,6 +41,7 @@ export interface BookingCounts {
   accepted: number;
   declined: number;
   completed: number;
+  upcoming: number; // Adding the missing 'upcoming' property
 }
 
 // Add PortfolioImage interface to fix the error
