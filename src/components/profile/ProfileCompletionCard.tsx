@@ -39,14 +39,14 @@ const ProfileCompletionCard = () => {
           english: 'Portfolio Uploaded', 
           vietnamese: 'Bộ sưu tập đã tải lên' 
         }),
-        completed: !!(userProfile.gallery && userProfile.gallery.length > 0)
+        completed: !!(userProfile.portfolio_urls && userProfile.portfolio_urls.length > 0)
       },
       {
         name: t({ 
           english: 'Services Added', 
           vietnamese: 'Dịch vụ đã thêm' 
         }),
-        completed: !!(userProfile.services && userProfile.services.length > 0)
+        completed: !!(userProfile.skills && userProfile.skills.length > 0)
       },
       {
         name: t({ 
