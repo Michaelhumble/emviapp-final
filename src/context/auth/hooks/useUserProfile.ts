@@ -45,7 +45,8 @@ export const useUserProfile = (
       const normalizedRole = normalizeUserRole(data.role);
       console.log("[useUserProfile] Normalized role:", normalizedRole);
       
-      // Map database fields to UserProfile - be explicit about each field
+      // Map database fields to UserProfile with proper type safety
+      // Using optional chaining and fallbacks for potentially missing fields
       const mappedProfile: UserProfile = {
         id: data.id,
         email: data.email || user.email || '',
@@ -55,32 +56,32 @@ export const useUserProfile = (
         created_at: data.created_at,
         updated_at: data.updated_at,
         
-        // Map additional fields with proper fallbacks
-        referral_count: data.referral_count || 0,
-        profile_views: data.profile_views || 0,
+        // Handle potentially missing fields with fallbacks
+        referral_count: data.referral_count !== undefined ? data.referral_count : 0,
+        profile_views: data.profile_views !== undefined ? data.profile_views : 0,
         
         // Extended properties
-        bio: data.bio,
-        specialty: data.specialty,
-        location: data.location,
-        instagram: data.instagram,
-        website: data.website,
-        phone: data.phone,
-        salon_name: data.salon_name,
-        company_name: data.company_name,
-        custom_role: data.custom_role,
-        contact_link: data.contact_link,
-        skills: data.skills || [],
-        skill_level: data.skill_level,
-        portfolio_urls: data.portfolio_urls || [],
-        preferences: data.preferences || [],
-        boosted_until: data.boosted_until,
-        credits: data.credits,
-        affiliate_code: data.affiliate_code,
-        referral_code: data.referral_code,
-        accepts_bookings: data.accepts_bookings,
-        booking_url: data.booking_url,
-        preferred_language: data.preferred_language,
+        bio: data.bio || '',
+        specialty: data.specialty || '',
+        location: data.location || '',
+        instagram: data.instagram || '',
+        website: data.website || '',
+        phone: data.phone || '',
+        salon_name: data.salon_name || '',
+        company_name: data.company_name || '',
+        custom_role: data.custom_role || '',
+        contact_link: data.contact_link || '',
+        skills: Array.isArray(data.skills) ? data.skills : [],
+        skill_level: data.skill_level || '',
+        portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
+        preferences: Array.isArray(data.preferences) ? data.preferences : [],
+        boosted_until: data.boosted_until || null,
+        credits: data.credits !== undefined ? data.credits : 0,
+        affiliate_code: data.affiliate_code || data.referral_code || '',
+        referral_code: data.referral_code || '',
+        accepts_bookings: !!data.accepts_bookings,
+        booking_url: data.booking_url || '',
+        preferred_language: data.preferred_language || '',
       };
 
       setUserProfile(mappedProfile);
@@ -112,6 +113,10 @@ export const useUserProfile = (
         role: normalizedRole || null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
+        // Add default values for required fields
+        referral_count: 0,
+        profile_views: 0,
+        referral_code: `EMVI${Math.floor(1000 + Math.random() * 9000)}`,
       };
 
       const { error } = await supabase.from("users").insert(newProfile);
