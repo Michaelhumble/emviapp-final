@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { User } from "@supabase/supabase-js";
 import { UserProfile, UserRole } from "../types";
 import { supabase } from "@/integrations/supabase/client";
-import { normalizeUserRole } from "@/utils/navigation";
+import { getUserRole, normalizeUserRole } from "@/utils/roleUtils";
 
 /**
  * Hook to handle user profile management with improved role handling
@@ -35,22 +35,29 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
       
       if (data) {
         console.log(`[Auth] Profile loaded:`, data);
-        setUserProfile(data as unknown as UserProfile);
         
-        // Extract and normalize role
-        const rawRole = data.role as string;
-        console.log(`[Auth] Raw role from database:`, rawRole);
+        // Get normalized role using our utility function
+        const role = await getUserRole(userId);
         
-        // Normalize the role
-        const normalizedRole = normalizeUserRole(rawRole);
-        console.log(`[Auth] Normalized role:`, normalizedRole);
+        // Create clean UserProfile object
+        const cleanProfile: UserProfile = {
+          id: data.id || userId,
+          email: data.email || '',
+          full_name: data.full_name || '',
+          avatar_url: data.avatar_url || '',
+          role: role,
+          created_at: data.created_at || new Date().toISOString(),
+          updated_at: data.updated_at || new Date().toISOString(),
+          referral_count: data.referral_count || 0,
+          profile_views: data.profile_views || 0
+        };
         
-        // Store the normalized role
-        setUserRole(normalizedRole);
+        setUserProfile(cleanProfile);
+        setUserRole(role);
         
         // Cache in localStorage for emergency fallback
-        if (normalizedRole) {
-          localStorage.setItem('emviapp_user_role', normalizedRole);
+        if (role) {
+          localStorage.setItem('emviapp_user_role', role);
         }
       } else {
         console.warn(`[Auth] No profile found for user ${userId}`);
@@ -94,17 +101,6 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
       localStorage.removeItem('emviapp_user_role');
     }
   }, [user, getUserProfile]);
-
-  // Emergency fallback - if for some reason the role isn't being set properly
-  useEffect(() => {
-    if (user && !userRole) {
-      const cachedRole = localStorage.getItem('emviapp_user_role') as UserRole | null;
-      if (cachedRole) {
-        console.warn('[Auth] Using cached role from localStorage:', cachedRole);
-        setUserRole(cachedRole);
-      }
-    }
-  }, [user, userRole]);
 
   return {
     userProfile,

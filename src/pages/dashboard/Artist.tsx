@@ -5,7 +5,6 @@ import { UserRole } from "@/context/auth/types";
 import { useEffect } from "react";
 import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import DashboardRouteProtection from "@/components/dashboard/DashboardRouteProtection";
 import NewArtistDashboard from "@/components/dashboard/artist/NewArtistDashboard";
 
@@ -20,16 +19,11 @@ const ArtistDashboardPage = () => {
     // Debug check to validate correct routing
     if (userRole) {
       console.log(`[Artist Dashboard] Current role: ${userRole}`);
-      
-      // If not artist role, log warning (DashboardRouteProtection will handle redirect)
-      if (userRole !== 'artist' && userRole !== 'nail technician/artist' && userRole !== 'renter') {
-        console.warn(`[Artist Dashboard] Non-artist role (${userRole}) accessed artist dashboard`);
-      }
     }
-  }, [userRole, navigate]);
+  }, [userRole]);
 
   // Define allowed roles for this dashboard - strictly enforce artist roles only
-  const allowedRoles: UserRole[] = ['artist', 'nail technician/artist', 'renter'];
+  const allowedRoles: UserRole[] = ['artist'];
 
   return (
     <Layout>

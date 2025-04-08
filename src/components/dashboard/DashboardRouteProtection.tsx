@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { UserRole } from "@/context/auth/types";
-import { hasRoleAccess, normalizeUserRole } from "@/utils/navigation";
+import { hasRoleAccess } from "@/utils/roleUtils";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCcw } from "lucide-react";
@@ -23,9 +23,9 @@ const DashboardRouteProtection = ({
   children,
   dashboardType
 }: DashboardRouteProtectionProps) => {
-  const { userRole, user, loading, refreshUserProfile, validateUserRole } = useAuth();
+  const { userRole, user, loading, refreshUserProfile } = useAuth();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [hadInitialRender, setHadInitialRender] = useState(false);
+  const [accessVerified, setAccessVerified] = useState(false);
   const navigate = useNavigate();
   
   // Function to force refresh user profile
@@ -34,12 +34,7 @@ const DashboardRouteProtection = ({
     console.log(`[${dashboardType}] Manually refreshing user profile...`);
     
     try {
-      // Check if we have validateUserRole (force validation function)
-      if (validateUserRole) {
-        await validateUserRole();
-      } else {
-        await refreshUserProfile();
-      }
+      await refreshUserProfile();
       toast.success("Profile refreshed successfully");
     } catch (error) {
       console.error(`[${dashboardType}] Error refreshing profile:`, error);
@@ -74,16 +69,6 @@ const DashboardRouteProtection = ({
       return;
     }
     
-    // Normalize role for consistent checking
-    const normalizedRole = normalizeUserRole(userRole);
-    console.log(`[${dashboardType}] Normalized role: ${normalizedRole}`);
-    
-    // ENHANCED: Added more detailed logging for role access check
-    console.log(`[${dashboardType}] Checking if user with role ${normalizedRole} can access dashboard for ${allowedRoles.join(', ')}`);
-    
-    // Set that we've had initial render with role
-    setHadInitialRender(true);
-    
     // Check if user has access to this dashboard - with strict enforcement
     const userHasAccess = hasRoleAccess(userRole, allowedRoles);
     
@@ -91,14 +76,15 @@ const DashboardRouteProtection = ({
       console.warn(`[${dashboardType}] User with role ${userRole} attempted unauthorized access`);
       toast.error(`Access denied: This dashboard is for ${allowedRoles.join(' or ')} accounts only`);
       
-      // ENHANCED: Use window.location for more reliable redirect on role mismatch
+      // Use window.location for more reliable redirect on role mismatch
       console.log(`[${dashboardType}] Redirecting to main dashboard due to unauthorized access`);
       window.location.href = "/dashboard"; 
       return;
     } else {
       console.log(`[${dashboardType}] Access granted to ${dashboardType} dashboard for role: ${userRole}`);
+      setAccessVerified(true);
     }
-  }, [user, userRole, loading, navigate, allowedRoles, dashboardType, hadInitialRender]);
+  }, [user, userRole, loading, navigate, allowedRoles, dashboardType]);
   
   // Show loading state while authentication is in progress
   if (loading) {
@@ -142,16 +128,18 @@ const DashboardRouteProtection = ({
     );
   }
   
-  // CRITICAL FIX: Added more explicit check to prevent unauthorized access and wrong dashboard rendering
-  // If not authorized or not logged in, return nothing (redirect happens in useEffect)
-  if (!user || (userRole && !hasRoleAccess(userRole, allowedRoles))) {
-    console.log(`[${dashboardType}] User is not authorized, preventing dashboard render`);
-    return null;
+  // If role has been verified and access is granted, show the dashboard
+  if (user && userRole && accessVerified) {
+    return <>{children}</>;
   }
   
-  // User is authenticated and authorized, show dashboard content
-  console.log(`[${dashboardType}] Rendering dashboard for ${userRole} role`);
-  return <>{children}</>;
+  // Default state - still verifying
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <Loader2 className="h-8 w-8 animate-spin text-purple-600 mb-4" />
+      <p className="text-gray-600">Verifying access to {dashboardType} dashboard...</p>
+    </div>
+  );
 };
 
 export default DashboardRouteProtection;
