@@ -23,7 +23,7 @@ const DashboardRouteProtection = ({
   children,
   dashboardType
 }: DashboardRouteProtectionProps) => {
-  const { userRole, user, loading, refreshUserProfile } = useAuth();
+  const { userRole, user, loading, refreshUserProfile, validateUserRole } = useAuth();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const navigate = useNavigate();
   
@@ -33,7 +33,12 @@ const DashboardRouteProtection = ({
     console.log(`[${dashboardType}] Manually refreshing user profile...`);
     
     try {
-      await refreshUserProfile();
+      // Check if we have validateUserRole (force validation function)
+      if (validateUserRole) {
+        await validateUserRole();
+      } else {
+        await refreshUserProfile();
+      }
       toast.success("Profile refreshed successfully");
     } catch (error) {
       console.error(`[${dashboardType}] Error refreshing profile:`, error);

@@ -68,18 +68,27 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
       localStorage.removeItem('emviapp_user_role');
       localStorage.removeItem('emviapp_new_user');
       localStorage.removeItem('emviapp_session');
+      localStorage.removeItem('supabase.auth.token');
       
       // Other app-specific storage items
       localStorage.removeItem('lastProfileRefresh');
       localStorage.removeItem('dashboardPreferences');
       
-      // Sign out from Supabase
-      const { error } = await supabase.auth.signOut();
+      // First reset all session data to force clear client-side state
+      await supabase.auth.setSession({ access_token: '', refresh_token: '' });
+      
+      // Then sign out from Supabase
+      const { error } = await supabase.auth.signOut({ scope: 'global' });
       
       if (error) throw error;
       
       console.log('[Auth] Sign out successful');
       toast.success("Successfully signed out");
+      
+      // Force reload the page to clear any remaining state
+      window.location.href = '/';
+      
+      return;
     } catch (error) {
       console.error("Error in signOut:", error);
       toast.error("Failed to sign out");
@@ -87,6 +96,8 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
       // Force reset session data even if Supabase signOut fails
       try {
         await supabase.auth.setSession({ access_token: '', refresh_token: '' });
+        // Force redirect to homepage
+        window.location.href = '/';
       } catch (e) {
         console.error("Failed to reset session:", e);
       }

@@ -1,3 +1,4 @@
+
 import { NavigateFunction } from "react-router-dom";
 import { UserRole } from "@/context/auth/types";
 import { toast } from "sonner";
@@ -10,7 +11,7 @@ export const normalizeUserRole = (role: string | null): UserRole | null => {
   if (!role) return null;
   
   // Convert role to lowercase for case-insensitive comparison
-  const normalizedRole = role.toLowerCase();
+  const normalizedRole = role.toLowerCase().trim();
   
   // Log the normalization process for debugging
   console.log(`[Role] Normalizing role: ${role} → ${normalizedRole}`);
@@ -22,6 +23,7 @@ export const normalizeUserRole = (role: string | null): UserRole | null => {
     case 'nail artist':
     case 'technician':
     case 'nail tech':
+    case 'artist':
       console.log('[Role] Normalized to: artist');
       return 'artist';
       
@@ -29,6 +31,7 @@ export const normalizeUserRole = (role: string | null): UserRole | null => {
     case 'salon owner':
     case 'salon business':
     case 'business owner':
+    case 'salon':
       console.log('[Role] Normalized to: salon');
       return 'salon';
       
@@ -50,12 +53,7 @@ export const normalizeUserRole = (role: string | null): UserRole | null => {
       console.log('[Role] Normalized to: customer');
       return 'customer';
       
-    // Default behavior - if the role is already one of our standard roles, return it
-    case 'artist':
-    case 'salon':
-    case 'customer':
     case 'freelancer':
-    case 'supplier':
     case 'other':
       return normalizedRole as UserRole;
       

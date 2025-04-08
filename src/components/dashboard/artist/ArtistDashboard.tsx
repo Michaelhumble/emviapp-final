@@ -15,7 +15,7 @@ import ArtistServicesSection from './ArtistServicesSection';
 import ArtistMetricsSection from './ArtistMetricsSection';
 import ArtistBoostTracker from './ArtistBoostTracker';
 import { useEffect } from 'react';
-import { UserProfile } from '@/context/auth/types';
+import { UserProfile, UserRole } from '@/context/auth/types';
 
 // Define proper types for ArtistDashboard components if they don't exist
 interface ArtistBoostTrackerProps {
@@ -72,7 +72,7 @@ const ArtistDashboard = () => {
     instagram: data?.instagram || '',
     website: data?.website || '',
     specialty: data?.specialty || '',
-    role: data?.role || null,
+    role: (data?.role as UserRole) || null,
     created_at: data?.created_at || '',
     updated_at: data?.updated_at || '',
     preferred_language: data?.preferred_language || '',
@@ -81,15 +81,15 @@ const ArtistDashboard = () => {
     company_name: data?.company_name || '',
     custom_role: data?.custom_role || '',
     contact_link: data?.contact_link || '',
-    skills: data?.skills || [],
+    skills: Array.isArray(data?.skills) ? data.skills : [],
     skill_level: data?.skill_level || '',
     profile_views: data?.profile_views || 0,
-    preferences: data?.preferences || [],
+    preferences: Array.isArray(data?.preferences) ? data.preferences : [],
     affiliate_code: data?.affiliate_code || '',
     referral_code: data?.referral_code || '',
     credits: data?.credits || 0,
     boosted_until: data?.boosted_until || null,
-    portfolio_urls: data?.portfolio_urls || [],
+    portfolio_urls: Array.isArray(data?.portfolio_urls) ? data.portfolio_urls : [],
     accepts_bookings: data?.accepts_bookings || false,
     booking_url: data?.booking_url || '',
   };
