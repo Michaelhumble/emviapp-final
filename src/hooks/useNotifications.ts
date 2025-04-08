@@ -43,8 +43,8 @@ export const useNotifications = () => {
         type: item.type as 'info' | 'warning' | 'success' | 'error',
         createdAt: item.created_at,
         isRead: item.is_read,
-        link: item.link,
-        metadata: item.metadata
+        link: item.link || undefined,
+        metadata: item.metadata as Record<string, any> || {}
       }));
       
       // Calculate unread count
@@ -136,7 +136,7 @@ export const useNotifications = () => {
             createdAt: payload.new.created_at,
             isRead: payload.new.is_read,
             link: payload.new.link,
-            metadata: payload.new.metadata
+            metadata: payload.new.metadata as Record<string, any> || {}
           };
           
           // Add to local state

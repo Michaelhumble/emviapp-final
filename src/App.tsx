@@ -7,6 +7,7 @@ import { AuthProvider } from "./context/auth";
 import { ProfileProvider } from "./context/profile";
 import { SubscriptionProvider } from "./context/subscription";
 import { NotificationProvider } from "./context/notification";
+import { BookingNotificationProvider } from "@/components/BookingNotificationProvider";
 
 // Import our components
 import LanguagePreference from "@/components/common/LanguagePreference";
@@ -29,9 +30,11 @@ const App = () => {
       <SubscriptionProvider>
         <ProfileProvider>
           <NotificationProvider>
+            <BookingNotificationProvider />
             <Outlet />
             <RouteLogger />
             <LanguagePreference />
+            <Toaster position="top-right" />
           </NotificationProvider>
         </ProfileProvider>
       </SubscriptionProvider>

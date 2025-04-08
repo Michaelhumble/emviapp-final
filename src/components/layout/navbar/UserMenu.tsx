@@ -27,10 +27,12 @@ import {
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { NotificationCenter } from "@/components/notifications/NotificationCenter";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export function UserMenu() {
   const { user, signOut, userProfile } = useAuth();
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
   
   const handleSignOut = async () => {
     try {
@@ -82,31 +84,46 @@ export function UserMenu() {
             <DropdownMenuItem asChild>
               <Link to="/dashboard" className="cursor-pointer w-full">
                 <LayoutDashboard className="mr-2 h-4 w-4" />
-                <span>Dashboard</span>
+                <span>{t({
+                  english: "Dashboard",
+                  vietnamese: "Bảng điều khiển"
+                })}</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link to="/profile" className="cursor-pointer w-full">
                 <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
+                <span>{t({
+                  english: "Profile",
+                  vietnamese: "Hồ sơ"
+                })}</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link to="/messages" className="cursor-pointer w-full">
                 <MessageSquare className="mr-2 h-4 w-4" />
-                <span>Messages</span>
+                <span>{t({
+                  english: "Messages",
+                  vietnamese: "Tin nhắn"
+                })}</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link to="/checkout" className="cursor-pointer w-full">
                 <CreditCard className="mr-2 h-4 w-4" />
-                <span>Credits</span>
+                <span>{t({
+                  english: "Credits",
+                  vietnamese: "Tín dụng"
+                })}</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link to="/settings" className="cursor-pointer w-full">
                 <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
+                <span>{t({
+                  english: "Settings",
+                  vietnamese: "Cài đặt"
+                })}</span>
               </Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>
@@ -114,13 +131,19 @@ export function UserMenu() {
           <DropdownMenuItem asChild>
             <Link to="/referrals" className="cursor-pointer w-full">
               <UserPlus className="mr-2 h-4 w-4" />
-              <span>Invite Friends</span>
+              <span>{t({
+                english: "Invite Friends",
+                vietnamese: "Mời bạn bè"
+              })}</span>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
             <LogOut className="mr-2 h-4 w-4" />
-            <span>Log out</span>
+            <span>{t({
+              english: "Log out",
+              vietnamese: "Đăng xuất"
+            })}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

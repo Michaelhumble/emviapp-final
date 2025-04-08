@@ -4,6 +4,8 @@ export interface Service {
   title: string;
   price: number;
   duration_minutes: number;
+  description?: string;
+  is_visible?: boolean;
 }
 
 export interface PortfolioImage {
