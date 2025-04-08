@@ -65,16 +65,23 @@ export const adaptUserProfile = (profile: AuthUserProfile | null): AppUserProfil
 /**
  * Maps role types between auth and application formats
  */
-function mapRoleType(role: UserRole | null): AppUserProfile['role'] {
+function mapRoleType(role: UserRole | string | null): AppUserProfile['role'] {
   if (!role) return 'customer';
   
+  // If it's already a string, normalize it
+  const roleString = typeof role === 'string' ? role.toLowerCase() : String(role).toLowerCase();
+  
   // Simple mapping of role types
-  switch (role) {
+  switch (roleString) {
     case 'artist':
     case 'nail technician/artist':
+    case 'nail technician':
+    case 'nail artist':
+    case 'technician':
     case 'renter':
       return 'artist';
     case 'salon_owner':
+    case 'salon owner':
     case 'salon':
     case 'owner':
       return 'salon';
@@ -83,6 +90,7 @@ function mapRoleType(role: UserRole | null): AppUserProfile['role'] {
     case 'beauty supplier':
       return 'supplier';
     case 'customer':
+    case 'client':
       return 'customer';
     case 'freelancer':
       return 'freelancer';

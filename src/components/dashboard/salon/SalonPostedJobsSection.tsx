@@ -8,6 +8,7 @@ import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { useTranslation } from "@/hooks/useTranslation";
+import { adaptUserProfile } from "@/utils/profileAdapter";
 
 interface Job {
   id: string;
@@ -20,7 +21,8 @@ interface Job {
 const SalonPostedJobsSection = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
+  const adaptedProfile = adaptUserProfile(userProfile);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -56,7 +58,7 @@ const SalonPostedJobsSection = () => {
   }, [user]);
   
   return (
-    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm mt-8">
+    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h2 className="text-lg font-medium text-gray-800">{t("Your Posted Jobs")}</h2>
@@ -83,7 +85,7 @@ const SalonPostedJobsSection = () => {
               <TableRow>
                 <TableHead>{t("Job Title")}</TableHead>
                 <TableHead className="hidden md:table-cell">{t("Location")}</TableHead>
-                <TableHead className="hidden md:table-cell">{t("Created")}</TableHead>
+                <TableHead className="hidden md:table-cell">{t("Posted")}</TableHead>
                 <TableHead>{t("Status")}</TableHead>
                 <TableHead>{t("Actions")}</TableHead>
               </TableRow>
@@ -117,7 +119,6 @@ const SalonPostedJobsSection = () => {
         <div className="text-center py-10 bg-gray-50 rounded-lg">
           <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-800 mb-2">{t("You haven't posted any jobs yet")}</h3>
-          <p className="text-gray-400 mb-1">{t("Bạn chưa đăng công việc nào.")}</p>
           <p className="text-gray-500 mb-4">{t("Post your first job to find nail technicians for your salon")}</p>
           <Button asChild>
             <Link to="/post/job">{t("Post Your First Job")}</Link>
