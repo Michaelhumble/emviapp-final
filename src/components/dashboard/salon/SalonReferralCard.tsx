@@ -1,12 +1,13 @@
 
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Users } from "lucide-react";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/context/auth";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useTranslation } from "@/hooks/useTranslation";
+import ReferralHeader from "./referral/ReferralHeader";
+import ReferralLink from "./referral/ReferralLink";
+import ReferralStats from "./referral/ReferralStats";
 
 const SalonReferralCard = () => {
   const { user, userProfile } = useAuth();
@@ -55,19 +56,9 @@ const SalonReferralCard = () => {
   const referralLink = `https://emviapp.com/join?ref=${referralCode}`;
   
   return (
-    <Card className="border-blue-100">
+    <Card className="border-blue-100" id="referral-card">
       <CardHeader>
-        {/* Vietnamese referral text for salons - making it more prominent */}
-        <div className="mb-3 py-2 px-3 bg-blue-50 rounded-md border border-blue-100">
-          <p className="text-blue-700 text-sm font-medium">
-            {t("Giới thiệu chủ tiệm khác để nhận thưởng từ Emvi.")} <span className="text-blue-500 text-xs block mt-1">{t("Invite other salon owners and earn Emvi rewards.")}</span>
-          </p>
-        </div>
-        
-        <CardTitle className="text-lg flex items-center">
-          <Users className="h-5 w-5 text-blue-500 mr-2" />
-          {t("Salon Referral Program")}
-        </CardTitle>
+        <ReferralHeader />
       </CardHeader>
       <CardContent>
         <p className="text-gray-600 mb-4">
@@ -75,34 +66,13 @@ const SalonReferralCard = () => {
         </p>
         
         <div className="space-y-4">
-          <div>
-            <p className="text-sm text-gray-500 mb-1">{t("Your Referral Link")}</p>
-            <div className="flex">
-              <input
-                type="text"
-                value={referralLink}
-                readOnly
-                className="flex-1 p-2 text-sm border rounded-l-md bg-gray-50"
-              />
-              <Button
-                size="sm"
-                onClick={handleCopyReferralCode}
-                className={`rounded-l-none ${copied ? 'bg-green-500' : ''}`}
-              >
-                {copied ? t("Copied!") : t("Copy")}
-              </Button>
-            </div>
-          </div>
+          <ReferralLink 
+            referralLink={referralLink}
+            onCopy={handleCopyReferralCode}
+            copied={copied}
+          />
           
-          <div className="flex justify-between items-center py-3 px-4 bg-blue-50 rounded-md">
-            <div>
-              <p className="text-sm font-medium text-blue-700">{t("Your Referrals")}</p>
-              <p className="text-xs text-blue-500">{t("Earn 20 credits per successful referral")}</p>
-            </div>
-            <div className="bg-white py-1 px-3 rounded-full text-blue-600 font-medium border border-blue-100">
-              {referralCount}
-            </div>
-          </div>
+          <ReferralStats referralCount={referralCount} />
         </div>
       </CardContent>
     </Card>
