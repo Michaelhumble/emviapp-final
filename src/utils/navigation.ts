@@ -1,31 +1,68 @@
-
 import { NavigateFunction } from "react-router-dom";
 import { UserRole } from "@/context/auth/types";
 import { toast } from "sonner";
 
 /**
  * Normalizes user roles to handle variations and aliases
- * IMPORTANT: This is the single source of truth for role normalization
+ * This is the single source of truth for role normalization
  */
-const normalizeRole = (role: UserRole | null): UserRole | null => {
+export const normalizeUserRole = (role: string | null): UserRole | null => {
   if (!role) return null;
   
   // Convert role to lowercase for case-insensitive comparison
-  const normalizedRole = role.toLowerCase() as UserRole;
+  const normalizedRole = role.toLowerCase();
+  
+  // Log the normalization process for debugging
+  console.log(`[Role] Normalizing role: ${role} → ${normalizedRole}`);
   
   // Map role variations to standard roles
   switch (normalizedRole) {
     case 'nail technician/artist':
+    case 'nail technician':
+    case 'nail artist':
+    case 'technician':
+    case 'nail tech':
+      console.log('[Role] Normalized to: artist');
       return 'artist';
+      
     case 'owner':
+    case 'salon owner':
+    case 'salon business':
+    case 'business owner':
+      console.log('[Role] Normalized to: salon');
       return 'salon';
+      
     case 'beauty supplier':
     case 'vendor':
+    case 'supplier':
+    case 'beauty vendor':
+      console.log('[Role] Normalized to: supplier');
       return 'supplier';
+      
     case 'renter':
-      return 'artist'; // Renters see artist dashboard
-    default:
+    case 'booth renter':
+      console.log('[Role] Normalized to: artist');
+      return 'artist';
+      
+    case 'client':
+    case 'customer':
+    case 'user':
+      console.log('[Role] Normalized to: customer');
+      return 'customer';
+      
+    // Default behavior - if the role is already one of our standard roles, return it
+    case 'artist':
+    case 'salon':
+    case 'customer':
+    case 'freelancer':
+    case 'supplier':
+    case 'other':
       return normalizedRole as UserRole;
+      
+    // Handle unknown roles
+    default:
+      console.warn(`[Role] Unknown role: ${role}, defaulting to 'customer'`);
+      return 'customer';
   }
 };
 
@@ -39,7 +76,7 @@ export const navigateToRoleDashboard = (
   console.log("[Dashboard Navigation] Original role:", userRole);
   
   // Normalize the role for consistent routing
-  const normalizedRole = normalizeRole(userRole);
+  const normalizedRole = normalizeUserRole(userRole as string);
   console.log("[Dashboard Navigation] Normalized role:", normalizedRole);
   
   if (!normalizedRole) {
@@ -84,9 +121,6 @@ export const navigateToRoleDashboard = (
 
 /**
  * Check if a user is allowed to view a specific route based on their role
- * @param userRole The user's role from auth context
- * @param allowedRoles Array of roles allowed to access the route
- * @returns Boolean indicating if the user has access
  */
 export const hasRoleAccess = (
   userRole: UserRole | null,
@@ -95,10 +129,16 @@ export const hasRoleAccess = (
   if (!userRole) return false;
   
   // Normalize the user's role
-  const normalizedRole = normalizeRole(userRole);
+  const normalizedRole = normalizeUserRole(userRole as string);
+  
+  // Log the access check for debugging
+  console.log(`[Role Access] Checking if ${normalizedRole} has access to route requiring: ${allowedRoles.join(', ')}`);
   
   // Check if normalized role is in allowed roles
-  return allowedRoles.includes(normalizedRole as UserRole);
+  const hasAccess = allowedRoles.includes(normalizedRole as UserRole);
+  console.log(`[Role Access] Access granted: ${hasAccess}`);
+  
+  return hasAccess;
 };
 
 /**
@@ -120,7 +160,7 @@ export const getPersonalizedGreeting = (
   }
   
   // Normalize role for consistent greetings
-  const normalizedRole = normalizeRole(role);
+  const normalizedRole = normalizeUserRole(role);
 
   switch (normalizedRole) {
     case 'artist':

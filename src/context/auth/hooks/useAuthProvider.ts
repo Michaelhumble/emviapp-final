@@ -3,6 +3,7 @@ import { AuthContextType } from "../types";
 import { useSession } from "./useSession";
 import { useUserProfile } from "./useUserProfile";
 import { useAuthMethods } from "./useAuthMethods";
+import { useCallback } from "react";
 
 /**
  * Custom hook to handle auth provider logic
@@ -32,6 +33,14 @@ export const useAuthProvider = () => {
     signOut 
   } = useAuthMethods(setLoading);
 
+  // Debug function to force validation of user role
+  const validateUserRole = useCallback(async () => {
+    console.log("[Auth Provider] Force validating user role");
+    if (user) {
+      await refreshUserProfile();
+    }
+  }, [user, refreshUserProfile]);
+
   // Compile context value
   const authContextType: AuthContextType = {
     session,
@@ -46,6 +55,7 @@ export const useAuthProvider = () => {
     signUp,
     signOut,
     refreshUserProfile,
+    validateUserRole, // Add new force validation method
   };
 
   return authContextType;

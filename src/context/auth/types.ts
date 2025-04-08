@@ -63,4 +63,5 @@ export interface AuthContextType {
   signUp: (email: string, password: string) => Promise<AuthResponse>;
   signOut: () => Promise<void>;
   refreshUserProfile: () => Promise<void>;
+  validateUserRole?: () => Promise<void>; // New optional method for force validation
 }
