@@ -6,6 +6,14 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import BookingNotificationsSection from '../notifications/BookingNotificationsSection';
+import ArtistReferralCenter from './ArtistReferralCenter';
+import ArtistPortfolioSection from './ArtistPortfolioSection';
+import ArtistBookingsPanel from './ArtistBookingsPanel';
+import ArtistDashboardHeader from './ArtistDashboardHeader';
+import ArtistToolkitSection from './ArtistToolkitSection';
+import ArtistServicesSection from './ArtistServicesSection';
+import ArtistMetricsSection from './ArtistMetricsSection';
+import ArtistBoostTracker from './ArtistBoostTracker';
 
 const ArtistDashboard = () => {
   const { user } = useAuth();
@@ -31,9 +39,38 @@ const ArtistDashboard = () => {
   if (error) return <ArtistErrorState error={error as Error} />;
 
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-6">
+    <div className="space-y-8">
+      {/* Artist-specific notification section */}
       <BookingNotificationsSection />
-      <ArtistDashboardContent artistData={data} />
+      
+      {/* Artist Dashboard Header */}
+      <ArtistDashboardHeader artistData={data} />
+      
+      {/* Artist Boost Tracker */}
+      <ArtistBoostTracker />
+      
+      {/* Primary content section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <ArtistDashboardContent artistData={data} />
+        </div>
+        <div className="lg:col-span-1 space-y-6">
+          <ArtistMetricsSection />
+          <ArtistReferralCenter />
+        </div>
+      </div>
+      
+      {/* Artist Portfolio Section */}
+      <ArtistPortfolioSection />
+      
+      {/* Artist Bookings Panel */}
+      <ArtistBookingsPanel />
+      
+      {/* Artist Services Section */}
+      <ArtistServicesSection />
+      
+      {/* Artist Toolkit */}
+      <ArtistToolkitSection />
     </div>
   );
 };

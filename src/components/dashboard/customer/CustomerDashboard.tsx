@@ -4,7 +4,6 @@ import { useAuth } from "@/context/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays, Heart, Star, Users, Award, Search, MapPin, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getPersonalizedGreeting } from "@/utils/navigation";
 import CustomerWelcomeBanner from "./CustomerWelcomeBanner";
 import CustomerDashboardHeader from "./CustomerDashboardHeader";
 import CustomerDashboardWidgets from "./CustomerDashboardWidgets";
@@ -13,10 +12,11 @@ import CustomerProfileSection from "./CustomerProfileSection";
 import CustomerMetricsSection from "./CustomerMetricsSection";
 import CustomerReferralCenter from "./CustomerReferralCenter";
 import InviteSalonSection from "./InviteSalonSection";
+import CustomerMotivationalQuote from "./CustomerMotivationalQuote";
+import CustomerDashboardStats from "./CustomerDashboardStats";
 
 const CustomerDashboard = () => {
   const { userProfile } = useAuth();
-  const userName = userProfile?.full_name || "Beauty Enthusiast";
   
   return (
     <div className="space-y-6">
@@ -28,6 +28,12 @@ const CustomerDashboard = () => {
       
       {/* Customer-specific Dashboard Widgets */}
       <CustomerDashboardWidgets />
+      
+      {/* Customer Dashboard Stats */}
+      <CustomerDashboardStats />
+      
+      {/* Customer Motivational Quote */}
+      <CustomerMotivationalQuote />
       
       {/* Bookings Section - Main component for customer */}
       <CustomerBookingsSection />
