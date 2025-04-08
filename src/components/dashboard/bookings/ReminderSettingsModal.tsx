@@ -21,6 +21,17 @@ interface ReminderSettingsModalProps {
   onClose: () => void;
 }
 
+// Define interfaces for notification settings
+interface NotificationSettings {
+  id?: string;
+  user_id: string;
+  email_reminders_enabled: boolean;
+  sms_reminders_enabled: boolean;
+  reminder_hours_before?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
 const ReminderSettingsModal = ({ isOpen, onClose }: ReminderSettingsModalProps) => {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -40,8 +51,9 @@ const ReminderSettingsModal = ({ isOpen, onClose }: ReminderSettingsModalProps) 
     
     setIsLoading(true);
     try {
+      // Use type assertion to tell TypeScript this is okay
       const { data, error } = await supabase
-        .from("notification_settings")
+        .from("notification_settings" as any)
         .select("email_reminders_enabled, sms_reminders_enabled")
         .eq("user_id", user.id)
         .maybeSingle();
@@ -49,8 +61,10 @@ const ReminderSettingsModal = ({ isOpen, onClose }: ReminderSettingsModalProps) 
       if (error) throw error;
       
       if (data) {
-        setEmailReminders(data.email_reminders_enabled !== false);
-        setSmsReminders(data.sms_reminders_enabled !== false);
+        // Type assertion to access the properties
+        const settings = data as any;
+        setEmailReminders(settings.email_reminders_enabled !== false);
+        setSmsReminders(settings.sms_reminders_enabled !== false);
       }
     } catch (error) {
       console.error("Error loading notification settings:", error);
@@ -64,13 +78,14 @@ const ReminderSettingsModal = ({ isOpen, onClose }: ReminderSettingsModalProps) 
     
     setIsSaving(true);
     try {
+      // Check if settings exist for this user
       const { data, error: selectError } = await supabase
-        .from("notification_settings")
+        .from("notification_settings" as any)
         .select("id")
         .eq("user_id", user.id)
         .maybeSingle();
       
-      const settings = {
+      const settings: NotificationSettings = {
         user_id: user.id,
         email_reminders_enabled: emailReminders,
         sms_reminders_enabled: smsReminders,
@@ -82,7 +97,7 @@ const ReminderSettingsModal = ({ isOpen, onClose }: ReminderSettingsModalProps) 
       if (data?.id) {
         // Update existing settings
         const { error: updateError } = await supabase
-          .from("notification_settings")
+          .from("notification_settings" as any)
           .update(settings)
           .eq("id", data.id);
         
@@ -90,7 +105,7 @@ const ReminderSettingsModal = ({ isOpen, onClose }: ReminderSettingsModalProps) 
       } else {
         // Insert new settings
         const { error: insertError } = await supabase
-          .from("notification_settings")
+          .from("notification_settings" as any)
           .insert(settings);
         
         error = insertError;
