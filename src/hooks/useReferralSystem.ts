@@ -52,8 +52,8 @@ export const useReferralSystem = () => {
         
         // Fetch referrals using type assertion since the schema might not be updated
         // in the TypeScript definitions yet
-        const { data: referralsData, error: referralsError } = await (supabase
-          .from('referrals' as any)
+        const { data: referralsData, error: referralsError } = await supabase
+          .from('referrals')
           .select(`
             id,
             referred_id,
@@ -65,7 +65,7 @@ export const useReferralSystem = () => {
             users!referred_id(full_name, email)
           `)
           .eq('referrer_id', user.id)
-          .order('created_at', { ascending: false }));
+          .order('created_at', { ascending: false });
           
         if (referralsError) {
           console.error('Error fetching referrals:', referralsError);
@@ -87,10 +87,23 @@ export const useReferralSystem = () => {
         
         setReferrals(processedReferrals);
         
+        // Get referral count
+        const { data: statsData, error: statsError } = await supabase
+          .rpc('get_user_referral_stats', { user_id: user.id });
+          
+        if (statsError) {
+          console.error('Error fetching referral stats:', statsError);
+          setLoading(false);
+          return;
+        }
+        
         // Calculate stats
         const total = processedReferrals.length;
         const completed = processedReferrals.filter(r => r.status === 'completed').length;
         const pending = total - completed;
+        
+        // Get actual referral count from RPC result
+        const referralCount = statsData?.referral_count || 0;
         
         // Define target milestone based on user role
         let targetMilestone = 5; // Default
@@ -101,9 +114,9 @@ export const useReferralSystem = () => {
         }
         
         // Calculate remaining referrals needed for next milestone
-        const currentTier = Math.floor(completed / targetMilestone);
-        const nextMilestoneIn = targetMilestone - (completed % targetMilestone);
-        const percentage = ((completed % targetMilestone) / targetMilestone) * 100;
+        const currentTier = Math.floor(referralCount / targetMilestone);
+        const nextMilestoneIn = targetMilestone - (referralCount % targetMilestone);
+        const percentage = ((referralCount % targetMilestone) / targetMilestone) * 100;
         
         setReferralStats({
           totalReferrals: total,
@@ -128,7 +141,7 @@ export const useReferralSystem = () => {
     
     fetchReferralData();
     
-    // Set up real-time subscription for referral updates with type safety
+    // Set up real-time subscription for referral updates
     const channel = supabase
       .channel('referral-updates')
       .on('postgres_changes', {
