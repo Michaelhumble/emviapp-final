@@ -39,7 +39,7 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
         // Get normalized role using our utility function
         const role = await getUserRole(userId);
         
-        // Create clean UserProfile object
+        // Create clean UserProfile object with all properties mapped for backward compatibility
         const cleanProfile: UserProfile = {
           id: data.id || userId,
           email: data.email || '',
@@ -48,8 +48,31 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
           role: role,
           created_at: data.created_at || new Date().toISOString(),
           updated_at: data.updated_at || new Date().toISOString(),
+          
+          // Map all extended properties for backward compatibility
+          bio: data.bio || '',
+          specialty: data.specialty || '',
+          location: data.location || '',
+          instagram: data.instagram || '',
+          website: data.website || '',
+          phone: data.phone || '',
+          salon_name: data.salon_name || '',
+          company_name: data.company_name || '',
+          custom_role: data.custom_role || '',
+          contact_link: data.contact_link || '',
+          skills: data.skills || [],
+          skill_level: data.skill_level || '',
+          profile_views: data.profile_views || 0,
           referral_count: data.referral_count || 0,
-          profile_views: data.profile_views || 0
+          portfolio_urls: data.portfolio_urls || [],
+          preferences: data.preferences || [],
+          boosted_until: data.boosted_until || null,
+          credits: data.credits || 0,
+          affiliate_code: data.referral_code || '',
+          referral_code: data.referral_code || '',
+          accepts_bookings: data.accepts_bookings || false,
+          booking_url: data.booking_url || '',
+          preferred_language: data.preferred_language || 'en',
         };
         
         setUserProfile(cleanProfile);

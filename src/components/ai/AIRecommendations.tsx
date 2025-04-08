@@ -2,29 +2,34 @@
 import { useAuth } from "@/context/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lightbulb } from "lucide-react";
+import { isRoleEquivalent } from "@/utils/roleUtils";
 
 const AIRecommendations = () => {
   const { userRole } = useAuth();
   
   // Role-specific recommendation title
   const getTitle = () => {
-    switch(userRole) {
-      case 'artist':
-        return "Jobs For You";
-      case 'salon':
-      case 'owner':
-        return "Top Artist Matches";
-      case 'customer':
-        return "For Your Next Appointment";
-      case 'freelancer':
-        return "Gig Opportunities";
-      case 'vendor':
-      case 'supplier':
-      case 'beauty supplier':
-        return "Business Leads";
-      default:
-        return "Personalized Recommendations";
+    if (isRoleEquivalent(userRole, ['artist'])) {
+      return "Jobs For You";
     }
+    
+    if (isRoleEquivalent(userRole, ['salon', 'owner', 'salon_owner'])) {
+      return "Top Artist Matches";
+    }
+    
+    if (isRoleEquivalent(userRole, ['customer'])) {
+      return "For Your Next Appointment";
+    }
+    
+    if (isRoleEquivalent(userRole, ['freelancer'])) {
+      return "Gig Opportunities";
+    }
+    
+    if (isRoleEquivalent(userRole, ['vendor', 'supplier', 'beauty supplier'])) {
+      return "Business Leads";
+    }
+    
+    return "Personalized Recommendations";
   };
   
   return (

@@ -10,7 +10,22 @@ export type UserRole =
   | 'supplier'
   | 'other';
 
-// Clean user profile data structure
+// Legacy role mappings
+export type LegacyUserRole = 
+  | 'customer' 
+  | 'artist' 
+  | 'salon_owner'
+  | 'salon'
+  | 'owner'
+  | 'freelancer'
+  | 'supplier'
+  | 'vendor'
+  | 'beauty supplier'
+  | 'nail technician/artist'
+  | 'renter'
+  | 'other';
+
+// Clean user profile data structure with extended properties for backward compatibility
 export interface UserProfile {
   id: string;
   email: string;
@@ -21,6 +36,29 @@ export interface UserProfile {
   updated_at: string;
   referral_count?: number;
   profile_views?: number;
+  
+  // Extended properties for backward compatibility
+  bio?: string;
+  specialty?: string;
+  location?: string;
+  instagram?: string;
+  website?: string;
+  phone?: string;
+  salon_name?: string;
+  company_name?: string;
+  custom_role?: string;
+  contact_link?: string;
+  skills?: string[];
+  skill_level?: string;
+  portfolio_urls?: string[];
+  preferences?: string[];
+  boosted_until?: string;
+  credits?: number;
+  affiliate_code?: string;
+  referral_code?: string;
+  accepts_bookings?: boolean;
+  booking_url?: string;
+  preferred_language?: string;
 }
 
 // Auth context interface

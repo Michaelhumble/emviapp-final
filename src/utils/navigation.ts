@@ -1,6 +1,6 @@
 
 import { NavigateFunction } from "react-router-dom";
-import { UserRole } from "@/context/auth/types";
+import { UserRole, LegacyUserRole } from "@/context/auth/types";
 import { toast } from "sonner";
 import { normalizeUserRole } from "./roleUtils";
 
@@ -87,3 +87,6 @@ export const getPersonalizedGreeting = (
       return `Hello, ${name}! Welcome to your dashboard.`;
   }
 };
+
+// Re-export normalizeUserRole for convenience
+export { normalizeUserRole };

@@ -5,7 +5,8 @@ import { Loader2, AlertTriangle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
-import { navigateToRoleDashboard, normalizeUserRole } from "@/utils/navigation";
+import { navigateToRoleDashboard } from "@/utils/navigation";
+import { normalizeUserRole } from "@/utils/roleUtils";
 
 /**
  * Dashboard page that handles loading user profile and redirecting to role-specific dashboards
@@ -48,21 +49,20 @@ const DashboardPage = () => {
         
         // After successful refresh, try direct navigation based on role
         if (userRole) {
-          const normalizedRole = normalizeUserRole(userRole);
-          console.log("[Dashboard] Direct navigation after refresh to:", normalizedRole);
+          console.log("[Dashboard] Direct navigation after refresh to:", userRole);
           
-          if (normalizedRole === 'artist') {
+          if (userRole === 'artist') {
             window.location.href = '/dashboard/artist';
             return;
-          } else if (normalizedRole === 'salon') {
+          } else if (userRole === 'salon_owner') {
             window.location.href = '/dashboard/salon';
             return;
-          } else if (normalizedRole === 'customer') {
+          } else if (userRole === 'customer') {
             window.location.href = '/dashboard/customer';
             return;
           } else {
             // Use force reload for other role types
-            navigateToRoleDashboard(navigate, normalizedRole);
+            navigateToRoleDashboard(navigate, userRole);
           }
         }
       } catch (error) {
@@ -108,18 +108,17 @@ const DashboardPage = () => {
       console.log("[Dashboard Router] User role detected:", userRole);
       
       // Added direct routing with window.location for more reliable redirection
-      const normalizedRole = normalizeUserRole(userRole);
-      console.log("[Dashboard Router] Normalized role for redirect:", normalizedRole);
+      console.log("[Dashboard Router] Direct routing to dashboard for:", userRole);
       
-      if (normalizedRole === 'artist') {
+      if (userRole === 'artist') {
         console.log("[Dashboard Router] Direct routing to artist dashboard");
         window.location.href = '/dashboard/artist';
         return;
-      } else if (normalizedRole === 'salon') {
+      } else if (userRole === 'salon_owner') {
         console.log("[Dashboard Router] Direct routing to salon dashboard");
         window.location.href = '/dashboard/salon';
         return;
-      } else if (normalizedRole === 'customer') {
+      } else if (userRole === 'customer') {
         console.log("[Dashboard Router] Direct routing to customer dashboard");
         window.location.href = '/dashboard/customer';
         return;

@@ -1,5 +1,5 @@
 
-import { UserRole } from "@/context/auth/types";
+import { UserRole, LegacyUserRole } from "@/context/auth/types";
 import { supabase } from "@/integrations/supabase/client";
 
 /**
@@ -119,4 +119,18 @@ export const hasRoleAccess = (
   console.log(`[Role Access] Access granted: ${hasAccess}`);
   
   return hasAccess;
+};
+
+/**
+ * Helper function for components to check role equivalence despite normalization
+ * This allows components to continue using legacy role checks
+ */
+export const isRoleEquivalent = (userRole: UserRole | null, legacyRoles: LegacyUserRole[]): boolean => {
+  if (!userRole) return false;
+  
+  // Map legacy roles to normalized roles
+  const normalizedRoles = legacyRoles.map(role => normalizeUserRole(role));
+  
+  // Return true if the normalized user role matches any of the normalized legacy roles
+  return normalizedRoles.includes(userRole);
 };

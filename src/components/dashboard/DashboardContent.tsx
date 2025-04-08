@@ -10,6 +10,7 @@ import SubscriptionStatusCard from "./SubscriptionStatusCard";
 import FreelancerDashboardWidgets from "./freelancer/FreelancerDashboardWidgets";
 import SupplierDashboardWidgets from "./supplier/SupplierDashboardWidgets";
 import OtherDashboardWidgets from "./other/OtherDashboardWidgets";
+import { isRoleEquivalent } from "@/utils/roleUtils";
 
 interface DashboardContentProps {
   className?: string;
@@ -18,17 +19,17 @@ interface DashboardContentProps {
 const DashboardContent = ({ className = "" }: DashboardContentProps) => {
   const { userRole, userProfile } = useAuth();
 
-  const isArtistOrTechnician = userRole === 'artist' || userRole === 'nail technician/artist' || userRole === 'renter';
+  const isArtistOrTechnician = isRoleEquivalent(userRole, ['artist', 'nail technician/artist', 'renter']);
   
-  const isFreelancer = userRole === 'freelancer';
+  const isFreelancer = isRoleEquivalent(userRole, ['freelancer']);
   
-  const isSalon = userRole === 'salon' || userRole === 'owner';
+  const isSalon = isRoleEquivalent(userRole, ['salon_owner', 'salon', 'owner']);
   
-  const isSupplier = userRole === 'vendor' || userRole === 'supplier' || userRole === 'beauty supplier';
+  const isSupplier = isRoleEquivalent(userRole, ['supplier', 'vendor', 'beauty supplier']);
   
-  const isCustomer = userRole === 'customer';
+  const isCustomer = isRoleEquivalent(userRole, ['customer']);
   
-  const isOther = userRole === 'other' || !userRole;
+  const isOther = isRoleEquivalent(userRole, ['other']) || !userRole;
   
   // Generate theme class based on user role
   const getRoleThemeClass = () => {
