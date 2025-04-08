@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Image, FileUpload } from "lucide-react";
+import { PlusCircle, Image, Upload } from "lucide-react";
 import { UserProfile } from "@/types/profile";
 import { motion } from "framer-motion";
 
@@ -85,7 +85,7 @@ const ArtistPortfolioSection = ({ profileData }: ArtistPortfolioSectionProps) =>
                 View All ({displayImages.length})
               </Button>
               <Button variant="outline" className="text-sm h-8" size="sm">
-                <FileUpload className="h-3.5 w-3.5 mr-1" />
+                <Upload className="h-3.5 w-3.5 mr-1" />
                 Update
               </Button>
             </div>

@@ -35,6 +35,8 @@ export interface UserProfile {
   accepts_bookings?: boolean;
   booking_url?: string;
   boosted_until?: string;
+  portfolio_urls?: string[]; // Added missing field
+  referral_code?: string; // Added missing field
 }
 
 export interface SocialLinks {

@@ -52,10 +52,10 @@ export const adaptUserProfile = (profile: AuthUserProfile | null): AppUserProfil
     booking_url: profile.booking_url || '',
     boosted_until: profile.boosted_until || '',
     
-    // Map portfolio_urls if available
+    // Portfolio URLs field (missing in original)
     portfolio_urls: profile.portfolio_urls || [],
     
-    // If there's a referral_code in the auth profile, map it
+    // Referral code field (missing in original)
     referral_code: profile.referral_code || ''
   };
   
