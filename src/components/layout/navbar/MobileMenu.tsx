@@ -1,122 +1,122 @@
 
-import { Link } from "react-router-dom";
-import { Home, Activity, LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger
-} from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+import React, { useState } from 'react';
+import { Menu, X } from 'lucide-react';
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 interface MobileMenuProps {
   user: any;
-  handleSignOut: () => void;
+  handleSignOut: () => Promise<void>;
 }
 
 const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
+  const [open, setOpen] = useState(false);
+
+  const closeMenu = () => setOpen(false);
+
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button
           variant="ghost"
-          className="md:hidden"
-          aria-label="Toggle mobile menu"
+          className="md:hidden p-2"
+          aria-label="Menu"
         >
-          <Menu className="h-4 w-4" />
+          <Menu className="h-6 w-6" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="bottom">
-        <div className="grid gap-4 py-4">
-          <Link
-            to="/"
-            className="text-gray-600 hover:text-primary transition-colors flex items-center gap-1 py-2"
-          >
-            <Home className="h-4 w-4" /> Home
-          </Link>
-          <Link
-            to="/jobs"
-            className="text-gray-600 hover:text-primary transition-colors block py-2"
-          >
-            Jobs
-          </Link>
-          <Link
-            to="/salons"
-            className="text-gray-600 hover:text-primary transition-colors block py-2"
-          >
-            Salons
-          </Link>
-          <Link
-            to="/analysis"
-            className="text-gray-600 hover:text-primary transition-colors flex items-center gap-1 py-2"
-          >
-            <Activity className="h-4 w-4" /> Analysis
-          </Link>
-          <div className="py-2">
-            <p className="font-medium mb-2">Community</p>
-            <div className="pl-4 flex flex-col gap-2">
-              <Link
-                to="/customers"
-                className="text-gray-600 hover:text-primary transition-colors block py-1"
-              >
-                Customers
+      <SheetContent className="flex flex-col">
+        <SheetHeader>
+          <SheetTitle>Menu</SheetTitle>
+        </SheetHeader>
+        
+        <div className="flex-1 py-6">
+          <div className="flex flex-col space-y-3">
+            <Link 
+              to="/" 
+              className="px-2 py-1.5 text-md hover:bg-gray-100 rounded"
+              onClick={closeMenu}
+            >
+              Home
+            </Link>
+            <Link 
+              to="/artists" 
+              className="px-2 py-1.5 text-md hover:bg-gray-100 rounded"
+              onClick={closeMenu}
+            >
+              Find Artists
+            </Link>
+            <Link 
+              to="/salon-owners" 
+              className="px-2 py-1.5 text-md hover:bg-gray-100 rounded"
+              onClick={closeMenu}
+            >
+              For Salon Owners
+            </Link>
+            <Link 
+              to="/jobs" 
+              className="px-2 py-1.5 text-md hover:bg-gray-100 rounded"
+              onClick={closeMenu}
+            >
+              Jobs
+            </Link>
+            
+            {user && (
+              <>
+                <Link 
+                  to="/dashboard" 
+                  className="px-2 py-1.5 text-md hover:bg-gray-100 rounded"
+                  onClick={closeMenu}
+                >
+                  Dashboard
+                </Link>
+                <Link 
+                  to="/profile" 
+                  className="px-2 py-1.5 text-md hover:bg-gray-100 rounded"
+                  onClick={closeMenu}
+                >
+                  Profile
+                </Link>
+                <Link 
+                  to="/referrals" 
+                  className="px-2 py-1.5 text-md hover:bg-gray-100 rounded"
+                  onClick={closeMenu}
+                >
+                  Referrals
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+        
+        <SheetFooter>
+          {user ? (
+            <Button 
+              variant="destructive" 
+              className="w-full" 
+              onClick={() => {
+                handleSignOut();
+                closeMenu();
+              }}
+            >
+              Sign Out
+            </Button>
+          ) : (
+            <div className="grid grid-cols-2 gap-2 w-full">
+              <Link to="/auth/signin" className="w-full" onClick={closeMenu}>
+                <Button variant="outline" className="w-full">
+                  Sign In
+                </Button>
               </Link>
-              <Link
-                to="/artists"
-                className="text-gray-600 hover:text-primary transition-colors block py-1"
-              >
-                Artists
-              </Link>
-              <Link
-                to="/salon-owners"
-                className="text-gray-600 hover:text-primary transition-colors block py-1"
-              >
-                Salon Owners
-              </Link>
-              <Link
-                to="/suppliers"
-                className="text-gray-600 hover:text-primary transition-colors block py-1"
-              >
-                Suppliers
+              <Link to="/auth/signup" className="w-full" onClick={closeMenu}>
+                <Button className="w-full">
+                  Sign Up
+                </Button>
               </Link>
             </div>
-          </div>
-          {user ? (
-            <>
-              <Link
-                to="/profile"
-                className="text-gray-600 hover:text-primary transition-colors block py-2"
-              >
-                Profile
-              </Link>
-              <Link
-                to="/dashboard"
-                className="text-gray-600 hover:text-primary transition-colors block py-2"
-              >
-                Dashboard
-              </Link>
-              <Link
-                to="/messages"
-                className="text-gray-600 hover:text-primary transition-colors block py-2"
-              >
-                Messages
-              </Link>
-              <Button variant="ghost" className="w-full justify-start" onClick={handleSignOut}>
-                <LogOut className="mr-2 h-4 w-4" />
-                Sign Out
-              </Button>
-            </>
-          ) : (
-            <>
-              <Link to="/sign-in">
-                <Button variant="ghost" className="w-full justify-start">Sign In</Button>
-              </Link>
-              <Link to="/sign-up">
-                <Button className="w-full justify-start">Sign Up</Button>
-              </Link>
-            </>
           )}
-        </div>
+        </SheetFooter>
       </SheetContent>
     </Sheet>
   );

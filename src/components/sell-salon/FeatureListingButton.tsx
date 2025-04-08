@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
@@ -35,7 +34,6 @@ export const FeatureListingButton = ({
   const { user } = useAuth();
   
   React.useEffect(() => {
-    // Check if user has enough credits when component mounts
     const checkUserCredits = async () => {
       if (!user) return;
       
@@ -52,7 +50,6 @@ export const FeatureListingButton = ({
       return;
     }
     
-    // Don't allow featuring a listing that's already featured
     if (isFeatured) {
       toast.info("This listing is already featured");
       return;
@@ -73,7 +70,6 @@ export const FeatureListingButton = ({
     setIsLoading(true);
     
     try {
-      // First check if the user has enough credits
       const deducted = await deductCredits({
         userId: user.id,
         amount: CREDIT_COSTS.FEATURED_LISTING,
@@ -87,12 +83,11 @@ export const FeatureListingButton = ({
         return;
       }
       
-      // Update the listing to featured
       const { error } = await supabase
         .from('salon_sales')
         .update({ is_featured: true } as any)
         .eq('id', salonSaleId)
-        .eq('user_id', user.id); // Ensure owner can only update their own listings
+        .eq('user_id', user.id);
       
       if (error) {
         console.error("Error featuring listing:", error);
@@ -100,7 +95,6 @@ export const FeatureListingButton = ({
         return;
       }
       
-      // Log the transaction in activity_log
       await supabase.from('activity_log').insert({
         user_id: user.id,
         activity_type: 'feature_listing',
@@ -127,7 +121,7 @@ export const FeatureListingButton = ({
   };
   
   if (!isOwner) {
-    return null; // Don't show the button if not the owner
+    return null;
   }
   
   if (isFeatured) {

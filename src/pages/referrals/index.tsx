@@ -45,8 +45,8 @@ const ReferralsPage = () => {
                   className="flex-1 p-2 border rounded-l-md"
                 />
                 <Button
-                  variant={copied ? "success" : "default"}
-                  className="rounded-l-none"
+                  variant={copied ? "outline" : "default"}
+                  className={`rounded-l-none ${copied ? "bg-green-500 text-white hover:bg-green-600" : ""}`}
                   onClick={handleCopy}
                 >
                   {copied ? (
