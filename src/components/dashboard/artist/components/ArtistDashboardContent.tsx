@@ -17,6 +17,7 @@ import { useArtistData } from "../context/ArtistDataContext";
 import ArtistGoalsProgress from "../ArtistGoalsProgress";
 import ArtistReferralRewards from "../ArtistReferralRewards";
 import ProfileCompletionTracker from "@/components/profile/ProfileCompletionTracker";
+import ServiceManagement from "../services/ServiceManagement";
 
 const ArtistDashboardContent = () => {
   const { artistProfile, firstName, userCredits, handleCopyReferralLink } = useArtistData();
@@ -47,45 +48,50 @@ const ArtistDashboardContent = () => {
         <ArtistPortfolio />
       </div>
       
-      {/* 7. Services Section */}
+      {/* 7. Services Management Section - NEW */}
+      <div className="mb-8">
+        <ServiceManagement />
+      </div>
+      
+      {/* 8. Services Section */}
       <div className="mb-8">
         <ArtistServices />
       </div>
       
-      {/* 8. Profile Header */}
+      {/* 9. Profile Header */}
       <ArtistDashboardProfile artistProfile={artistProfile} />
       
-      {/* 9. Performance Metrics */}
+      {/* 10. Performance Metrics */}
       <ArtistPerformanceMetrics profileViews={artistProfile?.profile_views || 245} />
       
-      {/* 10. Artist Toolkit */}
+      {/* 11. Artist Toolkit */}
       <ArtistToolkitSection onCopyReferralLink={handleCopyReferralLink} />
       
-      {/* 11. Dashboard Status Widgets */}
+      {/* 12. Dashboard Status Widgets */}
       <DashboardStatusWidgets />
       
-      {/* 12. Referral Center - IMPROVED */}
+      {/* 13. Referral Center - IMPROVED */}
       <ArtistReferralCenter />
       
-      {/* 13. Credits Redemption Section */}
+      {/* 14. Credits Redemption Section */}
       <section className="mb-8" id="credits-redemption">
         <h2 className="text-xl font-serif font-semibold mb-4">Redeem Emvi Credits</h2>
         <ArtistCreditsRedemption />
       </section>
       
-      {/* 14. Booking Calendar */}
+      {/* 15. Booking Calendar */}
       <section className="mb-8" id="calendar">
         <h2 className="text-xl font-serif font-semibold mb-4">Booking Calendar</h2>
         <ArtistBookingCalendar />
       </section>
       
-      {/* 15. Activity Feed */}
+      {/* 16. Activity Feed */}
       <section className="mb-8" id="activity-feed">
         <h2 className="text-xl font-serif font-semibold mb-4">Recent Activity</h2>
         <ArtistActivityFeed limit={5} />
       </section>
       
-      {/* 16. Upgrade Section */}
+      {/* 17. Upgrade Section */}
       <section id="upgrade">
         <h2 className="text-xl font-serif font-semibold mb-4">Unlock Premium Features</h2>
         <ArtistUpgradeSection />
