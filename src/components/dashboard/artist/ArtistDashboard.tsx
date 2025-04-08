@@ -17,6 +17,7 @@ import ArtistBoostTracker from './ArtistBoostTracker';
 import { useEffect } from 'react';
 import { UserProfile, UserRole } from '@/context/auth/types';
 import { Json } from '@/integrations/supabase/types';
+import ArtistWelcomeBanner from './ArtistWelcomeBanner';
 
 // Define proper types for ArtistDashboard components if they don't exist
 interface ArtistBoostTrackerProps {
@@ -78,13 +79,13 @@ const ArtistDashboard = () => {
     updated_at: data?.updated_at || '',
     preferred_language: data?.preferred_language || '',
     referral_count: data?.credits || 0,
-    salon_name: data?.salon_name || '',
-    company_name: data?.company_name || '',
+    salon_name: data?.salon_name || '', // Default empty string if not present
+    company_name: data?.company_name || '', // Default empty string if not present
     custom_role: data?.custom_role || '',
     contact_link: data?.contact_link || '',
-    skills: Array.isArray(data?.skills) ? data.skills : [],
-    skill_level: data?.skill_level || '',
-    profile_views: data?.profile_views || 0,
+    skills: data?.skills || [], // Default empty array if not present
+    skill_level: data?.skill_level || '', // Default empty string if not present
+    profile_views: data?.profile_views || 0, // Default to 0 if not present
     preferences: Array.isArray(data?.preferences) ? data.preferences : [],
     affiliate_code: data?.referral_code || '',
     referral_code: data?.referral_code || '',
@@ -112,14 +113,7 @@ const ArtistDashboard = () => {
   return (
     <div className="space-y-8">
       {/* Artist-specific welcome banner */}
-      <div className="bg-gradient-to-r from-purple-100 to-purple-50 border border-purple-200 rounded-2xl p-6 mb-8">
-        <h1 className="text-2xl md:text-3xl font-serif font-semibold mb-2">
-          Welcome back, {userProfileData.full_name || 'Artist'} – Let's grow your beauty career today.
-        </h1>
-        <p className="text-gray-600">
-          Manage your profile, bookings, and client communications all in one place.
-        </p>
-      </div>
+      <ArtistWelcomeBanner firstName={userProfileData.full_name?.split(' ')[0] || 'Artist'} />
       
       {/* Artist-specific notification section */}
       <BookingNotificationsSection />
