@@ -3,9 +3,6 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AuthProvider } from './context/auth';
-import { ProfileProvider } from './context/profile';
-import { SubscriptionProvider } from './context/subscription';
 import { Toaster } from '@/components/ui/sonner';
 
 // Import pages
@@ -59,6 +56,7 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
+    errorElement: <NotFound />,
     children: [
       {
         index: true,
@@ -211,18 +209,11 @@ const router = createBrowserRouter([
   },
 ]);
 
-// Define AppWithProviders component to properly nest providers
-const AppWithProviders = () => {
-  return (
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
       <Toaster />
     </QueryClientProvider>
-  );
-};
-
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <AppWithProviders />
   </React.StrictMode>,
 );

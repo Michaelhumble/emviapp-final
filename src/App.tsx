@@ -1,5 +1,5 @@
 
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { Toaster } from "sonner";
 import { useEffect } from "react";
 import { logRouteAccess } from "@/utils/routeChecker";
@@ -14,16 +14,16 @@ import LanguagePreference from "@/components/common/LanguagePreference";
 import RouteLogger from "@/components/common/RouteLogger";
 
 const App = () => {
-  const location = useLocation();
+  // Note: Removing useLocation hook that was causing the issue
+  // The RouteLogger component will handle route logging internally
   
   useEffect(() => {
-    // Log route changes
-    console.info("Route changed to:", location.pathname);
-    logRouteAccess(location.pathname);
+    // Log initial app load
+    console.info("App initialized");
     
-    // Scroll to top on route change
+    // Scroll to top on initial load
     window.scrollTo(0, 0);
-  }, [location.pathname]);
+  }, []);
   
   return (
     <AuthProvider>

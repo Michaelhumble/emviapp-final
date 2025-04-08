@@ -9,14 +9,18 @@ const RouteLogger = () => {
   const { user } = useAuth();
   
   useEffect(() => {
-    // Log route access for analytics
-    logRouteAccess(location.pathname);
-    
-    // Add additional info for logged in users
-    if (user) {
-      console.info(`User ${user.id} accessing route: ${location.pathname}`);
-    } else {
-      console.info(`Anonymous user accessing route: ${location.pathname}`);
+    try {
+      // Log route access for analytics
+      logRouteAccess(location.pathname);
+      
+      // Add additional info for logged in users
+      if (user) {
+        console.info(`User ${user.id} accessing route: ${location.pathname}`);
+      } else {
+        console.info(`Anonymous user accessing route: ${location.pathname}`);
+      }
+    } catch (error) {
+      console.error("Error in RouteLogger:", error);
     }
   }, [location.pathname, user]);
   
