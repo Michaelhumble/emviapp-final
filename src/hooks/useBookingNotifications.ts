@@ -90,7 +90,7 @@ export const useBookingNotifications = () => {
           const dateTime = formatBookingDate(booking.date_requested, booking.time_requested);
           
           // Notification for customer when they create a booking
-          toast({
+          toast.success({
             title: t({
               english: 'Booking Sent',
               vietnamese: 'Đã gửi lịch hẹn'
@@ -115,7 +115,7 @@ export const useBookingNotifications = () => {
           const dateTime = formatBookingDate(booking.date_requested, booking.time_requested);
           
           // Notification for artist when they receive a booking
-          toast({
+          toast.success({
             title: t({
               english: 'New Booking Request',
               vietnamese: 'Yêu cầu đặt lịch mới'
@@ -142,7 +142,7 @@ export const useBookingNotifications = () => {
           
           // Status change notifications for customer
           if (booking.status === 'accepted') {
-            toast({
+            toast.success({
               title: t({
                 english: 'Booking Confirmed',
                 vietnamese: 'Lịch hẹn đã được xác nhận'
@@ -153,7 +153,7 @@ export const useBookingNotifications = () => {
               })
             });
           } else if (booking.status === 'declined') {
-            toast({
+            toast.error({
               title: t({
                 english: 'Booking Declined',
                 vietnamese: 'Lịch hẹn bị từ chối'
@@ -164,7 +164,7 @@ export const useBookingNotifications = () => {
               })
             });
           } else if (booking.status === 'cancelled') {
-            toast({
+            toast.error({
               title: t({
                 english: 'Booking Cancelled',
                 vietnamese: 'Lịch hẹn đã bị hủy'
@@ -175,7 +175,7 @@ export const useBookingNotifications = () => {
               })
             });
           } else if (booking.status === 'completed') {
-            toast({
+            toast.success({
               title: t({
                 english: 'Booking Completed',
                 vietnamese: 'Lịch hẹn đã hoàn thành'
@@ -203,7 +203,7 @@ export const useBookingNotifications = () => {
           
           // Status change notifications for artist
           if (booking.status === 'cancelled') {
-            toast({
+            toast.error({
               title: t({
                 english: 'Booking Cancelled',
                 vietnamese: 'Lịch hẹn đã bị hủy'
@@ -214,7 +214,7 @@ export const useBookingNotifications = () => {
               })
             });
           } else if (booking.status === 'completed') {
-            toast({
+            toast.success({
               title: t({
                 english: 'Booking Completed',
                 vietnamese: 'Lịch hẹn đã hoàn thành'

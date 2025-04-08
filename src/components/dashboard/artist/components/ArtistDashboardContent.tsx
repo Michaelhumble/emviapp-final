@@ -1,113 +1,47 @@
 
-import ArtistWelcomeBanner from "../ArtistWelcomeBanner";
-import ArtistDashboardProfile from "../ArtistDashboardProfile";
-import ArtistPerformanceMetrics from "../ArtistPerformanceMetrics";
-import ArtistToolkitSection from "../ArtistToolkitSection";
-import DashboardStatusWidgets from "../DashboardStatusWidgets";
-import ArtistServicesGrid from "../ArtistServicesGrid";
-import ArtistReferralCenter from "../ArtistReferralCenter";
-import ArtistCreditsRedemption from "../ArtistCreditsRedemption";
-import ArtistBookingCalendar from "../ArtistBookingCalendar";
-import ArtistUpgradeSection from "../ArtistUpgradeSection";
-import ArtistMotivationalQuote from "../ArtistMotivationalQuote";
-import ArtistPortfolio from "../ArtistPortfolio";
-import ArtistServices from "../services/ArtistServices";
-import ArtistActivityFeed from "../activity/ArtistActivityFeed";
-import { useArtistData } from "../context/ArtistDataContext";
-import ArtistGoalsProgress from "../ArtistGoalsProgress";
-import ArtistReferralRewards from "../ArtistReferralRewards";
-import ProfileCompletionTracker from "@/components/profile/ProfileCompletionTracker";
-import ServiceManagement from "../services/ServiceManagement";
-import ArtistBookingSettings from "../ArtistBookingSettings";
-import ArtistBookingsPanel from "../ArtistBookingsPanel";
+import React from 'react';
 
-const ArtistDashboardContent = () => {
-  const { artistProfile, firstName, userCredits, handleCopyReferralLink } = useArtistData();
+export interface ArtistDashboardContentProps {
+  artistData: any;
+}
 
+const ArtistDashboardContent = ({ artistData }: ArtistDashboardContentProps) => {
   return (
-    <div className="container mx-auto px-4 pb-20">
-      {/* 1. Welcome Banner */}
-      <ArtistWelcomeBanner firstName={firstName} />
-      
-      {/* 2. Motivational Quote - Enhanced */}
-      <ArtistMotivationalQuote />
-      
-      {/* 3. Goals & Progress - NEW */}
-      <div className="mb-8">
-        <ArtistGoalsProgress artistProfile={artistProfile} />
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="col-span-1">
+          <h2 className="text-2xl font-semibold mb-4">Welcome, {artistData?.full_name || 'Artist'}</h2>
+          <p className="text-gray-600">
+            This is your dashboard where you can manage your profile, services, and bookings.
+          </p>
+        </div>
+        
+        <div className="col-span-2">
+          <div className="p-4 bg-white rounded-xl border border-gray-100 shadow-sm">
+            <h3 className="text-lg font-medium mb-2">Your Profile</h3>
+            <div className="flex items-center space-x-4">
+              <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center">
+                {artistData?.avatar_url ? (
+                  <img 
+                    src={artistData.avatar_url} 
+                    alt={artistData.full_name} 
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="text-purple-600 text-xl font-semibold">
+                    {artistData?.full_name?.[0] || 'A'}
+                  </span>
+                )}
+              </div>
+              <div>
+                <h4 className="font-medium">{artistData?.full_name}</h4>
+                <p className="text-sm text-gray-500">{artistData?.specialty || 'Nail Artist'}</p>
+                <p className="text-sm text-gray-500">{artistData?.location}</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      
-      {/* 4. Profile Completion Tracker - NEW */}
-      <div className="mb-8">
-        <ProfileCompletionTracker />
-      </div>
-      
-      {/* 5. Referral Rewards - NEW */}
-      <ArtistReferralRewards />
-      
-      {/* 6. Portfolio Section */}
-      <div className="mb-8">
-        <ArtistPortfolio />
-      </div>
-      
-      {/* 7. Services Management Section - NEW */}
-      <div className="mb-8">
-        <ServiceManagement />
-      </div>
-      
-      {/* 8. Booking Settings Section - NEW */}
-      <div className="mb-8">
-        <ArtistBookingSettings />
-      </div>
-      
-      {/* 9. My Bookings Section - NEW */}
-      <div className="mb-8">
-        <ArtistBookingsPanel />
-      </div>
-      
-      {/* 10. Services Section */}
-      <div className="mb-8">
-        <ArtistServices />
-      </div>
-      
-      {/* 11. Profile Header */}
-      <ArtistDashboardProfile artistProfile={artistProfile} />
-      
-      {/* 12. Performance Metrics */}
-      <ArtistPerformanceMetrics profileViews={artistProfile?.profile_views || 245} />
-      
-      {/* 13. Artist Toolkit */}
-      <ArtistToolkitSection onCopyReferralLink={handleCopyReferralLink} />
-      
-      {/* 14. Dashboard Status Widgets */}
-      <DashboardStatusWidgets />
-      
-      {/* 15. Referral Center - IMPROVED */}
-      <ArtistReferralCenter />
-      
-      {/* 16. Credits Redemption Section */}
-      <section className="mb-8" id="credits-redemption">
-        <h2 className="text-xl font-serif font-semibold mb-4">Redeem Emvi Credits</h2>
-        <ArtistCreditsRedemption />
-      </section>
-      
-      {/* 17. Booking Calendar */}
-      <section className="mb-8" id="calendar">
-        <h2 className="text-xl font-serif font-semibold mb-4">Booking Calendar</h2>
-        <ArtistBookingCalendar />
-      </section>
-      
-      {/* 18. Activity Feed */}
-      <section className="mb-8" id="activity-feed">
-        <h2 className="text-xl font-serif font-semibold mb-4">Recent Activity</h2>
-        <ArtistActivityFeed limit={5} />
-      </section>
-      
-      {/* 19. Upgrade Section */}
-      <section id="upgrade">
-        <h2 className="text-xl font-serif font-semibold mb-4">Unlock Premium Features</h2>
-        <ArtistUpgradeSection />
-      </section>
     </div>
   );
 };
