@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -171,7 +170,7 @@ export const supportArtist = async (
   }
 };
 
-// Function to get referral stats for a user
+// New function to get referral stats for a user
 export const getReferralStats = async (userId: string) => {
   if (!userId) return null;
   
@@ -297,20 +296,20 @@ export const approveCreditEarning = async (earningId: string): Promise<boolean> 
       .eq('id', earningId)
       .single();
       
-    if (fetchError) {
+    if (fetchError || !earningData) {
       console.error("Error fetching credit earning:", fetchError);
       return false;
     }
     
     // Ensure earning data is valid and has required properties
-    if (!earningData || typeof earningData !== 'object') {
+    if (typeof earningData !== 'object') {
       console.error("Invalid earning data structure:", earningData);
       return false;
     }
     
-    // Use nullish coalescing for safe property access
-    const userId = earningData && 'user_id' in earningData ? earningData.user_id : '';
-    const amount = earningData && 'amount' in earningData ? earningData.amount : 0;
+    // Use optional chaining and nullish coalescing for safe property access
+    const userId = earningData?.user_id ?? '';
+    const amount = earningData?.amount ?? 0;
     
     if (!userId) {
       console.error("No user ID in earning data");

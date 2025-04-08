@@ -77,7 +77,7 @@ const Hero = () => {
   }, [randomizedImages.length]);
 
   return (
-    <div className="relative pt-24 pb-28 overflow-hidden max-w-full">
+    <div className="relative pt-24 pb-28 overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#FDFDFD] to-[#F6F6F6] z-0"></div>
       
@@ -85,7 +85,7 @@ const Hero = () => {
       <div className="absolute inset-0 md:m-4 backdrop-blur-[2px] bg-white/5 border border-white/40 rounded-lg shadow-lg z-10"></div>
       
       {/* Image carousel placed in front of glass background */}
-      <div className="absolute inset-0 w-full h-full overflow-hidden z-20 max-h-[80vh] rounded-2xl md:m-4">
+      <div className="absolute inset-0 w-full h-full overflow-hidden z-20">
         <HeroCarousel images={randomizedImages} activeIndex={activeIndex} isMobile={isMobile} />
       </div>
 

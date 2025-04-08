@@ -8,9 +8,6 @@ import { ProfileProvider } from './context/profile';
 import { SubscriptionProvider } from './context/subscription';
 import { Toaster } from '@/components/ui/sonner';
 
-// Import styles
-import './index.css';
-
 // Import pages
 import App from './App';
 import Index from '@/pages/Index';
@@ -44,12 +41,15 @@ import ArtistPublicProfile from '@/pages/u/ArtistPublicProfile';
 import PostJob from '@/pages/post/PostJob';
 import PostingIndex from '@/pages/posting/Index';
 import SalonPost from '@/pages/posting/SalonPost';
+// Import new salon sale pages
 import SellSalonIndex from '@/pages/sell-salon/index';
 import NewSalonSalePage from '@/pages/sell-salon/new';
 import SalonSaleDetail from '@/pages/sell-salon/[id]';
+// Import Artist Directory page
 import ArtistDirectory from '@/pages/explore/artists';
-import CommandCenter from '@/pages/admin/CommandCenter';
-import Welcome from '@/pages/Welcome';
+
+// Import styles
+import './index.css';
 
 // Create query client
 const queryClient = new QueryClient();
@@ -63,10 +63,6 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Index />
-      },
-      {
-        path: 'welcome',
-        element: <Welcome />
       },
       {
         path: 'jobs',
@@ -184,6 +180,7 @@ const router = createBrowserRouter([
         path: 'posting/salon',
         element: <SalonPost />
       },
+      // New routes for salon sales
       {
         path: 'sell-salon',
         element: <SellSalonIndex />
@@ -196,13 +193,10 @@ const router = createBrowserRouter([
         path: 'sell-salon/:id',
         element: <SalonSaleDetail />
       },
+      // New route for Artist Directory
       {
         path: 'explore/artists',
         element: <ArtistDirectory />
-      },
-      {
-        path: 'admin/command-center',
-        element: <CommandCenter />
       },
       {
         path: '*',

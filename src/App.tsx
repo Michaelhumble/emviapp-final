@@ -1,5 +1,6 @@
 
 import { Outlet, useLocation } from "react-router-dom";
+import { Toaster } from "sonner";
 import { useEffect } from "react";
 import { logRouteAccess } from "@/utils/routeChecker";
 import { AuthProvider } from "./context/auth";
@@ -26,11 +27,9 @@ const App = () => {
     <AuthProvider>
       <SubscriptionProvider>
         <ProfileProvider>
-          <div className="flex flex-col min-h-screen overflow-hidden">
-            <Outlet />
-            <RouteLogger />
-            <LanguagePreference />
-          </div>
+          <Outlet />
+          <RouteLogger />
+          <LanguagePreference />
         </ProfileProvider>
       </SubscriptionProvider>
     </AuthProvider>
