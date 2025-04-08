@@ -5,6 +5,7 @@ import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { UserRole } from "@/context/auth/types";
+import { isRoleEquivalent } from "@/utils/roleUtils";
 
 export const useRoleSignUp = () => {
   const [email, setEmail] = useState("");
@@ -87,28 +88,17 @@ export const useRoleSignUp = () => {
 
 // Helper function to redirect based on role
 const redirectBasedOnRole = (role: UserRole, navigate: any) => {
-  switch (role) {
-    case 'artist':
-    case 'nail technician/artist':
-      navigate('/dashboard/artist');
-      break;
-    case 'salon':
-    case 'owner':
-      navigate('/dashboard/salon');
-      break;
-    case 'customer':
-      navigate('/dashboard/customer');
-      break;
-    case 'supplier':
-    case 'vendor':
-    case 'beauty supplier':
-      navigate('/dashboard/supplier');
-      break;
-    case 'freelancer':
-      navigate('/dashboard/freelancer');
-      break;
-    case 'other':
-    default:
-      navigate('/dashboard/other');
+  if (isRoleEquivalent(role, ['artist', 'nail technician/artist'])) {
+    navigate('/dashboard/artist');
+  } else if (isRoleEquivalent(role, ['salon_owner', 'salon', 'owner'])) {
+    navigate('/dashboard/salon');
+  } else if (role === 'customer') {
+    navigate('/dashboard/customer');
+  } else if (isRoleEquivalent(role, ['supplier', 'vendor', 'beauty supplier'])) {
+    navigate('/dashboard/supplier');
+  } else if (role === 'freelancer') {
+    navigate('/dashboard/freelancer');
+  } else {
+    navigate('/dashboard/other');
   }
 };

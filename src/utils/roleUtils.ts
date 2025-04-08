@@ -59,6 +59,20 @@ export const normalizeUserRole = (role: string | null): UserRole | null => {
 };
 
 /**
+ * Helper function for components to check role equivalence despite normalization
+ * This allows components to continue using legacy role checks
+ */
+export const isRoleEquivalent = (userRole: UserRole | null, legacyRoles: LegacyUserRole[]): boolean => {
+  if (!userRole) return false;
+  
+  // For each legacy role, normalize it and check if it matches the user's normalized role
+  return legacyRoles.some(legacyRole => {
+    const normalizedLegacyRole = normalizeUserRole(legacyRole);
+    return normalizedLegacyRole === userRole;
+  });
+};
+
+/**
  * Retrieves user role directly from Supabase
  * @param userId The user ID to get role for
  * @returns Promise containing the normalized UserRole or null
@@ -121,16 +135,5 @@ export const hasRoleAccess = (
   return hasAccess;
 };
 
-/**
- * Helper function for components to check role equivalence despite normalization
- * This allows components to continue using legacy role checks
- */
-export const isRoleEquivalent = (userRole: UserRole | null, legacyRoles: LegacyUserRole[]): boolean => {
-  if (!userRole) return false;
-  
-  // Map legacy roles to normalized roles
-  const normalizedRoles = legacyRoles.map(role => normalizeUserRole(role));
-  
-  // Return true if the normalized user role matches any of the normalized legacy roles
-  return normalizedRoles.includes(userRole);
-};
+// Make sure to export all functions
+export { UserRole, LegacyUserRole };

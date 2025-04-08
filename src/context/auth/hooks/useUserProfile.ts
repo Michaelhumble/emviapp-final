@@ -1,133 +1,151 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { User } from "@supabase/supabase-js";
-import { UserProfile, UserRole } from "../types";
 import { supabase } from "@/integrations/supabase/client";
-import { getUserRole, normalizeUserRole } from "@/utils/roleUtils";
+import { UserProfile, UserRole } from "../types";
+import { normalizeUserRole } from "@/utils/roleUtils";
 
-/**
- * Hook to handle user profile management with improved role handling
- */
-export const useUserProfile = (user: User | null, setLoading: (loading: boolean) => void) => {
+export const useUserProfile = (
+  user: User | null,
+  setLoading: (loading: boolean) => void
+) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
-  const [fetching, setFetching] = useState(false);
 
-  // Function to fetch user profile with improved error handling and debugging
-  const getUserProfile = useCallback(async (userId: string) => {
-    if (fetching) return; // Prevent concurrent fetches
-    
+  // Fetch user profile from database
+  const fetchUserProfile = useCallback(async () => {
+    if (!user) {
+      setUserProfile(null);
+      setUserRole(null);
+      return;
+    }
+
     try {
-      console.log(`[Auth] Fetching profile for user: ${userId}`);
-      setFetching(true);
       setLoading(true);
       
       const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
-      
+        .from("users")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
       if (error) {
-        console.error("[Auth] Error fetching profile:", error);
-        throw error;
+        console.error("Error fetching user profile:", error);
+        return null;
       }
+
+      if (!data) {
+        console.log("No user profile found, creating one");
+        // Create a new profile
+        await createUserProfile(user);
+        return;
+      }
+
+      // Normalize the role
+      const normalizedRole = normalizeUserRole(data.role);
+      console.log("[useUserProfile] Normalized role:", normalizedRole);
       
-      if (data) {
-        console.log(`[Auth] Profile loaded:`, data);
+      // Map database fields to UserProfile
+      const mappedProfile: UserProfile = {
+        id: data.id,
+        email: data.email || user.email || '',
+        full_name: data.full_name || '',
+        avatar_url: data.avatar_url,
+        role: normalizedRole,
+        created_at: data.created_at,
+        updated_at: data.updated_at,
         
-        // Get normalized role using our utility function
-        const role = await getUserRole(userId);
+        // Map additional fields with proper fallbacks
+        referral_count: data.referral_count || data.referral_code ? 0 : undefined,
+        profile_views: data.profile_views || 0,
         
-        // Create clean UserProfile object with all properties mapped for backward compatibility
-        const cleanProfile: UserProfile = {
-          id: data.id || userId,
-          email: data.email || '',
-          full_name: data.full_name || '',
-          avatar_url: data.avatar_url || '',
-          role: role,
-          created_at: data.created_at || new Date().toISOString(),
-          updated_at: data.updated_at || new Date().toISOString(),
-          
-          // Map all extended properties for backward compatibility
-          bio: data.bio || '',
-          specialty: data.specialty || '',
-          location: data.location || '',
-          instagram: data.instagram || '',
-          website: data.website || '',
-          phone: data.phone || '',
-          salon_name: data.salon_name || '',
-          company_name: data.company_name || '',
-          custom_role: data.custom_role || '',
-          contact_link: data.contact_link || '',
-          skills: data.skills || [],
-          skill_level: data.skill_level || '',
-          profile_views: data.profile_views || 0,
-          referral_count: data.referral_count || 0,
-          portfolio_urls: data.portfolio_urls || [],
-          preferences: data.preferences || [],
-          boosted_until: data.boosted_until || null,
-          credits: data.credits || 0,
-          affiliate_code: data.referral_code || '',
-          referral_code: data.referral_code || '',
-          accepts_bookings: data.accepts_bookings || false,
-          booking_url: data.booking_url || '',
-          preferred_language: data.preferred_language || 'en',
-        };
-        
-        setUserProfile(cleanProfile);
-        setUserRole(role);
-        
-        // Cache in localStorage for emergency fallback
-        if (role) {
-          localStorage.setItem('emviapp_user_role', role);
-        }
-      } else {
-        console.warn(`[Auth] No profile found for user ${userId}`);
-        setUserProfile(null);
-        setUserRole(null);
-        localStorage.removeItem('emviapp_user_role');
-      }
-    } catch (err) {
-      console.error("[Auth] Error in getUserProfile:", err);
-      setUserProfile(null);
-      setUserRole(null);
+        // Extended properties
+        salon_name: data.salon_name,
+        company_name: data.company_name,
+        bio: data.bio,
+        specialty: data.specialty,
+        location: data.location,
+        instagram: data.instagram,
+        website: data.website,
+        phone: data.phone,
+        custom_role: data.custom_role,
+        contact_link: data.contact_link,
+        skills: data.skills || [],
+        skill_level: data.skill_level,
+        portfolio_urls: data.portfolio_urls || [],
+        preferences: data.preferences || [],
+        boosted_until: data.boosted_until,
+        credits: data.credits,
+        affiliate_code: data.affiliate_code,
+        referral_code: data.referral_code,
+        accepts_bookings: data.accepts_bookings,
+        booking_url: data.booking_url,
+        preferred_language: data.preferred_language,
+      };
+
+      setUserProfile(mappedProfile);
+      setUserRole(normalizedRole);
+      
+      return mappedProfile;
+      
+    } catch (error) {
+      console.error("Error in fetchUserProfile:", error);
+      return null;
     } finally {
       setLoading(false);
-      setFetching(false);
     }
-  }, [setLoading, fetching]);
+  }, [user, setLoading]);
 
-  // Refresh user profile - exposed function for manual refresh
+  // Create a new user profile
+  const createUserProfile = async (user: User) => {
+    try {
+      // Extract role from user metadata if available
+      const userMetadata = user.user_metadata;
+      const roleFromMetadata = userMetadata?.user_type;
+      
+      const normalizedRole = normalizeUserRole(roleFromMetadata || null);
+      
+      const newProfile = {
+        id: user.id,
+        email: user.email,
+        full_name: userMetadata?.full_name || "",
+        role: normalizedRole || null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      const { error } = await supabase.from("users").insert(newProfile);
+
+      if (error) {
+        console.error("Error creating user profile:", error);
+        return;
+      }
+
+      // Set the new profile
+      setUserProfile(newProfile as UserProfile);
+      setUserRole(normalizedRole);
+      
+    } catch (error) {
+      console.error("Error in createUserProfile:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Refresh user profile on demand
   const refreshUserProfile = useCallback(async () => {
-    if (user) {
-      console.log(`[Auth] Manual profile refresh requested for: ${user.id}`);
-      await getUserProfile(user.id);
-    } else {
-      console.warn('[Auth] Cannot refresh profile: No authenticated user');
-    }
-  }, [user, getUserProfile]);
+    return fetchUserProfile();
+  }, [fetchUserProfile]);
 
-  // Fetch user profile when user changes
+  // Fetch user profile on mount and when user changes
   useEffect(() => {
     if (user) {
-      console.log(`[Auth] User changed, fetching profile for: ${user.id}`);
-      // Use setTimeout to avoid potential deadlocks with Supabase client
-      setTimeout(() => {
-        getUserProfile(user.id);
-      }, 0);
+      fetchUserProfile();
     } else {
-      // Clear user profile and role when logged out
-      console.log(`[Auth] User logged out or no user, clearing profile data`);
       setUserProfile(null);
       setUserRole(null);
-      localStorage.removeItem('emviapp_user_role');
     }
-  }, [user, getUserProfile]);
+  }, [user, fetchUserProfile]);
 
-  return {
-    userProfile,
-    userRole,
-    refreshUserProfile
-  };
+  return { userProfile, userRole, refreshUserProfile };
 };

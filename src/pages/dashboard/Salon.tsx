@@ -1,83 +1,75 @@
 
-import { useEffect } from "react";
-import Layout from "@/components/layout/Layout";
-import { motion } from "framer-motion";
-import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
-import DashboardRouteProtection from "@/components/dashboard/DashboardRouteProtection";
-import { UserRole } from "@/context/auth/types";
-import SalonDashboardBanner from "@/components/dashboard/salon/SalonDashboardBanner";
-import SalonQuickStats from "@/components/dashboard/salon/SalonQuickStats";
-import SalonReferralCard from "@/components/dashboard/salon/SalonReferralCard";
-import SalonDashboardActionButtons from "@/components/dashboard/salon/SalonDashboardActionButtons";
-import SalonCreditStatus from "@/components/dashboard/salon/SalonCreditStatus";
-import SalonPostedJobsSection from "@/components/dashboard/salon/SalonPostedJobsSection";
-import SalonBoostStatus from "@/components/dashboard/salon/SalonBoostStatus";
-import SalonCreditPromotion from "@/components/dashboard/salon/SalonCreditPromotion";
-import TopLocalArtists from "@/components/dashboard/salon/TopLocalArtists";
-import { useAuth } from "@/context/auth";
+// Get the first few lines to extract imports
+import { useEffect } from 'react';
+import { useAuth } from '@/context/auth';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
+import Layout from '@/components/layout/Layout';
+import DashboardBreadcrumb from '@/components/dashboard/DashboardBreadcrumb';
+import { Loader2 } from 'lucide-react';
+import SalonOwnerDashboardContent from '@/components/dashboard/salon/SalonOwnerDashboardContent';
+import { isRoleEquivalent } from '@/utils/roleUtils';
 
 const SalonDashboard = () => {
-  const { userProfile } = useAuth();
-  
+  const { userProfile, userRole, loading } = useAuth();
+  const navigate = useNavigate();
+
+  // Protect this route for salon owners only
   useEffect(() => {
-    document.title = "Salon Dashboard | EmviApp";
-    console.log("[Salon Dashboard] Component mounted");
-  }, []);
-  
-  // Define allowed roles for this dashboard
-  const allowedRoles: UserRole[] = ['salon', 'owner'];
-  
+    if (!loading && !isRoleEquivalent(userRole, ['salon_owner', 'salon', 'owner'])) {
+      toast.error('You do not have access to the salon dashboard. Redirecting to your dashboard.');
+      navigate('/dashboard');
+    }
+  }, [userRole, loading, navigate]);
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-screen">
+          <Loader2 className="h-8 w-8 animate-spin" />
+          <span className="ml-2">Loading salon dashboard...</span>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!userProfile) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-12">
+          <h1 className="text-3xl font-serif mb-8">Salon Dashboard</h1>
+          <div className="text-center p-12 border border-gray-200 rounded-lg">
+            <p className="text-gray-600 mb-4">Please complete your profile to access your dashboard.</p>
+            <button 
+              onClick={() => navigate('/profile/edit')}
+              className="px-4 py-2 bg-primary text-white rounded-lg"
+            >
+              Complete Profile
+            </button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  const salonName = userProfile.salon_name || 'Your Salon';
+
   return (
     <Layout>
-      <motion.div 
-        className="min-h-screen bg-gradient-to-b from-white to-blue-50/30"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <DashboardRouteProtection allowedRoles={allowedRoles} dashboardType="Salon">
-          <div className="container px-4 mx-auto py-12">
-            <RoleDashboardLayout>
-              <div className="space-y-8">
-                {/* Salon Welcome Banner with Vietnamese text */}
-                <SalonDashboardBanner userName={userProfile?.salon_name || userProfile?.full_name} />
-                
-                {/* Salon Boost Status */}
-                <SalonBoostStatus />
-                
-                {/* Salon Quick Stats */}
-                <SalonQuickStats />
-                
-                {/* Action Buttons with Vietnamese text */}
-                <SalonDashboardActionButtons />
-                
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  {/* NEW: Credit Promotion Card */}
-                  <div className="lg:col-span-1">
-                    <SalonCreditPromotion />
-                  </div>
-                  
-                  {/* Referral Center with Vietnamese text */}
-                  <div id="referral-card" className="lg:col-span-1">
-                    <SalonReferralCard />
-                  </div>
-                  
-                  {/* NEW: Top Local Artists widget */}
-                  <div className="lg:col-span-1">
-                    <TopLocalArtists />
-                  </div>
-                </div>
-                
-                {/* Credit Status Card */}
-                <SalonCreditStatus />
-                
-                {/* Posted Jobs Section */}
-                <SalonPostedJobsSection />
-              </div>
-            </RoleDashboardLayout>
-          </div>
-        </DashboardRouteProtection>
-      </motion.div>
+      <div className="container mx-auto px-4 py-8">
+        <DashboardBreadcrumb 
+          links={[
+            { name: 'Dashboard', href: '/dashboard' },
+            { name: 'Salon', href: '/dashboard/salon' },
+          ]} 
+        />
+        
+        <h1 className="text-3xl font-serif mb-8">
+          {salonName} Dashboard
+        </h1>
+        
+        <SalonOwnerDashboardContent />
+      </div>
     </Layout>
   );
 };
