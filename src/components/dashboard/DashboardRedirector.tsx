@@ -20,25 +20,17 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
 
   const checkUserRoleAndRedirect = useCallback(async () => {
     if (!isSignedIn || !user) {
-      console.log("User not signed in, redirecting to sign-in page");
+      console.log("[DashboardRedirector] User not signed in, redirecting to sign-in page");
       navigate("/sign-in");
       return;
     }
 
     try {
-      console.log("Checking user role for redirecting:", { userRole, userId: user.id });
+      console.log("[DashboardRedirector] Checking role for user:", { userRole, userId: user.id });
       
       // First, try to use the role from context if available
       if (userRole) {
-        console.log("Using role from context:", userRole);
-        
-        // Check if role is 'owner', redirect to salon dashboard
-        if (userRole === 'owner') {
-          console.log("Owner role detected, redirecting to salon dashboard");
-          navigate('/dashboard/salon');
-          return;
-        }
-        
+        console.log("[DashboardRedirector] Using role from context:", userRole);
         navigateToRoleDashboard(navigate, userRole);
         return;
       }
@@ -51,12 +43,12 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         .maybeSingle();
         
       if (error) {
-        console.error("Error fetching user profile:", error);
+        console.error("[DashboardRedirector] Error fetching user profile:", error);
         throw new Error(`Failed to fetch user role: ${error.message}`);
       }
       
       if (!profile || !profile.role) {
-        console.log("No role found, showing role selection modal");
+        console.log("[DashboardRedirector] No role found, showing role selection modal");
         setShowRoleModal(true);
         if (isNewUser) {
           clearIsNewUser();
@@ -65,20 +57,13 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
       }
       
       // If we have a role, redirect to the appropriate dashboard
-      console.log("Redirecting to dashboard for role:", profile.role);
-      
-      // Check if role is 'owner', redirect to salon dashboard
-      if (profile.role === 'owner') {
-        console.log("Owner role detected, redirecting to salon dashboard");
-        navigate('/dashboard/salon');
-        return;
-      }
-      
+      console.log("[DashboardRedirector] Redirecting with role:", profile.role);
       navigateToRoleDashboard(navigate, profile.role as UserRole);
       
     } catch (error) {
-      console.error("Error in role check and redirect:", error);
+      console.error("[DashboardRedirector] Error in role check and redirect:", error);
       setRedirectError("Unable to determine your user role. Please try again or select a role.");
+      navigate("/profile/edit");
     } finally {
       setLocalLoading(false);
     }

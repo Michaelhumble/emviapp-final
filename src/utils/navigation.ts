@@ -1,12 +1,10 @@
-
 import { NavigateFunction } from "react-router-dom";
 import { UserRole } from "@/context/auth/types";
 import { toast } from "sonner";
 
 /**
  * Normalizes user roles to handle variations and aliases
- * @param role The raw user role
- * @returns Normalized role for consistent routing
+ * IMPORTANT: This is the single source of truth for role normalization
  */
 const normalizeRole = (role: UserRole | null): UserRole | null => {
   if (!role) return null;
@@ -23,57 +21,64 @@ const normalizeRole = (role: UserRole | null): UserRole | null => {
     case 'beauty supplier':
     case 'vendor':
       return 'supplier';
+    case 'renter':
+      return 'artist'; // Renters see artist dashboard
     default:
       return normalizedRole as UserRole;
   }
 };
 
 /**
- * Navigates the user to their role-specific dashboard
- * @param navigate The navigate function from react-router-dom
- * @param userRole The user's role from auth context
+ * Navigates the user to their role-specific dashboard with validation
  */
 export const navigateToRoleDashboard = (
   navigate: NavigateFunction,
   userRole: UserRole | null
 ) => {
-  console.log("Navigating based on role:", userRole);
+  console.log("[Dashboard Navigation] Original role:", userRole);
   
   // Normalize the role for consistent routing
   const normalizedRole = normalizeRole(userRole);
-  console.log("Normalized role:", normalizedRole);
+  console.log("[Dashboard Navigation] Normalized role:", normalizedRole);
   
   if (!normalizedRole) {
-    // If no role defined, navigate to profile page to set role
+    console.error("[Dashboard Navigation] No role defined for user");
     navigate("/profile/edit");
-    toast.info("Please complete your profile to access your dashboard");
+    toast.error("Please complete your profile to access your dashboard");
     return;
   }
+  
+  let targetDashboard = '';
   
   // Route based on normalized role
   switch (normalizedRole) {
     case 'artist':
-      navigate('/dashboard/artist');
+      targetDashboard = '/dashboard/artist';
       break;
     case 'salon':
-      navigate('/dashboard/salon');
+      targetDashboard = '/dashboard/salon';
       break;
     case 'customer':
-      navigate('/dashboard/customer');
+      targetDashboard = '/dashboard/customer';
       break;
     case 'supplier':
-      navigate('/dashboard/supplier');
+      targetDashboard = '/dashboard/supplier';
       break;
     case 'freelancer':
-      navigate('/dashboard/freelancer');
-      break;
-    case 'renter':
-      navigate('/dashboard/artist'); // Renters see artist dashboard
+      targetDashboard = '/dashboard/freelancer';
       break;
     case 'other':
+      targetDashboard = '/dashboard/other';
+      break;
     default:
-      navigate('/dashboard/other');
+      console.error("[Dashboard Navigation] Invalid role:", normalizedRole);
+      navigate("/profile/edit");
+      toast.error("Invalid user role. Please update your profile.");
+      return;
   }
+
+  console.log("[Dashboard Navigation] Redirecting to:", targetDashboard);
+  navigate(targetDashboard);
 };
 
 /**
