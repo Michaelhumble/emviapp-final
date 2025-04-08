@@ -75,7 +75,11 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
       localStorage.removeItem('dashboardPreferences');
       
       // First reset all session data to force clear client-side state
-      await supabase.auth.setSession({ access_token: '', refresh_token: '' });
+      try {
+        await supabase.auth.setSession({ access_token: '', refresh_token: '' });
+      } catch (err) {
+        console.error("Failed to reset session:", err);
+      }
       
       // Then sign out from Supabase
       const { error } = await supabase.auth.signOut({ scope: 'global' });
@@ -86,7 +90,9 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
       toast.success("Successfully signed out");
       
       // Force reload the page to clear any remaining state
-      window.location.href = '/';
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 100);
       
       return;
     } catch (error) {

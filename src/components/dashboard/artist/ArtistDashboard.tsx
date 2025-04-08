@@ -16,6 +16,7 @@ import ArtistMetricsSection from './ArtistMetricsSection';
 import ArtistBoostTracker from './ArtistBoostTracker';
 import { useEffect } from 'react';
 import { UserProfile, UserRole } from '@/context/auth/types';
+import { Json } from '@/integrations/supabase/types';
 
 // Define proper types for ArtistDashboard components if they don't exist
 interface ArtistBoostTrackerProps {
@@ -76,7 +77,7 @@ const ArtistDashboard = () => {
     created_at: data?.created_at || '',
     updated_at: data?.updated_at || '',
     preferred_language: data?.preferred_language || '',
-    referral_count: data?.referral_count || 0,
+    referral_count: data?.credits || 0,
     salon_name: data?.salon_name || '',
     company_name: data?.company_name || '',
     custom_role: data?.custom_role || '',
@@ -85,7 +86,7 @@ const ArtistDashboard = () => {
     skill_level: data?.skill_level || '',
     profile_views: data?.profile_views || 0,
     preferences: Array.isArray(data?.preferences) ? data.preferences : [],
-    affiliate_code: data?.affiliate_code || '',
+    affiliate_code: data?.referral_code || '',
     referral_code: data?.referral_code || '',
     credits: data?.credits || 0,
     boosted_until: data?.boosted_until || null,
@@ -110,6 +111,16 @@ const ArtistDashboard = () => {
 
   return (
     <div className="space-y-8">
+      {/* Artist-specific welcome banner */}
+      <div className="bg-gradient-to-r from-purple-100 to-purple-50 border border-purple-200 rounded-2xl p-6 mb-8">
+        <h1 className="text-2xl md:text-3xl font-serif font-semibold mb-2">
+          Welcome back, {userProfileData.full_name || 'Artist'} – Let's grow your beauty career today.
+        </h1>
+        <p className="text-gray-600">
+          Manage your profile, bookings, and client communications all in one place.
+        </p>
+      </div>
+      
       {/* Artist-specific notification section */}
       <BookingNotificationsSection />
       

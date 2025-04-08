@@ -30,7 +30,7 @@ const ArtistWelcomeBanner = ({ firstName }: ArtistWelcomeBannerProps) => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-serif font-semibold mb-2">
-            Welcome back, {firstName || 'Artist'}!
+            Welcome back, {firstName || 'Artist'}! Let's grow your beauty career today.
           </h1>
           
           {/* Vietnamese and English welcome text */}
