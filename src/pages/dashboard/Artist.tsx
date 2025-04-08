@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
 import DashboardRouteProtection from "@/components/dashboard/DashboardRouteProtection";
-import NewArtistDashboard from "@/components/dashboard/artist/NewArtistDashboard";
+import ArtistDashboard from "@/components/dashboard/artist/ArtistDashboard";
 
 const ArtistDashboardPage = () => {
   const { userRole } = useAuth();
@@ -35,7 +35,7 @@ const ArtistDashboardPage = () => {
       >
         <DashboardRouteProtection allowedRoles={allowedRoles} dashboardType="Artist">
           <div className="container px-4 mx-auto py-12">
-            <NewArtistDashboard />
+            <ArtistDashboard />
           </div>
         </DashboardRouteProtection>
       </motion.div>

@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Scissors, Plus, DollarSign, Clock } from "lucide-react";
-import { UserProfile } from "@/context/auth/types";
+import { UserProfile } from "@/types/profile";
 import { toast } from "sonner";
 
 interface ArtistServicesSectionProps {

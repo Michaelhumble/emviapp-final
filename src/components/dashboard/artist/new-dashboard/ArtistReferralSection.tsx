@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, Copy, Check, Gift } from "lucide-react";
-import { UserProfile } from "@/context/auth/types";
+import { UserProfile } from "@/types/profile";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 

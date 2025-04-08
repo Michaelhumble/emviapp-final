@@ -1,72 +1,90 @@
 
-import { Card, CardContent } from "@/components/ui/card";
-import { UserProfile } from "@/context/auth/types";
-import { Calendar, Image, Users, CreditCard } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Calendar, Users, Star, Paintbrush } from "lucide-react";
+import { UserProfile } from "@/types/profile";
+import { motion } from "framer-motion";
 
 interface ArtistDashboardStatsProps {
   profileData?: UserProfile;
 }
 
 const ArtistDashboardStats = ({ profileData }: ArtistDashboardStatsProps) => {
-  // Sample stats - in a real app these would come from the database
+  // Sample stats for UI mockup - in a real app these would come from the backend
   const stats = [
     {
-      title: "Portfolio Items",
-      value: profileData?.portfolio_urls?.length || 0,
-      icon: <Image className="h-5 w-5 text-purple-500" />,
-      change: "+2 this week",
-      trend: "up"
+      label: "Appointments",
+      value: "3",
+      icon: Calendar,
+      trend: "+2 this week",
+      color: "text-blue-500 bg-blue-50",
     },
     {
-      title: "Upcoming Appointments",
-      value: 5,
-      icon: <Calendar className="h-5 w-5 text-indigo-500" />,
-      change: "3 this week",
-      trend: "neutral"
+      label: "Clients",
+      value: "28",
+      icon: Users,
+      trend: "+5 this month",
+      color: "text-violet-500 bg-violet-50",
     },
     {
-      title: "Profile Views",
-      value: profileData?.profile_views || 0,
-      icon: <Users className="h-5 w-5 text-pink-500" />,
-      change: "+12 this week",
-      trend: "up"
+      label: "Portfolio Views",
+      value: profileData?.profile_views?.toString() || "124",
+      icon: Paintbrush,
+      trend: "+18% vs. last week",
+      color: "text-pink-500 bg-pink-50",
     },
     {
-      title: "Credits",
-      value: profileData?.credits || 0,
-      icon: <CreditCard className="h-5 w-5 text-emerald-500" />,
-      change: "Use for promotions",
-      trend: "neutral"
-    }
+      label: "Rating",
+      value: "4.8",
+      icon: Star,
+      trend: "from 16 reviews",
+      color: "text-amber-500 bg-amber-50",
+    },
   ];
-  
+
+  // Animation variants
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {stats.map((stat, index) => (
-        <Card key={index} className="border-purple-100">
-          <CardContent className="p-4">
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-sm text-gray-500 flex items-center">
-                  {stat.icon}
-                  <span className="ml-1">{stat.title}</span>
-                </p>
-                <p className="text-2xl font-bold mt-1">{stat.value}</p>
+    <motion.div
+      className="grid grid-cols-2 md:grid-cols-4 gap-4"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
+      {stats.map((stat, index) => {
+        const IconComponent = stat.icon;
+        
+        return (
+          <motion.div key={index} variants={item}>
+            <Card className="border-purple-100 p-4 hover:shadow-md transition-shadow">
+              <div className="flex items-start space-x-3">
+                <div className={`p-2 rounded-lg ${stat.color}`}>
+                  <IconComponent className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">{stat.label}</p>
+                  <h3 className="text-2xl font-semibold text-gray-800">{stat.value}</h3>
+                  <p className="text-xs text-gray-400">{stat.trend}</p>
+                </div>
               </div>
-              <span className={`text-xs px-2 py-1 rounded-full ${
-                stat.trend === 'up' 
-                  ? 'bg-green-100 text-green-800' 
-                  : stat.trend === 'down' 
-                    ? 'bg-red-100 text-red-800' 
-                    : 'bg-gray-100 text-gray-800'
-              }`}>
-                {stat.change}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+            </Card>
+          </motion.div>
+        );
+      })}
+    </motion.div>
   );
 };
 
