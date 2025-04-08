@@ -17,6 +17,7 @@ import AIAgents from "@/components/home/AIAgents";
 import AITeam from "@/components/home/AITeam";
 import PricingSection from "@/components/home/PricingSection";
 import FreelancersHighlight from "@/components/home/FreelancersHighlight";
+import Features from "@/components/home/Features";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -37,26 +38,29 @@ const Index = () => {
   
   return (
     <Layout>
-      <Hero />
-      <ArtistTestimonials />
-      <AITeam />
-      <AIAgents />
-      <FreelancersHighlight />
-      <PricingSection />
-      <AIPowerhouse />
-      <FeaturedSalons />
-      <JobsHighlight />
-      <ArtistCallout />
-      <Testimonials />
-      <CallToAction />
-      
-      {user && userId && (
-        <RoleSelectionModal 
-          open={isRoleModalOpen} 
-          onOpenChange={setIsRoleModalOpen} 
-          userId={userId} 
-        />
-      )}
+      <div className="w-full overflow-x-hidden">
+        <Hero />
+        <ArtistTestimonials />
+        <Features />
+        <AITeam />
+        <AIAgents />
+        <FreelancersHighlight />
+        <PricingSection />
+        <AIPowerhouse />
+        <FeaturedSalons />
+        <JobsHighlight />
+        <ArtistCallout />
+        <Testimonials />
+        <CallToAction />
+        
+        {user && userId && (
+          <RoleSelectionModal 
+            open={isRoleModalOpen} 
+            onOpenChange={setIsRoleModalOpen} 
+            userId={userId} 
+          />
+        )}
+      </div>
     </Layout>
   );
 };

@@ -15,7 +15,8 @@ const CommandCenter = () => {
   // Admin access check
   useEffect(() => {
     // Only allow Michael's email or role-based admin access
-    const isAdmin = userProfile?.email === 'michael@emvi.app' || userProfile?.role === 'admin';
+    const isAdmin = userProfile?.email === 'michael@emvi.app' || 
+                    (userProfile?.role && userProfile.role.toLowerCase() === 'admin');
     
     if (!isAdmin) {
       navigate('/');

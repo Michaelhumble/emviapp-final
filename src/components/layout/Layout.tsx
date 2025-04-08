@@ -70,9 +70,9 @@ const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen w-full overflow-x-hidden">
       {!isAuthPage && !hideNavbar && <Navbar />}
-      <main className={`flex-grow ${!isAuthPage && !hideNavbar ? "pt-16" : ""}`}>
+      <main className={`flex-grow w-full ${!isAuthPage && !hideNavbar ? "pt-16" : ""}`}>
         {children}
       </main>
       <Footer />

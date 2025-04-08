@@ -1,5 +1,4 @@
 
-// Fix for the TypeScript error - we need to add proper null checks
 import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 
@@ -38,8 +37,19 @@ export const useTranslation = (preferredLanguage: string = 'English') => {
     fetchTranslations();
   }, []);
 
-  // Fixed translation function with proper null checks
+  // Translation function with proper type handling
   const t = (key: string, defaultText?: string): string => {
+    if (!key) return defaultText || "";
+    
+    // Handle the case where key is an object with english/vietnamese properties
+    if (typeof key === 'object' && key !== null) {
+      const translationObj = key as {english: string, vietnamese: string};
+      return preferredLanguage.toLowerCase() === 'vietnamese' || 
+             preferredLanguage.toLowerCase() === 'tiếng việt'
+             ? translationObj.vietnamese
+             : translationObj.english;
+    }
+    
     // Use optional chaining and nullish coalescing for safety
     const item = translations.find(t => t?.key === key);
     

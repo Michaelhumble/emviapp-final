@@ -1,3 +1,4 @@
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
@@ -6,6 +7,9 @@ import { AuthProvider } from './context/auth';
 import { ProfileProvider } from './context/profile';
 import { SubscriptionProvider } from './context/subscription';
 import { Toaster } from '@/components/ui/sonner';
+
+// Import styles
+import './index.css';
 
 // Import pages
 import App from './App';
@@ -45,6 +49,7 @@ import NewSalonSalePage from '@/pages/sell-salon/new';
 import SalonSaleDetail from '@/pages/sell-salon/[id]';
 import ArtistDirectory from '@/pages/explore/artists';
 import CommandCenter from '@/pages/admin/CommandCenter';
+import Welcome from '@/pages/Welcome';
 
 // Create query client
 const queryClient = new QueryClient();
@@ -58,6 +63,10 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Index />
+      },
+      {
+        path: 'welcome',
+        element: <Welcome />
       },
       {
         path: 'jobs',
