@@ -94,8 +94,9 @@ const ReferralMilestones = ({ referralStats, referralProgress }: ReferralMilesto
                 
                 {isNext && (
                   <div className="text-xs text-amber-700 font-medium mt-1">
-                    {t('referral.milestone.almost_there', { 
-                      count: referralProgress.nextMilestoneIn
+                    {t({
+                      english: `Almost there! ${referralProgress.nextMilestoneIn} more to unlock`,
+                      vietnamese: `Sắp đạt được! Còn ${referralProgress.nextMilestoneIn} nữa để mở khóa`
                     })}
                   </div>
                 )}

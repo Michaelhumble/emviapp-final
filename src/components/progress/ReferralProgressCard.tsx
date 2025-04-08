@@ -51,7 +51,7 @@ const ReferralProgressCard = ({ referralStats, loading }: ReferralProgressCardPr
       <CardHeader className="pb-2 bg-gradient-to-r from-purple-50 to-fuchsia-50">
         <CardTitle className="flex items-center text-lg font-medium">
           <Users className="h-5 w-5 mr-2 text-purple-500" />
-          {t('referral_progress', { 
+          {t({ 
             english: 'Referral Progress', 
             vietnamese: 'Giới thiệu bạn bè' 
           })}
@@ -71,7 +71,7 @@ const ReferralProgressCard = ({ referralStats, loading }: ReferralProgressCardPr
               <span>
                 {completed}/{targetMilestone} 
                 <span className="text-sm ml-1 font-normal text-gray-500">
-                  {t('referrals_completed', { 
+                  {t({ 
                     english: 'referrals completed', 
                     vietnamese: 'giới thiệu hoàn thành' 
                   })}
@@ -87,7 +87,7 @@ const ReferralProgressCard = ({ referralStats, loading }: ReferralProgressCardPr
                   </TooltipTrigger>
                   <TooltipContent className="w-60 p-3">
                     <p>
-                      {t('referral_requirement_tooltip', { 
+                      {t({ 
                         english: 'Your referrals must complete bookings to count!', 
                         vietnamese: 'Phần thưởng sẽ được mở khóa khi bạn bè hoàn thành đặt lịch!' 
                       })}
@@ -108,14 +108,14 @@ const ReferralProgressCard = ({ referralStats, loading }: ReferralProgressCardPr
             <div className="text-sm text-gray-500">
               {completed >= targetMilestone ? (
                 <p className="text-purple-600 font-medium">
-                  {t('milestone_reached', { 
+                  {t({ 
                     english: 'Milestone reached! 🎉', 
                     vietnamese: 'Đã đạt mốc! 🎉' 
                   })}
                 </p>
               ) : (
                 <p>
-                  {t('more_referrals_needed', { 
+                  {t({ 
                     english: `${targetMilestone - completed} more to reach milestone`, 
                     vietnamese: `Còn ${targetMilestone - completed} giới thiệu để đạt mốc` 
                   })}
@@ -123,7 +123,7 @@ const ReferralProgressCard = ({ referralStats, loading }: ReferralProgressCardPr
               )}
               
               <p className="mt-2 text-xs text-gray-400">
-                {t('referral_reward', { 
+                {t({ 
                   english: 'Earn 20 credits per successful referral', 
                   vietnamese: 'Nhận 20 điểm cho mỗi lượt giới thiệu thành công' 
                 })}

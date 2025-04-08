@@ -21,15 +21,15 @@ const ProfileCompletionCard = ({ percentage, userProfile, loading }: ProfileComp
   const getChecklistItems = () => {
     const commonItems = [
       {
-        name: t('profile_photo', { english: 'Profile Photo', vietnamese: 'Ảnh hồ sơ' }),
+        name: t({ english: 'Profile Photo', vietnamese: 'Ảnh hồ sơ' }),
         completed: !!userProfile?.avatar_url
       },
       {
-        name: t('bio', { english: 'Bio', vietnamese: 'Tiểu sử' }),
+        name: t({ english: 'Bio', vietnamese: 'Tiểu sử' }),
         completed: !!userProfile?.bio
       },
       {
-        name: t('location', { english: 'Location', vietnamese: 'Địa điểm' }),
+        name: t({ english: 'Location', vietnamese: 'Địa điểm' }),
         completed: !!userProfile?.location
       }
     ];
@@ -38,15 +38,15 @@ const ProfileCompletionCard = ({ percentage, userProfile, loading }: ProfileComp
       return [
         ...commonItems,
         {
-          name: t('specialties', { english: 'Specialties', vietnamese: 'Chuyên môn' }),
+          name: t({ english: 'Specialties', vietnamese: 'Chuyên môn' }),
           completed: !!userProfile?.specialty
         },
         {
-          name: t('portfolio', { english: 'Portfolio', vietnamese: 'Danh mục' }),
+          name: t({ english: 'Portfolio', vietnamese: 'Danh mục' }),
           completed: Array.isArray(userProfile?.portfolio_urls) && userProfile?.portfolio_urls.length > 0
         },
         {
-          name: t('social_links', { english: 'Social Links', vietnamese: 'Liên kết mạng xã hội' }),
+          name: t({ english: 'Social Links', vietnamese: 'Liên kết mạng xã hội' }),
           completed: !!(userProfile?.instagram || userProfile?.website)
         }
       ];
@@ -54,15 +54,15 @@ const ProfileCompletionCard = ({ percentage, userProfile, loading }: ProfileComp
       return [
         ...commonItems,
         {
-          name: t('salon_name', { english: 'Salon Name', vietnamese: 'Tên salon' }),
+          name: t({ english: 'Salon Name', vietnamese: 'Tên salon' }),
           completed: !!userProfile?.salon_name
         },
         {
-          name: t('contact_info', { english: 'Contact Info', vietnamese: 'Thông tin liên hệ' }),
+          name: t({ english: 'Contact Info', vietnamese: 'Thông tin liên hệ' }),
           completed: !!(userProfile?.phone || userProfile?.contact_link)
         },
         {
-          name: t('website', { english: 'Website/Social', vietnamese: 'Website/Mạng xã hội' }),
+          name: t({ english: 'Website/Social', vietnamese: 'Website/Mạng xã hội' }),
           completed: !!(userProfile?.website || userProfile?.instagram)
         }
       ];
@@ -72,11 +72,11 @@ const ProfileCompletionCard = ({ percentage, userProfile, loading }: ProfileComp
     return [
       ...commonItems,
       {
-        name: t('preferences', { english: 'Preferences', vietnamese: 'Sở thích' }),
+        name: t({ english: 'Preferences', vietnamese: 'Sở thích' }),
         completed: Array.isArray(userProfile?.preferences) && userProfile?.preferences.length > 0
       },
       {
-        name: t('contact_method', { english: 'Contact Method', vietnamese: 'Phương thức liên hệ' }),
+        name: t({ english: 'Contact Method', vietnamese: 'Phương thức liên hệ' }),
         completed: !!(userProfile?.phone || userProfile?.contact_link)
       }
     ];
@@ -96,7 +96,7 @@ const ProfileCompletionCard = ({ percentage, userProfile, loading }: ProfileComp
       <CardHeader className="pb-2 bg-gradient-to-r from-green-50 to-emerald-50">
         <CardTitle className="flex items-center text-lg font-medium">
           <UserCheck className="h-5 w-5 mr-2 text-green-500" />
-          {t('profile_completion', { 
+          {t({ 
             english: 'Profile Completion', 
             vietnamese: 'Hoàn Thiện Hồ Sơ' 
           })}
@@ -120,7 +120,7 @@ const ProfileCompletionCard = ({ percentage, userProfile, loading }: ProfileComp
             <div className="flex items-center justify-between mb-2">
               <span className="text-xl font-bold">{percentage}%</span>
               <span className="text-sm text-gray-500">
-                {t('complete', { english: 'complete', vietnamese: 'hoàn thành' })}
+                {t({ english: 'complete', vietnamese: 'hoàn thành' })}
               </span>
             </div>
             
@@ -150,7 +150,7 @@ const ProfileCompletionCard = ({ percentage, userProfile, loading }: ProfileComp
             </div>
             
             <p className="text-xs text-gray-500 mt-3">
-              {t('complete_profile_bonus', { 
+              {t({ 
                 english: 'Complete your profile to unlock visibility bonuses!', 
                 vietnamese: 'Hoàn thành hồ sơ để mở khóa phần thưởng khả năng hiển thị!' 
               })}

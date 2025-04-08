@@ -250,11 +250,12 @@ export const getReferralStats = async (userId: string): Promise<any> => {
     const total = data.length;
     const verified = data.filter(ref => ref.status === 'verified').length;
     const pending = data.filter(ref => ref.status === 'pending').length;
+    const completed = data.filter(ref => ref.milestone_reached).length;
 
-    return { total, verified, pending, data };
+    return { total, verified, pending, completed, data };
   } catch (error) {
     console.error("Unexpected error fetching referral stats:", error);
-    return { total: 0, verified: 0, pending: 0 };
+    return { total: 0, verified: 0, pending: 0, completed: 0 };
   }
 };
 

@@ -23,7 +23,7 @@ const CreditStatusCard = ({ credits, loading }: CreditStatusCardProps) => {
       <CardHeader className="pb-2 bg-gradient-to-r from-amber-50 to-yellow-50">
         <CardTitle className="flex items-center text-lg font-medium">
           <Coins className="h-5 w-5 mr-2 text-amber-500" />
-          {t('credit_status', { 
+          {t({ 
             english: 'Credit Status', 
             vietnamese: 'Điểm Emvi' 
           })}
@@ -42,7 +42,7 @@ const CreditStatusCard = ({ credits, loading }: CreditStatusCardProps) => {
             <div className="text-2xl font-bold mb-2 flex items-baseline">
               {credits}
               <span className="text-sm ml-1 font-normal text-gray-500">
-                {t('emvi_credits', { 
+                {t({ 
                   english: 'Emvi Credits', 
                   vietnamese: 'Điểm Emvi' 
                 })}
@@ -63,13 +63,13 @@ const CreditStatusCard = ({ credits, loading }: CreditStatusCardProps) => {
             
             <div className="text-sm text-gray-500 mt-3">
               <p>
-                {t('credits_to_milestone', { 
+                {t({ 
                   english: `${nextMilestone - credits} more to unlock a profile boost!`, 
                   vietnamese: `Còn ${nextMilestone - credits} điểm để mở khóa tính năng tăng tốc!` 
                 })}
               </p>
               <p className="mt-2 text-xs text-gray-400">
-                100 {t('credits', { english: 'credits', vietnamese: 'điểm' })} = $10 {t('emvi_power', { english: 'in Emvi power', vietnamese: 'sức mạnh Emvi' })}
+                100 {t({ english: 'credits', vietnamese: 'điểm' })} = $10 {t({ english: 'in Emvi power', vietnamese: 'sức mạnh Emvi' })}
               </p>
             </div>
           </>

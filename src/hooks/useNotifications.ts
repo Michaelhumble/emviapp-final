@@ -41,8 +41,8 @@ export const useNotifications = () => {
           message: item.description,
           type: item.activity_type as 'info' | 'warning' | 'success' | 'error',
           createdAt: item.created_at,
-          isRead: metadata?.is_read || false,
-          link: metadata?.link || null,
+          isRead: metadata && 'is_read' in metadata ? Boolean(metadata.is_read) : false,
+          link: metadata && 'link' in metadata ? String(metadata.link) : null,
           metadata: metadata as Record<string, any>
         };
       });

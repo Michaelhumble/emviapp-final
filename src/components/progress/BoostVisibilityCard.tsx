@@ -56,7 +56,7 @@ const BoostVisibilityCard = ({ boostStatus, credits, loading }: BoostVisibilityC
       <CardHeader className="pb-2 bg-gradient-to-r from-blue-50 to-cyan-50">
         <CardTitle className="flex items-center text-lg font-medium">
           <Rocket className="h-5 w-5 mr-2 text-blue-500" />
-          {t('boost_visibility', { 
+          {t({ 
             english: 'Boost & Visibility', 
             vietnamese: 'Tăng Khả Năng Hiển Thị' 
           })}
@@ -72,7 +72,7 @@ const BoostVisibilityCard = ({ boostStatus, credits, loading }: BoostVisibilityC
           </div>
         ) : !isBoostApplicable() ? (
           <p className="text-sm text-gray-500">
-            {t('boost_not_applicable', { 
+            {t({ 
               english: 'Boost features are available for artists and salons', 
               vietnamese: 'Tính năng tăng tốc có sẵn cho nghệ sĩ và salon' 
             })}
@@ -82,7 +82,7 @@ const BoostVisibilityCard = ({ boostStatus, credits, loading }: BoostVisibilityC
             <div className="flex items-center mb-3">
               <div className="h-3 w-3 bg-green-400 rounded-full animate-pulse mr-2"></div>
               <p className="text-lg font-medium text-green-600">
-                {t('boost_active', { 
+                {t({ 
                   english: 'Boost Active', 
                   vietnamese: 'Đang Tăng Tốc' 
                 })}
@@ -93,12 +93,12 @@ const BoostVisibilityCard = ({ boostStatus, credits, loading }: BoostVisibilityC
               <Clock className="h-4 w-4 mr-1" />
               <span>
                 {boostTimeRemaining ? (
-                  t('time_remaining', { 
+                  t({ 
                     english: `${boostTimeRemaining} remaining`, 
                     vietnamese: `Còn ${boostTimeRemaining}` 
                   })
                 ) : (
-                  t('expires_soon', { 
+                  t({ 
                     english: 'Expires soon', 
                     vietnamese: 'Sắp hết hạn' 
                   })
@@ -107,7 +107,7 @@ const BoostVisibilityCard = ({ boostStatus, credits, loading }: BoostVisibilityC
             </div>
             
             <p className="text-sm text-gray-500">
-              {t('boost_active_benefit', { 
+              {t({ 
                 english: 'Your profile appears higher in search results', 
                 vietnamese: 'Hồ sơ của bạn xuất hiện cao hơn trong kết quả tìm kiếm' 
               })}
@@ -116,7 +116,7 @@ const BoostVisibilityCard = ({ boostStatus, credits, loading }: BoostVisibilityC
         ) : (
           <>
             <p className="text-lg font-medium mb-3 text-gray-700">
-              {t('no_boost_active', { 
+              {t({ 
                 english: 'No boost active', 
                 vietnamese: 'Chưa kích hoạt tăng tốc' 
               })}
@@ -128,7 +128,7 @@ const BoostVisibilityCard = ({ boostStatus, credits, loading }: BoostVisibilityC
               className={`w-full ${!canBoost ? 'opacity-70' : ''}`}
               disabled={!canBoost}
             >
-              {t('boost_now_button', { 
+              {t({ 
                 english: `Boost Now (${boostCost} credits)`, 
                 vietnamese: `Tăng Tốc Ngay (${boostCost} điểm)` 
               })}
@@ -136,7 +136,7 @@ const BoostVisibilityCard = ({ boostStatus, credits, loading }: BoostVisibilityC
             
             {!canBoost && (
               <p className="text-xs text-amber-600 mt-2">
-                {t('not_enough_credits', { 
+                {t({ 
                   english: `You need ${boostCost - credits} more credits`, 
                   vietnamese: `Bạn cần thêm ${boostCost - credits} điểm` 
                 })}
@@ -144,7 +144,7 @@ const BoostVisibilityCard = ({ boostStatus, credits, loading }: BoostVisibilityC
             )}
             
             <p className="text-xs text-gray-500 mt-3">
-              {t('boost_benefit', { 
+              {t({ 
                 english: 'Get noticed by more clients and rank higher in search results', 
                 vietnamese: 'Được nhiều khách hàng chú ý hơn và xếp hạng cao hơn trong tìm kiếm' 
               })}
