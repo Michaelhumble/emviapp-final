@@ -2,7 +2,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
-import { UserProfile } from '@/types/profile';
 import { Loader2 } from 'lucide-react';
 import ArtistWelcomeHeader from './new-dashboard/ArtistWelcomeHeader';
 import ArtistPortfolioSection from './new-dashboard/ArtistPortfolioSection';
@@ -11,6 +10,8 @@ import ArtistReferralSection from './new-dashboard/ArtistReferralSection';
 import ArtistAppointmentsSection from './new-dashboard/ArtistAppointmentsSection';
 import ArtistDashboardStats from './new-dashboard/ArtistDashboardStats';
 import { motion } from 'framer-motion';
+import { adaptUserProfile } from '@/utils/profileAdapter';
+import { UserProfile } from '@/types/profile';
 
 /**
  * Complete Artist Dashboard reimplementation
@@ -36,8 +37,8 @@ const ArtistDashboard = () => {
       }
       
       console.log('[ArtistDashboard] Profile data fetched successfully');
-      // Explicitly cast the data to UserProfile to ensure type safety
-      return data as unknown as UserProfile;
+      // Adapt the data to ensure type compatibility
+      return adaptUserProfile(data as any);
     },
     enabled: !!user?.id
   });

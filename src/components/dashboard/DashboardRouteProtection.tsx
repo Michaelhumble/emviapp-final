@@ -7,6 +7,7 @@ import { hasRoleAccess } from "@/utils/roleUtils";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCcw } from "lucide-react";
+import { navigateToRoleDashboard } from "@/utils/navigation";
 
 interface DashboardRouteProtectionProps {
   allowedRoles: UserRole[];
@@ -73,12 +74,15 @@ const DashboardRouteProtection = ({
     const userHasAccess = hasRoleAccess(userRole, allowedRoles);
     
     if (!userHasAccess) {
-      console.warn(`[${dashboardType}] User with role ${userRole} attempted unauthorized access`);
+      console.warn(`[${dashboardType}] ROLE MISMATCH: User with role ${userRole} attempted to access ${dashboardType} dashboard`);
       toast.error(`Access denied: This dashboard is for ${allowedRoles.join(' or ')} accounts only`);
       
-      // Use window.location for more reliable redirect on role mismatch
-      console.log(`[${dashboardType}] Redirecting to main dashboard due to unauthorized access`);
-      window.location.href = "/dashboard"; 
+      // Redirect to the dashboard that matches their actual role
+      // Enhanced debugging message
+      console.log(`[${dashboardType}] REDIRECTING: User with role ${userRole} is being redirected to the correct dashboard`);
+      
+      // Use the navigation utility to ensure they go to the right place
+      navigateToRoleDashboard(navigate, userRole);
       return;
     } else {
       console.log(`[${dashboardType}] Access granted to ${dashboardType} dashboard for role: ${userRole}`);

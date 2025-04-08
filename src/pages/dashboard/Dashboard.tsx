@@ -50,20 +50,7 @@ const DashboardPage = () => {
         // After successful refresh, try direct navigation based on role
         if (userRole) {
           console.log("[Dashboard] Direct navigation after refresh to:", userRole);
-          
-          if (userRole === 'artist') {
-            window.location.href = '/dashboard/artist';
-            return;
-          } else if (userRole === 'salon_owner') {
-            window.location.href = '/dashboard/salon';
-            return;
-          } else if (userRole === 'customer') {
-            window.location.href = '/dashboard/customer';
-            return;
-          } else {
-            // Use force reload for other role types
-            navigateToRoleDashboard(navigate, userRole);
-          }
+          navigateToRoleDashboard(navigate, userRole);
         }
       } catch (error) {
         console.error("Profile refresh failed:", error);
@@ -99,6 +86,7 @@ const DashboardPage = () => {
     if (loading || isRefreshing) return;
     
     if (!user) {
+      console.log("[Dashboard Router] No authenticated user, redirecting to sign-in");
       navigate("/sign-in");
       return;
     }
@@ -106,31 +94,15 @@ const DashboardPage = () => {
     // If we have a role, redirect to the appropriate dashboard
     if (userRole) {
       console.log("[Dashboard Router] User role detected:", userRole);
+      console.log("[Dashboard Router] Redirecting to role-specific dashboard");
       
-      // Added direct routing with window.location for more reliable redirection
-      console.log("[Dashboard Router] Direct routing to dashboard for:", userRole);
-      
-      if (userRole === 'artist') {
-        console.log("[Dashboard Router] Direct routing to artist dashboard");
-        window.location.href = '/dashboard/artist';
-        return;
-      } else if (userRole === 'salon_owner') {
-        console.log("[Dashboard Router] Direct routing to salon dashboard");
-        window.location.href = '/dashboard/salon';
-        return;
-      } else if (userRole === 'customer') {
-        console.log("[Dashboard Router] Direct routing to customer dashboard");
-        window.location.href = '/dashboard/customer';
-        return;
-      } else {
-        // Use the utility function for other roles
-        navigateToRoleDashboard(navigate, userRole);
-      }
-    } else if (!loading && user) {
+      // Use the navigation utility to ensure consistent routing
+      navigateToRoleDashboard(navigate, userRole);
+    } else {
       // If no role but user is logged in, redirect to role selection
       console.log("[Dashboard Router] No role detected for user, redirecting to role selection");
       navigate("/choose-role");
-      toast.error("Please select your role to access your dashboard");
+      toast.info("Please select your role to access your dashboard");
     }
   }, [user, userRole, loading, navigate, isRefreshing]);
   

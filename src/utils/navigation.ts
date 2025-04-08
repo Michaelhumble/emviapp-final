@@ -15,15 +15,26 @@ export const navigateToRoleDashboard = (
   
   if (!userRole) {
     console.error("[Dashboard Navigation] No role defined for user");
-    navigate("/profile/edit");
-    toast.error("Please complete your profile to access your dashboard");
+    navigate("/choose-role");
+    toast.error("Please select your role to access your dashboard");
+    return;
+  }
+  
+  // Normalize role to ensure consistent routing
+  const normalizedRole = normalizeUserRole(userRole);
+  console.log("[Dashboard Navigation] Normalized role:", normalizedRole);
+  
+  if (!normalizedRole) {
+    console.error("[Dashboard Navigation] Invalid role after normalization");
+    navigate("/choose-role");
+    toast.error("Your role needs to be set up. Please select a role.");
     return;
   }
   
   let targetDashboard = '';
   
   // Route based on normalized role
-  switch (userRole) {
+  switch (normalizedRole) {
     case 'artist':
       targetDashboard = '/dashboard/artist';
       break;
@@ -43,15 +54,21 @@ export const navigateToRoleDashboard = (
       targetDashboard = '/dashboard/other';
       break;
     default:
-      console.error("[Dashboard Navigation] Invalid role:", userRole);
-      navigate("/profile/edit");
+      console.error("[Dashboard Navigation] Invalid role:", normalizedRole);
+      navigate("/choose-role");
       toast.error("Invalid user role. Please update your profile.");
       return;
   }
 
   console.log("[Dashboard Navigation] Redirecting to:", targetDashboard);
+  
   // Use direct href navigation for more reliable redirection
-  window.location.href = targetDashboard;
+  if (window.location.pathname !== targetDashboard) {
+    console.log("[Dashboard Navigation] Current path differs from target, performing navigation");
+    navigate(targetDashboard);
+  } else {
+    console.log("[Dashboard Navigation] Already on correct dashboard");
+  }
 };
 
 /**

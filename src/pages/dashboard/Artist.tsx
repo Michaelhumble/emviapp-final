@@ -23,7 +23,7 @@ const ArtistDashboardPage = () => {
   }, [userRole]);
 
   // Define allowed roles for this dashboard - strictly enforce artist roles only
-  const allowedRoles: UserRole[] = ['artist'];
+  const allowedRoles: UserRole[] = ['artist', 'nail technician/artist', 'renter'];
 
   return (
     <Layout>
