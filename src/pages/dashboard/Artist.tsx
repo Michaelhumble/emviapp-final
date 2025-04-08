@@ -6,6 +6,7 @@ import ArtistDashboard from "@/components/dashboard/artist/ArtistDashboard";
 import DashboardRouteProtection from "@/components/dashboard/DashboardRouteProtection";
 import { UserRole } from "@/context/auth/types";
 import { useEffect } from "react";
+import { ArtistDataProvider } from "@/components/dashboard/artist/context/ArtistDataContext";
 
 const ArtistDashboardPage = () => {
   // Set page title
@@ -13,7 +14,7 @@ const ArtistDashboardPage = () => {
     document.title = "Artist Dashboard | EmviApp";
   }, []);
 
-  // Define allowed roles for this dashboard
+  // Define allowed roles for this dashboard - strictly enforce artist roles only
   const allowedRoles: UserRole[] = ['artist', 'nail technician/artist'];
 
   return (
@@ -25,11 +26,13 @@ const ArtistDashboardPage = () => {
         transition={{ duration: 0.5 }}
       >
         <DashboardRouteProtection allowedRoles={allowedRoles} dashboardType="Artist">
-          <div className="container px-4 mx-auto py-12">
-            <RoleDashboardLayout>
-              <ArtistDashboard />
-            </RoleDashboardLayout>
-          </div>
+          <ArtistDataProvider>
+            <div className="container px-4 mx-auto py-12">
+              <RoleDashboardLayout>
+                <ArtistDashboard />
+              </RoleDashboardLayout>
+            </div>
+          </ArtistDataProvider>
         </DashboardRouteProtection>
       </motion.div>
     </Layout>

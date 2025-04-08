@@ -69,11 +69,12 @@ const DashboardRouteProtection = ({
       return;
     }
     
-    // Check if user has access to this dashboard
+    // Check if user has access to this dashboard - with strict enforcement
     if (!hasRoleAccess(userRole, allowedRoles)) {
       console.warn(`[${dashboardType}] User with role ${userRole} attempted unauthorized access`);
-      toast.error(`You don't have access to the ${dashboardType} dashboard`);
-      navigate("/dashboard");
+      toast.error(`Access denied: This dashboard is for ${allowedRoles.join(' or ')} accounts only`);
+      navigate("/dashboard"); // Redirect to the dashboard selector
+      return;
     } else {
       console.log(`[${dashboardType}] Access granted to ${dashboardType} dashboard for role: ${userRole}`);
     }

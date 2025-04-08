@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { UserRole } from "@/context/auth/types";
-import { navigateToRoleDashboard } from "@/utils/navigation";
+import { navigateToRoleDashboard, normalizeUserRole } from "@/utils/navigation";
 import { useAuth } from "@/context/auth";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 
@@ -14,7 +14,7 @@ interface DashboardRedirectorProps {
 }
 
 const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRedirectorProps) => {
-  const { user, userRole, isSignedIn, isNewUser, clearIsNewUser } = useAuth();
+  const { user, userRole, isSignedIn, isNewUser, clearIsNewUser, refreshUserProfile } = useAuth();
   const navigate = useNavigate();
   const [showRoleModal, setShowRoleModal] = useState(false);
 
@@ -31,6 +31,17 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
       // First, try to use the role from context if available
       if (userRole) {
         console.log("[DashboardRedirector] Using role from context:", userRole);
+        
+        // Normalize the role to ensure consistent routing
+        const normalizedRole = normalizeUserRole(userRole);
+        console.log("[DashboardRedirector] Normalized role:", normalizedRole);
+        
+        if (normalizedRole === 'artist') {
+          console.log("[DashboardRedirector] Routing artist to artist dashboard");
+          navigate('/dashboard/artist');
+          return;
+        }
+        
         navigateToRoleDashboard(navigate, userRole);
         return;
       }
@@ -57,7 +68,23 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
       }
       
       // If we have a role, redirect to the appropriate dashboard
-      console.log("[DashboardRedirector] Redirecting with role:", profile.role);
+      console.log("[DashboardRedirector] Database role:", profile.role);
+      
+      // Normalize the role from database
+      const normalizedDbRole = normalizeUserRole(profile.role);
+      console.log("[DashboardRedirector] Normalized database role:", normalizedDbRole);
+      
+      // If artist, directly navigate to artist dashboard
+      if (normalizedDbRole === 'artist') {
+        console.log("[DashboardRedirector] Routing artist to artist dashboard");
+        navigate('/dashboard/artist');
+        
+        // Refresh user profile to ensure we have the role in context for next time
+        await refreshUserProfile();
+        return;
+      }
+      
+      // For other roles, use the standard navigation
       navigateToRoleDashboard(navigate, profile.role as UserRole);
       
     } catch (error) {
@@ -67,7 +94,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
     } finally {
       setLocalLoading(false);
     }
-  }, [user, userRole, isSignedIn, navigate, isNewUser, clearIsNewUser, setRedirectError, setLocalLoading]);
+  }, [user, userRole, isSignedIn, navigate, isNewUser, clearIsNewUser, setRedirectError, setLocalLoading, refreshUserProfile]);
 
   useEffect(() => {
     checkUserRoleAndRedirect();

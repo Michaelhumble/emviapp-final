@@ -57,10 +57,10 @@ export const normalizeUserRole = (role: string | null): UserRole | null => {
     case 'other':
       return normalizedRole as UserRole;
       
-    // Handle unknown roles
+    // Handle unknown roles - Don't default to customer anymore, return null for proper error handling
     default:
-      console.warn(`[Role] Unknown role: ${role}, defaulting to 'customer'`);
-      return 'customer';
+      console.warn(`[Role] Unknown role: ${role}, roles should be explicitly mapped`);
+      return null;
   }
 };
 
@@ -89,9 +89,11 @@ export const navigateToRoleDashboard = (
   // Route based on normalized role
   switch (normalizedRole) {
     case 'artist':
+    case 'nail technician/artist':
       targetDashboard = '/dashboard/artist';
       break;
     case 'salon':
+    case 'owner':
       targetDashboard = '/dashboard/salon';
       break;
     case 'customer':

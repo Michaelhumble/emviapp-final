@@ -13,6 +13,11 @@ const ArtistWelcomeBanner = ({ firstName }: ArtistWelcomeBannerProps) => {
   const navigate = useNavigate();
   const { artistProfile } = useArtistData();
   
+  // Get the first name from context if available, otherwise use prop
+  const displayName = artistProfile?.full_name 
+    ? artistProfile.full_name.split(' ')[0] 
+    : firstName || 'Artist';
+  
   const handlePreviewProfile = () => {
     // Navigate to public profile page using user ID
     if (artistProfile?.id) {
@@ -30,7 +35,7 @@ const ArtistWelcomeBanner = ({ firstName }: ArtistWelcomeBannerProps) => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-serif font-semibold mb-2">
-            Welcome back, {firstName || 'Artist'}! Let's grow your beauty career today.
+            Welcome back, {displayName}! Let's grow your beauty career today.
           </h1>
           
           {/* Vietnamese and English welcome text */}

@@ -18,8 +18,9 @@ import { useEffect } from 'react';
 import { UserProfile, UserRole } from '@/context/auth/types';
 import { Json } from '@/integrations/supabase/types';
 import ArtistWelcomeBanner from './ArtistWelcomeBanner';
+import { ArtistDataProvider } from './context/ArtistDataContext';
 
-// Define proper types for ArtistDashboard components if they don't exist
+// Define proper types for ArtistDashboard components
 interface ArtistBoostTrackerProps {
   profileViews: number;
 }
@@ -145,42 +146,44 @@ const ArtistDashboard = () => {
   };
 
   return (
-    <div className="space-y-8">
-      {/* Artist-specific welcome banner */}
-      <ArtistWelcomeBanner firstName={userProfileData.full_name?.split(' ')[0] || 'Artist'} />
-      
-      {/* Artist-specific notification section */}
-      <BookingNotificationsSection />
-      
-      {/* Artist Dashboard Header */}
-      <ArtistDashboardHeader profile={userProfileData} />
-      
-      {/* Artist Boost Tracker */}
-      <ArtistBoostTracker {...boostTrackerProps} />
-      
-      {/* Primary content section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <ArtistDashboardContent artistData={userProfileData} />
+    <ArtistDataProvider>
+      <div className="space-y-8">
+        {/* Artist-specific welcome banner */}
+        <ArtistWelcomeBanner firstName={userProfileData.full_name?.split(' ')[0] || 'Artist'} />
+        
+        {/* Artist-specific notification section */}
+        <BookingNotificationsSection />
+        
+        {/* Artist Dashboard Header */}
+        <ArtistDashboardHeader profile={userProfileData} />
+        
+        {/* Artist Boost Tracker */}
+        <ArtistBoostTracker {...boostTrackerProps} />
+        
+        {/* Primary content section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <ArtistDashboardContent artistData={userProfileData} />
+          </div>
+          <div className="lg:col-span-1 space-y-6">
+            <ArtistMetricsSection />
+            <ArtistReferralCenter />
+          </div>
         </div>
-        <div className="lg:col-span-1 space-y-6">
-          <ArtistMetricsSection />
-          <ArtistReferralCenter />
-        </div>
+        
+        {/* Artist Portfolio Section */}
+        <ArtistPortfolioSection />
+        
+        {/* Artist Bookings Panel */}
+        <ArtistBookingsPanel />
+        
+        {/* Artist Services Section */}
+        <ArtistServicesSection />
+        
+        {/* Artist Toolkit */}
+        <ArtistToolkitSection {...toolkitSectionProps} />
       </div>
-      
-      {/* Artist Portfolio Section */}
-      <ArtistPortfolioSection />
-      
-      {/* Artist Bookings Panel */}
-      <ArtistBookingsPanel />
-      
-      {/* Artist Services Section */}
-      <ArtistServicesSection />
-      
-      {/* Artist Toolkit */}
-      <ArtistToolkitSection {...toolkitSectionProps} />
-    </div>
+    </ArtistDataProvider>
   );
 };
 
