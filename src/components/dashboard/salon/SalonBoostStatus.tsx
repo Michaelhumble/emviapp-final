@@ -6,9 +6,11 @@ import { Flame, ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatDistanceToNow, isAfter } from "date-fns";
 import { useState, useEffect } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const SalonBoostStatus = () => {
   const { user, userProfile } = useAuth();
+  const { t } = useTranslation();
   const [isBoosted, setIsBoosted] = useState(false);
   const [boostEndDate, setBoostEndDate] = useState<Date | null>(null);
   
@@ -38,10 +40,10 @@ const SalonBoostStatus = () => {
                   <Flame className="h-5 w-5 text-amber-500" />
                 </motion.div>
                 <div>
-                  <h3 className="font-medium text-amber-800">Your salon profile is currently boosted!</h3>
+                  <h3 className="font-medium text-amber-800">{t("Your salon profile is currently boosted!")}</h3>
                   {boostEndDate && (
                     <p className="text-sm text-amber-700">
-                      Your boost expires in {formatDistanceToNow(boostEndDate)}
+                      {t("Your boost expires in")} {formatDistanceToNow(boostEndDate)}
                     </p>
                   )}
                 </div>
@@ -52,9 +54,9 @@ const SalonBoostStatus = () => {
                   <Flame className="h-5 w-5 text-gray-400" />
                 </div>
                 <div>
-                  <h3 className="font-medium">Boost your salon for more visibility</h3>
+                  <h3 className="font-medium">{t("Boost your salon for more visibility")}</h3>
                   <p className="text-sm text-gray-500">
-                    Tăng cường hồ sơ tiệm của bạn để thu hút nhiều kỹ thuật viên hơn
+                    {t("Tăng cường hồ sơ tiệm của bạn để thu hút nhiều kỹ thuật viên hơn")}
                   </p>
                 </div>
               </>
@@ -66,7 +68,7 @@ const SalonBoostStatus = () => {
               className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600"
               size="sm"
             >
-              Boost Now <ArrowUpRight className="ml-1 h-4 w-4" />
+              {t("Boost Now")} <ArrowUpRight className="ml-1 h-4 w-4" />
             </Button>
           )}
         </div>
