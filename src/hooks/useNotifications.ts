@@ -1,7 +1,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Notification, NotificationResponse } from '@/types/notification';
+import { Notification } from '@/types/notification';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
@@ -32,15 +32,20 @@ export const useNotifications = () => {
       if (error) throw error;
 
       // Format notifications
-      const formattedNotifications: Notification[] = data.map(item => ({
-        id: item.id,
-        message: item.description,
-        type: item.activity_type as 'info' | 'warning' | 'success' | 'error',
-        createdAt: item.created_at,
-        isRead: item.metadata?.is_read || false,
-        link: item.metadata?.link,
-        metadata: item.metadata || {}
-      }));
+      const formattedNotifications: Notification[] = data.map(item => {
+        // Ensure metadata is an object
+        const metadata = typeof item.metadata === 'object' ? item.metadata : {};
+        
+        return {
+          id: item.id,
+          message: item.description,
+          type: item.activity_type as 'info' | 'warning' | 'success' | 'error',
+          createdAt: item.created_at,
+          isRead: metadata?.is_read || false,
+          link: metadata?.link || null,
+          metadata: metadata as Record<string, any>
+        };
+      });
 
       // Calculate unread count
       const unread = formattedNotifications.filter(n => !n.isRead).length;
@@ -63,14 +68,14 @@ export const useNotifications = () => {
       if (!notification) return;
       
       // Update the metadata field to mark as read
+      const updatedMetadata = {
+        ...notification.metadata,
+        is_read: true
+      };
+      
       const { error } = await supabase
         .from('activity_log')
-        .update({ 
-          metadata: { 
-            ...notification.metadata,
-            is_read: true 
-          } 
-        })
+        .update({ metadata: updatedMetadata })
         .eq('id', id)
         .eq('user_id', user.id);
 
@@ -100,14 +105,14 @@ export const useNotifications = () => {
       const unreadNotifications = notifications.filter(n => !n.isRead);
       
       for (const notification of unreadNotifications) {
+        const updatedMetadata = {
+          ...notification.metadata,
+          is_read: true
+        };
+        
         await supabase
           .from('activity_log')
-          .update({ 
-            metadata: { 
-              ...notification.metadata,
-              is_read: true 
-            } 
-          })
+          .update({ metadata: updatedMetadata })
           .eq('id', notification.id)
           .eq('user_id', user.id);
       }
@@ -144,6 +149,7 @@ export const useNotifications = () => {
         },
         (payload) => {
           const newItem = payload.new as any;
+          const metadata = typeof newItem.metadata === 'object' ? newItem.metadata : {};
           
           // Format the new notification
           const newNotification: Notification = {
@@ -151,9 +157,9 @@ export const useNotifications = () => {
             message: newItem.description,
             type: newItem.activity_type || 'info',
             createdAt: newItem.created_at,
-            isRead: newItem.metadata?.is_read || false,
-            link: newItem.metadata?.link,
-            metadata: newItem.metadata || {}
+            isRead: metadata?.is_read || false,
+            link: metadata?.link || null,
+            metadata: metadata as Record<string, any>
           };
 
           // Update state with new notification
