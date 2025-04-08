@@ -30,8 +30,24 @@ export const useNotifications = () => {
       
       if (error) throw error;
       
+      if (!data) {
+        setNotifications([]);
+        setUnreadCount(0);
+        return;
+      }
+      
+      // Map to our notification type
+      const notificationsData: Notification[] = data.map(item => ({
+        id: item.id,
+        message: item.message,
+        type: item.type as 'info' | 'warning' | 'success' | 'error',
+        createdAt: item.created_at,
+        isRead: item.is_read,
+        link: item.link,
+        metadata: item.metadata
+      }));
+      
       // Calculate unread count
-      const notificationsData = data as Notification[];
       const unread = notificationsData.filter(n => !n.isRead).length;
 
       setNotifications(notificationsData);

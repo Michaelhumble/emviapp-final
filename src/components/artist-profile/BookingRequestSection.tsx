@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -12,6 +11,7 @@ import { UserProfile } from "@/types/profile";
 import { DaySchedule } from "@/components/dashboard/artist/types/ArtistDashboardTypes";
 import { format } from "date-fns";
 import { CalendarIcon, Clock } from "lucide-react";
+import BookingConfirmationModal from "./BookingConfirmationModal";
 
 interface BookingTime {
   day: string;
@@ -38,9 +38,9 @@ const BookingRequestSection = ({ profile, services }: BookingRequestSectionProps
   const [note, setNote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [step, setStep] = useState(1);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const { user, userRole } = useAuth();
   
-  // Extract artist's availability schedule from preferences
   const getAvailabilitySchedule = (): DaySchedule[] => {
     if (!profile?.preferences) return [];
     
@@ -64,13 +64,11 @@ const BookingRequestSection = ({ profile, services }: BookingRequestSectionProps
     .filter(day => day.active)
     .map(day => day.day.toLowerCase());
   
-  // Determine if a date should be disabled based on artist's availability
   const isDateAvailable = (date: Date) => {
     const day = format(date, 'EEEE').toLowerCase();
     return availableDays.includes(day);
   };
   
-  // Get available time slots for the selected date
   const getAvailableTimeSlots = () => {
     if (!date) return [];
     
@@ -82,12 +80,14 @@ const BookingRequestSection = ({ profile, services }: BookingRequestSectionProps
     return matchingDay ? [matchingDay.time] : [];
   };
   
-  // Format for display
   const getFormattedDate = () => {
     return date ? format(date, 'MMMM d, yyyy') : '';
   };
   
-  // Handle booking submission
+  const getSelectedServiceObject = () => {
+    return services.find(service => service.id === selectedService) || null;
+  };
+  
   const handleSubmitBooking = async () => {
     if (!user || !date || !time || !selectedService) {
       toast.error("Please fill in all required fields");
@@ -97,7 +97,6 @@ const BookingRequestSection = ({ profile, services }: BookingRequestSectionProps
     setIsSubmitting(true);
     
     try {
-      // Create booking record
       const { data, error } = await supabase
         .from('bookings')
         .insert({
@@ -106,6 +105,7 @@ const BookingRequestSection = ({ profile, services }: BookingRequestSectionProps
           date_requested: format(date, 'yyyy-MM-dd'),
           time_requested: time,
           note: note,
+          service_id: selectedService,
           status: 'pending'
         });
       
@@ -113,12 +113,12 @@ const BookingRequestSection = ({ profile, services }: BookingRequestSectionProps
       
       toast.success("Booking request sent successfully!");
       setIsOpen(false);
-      // Reset form
       setDate(undefined);
       setTime("");
       setSelectedService("");
       setNote("");
       setStep(1);
+      setShowConfirmation(false);
     } catch (error) {
       console.error("Error submitting booking:", error);
       toast.error("Failed to send booking request. Please try again.");
@@ -127,12 +127,10 @@ const BookingRequestSection = ({ profile, services }: BookingRequestSectionProps
     }
   };
 
-  // Only show for customers when artist accepts bookings
   if (userRole !== 'customer' || !profile.accepts_bookings) {
     return null;
   }
   
-  // Check if we have services and schedule
   const hasServices = services && services.length > 0;
   const hasSchedule = availabilitySchedule.some(day => day.active);
   
@@ -156,7 +154,8 @@ const BookingRequestSection = ({ profile, services }: BookingRequestSectionProps
       : "Anything you'd like to share?",
     submitButton: isVietnamese ? "Gửi Yêu Cầu Đặt Lịch" : "Submit Booking Request",
     next: isVietnamese ? "Tiếp Tục" : "Next",
-    back: isVietnamese ? "Quay Lại" : "Back"
+    back: isVietnamese ? "Quay Lại" : "Back",
+    review: isVietnamese ? "Xem Lại & Xác Nhận" : "Review & Confirm"
   };
   
   return (
@@ -238,7 +237,6 @@ const BookingRequestSection = ({ profile, services }: BookingRequestSectionProps
                       selected={date}
                       onSelect={setDate}
                       disabled={(date) => {
-                        // Disable past dates or dates that don't match available days
                         const today = new Date();
                         today.setHours(0, 0, 0, 0);
                         return date < today || !isDateAvailable(date);
@@ -290,24 +288,6 @@ const BookingRequestSection = ({ profile, services }: BookingRequestSectionProps
             {step === 3 && (
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-medium">{isVietnamese ? "Chi Tiết Đặt Lịch:" : "Booking Details:"}</h3>
-                  <div className="mt-2 p-3 bg-gray-50 rounded-md">
-                    <div className="flex items-center gap-2">
-                      <CalendarIcon className="h-4 w-4 text-gray-500" />
-                      <span>{getFormattedDate()}</span>
-                    </div>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Clock className="h-4 w-4 text-gray-500" />
-                      <span>{time}</span>
-                    </div>
-                    <div className="mt-1">
-                      <span className="text-gray-500">{isVietnamese ? "Dịch vụ:" : "Service:"} </span>
-                      <span>{services.find(s => s.id === selectedService)?.title}</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
                   <label className="block text-sm font-medium mb-1">
                     {translations.noteLabel}
                   </label>
@@ -327,16 +307,10 @@ const BookingRequestSection = ({ profile, services }: BookingRequestSectionProps
                     {translations.back}
                   </Button>
                   <Button
-                    onClick={handleSubmitBooking}
-                    disabled={isSubmitting}
+                    onClick={() => setShowConfirmation(true)}
                     className="bg-purple-600 hover:bg-purple-700 text-white"
                   >
-                    {isSubmitting ? (
-                      <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
-                        {isVietnamese ? "Đang gửi..." : "Sending..."}
-                      </div>
-                    ) : translations.submitButton}
+                    {translations.review}
                   </Button>
                 </div>
               </div>
@@ -344,6 +318,18 @@ const BookingRequestSection = ({ profile, services }: BookingRequestSectionProps
           </div>
         </DialogContent>
       </Dialog>
+      
+      <BookingConfirmationModal
+        open={showConfirmation}
+        onOpenChange={setShowConfirmation}
+        onConfirm={handleSubmitBooking}
+        profile={profile}
+        selectedService={getSelectedServiceObject()}
+        date={date}
+        time={time}
+        note={note}
+        isSubmitting={isSubmitting}
+      />
     </div>
   );
 };
