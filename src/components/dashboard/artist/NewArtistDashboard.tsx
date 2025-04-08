@@ -36,7 +36,8 @@ const NewArtistDashboard = () => {
       }
       
       console.log('[NewArtistDashboard] Profile data fetched successfully');
-      return data as UserProfile;
+      // Explicitly cast the data to UserProfile to ensure type safety
+      return data as unknown as UserProfile;
     },
     enabled: !!user?.id
   });
