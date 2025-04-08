@@ -47,7 +47,7 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
       return {
         id: `portfolio-${index}`,
         url: url,
-        name: fileName
+        name: fileName // This is now required
       };
     });
     
@@ -137,6 +137,7 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
     fetchArtistProfile();
   };
   
+  // Create the value object with all required properties from ArtistDataContextType
   const value: ArtistDataContextType = {
     artistProfile: state.artistProfile,
     loading: state.loading,

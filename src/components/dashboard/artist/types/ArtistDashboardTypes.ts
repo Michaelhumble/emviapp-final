@@ -45,14 +45,14 @@ export interface BookingCounts {
   upcoming: number;
 }
 
-// Updated PortfolioImage interface to include the name property
+// Updated PortfolioImage interface to make name property required
 export interface PortfolioImage {
   id: string;
   url: string;
   thumbnail_url?: string;
   alt_text?: string;
   created_at?: string;
-  name?: string; // Added name property
+  name: string; // Making this required to fix the error
 }
 
 // Updated ArtistDataContextType interface to match what's being used in the components
@@ -66,7 +66,7 @@ export interface ArtistDataContextType {
   copied?: boolean;
   firstName?: string;
   userCredits?: number;
-  refreshArtistProfile?: () => Promise<void>;
+  refreshArtistProfile: () => Promise<void>; // Added this required property
   portfolioImages: PortfolioImage[];
   loadingPortfolio: boolean;
 }
@@ -87,9 +87,9 @@ export interface ArtistProfileState {
   is_available?: boolean;
   // Add properties used in components
   portfolio_urls?: string[];
-  preferred_language?: string;
-  accepts_bookings?: boolean;
-  preferences?: string[];
+  preferred_language?: string; // Added property
+  accepts_bookings?: boolean; // Added property
+  preferences?: string[]; // Added property
   credits?: number;
   affiliate_code?: string;
   referral_count?: number;

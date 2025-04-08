@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { X } from "lucide-react";
+import { PortfolioImage } from "../types/ArtistDashboardTypes";
 
 interface ArtistPortfolioViewerProps {
-  image: { url: string; name: string; id: string } | null;
+  image: PortfolioImage | null;
   onClose: () => void;
 }
 
