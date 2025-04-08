@@ -5,6 +5,7 @@ import { Loader2, AlertTriangle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
+import { navigateToRoleDashboard } from "@/utils/navigation";
 
 /**
  * Dashboard page that handles loading user profile and redirecting to role-specific dashboards
@@ -66,38 +67,13 @@ const DashboardPage = () => {
     
     // If we have a role, redirect to the appropriate dashboard
     if (userRole) {
-      console.log("Redirecting to dashboard for role:", userRole);
-      
-      switch (userRole) {
-        case 'artist':
-        case 'nail technician/artist':
-          navigate('/dashboard/artist');
-          break;
-        case 'salon':
-        case 'owner':
-          navigate('/dashboard/salon');
-          break;
-        case 'customer':
-          navigate('/dashboard/customer');
-          break;
-        case 'supplier':
-        case 'vendor':
-        case 'beauty supplier':
-          navigate('/dashboard/supplier');
-          break;
-        case 'freelancer':
-          navigate('/dashboard/freelancer');
-          break;
-        case 'renter':
-          navigate('/dashboard/artist'); // Renters see artist dashboard
-          break;
-        case 'other':
-        default:
-          navigate('/dashboard/other');
-      }
+      console.log("[Dashboard Router] User role detected:", userRole);
+      navigateToRoleDashboard(navigate, userRole);
     } else if (!loading && user) {
       // If no role but user is logged in, redirect to role selection
-      navigate("/select-role");
+      console.log("[Dashboard Router] No role detected for user, redirecting to role selection");
+      navigate("/choose-role");
+      toast.error("Please select your role to access your dashboard");
     }
   }, [user, userRole, loading, navigate]);
   
