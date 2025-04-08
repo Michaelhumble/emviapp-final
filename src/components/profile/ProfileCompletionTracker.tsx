@@ -1,12 +1,12 @@
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/context/auth";
-import { UserRole } from "@/context/auth/types";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Check, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Target } from "lucide-react";
 import { Link } from "react-router-dom";
+import ProfileCompletionCard from "./ProfileCompletionCard";
 
 const ProfileCompletionTracker = () => {
   const { userProfile } = useAuth();
@@ -71,47 +71,7 @@ const ProfileCompletionTracker = () => {
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
-      className="mb-8 bg-white rounded-xl border border-gray-100 shadow-sm p-6"
-    >
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-        <div>
-          <h3 className="text-lg font-serif font-medium mb-1 flex items-center">
-            <Sparkles className="h-5 w-5 text-amber-500 mr-2" />
-            Profile Completion
-          </h3>
-          <p className="text-sm text-gray-500">The more you complete, the more EmviApp works for you.</p>
-        </div>
-        <div className="mt-2 md:mt-0">
-          {completionPercentage === 100 ? (
-            <div className="flex items-center text-green-600 font-medium">
-              <Check className="h-5 w-5 mr-1" /> Complete!
-            </div>
-          ) : (
-            <Link to="/profile/edit">
-              <Button size="sm">
-                Complete Profile <ArrowRight className="ml-1 h-4 w-4" />
-              </Button>
-            </Link>
-          )}
-        </div>
-      </div>
-      
-      <Progress value={completionPercentage} className="h-2 mb-2" />
-      
-      <div className="flex justify-between text-sm mt-2">
-        <span className="font-medium">{completionPercentage}% Complete</span>
-        {incompleteFields.length > 0 && completionPercentage < 100 && (
-          <span className="text-gray-500">
-            Missing: {incompleteFields.slice(0, 2).join(', ')}
-            {incompleteFields.length > 2 ? ` and ${incompleteFields.length - 2} more` : ''}
-          </span>
-        )}
-      </div>
-    </motion.div>
+    <ProfileCompletionCard />
   );
 };
 

@@ -1,120 +1,199 @@
 
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/context/auth';
+import { motion } from 'framer-motion';
 import { Progress } from "@/components/ui/progress";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CheckCircle, XCircle, UserCheck, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, AlertCircle, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useAuth } from '@/context/auth';
+import { useState, useEffect } from 'react';
 
 const ProfileCompletionCard = () => {
-  const { userProfile } = useAuth();
+  const { t } = useTranslation();
+  const { userProfile, userRole } = useAuth();
   const [completionPercentage, setCompletionPercentage] = useState(0);
-  const [missingFields, setMissingFields] = useState<string[]>([]);
-
+  const [checklistItems, setChecklistItems] = useState<{ name: string; completed: boolean }[]>([]);
+  
   useEffect(() => {
-    if (!userProfile) {
-      setCompletionPercentage(0);
-      return;
-    }
-
-    // Define required fields based on user role
-    const requiredFields: Record<string, string[]> = {
-      'artist': ['full_name', 'email', 'phone', 'specialty', 'bio', 'avatar_url', 'instagram'],
-      'nail technician/artist': ['full_name', 'email', 'phone', 'specialty', 'bio', 'avatar_url', 'instagram'],
-      'salon': ['full_name', 'email', 'phone', 'salon_name', 'location', 'bio'],
-      'owner': ['full_name', 'email', 'phone', 'salon_name', 'location'],
-      'vendor': ['full_name', 'email', 'phone', 'company_name', 'product_type'],
-      'supplier': ['full_name', 'email', 'phone', 'company_name', 'product_type'],
-      'beauty supplier': ['full_name', 'email', 'phone', 'company_name', 'product_type'],
-      'freelancer': ['full_name', 'email', 'phone', 'specialty', 'bio', 'avatar_url'],
-      'renter': ['full_name', 'email', 'phone', 'specialty', 'bio'],
-      'customer': ['full_name', 'email', 'location'],
-      'other': ['full_name', 'email'],
-    };
-
-    // Get the required fields for the user's role
-    const fieldsToCheck = requiredFields[userProfile.role || 'customer'] || requiredFields['customer'];
+    if (!userProfile) return;
     
-    // Count how many required fields are filled
-    const filledFields = fieldsToCheck.filter(field => {
-      const value = userProfile[field as keyof typeof userProfile];
-      return value !== undefined && value !== null && value !== '';
-    });
+    // Define the checklist items based on the user profile data
+    const items = [
+      {
+        name: t({ 
+          english: 'Profile Picture', 
+          vietnamese: 'Ảnh hồ sơ' 
+        }),
+        completed: !!userProfile.avatar_url
+      },
+      {
+        name: t({ 
+          english: 'Bio & Specialty', 
+          vietnamese: 'Tiểu sử & Chuyên môn' 
+        }),
+        completed: !!(userProfile.bio && userProfile.specialty)
+      },
+      {
+        name: t({ 
+          english: 'Portfolio Uploaded', 
+          vietnamese: 'Bộ sưu tập đã tải lên' 
+        }),
+        completed: !!(userProfile.gallery && userProfile.gallery.length > 0)
+      },
+      {
+        name: t({ 
+          english: 'Services Added', 
+          vietnamese: 'Dịch vụ đã thêm' 
+        }),
+        completed: !!(userProfile.services && userProfile.services.length > 0)
+      },
+      {
+        name: t({ 
+          english: 'Referral Link Shared', 
+          vietnamese: 'Đã chia sẻ liên kết giới thiệu' 
+        }),
+        completed: !!(userProfile.referral_count && userProfile.referral_count > 0)
+      }
+    ];
     
-    const missing = fieldsToCheck.filter(field => {
-      const value = userProfile[field as keyof typeof userProfile];
-      return value === undefined || value === null || value === '';
-    });
-    
-    setMissingFields(missing.map(formatFieldName));
+    setChecklistItems(items);
     
     // Calculate completion percentage
-    const percentage = Math.floor((filledFields.length / fieldsToCheck.length) * 100);
+    const completedItems = items.filter(item => item.completed).length;
+    const percentage = Math.round((completedItems / items.length) * 100);
     setCompletionPercentage(percentage);
-  }, [userProfile]);
-
-  const formatFieldName = (field: string): string => {
-    switch (field) {
-      case 'full_name': return 'Full Name';
-      case 'avatar_url': return 'Profile Photo';
-      case 'salon_name': return 'Salon Name';
-      case 'company_name': return 'Company Name';
-      case 'product_type': return 'Product Type';
-      default:
-        // Convert camelCase to words with spaces and capitalize first letter
-        return field.replace(/([A-Z])/g, ' $1')
-          .replace(/_/g, ' ')
-          .replace(/^\w/, c => c.toUpperCase());
+  }, [userProfile, t]);
+  
+  // Animation variants
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        duration: 0.6,
+        delay: 0.1
+      }
     }
   };
-
-  if (!userProfile) {
-    return null;
-  }
-
+  
+  const progressVariants = {
+    hidden: { width: '0%' },
+    visible: { 
+      width: `${completionPercentage}%`,
+      transition: { 
+        duration: 0.8,
+        delay: 0.3,
+        ease: "easeOut"
+      }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { opacity: 0, x: -5 },
+    visible: (i: number) => ({ 
+      opacity: 1, 
+      x: 0,
+      transition: { 
+        delay: 0.4 + (i * 0.1),
+        duration: 0.3
+      }
+    })
+  };
+  
   return (
-    <Card className={`shadow-sm ${completionPercentage === 100 ? 'bg-green-50' : ''}`}>
-      <CardContent className="p-4">
-        <div className="flex justify-between items-center">
-          <div>
-            <h3 className="font-medium mb-1">
-              {completionPercentage === 100 ? (
-                <div className="flex items-center text-green-600">
-                  <CheckCircle2 className="h-4 w-4 mr-1" />
-                  Profile Complete
-                </div>
-              ) : (
-                <div className="flex items-center">
-                  <AlertCircle className="h-4 w-4 mr-1 text-amber-500" />
-                  Complete Your Profile: {completionPercentage}%
-                </div>
-              )}
-            </h3>
-            
-            {completionPercentage < 100 && (
-              <div className="mb-2">
-                <Progress value={completionPercentage} className="h-2" />
+    <motion.div
+      variants={cardVariants}
+      initial="hidden"
+      animate="visible"
+      className="w-full"
+    >
+      <Card className="border border-purple-100 shadow-sm overflow-hidden backdrop-blur-sm bg-white/90">
+        <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50 pb-4">
+          <CardTitle className="flex items-center text-lg font-medium">
+            <UserCheck className="h-5 w-5 text-purple-500 mr-2" />
+            {t({
+              english: 'Your Profile Progress',
+              vietnamese: 'Tiến Độ Hồ Sơ'
+            })}
+          </CardTitle>
+        </CardHeader>
+        
+        <CardContent className="p-6">
+          <div className="mb-6">
+            <div className="flex justify-between items-center mb-2">
+              <div className="font-medium text-lg">
+                {completionPercentage}% {t({
+                  english: 'Complete',
+                  vietnamese: 'Hoàn thành'
+                })}
               </div>
-            )}
+              <div className="text-sm text-gray-500">
+                {t({
+                  english: `${checklistItems.filter(item => item.completed).length} of ${checklistItems.length} tasks done`,
+                  vietnamese: `${checklistItems.filter(item => item.completed).length} / ${checklistItems.length} nhiệm vụ`
+                })}
+              </div>
+            </div>
             
-            {missingFields.length > 0 && completionPercentage < 100 && (
-              <p className="text-sm text-gray-500 mt-2">
-                Missing: {missingFields.slice(0, 2).join(', ')}
-                {missingFields.length > 2 ? ` and ${missingFields.length - 2} more` : ''}
-              </p>
-            )}
+            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+              <motion.div 
+                className="h-full bg-gradient-to-r from-purple-400 to-indigo-500 rounded-full"
+                variants={progressVariants}
+                initial="hidden"
+                animate="visible"
+              />
+            </div>
           </div>
           
-          <Link to="/profile/edit">
-            <Button variant={completionPercentage === 100 ? "outline" : "default"} size="sm">
-              {completionPercentage === 100 ? "Edit Profile" : "Complete Now"}
+          <div className="space-y-3 mb-6">
+            {checklistItems.map((item, index) => (
+              <motion.div 
+                key={index}
+                custom={index}
+                variants={itemVariants}
+                initial="hidden"
+                animate="visible"
+                className="flex items-center"
+              >
+                {item.completed ? (
+                  <div className="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center mr-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  </div>
+                ) : (
+                  <div className="h-5 w-5 rounded-full bg-gray-100 flex items-center justify-center mr-2">
+                    <XCircle className="h-4 w-4 text-gray-400" />
+                  </div>
+                )}
+                <span className={`text-sm ${item.completed ? 'text-gray-800' : 'text-gray-500'}`}>
+                  {item.name}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+          
+          <div className="mb-4">
+            <p className="text-sm text-center text-gray-600">
+              {t({
+                english: 'Complete your profile to unlock more bookings!',
+                vietnamese: 'Hoàn thiện hồ sơ để nhận nhiều lượt đặt hơn!'
+              })}
+            </p>
+          </div>
+          
+          <Button asChild className="w-full" variant={completionPercentage === 100 ? "outline" : "default"}>
+            <Link to="/profile/edit" className="flex items-center justify-center">
+              {t({
+                english: 'Update Profile',
+                vietnamese: 'Cập Nhật Hồ Sơ'
+              })}
               <ChevronRight className="ml-1 h-4 w-4" />
-            </Button>
-          </Link>
-        </div>
-      </CardContent>
-    </Card>
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
 
