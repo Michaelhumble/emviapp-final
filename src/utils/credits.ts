@@ -170,7 +170,7 @@ export const supportArtist = async (
   }
 };
 
-// New function to get referral stats for a user
+// Function to get referral stats for a user
 export const getReferralStats = async (userId: string) => {
   if (!userId) return null;
   
@@ -302,7 +302,7 @@ export const approveCreditEarning = async (earningId: string): Promise<boolean> 
     }
     
     // Ensure earning data is valid and has required properties
-    if (typeof earningData !== 'object') {
+    if (!earningData || typeof earningData !== 'object') {
       console.error("Invalid earning data structure:", earningData);
       return false;
     }
