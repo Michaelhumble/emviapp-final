@@ -61,6 +61,7 @@ const ArtistDashboard = () => {
 
   // Prepare props for components that need specific data
   const boostTrackerProps: ArtistBoostTrackerProps = {
+    // Default to 0 if profile_views doesn't exist on the data object
     profileViews: data?.profile_views || 0
   };
   
@@ -79,7 +80,7 @@ const ArtistDashboard = () => {
       <BookingNotificationsSection />
       
       {/* Artist Dashboard Header */}
-      <ArtistDashboardHeader artistName={data?.full_name} artistData={data} />
+      <ArtistDashboardHeader profile={data} />
       
       {/* Artist Boost Tracker */}
       <ArtistBoostTracker {...boostTrackerProps} />
