@@ -12,17 +12,11 @@ import { DaySchedule } from "@/components/dashboard/artist/types/ArtistDashboard
 import { format } from "date-fns";
 import { CalendarIcon, Clock } from "lucide-react";
 import BookingConfirmationModal from "./BookingConfirmationModal";
+import { Service } from "@/pages/u/artist-profile/types";
 
 interface BookingTime {
   day: string;
   time: string;
-}
-
-interface Service {
-  id: string;
-  title: string;
-  price: number;
-  duration_minutes: number;
 }
 
 interface BookingRequestSectionProps {
