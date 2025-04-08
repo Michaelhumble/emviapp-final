@@ -14,6 +14,7 @@ import ContactSection from "@/components/artist-profile/ContactSection";
 import ProfileLoading from "@/components/artist-profile/ProfileLoading";
 import ProfileNotFound from "@/components/artist-profile/ProfileNotFound";
 import SuggestedArtists from "@/components/artists/SuggestedArtists";
+import BookingRequestSection from "@/components/artist-profile/BookingRequestSection";
 
 interface Service {
   id: string;
@@ -184,6 +185,10 @@ const ArtistPublicProfile = () => {
           
           <PortfolioGallery images={portfolioImages} />
           <ServicesSection services={services} />
+          
+          {/* Add Booking Request Section */}
+          <BookingRequestSection profile={profile} services={services} />
+          
           <ContactSection profile={profile} isSalonOwner={isSalonOwner} />
           
           {/* Artist suggestions */}
