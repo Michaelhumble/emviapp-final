@@ -1,8 +1,10 @@
 
-import { User } from "@supabase/supabase-js";
-import { Link, useNavigate } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import React, { useState } from "react";
+import { 
+  Avatar, 
+  AvatarFallback, 
+  AvatarImage 
+} from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,99 +14,111 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { UserRole } from "@/context/auth/types";
-import { getInitials } from "@/utils/userUtils";
+import { Button } from "@/components/ui/button";
 import { 
-  LogOut, Settings, User as UserIcon, 
-  Home, BookOpenText, Calendar, 
-  Sparkles, ChevronDown 
+  User, 
+  Settings, 
+  LogOut, 
+  CreditCard, 
+  LayoutDashboard, 
+  UserPlus, 
+  MessageSquare 
 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/context/auth";
+import { NotificationCenter } from "@/components/notifications/NotificationCenter";
 
-interface UserMenuProps {
-  user: User;
-  userRole: UserRole | null;
-  handleSignOut: () => Promise<void>;
-}
-
-const UserMenu = ({ user, userRole, handleSignOut }: UserMenuProps) => {
-  const navigate = useNavigate();
-  const userEmail = user.email || '';
-  const userName = user.user_metadata?.name || userEmail;
+export function UserMenu() {
+  const { user, signOut, userProfile } = useAuth();
+  const [open, setOpen] = useState(false);
   
-  // Get role-specific dashboard label
-  const getDashboardLabel = () => {
-    switch (userRole) {
-      case 'artist':
-      case 'nail technician/artist':
-        return "Artist Dashboard";
-      case 'salon':
-      case 'owner':
-        return "Salon Dashboard";
-      case 'customer':
-        return "Beauty Dashboard";
-      case 'freelancer':
-        return "Freelancer Hub";
-      default:
-        return "Dashboard";
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      setOpen(false);
+    } catch (error) {
+      console.error("Error signing out:", error);
     }
+  };
+
+  const getInitials = () => {
+    if (!userProfile?.full_name) return "U";
+    
+    const names = userProfile.full_name.split(" ");
+    if (names.length > 1) {
+      return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
+    }
+    return names[0][0].toUpperCase();
   };
   
   return (
     <div className="flex items-center gap-2">
-      {/* Direct dashboard button */}
-      <Button 
-        variant="ghost" 
-        size="sm"
-        className="mr-1 hidden md:flex items-center gap-1 hover:bg-secondary"
-        onClick={() => navigate('/dashboard')}
-      >
-        <Sparkles className="h-4 w-4 text-amber-400 mr-1" />
-        {getDashboardLabel()}
-      </Button>
+      {user && <NotificationCenter className="mr-1" />}
       
-      <DropdownMenu>
+      <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-8 w-8 rounded-full">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={user.user_metadata?.avatar_url} alt={userName} />
-              <AvatarFallback>{getInitials(userName)}</AvatarFallback>
+              <AvatarImage src={userProfile?.avatar_url || ""} alt={userProfile?.full_name || "User"} />
+              <AvatarFallback className="bg-primary text-white">
+                {getInitials()}
+              </AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">{userName}</p>
+              <p className="text-sm font-medium leading-none">
+                {userProfile?.full_name || "User"}
+              </p>
               <p className="text-xs leading-none text-muted-foreground">
-                {userEmail}
+                {user?.email}
               </p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem onClick={() => navigate('/dashboard')}>
-              <Home className="mr-2 h-4 w-4" />
-              <span>{getDashboardLabel()}</span>
+            <DropdownMenuItem asChild>
+              <Link to="/dashboard" className="cursor-pointer w-full">
+                <LayoutDashboard className="mr-2 h-4 w-4" />
+                <span>Dashboard</span>
+              </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/profile')}>
-              <UserIcon className="mr-2 h-4 w-4" />
-              <span>My Profile</span>
+            <DropdownMenuItem asChild>
+              <Link to="/profile" className="cursor-pointer w-full">
+                <User className="mr-2 h-4 w-4" />
+                <span>Profile</span>
+              </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/jobs')}>
-              <BookOpenText className="mr-2 h-4 w-4" />
-              <span>Jobs Board</span>
+            <DropdownMenuItem asChild>
+              <Link to="/messages" className="cursor-pointer w-full">
+                <MessageSquare className="mr-2 h-4 w-4" />
+                <span>Messages</span>
+              </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/messages')}>
-              <Calendar className="mr-2 h-4 w-4" />
-              <span>Bookings</span>
+            <DropdownMenuItem asChild>
+              <Link to="/checkout" className="cursor-pointer w-full">
+                <CreditCard className="mr-2 h-4 w-4" />
+                <span>Credits</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/settings" className="cursor-pointer w-full">
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Settings</span>
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => navigate('/profile/edit')}>
-            <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
+          <DropdownMenuItem asChild>
+            <Link to="/referrals" className="cursor-pointer w-full">
+              <UserPlus className="mr-2 h-4 w-4" />
+              <span>Invite Friends</span>
+            </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleSignOut}>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
           </DropdownMenuItem>
@@ -112,6 +126,4 @@ const UserMenu = ({ user, userRole, handleSignOut }: UserMenuProps) => {
       </DropdownMenu>
     </div>
   );
-};
-
-export default UserMenu;
+}

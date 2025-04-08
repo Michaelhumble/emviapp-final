@@ -6,6 +6,7 @@ import { logRouteAccess } from "@/utils/routeChecker";
 import { AuthProvider } from "./context/auth";
 import { ProfileProvider } from "./context/profile";
 import { SubscriptionProvider } from "./context/subscription";
+import { NotificationProvider } from "./context/notification";
 
 // Import our components
 import LanguagePreference from "@/components/common/LanguagePreference";
@@ -27,9 +28,11 @@ const App = () => {
     <AuthProvider>
       <SubscriptionProvider>
         <ProfileProvider>
-          <Outlet />
-          <RouteLogger />
-          <LanguagePreference />
+          <NotificationProvider>
+            <Outlet />
+            <RouteLogger />
+            <LanguagePreference />
+          </NotificationProvider>
         </ProfileProvider>
       </SubscriptionProvider>
     </AuthProvider>
