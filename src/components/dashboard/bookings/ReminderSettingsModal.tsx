@@ -79,11 +79,13 @@ const ReminderSettingsModal = ({ isOpen, onClose }: ReminderSettingsModalProps) 
     setIsSaving(true);
     try {
       // Check if settings exist for this user
-      const { data, error: selectError } = await supabase
+      const { data: existingSettings, error: selectError } = await supabase
         .from("notification_settings" as any)
         .select("id")
         .eq("user_id", user.id)
         .maybeSingle();
+      
+      if (selectError) throw selectError;
       
       const settings: NotificationSettings = {
         user_id: user.id,
@@ -94,12 +96,15 @@ const ReminderSettingsModal = ({ isOpen, onClose }: ReminderSettingsModalProps) 
       
       let error;
       
-      if (data?.id) {
+      // Properly access the id with safer type checking
+      const existingSettingsData = existingSettings as any;
+      
+      if (existingSettingsData && existingSettingsData.id) {
         // Update existing settings
         const { error: updateError } = await supabase
           .from("notification_settings" as any)
           .update(settings)
-          .eq("id", data.id);
+          .eq("id", existingSettingsData.id);
         
         error = updateError;
       } else {
