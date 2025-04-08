@@ -1,23 +1,63 @@
 
-import { useTranslation } from "@/hooks/useTranslation";
+import { useAuth } from "@/context/auth";
+import { Progress } from "@/components/ui/progress";
 
 interface ReferralStatsProps {
   referralCount: number;
 }
 
 const ReferralStats = ({ referralCount }: ReferralStatsProps) => {
-  const { t } = useTranslation();
+  const { userProfile } = useAuth();
+  const preferredLanguage = userProfile?.preferred_language || "English";
+  const isVietnamese = preferredLanguage === "Vietnamese";
+  
+  // Progress calculation (assuming target is 10 referrals)
+  const targetReferrals = 10;
+  const referralProgress = Math.min(referralCount / targetReferrals * 100, 100);
+  
+  // Amount needed to reach next milestone
+  const creditsPerReferral = 50;
+  const earnedCredits = referralCount * creditsPerReferral;
   
   return (
-    <div className="flex justify-between items-center py-3 px-4 bg-blue-50 rounded-md">
+    <>
       <div>
-        <p className="text-sm font-medium text-blue-700">{t("Your Referrals")}</p>
-        <p className="text-xs text-blue-500">{t("Earn 20 credits per successful referral")}</p>
+        <div className="flex justify-between mb-1">
+          <span className="text-sm text-gray-600">
+            {isVietnamese ? "Số lượt giới thiệu" : "Your referrals"}
+          </span>
+          <span className="text-sm font-medium">
+            {referralCount}/{targetReferrals}
+          </span>
+        </div>
+        <Progress value={referralProgress} className="h-2" />
+        
+        <div className="flex justify-between items-center mt-3">
+          <div className="space-y-1">
+            <p className="text-sm text-gray-600">
+              {isVietnamese ? "Đã kiếm được" : "Earned"}
+            </p>
+            <p className="font-medium">
+              {earnedCredits} {isVietnamese ? "điểm" : "credits"}
+            </p>
+          </div>
+          <div className="space-y-1 text-right">
+            <p className="text-sm text-gray-600">
+              {isVietnamese ? "Còn lại để đạt mốc tiếp theo" : "Next milestone"}
+            </p>
+            <p className="font-medium">
+              {targetReferrals - referralCount} {isVietnamese ? "lượt giới thiệu" : "referrals"}
+            </p>
+          </div>
+        </div>
       </div>
-      <div className="bg-white py-1 px-3 rounded-full text-blue-600 font-medium border border-blue-100">
-        {referralCount}
-      </div>
-    </div>
+      
+      <p className="text-xs text-gray-500 mt-2">
+        {isVietnamese 
+          ? "Mỗi người được giới thiệu thành công sẽ mang đến cho bạn 50 điểm." 
+          : "Each successful referral brings you 50 Emvi credits."}
+      </p>
+    </>
   );
 };
 

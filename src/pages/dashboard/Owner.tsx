@@ -18,14 +18,34 @@ import VisibilityNotification from "@/components/dashboard/salon/VisibilityNotif
 import SalonListingsManagement from "@/components/dashboard/salon/SalonListingsManagement";
 import SalonCreditPromotion from "@/components/dashboard/salon/SalonCreditPromotion";
 import TopLocalArtists from "@/components/dashboard/salon/TopLocalArtists";
+import NextStepsSmart from "@/components/dashboard/salon/NextStepsSmart";
+import confetti from "canvas-confetti";
 
 const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
   const { userProfile } = useAuth();
+  const [showConfetti, setShowConfetti] = useState(false);
   
   useEffect(() => {
     document.title = "Salon Owner Dashboard | EmviApp";
     console.log("Owner Dashboard rendered with profile:", userProfile);
+    
+    // Check if we should show confetti (e.g., first login, recent referred user, etc.)
+    const shouldShowConfetti = localStorage.getItem('salon_success');
+    
+    if (shouldShowConfetti) {
+      // Remove the flag so it only shows once
+      localStorage.removeItem('salon_success');
+      
+      setTimeout(() => {
+        setShowConfetti(true);
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      }, 1000);
+    }
   }, [userProfile]);
   
   return (
@@ -44,6 +64,9 @@ const OwnerDashboard = () => {
               
               {/* NEW: Salon Boost Status */}
               <SalonBoostStatus />
+
+              {/* NEW: Next Steps Smart Panel */}
+              <NextStepsSmart />
               
               {/* Salon Quick Stats */}
               <SalonQuickStats />

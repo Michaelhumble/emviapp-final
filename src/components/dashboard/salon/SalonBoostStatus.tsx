@@ -7,12 +7,16 @@ import { motion } from "framer-motion";
 import { formatDistanceToNow, isAfter } from "date-fns";
 import { useState, useEffect } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { toast } from "sonner";
+import { vi } from "date-fns/locale";
 
 const SalonBoostStatus = () => {
   const { user, userProfile } = useAuth();
   const { t } = useTranslation();
   const [isBoosted, setIsBoosted] = useState(false);
   const [boostEndDate, setBoostEndDate] = useState<Date | null>(null);
+  const preferredLanguage = userProfile?.preferred_language || "English";
+  const isVietnamese = preferredLanguage === "Vietnamese";
   
   useEffect(() => {
     if (userProfile?.boosted_until) {
@@ -24,6 +28,11 @@ const SalonBoostStatus = () => {
       setBoostEndDate(null);
     }
   }, [userProfile]);
+  
+  const handleBoostClick = () => {
+    toast.info(isVietnamese ? "Đang chuyển đến trang tăng độ phổ biến..." : "Redirecting to salon boost options...");
+    // In a real implementation, this would navigate to a boost page or open a modal
+  };
   
   return (
     <Card className={`mb-6 border ${isBoosted ? 'border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50' : 'border-gray-200'}`}>
@@ -40,10 +49,15 @@ const SalonBoostStatus = () => {
                   <Flame className="h-5 w-5 text-amber-500" />
                 </motion.div>
                 <div>
-                  <h3 className="font-medium text-amber-800">{t("Your salon profile is currently boosted!")}</h3>
+                  <h3 className="font-medium text-amber-800">
+                    {isVietnamese ? "Hồ sơ tiệm của bạn đang được tăng cường!" : "Your salon profile is currently boosted!"}
+                  </h3>
                   {boostEndDate && (
                     <p className="text-sm text-amber-700">
-                      {t("Your boost expires in")} {formatDistanceToNow(boostEndDate)}
+                      {isVietnamese ? "Tăng cường của bạn hết hạn trong" : "Your boost expires in"}{" "}
+                      {formatDistanceToNow(boostEndDate, { 
+                        locale: isVietnamese ? vi : undefined 
+                      })}
                     </p>
                   )}
                 </div>
@@ -54,9 +68,11 @@ const SalonBoostStatus = () => {
                   <Flame className="h-5 w-5 text-gray-400" />
                 </div>
                 <div>
-                  <h3 className="font-medium">{t("Boost your salon for more visibility")}</h3>
+                  <h3 className="font-medium">
+                    {isVietnamese ? "Tăng độ phổ biến của tiệm để thu hút khách hàng" : "Boost your salon for more visibility"}
+                  </h3>
                   <p className="text-sm text-gray-500">
-                    {t("Tăng cường hồ sơ tiệm của bạn để thu hút nhiều kỹ thuật viên hơn")}
+                    {isVietnamese ? "Tăng cường hồ sơ tiệm của bạn để thu hút nhiều thợ nail hơn" : "Boost your salon profile to attract more nail technicians"}
                   </p>
                 </div>
               </>
@@ -67,8 +83,9 @@ const SalonBoostStatus = () => {
             <Button 
               className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600"
               size="sm"
+              onClick={handleBoostClick}
             >
-              {t("Boost Now")} <ArrowUpRight className="ml-1 h-4 w-4" />
+              {isVietnamese ? "Tăng Ngay" : "Boost Now"} <ArrowUpRight className="ml-1 h-4 w-4" />
             </Button>
           )}
         </div>
