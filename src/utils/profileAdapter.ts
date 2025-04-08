@@ -51,11 +51,7 @@ export const adaptUserProfile = (profile: AuthUserProfile | null): AppUserProfil
     accepts_bookings: profile.accepts_bookings || false,
     booking_url: profile.booking_url || '',
     boosted_until: profile.boosted_until || '',
-    
-    // Portfolio URLs field (missing in original)
     portfolio_urls: profile.portfolio_urls || [],
-    
-    // Referral code field (missing in original)
     referral_code: profile.referral_code || ''
   };
   

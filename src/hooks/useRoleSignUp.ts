@@ -2,10 +2,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
+import { UserRole } from "@/context/auth/types";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { UserRole } from "@/context/auth/types";
-import { isRoleEquivalent } from "@/utils/roleUtils";
+import { navigateToRoleDashboard } from "@/utils/navigation";
 
 export const useRoleSignUp = () => {
   const [email, setEmail] = useState("");
@@ -23,49 +23,68 @@ export const useRoleSignUp = () => {
     
     if (password !== confirmPassword) {
       setError("Passwords don't match");
-      toast.error("Passwords don't match");
-      return;
-    }
-
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
-      toast.error("Password must be at least 6 characters");
       return;
     }
     
     setIsSubmitting(true);
 
     try {
-      // Sign up with Supabase
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            user_type: selectedRole, // Store user role in metadata
-          },
-        },
-      });
+      console.log(`[SignUp] Starting sign-up with role: ${selectedRole}`);
       
-      if (signUpError) {
-        setError(signUpError.message);
-        toast.error(signUpError.message || "Failed to sign up");
+      // First, sign up the user with Supabase Auth
+      const signUpResponse = await signUp(email, password);
+      
+      if (signUpResponse.error) {
+        setError(signUpResponse.error.message || "Failed to sign up");
         setIsSubmitting(false);
         return;
       }
       
-      // Success!
-      toast.success("Account created successfully! Redirecting to dashboard...");
+      if (!signUpResponse.data.user) {
+        setError("No user data returned from sign-up");
+        setIsSubmitting(false);
+        return;
+      }
       
-      // Redirect based on role
-      setTimeout(() => {
-        redirectBasedOnRole(selectedRole, navigate);
-      }, 1500);
+      const userId = signUpResponse.data.user.id;
+      console.log(`[SignUp] User created with ID: ${userId}`);
       
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred");
-      toast.error(err.message || "Failed to sign up. Please try again.");
-      console.error("Sign up error:", err);
+      // Explicitly update user metadata with the selected role
+      const { error: metadataError } = await supabase.auth.updateUser({
+        data: { role: selectedRole }
+      });
+      
+      if (metadataError) {
+        console.error("[SignUp] Error updating user metadata:", metadataError);
+        // Continue anyway as we'll also update the public.users table
+      } else {
+        console.log(`[SignUp] Successfully set role in auth metadata: ${selectedRole}`);
+      }
+      
+      // Update role in the public.users table
+      const { error: roleUpdateError } = await supabase
+        .from('users')
+        .update({ role: selectedRole })
+        .eq('id', userId);
+      
+      if (roleUpdateError) {
+        console.error("[SignUp] Error updating user role:", roleUpdateError);
+        setError("Account created but role could not be saved. Please contact support.");
+        setIsSubmitting(false);
+        return;
+      }
+      
+      console.log(`[SignUp] Successfully set role in users table: ${selectedRole}`);
+      
+      // Log success
+      toast.success("Account created successfully!");
+      
+      // Navigate to the appropriate dashboard based on role
+      navigateToRoleDashboard(navigate, selectedRole);
+      
+    } catch (error) {
+      console.error("[SignUp] Unexpected error:", error);
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -84,21 +103,4 @@ export const useRoleSignUp = () => {
     error,
     handleSubmit
   };
-};
-
-// Helper function to redirect based on role
-const redirectBasedOnRole = (role: UserRole, navigate: any) => {
-  if (isRoleEquivalent(role, ['artist', 'nail technician/artist'])) {
-    navigate('/dashboard/artist');
-  } else if (isRoleEquivalent(role, ['salon_owner', 'salon', 'owner'])) {
-    navigate('/dashboard/salon');
-  } else if (role === 'customer') {
-    navigate('/dashboard/customer');
-  } else if (isRoleEquivalent(role, ['supplier', 'vendor', 'beauty supplier'])) {
-    navigate('/dashboard/supplier');
-  } else if (role === 'freelancer') {
-    navigate('/dashboard/freelancer');
-  } else {
-    navigate('/dashboard/other');
-  }
 };

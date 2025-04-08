@@ -35,8 +35,8 @@ export interface UserProfile {
   accepts_bookings?: boolean;
   booking_url?: string;
   boosted_until?: string;
-  portfolio_urls?: string[]; // Added missing field
-  referral_code?: string; // Added missing field
+  portfolio_urls?: string[];
+  referral_code?: string;
 }
 
 export interface SocialLinks {
@@ -49,6 +49,7 @@ export interface SocialLinks {
 export type UserRole = 
   | 'artist' 
   | 'salon' 
+  | 'salon_owner'
   | 'customer' 
   | 'freelancer' 
   | 'vendor' 

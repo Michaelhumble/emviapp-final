@@ -32,6 +32,7 @@ export const normalizeUserRole = (role: string | null): UserRole | null => {
     case 'salon business':
     case 'business owner':
     case 'salon':
+    case 'salon_owner': // Explicitly handle this format
       return 'salon_owner';
       
     case 'beauty supplier':

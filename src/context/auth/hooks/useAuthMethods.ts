@@ -37,9 +37,16 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
   const signUp = async (email: string, password: string): Promise<AuthResponse> => {
     setLoading(true);
     try {
+      // Sign up with auth API
       const response = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            // We'll update this with the selected role after sign-up
+            email: email
+          }
+        }
       });
       
       if (response.error) {
