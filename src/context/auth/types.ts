@@ -47,7 +47,7 @@ export interface UserProfile {
   skill_level?: string;
   portfolio_urls?: string[];
   preferences?: string[];
-  boosted_until?: string;
+  boosted_until?: string | null;
   credits?: number;
   affiliate_code?: string;
   referral_code?: string;
@@ -67,7 +67,7 @@ export interface AuthContextType {
   isNewUser: boolean;
   clearIsNewUser: () => void;
   signIn: (email: string, password: string) => Promise<AuthResponse>;
-  signUp: (email: string, password: string) => Promise<AuthResponse>;
+  signUp: (email: string, password: string, role?: UserRole) => Promise<AuthResponse>;
   signOut: () => Promise<void>;
   refreshUserProfile: () => Promise<void>;
   validateUserRole?: () => Promise<void>; // Method for force validation

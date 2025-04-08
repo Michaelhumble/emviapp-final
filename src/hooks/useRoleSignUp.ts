@@ -31,8 +31,8 @@ export const useRoleSignUp = () => {
     try {
       console.log(`[SignUp] Starting sign-up with role: ${selectedRole}`);
       
-      // First, sign up the user with Supabase Auth
-      const signUpResponse = await signUp(email, password);
+      // Pass the selected role to signUp method
+      const signUpResponse = await signUp(email, password, selectedRole);
       
       if (signUpResponse.error) {
         setError(signUpResponse.error.message || "Failed to sign up");
@@ -48,33 +48,6 @@ export const useRoleSignUp = () => {
       
       const userId = signUpResponse.data.user.id;
       console.log(`[SignUp] User created with ID: ${userId}`);
-      
-      // Explicitly update user metadata with the selected role
-      const { error: metadataError } = await supabase.auth.updateUser({
-        data: { role: selectedRole }
-      });
-      
-      if (metadataError) {
-        console.error("[SignUp] Error updating user metadata:", metadataError);
-        // Continue anyway as we'll also update the public.users table
-      } else {
-        console.log(`[SignUp] Successfully set role in auth metadata: ${selectedRole}`);
-      }
-      
-      // Update role in the public.users table
-      const { error: roleUpdateError } = await supabase
-        .from('users')
-        .update({ role: selectedRole })
-        .eq('id', userId);
-      
-      if (roleUpdateError) {
-        console.error("[SignUp] Error updating user role:", roleUpdateError);
-        setError("Account created but role could not be saved. Please contact support.");
-        setIsSubmitting(false);
-        return;
-      }
-      
-      console.log(`[SignUp] Successfully set role in users table: ${selectedRole}`);
       
       // Log success
       toast.success("Account created successfully!");

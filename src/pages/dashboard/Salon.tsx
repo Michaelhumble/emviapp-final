@@ -1,26 +1,35 @@
 
 import { useEffect } from 'react';
 import { useAuth } from '@/context/auth';
-import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Loader2, Home } from 'lucide-react';
+import { Home } from 'lucide-react';
 import SalonOwnerDashboardContent from '@/components/dashboard/salon/SalonOwnerDashboardContent';
 import DashboardRouteProtection from '@/components/dashboard/DashboardRouteProtection';
 import { Link } from 'react-router-dom';
 import { adaptUserProfile } from '@/utils/profileAdapter';
 
 const SalonDashboard = () => {
-  const { userProfile, userRole, loading } = useAuth();
+  const { userProfile, userRole } = useAuth();
   const adaptedProfile = adaptUserProfile(userProfile);
   const navigate = useNavigate();
 
   // Salon name for display
   const salonName = adaptedProfile?.salon_name || 'Your Salon';
 
+  useEffect(() => {
+    // Set page title
+    document.title = "Salon Owner Dashboard | EmviApp";
+    
+    // Debug check to validate correct routing
+    if (userRole) {
+      console.log(`[Salon Dashboard] Current role: ${userRole}`);
+    }
+  }, [userRole]);
+
   return (
-    <DashboardRouteProtection allowedRoles={['salon_owner', 'salon', 'owner']} dashboardType="salon">
+    <DashboardRouteProtection allowedRoles={['salon_owner']} dashboardType="Salon">
       <Layout>
         <div className="container mx-auto px-4 py-8">
           <Breadcrumb className="mb-6">

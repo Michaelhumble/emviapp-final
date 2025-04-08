@@ -24,9 +24,10 @@ const DashboardRouteProtection = ({
   children,
   dashboardType
 }: DashboardRouteProtectionProps) => {
-  const { userRole, user, loading, refreshUserProfile } = useAuth();
+  const { userRole, user, loading, refreshUserProfile, validateUserRole } = useAuth();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [accessVerified, setAccessVerified] = useState(false);
+  const [enforceRetries, setEnforceRetries] = useState(0);
   const navigate = useNavigate();
   
   // Function to force refresh user profile
@@ -35,7 +36,12 @@ const DashboardRouteProtection = ({
     console.log(`[${dashboardType}] Manually refreshing user profile...`);
     
     try {
-      await refreshUserProfile();
+      // Use the validate function for a full fresh check
+      if (validateUserRole) {
+        await validateUserRole();
+      } else {
+        await refreshUserProfile();
+      }
       toast.success("Profile refreshed successfully");
     } catch (error) {
       console.error(`[${dashboardType}] Error refreshing profile:`, error);
@@ -55,7 +61,7 @@ const DashboardRouteProtection = ({
     // If user is not authenticated, redirect to sign-in
     if (!user) {
       console.log(`[${dashboardType}] No authenticated user, redirecting to sign-in`);
-      navigate("/sign-in");
+      navigate("/auth/signin");
       return;
     }
     
@@ -63,10 +69,21 @@ const DashboardRouteProtection = ({
     console.log(`[${dashboardType}] Current user role:`, userRole);
     console.log(`[${dashboardType}] Allowed roles:`, allowedRoles);
     
-    // If role hasn't loaded yet or is null
+    // If role hasn't loaded yet or is null - enforce refresh after brief delay
     if (!userRole) {
       console.log(`[${dashboardType}] User role not available yet, waiting...`);
-      // Don't redirect immediately, wait for role to load
+      
+      // After retries, try to force refresh the role
+      if (enforceRetries > 2 && !isRefreshing) {
+        console.log(`[${dashboardType}] Role still missing after retries, forcing refresh...`);
+        handleRefreshRole();
+      } else if (enforceRetries <= 2) {
+        // Increment retry counter
+        const timer = setTimeout(() => {
+          setEnforceRetries(prev => prev + 1);
+        }, 1000);
+        return () => clearTimeout(timer);
+      }
       return;
     }
     
@@ -88,7 +105,7 @@ const DashboardRouteProtection = ({
       console.log(`[${dashboardType}] Access granted to ${dashboardType} dashboard for role: ${userRole}`);
       setAccessVerified(true);
     }
-  }, [user, userRole, loading, navigate, allowedRoles, dashboardType]);
+  }, [user, userRole, loading, navigate, allowedRoles, dashboardType, enforceRetries, isRefreshing, refreshUserProfile, validateUserRole]);
   
   // Show loading state while authentication is in progress
   if (loading) {

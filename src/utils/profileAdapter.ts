@@ -1,6 +1,7 @@
 
 import { UserProfile as AuthUserProfile, UserRole } from "@/context/auth/types";
 import { UserProfile as AppUserProfile } from "@/types/profile";
+import { normalizeUserRole } from "@/utils/roleUtils";
 
 /**
  * Adapts the auth context UserProfile to the application UserProfile type
@@ -8,6 +9,9 @@ import { UserProfile as AppUserProfile } from "@/types/profile";
  */
 export const adaptUserProfile = (profile: AuthUserProfile | null): AppUserProfile | null => {
   if (!profile) return null;
+  
+  // Normalize the role to ensure type safety with UserRole enum
+  const normalizedRole = normalizeUserRole(profile.role);
   
   // Create an adapted profile that matches the application UserProfile type
   const adaptedProfile: AppUserProfile = {
@@ -29,7 +33,7 @@ export const adaptUserProfile = (profile: AuthUserProfile | null): AppUserProfil
     avatar_url: profile.avatar_url || '',
     gallery: [], // Default empty array
     availability: [], // Default empty array
-    role: mapRoleType(profile.role),
+    role: normalizedRole,
     verification_status: 'pending',
     created_at: profile.created_at,
     updated_at: profile.updated_at || '',
@@ -57,40 +61,3 @@ export const adaptUserProfile = (profile: AuthUserProfile | null): AppUserProfil
   
   return adaptedProfile;
 };
-
-/**
- * Maps role types between auth and application formats
- */
-function mapRoleType(role: UserRole | string | null): AppUserProfile['role'] {
-  if (!role) return 'customer';
-  
-  // If it's already a string, normalize it
-  const roleString = typeof role === 'string' ? role.toLowerCase() : String(role).toLowerCase();
-  
-  // Simple mapping of role types
-  switch (roleString) {
-    case 'artist':
-    case 'nail technician/artist':
-    case 'nail technician':
-    case 'nail artist':
-    case 'technician':
-    case 'renter':
-      return 'artist';
-    case 'salon_owner':
-    case 'salon owner':
-    case 'salon':
-    case 'owner':
-      return 'salon';
-    case 'supplier':
-    case 'vendor':
-    case 'beauty supplier':
-      return 'supplier';
-    case 'customer':
-    case 'client':
-      return 'customer';
-    case 'freelancer':
-      return 'freelancer';
-    default:
-      return 'other';
-  }
-}

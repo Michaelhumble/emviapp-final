@@ -33,7 +33,7 @@ export const navigateToRoleDashboard = (
   
   let targetDashboard = '';
   
-  // Route based on normalized role
+  // Route based on normalized role - STRICT MAPPING
   switch (normalizedRole) {
     case 'artist':
       targetDashboard = '/dashboard/artist';
@@ -62,9 +62,9 @@ export const navigateToRoleDashboard = (
 
   console.log("[Dashboard Navigation] Redirecting to:", targetDashboard);
   
-  // Use direct href navigation for more reliable redirection
+  // Force navigation to the correct dashboard
   if (window.location.pathname !== targetDashboard) {
-    console.log("[Dashboard Navigation] Current path differs from target, performing navigation");
+    console.log(`[Dashboard Navigation] FORCE REDIRECT: ${window.location.pathname} → ${targetDashboard}`);
     navigate(targetDashboard);
   } else {
     console.log("[Dashboard Navigation] Already on correct dashboard");
