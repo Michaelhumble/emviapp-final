@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
@@ -97,7 +98,7 @@ export const useReferralSystem = () => {
         const completed = processedReferrals.filter(r => r.status === 'completed').length;
         const pending = total - completed;
         
-        const targetMilestone = 5; // Default
+        let targetMilestone = 5; // Default
         if (userRole === 'artist' || userRole === 'nail technician/artist') {
           targetMilestone = 3;
         } else if (userRole === 'salon' || userRole === 'owner') {

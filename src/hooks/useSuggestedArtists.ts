@@ -35,7 +35,7 @@ export const useSuggestedArtists = (currentArtistId?: string) => {
             .in('role', ['artist', 'freelancer', 'nail technician/artist'])
             .neq('avatar_url', '')
             .ilike('location', `%${userProfile.location.split(',')[0]}%`)
-            .order('boosted_until', { ascending: false, nullsLast: true });
+            .order('boosted_until', { ascending: false });
             
           // Exclude current artist if viewing a profile
           if (currentArtistId) {
