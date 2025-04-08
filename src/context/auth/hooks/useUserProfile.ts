@@ -21,6 +21,11 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
       if (profile) {
         setUserProfile(profile);
         setUserRole(profile.role as UserRole);
+        
+        // Debug log for role detection
+        console.log(`[Auth] User profile loaded for ${userId} with role: ${profile.role}`);
+      } else {
+        console.warn(`[Auth] No profile found for user ${userId}`);
       }
       
     } catch (err) {
