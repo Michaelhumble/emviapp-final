@@ -18,24 +18,25 @@ interface BookingData {
  */
 export const useCustomerNotifications = () => {
   const { formatBookingDate, t } = useFormatters();
-  const { getUserName } = useUserNameResolver();
+  const { getUserName, getServiceDetails } = useUserNameResolver();
 
   /**
    * Handle new booking creation notifications for customers
    */
   const handleNewBookingCreated = async (booking: BookingData) => {
     const artistName = await getUserName(booking.recipient_id);
+    const serviceTitle = booking.service_id 
+      ? await getServiceDetails(booking.service_id) 
+      : t({
+          english: 'a service',
+          vietnamese: 'một dịch vụ'
+        });
     const dateTime = formatBookingDate(booking.date_requested, booking.time_requested);
     
     toast.success(t({
-      english: `Your booking request with ${artistName} for ${dateTime} has been sent.`,
-      vietnamese: `Yêu cầu đặt lịch của bạn với ${artistName} vào ${dateTime} đã được gửi.`
-    }), {
-      description: t({
-        english: 'Booking Sent',
-        vietnamese: 'Đã gửi lịch hẹn'
-      })
-    });
+      english: `Successfully requested booking with ${artistName} for ${serviceTitle} on ${dateTime}`,
+      vietnamese: `Đã yêu cầu đặt lịch thành công với ${artistName} cho ${serviceTitle} vào ${dateTime}`
+    }));
   };
 
   /**
@@ -49,44 +50,14 @@ export const useCustomerNotifications = () => {
     
     if (booking.status === 'accepted') {
       toast.success(t({
-        english: `Your booking with ${artistName} on ${dateTime} has been confirmed.`,
-        vietnamese: `Lịch hẹn của bạn với ${artistName} vào ${dateTime} đã được xác nhận.`
-      }), {
-        description: t({
-          english: 'Booking Confirmed',
-          vietnamese: 'Lịch hẹn đã được xác nhận'
-        })
-      });
+        english: `${artistName} has accepted your booking for ${dateTime}!`,
+        vietnamese: `${artistName} đã chấp nhận lịch hẹn của bạn vào ${dateTime}!`
+      }));
     } else if (booking.status === 'declined') {
       toast.error(t({
-        english: `Your booking with ${artistName} on ${dateTime} has been declined.`,
-        vietnamese: `Lịch hẹn của bạn với ${artistName} vào ${dateTime} đã bị từ chối.`
-      }), {
-        description: t({
-          english: 'Booking Declined',
-          vietnamese: 'Lịch hẹn bị từ chối'
-        })
-      });
-    } else if (booking.status === 'cancelled') {
-      toast.error(t({
-        english: `Your booking with ${artistName} on ${dateTime} has been cancelled.`,
-        vietnamese: `Lịch hẹn của bạn với ${artistName} vào ${dateTime} đã bị hủy.`
-      }), {
-        description: t({
-          english: 'Booking Cancelled',
-          vietnamese: 'Lịch hẹn đã bị hủy'
-        })
-      });
-    } else if (booking.status === 'completed') {
-      toast.success(t({
-        english: `Your booking with ${artistName} on ${dateTime} has been marked as completed.`,
-        vietnamese: `Lịch hẹn của bạn với ${artistName} vào ${dateTime} đã được đánh dấu là hoàn thành.`
-      }), {
-        description: t({
-          english: 'Booking Completed',
-          vietnamese: 'Lịch hẹn đã hoàn thành'
-        })
-      });
+        english: `${artistName} has declined your booking for ${dateTime}`,
+        vietnamese: `${artistName} đã từ chối lịch hẹn của bạn vào ${dateTime}`
+      }));
     }
   };
 

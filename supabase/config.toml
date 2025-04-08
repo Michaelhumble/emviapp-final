@@ -6,3 +6,6 @@ verify_jwt = true
 
 [functions.webhook-credit-purchase]
 verify_jwt = false
+
+[functions.send-booking-reminders]
+verify_jwt = true

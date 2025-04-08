@@ -1,23 +1,16 @@
 
-import { useTranslation } from '@/hooks/useTranslation';
+import { useTranslation } from "@/hooks/useTranslation";
+import { format } from "date-fns";
 
-/**
- * Hook providing formatting utilities for notifications
- */
 export const useFormatters = () => {
   const { t } = useTranslation();
 
-  /**
-   * Format a date for display
-   */
-  const formatBookingDate = (date: string, time: string) => {
-    if (!date) return '';
+  const formatBookingDate = (dateStr: string, timeStr: string) => {
     try {
-      const dateObj = new Date(date);
-      const formattedDate = dateObj.toLocaleDateString();
-      return `${formattedDate} ${time || ''}`;
-    } catch (e) {
-      return `${date} ${time || ''}`;
+      const formattedDate = format(new Date(dateStr), "MMMM dd, yyyy");
+      return `${formattedDate} at ${timeStr}`;
+    } catch (error) {
+      return `${dateStr} at ${timeStr}`;
     }
   };
 

@@ -1,17 +1,8 @@
 
-import { supabase } from '@/integrations/supabase/client';
-import { useTranslation } from '@/hooks/useTranslation';
+import { supabase } from "@/integrations/supabase/client";
 
-/**
- * Hook to get user information from ID
- */
 export const useUserNameResolver = () => {
-  const { t } = useTranslation();
-
-  /**
-   * Fetch a user's name from their ID
-   */
-  const getUserName = async (userId: string): Promise<string> => {
+  const getUserName = async (userId: string) => {
     try {
       const { data } = await supabase
         .from('users')
@@ -19,22 +10,13 @@ export const useUserNameResolver = () => {
         .eq('id', userId)
         .single();
       
-      return data?.full_name || t({
-        english: 'Unknown user',
-        vietnamese: 'Người dùng không xác định'
-      });
+      return data?.full_name || 'Unknown User';
     } catch (error) {
-      console.error('Error fetching user:', error);
-      return t({
-        english: 'Unknown user',
-        vietnamese: 'Người dùng không xác định'
-      });
+      console.error('Error fetching user name:', error);
+      return 'Unknown User';
     }
   };
 
-  /**
-   * Fetch service details by ID
-   */
   const getServiceDetails = async (serviceId: string) => {
     try {
       const { data } = await supabase
@@ -43,16 +25,10 @@ export const useUserNameResolver = () => {
         .eq('id', serviceId)
         .single();
       
-      return data?.title || t({
-        english: 'a service',
-        vietnamese: 'một dịch vụ'
-      });
+      return data?.title || 'a service';
     } catch (error) {
-      console.error('Error fetching service:', error);
-      return t({
-        english: 'a service',
-        vietnamese: 'một dịch vụ'
-      });
+      console.error('Error fetching service details:', error);
+      return 'a service';
     }
   };
 

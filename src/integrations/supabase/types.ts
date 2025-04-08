@@ -43,6 +43,8 @@ export type Database = {
           id: string
           note: string | null
           recipient_id: string
+          reminder_sent: boolean | null
+          reminder_sent_at: string | null
           sender_id: string
           service_id: string | null
           status: string | null
@@ -54,6 +56,8 @@ export type Database = {
           id?: string
           note?: string | null
           recipient_id: string
+          reminder_sent?: boolean | null
+          reminder_sent_at?: string | null
           sender_id: string
           service_id?: string | null
           status?: string | null
@@ -65,6 +69,8 @@ export type Database = {
           id?: string
           note?: string | null
           recipient_id?: string
+          reminder_sent?: boolean | null
+          reminder_sent_at?: string | null
           sender_id?: string
           service_id?: string | null
           status?: string | null
@@ -323,6 +329,44 @@ export type Database = {
           role?: string
         }
         Relationships: []
+      }
+      notification_settings: {
+        Row: {
+          created_at: string | null
+          email_reminders_enabled: boolean | null
+          id: string
+          reminder_hours_before: number | null
+          sms_reminders_enabled: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email_reminders_enabled?: boolean | null
+          id?: string
+          reminder_hours_before?: number | null
+          sms_reminders_enabled?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          email_reminders_enabled?: boolean | null
+          id?: string
+          reminder_hours_before?: number | null
+          sms_reminders_enabled?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_settings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notifications: {
         Row: {

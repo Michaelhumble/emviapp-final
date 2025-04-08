@@ -1,4 +1,3 @@
-
 // Extending the existing types file to make sure it has all necessary fields
 
 export interface Booking {
@@ -14,6 +13,8 @@ export interface Booking {
   customer_name?: string;
   artist_name?: string;
   created_at?: string;
+  reminder_sent?: boolean;
+  reminder_sent_at?: string;
 }
 
 export interface BookingStats {
