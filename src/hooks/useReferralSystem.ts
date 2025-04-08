@@ -11,9 +11,13 @@ export const useReferralSystem = () => {
   const [referralCode, setReferralCode] = useState<string>('');
   const [referralLink, setReferralLink] = useState<string>('');
   const [referralStats, setReferralStats] = useState<ReferralStats>({
+    total: 0,
+    verified: 0,
+    pending: 0,
+    completed: 0,
+    completedReferrals: 0,
     totalReferrals: 0,
     pendingReferrals: 0,
-    completedReferrals: 0,
     targetMilestone: 5, // Default milestone target
   });
   const [referralProgress, setReferralProgress] = useState<ReferralProgress>({
@@ -106,10 +110,14 @@ export const useReferralSystem = () => {
         const percentage = ((completed % targetMilestone) / targetMilestone) * 100;
         
         setReferralStats({
-          totalReferrals: total,
-          pendingReferrals: pending,
-          completedReferrals: completed,
+          total,
+          verified: completed,
+          pending,
+          completed,
           targetMilestone,
+          completedReferrals: completed,
+          totalReferrals: total,
+          pendingReferrals: pending
         });
         
         setReferralProgress({

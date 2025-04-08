@@ -18,7 +18,7 @@ export const useTranslation = () => {
     }
     
     // If we're passed a string key (to be implemented with backend translations)
-    return key;
+    return key as string;
   }, [preferredLanguage]);
 
   return { t };

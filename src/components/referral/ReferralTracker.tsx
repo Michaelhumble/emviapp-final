@@ -36,7 +36,7 @@ const ReferralTracker = ({ className = '' }: ReferralTrackerProps) => {
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-medium flex items-center gap-2">
             <Users className="h-5 w-5 text-pink-500" />
-            {t('referral.tracker_title', { defaultValue: 'Referral Rewards' })}
+            {t('referral.tracker_title')}
           </CardTitle>
           {referralStats.completedReferrals > 0 && (
             <div className="flex items-center text-green-600 text-sm font-medium">

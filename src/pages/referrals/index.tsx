@@ -16,6 +16,9 @@ const ReferralsPage = () => {
     verified: 0,
     pending: 0,
     completed: 0,
+    completedReferrals: 0,
+    totalReferrals: 0,
+    pendingReferrals: 0,
     targetMilestone: 3,
     data: []
   });
@@ -47,7 +50,10 @@ const ReferralsPage = () => {
         
         setReferralStats({
           ...stats,
-          targetMilestone
+          targetMilestone,
+          completedReferrals: completed,
+          totalReferrals: stats.total,
+          pendingReferrals: stats.pending
         });
         
         setReferralProgress({
