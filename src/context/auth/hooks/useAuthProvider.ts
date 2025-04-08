@@ -37,6 +37,7 @@ export const useAuthProvider = () => {
   const validateUserRole = useCallback(async () => {
     console.log("[Auth Provider] Force validating user role");
     if (user) {
+      // Call refreshUserProfile but ignore the return value for validateUserRole
       await refreshUserProfile();
     }
   }, [user, refreshUserProfile]);
@@ -54,7 +55,7 @@ export const useAuthProvider = () => {
     signIn,
     signUp,
     signOut,
-    refreshUserProfile,
+    refreshUserProfile: validateUserRole, // Use the wrapper function that returns void
     validateUserRole, // Add new force validation method
   };
 

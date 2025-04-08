@@ -17,7 +17,7 @@ export const useUserProfile = (
     if (!user) {
       setUserProfile(null);
       setUserRole(null);
-      return;
+      return null;
     }
 
     try {
@@ -38,14 +38,14 @@ export const useUserProfile = (
         console.log("No user profile found, creating one");
         // Create a new profile
         await createUserProfile(user);
-        return;
+        return null;
       }
 
       // Normalize the role
       const normalizedRole = normalizeUserRole(data.role);
       console.log("[useUserProfile] Normalized role:", normalizedRole);
       
-      // Map database fields to UserProfile
+      // Map database fields to UserProfile - be explicit about each field
       const mappedProfile: UserProfile = {
         id: data.id,
         email: data.email || user.email || '',
@@ -56,18 +56,18 @@ export const useUserProfile = (
         updated_at: data.updated_at,
         
         // Map additional fields with proper fallbacks
-        referral_count: data.referral_count || data.referral_code ? 0 : undefined,
+        referral_count: data.referral_count || 0,
         profile_views: data.profile_views || 0,
         
         // Extended properties
-        salon_name: data.salon_name,
-        company_name: data.company_name,
         bio: data.bio,
         specialty: data.specialty,
         location: data.location,
         instagram: data.instagram,
         website: data.website,
         phone: data.phone,
+        salon_name: data.salon_name,
+        company_name: data.company_name,
         custom_role: data.custom_role,
         contact_link: data.contact_link,
         skills: data.skills || [],
@@ -134,7 +134,7 @@ export const useUserProfile = (
 
   // Refresh user profile on demand
   const refreshUserProfile = useCallback(async () => {
-    return fetchUserProfile();
+    return await fetchUserProfile();
   }, [fetchUserProfile]);
 
   // Fetch user profile on mount and when user changes

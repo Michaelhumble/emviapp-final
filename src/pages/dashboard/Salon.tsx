@@ -4,7 +4,7 @@ import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
-import DashboardBreadcrumb from '@/components/dashboard/DashboardBreadcrumb';
+import DashboardBreadcrumb from '@/components/ui/breadcrumb';
 import { Loader2 } from 'lucide-react';
 import SalonOwnerDashboardContent from '@/components/dashboard/salon/SalonOwnerDashboardContent';
 import { isRoleEquivalent } from '@/utils/roleUtils';

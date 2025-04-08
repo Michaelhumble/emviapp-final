@@ -135,5 +135,5 @@ export const hasRoleAccess = (
   return hasAccess;
 };
 
-// Make sure to export all functions
-export { UserRole, LegacyUserRole };
+// Export these types properly using 'export type'
+export type { UserRole, LegacyUserRole };
