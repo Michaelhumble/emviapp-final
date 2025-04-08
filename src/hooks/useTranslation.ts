@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 const LANGUAGE_PREFERENCE_KEY = 'emvi_language_preference';
 
 // Define translation type
-export type TranslationInput = string | { 
+type TranslationInput = string | { 
   english: string; 
   vietnamese: string; 
   defaultValue?: string;

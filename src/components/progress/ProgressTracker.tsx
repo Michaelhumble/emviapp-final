@@ -110,21 +110,30 @@ const ProgressTracker = () => {
     if (profileCompletionPercentage < 80) {
       return {
         icon: '🔍',
-        message: t('complete_profile_search_tip')
+        message: t('complete_profile_search_tip', { 
+          english: 'Complete your profile to show up in search results', 
+          vietnamese: 'Hoàn thành hồ sơ để xuất hiện trong kết quả tìm kiếm' 
+        })
       };
     }
     
     if (referralStats && referralStats.total < 3) {
       return {
         icon: '💎',
-        message: t('invite_friend_credits_tip')
+        message: t('invite_friend_credits_tip', { 
+          english: 'Invite one more friend to unlock 50 bonus credits', 
+          vietnamese: 'Mời thêm một người bạn để mở khóa 50 điểm thưởng' 
+        })
       };
     }
     
     if (!boostStatus.isActive && userRole === 'artist') {
       return {
         icon: '🔥',
-        message: t('boost_hiring_salons_tip')
+        message: t('boost_hiring_salons_tip', { 
+          english: 'Boost now – 8 salons nearby are hiring', 
+          vietnamese: 'Tăng cường ngay - 8 salon gần đây đang tuyển dụng' 
+        })
       };
     }
     
@@ -136,7 +145,10 @@ const ProgressTracker = () => {
   return (
     <div className="w-full mb-8">
       <h2 className="text-2xl font-semibold mb-4">
-        {t('progress_tracker')}
+        {t('progress_tracker', { 
+          english: 'Your Progress Tracker', 
+          vietnamese: 'Theo Dõi Tiến Độ Của Bạn' 
+        })}
       </h2>
       
       {tipMessage && (

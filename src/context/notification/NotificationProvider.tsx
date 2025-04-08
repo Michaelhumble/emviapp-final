@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext } from 'react';
+import { createContext, useContext, ReactNode } from 'react';
 import { useNotifications } from '@/hooks/useNotifications';
 import { Notification } from '@/types/notification';
 
@@ -8,8 +8,8 @@ interface NotificationContextType {
   unreadCount: number;
   loading: boolean;
   fetchNotifications: () => Promise<void>;
-  markAsRead: (id: string) => Promise<void>;
-  markAllAsRead: () => Promise<void>;
+  markAsRead: (id: string) => void;
+  markAllAsRead: () => void;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
@@ -22,31 +22,11 @@ export const useNotificationContext = () => {
   return context;
 };
 
-interface NotificationProviderProps {
-  children: React.ReactNode;
-}
-
-const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
-  const {
-    notifications,
-    unreadCount,
-    loading,
-    fetchNotifications,
-    markAsRead,
-    markAllAsRead
-  } = useNotifications();
-
+export const NotificationProvider = ({ children }: { children: ReactNode }) => {
+  const notificationService = useNotifications();
+  
   return (
-    <NotificationContext.Provider
-      value={{
-        notifications,
-        unreadCount,
-        loading,
-        fetchNotifications,
-        markAsRead,
-        markAllAsRead
-      }}
-    >
+    <NotificationContext.Provider value={notificationService}>
       {children}
     </NotificationContext.Provider>
   );

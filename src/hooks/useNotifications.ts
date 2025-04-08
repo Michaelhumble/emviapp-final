@@ -1,7 +1,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Notification } from '@/types/notification';
+import { Notification, NotificationResponse } from '@/types/notification';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
@@ -21,9 +21,9 @@ export const useNotifications = () => {
 
     setLoading(true);
     try {
-      // Fetch notifications from the database - using the activity_log table
+      // Fetch notifications from the database
       const { data, error } = await supabase
-        .from('activity_log')
+        .from('notifications')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
@@ -32,20 +32,15 @@ export const useNotifications = () => {
       if (error) throw error;
 
       // Format notifications
-      const formattedNotifications: Notification[] = data.map(item => {
-        // Ensure metadata is an object
-        const metadata = typeof item.metadata === 'object' ? item.metadata : {};
-        
-        return {
-          id: item.id,
-          message: item.description,
-          type: item.activity_type as 'info' | 'warning' | 'success' | 'error',
-          createdAt: item.created_at,
-          isRead: metadata?.is_read || false,
-          link: metadata?.link || null,
-          metadata: metadata as Record<string, any>
-        };
-      });
+      const formattedNotifications: Notification[] = data.map(item => ({
+        id: item.id,
+        message: item.message,
+        type: item.type || 'info',
+        createdAt: item.created_at,
+        isRead: item.is_read,
+        link: item.link,
+        metadata: item.metadata
+      }));
 
       // Calculate unread count
       const unread = formattedNotifications.filter(n => !n.isRead).length;
@@ -64,18 +59,9 @@ export const useNotifications = () => {
     if (!user) return;
 
     try {
-      const notification = notifications.find(n => n.id === id);
-      if (!notification) return;
-      
-      // Update the metadata field to mark as read
-      const updatedMetadata = {
-        ...notification.metadata,
-        is_read: true
-      };
-      
       const { error } = await supabase
-        .from('activity_log')
-        .update({ metadata: updatedMetadata })
+        .from('notifications')
+        .update({ is_read: true })
         .eq('id', id)
         .eq('user_id', user.id);
 
@@ -94,28 +80,20 @@ export const useNotifications = () => {
     } catch (error) {
       console.error('Error marking notification as read:', error);
     }
-  }, [user, notifications]);
+  }, [user]);
 
   // Mark all notifications as read
   const markAllAsRead = useCallback(async () => {
     if (!user) return;
 
     try {
-      // Update each unread notification
-      const unreadNotifications = notifications.filter(n => !n.isRead);
-      
-      for (const notification of unreadNotifications) {
-        const updatedMetadata = {
-          ...notification.metadata,
-          is_read: true
-        };
-        
-        await supabase
-          .from('activity_log')
-          .update({ metadata: updatedMetadata })
-          .eq('id', notification.id)
-          .eq('user_id', user.id);
-      }
+      const { error } = await supabase
+        .from('notifications')
+        .update({ is_read: true })
+        .eq('user_id', user.id)
+        .eq('is_read', false);
+
+      if (error) throw error;
 
       // Update local state
       setNotifications(prev => 
@@ -127,9 +105,9 @@ export const useNotifications = () => {
     } catch (error) {
       console.error('Error marking all notifications as read:', error);
     }
-  }, [user, notifications]);
+  }, [user]);
 
-  // Set up activity tracking
+  // Set up real-time subscription for new notifications
   useEffect(() => {
     if (!user) return;
 
@@ -138,28 +116,25 @@ export const useNotifications = () => {
 
     // Set up subscription for real-time updates
     const channel = supabase
-      .channel('activity-log-changes')
+      .channel('notifications-changes')
       .on(
         'postgres_changes',
         {
           event: 'INSERT',
           schema: 'public',
-          table: 'activity_log',
+          table: 'notifications',
           filter: `user_id=eq.${user.id}`
         },
         (payload) => {
-          const newItem = payload.new as any;
-          const metadata = typeof newItem.metadata === 'object' ? newItem.metadata : {};
-          
           // Format the new notification
           const newNotification: Notification = {
-            id: newItem.id,
-            message: newItem.description,
-            type: newItem.activity_type || 'info',
-            createdAt: newItem.created_at,
-            isRead: metadata?.is_read || false,
-            link: metadata?.link || null,
-            metadata: metadata as Record<string, any>
+            id: payload.new.id,
+            message: payload.new.message,
+            type: payload.new.type || 'info',
+            createdAt: payload.new.created_at,
+            isRead: payload.new.is_read,
+            link: payload.new.link,
+            metadata: payload.new.metadata
           };
 
           // Update state with new notification
