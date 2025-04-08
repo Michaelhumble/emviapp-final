@@ -1,66 +1,69 @@
 
-import { useState, useEffect } from "react";
-import { Card } from "@/components/ui/card";
-import { UserRole } from "@/context/auth/types";
-import { useAuth } from "@/context/auth";
-import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
-
-// Predefined quotes per role
-const ROLE_QUOTES: Record<string, string> = {
-  artist: "You've worked hard to build your craft. Now let EmviApp help you get seen. Boost your profile and let your art shine.",
-  freelancer: "You wear many hats. EmviApp is the one partner that gets it. We've got your back.",
-  salon: "Running a business is hard — finding great talent shouldn't be. EmviApp was built to make hiring easy, fast, and beautiful.",
-  supplier: "Your products. Their salons. EmviApp makes the connection effortless. Get your business in front of verified professionals.",
-  other: "Whatever your dream looks like — you belong here. EmviApp was made for you.",
-  "nail technician/artist": "Your artistic talents deserve to be seen. Let EmviApp connect you with clients who appreciate your craft.",
-  renter: "Independence with support. EmviApp helps you build your clientele while maintaining your freedom.",
-  owner: "Your salon deserves the best talent. EmviApp connects you with professionals who match your vision.",
-  customer: "Beauty services tailored to you. EmviApp helps you discover professionals who match your style.",
-  vendor: "Quality products need visibility. EmviApp connects you with the professionals who need what you offer.",
-  "beauty supplier": "Bridge the gap between your products and salon professionals with EmviApp's targeted connections."
-};
-
-// Default quote for fallback
-const DEFAULT_QUOTE = "Whatever your dream looks like — you belong here. EmviApp was made for you.";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { useTranslation } from '@/hooks/useTranslation';
+import { useAuth } from '@/context/auth';
 
 const ArtistMotivationalQuote = () => {
-  const { userRole } = useAuth();
-  const [quote, setQuote] = useState<string>("");
+  const { t } = useTranslation();
+  const { userProfile } = useAuth();
+  const isVietnamese = userProfile?.preferred_language?.toLowerCase() === 'vietnamese';
   
-  useEffect(() => {
-    // Get quote based on role, or use default if not found
-    const roleKey = userRole || "other";
-    const motivationalQuote = ROLE_QUOTES[roleKey] || DEFAULT_QUOTE;
-    
-    setQuote(motivationalQuote);
-  }, [userRole]);
-
-  if (!quote) return null;
-
+  // Quotes in both languages
+  const quotes = [
+    {
+      english: "Behind every beautiful set is a beautiful hustle.",
+      vietnamese: "Đằng sau mỗi bộ móng đẹp là một sự cố gắng tuyệt vời."
+    },
+    {
+      english: "Your art speaks when words can't.",
+      vietnamese: "Nghệ thuật của bạn lên tiếng khi lời nói không thể."
+    },
+    {
+      english: "Each client is a canvas for your creativity.",
+      vietnamese: "Mỗi khách hàng là một tấm canvas cho sự sáng tạo của bạn."
+    }
+  ];
+  
+  // Use the first quote as the featured one
+  const featuredQuote = quotes[0];
+  
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      className="mb-8 py-4 text-center"
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="mb-8"
     >
-      <Card className="bg-white shadow-md border border-gray-100 p-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-100 to-purple-200 rounded-bl-full opacity-40"></div>
+      <motion.blockquote
+        className="relative z-10 max-w-2xl mx-auto px-8 text-2xl font-serif text-gray-700 italic"
+        initial={{ scale: 0.95 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+      >
+        <motion.div
+          className="absolute inset-0 -z-10 opacity-5 blur-sm"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.05 }}
+          transition={{ delay: 0.5 }}
+        >
+          <div className="absolute top-0 -left-4 text-6xl text-purple-300">"</div>
+          <div className="absolute bottom-0 -right-4 text-6xl text-purple-300">"</div>
+        </motion.div>
         
-        <div className="flex items-start gap-4">
-          <Sparkles className="h-6 w-6 text-purple-500 mt-1 flex-shrink-0" />
-          
-          <div>
-            <h3 className="text-lg font-serif font-medium mb-2">
-              Your Personal Emvi Insight
-            </h3>
-            <p className="text-gray-700 leading-relaxed">
-              {quote}
-            </p>
-          </div>
-        </div>
-      </Card>
+        {t(featuredQuote)}
+        
+        {isVietnamese && (
+          <motion.p 
+            className="mt-2 text-lg text-gray-500 font-normal"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            {featuredQuote.english}
+          </motion.p>
+        )}
+      </motion.blockquote>
     </motion.div>
   );
 };
