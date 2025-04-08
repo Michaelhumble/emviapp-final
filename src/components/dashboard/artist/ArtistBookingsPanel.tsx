@@ -7,12 +7,28 @@ import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import { Booking, BookingCounts } from "./types/ArtistDashboardTypes";
 import { format, parseISO } from "date-fns";
+import BookingFilters from "../bookings/BookingFilters";
+import { ServiceTypeFilter } from "@/hooks/useBookingFilters";
+import { useFilteredBookings } from "@/hooks/useFilteredBookings";
 
 const ArtistBookingsPanel = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [counts, setCounts] = useState<BookingCounts>({ pending: 0, upcoming: 0 });
   const [loading, setLoading] = useState(true);
   const { user, userProfile } = useAuth();
+  const [serviceTypes, setServiceTypes] = useState<ServiceTypeFilter[]>([]);
+  const [filters, setFilters] = useState({
+    status: 'all',
+    dateFilter: 'all',
+    dateRange: { from: undefined, to: undefined },
+    clientType: 'all',
+    serviceType: 'all',
+    search: '',
+    serviceTypes: []
+  });
+  
+  // Apply filters to bookings
+  const filteredBookings = useFilteredBookings(bookings, filters);
   
   const fetchBookings = async () => {
     try {
@@ -80,6 +96,17 @@ const ArtistBookingsPanel = () => {
           pending: pendingCount,
           upcoming: upcomingCount
         });
+        
+        // Extract unique service types for filtering
+        const uniqueServices = Array.from(
+          new Map(
+            bookingsWithUserDetails
+              .filter(b => b.service_id && b.service_name)
+              .map(b => [b.service_id, { id: b.service_id || '', label: b.service_name || '' }])
+          ).values()
+        );
+        
+        setServiceTypes(uniqueServices);
       }
     } catch (error) {
       console.error("Error fetching bookings:", error);
@@ -173,13 +200,15 @@ const ArtistBookingsPanel = () => {
     accept: isVietnamese ? "Chấp Nhận" : "Accept",
     decline: isVietnamese ? "Từ Chối" : "Decline",
     noBookings: isVietnamese ? "Chưa có lịch hẹn nào" : "No bookings yet",
+    noFilteredBookings: isVietnamese ? "Không tìm thấy lịch hẹn nào phù hợp với bộ lọc" : "No bookings match your filters",
     customer: isVietnamese ? "Khách Hàng" : "Customer",
     service: isVietnamese ? "Dịch Vụ" : "Service",
     date: isVietnamese ? "Ngày" : "Date",
     time: isVietnamese ? "Giờ" : "Time",
     status: isVietnamese ? "Trạng Thái" : "Status",
     note: isVietnamese ? "Ghi Chú" : "Note",
-    actions: isVietnamese ? "Hành Động" : "Actions"
+    actions: isVietnamese ? "Hành Động" : "Actions",
+    filters: isVietnamese ? "Bộ Lọc" : "Filters"
   };
   
   const statusLabels = {
@@ -206,6 +235,14 @@ const ArtistBookingsPanel = () => {
       </CardHeader>
       
       <CardContent className="p-4">
+        {/* Booking Filters */}
+        <div className="mb-4">
+          <BookingFilters 
+            serviceTypes={serviceTypes}
+            onFilterChange={setFilters}
+          />
+        </div>
+        
         {loading ? (
           <div className="flex justify-center py-8">
             <div className="h-8 w-8 border-4 border-t-transparent border-purple-500 rounded-full animate-spin"></div>
@@ -213,6 +250,10 @@ const ArtistBookingsPanel = () => {
         ) : bookings.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             {translations.noBookings}
+          </div>
+        ) : filteredBookings.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            {translations.noFilteredBookings}
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -228,7 +269,7 @@ const ArtistBookingsPanel = () => {
                 </tr>
               </thead>
               <tbody>
-                {bookings.map((booking) => (
+                {filteredBookings.map((booking) => (
                   <tr key={booking.id} className="border-b hover:bg-gray-50">
                     <td className="py-3">{booking.customer_name}</td>
                     <td className="py-3">{booking.service_name || "Not specified"}</td>
@@ -272,11 +313,11 @@ const ArtistBookingsPanel = () => {
         )}
         
         {/* Note section */}
-        {bookings.some(b => b.note) && (
+        {filteredBookings.some(b => b.note) && (
           <div className="mt-6">
             <h3 className="font-medium mb-2">{translations.note}</h3>
             <div className="space-y-3">
-              {bookings
+              {filteredBookings
                 .filter(b => b.note)
                 .slice(0, 3)
                 .map(b => (
