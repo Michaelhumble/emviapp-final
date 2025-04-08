@@ -10,12 +10,12 @@ export default defineConfig(({ mode }) => ({
     allowedHosts: ["dd2787bb-39ac-4d3f-ad8a-82ffdf26198a.lovableproject.com"],
     hmr: {
       host: "dd2787bb-39ac-4d3f-ad8a-82ffdf26198a.lovableproject.com",
-      protocol: "https"
-    }
+      protocol: "https",
+    },
   },
   plugins: [
     react(),
-    mode === "development" && componentTagger()
+    mode === "development" && componentTagger(),
   ].filter(Boolean),
   resolve: {
     alias: {
