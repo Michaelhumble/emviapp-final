@@ -1,5 +1,4 @@
 
-// Get the first few lines to extract imports
 import { useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
