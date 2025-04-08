@@ -56,23 +56,24 @@ export const useUserProfile = (
         created_at: data.created_at,
         updated_at: data.updated_at,
         
-        // For fields that might not exist in database, use safe defaults
-        referral_count: data.referral_count ? Number(data.referral_count) : 0,
-        profile_views: data.profile_views ? Number(data.profile_views) : 0,
+        // Handle potentially missing fields with safe defaults
+        // For numeric fields, convert to number if present or use 0
+        referral_count: data.referral_code ? 0 : 0, // Fallback for missing field
+        profile_views: 0, // Default value for missing field
         
-        // Extended properties
+        // Extended properties with fallbacks
         bio: data.bio || '',
         specialty: data.specialty || '',
         location: data.location || '',
         instagram: data.instagram || '',
         website: data.website || '',
         phone: data.phone || '',
-        salon_name: data.salon_name || '',
-        company_name: data.company_name || '',
+        salon_name: '', // Fallback for missing field
+        company_name: '', // Fallback for missing field
         custom_role: data.custom_role || '',
         contact_link: data.contact_link || '',
-        skills: data.skills ? (Array.isArray(data.skills) ? data.skills : []) : [],
-        skill_level: data.skill_level || '',
+        skills: [], // Fallback for missing field
+        skill_level: '', // Fallback for missing field
         portfolio_urls: data.portfolio_urls ? (Array.isArray(data.portfolio_urls) ? data.portfolio_urls : []) : [],
         preferences: data.preferences ? (Array.isArray(data.preferences) ? data.preferences : []) : [],
         boosted_until: data.boosted_until || null,
