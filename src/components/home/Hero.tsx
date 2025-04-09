@@ -40,19 +40,17 @@ const Hero = () => {
 
   return (
     <section 
-      className="relative flex items-center justify-center overflow-hidden w-full"
+      className="relative flex items-center justify-center overflow-hidden w-screen" 
       style={{
-        width: '100vw',
-        maxWidth: '100%',
-        height: isMobile ? 'calc(100vh - 6rem)' : 'calc(150vh)',
-        marginLeft: '0',  // No margin on left side
-        marginRight: 'calc(-50vw + 50%)',  // Extend only to the right
+        height: 'calc(100vh - 64px)', // Top nav height subtracted
+        margin: 0,
+        padding: 0,
         border: 'none',
-        borderRadius: '0',
+        maxWidth: '100vw',
       }}
     >
       {/* Background image carousel */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 w-full h-full overflow-hidden">
         <HeroCarousel 
           images={heroImages} 
           activeIndex={currentImageIndex} 

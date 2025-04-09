@@ -35,16 +35,16 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
               className="w-full h-full object-cover"
               style={{ 
                 objectPosition: "center",
+                objectFit: "cover",
               }}
             />
           </div>
           
-          {/* Ultra light overlay (5% opacity) to maintain text readability */}
+          {/* Subtle overlay for better text readability */}
           <div 
             className="absolute inset-0 z-10"
             style={{ 
-              background: 'linear-gradient(to top, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.05) 100%)',
-              backdropFilter: 'blur(0px)'
+              background: 'linear-gradient(to top, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.1) 100%)'
             }}
             aria-hidden="true"
           ></div>
