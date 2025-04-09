@@ -1,5 +1,9 @@
 
-// This file is preserved for potential future use but the content has been removed
-// as per user request to restore the original hero section without images
-
-export const heroImages = [];
+// Background image for hero section
+export const heroImages = [
+  {
+    id: 1,
+    url: '/lovable-uploads/0bd73f14-58bb-4234-9a80-947119414193.png',
+    alt: 'Beauty industry tools and makeup brushes',
+  }
+];

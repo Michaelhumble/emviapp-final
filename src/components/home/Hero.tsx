@@ -4,6 +4,7 @@ import FloatingParticles from "./hero/FloatingParticles";
 import HeroContent from "./hero/HeroContent";
 import ScrollIndicator from "./hero/ScrollIndicator";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { heroImages } from "./hero/heroData";
 
 const Hero = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -11,15 +12,21 @@ const Hero = () => {
 
   return (
     <div className="relative pt-24 pb-28 overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#FDFDFD] to-[#F6F6F6] z-0"></div>
+      {/* Background image */}
+      <div 
+        className="absolute inset-0 z-0 bg-black"
+        style={{
+          backgroundImage: `url(${heroImages[0].url})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          filter: 'brightness(0.65)',
+        }}
+      />
       
-      {/* Lighter glass frame effect - only as a subtle border */}
-      <div className="absolute inset-0 md:m-4 backdrop-blur-[2px] bg-white/5 border border-white/40 rounded-lg shadow-lg z-10"></div>
+      {/* Overlay gradient */}
+      <div className="absolute inset-0 bg-black/40 z-10"></div>
       
-      {/* Floating particles animation */}
-      <FloatingParticles />
-
       {/* Content container with proper z-index to appear on top */}
       <HeroContent 
         activeIndex={activeIndex} 
