@@ -21,6 +21,11 @@ const CustomerDashboardPage = () => {
     <Layout>
       <DashboardRouteProtection allowedRoles={allowedRoles} dashboardType="Customer">
         <CustomerDashboardLayout>
+          {/* Debug banner for role */}
+          <div className="bg-purple-100 text-purple-800 text-sm py-1 px-3 rounded-md mb-4 flex items-center justify-center">
+            <span className="font-mono">DEBUG: Logged in as: customer</span>
+          </div>
+          
           <CustomerWelcomeBanner />
           <CustomerDashboard />
         </CustomerDashboardLayout>

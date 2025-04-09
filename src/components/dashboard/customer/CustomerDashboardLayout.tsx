@@ -1,15 +1,14 @@
 
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 
 interface CustomerDashboardLayoutProps {
   children: ReactNode;
-  title?: string;
 }
 
-const CustomerDashboardLayout = ({ children, title = "Customer Dashboard" }: CustomerDashboardLayoutProps) => {
+const CustomerDashboardLayout = ({ children }: CustomerDashboardLayoutProps) => {
   // Set up animation variants
   const pageVariants = {
     initial: { opacity: 0 },
