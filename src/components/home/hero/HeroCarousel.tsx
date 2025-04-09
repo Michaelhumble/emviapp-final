@@ -39,14 +39,14 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
             />
           </div>
           
-          {/* Lighter overlay for mobile to make images more visible */}
+          {/* Very light overlay (15% opacity) to maintain text readability while showing more of the image */}
           <div 
             className="absolute inset-0 z-10"
             style={{ 
               background: isMobile 
-                ? 'linear-gradient(to top, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.1) 100%)' 
-                : 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.3) 100%)',
-              backdropFilter: isMobile ? 'blur(4px)' : 'blur(2px)'
+                ? 'linear-gradient(to top, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.05) 100%)' 
+                : 'linear-gradient(to top, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.1) 100%)',
+              backdropFilter: isMobile ? 'blur(1px)' : 'blur(2px)'
             }}
             aria-hidden="true"
           ></div>
