@@ -59,6 +59,7 @@ export const useCustomerBookings = () => {
             !('error' in item.artist) && 
             item.artist !== null
           ) {
+            // Use type assertion to help TypeScript understand the structure
             const artistData = item.artist as { id: string; full_name: string; avatar_url?: string };
             booking.artist = {
               id: artistData.id,
