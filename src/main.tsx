@@ -19,7 +19,7 @@ import UserProfilePage from '@/pages/profile/UserProfilePage';
 import ProfileEdit from '@/pages/profile/edit';
 import UserProfileByUsername from '@/pages/profile/[username]';
 // Fix the casing issue - make sure to use the same case as the actual file
-import SalonDashboard from '@/pages/dashboard/salon';
+import SalonDashboard from '@/pages/dashboard/Salon';
 import SalonOwnerDashboard from '@/pages/dashboard/SalonOwnerDashboard';
 import ArtistDashboard from '@/pages/dashboard/Artist';
 import SupplierDashboard from '@/pages/dashboard/Supplier';

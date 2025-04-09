@@ -1,26 +1,23 @@
 
 import React, { useEffect } from 'react';
 import { useAuth } from '@/context/auth';
-import { toast } from "sonner";
-import { Building2, Users, Calendar, Star, PlusCircle, ChevronRight, RefreshCcw, Sparkles } from "lucide-react";
+import { Building2, FileText, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { navigateToRoleDashboard } from "@/utils/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import DashboardRouteProtection from "@/components/dashboard/DashboardRouteProtection";
 import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
-import SalonReferralSection from '@/components/dashboard/salon/SalonReferralSection';
-import SalonMetricsCards from '@/components/dashboard/salon/SalonMetricsCards';
-import SalonOwnerDashboardContent from '@/components/dashboard/salon/SalonOwnerDashboardContent';
 
 const SalonOwnerDashboard = () => {
   const { userProfile, userRole } = useAuth();
   const navigate = useNavigate();
   
   useEffect(() => {
-    // For testing only - show that the page loaded correctly
+    document.title = "Salon Owner Dashboard | EmviApp";
     console.log("[SalonOwner] Dashboard loaded for role:", userRole);
   }, [userRole]);
+
+  const displayName = userProfile?.business_name || userProfile?.full_name || userProfile?.email || "Salon Owner";
 
   return (
     <DashboardRouteProtection 
@@ -31,108 +28,68 @@ const SalonOwnerDashboard = () => {
         <RoleDashboardLayout>
           {/* Welcome Banner */}
           <div className="mb-8">
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-100 shadow-sm">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-                <h1 className="text-2xl md:text-3xl font-serif mb-2 md:mb-0 text-blue-800">
-                  Welcome back, <span className="font-semibold">{userProfile?.business_name || userProfile?.full_name || "Salon Owner"}</span>
-                </h1>
-                <Button 
-                  onClick={() => navigate('/profile/edit')}
-                  variant="outline" 
-                  className="text-sm border-blue-200 text-blue-700 hover:bg-blue-50"
-                >
-                  Edit Business Profile <ChevronRight className="ml-1 h-4 w-4" />
-                </Button>
-              </div>
-              <p className="text-blue-600">Manage your salon and find talented nail artists with ease.</p>
-            </div>
+            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-100">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-2xl font-serif text-blue-800">
+                  Welcome, {displayName}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-blue-600">Welcome to your Salon Dashboard</p>
+              </CardContent>
+            </Card>
           </div>
           
-          {/* Metrics Cards */}
+          {/* Action Buttons */}
           <div className="mb-8">
-            <SalonMetricsCards salonId={userProfile?.id || ''} />
-          </div>
-          
-          {/* Main Dashboard Content */}
-          <SalonOwnerDashboardContent />
-          
-          {/* Referral Section */}
-          <div className="mt-8">
-            <SalonReferralSection />
-          </div>
-          
-          {/* Quick Actions */}
-          <div className="mt-8">
             <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <Button 
                 onClick={() => navigate('/post/job')}
-                className="h-auto py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
+                className="h-auto py-6 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
               >
-                <div className="flex items-center">
-                  <PlusCircle className="mr-2 h-5 w-5" />
-                  <div className="text-left">
-                    <div className="font-medium">Post a Job</div>
-                    <div className="text-xs opacity-90">Find nail technicians & staff</div>
-                  </div>
+                <div className="flex flex-col items-center justify-center">
+                  <Building2 className="mb-2 h-6 w-6" />
+                  <span>Post a Job</span>
                 </div>
               </Button>
               
               <Button 
-                onClick={() => navigate('/posting/salon')}
+                onClick={() => navigate('/posting')}
                 variant="outline"
-                className="h-auto py-4 border-blue-200 hover:border-blue-300 text-blue-700"
+                className="h-auto py-6 border-blue-200 hover:border-blue-300 text-blue-700"
               >
-                <div className="flex items-center">
-                  <Building2 className="mr-2 h-5 w-5" />
-                  <div className="text-left">
-                    <div className="font-medium">Post a Booth</div>
-                    <div className="text-xs">Rent out available space</div>
-                  </div>
+                <div className="flex flex-col items-center justify-center">
+                  <FileText className="mb-2 h-6 w-6" />
+                  <span>My Listings</span>
                 </div>
               </Button>
               
               <Button 
+                onClick={() => navigate('/profile/edit')}
                 variant="outline"
-                className="h-auto py-4 border-amber-200 hover:border-amber-300 text-amber-700"
-                onClick={() => toast.info("Coming soon! This feature is under development.")}
+                className="h-auto py-6 border-purple-200 hover:border-purple-300 text-purple-700"
               >
-                <div className="flex items-center">
-                  <Sparkles className="mr-2 h-5 w-5" />
-                  <div className="text-left">
-                    <div className="font-medium">Boost Your Salon</div>
-                    <div className="text-xs">Increase visibility</div>
-                  </div>
+                <div className="flex flex-col items-center justify-center">
+                  <Edit className="mb-2 h-6 w-6" />
+                  <span>Edit Salon Profile</span>
                 </div>
               </Button>
             </div>
           </div>
           
-          {/* Coming Soon Features */}
-          <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-4">Coming Soon</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Card className="bg-white/50 backdrop-blur-sm border border-gray-100">
-                <CardContent className="p-4">
-                  <h3 className="font-medium mb-2">Client Appointment System</h3>
-                  <p className="text-sm text-gray-600">Manage your bookings and client appointments</p>
-                </CardContent>
-              </Card>
-              
-              <Card className="bg-white/50 backdrop-blur-sm border border-gray-100">
-                <CardContent className="p-4">
-                  <h3 className="font-medium mb-2">Staff Management</h3>
-                  <p className="text-sm text-gray-600">Track commissions, schedule staff, manage performance</p>
-                </CardContent>
-              </Card>
-              
-              <Card className="bg-white/50 backdrop-blur-sm border border-gray-100">
-                <CardContent className="p-4">
-                  <h3 className="font-medium mb-2">List Your Salon For Sale</h3>
-                  <p className="text-sm text-gray-600">Reach qualified buyers for your salon business</p>
-                </CardContent>
-              </Card>
-            </div>
+          {/* Additional Dashboard Content */}
+          <div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Salon Dashboard</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Manage your salon business, post jobs for nail technicians, and grow your client base.
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </RoleDashboardLayout>
       </div>
