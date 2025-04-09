@@ -2,7 +2,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { User } from "@supabase/supabase-js";
 import { UserProfile, UserRole } from "../types";
-import { fetchUserProfile } from "../userProfileService";
 import { supabase } from "@/integrations/supabase/client";
 
 /**
@@ -18,7 +17,23 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
       setLoading(true);
       console.log("[UserProfile] Fetching profile for user:", userId);
       
-      // Direct database query to ensure we get the latest data
+      // First, try to get role from auth metadata (most accurate)
+      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError) {
+        console.error("[UserProfile] Error fetching auth user:", authError);
+      } else {
+        // Check for role in user metadata
+        const metadataRole = authUser?.user_metadata?.role as UserRole | null;
+        console.log("[UserProfile] Role from auth metadata:", metadataRole);
+        
+        if (metadataRole) {
+          setUserRole(metadataRole);
+          localStorage.setItem('emviapp_user_role', metadataRole);
+        }
+      }
+      
+      // Always also get the profile from the database
       const { data: profile, error } = await supabase
         .from('users')
         .select('*')
@@ -33,43 +48,55 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
         console.log("[UserProfile] Profile fetched successfully:", profile);
         setUserProfile(profile as unknown as UserProfile);
         
-        // Make sure we have a valid role (not just null or undefined)
-        if (profile.role) {
+        // If we didn't get a role from metadata, use the database role
+        if (!authUser?.user_metadata?.role && profile.role) {
+          console.log("[UserProfile] Using role from database:", profile.role);
           setUserRole(profile.role as UserRole);
           
           // Store role in localStorage for redundancy
           localStorage.setItem('emviapp_user_role', profile.role);
-          console.log("[UserProfile] Role saved to localStorage:", profile.role);
-        } else {
-          console.log("[UserProfile] No role found in profile, checking localStorage");
-          // Check localStorage if profile doesn't have a role
-          const cachedRole = localStorage.getItem('emviapp_user_role');
-          if (cachedRole) {
-            console.log("[UserProfile] Using cached role from localStorage:", cachedRole);
-            setUserRole(cachedRole as UserRole);
-          } else {
-            console.log("[UserProfile] No role found in localStorage, defaulting to null");
-            setUserRole(null);
+          
+          // Since metadata didn't have role, update it (sync back to auth)
+          if (profile.role) {
+            try {
+              await supabase.auth.updateUser({
+                data: { role: profile.role }
+              });
+              console.log("[UserProfile] Updated auth metadata with role:", profile.role);
+            } catch (updateErr) {
+              console.error("[UserProfile] Error updating auth metadata:", updateErr);
+            }
           }
         }
       } else {
         console.log("[UserProfile] No profile found for user:", userId);
         
-        // Check if we have a cached role in localStorage
-        const cachedRole = localStorage.getItem('emviapp_user_role');
-        if (cachedRole) {
-          console.log("[UserProfile] Using cached role from localStorage:", cachedRole);
-          setUserRole(cachedRole as UserRole);
-        } else {
-          console.log("[UserProfile] No cached role found, role remains null");
-          setUserRole(null);
+        // Fallback to cached role only if no profile and no metadata role
+        if (!authUser?.user_metadata?.role) {
+          const cachedRole = localStorage.getItem('emviapp_user_role');
+          if (cachedRole) {
+            console.log("[UserProfile] Using cached role from localStorage:", cachedRole);
+            setUserRole(cachedRole as UserRole);
+          } else {
+            console.log("[UserProfile] No cached role found, role remains null");
+            setUserRole(null);
+          }
         }
         
         setUserProfile(null);
       }
     } catch (err) {
       console.error("[UserProfile] Error in getUserProfile:", err);
-      setUserRole(null);
+      
+      // Final fallback - check localStorage
+      const cachedRole = localStorage.getItem('emviapp_user_role');
+      if (cachedRole && !userRole) {
+        console.log("[UserProfile] After error, using cached role from localStorage:", cachedRole);
+        setUserRole(cachedRole as UserRole);
+      } else {
+        setUserRole(null);
+      }
+      
       setUserProfile(null);
     } finally {
       setLoading(false);

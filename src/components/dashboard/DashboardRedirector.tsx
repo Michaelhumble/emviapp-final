@@ -28,22 +28,51 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
     try {
       console.log("[DashboardRedirector] Checking role for user:", { userRole, userId: user.id });
       
-      // First, try to use the role from context if available
+      // 1. First check auth metadata (most accurate source)
+      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError) {
+        console.error("[DashboardRedirector] Error fetching auth user:", authError);
+      } else {
+        // Get role from user metadata
+        const metadataRole = authUser?.user_metadata?.role as UserRole | null;
+        console.log("[DashboardRedirector] Role from auth metadata:", metadataRole);
+        
+        if (metadataRole) {
+          console.log("[DashboardRedirector] Using role from auth metadata:", metadataRole);
+          localStorage.setItem('emviapp_user_role', metadataRole);
+          navigateToRoleDashboard(navigate, metadataRole);
+          return;
+        }
+      }
+      
+      // 2. Then try the context if available
       if (userRole) {
         console.log("[DashboardRedirector] Using role from context:", userRole);
         navigateToRoleDashboard(navigate, userRole);
         return;
       }
       
-      // Check for cached role in localStorage
+      // 3. Check for cached role in localStorage
       const cachedRole = localStorage.getItem('emviapp_user_role');
       if (cachedRole) {
         console.log("[DashboardRedirector] Using cached role from localStorage:", cachedRole);
+        
+        // Update auth metadata to match localStorage (fix desync)
+        try {
+          await supabase.auth.updateUser({
+            data: { role: cachedRole }
+          });
+          console.log("[DashboardRedirector] Updated auth metadata with localStorage role");
+        } catch (updateErr) {
+          console.error("[DashboardRedirector] Error updating auth metadata:", updateErr);
+        }
+        
         navigateToRoleDashboard(navigate, cachedRole as UserRole);
         return;
       }
       
-      // If role is not in context or localStorage, fetch it directly from the database
+      // 4. If all else fails, fetch it directly from the database
       const { data: profile, error } = await supabase
         .from('users')
         .select('role')
@@ -64,9 +93,19 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         return;
       }
       
+      // 5. If we have a role from the database, update auth metadata
+      try {
+        await supabase.auth.updateUser({
+          data: { role: profile.role }
+        });
+        console.log("[DashboardRedirector] Updated auth metadata with database role");
+      } catch (updateErr) {
+        console.error("[DashboardRedirector] Error updating auth metadata:", updateErr);
+      }
+      
       // If we have a role, save it to localStorage and redirect
       localStorage.setItem('emviapp_user_role', profile.role);
-      console.log("[DashboardRedirector] Redirecting with role:", profile.role);
+      console.log("[DashboardRedirector] Redirecting with role from database:", profile.role);
       navigateToRoleDashboard(navigate, profile.role as UserRole);
       
     } catch (error) {

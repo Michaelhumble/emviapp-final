@@ -6,7 +6,8 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
-  -- Extract values from user metadata
+  -- Extract role from user metadata with proper fallbacks
+  -- First check for 'role', then 'user_type', then default to 'customer'
   INSERT INTO public.users (
     id, 
     email, 
@@ -17,7 +18,11 @@ BEGIN
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'full_name', ''),
-    COALESCE(NEW.raw_user_meta_data->>'user_type', 'customer'),
+    COALESCE(
+      NEW.raw_user_meta_data->>'role',
+      NEW.raw_user_meta_data->>'user_type',
+      'customer'
+    ),
     NEW.created_at
   );
   

@@ -1,10 +1,10 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { UserRole } from "@/context/auth/types";
+import { navigateToRoleDashboard } from "@/utils/navigation";
 
 export const useRoleSignUp = () => {
   const [email, setEmail] = useState("");
@@ -13,7 +13,6 @@ export const useRoleSignUp = () => {
   const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { signUp } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,13 +34,14 @@ export const useRoleSignUp = () => {
     setIsSubmitting(true);
 
     try {
-      // Sign up with Supabase
+      // Sign up with Supabase - IMPORTANT: Save role in user metadata
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            user_type: selectedRole, // Store user role in metadata
+            role: selectedRole, // Store role in user metadata
+            user_type: selectedRole, // Also store as user_type for backward compatibility
           },
         },
       });
@@ -53,12 +53,30 @@ export const useRoleSignUp = () => {
         return;
       }
       
+      if (!data.user) {
+        throw new Error("User creation failed");
+      }
+
+      // Update the users table directly to ensure role is set
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ role: selectedRole })
+        .eq('id', data.user.id);
+
+      if (updateError) {
+        console.error("Error updating user role:", updateError);
+        // Continue anyway as the auth metadata should have the role
+      }
+
+      // Save role to localStorage for redundancy
+      localStorage.setItem('emviapp_user_role', selectedRole);
+      
       // Success!
       toast.success("Account created successfully! Redirecting to dashboard...");
       
       // Redirect based on role
       setTimeout(() => {
-        redirectBasedOnRole(selectedRole, navigate);
+        navigateToRoleDashboard(navigate, selectedRole);
       }, 1500);
       
     } catch (err: any) {
@@ -83,32 +101,4 @@ export const useRoleSignUp = () => {
     error,
     handleSubmit
   };
-};
-
-// Helper function to redirect based on role
-const redirectBasedOnRole = (role: UserRole, navigate: any) => {
-  switch (role) {
-    case 'artist':
-    case 'nail technician/artist':
-      navigate('/dashboard/artist');
-      break;
-    case 'salon':
-    case 'owner':
-      navigate('/dashboard/salon');
-      break;
-    case 'customer':
-      navigate('/dashboard/customer');
-      break;
-    case 'supplier':
-    case 'vendor':
-    case 'beauty supplier':
-      navigate('/dashboard/supplier');
-      break;
-    case 'freelancer':
-      navigate('/dashboard/freelancer');
-      break;
-    case 'other':
-    default:
-      navigate('/dashboard/other');
-  }
 };

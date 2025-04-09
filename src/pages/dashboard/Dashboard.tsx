@@ -31,27 +31,43 @@ const Dashboard = () => {
       try {
         console.log("[Dashboard] Current role from context:", userRole);
         
-        // Force check role directly from the database to avoid any state issues
-        const { data: profile, error } = await supabase
+        // IMPORTANT: Force check role from both auth metadata and database
+        // 1. First check user metadata (most current)
+        const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+        
+        if (authError) {
+          console.error("[Dashboard] Error getting auth user:", authError);
+        }
+        
+        // Get role from user metadata if available
+        const metadataRole = authUser?.user_metadata?.role as UserRole | undefined;
+        console.log("[Dashboard] Role from auth metadata:", metadataRole);
+        
+        // 2. Then check the database (fallback)
+        const { data: profile, error: dbError } = await supabase
           .from('users')
           .select('role')
           .eq('id', user.id)
           .single();
         
-        if (error) {
-          throw new Error(`Failed to fetch user role: ${error.message}`);
+        if (dbError) {
+          console.error("[Dashboard] Error fetching user role from DB:", dbError);
         }
         
-        // Use role from database to ensure accuracy
-        const databaseRole = profile?.role as UserRole | null;
+        // Use role from database as fallback
+        const databaseRole = profile?.role as UserRole | undefined;
         console.log("[Dashboard] Role from database:", databaseRole);
         
-        if (databaseRole) {
-          // Also save to localStorage for redundancy
-          localStorage.setItem('emviapp_user_role', databaseRole);
+        // 3. Determine the final role to use (prioritize metadata over database)
+        const finalRole = metadataRole || databaseRole || userRole;
+        console.log("[Dashboard] Final determined role:", finalRole);
+        
+        if (finalRole) {
+          // Save to localStorage for redundancy
+          localStorage.setItem('emviapp_user_role', finalRole);
           
-          // Use the role from database for redirection
-          navigateToRoleDashboard(navigate, databaseRole);
+          // Use the determined role for redirection
+          navigateToRoleDashboard(navigate, finalRole);
         } else {
           console.log("[Dashboard] No role found, redirecting to profile edit");
           toast.error("Please complete your profile to access your dashboard");

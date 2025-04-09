@@ -42,13 +42,31 @@ export function useSession() {
         console.log('[Auth] New user detected, setting isNewUser flag');
         setIsNewUser(true);
         localStorage.setItem('emviapp_new_user', 'true');
+        
+        // Check for role in user metadata and store it
+        const userRole = session?.user?.user_metadata?.role;
+        if (userRole) {
+          console.log('[Auth] Found role in metadata:', userRole);
+          localStorage.setItem('emviapp_user_role', userRole);
+        }
+        
         navigate('/choose-role');
+      }
+      
+      // If the user signs in, check for role info
+      if (event === 'SIGNED_IN' as AuthChangeEvent) {
+        const userRole = session?.user?.user_metadata?.role;
+        if (userRole) {
+          console.log('[Auth] Sign in with role in metadata:', userRole);
+          localStorage.setItem('emviapp_user_role', userRole);
+        }
       }
 
       // If the user signs out, reset all states
       if (event === 'SIGNED_OUT' as AuthChangeEvent) {
         setIsNewUser(false);
         localStorage.removeItem('emviapp_new_user');
+        localStorage.removeItem('emviapp_user_role');
       }
       
       setLoading(false);
@@ -58,6 +76,12 @@ export function useSession() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      
+      // Check for role in user metadata
+      if (session?.user?.user_metadata?.role) {
+        localStorage.setItem('emviapp_user_role', session.user.user_metadata.role);
+      }
+      
       setLoading(false);
     });
 
