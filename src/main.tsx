@@ -18,7 +18,7 @@ import Profile from '@/pages/Profile';
 import UserProfilePage from '@/pages/profile/UserProfilePage';
 import ProfileEdit from '@/pages/profile/edit';
 import UserProfileByUsername from '@/pages/profile/[username]';
-// Import with correct casing
+// Import with proper casing to fix the error
 import SalonDashboard from '@/pages/dashboard/salon';
 import SalonOwnerDashboard from '@/pages/dashboard/SalonOwnerDashboard';
 import ArtistDashboard from '@/pages/dashboard/Artist';
