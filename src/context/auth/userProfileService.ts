@@ -1,135 +1,115 @@
 
-import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile, UserRole } from './types';
-import { Json } from '@/integrations/supabase/types';
+import { toast } from 'sonner';
 
 /**
- * Fetches the user profile data from Supabase
+ * Fetch user profile from Supabase
  */
 export const fetchUserProfile = async (userId: string): Promise<UserProfile | null> => {
+  if (!userId) return null;
+  
   try {
-    console.log("Fetching user profile for:", userId);
-    
-    // Get user profile from the database using maybeSingle to prevent errors
+    // Get user profile data
     const { data, error } = await supabase
-      .from('users')
+      .from('profiles')
       .select('*')
       .eq('id', userId)
-      .maybeSingle();
+      .single();
     
-    if (error) {
-      console.error('Error fetching user profile:', error);
-      return null;
-    }
+    if (error) throw error;
     
-    if (!data) {
-      console.log('No user profile found');
-      return null;
-    }
+    if (!data) return null;
     
-    console.log("User profile retrieved:", data);
-    
-    // Cast role to UserRole and create user profile
-    const fetchedRole = data.role ? (data.role as UserRole) : null;
-    
-    // Create a profile object, safely checking if each property exists
+    // Transform database record to UserProfile type
     const profile: UserProfile = {
-      id: data.id || userId,
-      email: data.email || '',
+      id: data.id,
+      user_id: data.user_id,
       full_name: data.full_name || '',
-      avatar_url: data.avatar_url || '',
-      location: data.location || '',
-      bio: data.bio || '',
+      email: data.email || '',
       phone: data.phone || '',
-      instagram: data.instagram || '',
-      website: data.website || '',
+      bio: data.bio || '',
       specialty: data.specialty || '',
-      role: fetchedRole || 'customer',
-      created_at: data.created_at || new Date().toISOString(),
-      updated_at: data.updated_at || new Date().toISOString(),
-      preferred_language: data.preferred_language || '',
+      services: data.services || [],
+      location: data.location || '',
+      social_links: {
+        instagram: data.instagram || '',
+        facebook: data.facebook || '',
+        twitter: data.twitter || '',
+        website: data.website || '',
+      },
+      avatar_url: data.avatar_url || '',
+      gallery: data.gallery || [],
+      availability: data.availability || [],
+      role: (data.role as UserRole) || 'customer',
+      verification_status: data.verification_status || 'pending',
+      created_at: data.created_at || '',
+      updated_at: data.updated_at || '',
       
-      // Handle optional properties with proper type checking
-      salon_name: typeof data.salon_name === 'string' ? data.salon_name : null,
-      custom_role: typeof data.custom_role === 'string' ? data.custom_role : null,
-      contact_link: typeof data.contact_link === 'string' ? data.contact_link : null,
-      skills: Array.isArray(data.skills) ? data.skills : [],
-      skill_level: typeof data.skill_level === 'string' ? data.skill_level : null,
-      profile_views: typeof data.profile_views === 'number' ? data.profile_views : 0,
-      preferences: Array.isArray(data.preferences) ? data.preferences : [],
-      affiliate_code: typeof data.affiliate_code === 'string' ? data.affiliate_code : null,
-      referral_code: typeof data.referral_code === 'string' ? data.referral_code : null,
-      referral_count: typeof data.referral_count === 'number' ? data.referral_count : 0,
-      credits: typeof data.credits === 'number' ? data.credits : 0,
-      boosted_until: typeof data.boosted_until === 'string' ? data.boosted_until : null,
-      portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
-      accepts_bookings: typeof data.accepts_bookings === 'boolean' ? data.accepts_bookings : false,
-      booking_url: typeof data.booking_url === 'string' ? data.booking_url : null,
-      completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : []
+      // Optional fields with null-coalescing to handle potential undefined values
+      salon_name: data.salon_name || '',
+      company_name: data.company_name || '',
+      product_type: data.product_type || '',
+      instagram: data.instagram || '',
+      facebook: data.facebook || '',
+      twitter: data.twitter || '',
+      website: data.website || '',
+      preferred_language: data.preferred_language || 'en',
+      profile_views: data.profile_views || 0,
+      account_type: data.account_type || 'free',
+      affiliate_code: data.affiliate_code || '',
+      referral_code: data.referral_code || '',
+      referral_count: data.referral_count || 0,
+      skill_level: data.skill_level || '',
+      skills: data.skills || [],
+      preferences: data.preferences || [],
+      accepts_bookings: data.accepts_bookings || false,
+      booking_url: data.booking_url || '',
+      boosted_until: data.boosted_until || null,
+      profile_completion: data.profile_completion || 0,
+      completed_profile_tasks: data.completed_profile_tasks || [],
+      portfolio_urls: data.portfolio_urls || [],
     };
     
     return profile;
-  } catch (err) {
-    console.error("Error in fetchUserProfile:", err);
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    toast.error('Failed to load profile information');
     return null;
   }
 };
 
 /**
- * Creates a new user profile in Supabase
+ * Update user profile in Supabase
  */
-export const createUserProfile = async (user: User): Promise<UserProfile | null> => {
-  // Generate referral code if needed
-  const referralCode = `EMVI${Math.floor(1000 + Math.random() * 9000)}`;
-  
-  const newProfile = {
-    id: user.id,
-    email: user.email || '',
-    full_name: '',
-    avatar_url: '',
-    location: '',
-    bio: '',
-    phone: '',
-    instagram: '',
-    website: '',
-    specialty: '',
-    role: 'customer' as UserRole,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    referral_code: referralCode,
-    credits: 0,
-    portfolio_urls: []
-  };
+export const updateUserProfile = async (profile: Partial<UserProfile>): Promise<UserProfile | null> => {
+  if (!profile.id) {
+    console.error('User ID is required to update profile');
+    toast.error('Profile update failed: Missing user ID');
+    return null;
+  }
   
   try {
-    // Check if boosted_until column exists in users table
-    const { error: schemaError } = await supabase
-      .from('users')
-      .select('boosted_until')
-      .limit(1);
-      
-    // Only add boosted_until to the profile if the column exists
-    const profileToInsert = !schemaError ? 
-      { ...newProfile, boosted_until: null } : 
-      newProfile;
-      
+    // Update profile in database
     const { data, error } = await supabase
-      .from('users')
-      .insert([profileToInsert])
+      .from('profiles')
+      .update(profile)
+      .eq('id', profile.id)
       .select()
-      .maybeSingle();
-  
-    if (error) {
-      console.error('Error creating user profile:', error);
+      .single();
+    
+    if (error) throw error;
+    
+    if (!data) {
+      toast.error('Profile update failed: No data returned');
       return null;
     }
     
-    // Fetch the newly created profile
-    return await fetchUserProfile(user.id);
-    
+    toast.success('Profile updated successfully');
+    return data as UserProfile;
   } catch (error) {
-    console.error('Error in createUserProfile:', error);
+    console.error('Error updating user profile:', error);
+    toast.error('Failed to update profile');
     return null;
   }
 };

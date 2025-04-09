@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
 import { ProfileProvider } from '@/context/profile';
 import { ProfileCompletionProvider } from '@/context/profile/ProfileCompletionProvider';
+import { NotificationProvider } from '@/context/notification';
 import routes from './routes';
 import '@/App.css';
 
@@ -11,15 +12,17 @@ function App() {
     <AuthProvider>
       <ProfileProvider>
         <ProfileCompletionProvider>
-          <Routes>
-            {routes.map((route) => (
-              <Route
-                key={route.path}
-                path={route.path}
-                element={route.element}
-              />
-            ))}
-          </Routes>
+          <NotificationProvider>
+            <Routes>
+              {routes.map((route) => (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  element={route.element}
+                />
+              ))}
+            </Routes>
+          </NotificationProvider>
         </ProfileCompletionProvider>
       </ProfileProvider>
     </AuthProvider>

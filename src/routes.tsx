@@ -1,185 +1,111 @@
 
 import React from 'react';
-import Index from '@/pages/Index';
-import Jobs from '@/pages/jobs/index';
-import Salons from '@/pages/Salons';
-import SalonOwners from '@/pages/SalonOwners';
-import SignIn from '@/pages/auth/SignIn';
-import SignUp from '@/pages/auth/SignUp';
-import ChooseRole from '@/pages/auth/ChooseRole';
-import Profile from '@/pages/Profile';
-import UserProfilePage from '@/pages/profile/UserProfilePage';
-import ProfileEdit from '@/pages/profile/edit';
-import UserProfileByUsername from '@/pages/profile/[username]';
-import Dashboard from '@/pages/dashboard/Dashboard';
-import CustomerDashboard from '@/pages/dashboard/Customer';
-import SalonDashboard from '@/pages/dashboard/Salon';
-import ArtistDashboard from '@/pages/dashboard/Artist';
-import SupplierDashboard from '@/pages/dashboard/Supplier';
-import FreelancerDashboard from '@/pages/dashboard/Freelancer';
-import OtherDashboard from '@/pages/dashboard/Other';
-import NotFound from '@/pages/NotFound';
-import Analysis from '@/pages/Analysis';
-import ProfileRedirect from '@/components/profile/ProfileRedirect';
-import Checkout from '@/pages/Checkout';
-import Messaging from '@/pages/Messaging';
-import SalonMarketplace from '@/pages/SalonMarketplace';
-import ArtistPublicProfile from '@/pages/u/ArtistPublicProfile';
-import PostJob from '@/pages/post/PostJob';
-import PostingIndex from '@/pages/posting/Index';
-import SalonPost from '@/pages/posting/SalonPost';
-import SellSalonIndex from '@/pages/sell-salon/index';
-import NewSalonSalePage from '@/pages/sell-salon/new';
-import SalonSaleDetail from '@/pages/sell-salon/[id]';
-import ArtistDirectory from '@/pages/explore/artists';
-import Welcome from '@/pages/Welcome';
+import Index from './pages/Index';
+import Welcome from './pages/Welcome';
+import NotFound from './pages/NotFound';
+import Artists from './pages/Artists';
+import Jobs from './pages/Jobs';
+import SalonOwners from './pages/SalonOwners';
+import Customers from './pages/Customers';
+import Suppliers from './pages/Suppliers';
+import Freelancers from './pages/Freelancers';
+import Dashboard from './pages/dashboard';
+import ArtistDashboard from './pages/dashboard/Artist';
+import CustomerDashboard from './pages/dashboard/Customer';
+import SalonDashboard from './pages/dashboard/Salon';
+import OwnerDashboard from './pages/dashboard/Owner';
+import FreelancerDashboard from './pages/dashboard/Freelancer';
+import SupplierDashboard from './pages/dashboard/Supplier';
+import OtherDashboard from './pages/dashboard/Other';
+import ProfileEditor from './pages/profile/ProfileEditor';
+import SignIn from './pages/auth/SignIn';
+import SignUp from './pages/auth/SignUp';
 
-// Define the routes
 const routes = [
   {
     path: '/',
-    element: <Index />
-  },
-  {
-    path: '/jobs',
-    element: <Jobs />
-  },
-  {
-    path: '/salons',
-    element: <Salons />
-  },
-  {
-    path: '/salon-owners',
-    element: <SalonOwners />
-  },
-  {
-    path: '/salon/:id',
-    element: <SalonMarketplace />
-  },
-  {
-    path: '/analysis',
-    element: <Analysis />
+    element: <Index />,
   },
   {
     path: '/welcome',
-    element: <Welcome />
+    element: <Welcome />,
   },
   {
-    path: '/auth/signin',
-    element: <SignIn />
+    path: '/artists',
+    element: <Artists />,
   },
   {
-    path: '/auth/signup',
-    element: <SignUp />
+    path: '/jobs',
+    element: <Jobs />,
   },
   {
-    path: '/sign-in',
-    element: <SignIn />
+    path: '/salon-owners',
+    element: <SalonOwners />,
   },
   {
-    path: '/sign-up',
-    element: <SignUp />
+    path: '/customers',
+    element: <Customers />,
   },
   {
-    path: '/choose-role',
-    element: <ChooseRole />
+    path: '/suppliers',
+    element: <Suppliers />,
   },
   {
-    path: '/profile',
-    element: <UserProfilePage />
-  },
-  {
-    path: '/profile/edit',
-    element: <ProfileEdit />
-  },
-  {
-    path: '/profile/:username',
-    element: <UserProfileByUsername />
+    path: '/freelancers',
+    element: <Freelancers />,
   },
   {
     path: '/dashboard',
-    element: <Dashboard />
-  },
-  {
-    path: '/dashboard/customer',
-    element: <CustomerDashboard />
-  },
-  {
-    path: '/dashboard/salon',
-    element: <SalonDashboard />
+    element: <Dashboard />,
   },
   {
     path: '/dashboard/artist',
-    element: <ArtistDashboard />
+    element: <ArtistDashboard />,
   },
   {
-    path: '/dashboard/supplier',
-    element: <SupplierDashboard />
+    path: '/dashboard/customer',
+    element: <CustomerDashboard />,
   },
   {
-    path: '/dashboard/freelancer',
-    element: <FreelancerDashboard />
+    path: '/dashboard/salon',
+    element: <SalonDashboard />,
   },
   {
     path: '/dashboard/owner',
-    element: <SalonDashboard />
+    element: <OwnerDashboard />,
+  },
+  {
+    path: '/dashboard/freelancer',
+    element: <FreelancerDashboard />,
+  },
+  {
+    path: '/dashboard/supplier',
+    element: <SupplierDashboard />,
   },
   {
     path: '/dashboard/other',
-    element: <OtherDashboard />
+    element: <OtherDashboard />,
   },
   {
-    path: '/checkout',
-    element: <Checkout />
+    path: '/profile',
+    element: <ProfileEditor />,
   },
   {
-    path: '/messages',
-    element: <Messaging />
+    path: '/profile/edit',
+    element: <ProfileEditor />,
   },
   {
-    path: '/messages/:id',
-    element: <Messaging />
+    path: '/auth/signin',
+    element: <SignIn />,
   },
   {
-    path: '/redirect/profile',
-    element: <ProfileRedirect />
-  },
-  {
-    path: '/post/job',
-    element: <PostJob />
-  },
-  {
-    path: '/posting',
-    element: <PostingIndex />
-  },
-  {
-    path: '/posting/salon',
-    element: <SalonPost />
-  },
-  {
-    path: '/sell-salon',
-    element: <SellSalonIndex />
-  },
-  {
-    path: '/sell-salon/new',
-    element: <NewSalonSalePage />
-  },
-  {
-    path: '/sell-salon/:id',
-    element: <SalonSaleDetail />
-  },
-  {
-    path: '/explore/artists',
-    element: <ArtistDirectory />
-  },
-  {
-    path: '/u/:username',
-    element: <ArtistPublicProfile />
+    path: '/auth/signup',
+    element: <SignUp />,
   },
   {
     path: '*',
-    element: <NotFound />
-  }
+    element: <NotFound />,
+  },
 ];
 
 export default routes;
