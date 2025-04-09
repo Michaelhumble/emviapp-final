@@ -36,3 +36,26 @@ export interface PortfolioInfoProps {
 export interface PortfolioEmptyStateProps {
   isUploading: boolean;
 }
+
+// Updated service interface with image_url field
+export interface Service {
+  id: string;
+  title: string;
+  description: string | null;
+  price: number;
+  duration_minutes: number;
+  is_visible: boolean;
+  image_url?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Updated ServiceFormData interface with image_url field
+export interface ServiceFormData {
+  title: string;
+  description: string;
+  price: string;
+  duration_minutes: string;
+  is_visible: boolean;
+  image_url?: string;
+}

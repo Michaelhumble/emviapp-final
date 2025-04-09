@@ -793,6 +793,7 @@ export type Database = {
           description: string | null
           duration_minutes: number
           id: string
+          image_url: string | null
           is_visible: boolean | null
           price: number
           title: string
@@ -804,6 +805,7 @@ export type Database = {
           description?: string | null
           duration_minutes: number
           id?: string
+          image_url?: string | null
           is_visible?: boolean | null
           price: number
           title: string
@@ -815,6 +817,7 @@ export type Database = {
           description?: string | null
           duration_minutes?: number
           id?: string
+          image_url?: string | null
           is_visible?: boolean | null
           price?: number
           title?: string
