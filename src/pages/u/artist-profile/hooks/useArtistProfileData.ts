@@ -45,15 +45,13 @@ export const useArtistProfileData = (username?: string) => {
             specialty: profileData.specialty,
             location: profileData.location,
             avatar_url: profileData.avatar_url,
-            role: profileData.role as UserRole, // Cast the role string to UserRole type
+            role: profileData.role as UserRole,
             instagram: profileData.instagram,
             website: profileData.website,
             accepts_bookings: profileData.accepts_bookings,
             booking_url: profileData.booking_url,
-            // Add other properties as needed
             years_experience: profileData.years_experience,
-            // Store the profile views from the database in our local state
-            profile_views: profileData.profile_views
+            profile_views: profileData.profile_views || 0
           };
           
           setProfile(userProfile);
@@ -77,7 +75,7 @@ export const useArtistProfileData = (username?: string) => {
           // Fetch portfolio images from portfolio_items table
           const { data: portfolioData, error: portfolioError } = await supabase
             .from('portfolio_items')
-            .select('id, image_url, title as name')
+            .select('id, image_url as url, title as name')
             .eq('user_id', username);
           
           if (portfolioError) throw portfolioError;
