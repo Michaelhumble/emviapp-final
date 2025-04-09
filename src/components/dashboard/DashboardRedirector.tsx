@@ -36,12 +36,22 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         const normalizedRole = normalizeUserRole(userRole);
         console.log("[DashboardRedirector] Normalized role:", normalizedRole);
         
+        // CHANGED: Check if normalized role is null and handle accordingly
+        if (!normalizedRole) {
+          console.warn("[DashboardRedirector] Role normalized to null, showing role selection");
+          setShowRoleModal(true);
+          if (isNewUser) {
+            clearIsNewUser();
+          }
+          return;
+        }
+        
         // COMPLETELY REWRITTEN: Direct routing based on normalized role with no fallbacks
         if (normalizedRole === 'artist') {
           console.log("[DashboardRedirector] DIRECT ROUTING: Artist to artist dashboard");
           navigate('/dashboard/artist');
           return;
-        } else if (normalizedRole === 'salon') {
+        } else if (normalizedRole === 'salon_owner') {
           console.log("[DashboardRedirector] DIRECT ROUTING: Salon to salon dashboard");
           navigate('/dashboard/salon');
           return;
@@ -79,6 +89,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         throw new Error(`Failed to fetch user role: ${error.message}`);
       }
       
+      // CHANGED: If no role found, show role selection modal without defaulting to customer
       if (!profile || !profile.role) {
         console.log("[DashboardRedirector] No role found, showing role selection modal");
         setShowRoleModal(true);
@@ -95,6 +106,13 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
       const normalizedDbRole = normalizeUserRole(profile.role);
       console.log("[DashboardRedirector] Normalized database role:", normalizedDbRole);
       
+      // CHANGED: Check if normalized role is null and handle accordingly
+      if (!normalizedDbRole) {
+        console.warn("[DashboardRedirector] Database role normalized to null, showing role selection");
+        setShowRoleModal(true);
+        return;
+      }
+      
       // COMPLETELY REWRITTEN: Direct routing based on normalized database role
       if (normalizedDbRole === 'artist') {
         console.log("[DashboardRedirector] DIRECT ROUTING: Artist to artist dashboard");
@@ -102,7 +120,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         // Refresh user profile to ensure we have the role in context for next time
         await refreshUserProfile();
         return;
-      } else if (normalizedDbRole === 'salon') {
+      } else if (normalizedDbRole === 'salon_owner') {
         console.log("[DashboardRedirector] DIRECT ROUTING: Salon to salon dashboard");
         navigate('/dashboard/salon');
         await refreshUserProfile();
@@ -134,7 +152,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
     } catch (error) {
       console.error("[DashboardRedirector] Error in role check and redirect:", error);
       setRedirectError("Unable to determine your user role. Please try again or select a role.");
-      navigate("/profile/edit");
+      navigate("/choose-role"); // CHANGED: Direct to role selection instead of profile edit
     } finally {
       setLocalLoading(false);
     }

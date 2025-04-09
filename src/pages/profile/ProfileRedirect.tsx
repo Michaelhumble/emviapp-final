@@ -20,29 +20,32 @@ const ProfileRedirect = () => {
       return;
     }
     
+    // CHANGED: If no role, redirect to role selection instead of profile edit
+    if (!userRole) {
+      console.warn("[ProfileRedirect] No role detected, redirecting to role selection");
+      navigate('/choose-role');
+      return;
+    }
+    
     // Redirect based on user role
-    if (userRole) {
-      switch (userRole) {
-        case 'artist':
-        case 'nail technician/artist':
-          navigate('/profile/edit');
-          break;
-        case 'salon':
-        case 'owner':
-          navigate('/profile/salon/setup');
-          break;
-        case 'freelancer':
-          navigate('/profile/freelancer/setup');
-          break;
-        case 'other':
-          navigate('/profile/other/setup');
-          break;
-        default:
-          navigate('/profile/edit');
-      }
-    } else {
-      // No role yet, go to profile edit
-      navigate('/profile/edit');
+    switch (userRole) {
+      case 'artist':
+      case 'nail technician/artist':
+        navigate('/profile/edit');
+        break;
+      case 'salon_owner':
+      case 'salon':
+      case 'owner':
+        navigate('/profile/salon/setup');
+        break;
+      case 'freelancer':
+        navigate('/profile/freelancer/setup');
+        break;
+      case 'other':
+        navigate('/profile/other/setup');
+        break;
+      default:
+        navigate('/profile/edit');
     }
   }, [userRole, isSignedIn, loading, navigate]);
   

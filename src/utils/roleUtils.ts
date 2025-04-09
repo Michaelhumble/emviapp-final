@@ -1,3 +1,4 @@
+
 import { UserRole, LegacyUserRole } from "@/context/auth/types";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -64,10 +65,10 @@ export const normalizeUserRole = (role: string | null): UserRole | null => {
     case 'freelancer':
       return normalizedRole as UserRole;
       
-    // Log a warning for unknown roles, but return something to avoid errors
+    // CHANGED: Now log a warning for unknown roles but return null instead of 'other'
     default:
-      console.warn(`[Role] Unknown role: ${role}, using 'other' as fallback`);
-      return 'other';
+      console.warn(`[Role] Unknown role: ${role}, returning null (no default fallback)`);
+      return null;
   }
 };
 
@@ -171,7 +172,8 @@ export const getUserRole = async (userId: string): Promise<UserRole | null> => {
       return normalizedMetadataRole;
     }
     
-    console.warn("[getUserRole] No role found in users table or auth metadata");
+    // CHANGED: If no role detected, log this critical issue but don't default to any role
+    console.warn("[getUserRole] ⚠️ CRITICAL: No role found in users table or auth metadata");
     return null;
   } catch (err) {
     console.error("[getUserRole] Unexpected error:", err);

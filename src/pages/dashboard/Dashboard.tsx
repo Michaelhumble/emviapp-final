@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2, AlertTriangle, ArrowLeft } from "lucide-react";
@@ -123,7 +122,7 @@ const DashboardPage = () => {
             // Use the navigation utility with the directly fetched role
             navigateToRoleDashboard(navigate, directRole);
           } else {
-            // If no role detected at all, redirect to role selection
+            // CHANGED: If no role detected at all, redirect to role selection
             console.warn("[Dashboard Router] No role detected, redirecting to role selection");
             navigate("/choose-role");
             toast.info("Please select your role to continue");

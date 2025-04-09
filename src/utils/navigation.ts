@@ -1,4 +1,3 @@
-
 import { NavigateFunction } from "react-router-dom";
 import { UserRole, LegacyUserRole } from "@/context/auth/types";
 import { toast } from "sonner";
@@ -14,18 +13,16 @@ export const navigateToRoleDashboard = (
   console.log("[Dashboard Navigation] Original role:", userRole);
   
   if (!userRole) {
-    console.error("[Dashboard Navigation] No role defined for user");
+    console.error("[Dashboard Navigation] No role defined for user - redirecting to role selection");
     navigate("/choose-role");
     toast.error("Please select your role to access your dashboard");
     return;
   }
   
-  // Normalize role to ensure consistent routing
   const normalizedRole = normalizeUserRole(userRole);
-  console.log("[Dashboard Navigation] Normalized role:", normalizedRole);
   
   if (!normalizedRole) {
-    console.error("[Dashboard Navigation] Invalid role after normalization");
+    console.error("[Dashboard Navigation] Invalid role after normalization - redirecting to role selection");
     navigate("/choose-role");
     toast.error("Your role needs to be set up. Please select a role.");
     return;
@@ -33,7 +30,6 @@ export const navigateToRoleDashboard = (
   
   let targetDashboard = '';
   
-  // Route based on normalized role - STRICT MAPPING
   switch (normalizedRole) {
     case 'artist':
       targetDashboard = '/dashboard/artist';
@@ -62,7 +58,6 @@ export const navigateToRoleDashboard = (
 
   console.log("[Dashboard Navigation] Redirecting to:", targetDashboard);
   
-  // Force navigation to the correct dashboard
   if (window.location.pathname !== targetDashboard) {
     console.log(`[Dashboard Navigation] FORCE REDIRECT: ${window.location.pathname} → ${targetDashboard}`);
     navigate(targetDashboard);

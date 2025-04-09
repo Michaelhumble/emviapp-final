@@ -1,4 +1,3 @@
-
 import { AuthResponse } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -34,9 +33,9 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
             const userRole = await getUserRole(response.data.user.id);
             console.log(`[Auth] Detected user role for routing: ${userRole || 'none'}`);
             
-            // If no role, user will be directed to choose one later
+            // CHANGED: Log more explicit warning if no role found
             if (!userRole) {
-              console.warn("[Auth] No role found for logged in user - will prompt to choose role");
+              console.warn("[Auth] ⚠️ NO ROLE FOUND for logged in user - user will be prompted to choose role");
               toast.info("Please select your role to continue");
             }
           } catch (syncError) {
@@ -68,15 +67,22 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
         console.log(`[SignUp] Normalized role for signup: ${normalizeUserRole(role)}`);
       }
       
+      // CHANGED: Improved role handling during signup
+      // Make sure we're not storing a null or undefined role
+      const userMetadata: any = {
+        email: email
+      };
+      
+      if (role) {
+        userMetadata.role = role;
+      }
+      
       // Sign up with auth API, explicitly including role in metadata
       const response = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: {
-            email: email,
-            role: role // Store role directly in auth metadata
-          }
+          data: userMetadata
         }
       });
       
@@ -121,6 +127,10 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
           console.log("[SignUp] Role saved successfully to both auth and users table");
           toast.success("Account created successfully!");
         }
+      } else if (response.data.user) {
+        // CHANGED: If no role provided during signup, show a warning
+        console.warn("[SignUp] User created but no role was provided");
+        toast.info("Account created! Please select your role to continue.");
       } else {
         toast.success("Account created! Please verify your email.");
       }
