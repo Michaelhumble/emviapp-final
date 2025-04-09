@@ -77,7 +77,7 @@ const Hero = () => {
   }, [randomizedImages.length]);
 
   return (
-    <div className="fixed inset-0 w-full md:max-h-[80vh] flex items-center justify-center overflow-hidden z-50">
+    <div className="fixed inset-0 w-full md:h-[80vh] md:max-h-[80vh] flex items-center justify-center overflow-hidden z-50">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#FDFDFD] to-[#F6F6F6] z-0"></div>
       
