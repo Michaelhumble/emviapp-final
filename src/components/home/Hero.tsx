@@ -1,5 +1,5 @@
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -9,15 +9,15 @@ const Hero = () => {
   const isMobile = useIsMobile();
 
   return (
-    <section className="h-screen w-full flex items-center justify-center overflow-hidden bg-black relative">
+    <section className="h-screen w-full flex items-center justify-center overflow-hidden relative">
       {/* Animated gradient background */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/40 to-pink-600/30 animate-pulse-glow"></div>
-        <div className="absolute inset-0 bg-[url('/lovable-uploads/b8dd2904-7dc6-412d-89be-c962ca4ae5f8.png')] bg-cover bg-center opacity-30 mix-blend-overlay"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-700/30 to-pink-500/20 animate-pulse-glow"></div>
+        <div className="absolute inset-0 bg-[url('/lovable-uploads/b8dd2904-7dc6-412d-89be-c962ca4ae5f8.png')] bg-cover bg-center opacity-25 mix-blend-overlay"></div>
       </div>
       
-      {/* Blur glass overlay */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-10"></div>
+      {/* Lighter blur glass overlay */}
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-md z-10"></div>
 
       {/* Content container */}
       <motion.div 
@@ -36,7 +36,7 @@ const Hero = () => {
         </motion.h1>
         
         <motion.p 
-          className="text-white/90 text-lg md:text-xl mb-6 max-w-3xl mx-auto"
+          className="text-white/95 text-lg md:text-xl mb-6 max-w-3xl mx-auto"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
@@ -81,11 +81,11 @@ const Hero = () => {
         </motion.div>
       </motion.div>
       
-      {/* Optional subtle animated particle effect */}
+      {/* Subtle animated particle effect with reduced opacity */}
       <div aria-hidden="true" className="absolute inset-0 z-10 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-pink-500/10 rounded-full filter blur-3xl animate-blob animation-delay-2000"></div>
-        <div className="absolute top-2/3 right-1/3 w-40 h-40 bg-purple-500/10 rounded-full filter blur-3xl animate-blob"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-36 h-36 bg-blue-500/10 rounded-full filter blur-3xl animate-blob animation-delay-4000"></div>
+        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-pink-500/5 rounded-full filter blur-3xl animate-blob animation-delay-2000"></div>
+        <div className="absolute top-2/3 right-1/3 w-40 h-40 bg-purple-500/5 rounded-full filter blur-3xl animate-blob"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-36 h-36 bg-blue-500/5 rounded-full filter blur-3xl animate-blob animation-delay-4000"></div>
       </div>
     </section>
   );
