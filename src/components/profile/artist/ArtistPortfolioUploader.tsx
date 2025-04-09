@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { CloudUpload, Loader2, X, Image, AlertCircle } from "lucide-react";
+import { CloudUpload, Loader2, X, Image, AlertCircle, Check } from "lucide-react";
 import { useProfileCompletion } from "../hooks/useProfileCompletion";
 import { v4 as uuidv4 } from "uuid";
 
