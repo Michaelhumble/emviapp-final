@@ -1,13 +1,12 @@
 
 /**
- * Extracts and returns initials from a full name
+ * Generates initials from a name
  */
-export const getInitials = (fullName?: string): string => {
-  if (!fullName) return "?";
-  
-  return fullName
-    .split(" ")
-    .map(name => name[0])
-    .join("")
-    .toUpperCase();
+export const getInitials = (name: string = 'User'): string => {
+  return name
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .substring(0, 2);
 };
