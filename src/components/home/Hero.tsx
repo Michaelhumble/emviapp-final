@@ -42,8 +42,8 @@ const Hero = () => {
     <section 
       className="relative flex items-center justify-center overflow-hidden"
       style={{
-        width: 'calc(100% - 2px)',
-        height: 'calc(100vh - 2px)',
+        width: 'calc(140% - 2px)',
+        height: 'calc(140vh - 2px)',
         margin: '1px',
         border: '1px solid rgba(255,255,255,0.1)',
       }}
