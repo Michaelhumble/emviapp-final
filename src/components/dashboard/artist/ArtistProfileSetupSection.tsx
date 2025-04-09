@@ -8,6 +8,7 @@ import { useProfileCompletion } from '@/components/profile/hooks/useProfileCompl
 import { Progress } from '@/components/ui/progress';
 import { Check, Info } from 'lucide-react';
 import ArtistProfilePictureUpload from '@/components/profile/artist/ArtistProfilePictureUpload';
+import ArtistPortfolioUploader from '@/components/profile/artist/ArtistPortfolioUploader';
 
 const ArtistProfileSetupSection = () => {
   const { userProfile } = useAuth();
@@ -35,7 +36,7 @@ const ArtistProfileSetupSection = () => {
         
         <CardContent className="p-4">
           <Tabs defaultValue="bio" value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-3 mb-4">
+            <TabsList className="grid grid-cols-4 mb-4">
               <TabsTrigger value="bio">
                 Bio & Specialty
                 {userProfile?.bio && userProfile?.specialty && (
@@ -45,6 +46,12 @@ const ArtistProfileSetupSection = () => {
               <TabsTrigger value="photo">
                 Profile Photo
                 {isTaskComplete("avatar") && (
+                  <Check className="ml-1 h-4 w-4 text-green-500" />
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="portfolio">
+                Portfolio
+                {isTaskComplete("portfolio") && (
                   <Check className="ml-1 h-4 w-4 text-green-500" />
                 )}
               </TabsTrigger>
@@ -59,6 +66,10 @@ const ArtistProfileSetupSection = () => {
             
             <TabsContent value="photo" className="mt-0">
               <ArtistProfilePictureUpload />
+            </TabsContent>
+            
+            <TabsContent value="portfolio" className="mt-0">
+              <ArtistPortfolioUploader />
             </TabsContent>
             
             <TabsContent value="other" className="mt-0">
