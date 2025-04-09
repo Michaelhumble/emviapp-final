@@ -4,15 +4,11 @@ import { Navigate, useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { useAuth } from "@/context/auth";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import ArtistProfileForm from "@/components/profile/artist/ArtistProfileForm";
-import SalonProfileForm from "@/components/profile/SalonProfileForm";
-import CustomerProfileForm from "@/components/profile/CustomerProfileForm";
-import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
-import PopulateProfileButton from "@/components/profile/PopulateProfileButton";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import SimpleProfileForm from "@/components/profile/SimpleProfileForm";
 
 const ProfileEditor = () => {
-  const { user, userRole, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   
@@ -21,20 +17,9 @@ const ProfileEditor = () => {
     if (!authLoading) {
       setLoading(false);
     }
+    
+    document.title = "Edit Profile | EmviApp";
   }, [authLoading]);
-  
-  // Handle profile form based on user role
-  const renderProfileForm = () => {
-    if (userRole === "artist" || userRole === "nail technician/artist" || userRole === "freelancer") {
-      return <ArtistProfileForm />;
-    }
-    
-    if (userRole === "salon" || userRole === "owner" || userRole === "vendor" || userRole === "beauty supplier" || userRole === "supplier") {
-      return <SalonProfileForm />;
-    }
-    
-    return <CustomerProfileForm />;
-  };
   
   if (loading) {
     return (
@@ -56,25 +41,17 @@ const ProfileEditor = () => {
         <div className="max-w-3xl mx-auto">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold">Edit Profile</h1>
-            <div className="flex gap-2">
-              <PopulateProfileButton onComplete={() => {
-                // Force refresh the page after populating profile
-                window.location.reload();
-              }} />
-              <Button variant="outline" onClick={() => navigate(-1)}>
-                Back
-              </Button>
-            </div>
-          </div>
-          
-          {/* Profile Completion Card */}
-          <div className="mb-8">
-            <ProfileCompletionCard />
+            <Button variant="outline" onClick={() => navigate(-1)}>
+              Back
+            </Button>
           </div>
           
           <Card>
+            <CardHeader>
+              <CardTitle>Your Profile Information</CardTitle>
+            </CardHeader>
             <CardContent className="p-6">
-              {renderProfileForm()}
+              <SimpleProfileForm />
             </CardContent>
           </Card>
         </div>

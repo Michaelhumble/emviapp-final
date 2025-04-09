@@ -1,5 +1,5 @@
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { UserCircle, Upload, Loader2, X } from "lucide-react";
@@ -17,8 +17,31 @@ const ProfilePictureUploader = ({
   onUploadComplete,
 }: ProfilePictureUploaderProps) => {
   const [isUploading, setIsUploading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(currentAvatarUrl);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Initialize preview with current avatar
+  useEffect(() => {
+    setPreviewUrl(currentAvatarUrl);
+  }, [currentAvatarUrl]);
+
+  // Ensure storage bucket exists before upload
+  const ensureStorageBucketExists = async () => {
+    try {
+      // Check if profile_images bucket exists
+      const { data: buckets } = await supabase.storage.listBuckets();
+      const bucketExists = buckets?.some(b => b.name === 'profile_images');
+      
+      if (!bucketExists) {
+        console.log('Creating profile_images bucket...');
+        await supabase.storage.createBucket('profile_images', {
+          public: true
+        });
+      }
+    } catch (error) {
+      console.error('Error checking/creating storage bucket:', error);
+    }
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -37,16 +60,19 @@ const ProfilePictureUploader = ({
       return;
     }
 
+    // Create object URL for preview
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewUrl(objectUrl);
+
     setIsUploading(true);
 
     try {
-      // Create object URL for preview
-      const objectUrl = URL.createObjectURL(file);
-      setPreviewUrl(objectUrl);
+      // Ensure storage bucket exists
+      await ensureStorageBucketExists();
 
       // Get file extension
       const fileExt = file.name.split(".").pop();
-      const fileName = `avatar.${fileExt}`;
+      const fileName = `avatar_${Date.now()}.${fileExt}`;
       const filePath = `${userId}/${fileName}`;
 
       // Upload file to Supabase Storage
@@ -112,9 +138,13 @@ const ProfilePictureUploader = ({
       if (error) throw error;
 
       // Try to delete the file from storage (don't fail if it doesn't exist)
-      await supabase.storage
-        .from("profile_images")
-        .remove([`${userId}/avatar.jpg`, `${userId}/avatar.jpeg`, `${userId}/avatar.png`]);
+      try {
+        await supabase.storage
+          .from("profile_images")
+          .remove([`${userId}/avatar.jpg`, `${userId}/avatar.jpeg`, `${userId}/avatar.png`]);
+      } catch (storageError) {
+        console.log('Non-critical error removing files:', storageError);
+      }
 
       setPreviewUrl(null);
       onUploadComplete("");

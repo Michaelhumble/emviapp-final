@@ -3,7 +3,6 @@ import { Navigate, useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { useAuth } from "@/context/auth";
 import { Loader2, Edit, Shield, Award, Calendar, MapPin, Globe, Phone, Mail, Instagram, ExternalLink } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -17,97 +16,20 @@ import ProfileForm from "@/components/profile/ProfileForm";
 import SubscriptionProfile from "@/components/profile/SubscriptionProfile";
 import SubscriptionBadge from "@/components/subscription/SubscriptionBadge";
 
-interface UserProfile {
-  id: string;
-  full_name: string;
-  email: string;
-  location: string | null;
-  bio: string | null;
-  phone: string | null;
-  instagram: string | null;
-  website: string | null;
-  specialty: string | null;
-  avatar_url: string | null;
-  created_at: string | null;
-  role?: string | null;
-}
-
 const Profile = () => {
   const { user, loading: authLoading, userRole, userProfile } = useAuth();
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
-  const [formData, setFormData] = useState<Partial<UserProfile>>({});
   const [activeTab, setActiveTab] = useState("profile");
 
   useEffect(() => {
     document.title = "My Profile | EmviApp";
     
-    const fetchUserProfile = async () => {
-      if (!user) {
-        setLoading(false);
-        return;
-      }
-      
-      try {
-        const { data, error } = await supabase
-          .from("users")
-          .select("*")
-          .eq("id", user.id)
-          .single();
-          
-        if (error) throw error;
-        
-        setProfile(data);
-        setFormData(data);
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-        toast.error("Failed to load profile data");
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchUserProfile();
-  }, [user]);
-  
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-  
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!user) return;
-    
-    setUpdating(true);
-    try {
-      const { error } = await supabase
-        .from("users")
-        .update({
-          full_name: formData.full_name,
-          location: formData.location,
-          bio: formData.bio,
-          phone: formData.phone,
-          instagram: formData.instagram,
-          website: formData.website,
-          specialty: formData.specialty
-        })
-        .eq("id", user.id);
-        
-      if (error) throw error;
-      
-      toast.success("Profile updated successfully");
-      setProfile(prev => prev ? { ...prev, ...formData } : null);
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      toast.error("Failed to update profile");
-    } finally {
-      setUpdating(false);
+    // Set loading to false once we have userProfile or if auth loading is complete
+    if (!authLoading) {
+      setLoading(false);
     }
-  };
+  }, [authLoading, userProfile]);
   
   const getRoleColor = (role?: string | null) => {
     if (!role) return "bg-gray-100 text-gray-600";
@@ -132,7 +54,7 @@ const Profile = () => {
     }
   };
   
-  if (authLoading) {
+  if (authLoading || loading) {
     return (
       <Layout>
         <div className="flex items-center justify-center min-h-[50vh]">
@@ -161,43 +83,43 @@ const Profile = () => {
               <div className="flex flex-col md:flex-row md:items-center justify-between p-6 pt-8 md:pt-6">
                 <div className="flex flex-col md:flex-row items-center md:items-start gap-4">
                   <div className="relative">
-                    {profile?.avatar_url ? (
+                    {userProfile?.avatar_url ? (
                       <img 
-                        src={profile.avatar_url} 
-                        alt={profile.full_name} 
+                        src={userProfile.avatar_url} 
+                        alt={userProfile.full_name} 
                         className="h-28 w-28 rounded-full border-4 border-white shadow-md object-cover"
                       />
                     ) : (
                       <div className="h-28 w-28 rounded-full bg-primary/10 flex items-center justify-center text-3xl font-bold text-primary border-4 border-white shadow-md">
-                        {profile?.full_name?.charAt(0) || user?.email?.charAt(0)?.toUpperCase() || "U"}
+                        {userProfile?.full_name?.charAt(0) || user?.email?.charAt(0)?.toUpperCase() || "U"}
                       </div>
                     )}
-                    <div className={`absolute bottom-1 right-1 px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(userRole || profile?.role)}`}>
-                      {userRole || profile?.role || 'User'}
+                    <div className={`absolute bottom-1 right-1 px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(userRole || userProfile?.role)}`}>
+                      {userRole || userProfile?.role || 'User'}
                     </div>
                   </div>
                   <div className="md:ml-2 text-center md:text-left">
                     <h1 className="text-2xl font-bold">
-                      {profile?.full_name || 'Profile'}
+                      {userProfile?.full_name || 'Profile'}
                     </h1>
                     <div className="flex flex-wrap gap-2 mt-2 justify-center md:justify-start">
                       <SubscriptionBadge />
-                      {profile?.specialty && (
+                      {userProfile?.specialty && (
                         <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700">
                           <Award className="mr-1 h-3 w-3" />
-                          {profile.specialty}
+                          {userProfile.specialty}
                         </span>
                       )}
-                      {profile?.location && (
+                      {userProfile?.location && (
                         <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600">
                           <MapPin className="mr-1 h-3 w-3" />
-                          {profile.location}
+                          {userProfile.location}
                         </span>
                       )}
-                      {profile?.created_at && (
+                      {userProfile?.created_at && (
                         <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600">
                           <Calendar className="mr-1 h-3 w-3" />
-                          Joined {new Date(profile.created_at).toLocaleDateString()}
+                          Joined {new Date(userProfile.created_at).toLocaleDateString()}
                         </span>
                       )}
                     </div>
@@ -226,37 +148,41 @@ const Profile = () => {
                             <CardTitle className="text-lg">Contact Information</CardTitle>
                           </CardHeader>
                           <CardContent className="space-y-4">
-                            {profile?.email && (
+                            {userProfile?.email && (
                               <div className="flex items-center gap-2">
                                 <Mail className="h-4 w-4 text-muted-foreground" />
-                                <span>{profile.email}</span>
+                                <span>{userProfile.email}</span>
                               </div>
                             )}
-                            {profile?.phone && (
+                            {userProfile?.phone && (
                               <div className="flex items-center gap-2">
                                 <Phone className="h-4 w-4 text-muted-foreground" />
-                                <span>{profile.phone}</span>
+                                <span>{userProfile.phone}</span>
                               </div>
                             )}
-                            {profile?.website && (
+                            {userProfile?.website && (
                               <div className="flex items-center gap-2">
                                 <Globe className="h-4 w-4 text-muted-foreground" />
-                                <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                                  {profile.website.replace(/^https?:\/\//, '')}
+                                <a href={userProfile.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                                  {userProfile.website.replace(/^https?:\/\//, '')}
                                 </a>
                               </div>
                             )}
-                            {profile?.instagram && (
+                            {userProfile?.instagram && (
                               <div className="flex items-center gap-2">
                                 <Instagram className="h-4 w-4 text-muted-foreground" />
-                                <a href={`https://instagram.com/${profile.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                                  {profile.instagram}
+                                <a href={`https://instagram.com/${userProfile.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                                  {userProfile.instagram}
                                 </a>
                               </div>
                             )}
                           </CardContent>
                           <CardFooter>
-                            <Button variant="outline" className="w-full" onClick={() => navigate('/profile/edit')}>
+                            <Button 
+                              variant="outline" 
+                              className="w-full" 
+                              onClick={() => navigate('/profile/edit')}
+                            >
                               <Edit className="mr-2 h-4 w-4" />
                               Edit Profile
                             </Button>
@@ -269,14 +195,14 @@ const Profile = () => {
                           </CardHeader>
                           <CardContent>
                             <p className="text-muted-foreground">
-                              {profile?.bio || 'No bio information added yet.'}
+                              {userProfile?.bio || 'No bio information added yet.'}
                             </p>
                           </CardContent>
                         </Card>
                       </div>
                       
                       <div className="md:col-span-2">
-                        {profile?.role === 'artist' || userRole === 'artist' || profile?.role === 'nail technician/artist' || userRole === 'nail technician/artist' ? (
+                        {userProfile?.role === 'artist' || userRole === 'artist' || userProfile?.role === 'nail technician/artist' || userRole === 'nail technician/artist' ? (
                           <Card>
                             <CardHeader>
                               <CardTitle>Artist Portfolio</CardTitle>
@@ -293,7 +219,7 @@ const Profile = () => {
                               </div>
                             </CardContent>
                           </Card>
-                        ) : profile?.role === 'salon' || userRole === 'salon' || profile?.role === 'owner' || userRole === 'owner' ? (
+                        ) : userProfile?.role === 'salon' || userRole === 'salon' || userProfile?.role === 'owner' || userRole === 'owner' ? (
                           <Card>
                             <CardHeader>
                               <CardTitle>Salon Management</CardTitle>
