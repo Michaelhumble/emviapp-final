@@ -18,7 +18,7 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
       {images.map((image, index) => (
         <motion.div 
           key={index}
-          className="absolute inset-0 w-full h-full overflow-hidden"
+          className="absolute inset-0 w-full h-full overflow-hidden transition-opacity duration-1000 ease-in-out"
           initial={{ opacity: 0, scale: 1 }}
           animate={{ 
             opacity: activeIndex === index ? 1 : 0,
@@ -35,7 +35,7 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
           <img 
             src={image.url} 
             alt={image.alt}
-            className={`w-full h-full object-cover ${isMobile ? 'object-center' : 'object-cover'} rounded-lg`}
+            className="w-full h-full object-cover rounded-lg"
           />
           
           {/* Enhanced gradient overlay for text readability */}

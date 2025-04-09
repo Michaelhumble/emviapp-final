@@ -1,13 +1,13 @@
 
 import { useState, useEffect } from "react";
-import HeroCarousel from "./hero/HeroCarousel";
-import FloatingParticles from "./hero/FloatingParticles";
-import HeroContent from "./hero/HeroContent";
-import ScrollIndicator from "./hero/ScrollIndicator";
-import { heroImages } from "./hero/heroData";
+import HeroCarousel from "../home/hero/HeroCarousel";
+import FloatingParticles from "../home/hero/FloatingParticles";
+import HeroContent from "../home/hero/HeroContent";
+import ScrollIndicator from "../home/hero/ScrollIndicator";
+import { heroImages } from "../home/hero/heroData";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-const Hero = () => {
+const HeroSectionRestored = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [randomizedImages, setRandomizedImages] = useState([...heroImages]);
   const isMobile = useIsMobile();
@@ -109,4 +109,4 @@ const Hero = () => {
   );
 };
 
-export default Hero;
+export default HeroSectionRestored;
