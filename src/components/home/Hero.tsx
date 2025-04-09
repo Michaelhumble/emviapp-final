@@ -8,7 +8,6 @@ import { ChevronRight } from "lucide-react";
 import { heroImages } from "./hero/heroData";
 import HeroCarousel from "./hero/HeroCarousel";
 import HeroContent from "./hero/HeroContent";
-import ScrollIndicator from "./hero/ScrollIndicator";
 
 const Hero = () => {
   const isMobile = useIsMobile();
@@ -40,17 +39,18 @@ const Hero = () => {
 
   return (
     <section 
-      className="relative flex items-center justify-center overflow-hidden w-screen" 
+      className="relative flex items-center justify-center overflow-hidden"
       style={{
-        height: 'calc(100vh - 64px)', // Top nav height subtracted
+        width: '100vw',
+        height: '100vh',
         margin: 0,
         padding: 0,
         border: 'none',
-        maxWidth: '100vw',
+        maxWidth: '100%',
       }}
     >
       {/* Background image carousel */}
-      <div className="absolute inset-0 w-full h-full overflow-hidden">
+      <div className="absolute inset-0 w-full h-full">
         <HeroCarousel 
           images={heroImages} 
           activeIndex={currentImageIndex} 
@@ -67,9 +67,6 @@ const Hero = () => {
           isMobile={isMobile}
         />
       </div>
-      
-      {/* Scroll indicator */}
-      {!isMobile && <ScrollIndicator />}
 
       {/* Mobile app-like status bar */}
       {isMobile && (

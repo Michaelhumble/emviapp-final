@@ -32,10 +32,12 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
             <img 
               src={image.url} 
               alt={image.alt}
-              className="w-full h-full object-cover"
+              className="w-full h-full"
               style={{ 
                 objectPosition: "center",
                 objectFit: "cover",
+                width: "100%",
+                height: "100%"
               }}
             />
           </div>
