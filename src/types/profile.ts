@@ -1,4 +1,3 @@
-
 export interface UserProfile {
   id: string;
   user_id?: string;
@@ -37,6 +36,7 @@ export interface UserProfile {
   boosted_until?: string;
   portfolio_urls?: string[];
   referral_code?: string;
+  credits?: number;
 }
 
 export interface SocialLinks {

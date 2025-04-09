@@ -14,7 +14,8 @@ import SalonJobManagement from './SalonJobManagement';
 const SalonDashboardContent = () => {
   const { userProfile } = useAuth();
   const adaptedProfile = adaptUserProfile(userProfile);
-  const [credits, setCredits] = useState(adaptedProfile?.credits || 0);
+  // Set default credits value of 0, then use optional chaining for adaptedProfile
+  const [credits, setCredits] = useState(0);
   
   const container = {
     hidden: { opacity: 0 },
@@ -33,8 +34,8 @@ const SalonDashboardContent = () => {
   
   // Update credit balance if profile changes
   useEffect(() => {
-    if (adaptedProfile?.credits) {
-      setCredits(adaptedProfile.credits);
+    if (adaptedProfile && 'credits' in adaptedProfile) {
+      setCredits(adaptedProfile.credits || 0);
     }
   }, [adaptedProfile]);
   
@@ -54,7 +55,7 @@ const SalonDashboardContent = () => {
     >
       {/* Welcome Banner */}
       <motion.div variants={item}>
-        <SalonDashboardBanner userName={adaptedProfile?.salon_name} />
+        <SalonDashboardBanner userName={adaptedProfile?.salon_name || adaptedProfile?.full_name} />
       </motion.div>
       
       {/* Quick Stats */}
