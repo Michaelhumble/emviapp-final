@@ -7,7 +7,8 @@ import { Link } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { useAuth } from "@/context/auth";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight, Home, Search, User, Bell } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface LayoutProps {
   children: ReactNode;
@@ -20,6 +21,7 @@ const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
   const { isSignedIn, userRole } = useAuth();
   const [showStickyCta, setShowStickyCta] = useState(false);
   const [showDashboardCta, setShowDashboardCta] = useState(false);
+  const isMobile = useIsMobile();
   
   const isAuthPage = location.pathname === "/auth/signin" || location.pathname === "/auth/signup" ||
     location.pathname === "/sign-in" || location.pathname === "/sign-up";
@@ -72,13 +74,13 @@ const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen">
       {!isAuthPage && !hideNavbar && <Navbar />}
-      <main className={`flex-grow ${!isAuthPage && !hideNavbar ? "pt-16" : ""}`}>
+      <main className={`flex-grow ${!isAuthPage && !hideNavbar && !isMobile ? "pt-16" : "pt-6"}`}>
         {children}
       </main>
-      <Footer />
+      {!isMobile && <Footer />}
       
       {/* Sticky CTA for home page */}
-      {isHomePage && (
+      {isHomePage && !isMobile && (
         <AnimatePresence>
           {showStickyCta && (
             <motion.div
@@ -121,7 +123,7 @@ const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
       )}
       
       {/* Dashboard CTA for signed-in users on profile pages */}
-      {isProfilePage && isSignedIn && !isDashboardPage && (
+      {isProfilePage && isSignedIn && !isDashboardPage && !isMobile && (
         <div className="fixed bottom-6 right-6 z-40">
           <Button 
             size="lg" 
@@ -136,7 +138,7 @@ const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
       )}
       
       {/* Dashboard CTA for signed-in users on home page */}
-      {isHomePage && isSignedIn && !isDashboardPage && (
+      {isHomePage && isSignedIn && !isDashboardPage && !isMobile && (
         <AnimatePresence>
           {showDashboardCta && (
             <motion.div
@@ -161,6 +163,28 @@ const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
             </motion.div>
           )}
         </AnimatePresence>
+      )}
+      
+      {/* Mobile App Bottom Navigation Bar */}
+      {isMobile && (
+        <div className="fixed bottom-0 left-0 right-0 h-16 bg-white shadow-lg border-t border-gray-200 z-50 flex justify-around items-center">
+          <Link to="/" className="flex flex-col items-center">
+            <Home className={`h-6 w-6 ${isHomePage ? 'text-primary' : 'text-gray-500'}`} />
+            <span className="text-xs mt-1">Home</span>
+          </Link>
+          <Link to="/jobs" className="flex flex-col items-center">
+            <Search className="h-6 w-6 text-gray-500" />
+            <span className="text-xs mt-1">Search</span>
+          </Link>
+          <Link to="/notifications" className="flex flex-col items-center">
+            <Bell className="h-6 w-6 text-gray-500" />
+            <span className="text-xs mt-1">Alerts</span>
+          </Link>
+          <Link to={isSignedIn ? "/profile" : "/auth/signin"} className="flex flex-col items-center">
+            <User className="h-6 w-6 text-gray-500" />
+            <span className="text-xs mt-1">Profile</span>
+          </Link>
+        </div>
       )}
     </div>
   );
