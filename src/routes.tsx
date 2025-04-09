@@ -1,10 +1,11 @@
+
 import React from 'react';
 import Index from './pages/Index';
 import Welcome from './pages/Welcome';
 import NotFound from './pages/NotFound';
 import Artists from './pages/Artists';
 import JobsPage from './pages/jobs';
-import SalonsPage from './pages/salons/SalonsPage';
+import SalonsPage from './pages/salons/SalonsFinal';
 import SellSalon from './pages/salons/SellSalon';
 import Customers from './pages/Customers';
 import Suppliers from './pages/Suppliers';
@@ -23,7 +24,7 @@ import SignUp from './pages/auth/SignUp';
 import ProfileRedirect from './components/profile/ProfileRedirect';
 import SalonOwners from './pages/SalonOwners';
 import Settings from './pages/Settings';
-import Salons from './pages/Salons';
+import SalonDetail from './pages/salons/SalonDetail';
 
 const routes = [
   {
@@ -47,8 +48,8 @@ const routes = [
     element: <SalonsPage />,
   },
   {
-    path: '/salons-directory',
-    element: <Salons />,
+    path: '/salons/:id',
+    element: <SalonDetail />,
   },
   {
     path: '/sell-salon',
