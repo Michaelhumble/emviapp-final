@@ -2,32 +2,7 @@
 import { NavigateFunction } from "react-router-dom";
 import { UserRole } from "@/context/auth/types";
 import { toast } from "sonner";
-
-/**
- * Normalizes user roles to handle variations and aliases
- * IMPORTANT: This is the single source of truth for role normalization
- */
-export const normalizeRole = (role: UserRole | null): UserRole | null => {
-  if (!role) return null;
-  
-  // Convert role to lowercase for case-insensitive comparison
-  const normalizedRole = role.toLowerCase() as UserRole;
-  
-  // Map role variations to standard roles
-  switch (normalizedRole) {
-    case 'nail technician/artist':
-      return 'artist';
-    case 'owner':
-      return 'salon';
-    case 'beauty supplier':
-    case 'vendor':
-      return 'supplier';
-    case 'renter':
-      return 'artist'; // Renters see artist dashboard
-    default:
-      return normalizedRole as UserRole;
-  }
-};
+import { normalizeRole } from "./roles";
 
 /**
  * Navigates the user to their role-specific dashboard with validation
@@ -36,14 +11,10 @@ export const navigateToRoleDashboard = (
   navigate: NavigateFunction,
   userRole: UserRole | null
 ) => {
-  console.log("[Dashboard Navigation] Original role:", userRole);
-  
   // Normalize the role for consistent routing
   const normalizedRole = normalizeRole(userRole);
-  console.log("[Dashboard Navigation] Normalized role:", normalizedRole);
   
   if (!normalizedRole) {
-    console.error("[Dashboard Navigation] No role defined for user");
     navigate("/profile/edit");
     toast.error("Please complete your profile to access your dashboard");
     return;
@@ -75,13 +46,11 @@ export const navigateToRoleDashboard = (
       targetDashboard = '/dashboard/other';
       break;
     default:
-      console.error("[Dashboard Navigation] Invalid role:", normalizedRole);
       navigate("/profile/edit");
       toast.error("Invalid user role. Please update your profile.");
       return;
   }
 
-  console.log("[Dashboard Navigation] Redirecting to:", targetDashboard);
   navigate(targetDashboard);
 };
 
@@ -136,8 +105,6 @@ export const getPersonalizedGreeting = (
       return `Welcome, ${name}! Showcase your products to businesses.`;
     case 'freelancer':
       return `Hey ${name}! Find your next gig today.`;
-    case 'renter':
-      return `Welcome, ${name}! Manage your booth rental and clients.`;
     default:
       return `Hello, ${name}! Welcome to your dashboard.`;
   }

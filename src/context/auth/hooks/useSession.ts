@@ -17,9 +17,7 @@ export function useSession() {
   } catch (error) {
     // If useNavigate throws an error, we're outside Router context
     // Provide a no-op function instead
-    navigate = (path: string) => {
-      console.warn('Navigation attempted outside Router context:', path);
-    };
+    navigate = (path: string) => {};
   }
 
   useEffect(() => {
@@ -33,20 +31,17 @@ export function useSession() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log(`[Auth] Auth state changed: ${event}`, session?.user?.id);
       setSession(session);
       setUser(session?.user ?? null);
       
       // If the user just signed up, set isNewUser to true
       if (event === 'SIGNED_UP' as AuthChangeEvent) {
-        console.log('[Auth] New user detected, setting isNewUser flag');
         setIsNewUser(true);
         localStorage.setItem('emviapp_new_user', 'true');
         
         // Check for role in user metadata and store it
         const userRole = session?.user?.user_metadata?.role;
         if (userRole) {
-          console.log('[Auth] Found role in metadata:', userRole);
           localStorage.setItem('emviapp_user_role', userRole);
         }
         
@@ -57,7 +52,6 @@ export function useSession() {
       if (event === 'SIGNED_IN' as AuthChangeEvent) {
         const userRole = session?.user?.user_metadata?.role;
         if (userRole) {
-          console.log('[Auth] Sign in with role in metadata:', userRole);
           localStorage.setItem('emviapp_user_role', userRole);
         }
       }

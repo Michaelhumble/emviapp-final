@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { User } from "@supabase/supabase-js";
 import { UserProfile, UserRole } from "../types";
 import { supabase } from "@/integrations/supabase/client";
+import { normalizeRole } from "@/utils/roles";
 
 /**
  * Hook to handle user profile management
@@ -15,21 +16,18 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
   const getUserProfile = async (userId: string) => {
     try {
       setLoading(true);
-      console.log("[UserProfile] Fetching profile for user:", userId);
       
       // First, try to get role from auth metadata (most accurate)
       const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
       
-      if (authError) {
-        console.error("[UserProfile] Error fetching auth user:", authError);
-      } else {
+      if (!authError) {
         // Check for role in user metadata
         const metadataRole = authUser?.user_metadata?.role as UserRole | null;
-        console.log("[UserProfile] Role from auth metadata:", metadataRole);
         
         if (metadataRole) {
-          setUserRole(metadataRole);
-          localStorage.setItem('emviapp_user_role', metadataRole);
+          const normalizedRole = normalizeRole(metadataRole);
+          setUserRole(normalizedRole);
+          localStorage.setItem('emviapp_user_role', normalizedRole || '');
         }
       }
       
@@ -45,16 +43,15 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
       }
       
       if (profile) {
-        console.log("[UserProfile] Profile fetched successfully:", profile);
         setUserProfile(profile as unknown as UserProfile);
         
         // If we didn't get a role from metadata, use the database role
         if (!authUser?.user_metadata?.role && profile.role) {
-          console.log("[UserProfile] Using role from database:", profile.role);
-          setUserRole(profile.role as UserRole);
+          const normalizedRole = normalizeRole(profile.role as UserRole);
+          setUserRole(normalizedRole);
           
           // Store role in localStorage for redundancy
-          localStorage.setItem('emviapp_user_role', profile.role);
+          localStorage.setItem('emviapp_user_role', normalizedRole || '');
           
           // Since metadata didn't have role, update it (sync back to auth)
           if (profile.role) {
@@ -62,23 +59,19 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
               await supabase.auth.updateUser({
                 data: { role: profile.role }
               });
-              console.log("[UserProfile] Updated auth metadata with role:", profile.role);
             } catch (updateErr) {
-              console.error("[UserProfile] Error updating auth metadata:", updateErr);
+              // Silent error - continue anyway
             }
           }
         }
       } else {
-        console.log("[UserProfile] No profile found for user:", userId);
-        
         // Fallback to cached role only if no profile and no metadata role
         if (!authUser?.user_metadata?.role) {
           const cachedRole = localStorage.getItem('emviapp_user_role');
           if (cachedRole) {
-            console.log("[UserProfile] Using cached role from localStorage:", cachedRole);
-            setUserRole(cachedRole as UserRole);
+            const normalizedRole = normalizeRole(cachedRole as UserRole);
+            setUserRole(normalizedRole);
           } else {
-            console.log("[UserProfile] No cached role found, role remains null");
             setUserRole(null);
           }
         }
@@ -86,13 +79,11 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
         setUserProfile(null);
       }
     } catch (err) {
-      console.error("[UserProfile] Error in getUserProfile:", err);
-      
       // Final fallback - check localStorage
       const cachedRole = localStorage.getItem('emviapp_user_role');
       if (cachedRole && !userRole) {
-        console.log("[UserProfile] After error, using cached role from localStorage:", cachedRole);
-        setUserRole(cachedRole as UserRole);
+        const normalizedRole = normalizeRole(cachedRole as UserRole);
+        setUserRole(normalizedRole);
       } else {
         setUserRole(null);
       }
