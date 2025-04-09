@@ -8,6 +8,7 @@ import { ChevronRight } from "lucide-react";
 import { heroImages } from "./hero/heroData";
 import HeroCarousel from "./hero/HeroCarousel";
 import HeroContent from "./hero/HeroContent";
+import ScrollIndicator from "./hero/ScrollIndicator";
 
 const Hero = () => {
   const isMobile = useIsMobile();
@@ -57,9 +58,7 @@ const Hero = () => {
       />
       
       {/* Scroll indicator */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white/70 text-sm z-30">
-        Scroll to explore
-      </div>
+      <ScrollIndicator />
     </section>
   );
 };

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile } from "@/types/profile";
@@ -102,28 +101,38 @@ export const useArtistProfileData = (username?: string) => {
 
   // Function to increment view count
   const incrementViewCount = async () => {
-    if (!profile || !username) return;
+    if (!profile || !profile.id) return;
     
     try {
-      const newViewCount = (viewCount || 0) + 1;
+      // Safely access profile_views with a fallback to 0
+      const currentViews = profile.profile_views || 0;
       
-      // Update local state immediately for better UX
-      setViewCount(newViewCount);
+      // Update with the incremented count
+      await updateProfileViews(profile.id, currentViews + 1);
       
-      // Update the database
-      const { error } = await supabase
-        .from('users')
-        .update({ profile_views: newViewCount })
-        .eq('id', username);
-      
-      if (error) {
-        console.error("Error updating view count:", error);
-      }
-    } catch (err) {
-      console.error("Error incrementing view count:", err);
+      // Update local state
+      setViewCount(currentViews + 1);
+    } catch (error) {
+      console.error("Error incrementing view count:", error);
     }
   };
-  
+
+  // When updating profile views in the database function:
+  const updateProfileViews = async (profileId: string, newCount: number) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          profile_views: newCount 
+        })
+        .eq('id', profileId);
+      
+      if (error) throw error;
+    } catch (error) {
+      console.error("Error updating profile views:", error);
+    }
+  };
+
   return {
     profile,
     services,
