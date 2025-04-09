@@ -7,11 +7,12 @@ import ArtistBioSpecialtyForm from '@/components/profile/ArtistBioSpecialtyForm'
 import { useProfileCompletion } from '@/components/profile/hooks/useProfileCompletion';
 import { Progress } from '@/components/ui/progress';
 import { Check, Info } from 'lucide-react';
+import ArtistProfilePictureUpload from '@/components/profile/artist/ArtistProfilePictureUpload';
 
 const ArtistProfileSetupSection = () => {
   const { userProfile } = useAuth();
   const [activeTab, setActiveTab] = useState('bio');
-  const { completionPercentage, markTaskComplete } = useProfileCompletion();
+  const { completionPercentage, markTaskComplete, isTaskComplete } = useProfileCompletion();
 
   const handleComplete = (taskId: string) => {
     markTaskComplete(taskId);
@@ -34,10 +35,16 @@ const ArtistProfileSetupSection = () => {
         
         <CardContent className="p-4">
           <Tabs defaultValue="bio" value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-2 mb-4">
+            <TabsList className="grid grid-cols-3 mb-4">
               <TabsTrigger value="bio">
                 Bio & Specialty
                 {userProfile?.bio && userProfile?.specialty && (
+                  <Check className="ml-1 h-4 w-4 text-green-500" />
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="photo">
+                Profile Photo
+                {isTaskComplete("avatar") && (
                   <Check className="ml-1 h-4 w-4 text-green-500" />
                 )}
               </TabsTrigger>
@@ -50,6 +57,10 @@ const ArtistProfileSetupSection = () => {
               <ArtistBioSpecialtyForm onComplete={handleComplete} />
             </TabsContent>
             
+            <TabsContent value="photo" className="mt-0">
+              <ArtistProfilePictureUpload />
+            </TabsContent>
+            
             <TabsContent value="other" className="mt-0">
               <div className="flex items-center justify-center p-6 text-center">
                 <div className="max-w-md">
@@ -57,7 +68,7 @@ const ArtistProfileSetupSection = () => {
                   <h3 className="text-lg font-medium mb-2">Additional Settings Coming Soon</h3>
                   <p className="text-muted-foreground">
                     We're working on more profile customization options for you. 
-                    Meanwhile, focus on completing your bio and specialty!
+                    Meanwhile, focus on completing your bio, specialty, and profile photo!
                   </p>
                 </div>
               </div>
