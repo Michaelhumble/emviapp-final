@@ -39,6 +39,11 @@ export interface UserProfile {
   completed_profile_tasks?: string[];
   portfolio_urls?: string[];
   years_experience?: number;
+  credits?: number;
+  custom_role?: string;
+  contact_link?: string;
+  badges?: any;
+  referral_code?: string;
 }
 
 export interface SocialLinks {
