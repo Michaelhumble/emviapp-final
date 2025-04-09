@@ -1,22 +1,20 @@
 
 import { useEffect } from 'react';
 import { useAuth } from '@/context/auth';
-import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Home } from 'lucide-react';
-import SalonOwnerDashboardContent from '@/components/dashboard/salon/SalonOwnerDashboardContent';
 import DashboardRouteProtection from '@/components/dashboard/DashboardRouteProtection';
 import { Link } from 'react-router-dom';
 import { adaptUserProfile } from '@/utils/profileAdapter';
+import SalonDashboardContent from '@/components/dashboard/salon/SalonDashboardContent';
 
 const SalonDashboard = () => {
   const { userProfile, userRole } = useAuth();
   const adaptedProfile = adaptUserProfile(userProfile);
-  const navigate = useNavigate();
 
   // Salon name for display
-  const salonName = adaptedProfile?.salon_name || 'Your Salon';
+  const salonName = adaptedProfile?.salon_name || adaptedProfile?.company_name || 'Your Salon';
 
   useEffect(() => {
     // Set page title
@@ -62,7 +60,7 @@ const SalonDashboard = () => {
           </h1>
           
           {/* Salon Dashboard Content */}
-          <SalonOwnerDashboardContent />
+          <SalonDashboardContent />
         </div>
       </Layout>
     </DashboardRouteProtection>
