@@ -31,15 +31,9 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
           <img 
             src={image.url} 
             alt={image.alt}
-            className={`${isMobile ? 'w-[90%] mx-auto' : 'w-full'} h-full object-cover`}
+            className="w-full h-full object-cover"
             style={{ 
               objectPosition: "center",
-              ...(isMobile && {
-                maxHeight: '75vh',
-                borderRadius: '16px',
-                marginTop: '10vh',
-                boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
-              })
             }}
           />
           
