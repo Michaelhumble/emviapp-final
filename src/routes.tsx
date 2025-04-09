@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Index from './pages/Index';
 import Welcome from './pages/Welcome';
@@ -22,6 +23,7 @@ import SignIn from './pages/auth/SignIn';
 import SignUp from './pages/auth/SignUp';
 import ProfileRedirect from './components/profile/ProfileRedirect';
 import SalonOwners from './pages/SalonOwners';
+import Settings from './pages/Settings';
 
 const routes = [
   {
@@ -103,6 +105,10 @@ const routes = [
   {
     path: '/profile/edit',
     element: <ProfileEditor />,
+  },
+  {
+    path: '/settings',
+    element: <Settings />,
   },
   {
     path: '/auth/signin',
