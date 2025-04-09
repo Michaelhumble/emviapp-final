@@ -102,11 +102,20 @@ const ProfileForm = ({ onProfileUpdate }: ProfileFormProps) => {
       toast.success("Profile updated successfully");
       
       if (onProfileUpdate && userProfile) {
-        // Call the callback with updated profile
-        onProfileUpdate({
+        // When calling onProfileUpdate, we need to make sure the object conforms to UserProfile
+        // Make a copy of the userProfile and spread in our form data to maintain type compatibility
+        const updatedProfile: UserProfile = {
           ...userProfile,
-          ...formData
-        });
+          full_name: formData.full_name,
+          bio: formData.bio,
+          specialty: formData.specialty,
+          location: formData.location,
+          instagram: formData.instagram,
+          website: formData.website
+        };
+        
+        // Now this will satisfy TypeScript's type checking
+        onProfileUpdate(updatedProfile);
       }
     } catch (error: any) {
       console.error('Error updating profile:', error);
