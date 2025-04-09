@@ -1,3 +1,4 @@
+
 export interface UserProfile {
   id: string;
   user_id?: string;
@@ -42,7 +43,6 @@ export interface UserProfile {
   custom_role?: string;
   contact_link?: string;
   badges?: any;
-  years_experience?: number;
 }
 
 export interface SocialLinks {

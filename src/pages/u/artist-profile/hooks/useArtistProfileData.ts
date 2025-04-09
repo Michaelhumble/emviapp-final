@@ -31,9 +31,7 @@ export const useArtistProfileData = (username?: string) => {
         
         if (profileData) {
           setProfile(profileData as UserProfile);
-          // Safely access profile_views or default to 0
-          const views = profileData.profile_views ?? 0;
-          setViewCount(views);
+          setViewCount(profileData.profile_views || 0);
           
           // Check if salon owner
           if (profileData.role === 'salon' || profileData.role === 'owner') {
@@ -112,13 +110,10 @@ export const useArtistProfileData = (username?: string) => {
       // Update local state immediately for better UX
       setViewCount(newViewCount);
       
-      // Update the database without using profile_views directly in the update
+      // Update the database
       const { error } = await supabase
         .from('users')
-        .update({ 
-          // Use a type assertion here to avoid TypeScript errors
-          profile_views: newViewCount 
-        } as Partial<UserProfile>)
+        .update({ profile_views: newViewCount })
         .eq('id', username);
       
       if (error) {

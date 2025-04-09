@@ -31,17 +31,11 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
             y: { duration: 1.2, ease: "easeOut" }
           }}
           aria-hidden={activeIndex !== index}
-          style={{
-            position: 'absolute',
-            transitionProperty: 'opacity, transform',
-            transitionDuration: '1000ms',
-            transitionTimingFunction: 'ease-in-out',
-          }}
         >
           <img 
             src={image.url} 
             alt={image.alt}
-            className="w-full h-full object-cover rounded-lg"
+            className={`w-full h-full object-cover ${isMobile ? 'object-center' : 'object-cover'} rounded-lg`}
           />
           
           {/* Enhanced gradient overlay for text readability */}

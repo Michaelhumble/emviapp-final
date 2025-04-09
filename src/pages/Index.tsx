@@ -36,21 +36,19 @@ const Index = () => {
   }, []);
   
   return (
-    <Layout hideNavbar={true}>
+    <Layout>
       <Hero />
-      <div className="mt-screen">
-        <ArtistTestimonials />
-        <AITeam />
-        <AIAgents />
-        <FreelancersHighlight />
-        <PricingSection />
-        <AIPowerhouse />
-        <FeaturedSalons />
-        <JobsHighlight />
-        <ArtistCallout />
-        <Testimonials />
-        <CallToAction />
-      </div>
+      <ArtistTestimonials />
+      <AITeam />
+      <AIAgents />
+      <FreelancersHighlight />
+      <PricingSection />
+      <AIPowerhouse />
+      <FeaturedSalons />
+      <JobsHighlight />
+      <ArtistCallout />
+      <Testimonials />
+      <CallToAction />
       
       {user && userId && (
         <RoleSelectionModal 

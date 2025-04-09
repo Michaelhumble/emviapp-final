@@ -72,10 +72,10 @@ const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
   return (
     <div className="flex flex-col min-h-screen">
       {!isAuthPage && !hideNavbar && <Navbar />}
-      <main className={`flex-grow ${isHomePage && hideNavbar ? "p-0 m-0" : (!isAuthPage && !hideNavbar ? "pt-16" : "")}`}>
+      <main className={`flex-grow ${!isAuthPage && !hideNavbar ? "pt-16" : ""}`}>
         {children}
       </main>
-      {!isHomePage && <Footer />}
+      <Footer />
       
       {/* Sticky CTA for home page */}
       {isHomePage && (
@@ -86,7 +86,7 @@ const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
               transition={{ duration: 0.5 }}
-              className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[200]"
+              className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50"
             >
               <div className="flex gap-4 bg-white/80 backdrop-blur-md shadow-xl p-3 rounded-full border border-gray-100">
                 {isSignedIn ? (
@@ -144,7 +144,7 @@ const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: 100, opacity: 0 }}
               transition={{ duration: 0.5 }}
-              className="fixed top-24 right-6 z-[100]"
+              className="fixed top-24 right-6 z-50"
             >
               <div className="bg-white/90 backdrop-blur-md shadow-lg p-4 rounded-lg border border-primary/20">
                 <h4 className="font-medium mb-2">Welcome back!</h4>
