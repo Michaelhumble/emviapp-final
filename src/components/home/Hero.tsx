@@ -39,7 +39,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative w-[99.8%] h-[99.8vh] mx-auto my-[0.1vh] flex items-center justify-center overflow-hidden border border-white/20">
+    <section className="relative w-[99.9%] h-[99.9vh] mx-auto my-[0.05vh] flex items-center justify-center overflow-hidden border border-white/10">
       {/* Background image carousel */}
       <div className="absolute inset-0 z-0">
         <HeroCarousel 

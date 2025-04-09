@@ -72,6 +72,7 @@ export interface UserProfile {
   contact_link?: string;
   preferences?: string[];
   affiliate_code?: string;
+  referral_count?: number;
 }
 
 export interface EmviUser {
