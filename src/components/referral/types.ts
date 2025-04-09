@@ -3,6 +3,13 @@ export interface ReferralData {
   referralCode: string | null;
   referralLink: string;
   referrals: Referral[];
+  // Adding these properties to make it compatible with usage in pages/referrals/index.tsx
+  id?: string;
+  referredName?: string;
+  referredEmail?: string;
+  status?: string;
+  milestoneReached?: boolean;
+  createdAt?: string;
 }
 
 export interface Referral {

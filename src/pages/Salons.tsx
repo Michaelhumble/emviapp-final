@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import SalonCard from "@/components/salons/SalonCard";
@@ -87,6 +86,9 @@ const Salons = () => {
                   filters={filters} 
                   updateFilters={updateFilters} 
                   resetFilters={resetFilters}
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                  suggestedKeywords={suggestedKeywords}
                 />
               </div>
 

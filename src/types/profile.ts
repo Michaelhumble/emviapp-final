@@ -1,4 +1,3 @@
-
 export interface UserProfile {
   id: string;
   user_id?: string;
@@ -38,6 +37,7 @@ export interface UserProfile {
   profile_completion?: number;
   completed_profile_tasks?: string[];
   portfolio_urls?: string[];
+  years_experience?: number;
 }
 
 export interface SocialLinks {

@@ -41,7 +41,7 @@ const SAMPLE_BOOKINGS = [
     customer_name: "Emma Nguyen",
     service: "Acrylic Full Set",
     date: new Date(2025, 3, 15, 10, 0),
-    status: "confirmed",
+    status: "confirmed" as "confirmed",
     customer_avatar: "",
     message: "Can you do a marble design? I love your work from Instagram!"
   },
@@ -50,7 +50,7 @@ const SAMPLE_BOOKINGS = [
     customer_name: "Sophia Johnson",
     service: "Gel Manicure",
     date: new Date(2025, 3, 16, 14, 30),
-    status: "pending",
+    status: "pending" as "pending",
     customer_avatar: "",
     message: "Looking forward to trying your salon for the first time!"
   },
@@ -59,7 +59,7 @@ const SAMPLE_BOOKINGS = [
     customer_name: "Alex Kim",
     service: "Nail Art Design",
     date: new Date(2025, 3, 18, 16, 0),
-    status: "confirmed",
+    status: "confirmed" as "confirmed",
     customer_avatar: "",
     message: "I'd like something similar to the blue floral design in your portfolio."
   }

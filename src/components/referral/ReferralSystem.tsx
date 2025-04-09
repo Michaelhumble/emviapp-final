@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -47,13 +46,13 @@ const ReferralSystem = () => {
   const { toast } = useToast();
   const { userProfile } = useAuth();
   const [showShareOptions, setShowShareOptions] = useState(false);
+  const [copied, setCopied] = useState(false);
   const { 
     loading, 
     referralCode, 
     referralLink, 
     referralStats, 
     referralProgress, 
-    copied, 
     copyReferralLink,
     getMotivationalMessage
   } = useReferralSystem();
@@ -67,6 +66,21 @@ const ReferralSystem = () => {
       });
     }
     setShowShareOptions(false);
+  };
+
+  const handleCopyReferralLink = () => {
+    const result = copyReferralLink(referralLink);
+    if (result) {
+      result.then((success) => {
+        if (success) {
+          setCopied(true);
+          toast.success('Referral link copied to clipboard!');
+          setTimeout(() => setCopied(false), 3000);
+        } else {
+          toast.error('Failed to copy link. Please try again.');
+        }
+      });
+    }
   };
 
   if (loading) {
@@ -111,7 +125,7 @@ const ReferralSystem = () => {
                 variant="outline" 
                 size="icon" 
                 className="ml-2 bg-white border-purple-200 hover:bg-purple-50"
-                onClick={copyReferralLink}
+                onClick={handleCopyReferralLink}
               >
                 {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
               </Button>

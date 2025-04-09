@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
@@ -22,38 +21,38 @@ const ReferralsPage = () => {
   } = useReferralSystem();
 
   // Sample referrals data for demo purposes
-  const sampleReferrals: ReferralData[] = [
+  const sampleReferrals: Referral[] = [
     { 
       id: "1", 
+      referredId: "user1",
       referredName: "Sarah Johnson", 
-      referredEmail: "sarah@example.com",
-      status: "joined", 
-      milestoneReached: false, 
-      createdAt: "2023-12-01" 
+      status: "pending", 
+      createdAt: "2023-12-01"
     },
     { 
       id: "2", 
+      referredId: "user2",
       referredName: "Alex Wong", 
-      referredEmail: "alex@example.com", 
-      status: "subscribed", 
-      milestoneReached: true,
-      createdAt: "2023-11-28" 
+      status: "completed", 
+      createdAt: "2023-11-28",
+      completedAt: "2023-11-30",
+      reward: 20
     },
     { 
       id: "3", 
+      referredId: "user3",
       referredName: "Maria Garcia", 
-      referredEmail: "maria@example.com",
-      status: "joined", 
-      milestoneReached: false, 
+      status: "pending", 
       createdAt: "2023-11-25" 
     },
     { 
       id: "4", 
+      referredId: "user4",
       referredName: "David Park", 
-      referredEmail: "david@example.com",
       status: "completed", 
-      milestoneReached: false, 
-      createdAt: "2023-11-20" 
+      createdAt: "2023-11-20",
+      completedAt: "2023-11-22",
+      reward: 20
     }
   ];
   

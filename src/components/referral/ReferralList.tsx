@@ -1,12 +1,12 @@
 
 import React from 'react';
-import { ReferralData } from './types';
+import { Referral } from './types';
 import { CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { toTranslatableText } from '@/components/dashboard/salon/SalonTranslationHelper';
 
 interface ReferralListProps {
-  referrals: ReferralData[];
+  referrals: Referral[];
 }
 
 const ReferralList = ({ referrals }: ReferralListProps) => {
@@ -19,6 +19,7 @@ const ReferralList = ({ referrals }: ReferralListProps) => {
         return <CheckCircle className="h-4 w-4 text-green-500" />;
       case 'processing':
       case 'joined':
+      case 'pending':
         return <Clock className="h-4 w-4 text-amber-500" />;
       case 'suspicious':
         return <AlertTriangle className="h-4 w-4 text-red-500" />;
