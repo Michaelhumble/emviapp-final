@@ -93,7 +93,7 @@ const Hero = () => {
   }, [activeIndex, randomizedImages]);
 
   return (
-    <div className="relative pt-24 pb-28 overflow-hidden max-h-[80vh] h-full w-full">
+    <div className="relative pt-24 pb-28 overflow-hidden max-h-[100vh] md:max-h-[95vh] min-h-[80vh] md:min-h-[85vh] h-full w-full">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#FDFDFD] to-[#F6F6F6] z-0"></div>
       
