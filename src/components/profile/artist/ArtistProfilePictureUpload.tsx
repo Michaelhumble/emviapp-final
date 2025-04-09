@@ -16,7 +16,7 @@ const ArtistProfilePictureUpload = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Check if avatar task is already complete
-  const avatarTaskComplete = isTaskComplete("avatar");
+  const avatarTaskComplete = isTaskComplete("profile_picture");
 
   // Initialize preview with profile image if available
   useEffect(() => {
@@ -114,7 +114,7 @@ const ArtistProfilePictureUpload = () => {
       await refreshUserProfile();
       
       // Mark task as complete
-      markTaskComplete("avatar");
+      markTaskComplete("profile_picture");
       
       toast.success("Profile picture updated successfully");
     } catch (error: any) {
