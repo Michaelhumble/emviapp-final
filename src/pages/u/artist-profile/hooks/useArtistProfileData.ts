@@ -30,11 +30,14 @@ export const useArtistProfileData = (username?: string) => {
         if (profileError) throw profileError;
         
         if (profileData) {
-          setProfile(profileData as UserProfile);
+          // Convert database record to UserProfile type
+          const userProfile: UserProfile = {
+            ...profileData,
+            profile_views: typeof profileData.profile_views === 'number' ? profileData.profile_views : 0,
+          };
           
-          // Safely access profile_views with proper type checking
-          const views = typeof profileData.profile_views === 'number' ? profileData.profile_views : 0;
-          setViewCount(views);
+          setProfile(userProfile);
+          setViewCount(userProfile.profile_views || 0);
           
           // Check if salon owner
           if (profileData.role === 'salon' || profileData.role === 'owner') {
@@ -108,8 +111,8 @@ export const useArtistProfileData = (username?: string) => {
     if (!profile || !profile.id) return;
     
     try {
-      // Safely access profile_views with a fallback to 0
-      const currentViews = typeof profile.profile_views === 'number' ? profile.profile_views : 0;
+      // Get current view count with default of 0
+      const currentViews = profile.profile_views || 0;
       
       // Update with the incremented count
       await updateProfileViews(profile.id, currentViews + 1);
