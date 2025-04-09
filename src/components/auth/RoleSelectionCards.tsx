@@ -14,10 +14,10 @@ interface RoleOption {
 
 const roleOptions: RoleOption[] = [
   {
-    id: "customer",
-    label: "Customer",
-    description: "I'm looking for beauty services",
-    icon: <User className="h-5 w-5 text-indigo-500" />
+    id: "artist",
+    label: "Artist",
+    description: "I'm a beauty professional",
+    icon: <Scissors className="h-5 w-5 text-indigo-500" />
   },
   {
     id: "salon_owner",
@@ -26,16 +26,16 @@ const roleOptions: RoleOption[] = [
     icon: <Building2 className="h-5 w-5 text-indigo-500" />
   },
   {
+    id: "customer",
+    label: "Customer",
+    description: "I'm looking for beauty services",
+    icon: <User className="h-5 w-5 text-indigo-500" />
+  },
+  {
     id: "freelancer",
     label: "Freelancer",
     description: "I offer freelance beauty services",
     icon: <Briefcase className="h-5 w-5 text-indigo-500" />
-  },
-  {
-    id: "artist",
-    label: "Artist",
-    description: "I'm a beauty professional",
-    icon: <Scissors className="h-5 w-5 text-indigo-500" />
   },
   {
     id: "supplier",

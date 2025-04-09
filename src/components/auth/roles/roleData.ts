@@ -12,12 +12,6 @@ export type RoleOption = {
 
 export const roleOptions: RoleOption[] = [
   {
-    id: "customer",
-    label: "Customer",
-    description: "I'm looking for beauty services and offers from top professionals.",
-    icon: React.createElement(User, { className: "h-5 w-5 text-primary" })
-  },
-  {
     id: "artist",
     label: "Artist (Hair, Brows, Lashes, Nails, Tattoo...)",
     description: "I'm a beauty professional looking for jobs, exposure, or to build my brand.",
@@ -28,6 +22,12 @@ export const roleOptions: RoleOption[] = [
     label: "Salon Owner (Business)",
     description: "I'm a salon owner hiring, managing my team, or selling my salon.",
     icon: React.createElement(Building2, { className: "h-5 w-5 text-primary" })
+  },
+  {
+    id: "customer",
+    label: "Customer",
+    description: "I'm looking for beauty services and offers from top professionals.",
+    icon: React.createElement(User, { className: "h-5 w-5 text-primary" })
   },
   {
     id: "freelancer",
