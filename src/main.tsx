@@ -18,8 +18,8 @@ import Profile from '@/pages/Profile';
 import UserProfilePage from '@/pages/profile/UserProfilePage';
 import ProfileEdit from '@/pages/profile/edit';
 import UserProfileByUsername from '@/pages/profile/[username]';
-// Fix the casing issue by using consistent import path
-import SalonDashboard from '@/pages/dashboard/salon'; // Changed from 'Salon' to 'salon'
+// Match the actual filename casing in the filesystem
+import SalonDashboard from '@/pages/dashboard/salon'; // Matching actual file casing
 import SalonOwnerDashboard from '@/pages/dashboard/SalonOwnerDashboard';
 import ArtistDashboard from '@/pages/dashboard/Artist';
 import SupplierDashboard from '@/pages/dashboard/Supplier';
