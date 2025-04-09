@@ -9,6 +9,7 @@ import BookingRequestSection from "@/components/artist-profile/BookingRequestSec
 import SuggestedArtists from "@/components/artists/SuggestedArtists";
 import ReviewsSection from "@/components/reviews/ReviewsSection";
 import { Service, PortfolioImage } from "./types";
+import { motion } from "framer-motion";
 
 interface ArtistProfileContentProps {
   profile: UserProfile;
@@ -33,7 +34,12 @@ const ArtistProfileContent: React.FC<ArtistProfileContentProps> = ({
   
   return (
     <div className="container mx-auto py-12 px-4">
-      <div className="max-w-4xl mx-auto">
+      <motion.div 
+        className="max-w-4xl mx-auto"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <ProfileHeader 
           profile={profile} 
           isSalonOwner={isSalonOwner} 
@@ -48,7 +54,9 @@ const ArtistProfileContent: React.FC<ArtistProfileContentProps> = ({
         <ReviewsSection artistId={profile.id} />
         
         {/* Add Booking Request Section */}
-        <BookingRequestSection profile={profile} services={services} />
+        {profile.accepts_bookings && (
+          <BookingRequestSection profile={profile} services={services} />
+        )}
         
         <ContactSection profile={profile} isSalonOwner={isSalonOwner} />
         
@@ -56,7 +64,7 @@ const ArtistProfileContent: React.FC<ArtistProfileContentProps> = ({
         <div className="mt-12">
           <SuggestedArtists currentArtistId={profile.id} />
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

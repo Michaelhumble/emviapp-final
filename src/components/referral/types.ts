@@ -1,39 +1,40 @@
 
+export interface ReferralData {
+  referralCode: string | null;
+  referralLink: string;
+  referrals: Referral[];
+}
+
+export interface Referral {
+  id: string;
+  referredId: string;
+  referredName?: string;
+  status: "pending" | "completed";
+  createdAt: string;
+  completedAt?: string;
+  reward?: number;
+}
+
 export interface ReferralStats {
-  totalReferrals: number;
-  pendingReferrals: number;
   completedReferrals: number;
-  targetMilestone: number;
+  pendingReferrals: number;
+  totalReferrals: number;
+  credits: number;
+  estimatedEarnings: number;
 }
 
 export interface ReferralProgress {
-  percentage: number;
+  level: number;
+  currentMilestone: number;
+  nextMilestone: number;
   nextMilestoneIn: number;
-  currentTier: number;
-  nextTier: number;
+  percentage: number;
+  rewards: ReferralReward[];
 }
 
-export interface CreditMilestone {
-  id: string;
-  credits: number;
-  name: string;
-  description: string;
-  unlockedAt: string | null;
-}
-
-export interface ReferralData {
-  id: string;
-  referredEmail: string;
-  referredName: string;
-  status: 'pending' | 'processing' | 'completed' | 'suspicious' | 'joined' | 'subscribed';
-  milestoneReached: boolean;
-  milestoneType?: string;
-  createdAt: string;
-  verifiedAt?: string;
-}
-
-export interface TranslationString {
-  key: string;
-  english: string;
-  vietnamese: string;
+export interface ReferralReward {
+  level: number;
+  milestone: number;
+  reward: string;
+  achieved: boolean;
 }

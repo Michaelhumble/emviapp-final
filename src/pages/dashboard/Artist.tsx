@@ -1,19 +1,21 @@
 
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/auth";
 import ArtistDashboardProfile from "@/components/dashboard/artist/ArtistDashboardProfile";
-import ArtistServicesSection from "@/components/dashboard/artist/ArtistServicesSection";
 import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ServiceManager from "@/components/dashboard/artist/services/ServiceManager";
 import ArtistPortfolioSection from "@/components/portfolio/ArtistPortfolioSection";
 import ArtistUpgradeSection from "@/components/dashboard/artist/ArtistUpgradeSection";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ReferralSystem from "@/components/referral/ReferralSystem";
+import ArtistAnalytics from "@/components/dashboard/artist/ArtistAnalytics";
+import ArtistBookingCalendar from "@/components/dashboard/artist/ArtistBookingCalendar";
+import ReviewsSection from "@/components/reviews/ReviewsSection";
 
 const ArtistDashboard = () => {
-  const { userProfile } = useAuth();
-  const navigate = useNavigate();
+  const { userProfile, user } = useAuth();
   
   useEffect(() => {
     document.title = "Artist Dashboard | EmviApp";
@@ -33,11 +35,14 @@ const ArtistDashboard = () => {
           
           {/* Main Dashboard Tabs */}
           <Tabs defaultValue="dashboard" className="mt-6">
-            <TabsList className="mb-6">
+            <TabsList className="mb-6 w-full md:w-auto">
               <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
               <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
               <TabsTrigger value="services">Services</TabsTrigger>
+              <TabsTrigger value="bookings">Bookings</TabsTrigger>
+              <TabsTrigger value="reviews">Reviews</TabsTrigger>
               <TabsTrigger value="earnings">Earnings</TabsTrigger>
+              <TabsTrigger value="referrals">Referrals</TabsTrigger>
             </TabsList>
             
             <TabsContent value="dashboard" className="space-y-6">
@@ -61,16 +66,22 @@ const ArtistDashboard = () => {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-500 text-sm">Services Offered</span>
-                        <span className="font-medium">0</span>
+                        <span className="font-medium">{userProfile?.skills?.length || 0}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-500 text-sm">Completed Bookings</span>
-                        <span className="font-medium">0</span>
+                        <span className="text-gray-500 text-sm">Referrals</span>
+                        <span className="font-medium">{userProfile?.referral_count || 0}</span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+              
+              {/* Analytics Overview */}
+              <ArtistAnalytics />
+              
+              {/* Services Preview */}
+              <ServiceManager />
               
               {/* Additional Dashboard Components */}
               <ArtistUpgradeSection />
@@ -81,16 +92,23 @@ const ArtistDashboard = () => {
             </TabsContent>
             
             <TabsContent value="services">
-              <ArtistServicesSection />
+              <ServiceManager />
             </TabsContent>
             
-            <TabsContent value="earnings" className="text-center py-12">
-              <div className="max-w-md mx-auto">
-                <h3 className="text-xl font-medium mb-2">Earnings Coming Soon</h3>
-                <p className="text-muted-foreground mb-4">
-                  Track your bookings, payments, and financial growth. This feature is currently in development.
-                </p>
-              </div>
+            <TabsContent value="bookings">
+              <ArtistBookingCalendar />
+            </TabsContent>
+            
+            <TabsContent value="reviews">
+              <ReviewsSection artistId={user?.id} />
+            </TabsContent>
+            
+            <TabsContent value="earnings">
+              <ArtistAnalytics />
+            </TabsContent>
+            
+            <TabsContent value="referrals">
+              <ReferralSystem />
             </TabsContent>
           </Tabs>
         </div>

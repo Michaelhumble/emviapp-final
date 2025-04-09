@@ -1,46 +1,54 @@
 
-/**
- * Utility hook for referral system operations
- */
 export const useReferralUtils = () => {
-  // Function to copy the referral link to clipboard
   const copyReferralLink = async (link: string): Promise<boolean> => {
     try {
       await navigator.clipboard.writeText(link);
       return true;
     } catch (error) {
-      console.error('Failed to copy:', error);
+      console.error('Failed to copy referral link:', error);
       return false;
     }
   };
-  
-  // Get a motivational message based on referral count
+
   const getMotivationalMessage = (
-    referralCount: number,
+    completedReferrals: number, 
     nextMilestoneIn: number,
-    preferredLanguage: string
+    language: string = 'English'
   ): string => {
-    // Vietnamese translations
-    if (preferredLanguage === 'vi' || preferredLanguage === 'Vietnamese') {
-      if (referralCount === 0) {
-        return 'Bắt đầu bằng việc giới thiệu bạn bè đầu tiên của bạn!';
+    // Messages for English language
+    if (language === 'English' || language === 'en') {
+      if (completedReferrals === 0) {
+        return "Start sharing your referral link to earn rewards!";
+      } else if (nextMilestoneIn === 0) {
+        return "Congratulations! You've reached a new milestone!";
       } else if (nextMilestoneIn === 1) {
-        return 'Chỉ còn 1 giới thiệu nữa để đạt cột mốc tiếp theo!';
+        return "You're just 1 referral away from the next level!";
+      } else if (nextMilestoneIn <= 3) {
+        return `Almost there! Only ${nextMilestoneIn} more referrals to level up.`;
       } else {
-        return `Còn ${nextMilestoneIn} giới thiệu nữa để đạt đến cột mốc tiếp theo!`;
+        return `You've referred ${completedReferrals} people. Keep sharing!`;
       }
     }
-    
-    // Default English
-    if (referralCount === 0) {
-      return 'Get started by making your first referral!';
-    } else if (nextMilestoneIn === 1) {
-      return 'Just 1 more referral to reach your next milestone!';
-    } else {
-      return `${nextMilestoneIn} more referrals until your next milestone!`;
+    // Messages for Vietnamese language
+    else if (language === 'Vietnamese' || language === 'vi') {
+      if (completedReferrals === 0) {
+        return "Hãy bắt đầu chia sẻ link giới thiệu để kiếm phần thưởng!";
+      } else if (nextMilestoneIn === 0) {
+        return "Chúc mừng! Bạn đã đạt cột mốc mới!";
+      } else if (nextMilestoneIn === 1) {
+        return "Bạn chỉ cần 1 lượt giới thiệu nữa để lên cấp!";
+      } else if (nextMilestoneIn <= 3) {
+        return `Sắp đạt được rồi! Chỉ cần thêm ${nextMilestoneIn} lượt giới thiệu để lên cấp.`;
+      } else {
+        return `Bạn đã giới thiệu ${completedReferrals} người. Hãy tiếp tục chia sẻ!`;
+      }
+    }
+    // Default to English for other languages
+    else {
+      return `You've referred ${completedReferrals} people. Keep going!`;
     }
   };
-  
+
   return {
     copyReferralLink,
     getMotivationalMessage
