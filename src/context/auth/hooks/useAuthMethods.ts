@@ -74,9 +74,9 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
   const signUp = async (email: string, password: string, role?: UserRole): Promise<AuthResponse> => {
     setLoading(true);
     try {
-      // Normalize role if provided
-      const normalizedRole = role ? normalizeUserRole(role) : null;
-      console.log(`[SignUp] Using role: ${normalizedRole || 'none provided'}`);
+      // Use the provided role directly without normalizing first
+      // (we'll normalize later if needed)
+      console.log(`[SignUp] Using explicitly provided role: ${role || 'none provided'}`);
       
       // Sign up with auth API, including role in metadata
       const response = await supabase.auth.signUp({
@@ -85,21 +85,21 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
         options: {
           data: {
             email: email,
-            role: normalizedRole // Store role in auth metadata
+            role: role // Store role directly in auth metadata
           }
         }
       });
       
       if (response.error) {
         toast.error(response.error.message);
-      } else if (response.data.user && normalizedRole) {
+      } else if (response.data.user && role) {
         // Successfully created auth user, now ensure role is set in users table
-        console.log(`[SignUp] Setting role in users table for user ${response.data.user.id}: ${normalizedRole}`);
+        console.log(`[SignUp] Setting role in users table for user ${response.data.user.id}: ${role}`);
         
         // Update role in the users table
         const { error: updateError } = await supabase
           .from('users')
-          .update({ role: normalizedRole })
+          .update({ role: role })
           .eq('id', response.data.user.id);
           
         if (updateError) {

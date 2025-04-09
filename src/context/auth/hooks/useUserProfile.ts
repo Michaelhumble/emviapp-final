@@ -81,7 +81,6 @@ export const useUserProfile = (
       }
       
       // Map database fields to UserProfile with proper type safety
-      // Using optional chaining and fallbacks for potentially missing fields
       const mappedProfile: UserProfile = {
         id: data.id,
         email: data.email || user.email || '',
@@ -91,10 +90,9 @@ export const useUserProfile = (
         created_at: data.created_at,
         updated_at: data.updated_at,
         
-        // Handle potentially missing fields with safe defaults
-        // For numeric fields, convert to number if present or use 0
-        referral_count: data.referral_count || 0,
-        profile_views: data.profile_views || 0,
+        // Handle numeric fields with safe defaults
+        referral_count: typeof data.referral_count === 'number' ? data.referral_count : 0,
+        profile_views: typeof data.profile_views === 'number' ? data.profile_views : 0,
         
         // Extended properties with fallbacks
         bio: data.bio || '',

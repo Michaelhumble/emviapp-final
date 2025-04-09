@@ -42,6 +42,7 @@ export const normalizeUserRole = (role: string | null): UserRole | null => {
     case 'vendor':
     case 'supplier':
     case 'beauty vendor':
+    case 'supply_partner': // Legacy format
       return 'supplier';
       
     case 'client':
@@ -54,6 +55,15 @@ export const normalizeUserRole = (role: string | null): UserRole | null => {
       
     case 'other':
       return 'other';
+      
+    // If the role is already one of our valid values, just return it
+    // This ensures we don't lose information by over-normalizing
+    case 'customer':
+    case 'artist':
+    case 'salon_owner':
+    case 'supplier':
+    case 'freelancer':
+      return normalizedRole as UserRole;
       
     // Log a warning for unknown roles, but return something to avoid errors
     default:

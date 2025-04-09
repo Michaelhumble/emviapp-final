@@ -29,7 +29,7 @@ export const useRoleSignUp = () => {
     setIsSubmitting(true);
 
     try {
-      console.log(`[SignUp] Starting sign-up with role: ${selectedRole}`);
+      console.log(`[SignUp] Starting sign-up with explicitly selected role: ${selectedRole}`);
       
       // Pass the selected role to signUp method
       const signUpResponse = await signUp(email, password, selectedRole);
@@ -47,7 +47,48 @@ export const useRoleSignUp = () => {
       }
       
       const userId = signUpResponse.data.user.id;
-      console.log(`[SignUp] User created with ID: ${userId}`);
+      console.log(`[SignUp] User created with ID: ${userId} and role: ${selectedRole}`);
+      
+      // Double-check that role was properly set
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', userId)
+        .single();
+        
+      if (userError) {
+        console.error("[SignUp] Error verifying user role:", userError);
+      } else {
+        console.log(`[SignUp] Role verification - Database has role: ${userData?.role}`);
+        
+        // If role doesn't match or isn't set, update it directly
+        if (!userData?.role || userData.role !== selectedRole) {
+          console.warn(`[SignUp] Role mismatch! Fixing role in database from ${userData?.role || 'none'} to ${selectedRole}`);
+          
+          const { error: updateError } = await supabase
+            .from('users')
+            .update({ role: selectedRole })
+            .eq('id', userId);
+            
+          if (updateError) {
+            console.error("[SignUp] Failed to update role in database:", updateError);
+          }
+        }
+      }
+      
+      // Also ensure auth metadata has the correct role
+      const { data: authUser, error: authError } = await supabase.auth.getUser();
+      if (!authError && authUser?.user) {
+        const currentMetadataRole = authUser.user.user_metadata?.role;
+        
+        if (currentMetadataRole !== selectedRole) {
+          console.warn(`[SignUp] Role mismatch in auth metadata! Fixing from ${currentMetadataRole || 'none'} to ${selectedRole}`);
+          
+          await supabase.auth.updateUser({
+            data: { role: selectedRole }
+          });
+        }
+      }
       
       // Log success
       toast.success("Account created successfully!");
