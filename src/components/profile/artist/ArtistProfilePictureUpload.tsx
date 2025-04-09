@@ -47,6 +47,29 @@ const ArtistProfilePictureUpload = () => {
       const fileName = `${user.id}.${fileExt}`;
       const filePath = `${fileName}`;
 
+      // Check if bucket exists, if not don't error out
+      const { data: buckets } = await supabase
+        .storage
+        .listBuckets();
+      
+      const profileBucketExists = buckets?.some(bucket => bucket.name === 'profile_images');
+      
+      // First ensure bucket exists
+      if (!profileBucketExists) {
+        console.log("Creating profile_images bucket");
+        const { error: bucketError } = await supabase
+          .storage
+          .createBucket('profile_images', {
+            public: true,
+            fileSizeLimit: 5 * 1024 * 1024
+          });
+          
+        if (bucketError) {
+          console.error("Error creating bucket:", bucketError);
+          // Continue anyway, might be permissions issue but bucket exists
+        }
+      }
+
       // Upload to Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from("profile_images")
@@ -57,28 +80,37 @@ const ArtistProfilePictureUpload = () => {
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
+      // Get public URL - ensure we're getting the fresh URL with cache-busting
+      const timestamp = new Date().getTime();
       const { data: publicUrlData } = supabase.storage
         .from("profile_images")
-        .getPublicUrl(filePath);
+        .getPublicUrl(`${filePath}?t=${timestamp}`);
 
-      const publicUrl = publicUrlData.publicUrl;
+      const publicUrl = publicUrlData.publicUrl.split('?')[0]; // Remove query params for storage
 
       // Update user record
       const { error: updateError } = await supabase
         .from("users")
-        .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
+        .update({ 
+          avatar_url: publicUrl, 
+          updated_at: new Date().toISOString() 
+        })
         .eq("id", user.id);
 
       if (updateError) throw updateError;
 
-      // Refresh user profile in auth context
-      await refreshUserProfile();
-
-      // Mark task as complete
-      markTaskComplete("avatar");
-
-      toast.success("Profile picture updated successfully");
+      // Refresh user profile in auth context with a slight delay
+      // to ensure Supabase has processed the update
+      setTimeout(async () => {
+        await refreshUserProfile();
+        
+        // Mark task as complete
+        markTaskComplete("avatar");
+        
+        toast.success("Profile picture updated successfully");
+        setIsUploading(false);
+      }, 1000);
+      
     } catch (error: any) {
       console.error("Error uploading profile picture:", error);
       toast.error(error.message || "Failed to upload profile picture");
@@ -89,7 +121,6 @@ const ArtistProfilePictureUpload = () => {
       } else {
         setPreviewUrl(null);
       }
-    } finally {
       setIsUploading(false);
     }
   };
@@ -152,6 +183,18 @@ const ArtistProfilePictureUpload = () => {
                   src={previewUrl}
                   alt="Profile Preview"
                   className="h-full w-full object-cover"
+                  onError={(e) => {
+                    console.error("Image failed to load:", previewUrl);
+                    const target = e.target as HTMLImageElement;
+                    target.onerror = null; // Prevent infinite error loop
+                    target.src = ''; // Clear src
+                    if (userProfile?.avatar_url) {
+                      // Try the original URL without preview changes
+                      setTimeout(() => {
+                        target.src = userProfile.avatar_url || '';
+                      }, 100);
+                    }
+                  }}
                 />
               ) : (
                 <div className="flex flex-col items-center justify-center h-full w-full text-muted-foreground">
