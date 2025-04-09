@@ -59,15 +59,15 @@ const CustomerBookingsSection = () => {
       
       // Transform data to handle potential errors with the artist relation
       return (data || []).map(item => {
-        // If artist is an error object, replace with null
-        if (item.artist && 'error' in item.artist) {
+        // Check if artist is an error object (has 'error' property)
+        if (item.artist && typeof item.artist === 'object' && 'error' in item.artist) {
           return {
             ...item,
             artist: null
-          };
+          } as Booking;
         }
-        return item;
-      }) as Booking[];
+        return item as Booking;
+      });
     },
     enabled: !!user,
   });
