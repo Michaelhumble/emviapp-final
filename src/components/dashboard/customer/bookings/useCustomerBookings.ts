@@ -39,7 +39,7 @@ export const useCustomerBookings = () => {
         
         // Transform the data to ensure it matches the CustomerBooking type
         const typedBookings: CustomerBooking[] = data.map(item => {
-          // Handle the artist property which might be an error object from Supabase
+          // Create the booking object with default null for artist
           const booking: CustomerBooking = {
             id: item.id,
             created_at: item.created_at,
@@ -53,8 +53,12 @@ export const useCustomerBookings = () => {
           };
           
           // Only set artist if it's a valid object with the expected properties
-          if (item.artist && typeof item.artist === 'object' && 'id' in item.artist && 'full_name' in item.artist) {
-            booking.artist = item.artist;
+          if (item.artist && typeof item.artist === 'object' && !('error' in item.artist) && 'id' in item.artist && 'full_name' in item.artist) {
+            booking.artist = {
+              id: item.artist.id,
+              full_name: item.artist.full_name,
+              avatar_url: item.artist.avatar_url
+            };
           }
           
           return booking;

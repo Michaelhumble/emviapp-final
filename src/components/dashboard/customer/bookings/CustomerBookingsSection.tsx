@@ -1,14 +1,14 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CalendarCheck, XCircle } from 'lucide-react';
+import { CalendarCheck } from 'lucide-react';
 import { useCustomerBookings } from './useCustomerBookings';
 import BookingsLoadingState from './BookingsLoadingState';
 import BookingsErrorState from './BookingsErrorState';
 import BookingsList from './BookingsList';
 
 const CustomerBookingsSection = () => {
-  const { data: bookings, isLoading, error } = useCustomerBookings();
+  const { bookings, loading, error } = useCustomerBookings();
 
   return (
     <Card className="mt-4">
@@ -19,7 +19,7 @@ const CustomerBookingsSection = () => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        {isLoading ? (
+        {loading ? (
           <BookingsLoadingState />
         ) : error ? (
           <BookingsErrorState />
