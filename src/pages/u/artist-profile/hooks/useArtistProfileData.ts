@@ -75,13 +75,20 @@ export const useArtistProfileData = (username?: string) => {
           // Fetch portfolio images from portfolio_items table
           const { data: portfolioData, error: portfolioError } = await supabase
             .from('portfolio_items')
-            .select('id, image_url as url, title as name')
+            .select('id, image_url, title')
             .eq('user_id', username);
           
           if (portfolioError) throw portfolioError;
           
           if (portfolioData) {
-            setPortfolioImages(portfolioData as PortfolioImage[]);
+            // Transform the data to match the PortfolioImage structure
+            const formattedPortfolioData: PortfolioImage[] = portfolioData.map(item => ({
+              id: item.id,
+              url: item.image_url,
+              name: item.title || `Portfolio image`
+            }));
+            
+            setPortfolioImages(formattedPortfolioData);
           } else {
             // Fallback to portfolio_urls if no dedicated portfolio items
             if (profileData.portfolio_urls && profileData.portfolio_urls.length > 0) {
