@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile } from "@/types/profile";
@@ -30,7 +31,8 @@ export const useArtistProfileData = (username?: string) => {
         
         if (profileData) {
           setProfile(profileData as UserProfile);
-          setViewCount(profileData.profile_views || 0);
+          // Use optional chaining to safely access profile_views or default to 0
+          setViewCount(profileData?.profile_views || 0);
           
           // Check if salon owner
           if (profileData.role === 'salon' || profileData.role === 'owner') {
@@ -120,8 +122,9 @@ export const useArtistProfileData = (username?: string) => {
   // When updating profile views in the database function:
   const updateProfileViews = async (profileId: string, newCount: number) => {
     try {
+      // Fixed: We should use 'users' table instead of 'profiles'
       const { error } = await supabase
-        .from('profiles')
+        .from('users')
         .update({ 
           profile_views: newCount 
         })
