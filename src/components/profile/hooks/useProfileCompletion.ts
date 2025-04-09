@@ -1,5 +1,5 @@
 
-import { useProfileCompletion as useProfileCompletionContext } from '@/context/profile';
+import { useProfileCompletion as useProfileCompletionProvider } from '@/context/profile';
 
-// This hook re-exports the context hook for better organization
-export const useProfileCompletion = useProfileCompletionContext;
+// Re-export the hook for better organization
+export const useProfileCompletion = useProfileCompletionProvider;

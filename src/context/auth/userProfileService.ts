@@ -49,9 +49,9 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       created_at: data.created_at || new Date().toISOString(),
       updated_at: data.updated_at || new Date().toISOString(),
       preferred_language: data.preferred_language || '',
-      // Handle properties that might not exist in the database
+      
+      // TypeScript-safe property access
       salon_name: data.salon_name || '',
-      company_name: data.company_name || '',
       custom_role: data.custom_role || '',
       contact_link: data.contact_link || '',
       skills: Array.isArray(data.skills) ? data.skills : [],
@@ -65,7 +65,8 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       boosted_until: data.boosted_until || null,
       portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
       accepts_bookings: data.accepts_bookings || false,
-      booking_url: data.booking_url || ''
+      booking_url: data.booking_url || '',
+      completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : []
     };
     
     return profile;
