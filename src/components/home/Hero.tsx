@@ -45,10 +45,10 @@ const Hero = () => {
         width: '100vw',
         maxWidth: '100%',
         height: 'calc(150vh)',
-        marginLeft: 'calc(-50vw + 50%)',
-        marginRight: 'calc(-50vw + 50%)',
-        border: 'none', // Remove border
-        borderRadius: '0', // Remove border radius
+        marginLeft: '0',  // No margin on left side
+        marginRight: 'calc(-50vw + 50%)',  // Extend only to the right
+        border: 'none',
+        borderRadius: '0',
       }}
     >
       {/* Background image carousel */}
