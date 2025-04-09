@@ -1,3 +1,4 @@
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
@@ -18,6 +19,7 @@ import UserProfilePage from '@/pages/profile/UserProfilePage';
 import ProfileEdit from '@/pages/profile/edit';
 import UserProfileByUsername from '@/pages/profile/[username]';
 import SalonDashboard from '@/pages/dashboard/Salon';
+import SalonOwnerDashboard from '@/pages/dashboard/SalonOwner';
 import ArtistDashboard from '@/pages/dashboard/Artist';
 import SupplierDashboard from '@/pages/dashboard/Supplier';
 import FreelancerDashboard from '@/pages/dashboard/Freelancer';
@@ -119,6 +121,10 @@ const router = createBrowserRouter([
       {
         path: 'dashboard/salon',
         element: <SalonDashboard />
+      },
+      {
+        path: 'dashboard/salon_owner',
+        element: <SalonOwnerDashboard />
       },
       {
         path: 'dashboard/artist',

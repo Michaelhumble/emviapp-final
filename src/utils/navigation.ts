@@ -38,10 +38,7 @@ export const navigateToRoleDashboard = (
       targetDashboard = '/dashboard/artist';
       break;
     case 'salon_owner':
-      targetDashboard = '/dashboard/salon';
-      break;
-    case 'customer':
-      targetDashboard = '/dashboard/customer';
+      targetDashboard = '/dashboard/salon_owner';
       break;
     case 'supplier':
       targetDashboard = '/dashboard/supplier';
@@ -92,8 +89,6 @@ export const getPersonalizedGreeting = (
       return `Welcome back, ${name}! Ready to showcase your artistry?`;
     case 'salon_owner':
       return `Hello, ${name}! Managing your salon made easy.`;
-    case 'customer':
-      return `Welcome, ${name}! Discover your perfect beauty experience.`;
     case 'supplier':
       return `Welcome, ${name}! Showcase your products to businesses.`;
     case 'freelancer':
