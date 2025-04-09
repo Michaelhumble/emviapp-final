@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, DollarSign, Calendar, Home, Sparkles } from "lucide-react";
 import { differenceInDays } from 'date-fns';
-import { Link } from 'react-router-dom';
 
 interface SalonCardProps {
   salon: any;
@@ -34,7 +33,7 @@ const SalonCard: React.FC<SalonCardProps> = ({ salon, onViewDetails }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <Card className={`overflow-hidden transition-all hover:shadow-lg border ${expired ? 'border-orange-200 bg-orange-50/30' : 'border-gray-100'}`}>
+      <Card className={`overflow-hidden transition-all hover:shadow-md border ${expired ? 'border-orange-200 bg-orange-50/30' : 'border-gray-100'}`}>
         {expired && (
           <div className="bg-orange-100 border-b border-orange-200 p-2 text-center">
             <p className="text-orange-800 text-xs font-medium">
@@ -53,7 +52,7 @@ const SalonCard: React.FC<SalonCardProps> = ({ salon, onViewDetails }) => {
         >
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
             <div className="p-4 text-white flex justify-between w-full items-end">
-              <Badge className="bg-primary hover:bg-primary text-white text-sm py-1">
+              <Badge className="bg-purple-600 hover:bg-purple-700 text-white text-sm py-1.5 px-3">
                 {salon.asking_price}
               </Badge>
               

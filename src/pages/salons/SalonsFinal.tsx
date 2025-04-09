@@ -9,7 +9,7 @@ import SalonsEmptyState from "@/components/salons/SalonsEmptyState";
 import SalonsLoadingState from "@/components/salons/SalonsLoadingState";
 import FeaturedSalonsSection from "@/components/salons/FeaturedSalonsSection";
 import SalonPromotion from "@/components/salons/SalonPromotion";
-import useSalonsData from '@/hooks/useSalonsData';
+import useSalonsData, { SalonFilters } from '@/hooks/useSalonsData';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -56,6 +56,16 @@ const SalonsFinal: React.FC = () => {
     navigate(`/salons/${salon.id}`);
   };
 
+  // The component now receives the correct filter props
+  const salonFilterProps = {
+    searchTerm,
+    setSearchTerm,
+    filters,
+    updateFilters,
+    resetFilters,
+    suggestedKeywords
+  };
+
   return (
     <Layout>
       <Helmet>
@@ -87,12 +97,7 @@ const SalonsFinal: React.FC = () => {
             
             {/* Search and Filter System */}
             <SalonFilter 
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-              filters={filters}
-              updateFilters={updateFilters}
-              resetFilters={resetFilters}
-              suggestedKeywords={suggestedKeywords}
+              {...salonFilterProps}
             />
             
             {/* Promotion Banner */}

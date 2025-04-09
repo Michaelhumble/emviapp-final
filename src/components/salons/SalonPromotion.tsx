@@ -19,7 +19,7 @@ const SalonPromotion: React.FC = () => {
           Featured Listing: $99
         </Badge>
         <Link to="/salons/list">
-          <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+          <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-6">
             List Your Salon
           </Button>
         </Link>

@@ -13,17 +13,13 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { motion } from "framer-motion";
+import { SalonFilters } from "@/hooks/useSalonsData";
 
 export interface SalonFilterProps {
   searchTerm: string;
   setSearchTerm: (value: string) => void;
-  filters: {
-    location: string;
-    priceRange: [number, number];
-    hasHousing: boolean;
-    showExpired: boolean;
-  };
-  updateFilters: (filters: Partial<SalonFilterProps['filters']>) => void;
+  filters: SalonFilters;
+  updateFilters: (filters: Partial<SalonFilters>) => void;
   resetFilters: () => void;
   suggestedKeywords: string[];
 }

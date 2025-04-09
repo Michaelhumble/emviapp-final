@@ -9,16 +9,16 @@ import { salonsForSaleJobs } from "@/utils/jobs/mockJobData";
 
 export interface SalonFilters {
   featured?: boolean;
-  location?: string;
-  priceRange?: [number, number];
-  showExpired?: boolean;
-  hasHousing?: boolean;
+  location: string;
+  priceRange: [number, number];
+  showExpired: boolean;
+  hasHousing: boolean;
   industry?: string;
   stations?: number;
   squareFeet?: [number, number];
 }
 
-export const useSalonsData = (initialFilters: SalonFilters = {}) => {
+export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
   const [salons, setSalons] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
