@@ -56,13 +56,11 @@ const Hero = () => {
       }}
     >
       {/* Background image carousel */}
-      <div className="absolute inset-0 w-full h-full">
-        <HeroCarousel 
-          images={heroImages} 
-          activeIndex={currentImageIndex} 
-          isMobile={isMobile}
-        />
-      </div>
+      <HeroCarousel 
+        images={heroImages} 
+        activeIndex={currentImageIndex} 
+        isMobile={isMobile}
+      />
       
       {/* Main content */}
       <div className="relative z-10 w-full h-full flex items-center justify-center">

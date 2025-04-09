@@ -43,6 +43,26 @@ interface ArtistProfile {
   avg_rating?: number;
 }
 
+// Define the Service type to match what's expected
+interface Service {
+  id: string;
+  title: string;
+  price: number;
+  duration_minutes: number;
+  description: string;
+  is_visible: boolean;
+  name?: string; // For compatibility
+  duration?: number; // For compatibility
+}
+
+// Define the PortfolioImage type to match what's expected
+interface PortfolioImage {
+  id: string;
+  url: string;
+  alt: string;
+  name: string;
+}
+
 export const useArtistProfileData = (username: string | undefined) => {
   const [viewCount, setViewCount] = useState(0);
   
@@ -72,18 +92,18 @@ export const useArtistProfileData = (username: string | undefined) => {
     enabled: !!username, // Only run query if username is provided
   });
 
-  // Mock portfolio images for demo
-  const portfolioImages = [
-    { id: '1', url: '/lovable-uploads/1b5ea814-ad33-4a65-b01e-6c406c98ffc1.png', alt: 'Portfolio image 1' },
-    { id: '2', url: '/lovable-uploads/253b19a3-141f-40c7-9cce-fc10464f0615.png', alt: 'Portfolio image 2' },
-    { id: '3', url: '/lovable-uploads/9f39ea95-e42c-4f4e-89a9-b44cb4e215e2.png', alt: 'Portfolio image 3' },
+  // Mock portfolio images for demo - updated with the required name property
+  const portfolioImages: PortfolioImage[] = [
+    { id: '1', url: '/lovable-uploads/1b5ea814-ad33-4a65-b01e-6c406c98ffc1.png', alt: 'Portfolio image 1', name: 'Image 1' },
+    { id: '2', url: '/lovable-uploads/253b19a3-141f-40c7-9cce-fc10464f0615.png', alt: 'Portfolio image 2', name: 'Image 2' },
+    { id: '3', url: '/lovable-uploads/9f39ea95-e42c-4f4e-89a9-b44cb4e215e2.png', alt: 'Portfolio image 3', name: 'Image 3' },
   ];
 
-  // Mock services for demo
-  const services = [
-    { id: '1', name: 'Nail Art', price: 50, duration: 60 },
-    { id: '2', name: 'Manicure', price: 35, duration: 45 },
-    { id: '3', name: 'Pedicure', price: 45, duration: 60 },
+  // Mock services for demo - updated to match the Service interface
+  const services: Service[] = [
+    { id: '1', title: 'Nail Art', price: 50, duration_minutes: 60, description: 'Beautiful nail art service', is_visible: true, name: 'Nail Art', duration: 60 },
+    { id: '2', title: 'Manicure', price: 35, duration_minutes: 45, description: 'Classic manicure service', is_visible: true, name: 'Manicure', duration: 45 },
+    { id: '3', title: 'Pedicure', price: 45, duration_minutes: 60, description: 'Relaxing pedicure service', is_visible: true, name: 'Pedicure', duration: 60 },
   ];
 
   const incrementViewCount = async () => {
@@ -107,4 +127,5 @@ export const useArtistProfileData = (username: string | undefined) => {
   };
 };
 
+export { type ArtistProfile, type Service, type PortfolioImage };
 export default useArtistProfileData;
