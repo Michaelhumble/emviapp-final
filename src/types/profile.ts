@@ -1,9 +1,9 @@
 
 export interface UserProfile {
-  uid: string;
-  email: string | null;
-  displayName: string | null;
-  photoURL: string | null;
+  uid?: string;
+  email?: string | null;
+  displayName?: string | null;
+  photoURL?: string | null;
   bio?: string;
   location?: string;
   website?: string;
