@@ -1,2 +1,2 @@
 
-export { ProfileProvider, useProfileCompletion } from './ProfileProvider';
+export { ProfileProvider, useProfile } from './ProfileProvider';

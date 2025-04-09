@@ -1,123 +1,77 @@
 
-import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { useAuth } from "@/context/auth";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from 'react';
+import { useAuth } from '@/context/auth';
+import { useNavigate } from 'react-router-dom';
+import { UserRole } from '@/context/auth/types';
 
-export const useSignUp = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [referralCode, setReferralCode] = useState<string | null>(null);
-  const [showRoleModal, setShowRoleModal] = useState(false);
-  const { signUp, user, isNewUser, clearIsNewUser } = useAuth();
+interface SignUpData {
+  email: string;
+  password: string;
+  role: UserRole;
+}
+
+interface UseSignUpReturn {
+  signUp: (data: SignUpData) => Promise<{ success: boolean; error?: string }>;
+  loading: boolean;
+  error: string | null;
+}
+
+export const useSignUp = (): UseSignUpReturn => {
+  const { signUp: authSignUp } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
 
-  useEffect(() => {
-    const refFromUrl = searchParams.get('ref');
-    if (refFromUrl) {
-      setReferralCode(refFromUrl);
-      console.log('Referral code detected:', refFromUrl);
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    console.log("Auth state in useSignUp:", { user, isNewUser, showRoleModal });
-    
-    if (user && isNewUser) {
-      console.log("New user detected, redirecting to role selection");
-      navigate("/choose-role");
-    }
-    
-    if (user && !isNewUser && !showRoleModal) {
-      console.log("User already has role, redirecting to dashboard");
-      navigate("/dashboard");
-    }
-  }, [user, isNewUser, navigate, showRoleModal]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (password !== confirmPassword) {
-      toast.error("Passwords don't match");
-      return;
-    }
-    
-    setIsSubmitting(true);
-
+  const signUp = async (data: SignUpData): Promise<{ success: boolean; error?: string }> => {
     try {
-      const signUpResponse = await signUp(email, password);
-      
-      if (signUpResponse.error) {
-        toast.error(signUpResponse.error.message || "Failed to sign up");
-        setIsSubmitting(false);
-        return;
-      }
-      
-      console.log("Sign up successful, user created");
-      
-      if (referralCode && signUpResponse.data?.user?.id) {
-        try {
-          const { error: rpcError } = await supabase.rpc('process_referral', {
-            referral_code: referralCode,
-            new_user_id: signUpResponse.data.user.id
-          });
-          
-          if (rpcError) {
-            console.error('Error processing referral:', rpcError);
-          } else {
-            console.log('Referral processed successfully');
-          }
-          
-          if (rpcError) {
-            const { error: updateError } = await supabase
-              .from('users')
-              .update({ referred_by: referralCode })
-              .eq('id', signUpResponse.data.user.id);
-              
-            if (updateError) {
-              console.error('Error updating referral data:', updateError);
-            }
-          }
-        } catch (refErr) {
-          console.error('Unexpected error processing referral:', refErr);
-        }
-      }
-      
-      toast.success("Account created successfully!");
-      setShowRoleModal(true);
-      
-    } catch (error) {
-      toast.error("Failed to sign up. Please try again.");
-      console.error("Sign up error:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+      setLoading(true);
+      setError(null);
 
-  const handleRoleModalClose = (open: boolean) => {
-    setShowRoleModal(open);
-    if (!open) {
-      clearIsNewUser();
+      // Basic validation
+      if (!data.email || !data.password) {
+        setError('Email and password are required');
+        return { success: false, error: 'Email and password are required' };
+      }
+
+      if (data.password.length < 6) {
+        setError('Password must be at least 6 characters');
+        return { success: false, error: 'Password must be at least 6 characters' };
+      }
+
+      // Call the signup method from auth context with user metadata
+      const result = await authSignUp(data.email, data.password, {
+        data: {
+          role: data.role
+        }
+      });
+
+      // Handle errors
+      if (!result.success) {
+        const errorMessage = result.error || 'Failed to create account';
+        setError(errorMessage);
+        return { success: false, error: errorMessage };
+      }
+
+      // Redirect on success
+      if (result.success) {
+        // Navigate to verify email or welcome page
+        navigate('/auth/verify-email');
+        return { success: true };
+      }
+
+      return result;
+    } catch (err) {
+      const errorMessage = (err as Error).message || 'An unexpected error occurred';
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    } finally {
+      setLoading(false);
     }
   };
 
   return {
-    email,
-    setEmail,
-    password,
-    setPassword,
-    confirmPassword,
-    setConfirmPassword,
-    isSubmitting,
-    referralCode,
-    showRoleModal,
-    setShowRoleModal,
-    handleSubmit,
-    handleRoleModalClose,
-    user
+    signUp,
+    loading,
+    error,
   };
 };

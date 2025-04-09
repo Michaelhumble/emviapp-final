@@ -50,17 +50,17 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       updated_at: data.updated_at || new Date().toISOString(),
       preferred_language: data.preferred_language || '',
       // Handle properties that might not exist in the database
-      referral_count: 0, // Default value since it might not exist in the DB
-      salon_name: '', // Default value
-      company_name: '', // Default value
+      salon_name: data.salon_name || '',
+      company_name: data.company_name || '',
       custom_role: data.custom_role || '',
       contact_link: data.contact_link || '',
-      skills: [], // Default empty array
-      skill_level: '', // Default empty string
-      profile_views: 0, // Default to 0
+      skills: Array.isArray(data.skills) ? data.skills : [],
+      skill_level: data.skill_level || '',
+      profile_views: data.profile_views || 0,
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       affiliate_code: data.referral_code || '',
       referral_code: data.referral_code || '',
+      referral_count: data.referral_count || 0,
       credits: data.credits || 0,
       boosted_until: data.boosted_until || null,
       portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],

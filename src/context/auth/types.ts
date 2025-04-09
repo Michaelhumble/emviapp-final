@@ -11,7 +11,8 @@ export type UserRole =
   | 'supplier'
   | 'freelancer'
   | 'nail technician/artist'
-  | null;
+  | 'renter'
+  | 'other';
 
 export interface UserProfile {
   id: string;
@@ -40,6 +41,15 @@ export interface UserProfile {
   preferred_language?: string | null;
   preferences?: string[] | null;
   referred_by?: string | null;
+  
+  // Add missing properties referenced throughout the app
+  salon_name?: string | null;
+  affiliate_code?: string | null;
+  referral_count?: number | null;
+  profile_views?: number | null;
+  skills?: string[] | null;
+  skill_level?: string | null;
+  account_type?: 'free' | 'pro' | 'enterprise' | null;
 }
 
 export interface AuthContextType {

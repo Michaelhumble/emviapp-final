@@ -28,7 +28,7 @@ export const usePortfolio = () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase
-        .from('portfolio')
+        .from('portfolio_items')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
@@ -72,7 +72,7 @@ export const usePortfolio = () => {
       
       // Save portfolio item to database
       const { error: dbError } = await supabase
-        .from('portfolio')
+        .from('portfolio_items')
         .insert({
           user_id: user.id,
           title,
@@ -98,7 +98,7 @@ export const usePortfolio = () => {
     try {
       // Delete the record from the database
       const { error: dbError } = await supabase
-        .from('portfolio')
+        .from('portfolio_items')
         .delete()
         .eq('id', id);
       

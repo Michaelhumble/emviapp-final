@@ -27,10 +27,31 @@ export const useAuthProvider = () => {
 
   // Use the auth methods hook
   const { 
-    signIn, 
-    signUp, 
-    signOut 
+    signIn: _signIn, 
+    signUp: _signUp, 
+    signOut: _signOut 
   } = useAuthMethods(setLoading);
+
+  // Wrap auth methods to match expected interface
+  const signIn = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    const result = await _signIn(email, password);
+    return {
+      success: !result.error,
+      error: result.error ? String(result.error) : undefined
+    };
+  };
+
+  const signUp = async (email: string, password: string, options?: object): Promise<{ success: boolean; error?: string }> => {
+    const result = await _signUp(email, password);
+    return {
+      success: !result.error,
+      error: result.error ? String(result.error) : undefined
+    };
+  };
+
+  const signOut = async (): Promise<void> => {
+    await _signOut();
+  };
 
   // Compile context value
   const authContextValue: AuthContextType = {
