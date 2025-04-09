@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile } from "@/types/profile";
 import { Service, PortfolioImage } from "../types";
+import { toast } from "sonner";
 
 export const useArtistProfileData = (username?: string) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -30,7 +31,29 @@ export const useArtistProfileData = (username?: string) => {
         if (profileError) throw profileError;
         
         if (profileData) {
-          setProfile(profileData as UserProfile);
+          // Create a UserProfile object with the data from the database
+          const userProfile: UserProfile = {
+            id: profileData.id,
+            full_name: profileData.full_name,
+            email: profileData.email,
+            phone: profileData.phone,
+            bio: profileData.bio,
+            specialty: profileData.specialty,
+            location: profileData.location,
+            avatar_url: profileData.avatar_url,
+            role: profileData.role,
+            instagram: profileData.instagram,
+            website: profileData.website,
+            accepts_bookings: profileData.accepts_bookings,
+            booking_url: profileData.booking_url,
+            // Add other properties as needed
+            years_experience: profileData.years_experience || 0,
+            // Store the profile views from the database in our local state
+            profile_views: profileData.profile_views || 0
+          };
+          
+          setProfile(userProfile);
+          // Set the view count from the profileData
           setViewCount(profileData.profile_views || 0);
           
           // Check if salon owner
@@ -92,6 +115,7 @@ export const useArtistProfileData = (username?: string) => {
       } catch (err) {
         console.error("Error fetching artist profile:", err);
         setError(err as Error);
+        toast.error("Failed to load artist profile");
       } finally {
         setLoading(false);
       }
@@ -113,11 +137,15 @@ export const useArtistProfileData = (username?: string) => {
       // Update the database
       const { error } = await supabase
         .from('users')
-        .update({ profile_views: newViewCount })
+        .update({ 
+          // Use 'profile_views' which matches the database column name
+          profile_views: newViewCount 
+        })
         .eq('id', username);
       
       if (error) {
         console.error("Error updating view count:", error);
+        toast.error("Failed to update view count");
       }
     } catch (err) {
       console.error("Error incrementing view count:", err);
