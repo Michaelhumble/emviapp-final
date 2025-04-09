@@ -91,10 +91,10 @@ const DateFilter: React.FC<DateFilterProps> = ({
               initialFocus
               mode="range"
               defaultMonth={dateRange.from}
-              selected={{
+              selected={dateRange.from ? {
                 from: dateRange.from,
                 to: dateRange.to
-              }}
+              } : undefined}
               onSelect={(range) => {
                 onDateRangeChange({
                   from: range?.from,

@@ -30,8 +30,8 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       phone: data.phone || '',
       bio: data.bio || '',
       specialty: data.specialty || '',
-      // Handle potentially missing fields with empty defaults
-      services: Array.isArray(data.services) ? data.services : [],
+      // Handle potentially missing fields with empty defaults or fallbacks
+      services: [], // Initialize with empty array since it doesn't exist in DB
       location: data.location || '',
       social_links: {
         instagram: data.instagram || '',
@@ -40,10 +40,10 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
         website: data.website || '',
       },
       avatar_url: data.avatar_url || '',
-      gallery: Array.isArray(data.gallery) ? data.gallery : [],
-      availability: Array.isArray(data.availability) ? data.availability : [],
+      gallery: [], // Initialize with empty array since it doesn't exist in DB
+      availability: [], // Initialize with empty array since it doesn't exist in DB
       role: (data.role as UserRole) || 'customer',
-      verification_status: data.verification_status as 'pending' | 'verified' | 'rejected' || 'pending',
+      verification_status: 'pending', // Default since it doesn't exist in DB
       created_at: data.created_at || '',
       updated_at: data.updated_at || '',
       
@@ -55,14 +55,14 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       facebook: data.facebook || '',
       twitter: data.twitter || '',
       website: data.website || '',
-      preferred_language: (data.preferred_language as 'en' | 'vi' | 'es' | 'English' | 'Vietnamese') || 'en',
+      preferred_language: (data.preferred_language as any) || 'en',
       profile_views: data.profile_views || 0,
       account_type: (data.account_type as 'free' | 'pro' | 'enterprise') || 'free',
       affiliate_code: data.affiliate_code || '',
       referral_code: data.referral_code || '',
-      referral_count: data.referral_count || 0,
+      referral_count: data.referral_code ? 0 : 0, // Default since it doesn't exist in DB
       skill_level: data.skill_level || '',
-      skills: Array.isArray(data.skills) ? data.skills : [],
+      skills: [], // Initialize with empty array since it doesn't exist in DB
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       accepts_bookings: Boolean(data.accepts_bookings),
       booking_url: data.booking_url || '',

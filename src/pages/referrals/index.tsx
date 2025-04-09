@@ -1,101 +1,132 @@
 
-import React from 'react';
-import { useAuth } from '@/context/auth';
-import { useTranslation } from '@/hooks/useTranslation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Share2, Copy, Check } from 'lucide-react';
-import { toast } from 'sonner';
+import { useEffect } from "react";
+import Layout from "@/components/layout/Layout";
+import { motion } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import ReferralMilestones from "@/components/referral/ReferralMilestones";
+import ReferralTracker from "@/components/referral/ReferralTracker";
+import ReferralList from "@/components/referral/ReferralList";
+import { Users, Award, RefreshCw } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
+import { toTranslatableText } from "@/components/dashboard/salon/SalonTranslationHelper";
 
 const ReferralsPage = () => {
-  const { user, userProfile } = useAuth();
   const { t } = useTranslation();
-  const [copied, setCopied] = React.useState(false);
   
-  // Generate a sample referral link
-  const referralLink = `https://emviapp.com/join?ref=${userProfile?.referral_code || 'ABC123'}`;
-  
-  // Handle copy to clipboard
-  const handleCopy = () => {
-    navigator.clipboard.writeText(referralLink);
-    setCopied(true);
-    toast.success(t('Copied to clipboard'));
-    
-    setTimeout(() => setCopied(false), 2000);
-  };
+  useEffect(() => {
+    document.title = "Referral Program | EmviApp";
+  }, []);
   
   return (
-    <div className="container py-16 mt-16">
-      <h1 className="text-3xl font-bold mb-6">
-        {t('Invite Friends to EmviApp')}
-      </h1>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('Your Referral Link')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center mb-4">
-                <input 
-                  type="text" 
-                  value={referralLink} 
-                  readOnly 
-                  className="flex-1 p-2 border rounded-l-md"
-                />
-                <Button
-                  variant={copied ? "outline" : "default"}
-                  className={`rounded-l-none ${copied ? "bg-green-500 text-white hover:bg-green-600" : ""}`}
-                  onClick={handleCopy}
-                >
-                  {copied ? (
-                    <>
-                      <Check className="h-4 w-4 mr-1" />
-                      {t('Copied')}
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-4 w-4 mr-1" />
-                      {t('Copy')}
-                    </>
-                  )}
-                </Button>
+    <Layout>
+      <motion.div 
+        className="min-h-screen bg-gradient-to-b from-white to-indigo-50/30"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="container px-4 mx-auto py-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="mb-8 text-center">
+              <h1 className="text-3xl md:text-4xl font-serif font-bold mb-3">
+                {t(toTranslatableText("Referral Program"))}
+              </h1>
+              <p className="text-gray-600">
+                {t(toTranslatableText("Invite friends and colleagues to EmviApp and earn rewards"))}
+              </p>
+            </div>
+            
+            <Card className="mb-8 overflow-hidden border-indigo-100">
+              <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 pb-8 pt-8">
+                <CardTitle className="text-center text-2xl text-indigo-700 mb-2 flex items-center justify-center">
+                  <Users className="h-6 w-6 mr-2 text-indigo-500" />
+                  {t(toTranslatableText("How It Works"))}
+                </CardTitle>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                  <div className="bg-white rounded-lg p-4 shadow-sm text-center">
+                    <div className="bg-indigo-100 w-12 h-12 rounded-full flex items-center justify-center text-indigo-600 font-bold text-lg mx-auto mb-3">
+                      1
+                    </div>
+                    <h3 className="font-medium mb-2">
+                      {t(toTranslatableText("Share Your Link"))}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {t(toTranslatableText("Send your personal referral link to other salons and beauty professionals"))}
+                    </p>
+                  </div>
+                  
+                  <div className="bg-white rounded-lg p-4 shadow-sm text-center">
+                    <div className="bg-indigo-100 w-12 h-12 rounded-full flex items-center justify-center text-indigo-600 font-bold text-lg mx-auto mb-3">
+                      2
+                    </div>
+                    <h3 className="font-medium mb-2">
+                      {t(toTranslatableText("They Sign Up"))}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {t(toTranslatableText("When they create an account using your link, they're connected to you"))}
+                    </p>
+                  </div>
+                  
+                  <div className="bg-white rounded-lg p-4 shadow-sm text-center">
+                    <div className="bg-indigo-100 w-12 h-12 rounded-full flex items-center justify-center text-indigo-600 font-bold text-lg mx-auto mb-3">
+                      3
+                    </div>
+                    <h3 className="font-medium mb-2">
+                      {t(toTranslatableText("Earn Rewards"))}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {t(toTranslatableText("You'll receive credits and badges based on your referrals' activity"))}
+                    </p>
+                  </div>
+                </div>
+              </CardHeader>
+              
+              <CardContent className="py-6">
+                <ReferralTracker />
+              </CardContent>
+            </Card>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+              <div className="md:col-span-2">
+                <Card className="h-full border-purple-100">
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Award className="h-5 w-5 mr-2 text-purple-500" />
+                      {t(toTranslatableText("Milestone Rewards"))}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ReferralMilestones />
+                  </CardContent>
+                </Card>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Button variant="outline" className="flex-1">
-                  <Share2 className="h-4 w-4 mr-2" />
-                  {t('Share via Email')}
-                </Button>
-                <Button variant="outline" className="flex-1">
-                  {t('Share to Instagram')}
-                </Button>
-                <Button variant="outline" className="flex-1">
-                  {t('Share to Facebook')}
-                </Button>
+              <div>
+                <Card className="h-full border-blue-100">
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <RefreshCw className="h-5 w-5 mr-2 text-blue-500" />
+                      {t(toTranslatableText("Recent Activity"))}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ReferralList 
+                      referrals={[
+                        { name: t(toTranslatableText("Sarah Johnson")), date: "2023-12-01", status: "joined" },
+                        { name: t(toTranslatableText("Alex Wong")), date: "2023-11-28", status: "subscribed" },
+                        { name: t(toTranslatableText("Maria Garcia")), date: "2023-11-25", status: "joined" },
+                        { name: t(toTranslatableText("David Park")), date: "2023-11-20", status: "completed" }
+                      ]} 
+                    />
+                  </CardContent>
+                </Card>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
-        
-        <div>
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('How It Works')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ol className="list-decimal list-inside space-y-2 text-sm">
-                <li>{t('Share your unique referral link with friends')}</li>
-                <li>{t('They sign up using your link')}</li>
-                <li>{t('When they complete their first booking, you earn rewards')}</li>
-                <li>{t('Earn up to 100 credits per successful referral')}</li>
-              </ol>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
+      </motion.div>
+    </Layout>
   );
 };
 

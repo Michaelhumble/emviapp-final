@@ -9,7 +9,7 @@ import BookingFilters from "../bookings/BookingFilters";
 import BookingCountsDisplay from "./bookings/BookingCountsDisplay";
 import BookingsTable from "./bookings/BookingsTable";
 import BookingNotes from "./bookings/BookingNotes";
-import { useArtistBookings } from "@/hooks/useArtistBookings";
+import { useArtistBookings, Booking as ArtistBooking } from "./hooks/useArtistBookings";
 
 const ArtistBookingsPanel = () => {
   const { userProfile } = useAuth();
@@ -33,8 +33,16 @@ const ArtistBookingsPanel = () => {
     serviceTypes: []
   });
   
+  // Convert serviceTypes to the expected format for BookingFilters
+  const formattedServiceTypes = serviceTypes.map(service => typeof service === 'string' 
+    ? service 
+    : (service as any).label || service);
+  
   // Apply filters to bookings
-  const filteredBookings = useFilteredBookings(bookings, filters);
+  const filteredBookings = useFilteredBookings(
+    bookings as any[], // Type assertion to avoid incompatible booking types
+    filters
+  );
   
   return (
     <Card className="overflow-hidden bg-white/85 backdrop-blur-sm shadow-md border-0 mb-8">
@@ -52,21 +60,21 @@ const ArtistBookingsPanel = () => {
         {/* Booking Filters */}
         <div className="mb-4">
           <BookingFilters 
-            serviceTypes={serviceTypes}
+            serviceTypes={formattedServiceTypes}
             onFilterChange={setFilters}
           />
         </div>
         
         {/* Bookings Table */}
         <BookingsTable 
-          bookings={filteredBookings}
+          bookings={filteredBookings as ArtistBooking[]}
           loading={loading}
           handleAccept={handleAccept}
           handleDecline={handleDecline}
         />
         
         {/* Booking Notes */}
-        <BookingNotes bookings={filteredBookings} />
+        <BookingNotes bookings={filteredBookings as ArtistBooking[]} />
       </CardContent>
     </Card>
   );

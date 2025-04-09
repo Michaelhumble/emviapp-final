@@ -24,6 +24,7 @@ export interface BookingCounts {
   accepted: number;
   completed: number;
   total: number;
+  upcoming?: number;
 }
 
 export const useArtistBookings = () => {

@@ -8,6 +8,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import ReferralHeader from "./referral/ReferralHeader";
 import ReferralLink from "./referral/ReferralLink";
 import ReferralStats from "./referral/ReferralStats";
+import { toTranslatableText } from "./SalonTranslationHelper";
 
 const SalonReferralCard = () => {
   const { user, userProfile } = useAuth();
@@ -48,7 +49,7 @@ const SalonReferralCard = () => {
     
     navigator.clipboard.writeText(referralCode);
     setCopied(true);
-    toast.success(t("Referral code copied to clipboard"));
+    toast.success(t(toTranslatableText("Referral code copied to clipboard")));
     
     setTimeout(() => setCopied(false), 2000);
   };
@@ -62,7 +63,7 @@ const SalonReferralCard = () => {
       </CardHeader>
       <CardContent>
         <p className="text-gray-600 mb-4">
-          {t("Invite other salons and earn free credits. Help grow our community!")}
+          {t(toTranslatableText("Invite other salons and earn free credits. Help grow our community!"))}
         </p>
         
         <div className="space-y-4">

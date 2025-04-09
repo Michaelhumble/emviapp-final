@@ -1,103 +1,91 @@
 
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/context/auth";
-import { toast } from "sonner";
-import { Booking } from "@/components/dashboard/artist/types/ArtistDashboardTypes";
-import { ServiceTypeFilter } from "@/hooks/useBookingFilters";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { CustomerBooking } from '@/components/dashboard/customer/bookings/types';
+import { useAuth } from '@/context/auth';
+import { toast } from 'sonner';
 
 export const useCustomerBookings = () => {
-  const { user } = useAuth();
-  const { t } = useTranslation();
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState<CustomerBooking[]>([]);
   const [loading, setLoading] = useState(true);
-  const [serviceTypes, setServiceTypes] = useState<ServiceTypeFilter[]>([]);
-  
-  const fetchBookings = async () => {
-    if (!user) return;
-    
-    setLoading(true);
-    try {
-      // Get bookings where the user is the sender
-      const { data, error } = await supabase
-        .from('bookings')
-        .select(`*`)
-        .eq('sender_id', user.id)
-        .order('created_at', { ascending: false });
+  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      if (!user) return;
       
-      if (error) throw error;
-      
-      if (data) {
-        // Transform data to include artist and service details
-        const bookingsWithDetails = await Promise.all(
-          data.map(async (booking) => {
-            // Get artist name
-            const { data: artistData, error: artistError } = await supabase
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Get bookings directly without trying to join with artist
+        const { data, error } = await supabase
+          .from('bookings')
+          .select(`
+            id, 
+            created_at, 
+            date_requested, 
+            time_requested, 
+            status, 
+            note,
+            service_id,
+            service:service_id (id, title, price),
+            recipient_id
+          `)
+          .eq('sender_id', user.id)
+          .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        if (!data) {
+          setBookings([]);
+          return;
+        }
+        
+        // Now we need to fetch artist details separately
+        const enhancedBookings = await Promise.all(data.map(async (booking) => {
+          let artistData = null;
+          
+          // Fetch artist (recipient) details
+          if (booking.recipient_id) {
+            const { data: artist, error: artistError } = await supabase
               .from('users')
-              .select('full_name')
+              .select('id, full_name, avatar_url')
               .eq('id', booking.recipient_id)
               .single();
-            
-            if (artistError) {
-              console.error("Error fetching artist details:", artistError);
+              
+            if (!artistError && artist) {
+              artistData = artist;
             }
-            
-            // Get service details if possible
-            let serviceName = "";
-            if (booking.service_id) {
-              const { data: serviceData, error: serviceError } = await supabase
-                .from('services')
-                .select('title')
-                .eq('id', booking.service_id)
-                .single();
-                
-              if (!serviceError && serviceData) {
-                serviceName = serviceData.title;
-              }
-            }
-            
-            return {
-              ...booking,
-              artist_name: artistData?.full_name || "Unknown Artist",
-              service_name: serviceName,
-              customer_name: "You" // For consistency with artist panel
-            } as Booking;
-          })
-        );
+          }
+          
+          // Create the booking object with the right structure
+          return {
+            id: booking.id,
+            created_at: booking.created_at,
+            date_requested: booking.date_requested,
+            time_requested: booking.time_requested,
+            status: booking.status || undefined,
+            note: booking.note || undefined,
+            service_id: booking.service_id || undefined,
+            service: booking.service,
+            artist: artistData // May be null if not found
+          } as CustomerBooking;
+        }));
         
-        setBookings(bookingsWithDetails);
-        
-        // Extract unique service types for filtering
-        const uniqueServices = Array.from(
-          new Map(
-            bookingsWithDetails
-              .filter(b => b.service_id && b.service_name)
-              .map(b => [b.service_id, { id: b.service_id || '', label: b.service_name || '' }])
-          ).values()
-        );
-        
-        setServiceTypes(uniqueServices);
+        setBookings(enhancedBookings);
+      } catch (error) {
+        console.error('Error fetching bookings:', error);
+        setError('Failed to load bookings. Please try again later.');
+        toast.error('Could not load your bookings');
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching bookings:", error);
-      toast.error(t({
-        english: "Failed to load bookings",
-        vietnamese: "Không thể tải lịch hẹn"
-      }));
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  useEffect(() => {
+    };
+
     fetchBookings();
   }, [user]);
-  
-  return {
-    bookings,
-    loading,
-    serviceTypes,
-    fetchBookings
-  };
+
+  return { bookings, loading, error };
 };

@@ -7,12 +7,17 @@ export interface DateRange {
   to?: Date;
 }
 
+export type BookingStatus = 'all' | 'pending' | 'accepted' | 'completed' | 'declined' | 'cancelled';
+export type DateFilter = 'all' | 'today' | 'this-week' | 'this-month' | 'custom';
+export type ClientType = 'all' | 'new' | 'returning';
+export type ServiceTypeFilter = 'all' | string;
+
 export interface BookingFilters {
-  status: 'all' | 'pending' | 'accepted' | 'completed' | 'declined' | 'cancelled';
-  dateFilter: 'all' | 'today' | 'this-week' | 'this-month' | 'custom';
+  status: BookingStatus;
+  dateFilter: DateFilter;
   dateRange: DateRange;
-  clientType: 'all' | 'new' | 'returning';
-  serviceType: 'all' | string;
+  clientType: ClientType;
+  serviceType: ServiceTypeFilter;
   search: string;
   serviceTypes: string[];
 }

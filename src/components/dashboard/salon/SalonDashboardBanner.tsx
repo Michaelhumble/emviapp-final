@@ -1,6 +1,7 @@
 
 import { useAuth } from "@/context/auth";
 import { useTranslation } from "@/hooks/useTranslation";
+import { toTranslatableText } from "./SalonTranslationHelper";
 
 interface SalonDashboardBannerProps {
   userName?: string;
@@ -14,15 +15,15 @@ const SalonDashboardBanner = ({ userName }: SalonDashboardBannerProps) => {
   return (
     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-100 shadow-sm">
       <h1 className="text-2xl font-bold text-blue-800">
-        {t("Welcome back, " + displayName + "!")}
+        {t(toTranslatableText("Welcome back, " + displayName + "!"))}
       </h1>
       <p className="text-blue-600 mt-2">
-        {t("Let's grow your salon today.")}
+        {t(toTranslatableText("Let's grow your salon today."))}
       </p>
       
       {/* Vietnamese welcome text for salon owners - making it more prominent */}
       <p className="text-blue-700 text-sm font-medium mt-3 bg-blue-50 px-3 py-2 inline-block rounded-md border border-blue-100">
-        {t("Cùng nhau phát triển tiệm làm đẹp của bạn.")} <span className="text-blue-500 ml-1">{t("Let's grow your beauty business together.")}</span>
+        {t(toTranslatableText("Cùng nhau phát triển tiệm làm đẹp của bạn.", "Cùng nhau phát triển tiệm làm đẹp của bạn."))} <span className="text-blue-500 ml-1">{t(toTranslatableText("Let's grow your beauty business together.", "Let's grow your beauty business together."))}</span>
       </p>
     </div>
   );

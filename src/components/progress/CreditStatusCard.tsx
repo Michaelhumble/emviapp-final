@@ -1,79 +1,55 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { useTranslation } from "@/hooks/useTranslation";
-import { Coins } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { CreditCard, Gift, Users } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
+import { toTranslatableText } from './TranslationHelper';
 
 interface CreditStatusCardProps {
-  credits: number;
-  loading: boolean;
+  credits?: number;
 }
 
-const CreditStatusCard = ({ credits, loading }: CreditStatusCardProps) => {
+const CreditStatusCard = ({ credits = 0 }: CreditStatusCardProps) => {
   const { t } = useTranslation();
   
-  // Calculate progress to next milestone (every 100 credits)
-  const nextMilestone = Math.ceil(credits / 100) * 100;
-  const currentProgress = credits % 100;
-  const progressPercentage = (currentProgress / 100) * 100;
-  
   return (
-    <Card className="h-full overflow-hidden border-amber-100 shadow-sm">
-      <CardHeader className="pb-2 bg-gradient-to-r from-amber-50 to-yellow-50">
-        <CardTitle className="flex items-center text-lg font-medium">
-          <Coins className="h-5 w-5 mr-2 text-amber-500" />
-          {t('credit_status', { 
-            english: 'Credit Status', 
-            vietnamese: 'Điểm Emvi' 
-          })}
+    <Card className="border-emerald-100 shadow-sm">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg flex items-center text-emerald-700">
+          <CreditCard className="mr-2 h-5 w-5 text-emerald-500" />
+          {t(toTranslatableText("Your Credits"))}
         </CardTitle>
       </CardHeader>
-      
-      <CardContent className="pt-4">
-        {loading ? (
-          <div className="space-y-3">
-            <Skeleton className="h-8 w-3/4" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-3 w-2/3" />
+      <CardContent>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <span className="text-3xl font-bold text-emerald-600">{credits}</span>
+            <span className="text-sm text-gray-500 ml-2">Credits</span>
           </div>
-        ) : (
-          <>
-            <div className="text-2xl font-bold mb-2 flex items-baseline">
-              {credits}
-              <span className="text-sm ml-1 font-normal text-gray-500">
-                {t('emvi_credits', { 
-                  english: 'Emvi Credits', 
-                  vietnamese: 'Điểm Emvi' 
-                })}
-              </span>
-            </div>
-            
-            <div className="mb-3">
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-gray-600">{currentProgress}</span>
-                <span className="text-gray-600">{nextMilestone}</span>
+          <Button size="sm" variant="outline" className="border-emerald-200 text-emerald-700 hover:bg-emerald-50">
+            {t(toTranslatableText("Buy Credits"))}
+          </Button>
+        </div>
+        
+        <div className="space-y-3">
+          <div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-3 rounded-lg border border-emerald-100">
+            <div className="flex items-start">
+              <Gift className="h-5 w-5 text-emerald-500 mr-2 mt-0.5 flex-shrink-0" />
+              <div>
+                <h3 className="font-medium text-emerald-800">
+                  {t(toTranslatableText("Earn Free Credits"))}
+                </h3>
+                <p className="text-xs text-emerald-700 mb-2">
+                  {t(toTranslatableText("Complete your profile and invite friends to earn up to 50 credits"))}
+                </p>
+                <Button size="sm" variant="outline" className="bg-white border-emerald-200 text-emerald-700 hover:bg-emerald-50">
+                  {t(toTranslatableText("See Ways to Earn"))}
+                </Button>
               </div>
-              <Progress 
-                value={progressPercentage} 
-                className="h-2" 
-                indicatorClassName="bg-gradient-to-r from-amber-300 to-yellow-400" 
-              />
             </div>
-            
-            <div className="text-sm text-gray-500 mt-3">
-              <p>
-                {t('credits_to_milestone', { 
-                  english: `${nextMilestone - credits} more to unlock a profile boost!`, 
-                  vietnamese: `Còn ${nextMilestone - credits} điểm để mở khóa tính năng tăng tốc!` 
-                })}
-              </p>
-              <p className="mt-2 text-xs text-gray-400">
-                100 {t('credits', { english: 'credits', vietnamese: 'điểm' })} = $10 {t('emvi_power', { english: 'in Emvi power', vietnamese: 'sức mạnh Emvi' })}
-              </p>
-            </div>
-          </>
-        )}
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

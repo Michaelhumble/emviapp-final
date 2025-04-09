@@ -10,7 +10,7 @@ interface TranslationStrings {
   };
 }
 
-interface TranslatableText {
+export interface TranslatableText {
   english: string;
   vietnamese: string;
 }
@@ -58,7 +58,12 @@ export const useTranslation = () => {
   };
   
   // Translate function for objects with english/vietnamese properties
-  const t = (text: TranslatableText): string => {
+  const t = (text: TranslatableText | string): string => {
+    if (typeof text === 'string') {
+      // For string input, just return the string (no translation)
+      return text;
+    }
+    // For TranslatableText objects, return the appropriate language
     return isVietnamese ? text.vietnamese : text.english;
   };
   

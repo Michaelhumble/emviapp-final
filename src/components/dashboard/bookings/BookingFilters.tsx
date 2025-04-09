@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, X } from "lucide-react";
-import { BookingFilters as BookingFiltersType } from "@/hooks/useBookingFilters";
+import { BookingFilters as BookingFiltersType, DateRange } from "@/hooks/useBookingFilters";
 import { useBookingFilters } from "@/hooks/useBookingFilters";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -109,8 +109,14 @@ const BookingFilters = ({ serviceTypes, onFilterChange }: BookingFiltersProps) =
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="range"
-                  selected={filters.dateRange}
-                  onSelect={(range) => updateFilter('dateRange', range)}
+                  selected={filters.dateRange.from ? {
+                    from: filters.dateRange.from,
+                    to: filters.dateRange.to
+                  } : undefined}
+                  onSelect={(range) => updateFilter('dateRange', {
+                    from: range?.from,
+                    to: range?.to
+                  })}
                   initialFocus
                 />
               </PopoverContent>
