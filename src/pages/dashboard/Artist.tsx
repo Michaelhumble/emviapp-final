@@ -10,7 +10,7 @@ import DashboardCard from "@/components/dashboard/DashboardCard";
 import InviteBanner from "@/components/dashboard/InviteBanner";
 import { toast } from "sonner";
 import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
-import ArtistPortfolioSection from "@/components/dashboard/artist/ArtistPortfolioSection";
+import ArtistPortfolioSection from "@/components/portfolio/ArtistPortfolioSection";
 
 const ArtistDashboard = () => {
   const { userProfile } = useAuth();

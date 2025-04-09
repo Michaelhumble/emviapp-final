@@ -1,97 +1,89 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { PortfolioItem, PortfolioFormData, PortfolioStats } from '@/types/portfolio';
-import { toast } from 'sonner';
 import { useAuth } from '@/context/auth';
+import { PortfolioItem, PortfolioFormData } from '@/types/portfolio';
+import { toast } from 'sonner';
 
 export const usePortfolio = () => {
   const { user } = useAuth();
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
-  const [portfolioStats, setPortfolioStats] = useState<PortfolioStats>({
-    totalItems: 0,
-    viewCount: 0,
-    mostViewed: null
-  });
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
+  const [portfolioStats, setPortfolioStats] = useState({
+    totalItems: 0,
+    viewCount: 0,
+    mostViewed: null as PortfolioItem | null
+  });
 
-  const fetchPortfolioItems = useCallback(async () => {
+  useEffect(() => {
+    if (user) {
+      fetchPortfolioItems();
+    }
+  }, [user]);
+
+  const fetchPortfolioItems = async () => {
     if (!user) return;
-
+    
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       const { data, error } = await supabase
-        .from('portfolio_items')
+        .from('portfolio')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
-
+      
       if (error) throw error;
       
-      const items = data as PortfolioItem[];
-      setPortfolioItems(items);
-      
-      // Calculate basic stats
-      if (items.length > 0) {
-        setPortfolioStats({
-          totalItems: items.length,
-          viewCount: Math.floor(Math.random() * 100), // This would be replaced with actual view tracking
-          mostViewed: items[0] // Assume first is most viewed for now
-        });
-      }
+      setPortfolioItems(data as PortfolioItem[]);
+      setPortfolioStats({
+        totalItems: data.length,
+        viewCount: Math.floor(Math.random() * 100), // This would be real view data in a full implementation
+        mostViewed: data.length > 0 ? data[0] as PortfolioItem : null
+      });
     } catch (error) {
       console.error('Error fetching portfolio items:', error);
       toast.error('Failed to load portfolio items');
     } finally {
       setIsLoading(false);
     }
-  }, [user]);
+  };
 
-  useEffect(() => {
-    if (user) {
-      fetchPortfolioItems();
-    }
-  }, [user, fetchPortfolioItems]);
-
-  const uploadPortfolioItem = async (formData: PortfolioFormData) => {
-    if (!user || !formData.image) return;
-
+  const uploadPortfolioItem = async ({ title, description, image }: PortfolioFormData) => {
+    if (!user || !image) return;
+    
+    setIsUploading(true);
     try {
-      setIsUploading(true);
-
       // Upload image to storage
-      const fileExt = formData.image.name.split('.').pop();
-      const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const fileExt = image.name.split('.').pop();
+      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
       
-      const { error: uploadError, data: uploadData } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('portfolio_images')
-        .upload(fileName, formData.image, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
+        .upload(filePath, image);
+      
       if (uploadError) throw uploadError;
-
+      
       // Get public URL for the uploaded image
       const { data: { publicUrl } } = supabase.storage
         .from('portfolio_images')
-        .getPublicUrl(fileName);
-
+        .getPublicUrl(filePath);
+      
       // Save portfolio item to database
-      const { error: insertError } = await supabase
-        .from('portfolio_items')
+      const { error: dbError } = await supabase
+        .from('portfolio')
         .insert({
           user_id: user.id,
-          title: formData.title,
-          description: formData.description || null,
+          title,
+          description,
           image_url: publicUrl
         });
-
-      if (insertError) throw insertError;
-
+      
+      if (dbError) throw dbError;
+      
       toast.success('Portfolio item added successfully');
-      fetchPortfolioItems();
+      await fetchPortfolioItems();
     } catch (error) {
       console.error('Error uploading portfolio item:', error);
       toast.error('Failed to upload portfolio item');
@@ -102,27 +94,38 @@ export const usePortfolio = () => {
 
   const deletePortfolioItem = async (id: string, imageUrl: string) => {
     if (!user) return;
-
+    
     try {
-      // Delete the database record
-      const { error: deleteError } = await supabase
-        .from('portfolio_items')
+      // Delete the record from the database
+      const { error: dbError } = await supabase
+        .from('portfolio')
         .delete()
-        .eq('id', id)
-        .eq('user_id', user.id);
-
-      if (deleteError) throw deleteError;
-
-      // Extract the file path from the URL
-      const urlPath = imageUrl.split('/').slice(-2).join('/');
+        .eq('id', id);
       
-      // Try to delete the image from storage (this might fail if the image doesn't exist)
-      await supabase.storage
-        .from('portfolio_images')
-        .remove([urlPath]);
-
+      if (dbError) throw dbError;
+      
+      // Extract file path from URL and delete from storage
+      const filePath = imageUrl.split('portfolio_images/')[1];
+      if (filePath) {
+        const { error: storageError } = await supabase.storage
+          .from('portfolio_images')
+          .remove([filePath]);
+        
+        if (storageError) {
+          console.error('Warning: Could not delete file from storage:', storageError);
+          // Continue execution - the database record is more important
+        }
+      }
+      
       toast.success('Portfolio item deleted');
-      setPortfolioItems(portfolioItems.filter(item => item.id !== id));
+      
+      // Update local state
+      setPortfolioItems(prevItems => prevItems.filter(item => item.id !== id));
+      setPortfolioStats(prev => ({
+        ...prev,
+        totalItems: prev.totalItems - 1,
+        mostViewed: prev.mostViewed?.id === id ? null : prev.mostViewed
+      }));
     } catch (error) {
       console.error('Error deleting portfolio item:', error);
       toast.error('Failed to delete portfolio item');

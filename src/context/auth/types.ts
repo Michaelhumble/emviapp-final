@@ -1,80 +1,58 @@
-import { Session, User } from "@supabase/supabase-js";
+
+import { Session, User } from '@supabase/supabase-js';
 
 export type UserRole = 
   | 'artist' 
-  | 'salon' 
   | 'customer' 
-  | 'freelancer' 
-  | 'vendor' 
-  | 'supplier' 
-  | 'beauty supplier' 
   | 'owner' 
+  | 'salon' 
+  | 'vendor'
+  | 'beauty supplier'
+  | 'supplier'
+  | 'freelancer'
   | 'nail technician/artist'
-  | 'renter'
-  | 'other';
+  | null;
 
 export interface UserProfile {
   id: string;
-  user_id?: string;
-  full_name?: string;
-  email?: string;
-  phone?: string;
+  email: string;
+  phone?: string | null;
+  avatar_url?: string | null;
+  full_name?: string | null;
+  bio?: string | null;
+  location?: string | null;
+  website?: string | null;
+  instagram?: string | null;
   role?: UserRole;
-  bio?: string;
-  location?: string;
-  salon_name?: string;
-  specialty?: string;
-  // Social media and web presence
-  instagram?: string;
-  website?: string;
-  // Profile media
-  avatar_url?: string;
-  portfolio_urls?: string[];
-  // Professional details
-  skills?: string[];
-  skill_level?: string;
-  // Preferences and statistics
-  preferences?: string[];
-  profile_views?: number;
-  // Booking capabilities
-  accepts_bookings?: boolean;
-  booking_url?: string;
-  // Referral and affiliate program
-  referral_code?: string;
-  referral_count?: number;
-  affiliate_code?: string;
-  credits?: number;
-  // Pro features
-  boosted_until?: string;
-  // Language preferences
-  preferred_language?: string;
-  // Additional fields for specific roles
-  custom_role?: string;
-  contact_link?: string;
-  company_name?: string;
-  // Timestamps
-  created_at?: string;
-  updated_at?: string;
-  // Add other profile fields
+  specialty?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+  badges?: Array<{ name: string; description: string; icon: string; }> | null;
+  credits?: number | null;
+  referral_code?: string | null;
+  booking_url?: string | null;
+  boosted_until?: string | null;
+  accepts_bookings?: boolean | null;
+  portfolio_urls?: string[] | null;
+  completed_profile_tasks?: string[] | null;
+  custom_role?: string | null;
+  contact_link?: string | null;
+  preferred_language?: string | null;
+  preferences?: string[] | null;
+  referred_by?: string | null;
 }
 
 export interface AuthContextType {
   session: Session | null;
   user: User | null;
   userProfile: UserProfile | null;
-  userRole: UserRole | null;
+  userRole: UserRole;
   loading: boolean;
   isSignedIn: boolean;
   isNewUser: boolean;
   clearIsNewUser: () => void;
-  signIn: (email: string, password: string) => Promise<{
-    error: Error | null;
-    data: { user: User | null; session: Session | null } | null;
-  }>;
-  signUp: (email: string, password: string, metadata?: Record<string, any>) => Promise<{
-    error: Error | null;
-    data: { user: User | null; session: Session | null } | null;
-  }>;
+  signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  signUp: (email: string, password: string, options?: object) => Promise<{ success: boolean; error?: string }>;
   signOut: () => Promise<void>;
   refreshUserProfile: () => Promise<void>;
 }
