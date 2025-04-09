@@ -30,6 +30,7 @@ const ArtistPortfolioUploader = () => {
   useEffect(() => {
     if (userProfile?.portfolio_urls && userProfile.portfolio_urls.length > 0) {
       setPortfolioImages(userProfile.portfolio_urls);
+      console.log("Loaded portfolio images:", userProfile.portfolio_urls);
     }
   }, [userProfile]);
 

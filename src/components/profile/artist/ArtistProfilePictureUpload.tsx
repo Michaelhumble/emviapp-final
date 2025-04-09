@@ -53,22 +53,17 @@ const ArtistProfilePictureUpload = () => {
       const fileExt = file.name.split(".").pop();
       const fileName = `${user.id}.${fileExt}`;
 
-      // Check if bucket exists, if not create it
-      const { data: buckets } = await supabase
-        .storage
-        .listBuckets();
+      // Check if profile_images bucket exists
+      const { data: buckets } = await supabase.storage.listBuckets();
       
-      const profileBucketExists = buckets?.some(bucket => bucket.name === 'profile_images');
+      const bucketExists = buckets?.some(bucket => bucket.name === 'profile_images');
       
-      // First ensure bucket exists
-      if (!profileBucketExists) {
-        console.log("Creating profile_images bucket");
-        await supabase
-          .storage
-          .createBucket('profile_images', {
-            public: true,
-            fileSizeLimit: 5 * 1024 * 1024
-          });
+      // Create bucket if it doesn't exist
+      if (!bucketExists) {
+        await supabase.storage.createBucket('profile_images', {
+          public: true,
+          fileSizeLimit: 5 * 1024 * 1024
+        });
       }
 
       // Upload to Supabase Storage
@@ -89,6 +84,8 @@ const ArtistProfilePictureUpload = () => {
 
       const publicUrl = publicUrlData.publicUrl.split('?')[0]; // Remove query params for storage
 
+      console.log("Profile image URL saved:", publicUrl);
+
       // Update user record
       const { error: updateError } = await supabase
         .from("users")
@@ -101,15 +98,13 @@ const ArtistProfilePictureUpload = () => {
       if (updateError) throw updateError;
 
       // Refresh user profile in auth context
-      setTimeout(async () => {
-        await refreshUserProfile();
-        
-        // Mark task as complete
-        markTaskComplete("avatar");
-        
-        toast.success("Profile picture updated successfully");
-        setIsUploading(false);
-      }, 1000);
+      await refreshUserProfile();
+      
+      // Mark task as complete
+      markTaskComplete("avatar");
+      
+      toast.success("Profile picture updated successfully");
+      setIsUploading(false);
       
     } catch (error: any) {
       console.error("Error uploading profile picture:", error);
