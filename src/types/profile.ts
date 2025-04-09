@@ -1,4 +1,3 @@
-import { User } from "firebase/auth";
 
 export interface UserProfile {
   uid: string;
@@ -55,6 +54,24 @@ export interface UserProfile {
   city?: string;
   state?: string;
   zipCode?: string;
+  // Additional properties needed based on the error messages
+  preferred_language?: string;
+  full_name?: string;
+  id?: string;
+  accepts_bookings?: boolean;
+  phone?: string;
+  instagram?: string;
+  avatar_url?: string;
+  specialty?: string;
+  years_experience?: number;
+  boosted_until?: string;
+  role?: string;
+  salon_name?: string;
+  company_name?: string;
+  booking_url?: string;
+  completed_profile_tasks?: string[];
+  badges?: any;
+  contact_link?: string;
 }
 
 export interface EmviUser extends User {

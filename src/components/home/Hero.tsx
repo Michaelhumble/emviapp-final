@@ -69,7 +69,7 @@ const Hero = () => {
   }, [activeIndex, sortedImages]);
 
   return (
-    <section className="relative w-full h-[120vh] min-h-[120vh] overflow-hidden">
+    <section className="relative w-[200%] h-[120vh] min-h-[120vh] overflow-hidden">
       {/* Background gradient layer */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#FDFDFD] to-[#F6F6F6] z-0"></div>
       
