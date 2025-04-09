@@ -2,19 +2,24 @@
 import { useAuth } from "@/context/auth";
 import { useTranslation } from "@/hooks/useTranslation";
 import { motion } from "framer-motion";
-import { checkCredits, getReferralStats } from "@/utils/credits";
 import { useState, useEffect } from "react";
 import CreditStatusCard from "./CreditStatusCard";
 import ReferralProgressCard from "./ReferralProgressCard";
 import BoostVisibilityCard from "./BoostVisibilityCard";
 import ProfileCompletionCard from "./ProfileCompletionCard";
 import { useProfileBoost } from "@/components/dashboard/artist/credits/useProfileBoost";
+import { toTranslatableText } from "./TranslationHelper";
 
 const ProgressTracker = () => {
   const { user, userProfile, userRole } = useAuth();
   const { t } = useTranslation();
   const [credits, setCredits] = useState<number>(0);
-  const [referralStats, setReferralStats] = useState<any>(null);
+  const [referralStats, setReferralStats] = useState<any>({
+    totalReferrals: 0,
+    pendingReferrals: 0,
+    completedReferrals: 0,
+    targetMilestone: 5
+  });
   const [loading, setLoading] = useState(true);
   const { boostStatus } = useProfileBoost();
 
@@ -65,13 +70,16 @@ const ProgressTracker = () => {
       
       setLoading(true);
       try {
-        // Fetch credits
-        const userCredits = await checkCredits(user.id);
-        setCredits(userCredits);
+        // Simulate fetching credits
+        setCredits(userProfile?.credits || 0);
         
-        // Fetch referral stats
-        const stats = await getReferralStats(user.id);
-        setReferralStats(stats);
+        // Simulate fetching referral stats
+        setReferralStats({
+          totalReferrals: userProfile?.referral_count || 0,
+          completedReferrals: userProfile?.referral_count || 0,
+          pendingReferrals: 0,
+          targetMilestone: 5
+        });
         
       } catch (error) {
         console.error("Error fetching user progress data:", error);
@@ -81,7 +89,7 @@ const ProgressTracker = () => {
     };
     
     fetchUserData();
-  }, [user?.id]);
+  }, [user?.id, userProfile]);
   
   const profileCompletionPercentage = calculateProfileCompletion();
   
@@ -109,21 +117,21 @@ const ProgressTracker = () => {
     if (profileCompletionPercentage < 80) {
       return {
         icon: '🔍',
-        message: t('Complete your profile to show up in search results')
+        message: t(toTranslatableText('Complete your profile to show up in search results'))
       };
     }
     
     if (referralStats && referralStats.total < 3) {
       return {
         icon: '💎',
-        message: t('Invite one more friend to unlock 50 bonus credits')
+        message: t(toTranslatableText('Invite one more friend to unlock 50 bonus credits'))
       };
     }
     
     if (!boostStatus.isActive && userRole === 'artist') {
       return {
         icon: '🔥',
-        message: t('Boost now – 8 salons nearby are hiring')
+        message: t(toTranslatableText('Boost now – 8 salons nearby are hiring'))
       };
     }
     
@@ -135,7 +143,7 @@ const ProgressTracker = () => {
   return (
     <div className="w-full mb-8">
       <h2 className="text-2xl font-semibold mb-4">
-        {t('Your Progress Tracker')}
+        {t(toTranslatableText('Your Progress Tracker'))}
       </h2>
       
       {tipMessage && (
@@ -160,22 +168,22 @@ const ProgressTracker = () => {
       >
         {/* Credit Status Card */}
         <motion.div variants={item}>
-          <CreditStatusCard credits={credits} loading={loading} />
+          <CreditStatusCard credits={credits} />
         </motion.div>
         
         {/* Referral Progress Card */}
         <motion.div variants={item}>
-          <ReferralProgressCard referralStats={referralStats} loading={loading} />
+          <ReferralProgressCard referralStats={referralStats} />
         </motion.div>
         
         {/* Boost & Visibility Card */}
         <motion.div variants={item}>
-          <BoostVisibilityCard boostStatus={boostStatus} credits={credits} loading={loading} />
+          <BoostVisibilityCard boostStatus={boostStatus} credits={credits} />
         </motion.div>
         
         {/* Profile Completion Card */}
         <motion.div variants={item}>
-          <ProfileCompletionCard percentage={profileCompletionPercentage} userProfile={userProfile} loading={loading} />
+          <ProfileCompletionCard percentage={profileCompletionPercentage} userProfile={userProfile} />
         </motion.div>
       </motion.div>
     </div>

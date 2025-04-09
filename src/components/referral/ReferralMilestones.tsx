@@ -3,13 +3,25 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Trophy, Gift, Crown, Star, Lock, Unlock } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
+import { toTranslatableText } from '@/components/dashboard/salon/SalonTranslationHelper';
 
-interface ReferralMilestonesProps {
-  referralStats: any;
-  referralProgress: any;
+export interface ReferralMilestonesProps {
+  referralStats: {
+    completedReferrals?: number;
+    totalReferrals?: number;
+  };
+  referralProgress: {
+    percentage?: number;
+    nextMilestoneIn?: number;
+    currentTier?: number;
+    nextTier?: number;
+  };
 }
 
-const ReferralMilestones = ({ referralStats, referralProgress }: ReferralMilestonesProps) => {
+const ReferralMilestones = ({ 
+  referralStats = { completedReferrals: 0, totalReferrals: 0 }, 
+  referralProgress = { percentage: 0, nextMilestoneIn: 0, currentTier: 0, nextTier: 1 } 
+}: ReferralMilestonesProps) => {
   const { t } = useTranslation();
   
   // Define milestones
@@ -17,29 +29,29 @@ const ReferralMilestones = ({ referralStats, referralProgress }: ReferralMilesto
     {
       tier: 1,
       icon: Gift,
-      name: t('First Milestone'),
-      description: t('Get 50 bonus credits'),
+      name: t(toTranslatableText('First Milestone')),
+      description: t(toTranslatableText('Get 50 bonus credits')),
       requirement: 3,
     },
     {
       tier: 2,
       icon: Trophy,
-      name: t('Second Milestone'),
-      description: t('Get 100 bonus credits'),
+      name: t(toTranslatableText('Second Milestone')),
+      description: t(toTranslatableText('Get 100 bonus credits')),
       requirement: 6,
     },
     {
       tier: 3,
       icon: Star,
-      name: t('Third Milestone'),
-      description: t('Get Premium status for 1 month'),
+      name: t(toTranslatableText('Third Milestone')),
+      description: t(toTranslatableText('Get Premium status for 1 month')),
       requirement: 9,
     },
     {
       tier: 4,
       icon: Crown,
-      name: t('Fourth Milestone'),
-      description: t('Get 500 bonus credits'),
+      name: t(toTranslatableText('Fourth Milestone')),
+      description: t(toTranslatableText('Get 500 bonus credits')),
       requirement: 12,
     },
   ];

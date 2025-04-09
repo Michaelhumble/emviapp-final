@@ -8,12 +8,17 @@ import { useAuth } from '@/context/auth';
 import { useTranslation } from '@/hooks/useTranslation';
 import { toTranslatableText } from './TranslationHelper';
 
-const ReferralProgressCard = () => {
+export interface ReferralProgressCardProps {
+  referralStats?: any; // Added to match what's passed in ProgressTracker
+  loading?: boolean; // Added loading prop
+}
+
+const ReferralProgressCard = ({ referralStats = {}, loading = false }: ReferralProgressCardProps) => {
   const { userProfile } = useAuth();
   const { t } = useTranslation();
   
   // Default values if profile data is missing
-  const referralCount = userProfile?.referral_count || 0;
+  const referralCount = referralStats?.completedReferrals || userProfile?.referral_count || 0;
   const referralCode = userProfile?.referral_code || '';
   
   // Referral tiers

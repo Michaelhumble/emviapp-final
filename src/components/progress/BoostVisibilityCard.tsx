@@ -6,8 +6,14 @@ import { TrendingUp, Star, Zap, ShoppingCart } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { toTranslatableText } from './TranslationHelper';
 
+export interface BoostVisibilityCardProps {
+  boostStatus?: any;
+  credits?: number;
+  loading?: boolean;
+}
+
 // This will update the BoostVisibilityCard component to fix t() usage
-const BoostVisibilityCard = () => {
+const BoostVisibilityCard = ({ boostStatus = {}, credits = 0, loading = false }: BoostVisibilityCardProps) => {
   const { t } = useTranslation();
   
   return (

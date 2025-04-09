@@ -6,6 +6,7 @@ import { useReferralData } from './referral/useReferralData';
 import { useReferralStats } from './referral/useReferralStats';
 import { useReferralProgress } from './referral/useReferralProgress';
 import { useReferralUtils } from './referral/useReferralUtils';
+import { ReferralData, ReferralStats, ReferralProgress } from '@/components/referral/types';
 
 export const useReferralSystem = () => {
   const { user, userRole } = useAuth();

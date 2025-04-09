@@ -1,35 +1,48 @@
 
+/**
+ * Utility hook for referral system operations
+ */
 export const useReferralUtils = () => {
-  const copyReferralLink = (referralLink: string): Promise<boolean> => {
-    return navigator.clipboard.writeText(referralLink)
-      .then(() => true)
-      .catch((err) => {
-        console.error('Failed to copy link:', err);
-        return false;
-      });
+  // Function to copy the referral link to clipboard
+  const copyReferralLink = async (link: string): Promise<boolean> => {
+    try {
+      await navigator.clipboard.writeText(link);
+      return true;
+    } catch (error) {
+      console.error('Failed to copy:', error);
+      return false;
+    }
   };
-
+  
+  // Get a motivational message based on referral count
   const getMotivationalMessage = (
-    completedReferrals: number,
+    referralCount: number,
     nextMilestoneIn: number,
-    preferred_language: string = 'English'
+    preferredLanguage: string
   ): string => {
-    const isVietnamese = preferred_language?.toLowerCase() === 'vietnamese' || preferred_language?.toLowerCase() === 'tiếng việt';
+    // Vietnamese translations
+    if (preferredLanguage === 'vi' || preferredLanguage === 'Vietnamese') {
+      if (referralCount === 0) {
+        return 'Bắt đầu bằng việc giới thiệu bạn bè đầu tiên của bạn!';
+      } else if (nextMilestoneIn === 1) {
+        return 'Chỉ còn 1 giới thiệu nữa để đạt cột mốc tiếp theo!';
+      } else {
+        return `Còn ${nextMilestoneIn} giới thiệu nữa để đạt đến cột mốc tiếp theo!`;
+      }
+    }
     
-    if (nextMilestoneIn <= 1) {
-      return isVietnamese ? 'Gần tới phần thưởng rồi!' : 'Almost there!';
-    } else if (completedReferrals === 0) {
-      return isVietnamese ? 'Mời bạn bè và nhận thưởng từ Emvi!' : 'Invite friends and earn rewards from Emvi!';
+    // Default English
+    if (referralCount === 0) {
+      return 'Get started by making your first referral!';
+    } else if (nextMilestoneIn === 1) {
+      return 'Just 1 more referral to reach your next milestone!';
     } else {
-      const message = isVietnamese 
-        ? `Bạn đã giới thiệu ${completedReferrals} người. Chỉ cần thêm ${nextMilestoneIn} để mở khóa phần thưởng!`
-        : `You've referred ${completedReferrals} friends. Just ${nextMilestoneIn} more to unlock a bonus reward!`;
-      return message;
+      return `${nextMilestoneIn} more referrals until your next milestone!`;
     }
   };
   
   return {
     copyReferralLink,
-    getMotivationalMessage,
+    getMotivationalMessage
   };
 };

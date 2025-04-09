@@ -6,11 +6,12 @@ import { CreditCard, Gift, Users } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { toTranslatableText } from './TranslationHelper';
 
-interface CreditStatusCardProps {
+export interface CreditStatusCardProps {
   credits?: number;
+  loading?: boolean; // Added loading prop
 }
 
-const CreditStatusCard = ({ credits = 0 }: CreditStatusCardProps) => {
+const CreditStatusCard = ({ credits = 0, loading = false }: CreditStatusCardProps) => {
   const { t } = useTranslation();
   
   return (

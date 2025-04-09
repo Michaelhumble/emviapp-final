@@ -7,13 +7,21 @@ import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/context/auth';
 import { useTranslation } from '@/hooks/useTranslation';
 import { toTranslatableText } from './TranslationHelper';
+import { UserProfile } from '@/context/auth/types';
 
-const ProfileCompletionCard = () => {
-  const { userProfile } = useAuth();
+export interface ProfileCompletionCardProps {
+  percentage?: number;
+  userProfile?: UserProfile | null;
+  loading?: boolean;
+}
+
+const ProfileCompletionCard = ({ percentage = 0, userProfile = null, loading = false }: ProfileCompletionCardProps) => {
   const { t } = useTranslation();
   
-  // Default values if profile data is missing
-  const profileCompletion = userProfile?.profile_completion || 0;
+  // Use passed percentage or calculate from profile if not provided
+  const displayPercentage = percentage || 0;
+  
+  // Default tasks if no profile data is available
   const completedTasks = userProfile?.completed_profile_tasks || [];
   
   // Profile completion tasks

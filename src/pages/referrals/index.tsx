@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,9 +9,53 @@ import ReferralList from "@/components/referral/ReferralList";
 import { Users, Award, RefreshCw } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toTranslatableText } from "@/components/dashboard/salon/SalonTranslationHelper";
+import { useReferralSystem } from "@/hooks/useReferralSystem";
+import { ReferralData } from "@/components/referral/types";
 
 const ReferralsPage = () => {
   const { t } = useTranslation();
+  const { 
+    referralStats, 
+    referralProgress, 
+    referrals: fetchedReferrals,
+    loading 
+  } = useReferralSystem();
+
+  // Sample referrals data for demo purposes
+  const sampleReferrals: ReferralData[] = [
+    { 
+      id: "1", 
+      referredName: "Sarah Johnson", 
+      referredEmail: "sarah@example.com",
+      status: "joined", 
+      milestoneReached: false, 
+      createdAt: "2023-12-01" 
+    },
+    { 
+      id: "2", 
+      referredName: "Alex Wong", 
+      referredEmail: "alex@example.com", 
+      status: "subscribed", 
+      milestoneReached: true,
+      createdAt: "2023-11-28" 
+    },
+    { 
+      id: "3", 
+      referredName: "Maria Garcia", 
+      referredEmail: "maria@example.com",
+      status: "joined", 
+      milestoneReached: false, 
+      createdAt: "2023-11-25" 
+    },
+    { 
+      id: "4", 
+      referredName: "David Park", 
+      referredEmail: "david@example.com",
+      status: "completed", 
+      milestoneReached: false, 
+      createdAt: "2023-11-20" 
+    }
+  ];
   
   useEffect(() => {
     document.title = "Referral Program | EmviApp";
@@ -97,7 +141,10 @@ const ReferralsPage = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ReferralMilestones />
+                    <ReferralMilestones 
+                      referralStats={referralStats || { completedReferrals: 0, totalReferrals: 0 }}
+                      referralProgress={referralProgress || { percentage: 0, nextMilestoneIn: 5, currentTier: 0, nextTier: 1 }}
+                    />
                   </CardContent>
                 </Card>
               </div>
@@ -111,14 +158,7 @@ const ReferralsPage = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ReferralList 
-                      referrals={[
-                        { name: t(toTranslatableText("Sarah Johnson")), date: "2023-12-01", status: "joined" },
-                        { name: t(toTranslatableText("Alex Wong")), date: "2023-11-28", status: "subscribed" },
-                        { name: t(toTranslatableText("Maria Garcia")), date: "2023-11-25", status: "joined" },
-                        { name: t(toTranslatableText("David Park")), date: "2023-11-20", status: "completed" }
-                      ]} 
-                    />
+                    <ReferralList referrals={fetchedReferrals || sampleReferrals} />
                   </CardContent>
                 </Card>
               </div>

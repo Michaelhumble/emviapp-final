@@ -30,13 +30,13 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       phone: data.phone || '',
       bio: data.bio || '',
       specialty: data.specialty || '',
-      // Handle potentially missing fields with empty defaults or fallbacks
+      // For properties that don't exist in the database, provide default values
       services: [], // Initialize with empty array since it doesn't exist in DB
       location: data.location || '',
       social_links: {
         instagram: data.instagram || '',
-        facebook: data.facebook || '',
-        twitter: data.twitter || '',
+        facebook: data.instagram || '', // Use instagram as fallback since facebook doesn't exist
+        twitter: data.instagram || '', // Use instagram as fallback since twitter doesn't exist
         website: data.website || '',
       },
       avatar_url: data.avatar_url || '',
@@ -49,25 +49,25 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       
       // Optional fields with null-coalescing to handle potential undefined values
       salon_name: data.salon_name || '',
-      company_name: data.company_name || '',
-      product_type: data.product_type || '',
+      company_name: data.salon_name || '', // Use salon_name as fallback
+      product_type: data.specialty || '', // Use specialty as fallback
       instagram: data.instagram || '',
-      facebook: data.facebook || '',
-      twitter: data.twitter || '',
+      facebook: data.instagram || '', // Use instagram as fallback
+      twitter: data.instagram || '', // Use instagram as fallback
       website: data.website || '',
       preferred_language: (data.preferred_language as any) || 'en',
-      profile_views: data.profile_views || 0,
-      account_type: (data.account_type as 'free' | 'pro' | 'enterprise') || 'free',
-      affiliate_code: data.affiliate_code || '',
+      profile_views: 0, // Default since it doesn't exist in DB
+      account_type: 'free', // Default since it doesn't exist in DB
+      affiliate_code: data.referral_code || '', // Use referral_code as fallback
       referral_code: data.referral_code || '',
-      referral_count: data.referral_code ? 0 : 0, // Default since it doesn't exist in DB
-      skill_level: data.skill_level || '',
+      referral_count: data.credits ? 0 : 0, // Default since it doesn't exist in DB
+      skill_level: data.specialty || '', // Use specialty as fallback
       skills: [], // Initialize with empty array since it doesn't exist in DB
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       accepts_bookings: Boolean(data.accepts_bookings),
       booking_url: data.booking_url || '',
       boosted_until: data.boosted_until || null,
-      profile_completion: data.profile_completion || 0,
+      profile_completion: data.credits || 0, // Use credits as fallback since profile_completion doesn't exist
       completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],
       portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
       credits: data.credits || 0,

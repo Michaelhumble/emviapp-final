@@ -25,7 +25,7 @@ export interface ReferralData {
   id: string;
   referredEmail: string;
   referredName: string;
-  status: 'pending' | 'processing' | 'completed' | 'suspicious';
+  status: 'pending' | 'processing' | 'completed' | 'suspicious' | 'joined' | 'subscribed';
   milestoneReached: boolean;
   milestoneType?: string;
   createdAt: string;
