@@ -6,7 +6,7 @@ import { CardTitle } from "@/components/ui/card";
 const ReferralHeader = () => {
   const { userProfile } = useAuth();
   const preferredLanguage = userProfile?.preferred_language || "English";
-  const isVietnamese = preferredLanguage === "Vietnamese";
+  const isVietnamese = preferredLanguage === 'vi' || preferredLanguage === 'Vietnamese';
   
   return (
     <CardTitle className="flex items-center text-lg">

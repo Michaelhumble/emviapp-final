@@ -1,4 +1,3 @@
-
 import { useAuth } from "@/context/auth";
 import { Progress } from "@/components/ui/progress";
 
@@ -9,7 +8,7 @@ interface ReferralStatsProps {
 const ReferralStats = ({ referralCount }: ReferralStatsProps) => {
   const { userProfile } = useAuth();
   const preferredLanguage = userProfile?.preferred_language || "English";
-  const isVietnamese = preferredLanguage === "Vietnamese";
+  const isVietnamese = preferredLanguage === 'vi' || preferredLanguage === 'Vietnamese';
   
   // Progress calculation (assuming target is 10 referrals)
   const targetReferrals = 10;

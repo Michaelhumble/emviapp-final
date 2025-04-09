@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Store, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -10,7 +9,7 @@ const SalonDashboardActionButtons = () => {
   const { t } = useTranslation();
   const { userProfile } = useAuth();
   const preferredLanguage = userProfile?.preferred_language || "English";
-  const isVietnamese = preferredLanguage === "Vietnamese";
+  const isVietnamese = preferredLanguage === 'vi' || preferredLanguage === 'Vietnamese';
   
   const handleActionClick = (action: string) => {
     toast.info(`${action} feature coming soon!`);

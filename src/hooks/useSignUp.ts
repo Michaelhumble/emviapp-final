@@ -40,9 +40,7 @@ export const useSignUp = (): UseSignUpReturn => {
 
       // Call the signup method from auth context with user metadata
       const result = await authSignUp(data.email, data.password, {
-        data: {
-          role: data.role
-        }
+        role: data.role
       });
 
       // Handle errors

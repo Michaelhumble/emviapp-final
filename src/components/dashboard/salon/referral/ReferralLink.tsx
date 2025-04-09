@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Copy } from "lucide-react";
@@ -16,7 +15,7 @@ const ReferralLink = ({ referralLink, onCopy, copied }: ReferralLinkProps) => {
   const { userProfile } = useAuth();
   const [justCopied, setJustCopied] = useState(false);
   const preferredLanguage = userProfile?.preferred_language || "English";
-  const isVietnamese = preferredLanguage === "Vietnamese";
+  const isVietnamese = preferredLanguage === 'vi' || preferredLanguage === 'Vietnamese';
 
   const handleCopy = () => {
     navigator.clipboard.writeText(referralLink).then(() => {

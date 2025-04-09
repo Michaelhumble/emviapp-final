@@ -24,7 +24,7 @@ export interface UserProfile {
   facebook?: string;
   twitter?: string;
   website?: string;
-  preferred_language?: 'en' | 'vi' | 'es' | 'English';
+  preferred_language?: 'en' | 'vi' | 'es' | 'English' | 'Vietnamese';
   profile_views?: number;
   account_type?: 'free' | 'pro' | 'enterprise';
   affiliate_code?: string;

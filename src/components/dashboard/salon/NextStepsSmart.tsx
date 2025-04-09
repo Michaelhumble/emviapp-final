@@ -30,7 +30,7 @@ const NextStepsSmart = () => {
   const { t } = useTranslation();
   const { userProfile } = useAuth();
   const preferredLanguage = userProfile?.preferred_language || 'English';
-  const isVietnamese = preferredLanguage === 'Vietnamese';
+  const isVietnamese = preferredLanguage === 'vi' || preferredLanguage === 'Vietnamese';
   
   const nextSteps: NextStepItem[] = [
     {

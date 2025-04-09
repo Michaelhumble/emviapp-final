@@ -1,4 +1,3 @@
-
 import { useAuth } from "@/context/auth";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,7 +15,7 @@ const SalonBoostStatus = () => {
   const [isBoosted, setIsBoosted] = useState(false);
   const [boostEndDate, setBoostEndDate] = useState<Date | null>(null);
   const preferredLanguage = userProfile?.preferred_language || "English";
-  const isVietnamese = preferredLanguage === "Vietnamese";
+  const isVietnamese = preferredLanguage === 'vi' || preferredLanguage === 'Vietnamese';
   
   useEffect(() => {
     if (userProfile?.boosted_until) {
