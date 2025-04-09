@@ -18,7 +18,7 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
       {images.map((image, index) => (
         <motion.div 
           key={index}
-          className="absolute inset-0 w-full h-full overflow-hidden transition-opacity duration-1000 ease-in-out"
+          className="absolute inset-0 w-full h-full"
           initial={{ opacity: 0 }}
           animate={{ 
             opacity: activeIndex === index ? 1 : 0,
@@ -27,21 +27,34 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
             opacity: { duration: 1.5, ease: "easeInOut" },
           }}
           aria-hidden={activeIndex !== index}
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            right: 0,
+            bottom: 0,
+            width: '100%',
+            height: '100%',
+            overflow: 'hidden',
+          }}
         >
-          <div className="w-full h-full">
-            <img 
-              src={image.url} 
-              alt={image.alt}
-              className="absolute inset-0 w-screen h-screen object-cover"
-              style={{ 
-                objectPosition: "center",
-                width: "100vw",
-                height: "100vh",
-                maxWidth: "100vw",
-                maxHeight: "100vh"
-              }}
-            />
-          </div>
+          <img 
+            src={image.url} 
+            alt={image.alt}
+            className="w-full h-full object-cover"
+            style={{ 
+              objectPosition: "center",
+              width: "100vw",
+              height: "100vh",
+              maxWidth: "100vw",
+              maxHeight: "100vh",
+              position: "absolute",
+              left: 0,
+              top: 0,
+              right: 0,
+              bottom: 0
+            }}
+          />
           
           {/* Subtle overlay for better text readability */}
           <div 

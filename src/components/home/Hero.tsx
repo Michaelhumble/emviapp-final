@@ -39,7 +39,7 @@ const Hero = () => {
 
   return (
     <section 
-      className="relative flex items-center justify-center overflow-hidden"
+      className="relative overflow-hidden"
       style={{
         width: '100vw',
         height: '100vh',
@@ -47,11 +47,16 @@ const Hero = () => {
         padding: 0,
         border: 'none',
         maxWidth: '100vw',
-        overflow: 'hidden'
+        maxHeight: '100vh',
+        position: 'relative',
+        left: 0,
+        top: 0,
+        right: 0,
+        bottom: 0
       }}
     >
       {/* Background image carousel */}
-      <div className="absolute inset-0 w-screen h-screen">
+      <div className="absolute inset-0 w-full h-full">
         <HeroCarousel 
           images={heroImages} 
           activeIndex={currentImageIndex} 

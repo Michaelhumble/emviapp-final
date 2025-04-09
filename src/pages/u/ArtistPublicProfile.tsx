@@ -26,7 +26,7 @@ const ArtistPublicProfile: React.FC = () => {
     if (profile && !loading) {
       incrementViewCount();
     }
-  }, [profile, loading]);
+  }, [profile, loading, incrementViewCount]);
   
   if (loading) {
     return (
