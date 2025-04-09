@@ -50,7 +50,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       updated_at: data.updated_at || new Date().toISOString(),
       preferred_language: data.preferred_language || '',
       
-      // TypeScript-safe property access
+      // TypeScript-safe property access with defaults for missing properties
       salon_name: data.salon_name || '',
       custom_role: data.custom_role || '',
       contact_link: data.contact_link || '',
@@ -58,7 +58,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       skill_level: data.skill_level || '',
       profile_views: data.profile_views || 0,
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
-      affiliate_code: data.referral_code || '',
+      affiliate_code: data.affiliate_code || '',
       referral_code: data.referral_code || '',
       referral_count: data.referral_count || 0,
       credits: data.credits || 0,
