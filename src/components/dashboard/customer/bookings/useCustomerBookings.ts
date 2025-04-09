@@ -1,48 +1,77 @@
 
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/context/auth';
 import { CustomerBooking } from './types';
+import { useAuth } from '@/context/auth';
+import { toast } from 'sonner';
 
 export const useCustomerBookings = () => {
+  const [bookings, setBookings] = useState<CustomerBooking[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
-  
-  return useQuery({
-    queryKey: ['customer-bookings', user?.id],
-    queryFn: async () => {
-      if (!user) return [];
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      if (!user) return;
       
-      const { data, error } = await supabase
-        .from('bookings')
-        .select(`
-          id, 
-          created_at, 
-          date_requested, 
-          time_requested,
-          status, 
-          note,
-          service_id,
-          service:service_id (id, title, price),
-          artist:recipient_id (id, full_name, avatar_url)
-        `)
-        .eq('sender_id', user.id)
-        .order('created_at', { ascending: false });
+      try {
+        setLoading(true);
+        setError(null);
         
-      if (error) throw error;
-      
-      // Transform data to handle potential errors with the artist relation
-      return (data || []).map(item => {
-        // Check if artist is an error object (has 'error' property)
-        if (item.artist && typeof item.artist === 'object' && 'error' in item.artist) {
+        const { data, error } = await supabase
+          .from('bookings')
+          .select(`
+            id, 
+            created_at, 
+            date_requested, 
+            time_requested, 
+            status, 
+            note,
+            service_id,
+            service:service_id (id, title, price),
+            artist:artist_id (id, full_name, avatar_url)
+          `)
+          .eq('customer_id', user.id)
+          .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        // Transform the data to ensure it matches the CustomerBooking type
+        const typedBookings: CustomerBooking[] = data.map(item => {
+          // Handle the artist property which might be an error object from Supabase
           const booking: CustomerBooking = {
-            ...item,
-            artist: null
+            id: item.id,
+            created_at: item.created_at,
+            date_requested: item.date_requested,
+            time_requested: item.time_requested,
+            status: item.status,
+            note: item.note,
+            service_id: item.service_id,
+            service: item.service,
+            artist: null // Default to null
           };
+          
+          // Only set artist if it's a valid object with the expected properties
+          if (item.artist && typeof item.artist === 'object' && 'id' in item.artist && 'full_name' in item.artist) {
+            booking.artist = item.artist;
+          }
+          
           return booking;
-        }
-        return item as CustomerBooking;
-      });
-    },
-    enabled: !!user,
-  });
+        });
+        
+        setBookings(typedBookings);
+      } catch (error) {
+        console.error('Error fetching bookings:', error);
+        setError('Failed to load bookings. Please try again later.');
+        toast.error('Could not load your bookings');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, [user]);
+
+  return { bookings, loading, error };
 };

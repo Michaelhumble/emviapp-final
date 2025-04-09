@@ -29,23 +29,17 @@ export function useSession() {
       setIsNewUser(true);
     }
 
-    // Get the current session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    // Listen for auth changes
+    // Set up auth state listener FIRST
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log(`[Auth] Auth state changed: ${event}`, session?.user?.id);
       setSession(session);
       setUser(session?.user ?? null);
-      setLoading(false);
-
+      
       // If the user just signed up, set isNewUser to true
       if (event === 'SIGNED_UP' as AuthChangeEvent) {
+        console.log('[Auth] New user detected, setting isNewUser flag');
         setIsNewUser(true);
         localStorage.setItem('emviapp_new_user', 'true');
         navigate('/choose-role');
@@ -56,6 +50,15 @@ export function useSession() {
         setIsNewUser(false);
         localStorage.removeItem('emviapp_new_user');
       }
+      
+      setLoading(false);
+    });
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
     });
 
     return () => {

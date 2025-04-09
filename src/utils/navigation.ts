@@ -49,6 +49,9 @@ export const navigateToRoleDashboard = (
     return;
   }
   
+  // Store normalized role in localStorage for persistence
+  localStorage.setItem('emviapp_user_role', normalizedRole);
+  
   let targetDashboard = '';
   
   // Route based on normalized role

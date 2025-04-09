@@ -35,7 +35,15 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         return;
       }
       
-      // If role is not in context, fetch it directly from the database
+      // Check for cached role in localStorage
+      const cachedRole = localStorage.getItem('emviapp_user_role');
+      if (cachedRole) {
+        console.log("[DashboardRedirector] Using cached role from localStorage:", cachedRole);
+        navigateToRoleDashboard(navigate, cachedRole as UserRole);
+        return;
+      }
+      
+      // If role is not in context or localStorage, fetch it directly from the database
       const { data: profile, error } = await supabase
         .from('users')
         .select('role')
@@ -56,7 +64,8 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         return;
       }
       
-      // If we have a role, redirect to the appropriate dashboard
+      // If we have a role, save it to localStorage and redirect
+      localStorage.setItem('emviapp_user_role', profile.role);
       console.log("[DashboardRedirector] Redirecting with role:", profile.role);
       navigateToRoleDashboard(navigate, profile.role as UserRole);
       

@@ -15,16 +15,32 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
   const getUserProfile = async (userId: string) => {
     try {
       setLoading(true);
+      console.log("[UserProfile] Fetching profile for user:", userId);
       
       const profile = await fetchUserProfile(userId);
       
       if (profile) {
+        console.log("[UserProfile] Profile fetched successfully:", profile.role);
         setUserProfile(profile);
         setUserRole(profile.role as UserRole);
+        
+        // Store role in localStorage as a backup
+        if (profile.role) {
+          localStorage.setItem('emviapp_user_role', profile.role);
+        }
+      } else {
+        console.log("[UserProfile] No profile found for user:", userId);
+        
+        // Check if we have a cached role in localStorage
+        const cachedRole = localStorage.getItem('emviapp_user_role');
+        if (cachedRole) {
+          console.log("[UserProfile] Using cached role from localStorage:", cachedRole);
+          setUserRole(cachedRole as UserRole);
+        }
       }
       
     } catch (err) {
-      console.error("Error in getUserProfile:", err);
+      console.error("[UserProfile] Error in getUserProfile:", err);
     } finally {
       setLoading(false);
     }
@@ -48,6 +64,9 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
       // Clear user profile and role when logged out
       setUserProfile(null);
       setUserRole(null);
+      
+      // Don't clear localStorage here, as we want to remember the role
+      // for the next login if needed
     }
   }, [user]);
 

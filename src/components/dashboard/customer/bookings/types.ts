@@ -18,4 +18,3 @@ export interface CustomerBooking {
     avatar_url?: string;
   } | null;
 }
-
