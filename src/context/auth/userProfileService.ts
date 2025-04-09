@@ -48,8 +48,8 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       updated_at: data.updated_at || '',
       
       // Optional fields with null-coalescing to handle potential undefined values
-      salon_name: data.salon_name || '',
-      company_name: data.salon_name || '', // Use salon_name as fallback if it exists
+      salon_name: typeof data.salon_name === 'string' ? data.salon_name : '',
+      company_name: typeof data.salon_name === 'string' ? data.salon_name : '', // Use salon_name as fallback if it exists
       product_type: data.specialty || '', // Use specialty as fallback
       instagram: data.instagram || '',
       facebook: data.instagram || '', // Use instagram as fallback
@@ -67,7 +67,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       accepts_bookings: Boolean(data.accepts_bookings),
       booking_url: data.booking_url || '',
       boosted_until: data.boosted_until || null,
-      profile_completion: data.credits || 0, // Use credits as fallback since profile_completion doesn't exist
+      profile_completion: typeof data.credits === 'number' ? data.credits : 0, // Use credits as fallback since profile_completion doesn't exist
       completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],
       portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
       credits: data.credits || 0,
