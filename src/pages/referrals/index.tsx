@@ -9,7 +9,7 @@ import { Users, Award, RefreshCw } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toTranslatableText } from "@/components/dashboard/salon/SalonTranslationHelper";
 import { useReferralSystem } from "@/hooks/useReferralSystem";
-import { ReferralData } from "@/components/referral/types";
+import { Referral } from "@/components/referral/types";
 
 const ReferralsPage = () => {
   const { t } = useTranslation();
@@ -157,7 +157,7 @@ const ReferralsPage = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ReferralList referrals={fetchedReferrals || sampleReferrals} />
+                    <ReferralList referrals={fetchedReferrals as Referral[] || sampleReferrals} />
                   </CardContent>
                 </Card>
               </div>

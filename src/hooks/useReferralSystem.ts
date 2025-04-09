@@ -17,15 +17,14 @@ export const useReferralSystem = () => {
   const [copied, setCopied] = useState(false);
   
   const handleCopyReferralLink = () => {
-    copyReferralLink(referralLink)
-      .then((success) => {
-        if (success) {
-          setCopied(true);
-          toast.success('Referral link copied to clipboard!');
-          setTimeout(() => setCopied(false), 3000);
-        } else {
-          toast.error('Failed to copy link. Please try again.');
-        }
+    navigator.clipboard.writeText(referralLink)
+      .then(() => {
+        setCopied(true);
+        toast.success('Referral link copied to clipboard!');
+        setTimeout(() => setCopied(false), 3000);
+      })
+      .catch(() => {
+        toast.error('Failed to copy link. Please try again.');
       });
   };
 

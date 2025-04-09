@@ -6,7 +6,7 @@ import { Copy, Check, Share2, Trophy, Users, Gift } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/context/auth";
 import { useReferralSystem } from "@/hooks/useReferralSystem";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { motion } from "framer-motion";
 
 const shareOptions = [
@@ -43,7 +43,6 @@ const shareOptions = [
 ];
 
 const ReferralSystem = () => {
-  const { toast } = useToast();
   const { userProfile } = useAuth();
   const [showShareOptions, setShowShareOptions] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -69,18 +68,13 @@ const ReferralSystem = () => {
   };
 
   const handleCopyReferralLink = () => {
-    const result = copyReferralLink(referralLink);
-    if (result) {
-      result.then((success) => {
-        if (success) {
-          setCopied(true);
-          toast.success('Referral link copied to clipboard!');
-          setTimeout(() => setCopied(false), 3000);
-        } else {
-          toast.error('Failed to copy link. Please try again.');
-        }
-      });
-    }
+    copyReferralLink();
+    setCopied(true);
+    toast({
+      title: 'Success',
+      description: 'Referral link copied to clipboard!'
+    });
+    setTimeout(() => setCopied(false), 3000);
   };
 
   if (loading) {
