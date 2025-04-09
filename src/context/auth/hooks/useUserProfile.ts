@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { User } from "@supabase/supabase-js";
 import { UserProfile, UserRole } from "../types";
 import { fetchUserProfile } from "../userProfileService";
+import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Hook to handle user profile management
@@ -17,11 +18,20 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
       setLoading(true);
       console.log("[UserProfile] Fetching profile for user:", userId);
       
-      const profile = await fetchUserProfile(userId);
+      // Direct database query to ensure we get the latest data
+      const { data: profile, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      if (error) {
+        throw error;
+      }
       
       if (profile) {
-        console.log("[UserProfile] Profile fetched successfully:", profile.role);
-        setUserProfile(profile);
+        console.log("[UserProfile] Profile fetched successfully:", profile);
+        setUserProfile(profile as unknown as UserProfile);
         
         // Make sure we have a valid role (not just null or undefined)
         if (profile.role) {
@@ -54,11 +64,13 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
           console.log("[UserProfile] No cached role found, role remains null");
           setUserRole(null);
         }
+        
+        setUserProfile(null);
       }
-      
     } catch (err) {
       console.error("[UserProfile] Error in getUserProfile:", err);
       setUserRole(null);
+      setUserProfile(null);
     } finally {
       setLoading(false);
     }
@@ -74,17 +86,15 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
   // Fetch user profile when user changes
   useEffect(() => {
     if (user) {
-      // Use setTimeout to avoid potential deadlocks with Supabase client
-      setTimeout(() => {
+      // Use a slight delay to avoid potential deadlocks with Supabase client
+      const timer = setTimeout(() => {
         getUserProfile(user.id);
-      }, 0);
+      }, 10);
+      return () => clearTimeout(timer);
     } else {
       // Clear user profile and role when logged out
       setUserProfile(null);
       setUserRole(null);
-      
-      // Don't clear localStorage here, as we want to remember the role
-      // for the next login if needed
     }
   }, [user]);
 
