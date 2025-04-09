@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { navigateToRoleDashboard } from "@/utils/navigation";
 
 export const useRoleSelection = (userId: string, onOpenChange: (open: boolean) => void) => {
-  const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
+  const [selectedRole, setSelectedRole] = useState<UserRole>("artist"); // Default to artist instead of customer
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -18,10 +18,9 @@ export const useRoleSelection = (userId: string, onOpenChange: (open: boolean) =
     }
 
     setIsSubmitting(true);
+    console.log(`[RoleSelection] Setting role for user ${userId} to ${selectedRole}`);
 
     try {
-      console.log(`[RoleSelection] Setting role for user ${userId} to ${selectedRole}`);
-      
       // First update auth metadata with the role
       const { error: metadataError } = await supabase.auth.updateUser({
         data: { role: selectedRole }
@@ -46,6 +45,9 @@ export const useRoleSelection = (userId: string, onOpenChange: (open: boolean) =
       }
       
       console.log("[RoleSelection] Successfully updated role in database");
+      
+      // Force a session refresh to get the updated metadata
+      await supabase.auth.refreshSession();
       
       // Close the modal
       onOpenChange(false);

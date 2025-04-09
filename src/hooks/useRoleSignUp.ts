@@ -11,7 +11,7 @@ export const useRoleSignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
+  const [selectedRole, setSelectedRole] = useState<UserRole>("artist"); // Default to artist instead of customer
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { signUp } = useAuth();
@@ -32,11 +32,10 @@ export const useRoleSignUp = () => {
     }
     
     setIsSubmitting(true);
+    console.log(`[useRoleSignUp] Starting sign-up with role: ${selectedRole}`);
 
     try {
-      console.log(`[SignUp] Starting sign-up with explicitly selected role: ${selectedRole}`);
-      
-      // Pass the selected role to signUp method
+      // IMPORTANT: Explicitly pass the selected role to signUp method
       const signUpResponse = await signUp(email, password, selectedRole);
       
       if (signUpResponse.error) {
@@ -52,9 +51,9 @@ export const useRoleSignUp = () => {
       }
       
       const userId = signUpResponse.data.user.id;
-      console.log(`[SignUp] User created with ID: ${userId} and role: ${selectedRole}`);
+      console.log(`[useRoleSignUp] User created with ID: ${userId} and role: ${selectedRole}`);
       
-      // Double-check that role was properly set - CRITICAL FIX HERE
+      // Double-check that role was properly set in the database
       const { data: userData, error: userError } = await supabase
         .from('users')
         .select('role')
@@ -62,13 +61,13 @@ export const useRoleSignUp = () => {
         .single();
         
       if (userError) {
-        console.error("[SignUp] Error verifying user role:", userError);
+        console.error("[useRoleSignUp] Error verifying user role:", userError);
       } else {
-        console.log(`[SignUp] Role verification - Database has role: ${userData?.role}`);
+        console.log(`[useRoleSignUp] Database has role: ${userData?.role}`);
         
-        // If role doesn't match or isn't set, update it directly - IMPROVED ERROR HANDLING
+        // If role doesn't match or isn't set, update it directly
         if (!userData?.role || userData.role !== selectedRole) {
-          console.warn(`[SignUp] Role mismatch! Fixing role in database from ${userData?.role || 'none'} to ${selectedRole}`);
+          console.warn(`[useRoleSignUp] Role mismatch! Fixing role in database from ${userData?.role || 'none'} to ${selectedRole}`);
           
           const { error: updateError } = await supabase
             .from('users')
@@ -76,33 +75,28 @@ export const useRoleSignUp = () => {
             .eq('id', userId);
             
           if (updateError) {
-            console.error("[SignUp] Failed to update role in database:", updateError);
-            // Continue anyway, we'll try again with auth metadata
+            console.error("[useRoleSignUp] Failed to update role in database:", updateError);
           }
         }
       }
       
-      // Also ensure auth metadata has the correct role - CRITICAL FIX
+      // Also ensure auth metadata has the correct role
       await supabase.auth.updateUser({
         data: { role: selectedRole }
       });
       
-      console.log("[SignUp] Updated auth metadata with role:", selectedRole);
-      
-      // Force a small delay to let database updates complete
-      await new Promise(resolve => setTimeout(resolve, 500));
+      console.log("[useRoleSignUp] Updated auth metadata with role:", selectedRole);
       
       // Force a session refresh to get the updated metadata
       await supabase.auth.refreshSession();
       
-      // Log success
       toast.success("Account created successfully!");
       
       // Navigate to the appropriate dashboard based on role
       navigateToRoleDashboard(navigate, selectedRole);
       
     } catch (error) {
-      console.error("[SignUp] Unexpected error:", error);
+      console.error("[useRoleSignUp] Unexpected error:", error);
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
