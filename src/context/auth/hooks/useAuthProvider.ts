@@ -1,11 +1,10 @@
 
-import { AuthContextType } from "../types";
+import { AuthContextType, UserProfile, UserRole } from "../types";
 import { useSession } from "./useSession";
 import { useUserProfile } from "./useUserProfile";
 import { useAuthMethods } from "./useAuthMethods";
 import { updateUserProfile } from "../userProfileService";
 import { supabase } from "@/integrations/supabase/client";
-import { UserProfile, UserRole } from "../types";
 
 /**
  * Custom hook to handle auth provider logic

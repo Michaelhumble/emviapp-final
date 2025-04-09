@@ -22,15 +22,17 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
     if (!data) return null;
     
     // Transform database record to UserProfile type
+    // Use type assertion for properties that may not exist in DB schema
     const profile: UserProfile = {
       id: data.id,
-      user_id: data.user_id,
+      user_id: data.id, // Use id as user_id since it might not exist in DB
       full_name: data.full_name || '',
       email: data.email || '',
       phone: data.phone || '',
       bio: data.bio || '',
       specialty: data.specialty || '',
-      services: data.services || [],
+      // Handle potentially missing fields with empty defaults
+      services: Array.isArray(data.services) ? data.services : [],
       location: data.location || '',
       social_links: {
         instagram: data.instagram || '',
@@ -39,10 +41,10 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
         website: data.website || '',
       },
       avatar_url: data.avatar_url || '',
-      gallery: data.gallery || [],
-      availability: data.availability || [],
+      gallery: Array.isArray(data.gallery) ? data.gallery : [],
+      availability: Array.isArray(data.availability) ? data.availability : [],
       role: (data.role as UserRole) || 'customer',
-      verification_status: data.verification_status || 'pending',
+      verification_status: data.verification_status as 'pending' | 'verified' | 'rejected' || 'pending',
       created_at: data.created_at || '',
       updated_at: data.updated_at || '',
       
@@ -54,21 +56,21 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       facebook: data.facebook || '',
       twitter: data.twitter || '',
       website: data.website || '',
-      preferred_language: data.preferred_language || 'en',
+      preferred_language: (data.preferred_language as 'en' | 'vi' | 'es' | 'English' | 'Vietnamese') || 'en',
       profile_views: data.profile_views || 0,
-      account_type: data.account_type || 'free',
+      account_type: (data.account_type as 'free' | 'pro' | 'enterprise') || 'free',
       affiliate_code: data.affiliate_code || '',
       referral_code: data.referral_code || '',
       referral_count: data.referral_count || 0,
       skill_level: data.skill_level || '',
-      skills: data.skills || [],
-      preferences: data.preferences || [],
-      accepts_bookings: data.accepts_bookings || false,
+      skills: Array.isArray(data.skills) ? data.skills : [],
+      preferences: Array.isArray(data.preferences) ? data.preferences : [],
+      accepts_bookings: Boolean(data.accepts_bookings),
       booking_url: data.booking_url || '',
       boosted_until: data.boosted_until || null,
       profile_completion: data.profile_completion || 0,
-      completed_profile_tasks: data.completed_profile_tasks || [],
-      portfolio_urls: data.portfolio_urls || [],
+      completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],
+      portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
       credits: data.credits || 0,
       custom_role: data.custom_role || '',
       contact_link: data.contact_link || '',
@@ -163,7 +165,9 @@ export const updateUserProfile = async (profile: Partial<UserProfile>): Promise<
     }
     
     toast.success('Profile updated successfully');
-    return data as UserProfile;
+    
+    // Transform response to UserProfile type
+    return await fetchUserProfile(profile.id);
   } catch (error) {
     console.error('Error updating user profile:', error);
     toast.error('Failed to update profile');
