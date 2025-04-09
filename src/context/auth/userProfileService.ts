@@ -50,22 +50,22 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       updated_at: data.updated_at || new Date().toISOString(),
       preferred_language: data.preferred_language || '',
       
-      // Safely access properties with proper type checking
-      salon_name: typeof data.salon_name === 'string' ? data.salon_name : '',
-      custom_role: typeof data.custom_role === 'string' ? data.custom_role : '',
-      contact_link: typeof data.contact_link === 'string' ? data.contact_link : '',
+      // Handle optional properties with proper type checking
+      salon_name: typeof data.salon_name === 'string' ? data.salon_name : null,
+      custom_role: typeof data.custom_role === 'string' ? data.custom_role : null,
+      contact_link: typeof data.contact_link === 'string' ? data.contact_link : null,
       skills: Array.isArray(data.skills) ? data.skills : [],
-      skill_level: typeof data.skill_level === 'string' ? data.skill_level : '',
+      skill_level: typeof data.skill_level === 'string' ? data.skill_level : null,
       profile_views: typeof data.profile_views === 'number' ? data.profile_views : 0,
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
-      affiliate_code: typeof data.affiliate_code === 'string' ? data.affiliate_code : '',
-      referral_code: typeof data.referral_code === 'string' ? data.referral_code : '',
+      affiliate_code: typeof data.affiliate_code === 'string' ? data.affiliate_code : null,
+      referral_code: typeof data.referral_code === 'string' ? data.referral_code : null,
       referral_count: typeof data.referral_count === 'number' ? data.referral_count : 0,
       credits: typeof data.credits === 'number' ? data.credits : 0,
       boosted_until: typeof data.boosted_until === 'string' ? data.boosted_until : null,
       portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
       accepts_bookings: typeof data.accepts_bookings === 'boolean' ? data.accepts_bookings : false,
-      booking_url: typeof data.booking_url === 'string' ? data.booking_url : '',
+      booking_url: typeof data.booking_url === 'string' ? data.booking_url : null,
       completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : []
     };
     

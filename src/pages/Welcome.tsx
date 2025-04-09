@@ -1,112 +1,75 @@
 
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/auth";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
-import Layout from "@/components/layout/Layout";
-import { Skeleton } from "@/components/ui/skeleton";
-import EmotionalTrust from "@/components/analysis/EmotionalTrust";
-import WelcomeHero from "@/components/welcome/WelcomeHero";
-import AITeam from "@/components/welcome/AITeam";
-import { navigateToRoleDashboard } from "@/utils/navigation";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/auth';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 const Welcome = () => {
-  const { user, userRole, loading } = useAuth();
   const navigate = useNavigate();
-  const [showAgents, setShowAgents] = useState(false);
-  const [hasSeenWelcome, setHasSeenWelcome] = useState(false);
-
-  // Check local storage to see if user has seen the welcome screen
-  useEffect(() => {
-    const welcomeSeen = localStorage.getItem(`emvi_welcome_seen_${user?.id}`);
-    if (welcomeSeen) {
-      redirectToDashboard();
-    }
-  }, [user]);
-
-  // Function to mark welcome as seen and redirect to dashboard
-  const completeWelcome = () => {
-    if (user?.id) {
-      localStorage.setItem(`emvi_welcome_seen_${user.id}`, "true");
-      redirectToDashboard();
-    }
+  const { userProfile, userRole } = useAuth();
+  
+  const handleGetStarted = () => {
+    navigate('/dashboard');
   };
   
-  const redirectToDashboard = () => {
-    console.log("Redirecting with user role:", userRole);
-    navigateToRoleDashboard(navigate, userRole);
-  };
-
-  // Function to handle the "Let's go" button click
-  const handleContinue = () => {
-    if (showAgents) {
-      completeWelcome();
-    } else {
-      setShowAgents(true);
-      setHasSeenWelcome(true);
-    }
-  };
-
-  // Skip directly to dashboard
-  const handleSkip = () => {
-    completeWelcome();
-  };
-
-  if (loading) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-12">
-          <div className="max-w-3xl mx-auto text-center">
-            <Skeleton className="h-12 w-3/4 mx-auto mb-4" />
-            <Skeleton className="h-6 w-1/2 mx-auto mb-12" />
-            <div className="space-y-4">
-              <Skeleton className="h-32 w-full" />
-              <Skeleton className="h-32 w-full" />
-              <Skeleton className="h-32 w-full" />
-            </div>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-
   return (
-    <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-        <div className="container mx-auto px-4 py-12 md:py-20">
-          {!showAgents ? (
-            <WelcomeHero 
-              userRole={userRole} 
-              onContinue={handleContinue} 
-              onSkip={handleSkip} 
-            />
-          ) : (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6 }}
-              className="max-w-4xl mx-auto"
-            >
-              <AITeam userRole={userRole} />
-              
-              <EmotionalTrust />
-              
-              <div className="text-center mt-12">
-                <Button 
-                  size="lg" 
-                  onClick={handleContinue}
-                  className="font-medium px-8 py-6"
-                >
-                  Let's Go! <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </div>
-            </motion.div>
-          )}
-        </div>
-      </div>
-    </Layout>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-purple-50/30 p-4">
+      <Card className="max-w-md w-full shadow-lg">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl">Welcome to EmviApp!</CardTitle>
+          <CardDescription>
+            We're excited to have you join our community
+          </CardDescription>
+        </CardHeader>
+        
+        <CardContent className="space-y-4">
+          <div className="text-center">
+            <div className="h-20 w-20 rounded-full bg-primary/10 mx-auto flex items-center justify-center mb-4">
+              <span className="text-3xl text-primary">✨</span>
+            </div>
+            
+            <h3 className="text-lg font-medium mb-2">
+              Hi, {userProfile?.full_name || 'there'}!
+            </h3>
+            
+            <p className="text-muted-foreground">
+              {userRole === 'artist' || userRole === 'nail technician/artist' ? (
+                "You're now part of our artist community. Let's set up your profile and start attracting clients."
+              ) : userRole === 'salon' || userRole === 'owner' ? (
+                "You're now part of our salon community. Let's set up your salon and start connecting with artists."
+              ) : (
+                "You're now part of our community. Let's explore what EmviApp has to offer."
+              )}
+            </p>
+          </div>
+          
+          <div className="bg-primary/5 p-4 rounded-lg">
+            <h4 className="font-medium mb-2">What's next:</h4>
+            <ul className="space-y-2 text-sm">
+              <li className="flex items-center">
+                <span className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center mr-2 text-xs">1</span>
+                <span>Complete your profile</span>
+              </li>
+              <li className="flex items-center">
+                <span className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center mr-2 text-xs">2</span>
+                <span>{userRole === 'artist' ? 'Add your portfolio' : 'Explore the platform'}</span>
+              </li>
+              <li className="flex items-center">
+                <span className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center mr-2 text-xs">3</span>
+                <span>{userRole === 'artist' ? 'Set up your services' : 'Connect with others'}</span>
+              </li>
+            </ul>
+          </div>
+        </CardContent>
+        
+        <CardFooter>
+          <Button className="w-full" onClick={handleGetStarted}>
+            Get Started
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
   );
 };
 

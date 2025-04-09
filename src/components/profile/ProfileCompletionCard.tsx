@@ -1,162 +1,99 @@
 
-import { useEffect } from "react";
-import { motion } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
+import { ChevronRight, Check, AlertCircle } from "lucide-react";
+import { useAuth } from "@/context/auth";
+import { useProfile } from "@/context/profile";
 import { Link } from "react-router-dom";
-import { CheckCircle2, Circle, ChevronRight, UserCircle } from "lucide-react";
-import { useProfileCompletion } from "@/components/profile/hooks/useProfileCompletion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { calculateProfileCompletion } from "@/utils/supabase-helpers";
 
 const ProfileCompletionCard = () => {
-  const { completedTasks, completionPercentage, pendingTasks } = useProfileCompletion();
+  const { userProfile, userRole } = useAuth();
+  const { incompleteFields } = useProfile();
   
-  useEffect(() => {
-    console.log("ProfileCompletionCard rendering with:", { 
-      completedTasks, 
-      completionPercentage,
-      pendingTasks
-    });
-  }, [completedTasks, completionPercentage, pendingTasks]);
+  const completionPercentage = calculateProfileCompletion(userProfile, userRole);
   
-  // Determine the progress color based on percentage
+  // Generate color based on completion percentage
   const getProgressColor = () => {
-    if (completionPercentage >= 80) return "bg-gradient-to-r from-green-400 to-emerald-500";
-    if (completionPercentage >= 50) return "bg-gradient-to-r from-amber-400 to-yellow-500";
-    return "bg-gradient-to-r from-violet-400 to-purple-500";
+    if (completionPercentage >= 80) return "bg-green-500";
+    if (completionPercentage >= 50) return "bg-amber-500";
+    return "bg-rose-500";
+  };
+  
+  // Generate message based on completion percentage
+  const getMessage = () => {
+    if (completionPercentage === 100) {
+      return "Your profile is complete! Clients can find you easily now.";
+    } else if (completionPercentage >= 80) {
+      return "Almost there! Complete your profile to get more visibility.";
+    } else if (completionPercentage >= 50) {
+      return "You're making progress. Keep going to improve your profile!";
+    } else {
+      return "Complete your profile to increase your visibility to potential clients.";
+    }
+  };
+  
+  // Get next incomplete field to highlight
+  const getNextAction = () => {
+    if (incompleteFields.includes('avatar_url')) {
+      return "Add a profile photo";
+    } else if (incompleteFields.includes('bio')) {
+      return "Add your bio";
+    } else if (incompleteFields.includes('specialty')) {
+      return "Add your specialty";
+    } else if (incompleteFields.includes('location')) {
+      return "Add your location";
+    } else if (incompleteFields.includes('portfolio')) {
+      return "Add portfolio items";
+    } else if (incompleteFields.includes('instagram')) {
+      return "Add your Instagram";
+    } else {
+      return "Update your profile";
+    }
   };
   
   return (
-    <Card className="border border-purple-100 shadow-sm overflow-hidden backdrop-blur-sm bg-white/90">
-      <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50 pb-4">
-        <CardTitle className="flex items-center text-lg font-medium">
-          <UserCircle className="h-5 w-5 text-purple-500 mr-2" />
-          Your Profile Progress
+    <Card className="overflow-hidden">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg font-medium flex items-center justify-between">
+          <span>Profile Completion</span>
+          <span className="text-base">{completionPercentage}%</span>
         </CardTitle>
       </CardHeader>
       
-      <CardContent className="p-6">
-        <div className="mb-6">
-          <div className="flex justify-between items-center mb-2">
-            <div className="font-medium text-lg">
-              {completionPercentage}% Complete
+      <CardContent className="pb-4">
+        <Progress 
+          value={completionPercentage} 
+          className="h-2 mb-3" 
+          indicatorClassName={getProgressColor()}
+        />
+        
+        <p className="text-sm text-muted-foreground mb-4">
+          {getMessage()}
+        </p>
+        
+        <div className="flex justify-between items-center">
+          {completionPercentage < 100 ? (
+            <>
+              <div className="flex items-center text-sm font-medium">
+                <AlertCircle className="h-4 w-4 mr-1 text-amber-500" />
+                <span>Next: {getNextAction()}</span>
+              </div>
+              
+              <Button asChild size="sm" className="gap-1">
+                <Link to="/profile/edit">
+                  Complete <ChevronRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </>
+          ) : (
+            <div className="flex items-center text-sm font-medium text-green-600 w-full justify-center">
+              <Check className="h-4 w-4 mr-1" />
+              <span>Profile complete!</span>
             </div>
-            <div className="text-sm text-gray-500">
-              {completedTasks.length} of {completedTasks.length + pendingTasks.length} tasks done
-            </div>
-          </div>
-          
-          <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-            <motion.div 
-              className={`h-full rounded-full ${getProgressColor()}`}
-              initial={{ width: 0 }}
-              animate={{ width: `${completionPercentage}%` }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-            />
-          </div>
+          )}
         </div>
-        
-        <div className="space-y-3 mb-6">
-          {/* Bio Task */}
-          <div className="flex items-center">
-            {completedTasks.includes('bio') ? (
-              <div className="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center mr-2">
-                <CheckCircle2 className="h-4 w-4 text-green-600" />
-              </div>
-            ) : (
-              <div className="h-5 w-5 rounded-full bg-gray-100 flex items-center justify-center mr-2">
-                <Circle className="h-4 w-4 text-gray-400" />
-              </div>
-            )}
-            <span className={`text-sm ${completedTasks.includes('bio') ? 'text-gray-800' : 'text-gray-500'}`}>
-              Add your bio
-            </span>
-          </div>
-          
-          {/* Specialty Task */}
-          <div className="flex items-center">
-            {completedTasks.includes('specialty') ? (
-              <div className="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center mr-2">
-                <CheckCircle2 className="h-4 w-4 text-green-600" />
-              </div>
-            ) : (
-              <div className="h-5 w-5 rounded-full bg-gray-100 flex items-center justify-center mr-2">
-                <Circle className="h-4 w-4 text-gray-400" />
-              </div>
-            )}
-            <span className={`text-sm ${completedTasks.includes('specialty') ? 'text-gray-800' : 'text-gray-500'}`}>
-              Add specialty
-            </span>
-          </div>
-          
-          {/* Location Task */}
-          <div className="flex items-center">
-            {completedTasks.includes('location') ? (
-              <div className="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center mr-2">
-                <CheckCircle2 className="h-4 w-4 text-green-600" />
-              </div>
-            ) : (
-              <div className="h-5 w-5 rounded-full bg-gray-100 flex items-center justify-center mr-2">
-                <Circle className="h-4 w-4 text-gray-400" />
-              </div>
-            )}
-            <span className={`text-sm ${completedTasks.includes('location') ? 'text-gray-800' : 'text-gray-500'}`}>
-              Add location
-            </span>
-          </div>
-          
-          {/* Profile Picture Task */}
-          <div className="flex items-center">
-            {completedTasks.includes('profile_picture') ? (
-              <div className="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center mr-2">
-                <CheckCircle2 className="h-4 w-4 text-green-600" />
-              </div>
-            ) : (
-              <div className="h-5 w-5 rounded-full bg-gray-100 flex items-center justify-center mr-2">
-                <Circle className="h-4 w-4 text-gray-400" />
-              </div>
-            )}
-            <span className={`text-sm ${completedTasks.includes('profile_picture') ? 'text-gray-800' : 'text-gray-500'}`}>
-              Upload profile photo
-            </span>
-          </div>
-          
-          {/* Portfolio Task */}
-          <div className="flex items-center">
-            {completedTasks.includes('portfolio') ? (
-              <div className="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center mr-2">
-                <CheckCircle2 className="h-4 w-4 text-green-600" />
-              </div>
-            ) : (
-              <div className="h-5 w-5 rounded-full bg-gray-100 flex items-center justify-center mr-2">
-                <Circle className="h-4 w-4 text-gray-400" />
-              </div>
-            )}
-            <span className={`text-sm ${completedTasks.includes('portfolio') ? 'text-gray-800' : 'text-gray-500'}`}>
-              Upload portfolio
-            </span>
-          </div>
-        </div>
-        
-        <div className="mb-4">
-          <p className="text-sm text-center text-gray-600">
-            {completionPercentage === 100 ? 
-              'Your profile is complete! Keep it updated.' :
-              'Complete your profile to unlock more bookings!'
-            }
-          </p>
-        </div>
-        
-        <Button asChild className="w-full" variant={completionPercentage === 100 ? "outline" : "default"}>
-          <Link to="/profile/edit" className="flex items-center justify-center">
-            {completionPercentage === 100 ? 
-              'View Profile' :
-              'Update Profile Now'
-            }
-            <ChevronRight className="ml-1 h-4 w-4" />
-          </Link>
-        </Button>
       </CardContent>
     </Card>
   );

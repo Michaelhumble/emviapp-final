@@ -1,125 +1,76 @@
 
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
+import { UserProfile } from '@/context/auth/types';
 import { calculateProfileCompletion } from '@/utils/supabase-helpers';
 
-interface ProfileContextProps {
-  isCompleted: boolean;
-  completionPercent: number;
-  completedTasks: {
-    profilePicture: boolean;
-    bio: boolean;
-    location: boolean;
-    specialty: boolean;
-    website: boolean;
-    instagram: boolean;
-  };
-  updateProfile: (data: any) => Promise<{ success: boolean; error?: any }>;
+// Define the context type
+interface ProfileContextType {
+  profileCompletion: number;
+  incompleteFields: string[];
+  refreshProfileCompletion: () => void;
 }
 
-const ProfileContext = createContext<ProfileContextProps | undefined>(undefined);
+// Create the context with default values
+const ProfileContext = createContext<ProfileContextType>({
+  profileCompletion: 0,
+  incompleteFields: [],
+  refreshProfileCompletion: () => {},
+});
 
+// ProfileProvider component
 export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, userProfile, refreshUserProfile } = useAuth();
-  
-  const [completedTasks, setCompletedTasks] = useState({
-    profilePicture: false,
-    bio: false,
-    location: false,
-    specialty: false,
-    website: false,
-    instagram: false,
-  });
-  
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [completionPercent, setCompletionPercent] = useState(0);
-  
-  useEffect(() => {
-    if (userProfile) {
-      // Update completion percent using the helper function
-      setCompletionPercent(calculateProfileCompletion(userProfile, userProfile.role || null));
-      
-      // Check individual tasks
-      const tasks = {
-        profilePicture: Boolean(userProfile.avatar_url),
-        bio: Boolean(userProfile.bio),
-        location: Boolean(userProfile.location),
-        specialty: Boolean(userProfile.specialty),
-        website: Boolean(userProfile.website),
-        instagram: Boolean(userProfile.instagram),
-      };
-      
-      setCompletedTasks(tasks);
-      
-      // Check if profile is considered complete (all required tasks done)
-      setIsCompleted(
-        tasks.profilePicture && 
-        tasks.bio && 
-        tasks.location && 
-        Boolean(userProfile.role)
-      );
-      
-      // If we have completed_profile_tasks array in the user profile, use it to track task completion
-      if (userProfile.completed_profile_tasks && Array.isArray(userProfile.completed_profile_tasks)) {
-        setCompletedTasks(prev => ({
-          ...prev,
-          profilePicture: userProfile.completed_profile_tasks?.includes('profile_picture') || prev.profilePicture,
-          bio: userProfile.completed_profile_tasks?.includes('bio') || prev.bio,
-          location: userProfile.completed_profile_tasks?.includes('location') || prev.location,
-          specialty: userProfile.completed_profile_tasks?.includes('specialty') || prev.specialty,
-        }));
-      }
+  const { userProfile, userRole } = useAuth();
+  const [profileCompletion, setProfileCompletion] = useState(0);
+  const [incompleteFields, setIncompleteFields] = useState<string[]>([]);
+
+  // Calculate profile completion
+  const calculateCompletion = () => {
+    if (!userProfile) {
+      setProfileCompletion(0);
+      setIncompleteFields(['all']);
+      return;
     }
-  }, [userProfile]);
-  
-  const updateProfile = async (data: any) => {
-    if (!user) {
-      return { success: false, error: 'User not authenticated' };
-    }
+
+    // Get completion percentage from utility function
+    const percentage = calculateProfileCompletion(userProfile, userRole);
+    setProfileCompletion(percentage);
+
+    // Determine which fields are incomplete
+    const incomplete: string[] = [];
     
-    try {
-      // Update the user profile
-      const { error } = await supabase
-        .from('users')
-        .update({
-          ...data,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
-        
-      if (error) throw error;
-      
-      // Refresh user profile to get updated data
-      await refreshUserProfile();
-      
-      return { success: true };
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      return { success: false, error };
-    }
+    if (!userProfile.full_name) incomplete.push('full_name');
+    if (!userProfile.bio) incomplete.push('bio');
+    if (!userProfile.avatar_url) incomplete.push('avatar_url');
+    if (!userProfile.specialty) incomplete.push('specialty');
+    if (!userProfile.location) incomplete.push('location');
+    if (!userProfile.phone) incomplete.push('phone');
+    if (!userProfile.instagram) incomplete.push('instagram');
+    if (!userProfile.portfolio_urls || userProfile.portfolio_urls.length === 0) incomplete.push('portfolio');
+    
+    setIncompleteFields(incomplete);
   };
-  
-  return (
-    <ProfileContext.Provider 
-      value={{ 
-        isCompleted, 
-        completionPercent, 
-        completedTasks, 
-        updateProfile 
-      }}
-    >
-      {children}
-    </ProfileContext.Provider>
-  );
+
+  // Calculate completion whenever profile changes
+  useEffect(() => {
+    calculateCompletion();
+  }, [userProfile, userRole]);
+
+  // Context value
+  const value = {
+    profileCompletion,
+    incompleteFields,
+    refreshProfileCompletion: calculateCompletion,
+  };
+
+  return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;
 };
 
+// Hook to use the profile context
 export const useProfile = () => {
   const context = useContext(ProfileContext);
-  
   if (context === undefined) {
     throw new Error('useProfile must be used within a ProfileProvider');
   }
-  
   return context;
 };

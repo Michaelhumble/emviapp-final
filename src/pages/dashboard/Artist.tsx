@@ -3,14 +3,13 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
-import { Paintbrush, MessageSquare, Calendar, Image, UserPlus, Zap, Trophy } from "lucide-react";
 import { useAuth } from "@/context/auth";
-import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
-import DashboardCard from "@/components/dashboard/DashboardCard";
-import InviteBanner from "@/components/dashboard/InviteBanner";
-import { toast } from "sonner";
+import ArtistDashboardProfile from "@/components/dashboard/artist/ArtistDashboardProfile";
+import ArtistServicesSection from "@/components/dashboard/artist/ArtistServicesSection";
 import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
 import ArtistPortfolioSection from "@/components/portfolio/ArtistPortfolioSection";
+import ArtistUpgradeSection from "@/components/dashboard/artist/ArtistUpgradeSection";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const ArtistDashboard = () => {
   const { userProfile } = useAuth();
@@ -20,25 +19,6 @@ const ArtistDashboard = () => {
     document.title = "Artist Dashboard | EmviApp";
   }, []);
   
-  const handleCardClick = (action: string) => {
-    switch (action) {
-      case "portfolio":
-        navigate("/profile/edit?tab=portfolio");
-        break;
-      case "messages":
-        navigate("/messages");
-        break;
-      case "calendar":
-        navigate("/calendar");
-        break;
-      case "boost":
-        toast.info("Boost feature coming soon!");
-        break;
-      default:
-        toast.info("Feature coming soon!");
-    }
-  };
-  
   return (
     <Layout>
       <motion.div 
@@ -47,121 +27,72 @@ const ArtistDashboard = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="container px-4 mx-auto py-12">
-          <RoleDashboardLayout>
-            <div className="space-y-8">
-              {/* Profile Completion Card - using our new component */}
-              <div className="mb-6">
-                <ProfileCompletionCard />
+        <div className="container px-4 mx-auto py-6">
+          {/* Artist Dashboard Header */}
+          <ArtistDashboardProfile artistProfile={userProfile} />
+          
+          {/* Main Dashboard Tabs */}
+          <Tabs defaultValue="dashboard" className="mt-6">
+            <TabsList className="mb-6">
+              <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+              <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
+              <TabsTrigger value="services">Services</TabsTrigger>
+              <TabsTrigger value="earnings">Earnings</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="dashboard" className="space-y-6">
+              {/* Profile Completion Card */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="md:col-span-2">
+                  <ProfileCompletionCard />
+                </div>
+                <div>
+                  {/* Simple Stats Card */}
+                  <div className="bg-white rounded-lg border border-gray-200 p-4 h-full">
+                    <h3 className="text-lg font-medium mb-3">Profile Stats</h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-500 text-sm">Profile Views</span>
+                        <span className="font-medium">{userProfile?.profile_views || 0}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-500 text-sm">Portfolio Items</span>
+                        <span className="font-medium">{userProfile?.portfolio_urls?.length || 0}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-500 text-sm">Services Offered</span>
+                        <span className="font-medium">0</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-500 text-sm">Completed Bookings</span>
+                        <span className="font-medium">0</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
               
-              {/* Stats Overview */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-                  <div className="text-sm text-gray-500">Profile Views</div>
-                  <div className="text-2xl font-bold">128</div>
-                  <div className="text-xs text-green-500">↑ 24% this week</div>
-                </div>
-                <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-                  <div className="text-sm text-gray-500">New Inquiries</div>
-                  <div className="text-2xl font-bold">8</div>
-                  <div className="text-xs text-green-500">↑ 2 since yesterday</div>
-                </div>
-                <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-                  <div className="text-sm text-gray-500">Upcoming Appointments</div>
-                  <div className="text-2xl font-bold">3</div>
-                  <div className="text-xs text-purple-500">Next: Tomorrow, 2pm</div>
-                </div>
-              </div>
-              
-              {/* Portfolio Section */}
+              {/* Additional Dashboard Components */}
+              <ArtistUpgradeSection />
+            </TabsContent>
+            
+            <TabsContent value="portfolio">
               <ArtistPortfolioSection />
-              
-              {/* Invite Banner */}
-              <InviteBanner className="mb-6" />
-              
-              {/* Action Cards */}
-              <div>
-                <h2 className="text-lg font-semibold mb-4 text-gray-800">Quick Actions</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <DashboardCard 
-                    title="Update Portfolio" 
-                    description="Showcase your latest work" 
-                    icon={Image} 
-                    onClick={() => handleCardClick("portfolio")}
-                    variant="primary"
-                  />
-                  
-                  <DashboardCard 
-                    title="Check Messages" 
-                    description="Respond to client inquiries" 
-                    icon={MessageSquare}
-                    onClick={() => handleCardClick("messages")} 
-                  />
-                  <DashboardCard 
-                    title="Manage Calendar" 
-                    description="Set your availability" 
-                    icon={Calendar}
-                    onClick={() => handleCardClick("calendar")} 
-                  />
-                  <DashboardCard 
-                    title="Invite Artists" 
-                    description="Grow your network" 
-                    icon={UserPlus}
-                    onClick={() => handleCardClick("invite")} 
-                    variant="secondary"
-                  />
-                  <DashboardCard 
-                    title="Boost Profile" 
-                    description="Get more visibility" 
-                    icon={Zap}
-                    onClick={() => handleCardClick("boost")} 
-                  />
-                  <DashboardCard 
-                    title="Pro Features" 
-                    description="Unlock advanced tools" 
-                    icon={Trophy}
-                    onClick={() => handleCardClick("pro")} 
-                    variant="outline"
-                  />
-                </div>
+            </TabsContent>
+            
+            <TabsContent value="services">
+              <ArtistServicesSection />
+            </TabsContent>
+            
+            <TabsContent value="earnings" className="text-center py-12">
+              <div className="max-w-md mx-auto">
+                <h3 className="text-xl font-medium mb-2">Earnings Coming Soon</h3>
+                <p className="text-muted-foreground mb-4">
+                  Track your bookings, payments, and financial growth. This feature is currently in development.
+                </p>
               </div>
-              
-              {/* Recent Activity */}
-              <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
-                <h2 className="text-lg font-semibold mb-4 text-gray-800">Recent Activity</h2>
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3 pb-3 border-b border-gray-100">
-                    <div className="bg-blue-100 p-2 rounded-full">
-                      <Paintbrush className="h-4 w-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">New portfolio item added</p>
-                      <p className="text-xs text-gray-500">2 hours ago</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3 pb-3 border-b border-gray-100">
-                    <div className="bg-green-100 p-2 rounded-full">
-                      <MessageSquare className="h-4 w-4 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">New message from Tina</p>
-                      <p className="text-xs text-gray-500">Yesterday</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="bg-purple-100 p-2 rounded-full">
-                      <UserPlus className="h-4 w-4 text-purple-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">Profile viewed by 12 new people</p>
-                      <p className="text-xs text-gray-500">This week</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </RoleDashboardLayout>
+            </TabsContent>
+          </Tabs>
         </div>
       </motion.div>
     </Layout>

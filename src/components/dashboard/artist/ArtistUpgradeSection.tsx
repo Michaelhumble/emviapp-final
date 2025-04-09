@@ -1,108 +1,96 @@
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Shield, Star, TrendingUp, Check } from "lucide-react";
-import { motion } from "framer-motion";
+import { CheckCircle, ArrowRight, Sparkles, Zap, Globe, Users } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 const ArtistUpgradeSection = () => {
-  // Example badge features
-  const verifiedBadgeFeatures = [
-    "Trust badge on your profile",
-    "Background check verification",
-    "Higher placement in search results",
-    "Increased client trust"
-  ];
+  const handleUpgradeClick = () => {
+    toast.info("Pro subscriptions coming soon! Check back later.");
+  };
   
-  const featuredArtistFeatures = [
-    "Featured on EmviApp homepage",
-    "Highlighted in local searches",
-    "Premium profile appearance",
-    "Priority client matching"
-  ];
-
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xl font-serif">Upgrade Options</CardTitle>
-        <CardDescription>Enhance your visibility and credibility</CardDescription>
+    <Card className="mb-6 border-primary/20">
+      <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10">
+        <div className="flex justify-between items-start">
+          <div>
+            <CardTitle className="text-lg font-medium">Upgrade to Pro</CardTitle>
+            <CardDescription>Boost your profile and business</CardDescription>
+          </div>
+          <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+            <Sparkles className="h-3 w-3 mr-1" /> Recommended
+          </Badge>
+        </div>
       </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Verified Artist Badge */}
-        <motion.div 
-          className="rounded-lg border bg-gradient-to-r from-blue-50 to-indigo-50 overflow-hidden"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <div className="p-4">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="bg-blue-100 p-2 rounded-full">
-                <Shield className="h-5 w-5 text-blue-600" />
-              </div>
-              <div>
-                <h3 className="font-medium">Verified Artist</h3>
-                <p className="text-xs text-blue-700">Build trust with potential clients</p>
-              </div>
+      
+      <CardContent className="pt-6">
+        <div className="grid gap-4">
+          <div className="flex items-start gap-2">
+            <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+            <div>
+              <h4 className="font-medium text-sm">Featured Placement</h4>
+              <p className="text-sm text-muted-foreground">Get priority placement in search results and explore pages</p>
             </div>
-            
-            <ul className="space-y-2 mb-4">
-              {verifiedBadgeFeatures.map((feature, i) => (
-                <li key={i} className="flex items-start">
-                  <Check className="h-4 w-4 text-blue-500 mt-0.5 mr-1.5 flex-shrink-0" />
-                  <span className="text-sm">{feature}</span>
-                </li>
-              ))}
-            </ul>
-            
-            <Button className="w-full bg-blue-600 hover:bg-blue-700">
-              Get Verified - $29.99
-            </Button>
           </div>
-        </motion.div>
-        
-        {/* Featured Artist */}
-        <motion.div 
-          className="rounded-lg border bg-gradient-to-r from-amber-50 to-orange-50 overflow-hidden"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-        >
-          <div className="p-4">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="bg-amber-100 p-2 rounded-full">
-                <Star className="h-5 w-5 text-amber-600" />
-              </div>
-              <div>
-                <h3 className="font-medium">Featured Artist</h3>
-                <p className="text-xs text-amber-700">Stand out from the competition</p>
-              </div>
+          
+          <div className="flex items-start gap-2">
+            <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+            <div>
+              <h4 className="font-medium text-sm">Advanced Analytics</h4>
+              <p className="text-sm text-muted-foreground">See who's viewing your profile and which services are most popular</p>
             </div>
-            
-            <ul className="space-y-2 mb-4">
-              {featuredArtistFeatures.map((feature, i) => (
-                <li key={i} className="flex items-start">
-                  <Check className="h-4 w-4 text-amber-500 mt-0.5 mr-1.5 flex-shrink-0" />
-                  <span className="text-sm">{feature}</span>
-                </li>
-              ))}
-            </ul>
-            
-            <Button className="w-full bg-amber-600 hover:bg-amber-700">
-              Get Featured - $49.99/month
-            </Button>
           </div>
-        </motion.div>
+          
+          <div className="flex items-start gap-2">
+            <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+            <div>
+              <h4 className="font-medium text-sm">Custom Booking Page</h4>
+              <p className="text-sm text-muted-foreground">Professional booking page to share with clients</p>
+            </div>
+          </div>
+          
+          <div className="flex items-start gap-2">
+            <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+            <div>
+              <h4 className="font-medium text-sm">Remove EmviApp Branding</h4>
+              <p className="text-sm text-muted-foreground">Present a fully professional image to your clients</p>
+            </div>
+          </div>
+        </div>
         
-        {/* Growth stats teaser */}
-        <div className="bg-purple-50 rounded-lg p-3 border border-purple-100">
-          <div className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-purple-600" />
-            <span className="text-xs font-medium text-purple-800">
-              Artists with badges receive 3.2x more client inquiries!
-            </span>
+        <div className="grid grid-cols-3 gap-4 mt-6">
+          <div className="flex flex-col items-center p-3 bg-primary/5 rounded-md">
+            <Zap className="h-6 w-6 text-amber-500 mb-1" />
+            <span className="text-sm font-medium">3x Visibility</span>
+          </div>
+          
+          <div className="flex flex-col items-center p-3 bg-primary/5 rounded-md">
+            <Globe className="h-6 w-6 text-blue-500 mb-1" />
+            <span className="text-sm font-medium">Custom Domain</span>
+          </div>
+          
+          <div className="flex flex-col items-center p-3 bg-primary/5 rounded-md">
+            <Users className="h-6 w-6 text-purple-500 mb-1" />
+            <span className="text-sm font-medium">Client CRM</span>
           </div>
         </div>
       </CardContent>
+      
+      <CardFooter className="flex flex-col">
+        <div className="flex items-center justify-between w-full mb-4">
+          <div className="text-lg font-medium">$9.99 <span className="text-sm text-muted-foreground">/month</span></div>
+          <div className="text-sm text-muted-foreground">or $99/year (save 18%)</div>
+        </div>
+        
+        <Button className="w-full" onClick={handleUpgradeClick}>
+          Upgrade Now <ArrowRight className="h-4 w-4 ml-1" />
+        </Button>
+        
+        <p className="text-xs text-center text-muted-foreground mt-3">
+          30-day money-back guarantee. Cancel anytime.
+        </p>
+      </CardFooter>
     </Card>
   );
 };
