@@ -6,34 +6,13 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-interface HeroImage {
-  url: string;
-  alt: string;
-}
-
 interface HeroContentProps {
   activeIndex: number;
   setActiveIndex: (index: number) => void;
-  heroImages: HeroImage[];
   isMobile?: boolean;
 }
 
-const HeroContent = ({ activeIndex, setActiveIndex, heroImages, isMobile = false }: HeroContentProps) => {
-  // Helper function to get the appropriate badge text based on the image index/alt text
-  const getImageCategory = (index: number, alt: string): string => {
-    const altText = alt.toLowerCase();
-    
-    if (altText.includes('nail') || altText.includes('manicure') || altText.includes('polish')) return 'Nail Artistry';
-    if (altText.includes('makeup') || altText.includes('cosmetic')) return 'Makeup Artists';
-    if (altText.includes('hair') || altText.includes('salon')) return 'Hair Stylists';
-    if (altText.includes('barber') || altText.includes('beard') || altText.includes('groom')) return 'Barbers';
-    if (altText.includes('facial') || altText.includes('spa') || altText.includes('massage') || altText.includes('wellness') || altText.includes('yoga')) return 'Spa & Wellness';
-    if (altText.includes('tattoo')) return 'Tattoo Artists';
-    
-    // Fallback categories
-    return 'Beauty Professionals';
-  };
-
+const HeroContent = ({ activeIndex, setActiveIndex, isMobile = false }: HeroContentProps) => {
   return (
     <div className="container mx-auto px-4 relative z-30">
       <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
@@ -42,37 +21,34 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages, isMobile = false
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          <Badge variant="outline" className="mb-4 sm:mb-6 bg-white/30 backdrop-blur-md px-3 py-1 sm:px-4 sm:py-1.5 text-xs font-medium rounded-full border-white/30 text-gray-100 shadow-sm">
-            {getImageCategory(activeIndex, heroImages[activeIndex]?.alt || '')}
+          <Badge variant="outline" className="mb-4 sm:mb-6 bg-white/30 backdrop-blur-md px-3 py-1 sm:px-4 sm:py-1.5 text-xs font-medium rounded-full border-white/30 text-gray-700 shadow-sm">
+            Beauty Professionals
           </Badge>
         </motion.div>
         
         <motion.h1 
-          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold font-serif leading-tight mb-4 sm:mb-6 text-white drop-shadow-lg tracking-tight px-2"
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold font-serif leading-tight mb-4 sm:mb-6 text-gray-800 tracking-tight px-2"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          style={{ textShadow: '0px 3px 8px rgba(0,0,0,0.7)' }}
         >
           The Beauty Industry's Missing Piece — We Just Built It.
         </motion.h1>
         <motion.p 
-          className="text-base sm:text-lg md:text-xl text-white mb-6 sm:mb-10 max-w-3xl font-sans px-2"
+          className="text-base sm:text-lg md:text-xl text-gray-600 mb-6 sm:mb-10 max-w-3xl font-sans px-2"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.3 }}
-          style={{ textShadow: '0px 2px 6px rgba(0,0,0,0.7)' }}
         >
           Hair, Nails, Makeup, Tattoos, Brows, Barbers, Booth Rentals—All in One Powerful App. Finally.
         </motion.p>
 
         {/* Vietnamese text addition */}
         <motion.p 
-          className="text-sm sm:text-base text-gray-300 mt-2 mb-6 max-w-2xl font-sans px-2"
+          className="text-sm sm:text-base text-gray-500 mt-2 mb-6 max-w-2xl font-sans px-2"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.5 }}
-          style={{ textShadow: '0px 1px 4px rgba(0,0,0,0.6)' }}
         >
           <em>Chúng tôi nói tiếng Việt — EmviApp là ngôi nhà mới cho cộng đồng làm đẹp của bạn.</em>
         </motion.p>
@@ -126,23 +102,6 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages, isMobile = false
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        </motion.div>
-        
-        {/* Carousel indicators */}
-        <motion.div 
-          className="flex mt-8 sm:mt-12 gap-2 justify-center overflow-x-auto pb-2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-        >
-          {heroImages.map((_, index) => (
-            <button
-              key={index}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${activeIndex === index ? 'bg-white w-6' : 'bg-white/40'}`}
-              onClick={() => setActiveIndex(index)}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
         </motion.div>
       </div>
     </div>
