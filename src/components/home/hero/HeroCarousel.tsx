@@ -32,20 +32,21 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
             <img 
               src={image.url} 
               alt={image.alt}
-              className={`${isMobile ? 'w-full h-full object-contain' : 'w-full h-full object-cover'}`}
+              className={`w-full h-full ${isMobile ? 'object-contain' : 'object-cover'}`}
               style={{ 
                 objectPosition: "center",
               }}
             />
           </div>
           
-          {/* Enhanced gradient overlay for better text readability and visual appeal */}
+          {/* Enhanced glass effect overlay for mobile with stronger blur and transparency */}
           <div 
             className="absolute inset-0 z-10"
             style={{ 
               background: isMobile 
-                ? 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.3) 100%)' 
-                : 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.3) 100%)'
+                ? 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.2) 100%)' 
+                : 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.3) 100%)',
+              backdropFilter: isMobile ? 'blur(8px)' : 'blur(2px)'
             }}
             aria-hidden="true"
           ></div>
