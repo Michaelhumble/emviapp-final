@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -20,7 +19,6 @@ import RoleSelectionCards from "@/components/auth/RoleSelectionCards";
 import { normalizeUserRole } from "@/utils/roleUtils";
 import { navigateToRoleDashboard } from "@/utils/navigation";
 
-// Define form schema
 const formSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
@@ -51,31 +49,30 @@ const SignUpPage = () => {
   
   const handleRoleSelect = (role: UserRole) => {
     setSelectedRole(role);
+    console.log(`[SignUp] Selected role changed to: ${role}`);
   };
   
   const onSubmit = async (data: FormValues) => {
     setIsLoading(true);
     
     try {
-      // Ensure we have a valid normalized role
-      const normalizedRole = normalizeUserRole(selectedRole);
-      
-      if (!normalizedRole) {
-        toast.error("Please select a valid role to continue");
+      // Ensure we have a valid role selected
+      if (!selectedRole) {
+        toast.error("Please select a role to continue");
         setIsLoading(false);
         return;
       }
+
+      console.log(`[SignUp] Creating account with explicit role: ${selectedRole}`);
       
-      console.log(`Signing up user with role: ${normalizedRole}`);
-      
-      // Sign up with Supabase - explicitly set role in metadata
+      // Sign up with Supabase - EXPLICITLY pass the selected role to auth metadata
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
           data: {
             full_name: data.fullName,
-            role: normalizedRole, // Set role in auth metadata
+            role: selectedRole, // ✅ Set role in auth metadata
           },
         },
       });
@@ -90,45 +87,63 @@ const SignUpPage = () => {
         // Prepare user profile data based on role
         const profileData: Record<string, any> = {
           full_name: data.fullName,
-          role: normalizedRole, // Set role in users table
+          role: selectedRole, // ✅ Set role in users table
           location: data.location || null,
         };
         
         // Add role-specific fields
-        if (normalizedRole === "artist" || normalizedRole === "freelancer") {
+        if (selectedRole === "artist" || selectedRole === "freelancer") {
           profileData.specialty = data.specialty || null;
         }
         
-        if (normalizedRole === "salon_owner") {
+        if (selectedRole === "salon_owner") {
           profileData.salon_name = data.businessName || null;
         }
         
-        // Update user profile with role information
+        // Explicitly wait for the DB update to complete before continuing
         const { error: profileError } = await supabase
           .from("users")
           .update(profileData)
           .eq("id", authData.user.id);
           
         if (profileError) {
-          console.error("Error updating profile:", profileError);
-          // Continue despite error to ensure the user can still use the app
+          console.error("[SignUp] Error updating profile:", profileError);
+          
+          // Try to verify the role was set correctly
+          const { data: userCheck } = await supabase
+            .from("users")
+            .select("role")
+            .eq("id", authData.user.id)
+            .single();
+            
+          if (!userCheck?.role || userCheck.role !== selectedRole) {
+            console.warn(`[SignUp] Role verification failed! DB has: ${userCheck?.role}, expected: ${selectedRole}`);
+            
+            // Final attempt to set the role
+            await supabase
+              .from("users")
+              .update({ role: selectedRole })
+              .eq("id", authData.user.id);
+          }
         }
         
         // Success message
         toast.success(`Account created successfully! Welcome to EmviApp.`);
         
-        // Navigate to appropriate dashboard
-        navigateToRoleDashboard(navigate, normalizedRole);
+        // Force refresh auth metadata to ensure it has the role
+        await supabase.auth.refreshSession();
+        
+        // Navigate to appropriate dashboard based on selected role
+        navigateToRoleDashboard(navigate, selectedRole);
       }
     } catch (error) {
-      console.error("Signup error:", error);
+      console.error("[SignUp] Signup error:", error);
       toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
   
-  // Role-specific form fields
   const renderRoleSpecificFields = () => {
     return (
       <AnimatePresence mode="wait">
@@ -310,7 +325,6 @@ const SignUpPage = () => {
                   )}
                 />
                 
-                {/* Role-specific fields */}
                 {renderRoleSpecificFields()}
                 
                 <Button 

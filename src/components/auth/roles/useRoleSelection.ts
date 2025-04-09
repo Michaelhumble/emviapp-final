@@ -1,37 +1,64 @@
 
 import { useState } from "react";
-import { UserRole } from "@/context/auth/types";
-import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { UserRole } from "@/context/auth/types";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { navigateToRoleDashboard } from "@/utils/navigation";
 
-export const useRoleSelection = (userId: string, onComplete: (open: boolean) => void) => {
+export const useRoleSelection = (userId: string, onOpenChange: (open: boolean) => void) => {
   const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const handleRoleSelection = async () => {
-    if (!selectedRole) return;
-    
+    if (!selectedRole) {
+      toast.error("Please select a role to continue");
+      return;
+    }
+
     setIsSubmitting(true);
-    
+
     try {
-      const { error } = await supabase
+      console.log(`[RoleSelection] Setting role for user ${userId} to ${selectedRole}`);
+      
+      // First update auth metadata with the role
+      const { error: metadataError } = await supabase.auth.updateUser({
+        data: { role: selectedRole }
+      });
+      
+      if (metadataError) {
+        console.error("[RoleSelection] Error updating auth metadata:", metadataError);
+        throw metadataError;
+      }
+      
+      console.log("[RoleSelection] Successfully updated auth metadata");
+      
+      // Then update the users table with the selected role
+      const { error: dbError } = await supabase
         .from('users')
         .update({ role: selectedRole })
         .eq('id', userId);
+        
+      if (dbError) {
+        console.error("[RoleSelection] Error updating role in database:", dbError);
+        throw dbError;
+      }
       
-      if (error) throw error;
+      console.log("[RoleSelection] Successfully updated role in database");
       
-      toast.success(`Role selected! You're now registered as a ${selectedRole}.`);
+      // Close the modal
+      onOpenChange(false);
       
-      // Use the utility function for consistent role-based navigation
-      onComplete(false);
+      // Show success message
+      toast.success(`Your role is now set to ${selectedRole}!`);
+      
+      // Navigate to the appropriate dashboard
       navigateToRoleDashboard(navigate, selectedRole);
+      
     } catch (error) {
-      console.error("Error setting user role:", error);
-      toast.error("We couldn't save your role. Please try again.");
+      console.error("[RoleSelection] Role selection error:", error);
+      toast.error("Failed to update your role. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

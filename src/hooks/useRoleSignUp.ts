@@ -26,6 +26,11 @@ export const useRoleSignUp = () => {
       return;
     }
     
+    if (!selectedRole) {
+      setError("Please select a role to continue");
+      return;
+    }
+    
     setIsSubmitting(true);
 
     try {
@@ -86,6 +91,9 @@ export const useRoleSignUp = () => {
       
       // Force a small delay to let database updates complete
       await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Force a session refresh to get the updated metadata
+      await supabase.auth.refreshSession();
       
       // Log success
       toast.success("Account created successfully!");

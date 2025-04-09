@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { UserRole } from "@/context/auth/types";
 
 export const useSignUp = () => {
   const [email, setEmail] = useState("");
@@ -12,6 +13,7 @@ export const useSignUp = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [showRoleModal, setShowRoleModal] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
   const { signUp, user, isNewUser, clearIsNewUser } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -25,7 +27,7 @@ export const useSignUp = () => {
   }, [searchParams]);
 
   useEffect(() => {
-    console.log("Auth state in useSignUp:", { user, isNewUser, showRoleModal });
+    console.log("Auth state in useSignUp:", { user, isNewUser, showRoleModal, selectedRole });
     
     if (user && isNewUser) {
       console.log("New user detected, redirecting to role selection");
@@ -49,7 +51,9 @@ export const useSignUp = () => {
     setIsSubmitting(true);
 
     try {
-      const signUpResponse = await signUp(email, password);
+      // Make sure we don't have a role selected here since this is a general sign-up form
+      // The role will be selected in the RoleSelectionModal
+      const signUpResponse = await signUp(email, password, null); // Explicitly pass null to avoid any default role
       
       if (signUpResponse.error) {
         toast.error(signUpResponse.error.message || "Failed to sign up");
@@ -105,6 +109,11 @@ export const useSignUp = () => {
     }
   };
 
+  const handleRoleSelect = (role: UserRole) => {
+    setSelectedRole(role);
+    console.log(`Selected role: ${role}`);
+  };
+
   return {
     email,
     setEmail,
@@ -116,6 +125,8 @@ export const useSignUp = () => {
     referralCode,
     showRoleModal,
     setShowRoleModal,
+    selectedRole,
+    handleRoleSelect,
     handleSubmit,
     handleRoleModalClose,
     user
