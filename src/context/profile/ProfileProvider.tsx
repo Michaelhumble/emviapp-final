@@ -78,6 +78,8 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (!user?.id) return;
     
     try {
+      console.log('Updating user progress:', { tasks, percentage });
+      
       const { error } = await supabase
         .from('users')
         .update({
@@ -105,27 +107,48 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
       let tasksToMark: string[] = [];
       
       try {
+        console.log('Checking profile completion for user:', user.id);
+        
         // First check localStorage
         const savedTasks = localStorage.getItem(`${LOCAL_STORAGE_KEY}_${user.id}`);
         if (savedTasks) {
+          console.log('Found tasks in localStorage:', savedTasks);
           tasksToMark = JSON.parse(savedTasks);
         }
         
-        // Then check profile data to auto-mark tasks as complete
+        // Then check database for completed tasks
+        if (userProfile?.completed_profile_tasks && Array.isArray(userProfile.completed_profile_tasks)) {
+          console.log('Found tasks in database:', userProfile.completed_profile_tasks);
+          
+          // Merge with localStorage tasks (prefer database)
+          userProfile.completed_profile_tasks.forEach(task => {
+            if (!tasksToMark.includes(task)) {
+              tasksToMark.push(task);
+            }
+          });
+        }
+        
+        // Auto-mark tasks as complete if data exists
         if (userProfile) {
+          console.log('Checking user profile data for auto-completion');
+          
           if (userProfile.bio && !tasksToMark.includes('bio')) {
+            console.log('Auto-marking bio as complete');
             tasksToMark.push('bio');
           }
           
           if (userProfile.specialty && !tasksToMark.includes('specialty')) {
+            console.log('Auto-marking specialty as complete');
             tasksToMark.push('specialty');
           }
           
           if (userProfile.location && !tasksToMark.includes('location')) {
+            console.log('Auto-marking location as complete');
             tasksToMark.push('location');
           }
           
           if (userProfile.avatar_url && !tasksToMark.includes('profile_picture')) {
+            console.log('Auto-marking profile_picture as complete');
             tasksToMark.push('profile_picture');
           }
           
@@ -134,9 +157,12 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
               Array.isArray(userProfile.portfolio_urls) && 
               userProfile.portfolio_urls.length > 0 && 
               !tasksToMark.includes('portfolio')) {
+            console.log('Auto-marking portfolio as complete');
             tasksToMark.push('portfolio');
           }
         }
+        
+        console.log('Final tasks to mark as complete:', tasksToMark);
         
         // Set completed tasks state
         setCompletedTasks(tasksToMark);
@@ -145,7 +171,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
         const percentage = Math.round((tasksToMark.length / allTasks.length) * 100);
         setCompletionPercentage(percentage);
         
-        // Update localStorage if needed
+        // Update localStorage
         localStorage.setItem(`${LOCAL_STORAGE_KEY}_${user.id}`, JSON.stringify(tasksToMark));
         
         // Update database if needed
@@ -160,6 +186,15 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     
     checkProfileCompletion();
   }, [user, userProfile]);
+
+  // Log the state for debugging
+  useEffect(() => {
+    console.log('ProfileCompletionContext state:', {
+      completedTasks,
+      completionPercentage,
+      pendingTasks
+    });
+  }, [completedTasks, completionPercentage, pendingTasks]);
 
   return (
     <ProfileCompletionContext.Provider

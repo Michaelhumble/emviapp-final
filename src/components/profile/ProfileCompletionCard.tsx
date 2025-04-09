@@ -4,8 +4,8 @@ import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { CheckCircle2, Circle, ChevronRight, UserCircle, StarIcon } from "lucide-react";
-import { useProfileCompletion } from "@/context/profile";
+import { CheckCircle2, Circle, ChevronRight, UserCircle } from "lucide-react";
+import { useProfileCompletion } from "@/components/profile/hooks/useProfileCompletion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/context/auth";
@@ -16,10 +16,10 @@ const ProfileCompletionCard = () => {
   const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
-    // Wait for profile data to load
+    // Use a shorter loading time to improve UX
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 800);
+    }, 500);
     
     return () => clearTimeout(timer);
   }, []);
@@ -66,6 +66,8 @@ const ProfileCompletionCard = () => {
     if (completionPercentage >= 50) return "bg-gradient-to-r from-amber-400 to-yellow-500";
     return "bg-gradient-to-r from-violet-400 to-purple-500";
   };
+  
+  console.log("ProfileCompletionCard rendering with:", { completedTasks, completionPercentage });
   
   if (isLoading) {
     return (
@@ -125,6 +127,7 @@ const ProfileCompletionCard = () => {
                 variants={progressVariants}
                 initial="hidden"
                 animate="visible"
+                style={{ width: `${completionPercentage}%` }}
               />
             </div>
           </div>
@@ -259,7 +262,7 @@ const ProfileCompletionCard = () => {
             <Link to="/profile/edit" className="flex items-center justify-center">
               {completionPercentage === 100 ? 
                 'View Profile' :
-                'Update Profile'
+                'Update Profile Now'
               }
               <ChevronRight className="ml-1 h-4 w-4" />
             </Link>

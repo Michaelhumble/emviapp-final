@@ -1,4 +1,5 @@
 
-import { useProfileCompletion as useProfileCompletionHook } from '@/context/profile';
+import { useProfileCompletion as useProfileCompletionContext } from '@/context/profile';
 
-export const useProfileCompletion = useProfileCompletionHook;
+// This hook simply re-exports the context hook for better organization
+export const useProfileCompletion = useProfileCompletionContext;

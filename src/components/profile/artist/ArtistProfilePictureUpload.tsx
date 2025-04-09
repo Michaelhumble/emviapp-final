@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2 } from "lucide-react";
-import { useProfileCompletion } from "@/context/profile";
+import { useProfileCompletion } from "@/components/profile/hooks/useProfileCompletion";
 import { useEffect } from "react";
 import { useAuth } from "@/context/auth";
 import ProfilePhotoUploader from "./ProfilePhotoUploader";
