@@ -4,7 +4,7 @@ import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { normalizeRole } from '@/utils/navigation';
+import { normalizeRole } from '@/utils/roles';
 import { Badge } from '@/components/ui/badge';
 import { UserRole } from '@/context/auth/types';
 
