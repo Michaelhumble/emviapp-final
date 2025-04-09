@@ -1,7 +1,55 @@
 
+import { RadioGroup } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { UserRole } from "@/context/auth/types";
+import { User, Scissors, Building2, Briefcase, ShoppingBag, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { roleOptions } from "./roles/roleData";
+
+interface RoleOption {
+  id: UserRole;
+  label: string;
+  description: string;
+  icon: React.ReactNode;
+}
+
+const roleOptions: RoleOption[] = [
+  {
+    id: "customer",
+    label: "Customer",
+    description: "I'm looking for beauty services",
+    icon: <User className="h-5 w-5 text-indigo-500" />
+  },
+  {
+    id: "owner",
+    label: "Salon Owner",
+    description: "I own a salon or beauty business",
+    icon: <Building2 className="h-5 w-5 text-indigo-500" />
+  },
+  {
+    id: "freelancer",
+    label: "Freelancer",
+    description: "I offer freelance beauty services",
+    icon: <Briefcase className="h-5 w-5 text-indigo-500" />
+  },
+  {
+    id: "artist",
+    label: "Artist",
+    description: "I'm a beauty professional",
+    icon: <Scissors className="h-5 w-5 text-indigo-500" />
+  },
+  {
+    id: "vendor",
+    label: "Vendor",
+    description: "I sell beauty products/supplies",
+    icon: <ShoppingBag className="h-5 w-5 text-indigo-500" />
+  },
+  {
+    id: "other",
+    label: "Other",
+    description: "None of the above",
+    icon: <HelpCircle className="h-5 w-5 text-indigo-500" />
+  }
+];
 
 interface RoleSelectionCardsProps {
   selectedRole: UserRole;
@@ -11,9 +59,9 @@ interface RoleSelectionCardsProps {
 const RoleSelectionCards = ({ selectedRole, onChange }: RoleSelectionCardsProps) => {
   return (
     <div className="w-full space-y-3">
-      <div className="text-sm font-medium text-gray-700">
+      <Label className="text-sm font-medium text-gray-700">
         I am joining as a:
-      </div>
+      </Label>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {roleOptions.map((option) => (
           <div 
@@ -24,10 +72,7 @@ const RoleSelectionCards = ({ selectedRole, onChange }: RoleSelectionCardsProps)
                 ? "border-indigo-600 bg-indigo-50" 
                 : "border-gray-200 bg-white hover:border-indigo-200"
             )}
-            onClick={() => {
-              console.log(`RoleSelectionCards: selected role ${option.id}`);
-              onChange(option.id);
-            }}
+            onClick={() => onChange(option.id)}
           >
             <div className="flex w-full items-center gap-x-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50">

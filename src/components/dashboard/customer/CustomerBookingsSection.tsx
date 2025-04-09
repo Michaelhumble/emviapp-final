@@ -1,5 +1,4 @@
 
-// This is a placeholder component since we've removed the customer role
-const CustomerBookingsSection = () => null;
+import CustomerBookingsSection from "./bookings/CustomerBookingsSection";
 
 export default CustomerBookingsSection;

@@ -1,69 +1,84 @@
 
-import { useEffect } from 'react';
-import { useAuth } from '@/context/auth';
-import Layout from '@/components/layout/Layout';
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Home } from 'lucide-react';
-import DashboardRouteProtection from '@/components/dashboard/DashboardRouteProtection';
-import { Link } from 'react-router-dom';
-import { adaptUserProfile } from '@/utils/profileAdapter';
-import SalonDashboardContent from '@/components/dashboard/salon/SalonDashboardContent';
+import { useEffect } from "react";
+import Layout from "@/components/layout/Layout";
+import { motion } from "framer-motion";
+import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
+import { useAuth } from "@/context/auth";
+import SalonDashboardBanner from "@/components/dashboard/salon/SalonDashboardBanner";
+import SalonQuickStats from "@/components/dashboard/salon/SalonQuickStats";
+import SalonReferralCard from "@/components/dashboard/salon/SalonReferralCard";
+import SalonDashboardActionButtons from "@/components/dashboard/salon/SalonDashboardActionButtons";
+import SalonCreditStatus from "@/components/dashboard/salon/SalonCreditStatus";
+import SalonPostedJobsSection from "@/components/dashboard/salon/SalonPostedJobsSection";
+import SalonBoostStatus from "@/components/dashboard/salon/SalonBoostStatus";
+import { toast } from "sonner";
+import SalonCreditPromotion from "@/components/dashboard/salon/SalonCreditPromotion";
+import TopLocalArtists from "@/components/dashboard/salon/TopLocalArtists";
 
 const SalonDashboard = () => {
   const { userProfile, userRole } = useAuth();
-  const adaptedProfile = adaptUserProfile(userProfile);
-
-  // Salon name for display
-  const salonName = adaptedProfile?.salon_name || adaptedProfile?.company_name || 'Your Salon';
-
+  
   useEffect(() => {
-    // Set page title
-    document.title = "Salon Owner Dashboard | EmviApp";
+    document.title = "Salon Dashboard | EmviApp";
+    // Add console log to debug
+    console.log("Salon Dashboard rendered with profile:", userProfile);
+    console.log("Current user role:", userRole);
     
-    // Debug check to validate correct routing
-    if (userRole) {
-      console.log(`[Salon Dashboard] Current role: ${userRole}`);
+    if (userRole !== 'salon' && userRole !== 'owner') {
+      toast.info("You're currently viewing the Salon dashboard, but your role is set as " + userRole);
     }
-  }, [userRole]);
-
+  }, [userProfile, userRole]);
+  
   return (
-    <DashboardRouteProtection allowedRoles={['salon_owner']} dashboardType="Salon">
-      <Layout>
-        <div className="container mx-auto px-4 py-8">
-          <Breadcrumb className="mb-6">
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link to="/">
-                    <Home className="h-4 w-4 mr-1" />
-                    Home
-                  </Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
+    <Layout>
+      <motion.div 
+        className="min-h-screen bg-gradient-to-b from-white to-blue-50/30"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="container px-4 mx-auto py-12">
+          <RoleDashboardLayout>
+            <div className="space-y-8">
+              {/* Salon Welcome Banner with Vietnamese text */}
+              <SalonDashboardBanner userName={userProfile?.salon_name || userProfile?.full_name} />
               
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link to="/dashboard">Dashboard</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
+              {/* Salon Boost Status */}
+              <SalonBoostStatus />
               
-              <BreadcrumbItem>
-                <BreadcrumbPage>Salon</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-          
-          <h1 className="text-3xl font-serif mb-8">
-            {salonName} Dashboard
-          </h1>
-          
-          {/* Salon Dashboard Content */}
-          <SalonDashboardContent />
+              {/* Salon Quick Stats */}
+              <SalonQuickStats />
+              
+              {/* Action Buttons with Vietnamese text */}
+              <SalonDashboardActionButtons />
+              
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* NEW: Credit Promotion Card */}
+                <div className="lg:col-span-1">
+                  <SalonCreditPromotion />
+                </div>
+                
+                {/* Referral Center with Vietnamese text */}
+                <div id="referral-card" className="lg:col-span-1">
+                  <SalonReferralCard />
+                </div>
+                
+                {/* NEW: Top Local Artists widget */}
+                <div className="lg:col-span-1">
+                  <TopLocalArtists />
+                </div>
+              </div>
+              
+              {/* Credit Status Card */}
+              <SalonCreditStatus />
+              
+              {/* Posted Jobs Section */}
+              <SalonPostedJobsSection />
+            </div>
+          </RoleDashboardLayout>
         </div>
-      </Layout>
-    </DashboardRouteProtection>
+      </motion.div>
+    </Layout>
   );
 };
 

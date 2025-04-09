@@ -4,40 +4,19 @@ import { useNavigate } from "react-router-dom";
 import { Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useArtistData } from "./context/ArtistDataContext";
-import { useAuth } from "@/context/auth";
 
 interface ArtistWelcomeBannerProps {
-  firstName?: string;
+  firstName: string;
 }
 
 const ArtistWelcomeBanner = ({ firstName }: ArtistWelcomeBannerProps) => {
   const navigate = useNavigate();
   const { artistProfile } = useArtistData();
-  const { userProfile } = useAuth();
-  
-  // FIXED: Improved name resolution logic to check multiple sources
-  // Get the first name from context or profile data
-  let displayName = "";
-  
-  if (artistProfile?.full_name) {
-    displayName = artistProfile.full_name.split(' ')[0];
-  } else if (userProfile?.full_name) {
-    displayName = userProfile.full_name.split(' ')[0];
-  } else if (firstName) {
-    displayName = firstName;
-  } else {
-    displayName = 'Artist';
-  }
-  
-  console.log("[ArtistWelcomeBanner] Display name:", displayName);
-  console.log("[ArtistWelcomeBanner] Artist profile:", artistProfile);
   
   const handlePreviewProfile = () => {
     // Navigate to public profile page using user ID
     if (artistProfile?.id) {
       navigate(`/u/${artistProfile.id}`);
-    } else if (userProfile?.id) {
-      navigate(`/u/${userProfile.id}`);
     }
   };
   
@@ -51,7 +30,7 @@ const ArtistWelcomeBanner = ({ firstName }: ArtistWelcomeBannerProps) => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-serif font-semibold mb-2">
-            Welcome back, {displayName}! Let's grow your beauty career today.
+            Welcome back, {firstName || 'Artist'}!
           </h1>
           
           {/* Vietnamese and English welcome text */}

@@ -4,7 +4,6 @@ import AIWelcomeAssistant from "./AIWelcomeAssistant";
 import AIRecommendations from "./AIRecommendations";
 import AISmartReminder from "./AISmartReminder";
 import AIPostPerformance from "./AIPostPerformance";
-import { isRoleEquivalent } from "@/utils/roleUtils";
 
 interface AIDashboardWidgetsProps {
   className?: string;
@@ -16,16 +15,13 @@ const AIDashboardWidgets = ({ className = "" }: AIDashboardWidgetsProps) => {
   if (!user) return null;
   
   // Determine which components to show based on user role
-  const showPostPerformance = isRoleEquivalent(userRole, [
-    'artist',
-    'salon',
-    'owner',
-    'salon_owner',
-    'freelancer',
-    'vendor',
-    'supplier',
-    'beauty supplier'
-  ]);
+  const showPostPerformance = userRole === 'artist' || 
+                             userRole === 'salon' || 
+                             userRole === 'freelancer' || 
+                             userRole === 'vendor' ||
+                             userRole === 'owner' ||
+                             userRole === 'supplier' ||
+                             userRole === 'beauty supplier';
   
   return (
     <div className={`space-y-6 ${className}`}>

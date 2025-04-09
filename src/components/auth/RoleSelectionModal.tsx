@@ -1,14 +1,10 @@
 
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { UserRole } from "@/context/auth/types";
-import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Loader2 } from "lucide-react";
-import RoleSelectionCards from "./RoleSelectionCards";
+import RoleSelectionList from "./roles/RoleSelectionList";
 import { useRoleSelection } from "./roles/useRoleSelection";
+import { useEffect } from "react";
 
 interface RoleSelectionModalProps {
   open: boolean;
@@ -23,38 +19,38 @@ const RoleSelectionModal = ({ open, onOpenChange, userId }: RoleSelectionModalPr
     isSubmitting,
     handleRoleSelection
   } = useRoleSelection(userId, onOpenChange);
-
+  
+  // Debug log to check if the modal is being rendered and its open state
+  useEffect(() => {
+    console.log("Role selection modal rendered with open state:", open, "for user:", userId);
+  }, [open, userId]);
+  
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Select your role</DialogTitle>
-          <DialogDescription>
-            Choose how you'll use EmviApp. This helps us personalize your experience.
+          <DialogTitle className="text-2xl font-serif">Welcome to EmviApp!</DialogTitle>
+          <DialogDescription className="space-y-2">
+            <p>Tell us how you'd like to use the platform so we can personalize your experience.</p>
+            <p className="text-indigo-600 font-medium text-sm">Bạn làm gì trong ngành làm đẹp?</p>
           </DialogDescription>
         </DialogHeader>
-        <div className="py-4">
-          <RoleSelectionCards 
-            selectedRole={selectedRole}
-            onChange={setSelectedRole}
-          />
-        </div>
-        <div className="flex justify-end gap-3">
-          <Button
-            variant="secondary"
-            onClick={() => onOpenChange(false)}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
+        
+        <RoleSelectionList 
+          selectedRole={selectedRole} 
+          onRoleSelect={setSelectedRole} 
+        />
+        
+        <div className="flex justify-end">
           <Button 
             onClick={handleRoleSelection}
             disabled={isSubmitting}
+            className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
           >
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
+                Setting up...
               </>
             ) : (
               "Continue"

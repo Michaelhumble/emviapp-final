@@ -1,72 +1,63 @@
+import { Session, User } from "@supabase/supabase-js";
 
-import { AuthResponse, Session, User } from '@supabase/supabase-js';
-
-// User roles in the system - strictly defined and normalized
 export type UserRole = 
-  | 'customer' 
   | 'artist' 
-  | 'salon_owner'
-  | 'freelancer'
-  | 'supplier'
-  | 'other'
-  // Legacy/non-standard roles that need mapping - included directly in the type
-  | 'salon'
-  | 'owner'
-  | 'vendor'
-  | 'beauty supplier'
+  | 'salon' 
+  | 'customer' 
+  | 'freelancer' 
+  | 'vendor' 
+  | 'supplier' 
+  | 'beauty supplier' 
+  | 'owner' 
   | 'nail technician/artist'
-  | 'renter';
+  | 'renter'
+  | 'other';
 
-// Legacy role mappings - this is now the same as UserRole for backward compatibility
-export type LegacyUserRole = UserRole;
-
-// Clean user profile data structure with extended properties for backward compatibility
 export interface UserProfile {
   id: string;
-  email: string;
-  full_name: string;
-  avatar_url?: string;
-  role: UserRole | null;
-  created_at: string;
-  updated_at: string;
-  referral_count?: number;
-  profile_views?: number;
-  
-  // Extended properties for backward compatibility
+  user_id?: string;
+  full_name?: string;
+  email?: string;
+  phone?: string;
+  role?: UserRole;
   bio?: string;
-  specialty?: string;
   location?: string;
+  salon_name?: string;
+  specialty?: string;
+  // Social media and web presence
   instagram?: string;
   website?: string;
-  phone?: string;
-  salon_name?: string;
-  company_name?: string;
-  custom_role?: string;
-  contact_link?: string;
+  // Profile media
+  avatar_url?: string;
+  portfolio_urls?: string[];
+  // Professional details
   skills?: string[];
   skill_level?: string;
-  portfolio_urls?: string[];
+  // Preferences and statistics
   preferences?: string[];
-  boosted_until?: string | null;
-  credits?: number;
-  affiliate_code?: string;
-  referral_code?: string;
+  profile_views?: number;
+  // Booking capabilities
   accepts_bookings?: boolean;
   booking_url?: string;
+  // Referral and affiliate program
+  referral_code?: string;
+  referral_count?: number;
+  affiliate_code?: string;
+  credits?: number;
+  // Pro features
+  boosted_until?: string;
+  // Language preferences
   preferred_language?: string;
-  
-  // Salon owner specific fields
-  business_name?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zip?: string;
-  hours?: string;
-  description?: string;
-  business_type?: string;
+  // Additional fields for specific roles
+  custom_role?: string;
+  contact_link?: string;
+  company_name?: string;
+  // Timestamps
+  created_at?: string;
+  updated_at?: string;
+  // Add other profile fields
 }
 
-// Auth context interface
 export interface AuthContextType {
   session: Session | null;
   user: User | null;
@@ -76,9 +67,14 @@ export interface AuthContextType {
   isSignedIn: boolean;
   isNewUser: boolean;
   clearIsNewUser: () => void;
-  signIn: (email: string, password: string) => Promise<AuthResponse>;
-  signUp: (email: string, password: string, role?: UserRole) => Promise<AuthResponse>;
+  signIn: (email: string, password: string) => Promise<{
+    error: Error | null;
+    data: { user: User | null; session: Session | null } | null;
+  }>;
+  signUp: (email: string, password: string, metadata?: Record<string, any>) => Promise<{
+    error: Error | null;
+    data: { user: User | null; session: Session | null } | null;
+  }>;
   signOut: () => Promise<void>;
   refreshUserProfile: () => Promise<void>;
-  validateUserRole?: () => Promise<void>; // Method for force validation
 }

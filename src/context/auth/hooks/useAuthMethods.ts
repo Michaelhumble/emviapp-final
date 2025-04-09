@@ -1,183 +1,77 @@
 
-import { AuthResponse } from "@supabase/supabase-js";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { UserRole } from "@/context/auth/types";
-import { normalizeUserRole } from "@/utils/roleUtils";
-import { getUserRole } from "@/utils/getUserRole";
 
 /**
- * Custom hook to handle auth methods
+ * Hook to handle authentication methods
  */
 export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
-  /**
-   * Sign in with email and password
-   */
-  const signIn = async (email: string, password: string): Promise<AuthResponse> => {
-    setLoading(true);
+  const signIn = async (email: string, password: string) => {
     try {
-      const response = await supabase.auth.signInWithPassword({
+      setLoading(true);
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       
-      if (response.error) {
-        toast.error(response.error.message);
-      } else {
-        // After successful login, check if we need to synchronize roles
-        if (response.data.user) {
-          try {
-            console.log(`[Auth] User logged in: ${response.data.user.id}`);
-            
-            // Get user role using our dedicated utility
-            const userRole = await getUserRole(response.data.user.id);
-            console.log(`[Auth] Detected user role for routing: ${userRole || 'none'}`);
-            
-            // Log more explicit warning if no role found
-            if (!userRole) {
-              console.warn("[Auth] ⚠️ NO ROLE FOUND for logged in user - user will be prompted to choose role");
-              toast.info("Please select your role to continue");
-            }
-          } catch (syncError) {
-            console.error("[Auth] Role sync error:", syncError);
-            // Non-blocking error - don't prevent login
-          }
-        }
-      }
+      if (error) throw error;
       
-      return response;
+      toast.success("Signed in successfully!");
+      return { data, error: null };
     } catch (error) {
-      console.error("Sign in error:", error);
-      throw error;
+      console.error("Error signing in:", error);
+      toast.error(error.message || "Failed to sign in");
+      return { data: null, error };
     } finally {
-      setLoading(false);
+      // Don't set loading false here - it will be handled by the auth state change
     }
   };
 
-  /**
-   * Sign up with email and password
-   */
-  const signUp = async (email: string, password: string, role?: UserRole): Promise<AuthResponse> => {
-    setLoading(true);
+  const signUp = async (email: string, password: string) => {
     try {
-      // Debug the role being passed to signup
-      console.log(`[SignUp] Using explicitly provided role: ${role || 'none provided'}`);
-      
-      if (role) {
-        console.log(`[SignUp] Normalized role for signup: ${normalizeUserRole(role)}`);
-      }
-      
-      // Make sure we're not storing a null or undefined role
-      const userMetadata: any = {
-        email: email
-      };
-      
-      if (role) {
-        userMetadata.role = role;
-      }
-      
-      // Sign up with auth API, explicitly including role in metadata
-      const response = await supabase.auth.signUp({
+      setLoading(true);
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          data: userMetadata
-        }
       });
       
-      if (response.error) {
-        toast.error(response.error.message);
-      } else if (response.data.user && role) {
-        // Successfully created auth user, now ensure role is set in users table
-        console.log(`[SignUp] Setting role in users table for user ${response.data.user.id}: ${role}`);
-        
-        // Delay slightly to ensure auth record is fully created
-        await new Promise(resolve => setTimeout(resolve, 300));
-        
-        // Update role in the users table with explicit error handling
-        const { error: updateError } = await supabase
-          .from('users')
-          .update({ role: role })
-          .eq('id', response.data.user.id);
-          
-        if (updateError) {
-          console.error("[SignUp] Error saving role to users table:", updateError);
-          
-          // Try to create the user record explicitly if update failed
-          // Ensure we include all required fields according to the database schema
-          const { error: insertError } = await supabase
-            .from('users')
-            .insert({
-              id: response.data.user.id,
-              email: email,
-              role: role,
-              full_name: "", // Add the required field with an empty default
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            });
-            
-          if (insertError) {
-            console.error("[SignUp] Error creating user record:", insertError);
-            toast.error("Account created but role preference could not be saved. Please update your profile.");
-          } else {
-            console.log("[SignUp] User record created with role:", role);
-          }
-        } else {
-          console.log("[SignUp] Role saved successfully to both auth and users table");
-          toast.success("Account created successfully!");
-        }
-      } else if (response.data.user) {
-        // If no role provided during signup, show a warning
-        console.warn("[SignUp] User created but no role was provided");
-        toast.info("Account created! Please select your role to continue.");
-      } else {
-        toast.success("Account created! Please verify your email.");
-      }
+      if (error) throw error;
       
-      return response;
+      // Mark as new user in localStorage
+      localStorage.setItem('emviapp_new_user', 'true');
+      
+      toast.success("Account created successfully!");
+      return { data, error: null };
     } catch (error) {
-      console.error("Sign up error:", error);
-      throw error;
+      console.error("Error signing up:", error);
+      toast.error(error.message || "Failed to sign up");
+      return { data: null, error };
     } finally {
-      setLoading(false);
+      // Don't set loading false here - it will be handled by the auth state change
     }
   };
 
-  /**
-   * Sign out with fallback cleanup
-   */
-  const signOut = async (): Promise<void> => {
-    setLoading(true);
+  const signOut = async () => {
     try {
-      console.log("[Auth] Signing out user");
+      setLoading(true);
       const { error } = await supabase.auth.signOut();
       
-      if (error) {
-        console.error("[Auth] Sign out error:", error);
-        toast.error("Error signing out. Performing force logout.");
-        
-        // Fallback: Clear local storage manually if signOut fails
-        localStorage.removeItem('sb-supabase-auth-token');
-        localStorage.removeItem('emviapp_user_role');
-        localStorage.removeItem('emviapp_new_user');
-        localStorage.removeItem('emviapp_session');
-        
-        // Force reload to clear all state
-        window.location.href = "/";
-      } else {
-        console.log("[Auth] Sign out successful");
-        // No toast here - will be handled by the redirect component
-      }
-    } catch (error) {
-      console.error("[Auth] Unexpected sign out error:", error);
+      if (error) throw error;
       
-      // Emergency fallback
-      localStorage.clear();
-      window.location.href = "/";
+      toast.success("Successfully signed out");
+    } catch (error) {
+      console.error("Error in signOut:", error);
+      toast.error("Failed to sign out");
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  return { signIn, signUp, signOut };
+  return {
+    signIn,
+    signUp,
+    signOut
+  };
 };

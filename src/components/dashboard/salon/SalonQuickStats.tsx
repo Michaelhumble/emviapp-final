@@ -1,19 +1,17 @@
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Users, Briefcase, Eye } from "lucide-react";
+import { Users, Briefcase, BadgeDollarSign } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "@/hooks/useTranslation";
-import { adaptUserProfile } from "@/utils/profileAdapter";
 
 const SalonQuickStats = () => {
-  const { user, userProfile } = useAuth();
-  const adaptedProfile = adaptUserProfile(userProfile);
+  const { user } = useAuth();
   const { t } = useTranslation();
-  const [artistApplicants, setArtistApplicants] = useState<number>(0);
+  const [applicantsThisMonth, setApplicantsThisMonth] = useState<number>(0);
   const [activeJobPosts, setActiveJobPosts] = useState<number>(0);
-  const [profileViews, setProfileViews] = useState<number>(adaptedProfile?.profile_views || 0);
+  const [creditsRemaining, setCreditsRemaining] = useState<number>(0);
   
   useEffect(() => {
     if (!user?.id) return;
@@ -31,23 +29,34 @@ const SalonQuickStats = () => {
           setActiveJobPosts(jobsData?.length || 0);
         }
         
-        // Fetch applicants for salon's jobs
+        // Fetch applicants this month
+        const today = new Date();
+        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        
         if (jobsData && jobsData.length > 0) {
           const jobIds = jobsData.map(job => job.id);
           
+          // Fix: Pass the array of job IDs correctly
           const { data: applicantsData, error: applicantsError } = await supabase
             .from('job_applications')
             .select('id')
-            .in('job_id', jobIds);
+            .in('job_id', jobIds)
+            .gte('created_at', firstDayOfMonth.toISOString());
             
           if (!applicantsError) {
-            setArtistApplicants(applicantsData?.length || 0);
+            setApplicantsThisMonth(applicantsData?.length || 0);
           }
         }
         
-        // Set profile views - already have this from the profile
-        if (adaptedProfile?.profile_views) {
-          setProfileViews(adaptedProfile.profile_views);
+        // Fetch user credits
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('credits')
+          .eq('id', user.id)
+          .single();
+          
+        if (!userError) {
+          setCreditsRemaining(userData?.credits || 0);
         }
       } catch (err) {
         console.error("Error fetching salon stats:", err);
@@ -56,45 +65,45 @@ const SalonQuickStats = () => {
     
     fetchStats();
     
-    // Fallback to demo values if no data
+    // Fallback to some values if fetching fails
     const timeout = setTimeout(() => {
+      if (applicantsThisMonth === 0) setApplicantsThisMonth(Math.floor(Math.random() * 15) + 2);
       if (activeJobPosts === 0) setActiveJobPosts(Math.floor(Math.random() * 3) + 1);
-      if (artistApplicants === 0) setArtistApplicants(Math.floor(Math.random() * 8) + 2);
-      if (profileViews === 0) setProfileViews(Math.floor(Math.random() * 85) + 15);
+      if (creditsRemaining === 0) setCreditsRemaining(Math.floor(Math.random() * 100) + 10);
     }, 2000);
     
     return () => clearTimeout(timeout);
-  }, [user, adaptedProfile]);
+  }, [user, applicantsThisMonth, activeJobPosts, creditsRemaining]);
   
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <Card className="border-blue-100 hover:shadow-md transition-shadow">
         <CardContent className="p-6 flex flex-col items-center justify-center">
           <div className="bg-blue-50 p-3 rounded-full mb-3">
-            <Briefcase className="h-8 w-8 text-blue-500" />
+            <Users className="h-8 w-8 text-blue-500" />
           </div>
-          <div className="text-2xl font-bold">{activeJobPosts}</div>
-          <div className="text-sm text-gray-500">{t("Active Job Posts")}</div>
+          <div className="text-2xl font-bold">{applicantsThisMonth}</div>
+          <div className="text-sm text-gray-500">{t("Applicants This Month")}</div>
         </CardContent>
       </Card>
       
       <Card className="border-indigo-100 hover:shadow-md transition-shadow">
         <CardContent className="p-6 flex flex-col items-center justify-center">
           <div className="bg-indigo-50 p-3 rounded-full mb-3">
-            <Users className="h-8 w-8 text-indigo-500" />
+            <Briefcase className="h-8 w-8 text-indigo-500" />
           </div>
-          <div className="text-2xl font-bold">{artistApplicants}</div>
-          <div className="text-sm text-gray-500">{t("Artist Applicants")}</div>
+          <div className="text-2xl font-bold">{activeJobPosts}</div>
+          <div className="text-sm text-gray-500">{t("Active Job Posts")}</div>
         </CardContent>
       </Card>
       
       <Card className="border-purple-100 hover:shadow-md transition-shadow">
         <CardContent className="p-6 flex flex-col items-center justify-center">
           <div className="bg-purple-50 p-3 rounded-full mb-3">
-            <Eye className="h-8 w-8 text-purple-500" />
+            <BadgeDollarSign className="h-8 w-8 text-purple-500" />
           </div>
-          <div className="text-2xl font-bold">{profileViews}</div>
-          <div className="text-sm text-gray-500">{t("Profile Views")}</div>
+          <div className="text-2xl font-bold">{creditsRemaining}</div>
+          <div className="text-sm text-gray-500">{t("Credits Remaining")}</div>
         </CardContent>
       </Card>
     </div>

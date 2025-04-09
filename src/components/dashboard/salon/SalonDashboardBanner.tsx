@@ -1,7 +1,6 @@
 
 import { useAuth } from "@/context/auth";
 import { useTranslation } from "@/hooks/useTranslation";
-import { adaptUserProfile } from "@/utils/profileAdapter";
 
 interface SalonDashboardBannerProps {
   userName?: string;
@@ -9,9 +8,8 @@ interface SalonDashboardBannerProps {
 
 const SalonDashboardBanner = ({ userName }: SalonDashboardBannerProps) => {
   const { userProfile } = useAuth();
-  const adaptedProfile = adaptUserProfile(userProfile);
   const { t } = useTranslation();
-  const displayName = userName || adaptedProfile?.salon_name || adaptedProfile?.full_name || "Salon Owner";
+  const displayName = userName || userProfile?.salon_name || userProfile?.full_name || "Salon Owner";
   
   return (
     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-100 shadow-sm">
@@ -24,7 +22,7 @@ const SalonDashboardBanner = ({ userName }: SalonDashboardBannerProps) => {
       
       {/* Vietnamese welcome text for salon owners - making it more prominent */}
       <p className="text-blue-700 text-sm font-medium mt-3 bg-blue-50 px-3 py-2 inline-block rounded-md border border-blue-100">
-        {t("Chúng tôi ở đây để giúp bạn phát triển salon của bạn.")} <span className="text-blue-500 ml-1">{t("We're here to help you grow your salon.")}</span>
+        {t("Cùng nhau phát triển tiệm làm đẹp của bạn.")} <span className="text-blue-500 ml-1">{t("Let's grow your beauty business together.")}</span>
       </p>
     </div>
   );

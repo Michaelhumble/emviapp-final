@@ -28,11 +28,10 @@ const ProfileEditor = () => {
       return <ArtistProfileForm />;
     }
     
-    if (userRole === "salon_owner" || userRole === "salon" || userRole === "owner" || userRole === "vendor" || userRole === "beauty supplier" || userRole === "supplier") {
+    if (userRole === "salon" || userRole === "owner" || userRole === "vendor" || userRole === "beauty supplier" || userRole === "supplier") {
       return <SalonProfileForm />;
     }
     
-    // Default to generic form for other roles
     return <CustomerProfileForm />;
   };
   

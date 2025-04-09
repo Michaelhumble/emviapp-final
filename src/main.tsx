@@ -18,9 +18,8 @@ import Profile from '@/pages/Profile';
 import UserProfilePage from '@/pages/profile/UserProfilePage';
 import ProfileEdit from '@/pages/profile/edit';
 import UserProfileByUsername from '@/pages/profile/[username]';
-// Use index import to avoid casing issues
-import SalonDashboard from '@/pages/dashboard/index';
-import SalonOwnerDashboard from '@/pages/dashboard/SalonOwnerDashboard';
+import CustomerDashboard from '@/pages/dashboard/Customer';
+import SalonDashboard from '@/pages/dashboard/Salon';
 import ArtistDashboard from '@/pages/dashboard/Artist';
 import SupplierDashboard from '@/pages/dashboard/Supplier';
 import FreelancerDashboard from '@/pages/dashboard/Freelancer';
@@ -39,9 +38,11 @@ import ArtistPublicProfile from '@/pages/u/ArtistPublicProfile';
 import PostJob from '@/pages/post/PostJob';
 import PostingIndex from '@/pages/posting/Index';
 import SalonPost from '@/pages/posting/SalonPost';
+// Import new salon sale pages
 import SellSalonIndex from '@/pages/sell-salon/index';
 import NewSalonSalePage from '@/pages/sell-salon/new';
 import SalonSaleDetail from '@/pages/sell-salon/[id]';
+// Import Artist Directory page
 import ArtistDirectory from '@/pages/explore/artists';
 
 // Import styles
@@ -120,12 +121,12 @@ const router = createBrowserRouter([
         element: <Dashboard />
       },
       {
-        path: 'dashboard/salon',
-        element: <SalonDashboard />
+        path: 'dashboard/customer',
+        element: <CustomerDashboard />
       },
       {
-        path: 'dashboard/salon_owner',
-        element: <SalonOwnerDashboard />
+        path: 'dashboard/salon',
+        element: <SalonDashboard />
       },
       {
         path: 'dashboard/artist',
@@ -177,6 +178,7 @@ const router = createBrowserRouter([
         path: 'posting/salon',
         element: <SalonPost />
       },
+      // New routes for salon sales
       {
         path: 'sell-salon',
         element: <SellSalonIndex />
@@ -189,6 +191,7 @@ const router = createBrowserRouter([
         path: 'sell-salon/:id',
         element: <SalonSaleDetail />
       },
+      // New route for Artist Directory
       {
         path: 'explore/artists',
         element: <ArtistDirectory />

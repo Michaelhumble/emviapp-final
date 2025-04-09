@@ -2,17 +2,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
-import { UserRole } from "@/context/auth/types";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { navigateToRoleDashboard } from "@/utils/navigation";
-import { normalizeUserRole } from "@/utils/roleUtils";
+import { UserRole } from "@/context/auth/types";
 
 export const useRoleSignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [selectedRole, setSelectedRole] = useState<UserRole>("artist"); // Default to artist instead of customer
+  const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { signUp } = useAuth();
@@ -24,91 +22,49 @@ export const useRoleSignUp = () => {
     
     if (password !== confirmPassword) {
       setError("Passwords don't match");
+      toast.error("Passwords don't match");
       return;
     }
-    
-    if (!selectedRole) {
-      setError("Please select a role to continue");
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      toast.error("Password must be at least 6 characters");
       return;
     }
     
     setIsSubmitting(true);
-    console.log(`[useRoleSignUp] Starting sign-up with explicit role: ${selectedRole}`);
 
     try {
-      // IMPORTANT: Explicitly pass the selected role to signUp method
-      const signUpResponse = await signUp(email, password, selectedRole);
-      
-      if (signUpResponse.error) {
-        setError(signUpResponse.error.message || "Failed to sign up");
-        setIsSubmitting(false);
-        return;
-      }
-      
-      if (!signUpResponse.data.user) {
-        setError("No user data returned from sign-up");
-        setIsSubmitting(false);
-        return;
-      }
-      
-      const userId = signUpResponse.data.user.id;
-      console.log(`[useRoleSignUp] User created with ID: ${userId} and role: ${selectedRole}`);
-      
-      // Double-check that role was properly set in the database
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('role')
-        .eq('id', userId)
-        .single();
-        
-      if (userError) {
-        console.error("[useRoleSignUp] Error verifying user role:", userError);
-      } else {
-        console.log(`[useRoleSignUp] Database has role: ${userData?.role}`);
-        
-        // If role doesn't match or isn't set, update it directly
-        if (!userData?.role || userData.role !== selectedRole) {
-          console.warn(`[useRoleSignUp] Role mismatch! Fixing role in database from ${userData?.role || 'none'} to ${selectedRole}`);
-          
-          const { error: updateError } = await supabase
-            .from('users')
-            .update({ role: selectedRole })
-            .eq('id', userId);
-            
-          if (updateError) {
-            console.error("[useRoleSignUp] Failed to update role in database:", updateError);
-          }
-        }
-      }
-      
-      // Also ensure auth metadata has the correct role - CRITICAL for proper routing
-      await supabase.auth.updateUser({
-        data: { role: selectedRole }
+      // Sign up with Supabase
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            user_type: selectedRole, // Store user role in metadata
+          },
+        },
       });
       
-      console.log("[useRoleSignUp] Updated auth metadata with role:", selectedRole);
-      
-      // Force a session refresh to get the updated metadata
-      await supabase.auth.refreshSession();
-      
-      toast.success("Account created successfully!");
-      
-      // Navigate to the appropriate dashboard based on role - Now with extra logging
-      console.log(`[useRoleSignUp] About to navigate using role: ${selectedRole}`);
-      const normalizedRole = normalizeUserRole(selectedRole);
-      console.log(`[useRoleSignUp] Normalized role for navigation: ${normalizedRole}`);
-      
-      if (normalizedRole === 'salon_owner') {
-        console.log("[useRoleSignUp] Explicit navigation for salon owner to: /dashboard/salon_owner");
-        navigate("/dashboard/salon_owner");
-      } else {
-        console.log("[useRoleSignUp] Using navigation utility for role:", selectedRole);
-        navigateToRoleDashboard(navigate, selectedRole);
+      if (signUpError) {
+        setError(signUpError.message);
+        toast.error(signUpError.message || "Failed to sign up");
+        setIsSubmitting(false);
+        return;
       }
       
-    } catch (error) {
-      console.error("[useRoleSignUp] Unexpected error:", error);
-      setError("An unexpected error occurred. Please try again.");
+      // Success!
+      toast.success("Account created successfully! Redirecting to dashboard...");
+      
+      // Redirect based on role
+      setTimeout(() => {
+        redirectBasedOnRole(selectedRole, navigate);
+      }, 1500);
+      
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred");
+      toast.error(err.message || "Failed to sign up. Please try again.");
+      console.error("Sign up error:", err);
     } finally {
       setIsSubmitting(false);
     }
@@ -127,4 +83,32 @@ export const useRoleSignUp = () => {
     error,
     handleSubmit
   };
+};
+
+// Helper function to redirect based on role
+const redirectBasedOnRole = (role: UserRole, navigate: any) => {
+  switch (role) {
+    case 'artist':
+    case 'nail technician/artist':
+      navigate('/dashboard/artist');
+      break;
+    case 'salon':
+    case 'owner':
+      navigate('/dashboard/salon');
+      break;
+    case 'customer':
+      navigate('/dashboard/customer');
+      break;
+    case 'supplier':
+    case 'vendor':
+    case 'beauty supplier':
+      navigate('/dashboard/supplier');
+      break;
+    case 'freelancer':
+      navigate('/dashboard/freelancer');
+      break;
+    case 'other':
+    default:
+      navigate('/dashboard/other');
+  }
 };
