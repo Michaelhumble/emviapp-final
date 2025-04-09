@@ -98,14 +98,12 @@ export const usePortfolio = () => {
       if (deleteError) throw deleteError;
 
       // Extract the file path from the URL
-      const filePath = imageUrl.split('/').pop();
-      if (filePath) {
-        const fullPath = `${user.id}/${filePath}`;
-        // Try to delete the image from storage (this might fail if the image doesn't exist)
-        await supabase.storage
-          .from('portfolio_images')
-          .remove([fullPath]);
-      }
+      const urlPath = imageUrl.split('/').slice(-2).join('/');
+      
+      // Try to delete the image from storage (this might fail if the image doesn't exist)
+      await supabase.storage
+        .from('portfolio_images')
+        .remove([urlPath]);
 
       toast.success('Portfolio item deleted');
       setPortfolioItems(portfolioItems.filter(item => item.id !== id));
