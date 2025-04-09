@@ -47,8 +47,8 @@ const Hero = () => {
         height: 'calc(150vh)',
         marginLeft: 'calc(-50vw + 50%)',
         marginRight: 'calc(-50vw + 50%)',
-        border: isMobile ? 'none' : '1px solid rgba(255,255,255,0.1)',
-        borderRadius: isMobile ? '0' : '0',
+        border: 'none', // Remove border
+        borderRadius: '0', // Remove border radius
       }}
     >
       {/* Background image carousel */}
