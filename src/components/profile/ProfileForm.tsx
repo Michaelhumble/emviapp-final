@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
@@ -111,7 +110,8 @@ const ProfileForm = ({ onProfileUpdate }: ProfileFormProps) => {
           specialty: formData.specialty,
           location: formData.location,
           instagram: formData.instagram,
-          website: formData.website
+          website: formData.website,
+          preferred_language: userProfile.preferred_language as "en" | "vi" | "es" | undefined
         };
         
         // Now this will satisfy TypeScript's type checking
