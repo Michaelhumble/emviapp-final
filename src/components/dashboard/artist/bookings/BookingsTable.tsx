@@ -1,21 +1,20 @@
 
-import React, { useState } from "react";
+import { Booking } from "@/components/dashboard/artist/hooks/useArtistBookings";
 import { Button } from "@/components/ui/button";
-import { Booking } from "../types/ArtistDashboardTypes";
-import { format, parseISO } from "date-fns";
-import { 
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from "@/components/ui/table";
 import { useTranslation } from "@/hooks/useTranslation";
-import BookingReminderStatus from "../../bookings/BookingReminderStatus";
-import ManualReminderButton from "../../bookings/ManualReminderButton";
-import ReminderSettingsModal from "../../bookings/ReminderSettingsModal";
-import { Settings } from "lucide-react";
+import { format } from "date-fns";
+import { CheckCircle, Clock, X, XCircle } from "lucide-react";
+import { useState } from "react";
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle 
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface BookingsTableProps {
   bookings: Booking[];
@@ -31,139 +30,239 @@ const BookingsTable = ({
   handleDecline 
 }: BookingsTableProps) => {
   const { t } = useTranslation();
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-
-  const formatDate = (dateStr: string) => {
+  const [declineDialogOpen, setDeclineDialogOpen] = useState(false);
+  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
+  const [declineReason, setDeclineReason] = useState("");
+  
+  // Confirm decline booking
+  const confirmDecline = async () => {
+    if (selectedBookingId) {
+      await handleDecline(selectedBookingId);
+      setDeclineDialogOpen(false);
+      setSelectedBookingId(null);
+      setDeclineReason("");
+    }
+  };
+  
+  // Open decline dialog
+  const openDeclineDialog = (bookingId: string) => {
+    setSelectedBookingId(bookingId);
+    setDeclineDialogOpen(true);
+  };
+  
+  // Get status badge class
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "bg-amber-100 text-amber-800 border-amber-200";
+      case "accepted":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "completed":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "declined":
+      case "cancelled":
+        return "bg-red-100 text-red-800 border-red-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
+    }
+  };
+  
+  // Get status icon
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "pending":
+        return <Clock className="h-4 w-4 text-amber-600" />;
+      case "accepted":
+        return <CheckCircle className="h-4 w-4 text-blue-600" />;
+      case "completed":
+        return <CheckCircle className="h-4 w-4 text-green-600" />;
+      case "declined":
+      case "cancelled":
+        return <XCircle className="h-4 w-4 text-red-600" />;
+      default:
+        return null;
+    }
+  };
+  
+  // Format date from string
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "Not specified";
+    
     try {
-      return format(parseISO(dateStr), "MMM dd, yyyy");
+      return format(new Date(dateStr), "MMM d, yyyy");
     } catch (error) {
       return dateStr;
     }
   };
-
-  // Get translated status labels
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "pending":
-        return t({ english: "Pending", vietnamese: "Đang Chờ" });
-      case "accepted":
-        return t({ english: "Accepted", vietnamese: "Đã Chấp Nhận" });
-      case "declined":
-        return t({ english: "Declined", vietnamese: "Đã Từ Chối" });
-      default:
-        return status;
-    }
+  
+  // Get initials for avatar
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map(n => n[0])
+      .join("")
+      .toUpperCase()
+      .substring(0, 2);
   };
-
+  
   if (loading) {
     return (
-      <div className="flex justify-center py-8">
-        <div className="h-8 w-8 border-4 border-t-transparent border-purple-500 rounded-full animate-spin"></div>
+      <div className="text-center py-12">
+        <div className="animate-spin h-8 w-8 border-2 border-primary rounded-full border-t-transparent mx-auto mb-4"></div>
+        <p className="text-gray-500">{t({ english: "Loading bookings...", vietnamese: "Đang tải lịch hẹn..." })}</p>
       </div>
     );
   }
-
+  
   if (bookings.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
-        {t({
-          english: "No bookings match your filters",
-          vietnamese: "Không tìm thấy lịch hẹn nào phù hợp với bộ lọc"
-        })}
+      <div className="text-center py-12 border rounded-md bg-gray-50">
+        <Clock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+        <h3 className="text-lg font-medium mb-2">
+          {t({ english: "No bookings found", vietnamese: "Không tìm thấy lịch hẹn nào" })}
+        </h3>
+        <p className="text-gray-500 max-w-md mx-auto">
+          {t({
+            english: "When clients book your services, they will appear here.",
+            vietnamese: "Khi khách hàng đặt lịch dịch vụ của bạn, họ sẽ xuất hiện ở đây."
+          })}
+        </p>
       </div>
     );
   }
-
+  
   return (
-    <div>
-      <div className="flex justify-end mb-4">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => setIsSettingsOpen(true)}
-          className="flex items-center gap-1"
-        >
-          <Settings className="h-4 w-4" />
-          {t({
-            english: "Reminder Settings",
-            vietnamese: "Cài đặt nhắc nhở"
-          })}
-        </Button>
-      </div>
-      
+    <>
       <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{t({ english: "Customer", vietnamese: "Khách Hàng" })}</TableHead>
-              <TableHead>{t({ english: "Service", vietnamese: "Dịch Vụ" })}</TableHead>
-              <TableHead>{t({ english: "Date", vietnamese: "Ngày" })}</TableHead>
-              <TableHead>{t({ english: "Time", vietnamese: "Giờ" })}</TableHead>
-              <TableHead>{t({ english: "Status", vietnamese: "Trạng Thái" })}</TableHead>
-              <TableHead>{t({ english: "Reminder", vietnamese: "Nhắc nhở" })}</TableHead>
-              <TableHead>{t({ english: "Actions", vietnamese: "Hành Động" })}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+        <table className="min-w-full divide-y divide-gray-200 border">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {t({ english: "Client", vietnamese: "Khách hàng" })}
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {t({ english: "Service", vietnamese: "Dịch vụ" })}
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {t({ english: "Date", vietnamese: "Ngày" })}
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {t({ english: "Time", vietnamese: "Thời gian" })}
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {t({ english: "Status", vietnamese: "Trạng thái" })}
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {t({ english: "Actions", vietnamese: "Hành động" })}
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
             {bookings.map((booking) => (
-              <TableRow key={booking.id} className="hover:bg-gray-50">
-                <TableCell>{booking.customer_name}</TableCell>
-                <TableCell>{booking.service_name || t({ english: "Not specified", vietnamese: "Không xác định" })}</TableCell>
-                <TableCell>{formatDate(booking.date_requested)}</TableCell>
-                <TableCell>{booking.time_requested}</TableCell>
-                <TableCell>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    booking.status === 'pending' ? 'bg-amber-100 text-amber-800' :
-                    booking.status === 'accepted' ? 'bg-emerald-100 text-emerald-800' :
-                    'bg-red-100 text-red-800'
-                  }`}>
-                    {getStatusLabel(booking.status)}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <BookingReminderStatus 
-                    reminderSent={booking.reminder_sent || false}
-                    reminderSentAt={booking.created_at}
-                  />
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-2">
-                    {booking.status === 'pending' && (
-                      <>
-                        <Button 
-                          size="sm" 
-                          className="bg-emerald-500 hover:bg-emerald-600 text-white"
-                          onClick={() => handleAccept(booking.id)}
-                        >
-                          {t({ english: "Accept", vietnamese: "Chấp Nhận" })}
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          className="text-red-500 border-red-200 hover:bg-red-50"
-                          onClick={() => handleDecline(booking.id)}
-                        >
-                          {t({ english: "Decline", vietnamese: "Từ Chối" })}
-                        </Button>
-                      </>
-                    )}
-                    
-                    {booking.status === 'accepted' && !booking.reminder_sent && (
-                      <ManualReminderButton booking={booking} />
-                    )}
+              <tr key={booking.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center">
+                    <Avatar className="h-8 w-8 mr-2">
+                      <AvatarImage src={booking.client_avatar || ""} />
+                      <AvatarFallback>{getInitials(booking.client_name || "")}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {booking.client_name}
+                      </div>
+                    </div>
                   </div>
-                </TableCell>
-              </TableRow>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-900">{booking.service_name}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-900">{formatDate(booking.date_requested)}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-900">{booking.time_requested || "Flexible"}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(booking.status)}`}>
+                    {getStatusIcon(booking.status)}
+                    <span className="ml-1 capitalize">{booking.status}</span>
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  {booking.status === 'pending' && (
+                    <div className="flex space-x-2">
+                      <Button 
+                        onClick={() => handleAccept(booking.id)} 
+                        size="sm" 
+                        variant="default"
+                      >
+                        {t({ english: "Accept", vietnamese: "Chấp nhận" })}
+                      </Button>
+                      <Button 
+                        onClick={() => openDeclineDialog(booking.id)} 
+                        size="sm" 
+                        variant="outline" 
+                        className="text-red-600 border-red-200 hover:bg-red-50"
+                      >
+                        {t({ english: "Decline", vietnamese: "Từ chối" })}
+                      </Button>
+                    </div>
+                  )}
+                  
+                  {booking.status === 'accepted' && (
+                    <Button size="sm" variant="outline">
+                      {t({ english: "View Details", vietnamese: "Xem chi tiết" })}
+                    </Button>
+                  )}
+                </td>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
+          </tbody>
+        </table>
       </div>
       
-      <ReminderSettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-      />
-    </div>
+      {/* Decline Dialog */}
+      <Dialog open={declineDialogOpen} onOpenChange={setDeclineDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {t({ english: "Decline Booking", vietnamese: "Từ chối lịch hẹn" })}
+            </DialogTitle>
+            <DialogDescription>
+              {t({
+                english: "Are you sure you want to decline this booking? The client will be notified.",
+                vietnamese: "Bạn có chắc chắn muốn từ chối lịch hẹn này? Khách hàng sẽ được thông báo."
+              })}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Textarea
+            placeholder={t({
+              english: "Reason for declining (optional)",
+              vietnamese: "Lý do từ chối (không bắt buộc)"
+            })}
+            value={declineReason}
+            onChange={(e) => setDeclineReason(e.target.value)}
+            className="min-h-[100px]"
+          />
+          
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDeclineDialogOpen(false)}
+            >
+              {t({ english: "Cancel", vietnamese: "Hủy" })}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDecline}
+            >
+              {t({ english: "Decline Booking", vietnamese: "Từ chối lịch hẹn" })}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

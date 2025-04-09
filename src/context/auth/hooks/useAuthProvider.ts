@@ -3,13 +3,13 @@ import { AuthContextType, UserProfile, UserRole } from "../types";
 import { useSession } from "./useSession";
 import { useUserProfile } from "./useUserProfile";
 import { useAuthMethods } from "./useAuthMethods";
-import { updateUserProfile } from "../userProfileService";
+import { updateUserProfile, createUserProfile, fetchUserProfile } from "../userProfileService";
 import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Custom hook to handle auth provider logic
  */
-export const useAuthProvider = () => {
+export const useAuthProvider = (): AuthContextType => {
   // Use the session hook
   const { 
     session, 
@@ -34,87 +34,51 @@ export const useAuthProvider = () => {
     signOut: _signOut 
   } = useAuthMethods(setLoading);
 
-  // Wrap auth methods to match expected interface
-  const signIn = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
-    const result = await _signIn(email, password);
-    return {
-      success: !result.error,
-      error: result.error ? String(result.error) : undefined
-    };
+  // Wrap sign in method
+  const signIn = async (email: string, password: string) => {
+    return _signIn(email, password);
   };
 
-  const signUp = async (email: string, password: string, userData?: Partial<UserProfile>): Promise<{ success: boolean; error?: string }> => {
+  // Wrap sign up method
+  const signUp = async (email: string, password: string, userData?: Partial<UserProfile>) => {
     const result = await _signUp(email, password);
-    return {
-      success: !result.error,
-      error: result.error ? String(result.error) : undefined
-    };
-  };
-
-  const signOut = async (): Promise<void> => {
-    await _signOut();
-  };
-
-  // Update profile method
-  const updateProfile = async (data: Partial<UserProfile>): Promise<UserProfile | null> => {
-    if (!user) return null;
-    const result = await updateUserProfile({
-      ...data,
-      id: user.id
-    });
-    if (result) {
-      await refreshUserProfile();
+    
+    // Create user profile if sign up was successful
+    if (result.user) {
+      await createUserProfile(result.user);
+      
+      // Update with initial user data if provided
+      if (userData && Object.keys(userData).length > 0) {
+        await updateUserProfile({
+          ...userData,
+          id: result.user.id
+        });
+      }
     }
+    
     return result;
   };
 
-  // Reset password function
-  const resetPassword = async (email: string): Promise<void> => {
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email);
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error resetting password:', error);
-      throw error;
-    }
+  // Wrap sign out method
+  const signOut = async () => {
+    return _signOut();
   };
 
-  // Update password function
-  const updatePassword = async (newPassword: string): Promise<void> => {
-    try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
-      });
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error updating password:', error);
-      throw error;
+  // Update user profile
+  const updateProfile = async (data: Partial<UserProfile>): Promise<UserProfile | null> => {
+    if (!user) return null;
+    
+    const updatedProfile = await updateUserProfile({
+      ...data,
+      id: user.id
+    });
+    
+    // Refresh user profile after update
+    if (updatedProfile) {
+      await refreshUserProfile();
     }
-  };
-
-  // Update email function
-  const updateEmail = async (newEmail: string): Promise<void> => {
-    try {
-      const { error } = await supabase.auth.updateUser({
-        email: newEmail
-      });
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error updating email:', error);
-      throw error;
-    }
-  };
-
-  // Delete account function
-  const deleteAccount = async (): Promise<void> => {
-    try {
-      // This would typically be handled by a server-side function
-      // for security reasons. This is a placeholder.
-      throw new Error('Account deletion requires a server-side function');
-    } catch (error) {
-      console.error('Error deleting account:', error);
-      throw error;
-    }
+    
+    return updatedProfile;
   };
 
   // Set user role
@@ -122,25 +86,124 @@ export const useAuthProvider = () => {
     if (!user) return;
     
     try {
-      await updateProfile({ role });
-    } catch (error) {
-      console.error('Error updating user role:', error);
+      setLoading(true);
+      
+      // Update role in user metadata
+      await supabase.auth.updateUser({
+        data: { role }
+      });
+      
+      // Update role in user profile
+      await updateUserProfile({
+        id: user.id,
+        role
+      });
+      
+      // Refresh user profile
+      await refreshUserProfile();
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Compile context value
-  const authContextValue: AuthContextType = {
-    session,
-    user,
-    userProfile,
-    userRole,
+  // Update user email
+  const updateEmail = async (newEmail: string): Promise<void> => {
+    if (!user) return;
+    
+    try {
+      setLoading(true);
+      
+      // Update email in auth
+      const { error } = await supabase.auth.updateUser({
+        email: newEmail
+      });
+      
+      if (error) throw error;
+      
+      // Update email in profile
+      await updateUserProfile({
+        id: user.id,
+        email: newEmail
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Update user password
+  const updatePassword = async (newPassword: string): Promise<void> => {
+    if (!user) return;
+    
+    try {
+      setLoading(true);
+      
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+      
+      if (error) throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Reset password (forgot password flow)
+  const resetPassword = async (email: string): Promise<void> => {
+    try {
+      setLoading(true);
+      
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`
+      });
+      
+      if (error) throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Delete user account
+  const deleteAccount = async (): Promise<void> => {
+    if (!user) return;
+    
+    try {
+      setLoading(true);
+      
+      // Delete user from database first
+      const { error: dbError } = await supabase
+        .from('users')
+        .delete()
+        .eq('id', user.id);
+      
+      if (dbError) throw dbError;
+      
+      // Delete user from auth
+      const { error } = await supabase.auth.admin.deleteUser(user.id);
+      
+      if (error) throw error;
+      
+      // Sign out
+      await signOut();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Determine if user is signed in
+  const isSignedIn = !!user;
+
+  return {
     loading,
-    isSignedIn: !!user,
+    isSignedIn,
+    user,
+    userRole,
+    userProfile,
+    session,
     isNewUser,
     clearIsNewUser,
     signIn,
-    signUp,
     signOut,
+    signUp,
     resetPassword,
     updateProfile,
     updatePassword,
@@ -149,6 +212,4 @@ export const useAuthProvider = () => {
     refreshUserProfile,
     setUserRole
   };
-
-  return authContextValue;
 };

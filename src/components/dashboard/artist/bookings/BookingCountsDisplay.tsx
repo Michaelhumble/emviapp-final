@@ -1,6 +1,7 @@
 
-import React from "react";
-import { BookingCounts } from "../types/ArtistDashboardTypes";
+import { BookingCounts } from "@/components/dashboard/artist/hooks/useArtistBookings";
+import { Badge } from "@/components/ui/badge";
+import { CalendarCheck, Clock, CheckCircle } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 
 interface BookingCountsDisplayProps {
@@ -11,18 +12,26 @@ const BookingCountsDisplay = ({ counts }: BookingCountsDisplayProps) => {
   const { t } = useTranslation();
   
   return (
-    <div className="flex gap-4 mt-2 md:mt-0">
-      <div className="bg-amber-50 px-3 py-1 rounded-full border border-amber-200 text-amber-800 text-sm">
-        {t({
-          english: "Pending",
-          vietnamese: "Đang Chờ"
-        })}: {counts.pending}
+    <div className="flex items-center space-x-4">
+      <div className="flex items-center">
+        <Clock className="h-4 w-4 text-amber-500 mr-1" />
+        <Badge variant="outline" className="bg-amber-50 text-amber-700 hover:bg-amber-100 border-amber-200">
+          {counts.pending} {t({ english: "Pending", vietnamese: "Đang chờ" })}
+        </Badge>
       </div>
-      <div className="bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 text-emerald-800 text-sm">
-        {t({
-          english: "Upcoming",
-          vietnamese: "Sắp Tới"
-        })}: {counts.upcoming}
+      
+      <div className="flex items-center">
+        <CalendarCheck className="h-4 w-4 text-blue-500 mr-1" />
+        <Badge variant="outline" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200">
+          {counts.accepted} {t({ english: "Accepted", vietnamese: "Đã chấp nhận" })}
+        </Badge>
+      </div>
+      
+      <div className="flex items-center">
+        <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
+        <Badge variant="outline" className="bg-green-50 text-green-700 hover:bg-green-100 border-green-200">
+          {counts.completed} {t({ english: "Completed", vietnamese: "Đã hoàn thành" })}
+        </Badge>
       </div>
     </div>
   );

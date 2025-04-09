@@ -22,7 +22,6 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
     if (!data) return null;
     
     // Transform database record to UserProfile type
-    // Use type assertion for properties that may not exist in DB schema
     const profile: UserProfile = {
       id: data.id,
       user_id: data.id, // Use id as user_id since it might not exist in DB
@@ -74,6 +73,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       credits: data.credits || 0,
       custom_role: data.custom_role || '',
       contact_link: data.contact_link || '',
+      badges: data.badges || [],
     };
     
     return profile;

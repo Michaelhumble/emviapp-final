@@ -5,7 +5,8 @@ import Welcome from './pages/Welcome';
 import NotFound from './pages/NotFound';
 import Artists from './pages/Artists';
 import Jobs from './pages/Jobs';
-import SalonOwners from './pages/SalonOwners';
+import SalonsPage from './pages/salons/SalonsPage';
+import SellSalon from './pages/salons/SellSalon';
 import Customers from './pages/Customers';
 import Suppliers from './pages/Suppliers';
 import Freelancers from './pages/Freelancers';
@@ -20,6 +21,8 @@ import OtherDashboard from './pages/dashboard/Other';
 import ProfileEditor from './pages/profile/ProfileEditor';
 import SignIn from './pages/auth/SignIn';
 import SignUp from './pages/auth/SignUp';
+import ProfileRedirect from './components/profile/ProfileRedirect';
+import SalonOwners from './pages/SalonOwners';
 
 const routes = [
   {
@@ -37,6 +40,14 @@ const routes = [
   {
     path: '/jobs',
     element: <Jobs />,
+  },
+  {
+    path: '/salons',
+    element: <SalonsPage />,
+  },
+  {
+    path: '/sell-salon',
+    element: <SellSalon />,
   },
   {
     path: '/salon-owners',
@@ -88,7 +99,7 @@ const routes = [
   },
   {
     path: '/profile',
-    element: <ProfileEditor />,
+    element: <ProfileRedirect />,
   },
   {
     path: '/profile/edit',
@@ -100,6 +111,15 @@ const routes = [
   },
   {
     path: '/auth/signup',
+    element: <SignUp />,
+  },
+  // Support legacy paths
+  {
+    path: '/sign-in',
+    element: <SignIn />,
+  },
+  {
+    path: '/sign-up',
     element: <SignUp />,
   },
   {
