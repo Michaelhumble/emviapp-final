@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile, UserRole } from './types';
 import { toast } from 'sonner';
@@ -47,30 +46,27 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       created_at: data.created_at || '',
       updated_at: data.updated_at || '',
       
-      // Optional fields with null-coalescing to handle potential undefined values
-      salon_name: data.salon_name !== undefined ? data.salon_name : '',
-      company_name: data.company_name !== undefined ? data.company_name : 
-                    (data.salon_name !== undefined ? data.salon_name : ''), // Use salon_name as fallback if it exists
+      // Optional fields with default values
+      salon_name: '',
+      company_name: '', 
       product_type: data.specialty || '', // Use specialty as fallback
       instagram: data.instagram || '',
-      facebook: data.facebook !== undefined ? data.facebook : (data.instagram || ''), // Use instagram as fallback
-      twitter: data.twitter !== undefined ? data.twitter : (data.instagram || ''), // Use instagram as fallback
+      facebook: data.instagram || '', // Use instagram as fallback
+      twitter: data.instagram || '', // Use instagram as fallback
       website: data.website || '',
       preferred_language: (data.preferred_language as any) || 'en',
-      profile_views: data.profile_views !== undefined ? data.profile_views : 0,
-      account_type: data.account_type !== undefined ? data.account_type : 'free',
-      affiliate_code: data.affiliate_code !== undefined ? data.affiliate_code : 
-                      (data.referral_code || ''), // Use referral_code as fallback
+      profile_views: 0,
+      account_type: 'free',
+      affiliate_code: data.referral_code || '', // Use referral_code as fallback
       referral_code: data.referral_code || '',
-      referral_count: data.referral_count !== undefined ? data.referral_count : 0,
-      skill_level: data.skill_level !== undefined ? data.skill_level : (data.specialty || ''), // Use specialty as fallback
+      referral_count: 0,
+      skill_level: data.specialty || '', // Use specialty as fallback
       skills: [], // Initialize with empty array since it doesn't exist in DB
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       accepts_bookings: Boolean(data.accepts_bookings),
       booking_url: data.booking_url || '',
       boosted_until: data.boosted_until || null,
-      profile_completion: data.profile_completion !== undefined ? data.profile_completion :
-                          (typeof data.credits === 'number' ? data.credits : 0), // Use credits as fallback
+      profile_completion: typeof data.credits === 'number' ? data.credits : 0, // Use credits as fallback
       completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],
       portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
       credits: data.credits || 0,

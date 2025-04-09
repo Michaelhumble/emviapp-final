@@ -1,17 +1,16 @@
 
 import { useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
-import Layout from '@/components/layout/Layout';
+import JobsPage from './jobs';
 
 const Jobs = () => {
   useEffect(() => {
     // Log page visit
-    console.log("Jobs page accessed, redirecting to jobs index page");
+    console.log("Jobs page accessed, rendering JobsPage component");
     document.title = "Job Listings | EmviApp";
   }, []);
 
-  // Redirect to the implemented jobs page
-  return <Navigate to="/jobs" replace />;
+  // Render the actual jobs page component instead of redirecting
+  return <JobsPage />;
 };
 
 export default Jobs;

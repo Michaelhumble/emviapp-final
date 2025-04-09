@@ -1,10 +1,9 @@
-
 import React from 'react';
 import Index from './pages/Index';
 import Welcome from './pages/Welcome';
 import NotFound from './pages/NotFound';
 import Artists from './pages/Artists';
-import Jobs from './pages/Jobs';
+import JobsPage from './pages/jobs';
 import SalonsPage from './pages/salons/SalonsPage';
 import SellSalon from './pages/salons/SellSalon';
 import Customers from './pages/Customers';
@@ -39,7 +38,7 @@ const routes = [
   },
   {
     path: '/jobs',
-    element: <Jobs />,
+    element: <JobsPage />,
   },
   {
     path: '/salons',
@@ -113,7 +112,6 @@ const routes = [
     path: '/auth/signup',
     element: <SignUp />,
   },
-  // Support legacy paths
   {
     path: '/sign-in',
     element: <SignIn />,
