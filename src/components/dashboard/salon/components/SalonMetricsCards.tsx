@@ -75,22 +75,40 @@ const SalonMetricsCards = ({ salonId }: SalonMetricsCardsProps) => {
         // Fetch profile info about boost status
         const { data: profileData, error: profileError } = await supabase
           .from('users')
-          .select('profile_views, boosted_until')
+          .select('boosted_until, credits')
           .eq('id', userProfile?.id)
           .single();
         
-        if (profileError) console.error('Error fetching profile:', profileError);
-        
-        // Set metrics
-        setMetrics({
-          applicantsThisMonth: applicantsCount || 0,
-          activeJobPosts: jobsCount || 0,
-          profileViews: profileData?.profile_views || 0,
-          isBoosted: profileData?.boosted_until ? new Date(profileData.boosted_until) > new Date() : false,
-          boostTimeRemaining: formatBoostTimeRemaining(profileData?.boosted_until)
-        });
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
+          // If error, set default values
+          setMetrics({
+            applicantsThisMonth: applicantsCount || 0,
+            activeJobPosts: jobsCount || 0,
+            profileViews: 0,
+            isBoosted: false,
+            boostTimeRemaining: ''
+          });
+        } else {
+          // Set metrics with profile data
+          setMetrics({
+            applicantsThisMonth: applicantsCount || 0,
+            activeJobPosts: jobsCount || 0,
+            profileViews: 0, // Using default as profile_views may not exist
+            isBoosted: profileData?.boosted_until ? new Date(profileData.boosted_until) > new Date() : false,
+            boostTimeRemaining: formatBoostTimeRemaining(profileData?.boosted_until)
+          });
+        }
       } catch (error) {
         console.error('Error fetching salon metrics:', error);
+        // Set default values on error
+        setMetrics({
+          applicantsThisMonth: 0,
+          activeJobPosts: 0,
+          profileViews: 0,
+          isBoosted: false,
+          boostTimeRemaining: ''
+        });
       } finally {
         setIsLoading(false);
       }

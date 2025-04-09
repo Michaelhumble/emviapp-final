@@ -117,7 +117,7 @@ const SalonDashboardContent = () => {
       
       {/* Metrics Cards */}
       <motion.div variants={item}>
-        <SalonMetricsCards />
+        <SalonMetricsCards salonId={userProfile?.id} />
       </motion.div>
       
       {/* Quick Actions */}

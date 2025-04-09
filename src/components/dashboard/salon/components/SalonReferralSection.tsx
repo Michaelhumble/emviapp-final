@@ -41,8 +41,8 @@ const SalonReferralSection = () => {
           if (!countError) {
             setReferrals(count || 0);
           }
-        } else {
-          setReferrals(referralsData?.referral_count || 0);
+        } else if (referralsData && referralsData.length > 0 && 'referral_count' in referralsData[0]) {
+          setReferrals(referralsData[0].referral_count || 0);
         }
         
         // Get user credits

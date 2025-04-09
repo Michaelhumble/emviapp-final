@@ -5,7 +5,6 @@ import AIDashboardWidgets from "../ai/AIDashboardWidgets";
 import DashboardGreeting from "./common/DashboardGreeting";
 import ArtistDashboardWidgets from "./artist/ArtistDashboardWidgets";
 import SalonOwnerDashboardWidgets from "./salon/SalonOwnerDashboardWidgets";
-import CustomerDashboardWidgets from "./customer/CustomerDashboardWidgets";
 import SubscriptionStatusCard from "./SubscriptionStatusCard";
 import FreelancerDashboardWidgets from "./freelancer/FreelancerDashboardWidgets";
 import SupplierDashboardWidgets from "./supplier/SupplierDashboardWidgets";
@@ -27,17 +26,12 @@ const DashboardContent = ({ className = "" }: DashboardContentProps) => {
   
   const isSupplier = isRoleEquivalent(userRole, ['supplier', 'vendor', 'beauty supplier']);
   
-  const isCustomer = isRoleEquivalent(userRole, ['customer']);
-  
-  const isOther = isRoleEquivalent(userRole, ['other']) || !userRole;
-  
   // Generate theme class based on user role
   const getRoleThemeClass = () => {
     if (isArtistOrTechnician) return "bg-gradient-to-br from-purple-50 to-pink-50";
     if (isSalon) return "bg-gradient-to-br from-blue-50 to-indigo-50";
     if (isSupplier) return "bg-gradient-to-br from-emerald-50 to-teal-50";
     if (isFreelancer) return "bg-gradient-to-br from-amber-50 to-yellow-50";
-    if (isCustomer) return "bg-gradient-to-br from-rose-50 to-pink-50";
     return "bg-gradient-to-br from-gray-50 to-slate-50";
   };
   
@@ -67,8 +61,7 @@ const DashboardContent = ({ className = "" }: DashboardContentProps) => {
       {isFreelancer && <FreelancerDashboardWidgets />}
       {isSalon && <SalonOwnerDashboardWidgets />}
       {isSupplier && <SupplierDashboardWidgets />}
-      {isCustomer && <CustomerDashboardWidgets />}
-      {isOther && <OtherDashboardWidgets />}
+      {!isArtistOrTechnician && !isFreelancer && !isSalon && !isSupplier && <OtherDashboardWidgets />}
     </div>
   );
 };
