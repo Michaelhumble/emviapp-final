@@ -35,6 +35,9 @@ export interface UserProfile {
   accepts_bookings?: boolean;
   booking_url?: string;
   boosted_until?: string;
+  profile_completion?: number;
+  completed_profile_tasks?: string[];
+  portfolio_urls?: string[];
 }
 
 export interface SocialLinks {

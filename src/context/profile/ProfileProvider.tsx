@@ -187,15 +187,6 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     checkProfileCompletion();
   }, [user, userProfile]);
 
-  // Log the state for debugging
-  useEffect(() => {
-    console.log('ProfileCompletionContext state:', {
-      completedTasks,
-      completionPercentage,
-      pendingTasks
-    });
-  }, [completedTasks, completionPercentage, pendingTasks]);
-
   return (
     <ProfileCompletionContext.Provider
       value={{

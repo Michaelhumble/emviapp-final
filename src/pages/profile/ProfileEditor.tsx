@@ -5,10 +5,10 @@ import Layout from "@/components/layout/Layout";
 import { useAuth } from "@/context/auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { UserRole } from "@/context/auth/types";
-import ArtistProfileForm from "@/components/profile/ArtistProfileForm";
+import ArtistProfileForm from "@/components/profile/artist/ArtistProfileForm";
 import SalonProfileForm from "@/components/profile/SalonProfileForm";
 import CustomerProfileForm from "@/components/profile/CustomerProfileForm";
+import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
 
 const ProfileEditor = () => {
   const { user, userRole, loading: authLoading } = useAuth();
@@ -58,6 +58,11 @@ const ProfileEditor = () => {
             <Button variant="outline" onClick={() => navigate(-1)}>
               Back
             </Button>
+          </div>
+          
+          {/* Profile Completion Card */}
+          <div className="mb-8">
+            <ProfileCompletionCard />
           </div>
           
           <Card>

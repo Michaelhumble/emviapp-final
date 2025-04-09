@@ -2,22 +2,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2 } from "lucide-react";
 import { useProfileCompletion } from "@/components/profile/hooks/useProfileCompletion";
-import { useEffect } from "react";
-import { useAuth } from "@/context/auth";
-import ProfilePhotoUploader from "./ProfilePhotoUploader";
+import ArtistProfilePhotoUploader from "./ArtistProfilePhotoUploader";
 
 const ArtistProfilePictureUpload = () => {
-  const { isTaskComplete, markTaskComplete } = useProfileCompletion();
-  const { userProfile } = useAuth();
+  const { isTaskComplete } = useProfileCompletion();
   const profilePictureTaskComplete = isTaskComplete("profile_picture");
-  
-  // Auto-mark task complete if profile picture exists
-  useEffect(() => {
-    if (userProfile?.avatar_url && !profilePictureTaskComplete) {
-      console.log("Auto-marking profile picture task as complete");
-      markTaskComplete("profile_picture");
-    }
-  }, [userProfile?.avatar_url, profilePictureTaskComplete, markTaskComplete]);
 
   return (
     <Card className="shadow-sm border-purple-100 overflow-hidden">
@@ -32,9 +21,7 @@ const ArtistProfilePictureUpload = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-6 space-y-6">
-        <ProfilePhotoUploader 
-          onSuccess={() => markTaskComplete("profile_picture")}
-        />
+        <ArtistProfilePhotoUploader />
       </CardContent>
     </Card>
   );
