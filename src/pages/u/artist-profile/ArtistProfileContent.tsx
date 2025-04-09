@@ -31,41 +31,70 @@ const ArtistProfileContent: React.FC<ArtistProfileContentProps> = ({
       window.open(profile.booking_url, '_blank');
     }
   };
+
+  // SEO-friendly location text
+  const locationText = profile.location 
+    ? `${profile.specialty || 'Beauty Professional'} in ${profile.location}`
+    : profile.specialty || 'Beauty Professional';
   
   return (
-    <div className="container mx-auto py-12 px-4">
+    <main className="container mx-auto py-12 px-4">
       <motion.div 
         className="max-w-4xl mx-auto"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <ProfileHeader 
-          profile={profile} 
-          isSalonOwner={isSalonOwner} 
-          handleBooking={handleBooking}
-          viewCount={viewCount} 
-        />
+        <header>
+          <ProfileHeader 
+            profile={profile} 
+            isSalonOwner={isSalonOwner} 
+            handleBooking={handleBooking}
+            viewCount={viewCount} 
+          />
+
+          {/* Add SEO-friendly text */}
+          <h1 className="sr-only">{profile.full_name} | {locationText}</h1>
+          {profile.specialty && profile.location && (
+            <p className="text-lg text-center text-gray-700 mt-4 mb-8">
+              Top-rated {profile.specialty} in {profile.location}
+            </p>
+          )}
+        </header>
         
-        <PortfolioGallery images={portfolioImages} />
-        <ServicesSection services={services} />
+        <section id="portfolio" aria-labelledby="portfolio-heading">
+          <h2 id="portfolio-heading" className="text-2xl font-serif font-semibold mb-6">Portfolio</h2>
+          <PortfolioGallery images={portfolioImages} artistName={profile.full_name} />
+        </section>
         
-        {/* Add Reviews Section */}
-        <ReviewsSection artistId={profile.id} />
+        <section id="services" aria-labelledby="services-heading" className="mt-12">
+          <h2 id="services-heading" className="text-2xl font-serif font-semibold mb-6">Services</h2>
+          <ServicesSection services={services} />
+        </section>
         
-        {/* Add Booking Request Section */}
+        <section id="reviews" aria-labelledby="reviews-heading" className="mt-12">
+          <h2 id="reviews-heading" className="text-2xl font-serif font-semibold mb-6">Client Reviews</h2>
+          <ReviewsSection artistId={profile.id} />
+        </section>
+        
         {profile.accepts_bookings && (
-          <BookingRequestSection profile={profile} services={services} />
+          <section id="booking" aria-labelledby="booking-heading" className="mt-12">
+            <h2 id="booking-heading" className="text-2xl font-serif font-semibold mb-6">Book an Appointment</h2>
+            <BookingRequestSection profile={profile} services={services} />
+          </section>
         )}
         
-        <ContactSection profile={profile} isSalonOwner={isSalonOwner} />
+        <section id="contact" aria-labelledby="contact-heading" className="mt-12">
+          <h2 id="contact-heading" className="text-2xl font-serif font-semibold mb-6">Contact Information</h2>
+          <ContactSection profile={profile} isSalonOwner={isSalonOwner} />
+        </section>
         
-        {/* Artist suggestions */}
-        <div className="mt-12">
+        <section id="suggested-artists" aria-labelledby="suggested-heading" className="mt-16">
+          <h2 id="suggested-heading" className="text-2xl font-serif font-semibold mb-6">Similar Artists You May Like</h2>
           <SuggestedArtists currentArtistId={profile.id} />
-        </div>
+        </section>
       </motion.div>
-    </div>
+    </main>
   );
 };
 

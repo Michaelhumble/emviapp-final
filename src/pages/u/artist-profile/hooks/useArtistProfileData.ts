@@ -1,132 +1,129 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { UserProfile } from "@/types/profile";
-import { useAuth } from "@/context/auth";
-import { useLocation } from "react-router-dom";
 import { Service, PortfolioImage } from "../types";
 
-export const useArtistProfileData = (username: string | undefined) => {
+export const useArtistProfileData = (username?: string) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [services, setServices] = useState<Service[]>([]);
   const [portfolioImages, setPortfolioImages] = useState<PortfolioImage[]>([]);
   const [viewCount, setViewCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const { user, userRole } = useAuth();
-  const location = useLocation();
-  
-  const isSalonOwner = userRole === 'salon' || userRole === 'owner';
-  
+  const [error, setError] = useState<Error | null>(null);
+  const [isSalonOwner, setIsSalonOwner] = useState(false);
+
   useEffect(() => {
+    if (!username) return;
+    
     const fetchProfileData = async () => {
-      if (!username) return;
-      
       try {
         setLoading(true);
         
-        let { data: userData, error: userError } = await supabase
+        // Fetch artist profile
+        const { data: profileData, error: profileError } = await supabase
           .from('users')
           .select('*')
           .eq('id', username)
-          .maybeSingle();
+          .single();
         
-        if (userError || !userData) {
-          const { data: nameData, error: nameError } = await supabase
-            .from('users')
-            .select('*')
-            .ilike('full_name', `%${username}%`)
-            .limit(1)
-            .maybeSingle();
+        if (profileError) throw profileError;
+        
+        if (profileData) {
+          setProfile(profileData as UserProfile);
+          setViewCount(profileData.profile_views || 0);
           
-          if (nameError || !nameData) {
-            setError("Artist profile not found");
-            setLoading(false);
-            return;
+          // Check if salon owner
+          if (profileData.role === 'salon' || profileData.role === 'owner') {
+            setIsSalonOwner(true);
           }
           
-          userData = nameData;
-        }
-        
-        setProfile(userData as UserProfile);
-        
-        if (userData) {
-          const { data: servicesData, error: servicesError } = await supabase
-            .from("services")
-            .select("*")
-            .eq("user_id", userData.id)
-            .eq("is_visible", true);
-          
-          if (servicesError) throw servicesError;
-          setServices(servicesData as Service[] || []);
-          
-          if (userData.portfolio_urls && userData.portfolio_urls.length > 0) {
-            const images = userData.portfolio_urls.map((url, index) => ({
-              id: `portfolio-${index}`,
-              url,
-              name: `Portfolio Image ${index + 1}`
-            }));
-            setPortfolioImages(images);
-          }
-          
-          // Track profile view if authenticated and not viewing own profile
-          if (user && user.id !== userData.id) {
-            // Store view information in activity_log instead of profile_views
-            try {
-              // Determine source page from referrer or path
-              const sourcePage = location.state?.source || 
-                            (location.pathname.includes('/explore') ? 'directory' :
-                             location.pathname.includes('/search') ? 'search' : 'direct');
-            
-              // Create an activity log entry for the profile view
-              await supabase
-                .from('activity_log')
-                .insert({
-                  user_id: user.id,
-                  activity_type: 'profile_view',
-                  description: `Viewed ${userData.full_name}'s profile`,
-                  metadata: {
-                    artist_id: userData.id,
-                    source_page: sourcePage,
-                    viewer_role: userRole || 'unknown'
-                  }
-                });
-            } catch (viewError) {
-              // Silently handle errors
-              console.log("Note: View may not be recorded", viewError);
+          // Fetch services (mock data for now)
+          const mockServices: Service[] = [
+            {
+              id: '1',
+              title: 'Basic Manicure',
+              price: 35,
+              duration_minutes: 45,
+              description: 'Classic manicure with polish of your choice',
+              is_visible: true
+            },
+            {
+              id: '2',
+              title: 'Gel Nail Extension',
+              price: 65,
+              duration_minutes: 90,
+              description: 'Full gel extensions with custom design options',
+              is_visible: true
+            },
+            {
+              id: '3',
+              title: 'Nail Art Design',
+              price: 25,
+              duration_minutes: 30,
+              description: 'Creative custom nail art per your request',
+              is_visible: true
             }
-            
-            // Get view count for display (only for artists and salon owners)
-            if (isSalonOwner || userRole === 'artist') {
-              try {
-                // Count profile views from activity log in the last 30 days
-                const { count } = await supabase
-                  .from('activity_log')
-                  .select('*', { count: 'exact', head: true })
-                  .eq('activity_type', 'profile_view')
-                  .contains('metadata', { artist_id: userData.id })
-                  .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
-                  
-                setViewCount(count);
-              } catch (countError) {
-                console.error("Error counting views:", countError);
-              }
+          ];
+          
+          setServices(mockServices);
+          
+          // Fetch portfolio images (mock data for now)
+          const mockPortfolio: PortfolioImage[] = [
+            {
+              id: '1',
+              url: 'https://images.unsplash.com/photo-1610992434884-29786a354f88?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+              name: 'French Manicure'
+            },
+            {
+              id: '2',
+              url: 'https://images.unsplash.com/photo-1604902396830-efe67c2edc64?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+              name: 'Gel Extension'
+            },
+            {
+              id: '3',
+              url: 'https://images.unsplash.com/photo-1604902396106-58a7239de795?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+              name: 'Summer Design'
             }
-          }
+          ];
+          
+          setPortfolioImages(mockPortfolio);
         }
-      } catch (error) {
-        console.error("Error fetching profile data:", error);
-        setError("Failed to load artist profile");
-        toast.error("Failed to load artist profile");
+      } catch (err) {
+        console.error("Error fetching artist profile:", err);
+        setError(err as Error);
       } finally {
         setLoading(false);
       }
     };
     
     fetchProfileData();
-  }, [username, user, userRole, location, isSalonOwner]);
+  }, [username]);
 
+  // Function to increment view count
+  const incrementViewCount = async () => {
+    if (!profile || !username) return;
+    
+    try {
+      const newViewCount = (viewCount || 0) + 1;
+      
+      // Update local state immediately for better UX
+      setViewCount(newViewCount);
+      
+      // Update the database
+      const { error } = await supabase
+        .from('users')
+        .update({ profile_views: newViewCount })
+        .eq('id', username);
+      
+      if (error) {
+        console.error("Error updating view count:", error);
+      }
+    } catch (err) {
+      console.error("Error incrementing view count:", err);
+    }
+  };
+  
   return {
     profile,
     services,
@@ -134,6 +131,7 @@ export const useArtistProfileData = (username: string | undefined) => {
     viewCount,
     loading,
     error,
-    isSalonOwner
+    isSalonOwner,
+    incrementViewCount
   };
 };

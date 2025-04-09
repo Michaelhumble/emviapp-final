@@ -1,34 +1,80 @@
 
 import React from "react";
-
-interface PortfolioImage {
-  id: string;
-  url: string;
-  name: string;
-}
+import { PortfolioImage } from "@/pages/u/artist-profile/types";
+import { Card } from "@/components/ui/card";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { useState } from "react";
 
 interface PortfolioGalleryProps {
   images: PortfolioImage[];
+  artistName?: string;
 }
 
-const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({ images }) => {
-  if (images.length === 0) return null;
-  
+const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({ images, artistName = "Artist" }) => {
+  const [selectedImage, setSelectedImage] = useState<PortfolioImage | null>(null);
+
+  if (!images || images.length === 0) {
+    return (
+      <Card className="p-6">
+        <p className="text-center text-gray-500">No portfolio images available yet.</p>
+      </Card>
+    );
+  }
+
   return (
-    <div className="mb-12">
-      <h2 className="text-2xl font-serif font-semibold mb-4">Portfolio</h2>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {images.map((image) => (
-          <div key={image.id} className="aspect-square rounded-md overflow-hidden border">
-            <img 
-              src={image.url} 
-              alt={image.name} 
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-            />
-          </div>
+    <>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {images.map((image, index) => (
+          <Dialog key={image.id || index}>
+            <DialogTrigger asChild>
+              <Card 
+                className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => setSelectedImage(image)}
+              >
+                <AspectRatio ratio={1}>
+                  <img 
+                    src={image.url} 
+                    alt={`${artistName}'s portfolio - ${image.name || `Image ${index + 1}`}`}
+                    className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                    loading={index < 6 ? "eager" : "lazy"}
+                  />
+                </AspectRatio>
+                {image.name && (
+                  <div className="p-3">
+                    <p className="text-sm font-medium">{image.name}</p>
+                  </div>
+                )}
+              </Card>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-3xl">
+              <div className="relative">
+                <img 
+                  src={image.url} 
+                  alt={`${artistName}'s portfolio - ${image.name || `Image ${index + 1}`}`}
+                  className="w-full rounded-md"
+                />
+                {image.name && (
+                  <div className="mt-2">
+                    <p className="text-lg font-medium">{image.name}</p>
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
         ))}
       </div>
-    </div>
+
+      {images.length > 0 && (
+        <div className="mt-8 text-center">
+          <Separator className="mb-8" />
+          <p className="text-sm text-gray-500">
+            View {images.length} portfolio {images.length === 1 ? 'image' : 'images'} from {artistName}'s professional work collection
+          </p>
+        </div>
+      )}
+    </>
   );
 };
 
