@@ -31,8 +31,15 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
           <img 
             src={image.url} 
             alt={image.alt}
-            className="w-full h-full object-cover object-center"
-            style={{ objectPosition: "center" }}
+            className={`${isMobile ? 'w-[85%] mx-auto' : 'w-full'} h-full object-cover`}
+            style={{ 
+              objectPosition: "center",
+              ...(isMobile && {
+                maxHeight: '85vh',
+                borderRadius: '12px',
+                marginTop: '8vh'
+              })
+            }}
           />
           
           {/* Enhanced gradient overlay for better text readability and visual appeal */}
