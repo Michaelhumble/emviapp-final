@@ -69,7 +69,7 @@ const Hero = () => {
   }, [activeIndex, sortedImages]);
 
   return (
-    <section className="relative w-full h-screen min-h-[100vh] overflow-hidden">
+    <section className="relative w-full h-[100vh] min-h-[100vh] overflow-hidden">
       {/* Background gradient layer */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#FDFDFD] to-[#F6F6F6] z-0"></div>
       
@@ -85,8 +85,8 @@ const Hero = () => {
       {/* Decorative floating elements - increased number */}
       <FloatingElements />
 
-      {/* Content layer - using the full width and improved spacing */}
-      <div className="relative w-full max-w-none mx-auto px-4 h-full flex flex-col justify-center items-center text-center z-30">
+      {/* Content layer - using the full width */}
+      <div className="relative w-full max-w-none h-full flex flex-col justify-center items-center text-center z-30">
         <HeroContent 
           activeIndex={activeIndex} 
           setActiveIndex={setActiveIndex}
