@@ -52,24 +52,6 @@ export const useProfileCompletion = () => {
 
     // Add to local state first for immediate UI feedback
     setCompletedTasks(prev => [...prev, taskId]);
-
-    // You could also update a specific field in the database if needed
-    // This could be used for tracking progress metrics
-    
-    // For example, updating a completedTasks array in the user profile
-    // (This is optional - the code already checks profile fields directly)
-    /*
-    try {
-      await supabase
-        .from('users')
-        .update({
-          completed_tasks: [...completedTasks, taskId]
-        })
-        .eq('id', user.id);
-    } catch (error) {
-      console.error('Error updating task completion status:', error);
-    }
-    */
   };
 
   const isTaskComplete = (taskId: string): boolean => {
