@@ -6,6 +6,7 @@ import { UserRole } from "@/context/auth/types";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { navigateToRoleDashboard } from "@/utils/navigation";
+import { normalizeUserRole } from "@/utils/roleUtils";
 
 export const useRoleSignUp = () => {
   const [email, setEmail] = useState("");
@@ -32,7 +33,7 @@ export const useRoleSignUp = () => {
     }
     
     setIsSubmitting(true);
-    console.log(`[useRoleSignUp] Starting sign-up with role: ${selectedRole}`);
+    console.log(`[useRoleSignUp] Starting sign-up with explicit role: ${selectedRole}`);
 
     try {
       // IMPORTANT: Explicitly pass the selected role to signUp method
@@ -80,7 +81,7 @@ export const useRoleSignUp = () => {
         }
       }
       
-      // Also ensure auth metadata has the correct role
+      // Also ensure auth metadata has the correct role - CRITICAL for proper routing
       await supabase.auth.updateUser({
         data: { role: selectedRole }
       });

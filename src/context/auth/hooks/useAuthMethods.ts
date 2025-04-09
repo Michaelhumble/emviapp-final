@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import { UserRole } from "@/context/auth/types";
 import { normalizeUserRole } from "@/utils/roleUtils";
 import { getUserRole } from "@/utils/getUserRole";
-import { navigateToRoleDashboard } from "@/utils/navigation";
 
 /**
  * Custom hook to handle auth methods
@@ -33,7 +32,7 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
             const userRole = await getUserRole(response.data.user.id);
             console.log(`[Auth] Detected user role for routing: ${userRole || 'none'}`);
             
-            // CHANGED: Log more explicit warning if no role found
+            // Log more explicit warning if no role found
             if (!userRole) {
               console.warn("[Auth] ⚠️ NO ROLE FOUND for logged in user - user will be prompted to choose role");
               toast.info("Please select your role to continue");
@@ -67,7 +66,6 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
         console.log(`[SignUp] Normalized role for signup: ${normalizeUserRole(role)}`);
       }
       
-      // CHANGED: Improved role handling during signup
       // Make sure we're not storing a null or undefined role
       const userMetadata: any = {
         email: email
@@ -128,7 +126,7 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
           toast.success("Account created successfully!");
         }
       } else if (response.data.user) {
-        // CHANGED: If no role provided during signup, show a warning
+        // If no role provided during signup, show a warning
         console.warn("[SignUp] User created but no role was provided");
         toast.info("Account created! Please select your role to continue.");
       } else {
