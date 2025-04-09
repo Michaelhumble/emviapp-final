@@ -19,6 +19,27 @@ export const useCustomerBookings = () => {
         setLoading(true);
         setError(null);
         
+        // Define explicit type for the raw data to prevent excessive type instantiation
+        type BookingRawData = {
+          id: string;
+          created_at: string;
+          date_requested: string | null;
+          time_requested: string | null;
+          status: string | null;
+          note: string | null;
+          service_id: string | null;
+          service: {
+            id: string;
+            title: string;
+            price: number;
+          } | null;
+          artist: {
+            id: string;
+            full_name: string;
+            avatar_url?: string;
+          } | null;
+        };
+        
         const { data, error } = await supabase
           .from('bookings')
           .select(`
@@ -38,16 +59,16 @@ export const useCustomerBookings = () => {
         if (error) throw error;
         
         // Transform the data to ensure it matches the CustomerBooking type
-        const typedBookings: CustomerBooking[] = data.map(item => {
+        const typedBookings: CustomerBooking[] = (data as BookingRawData[]).map(item => {
           // Create the booking object with default null for artist
           const booking: CustomerBooking = {
             id: item.id,
             created_at: item.created_at,
             date_requested: item.date_requested,
             time_requested: item.time_requested,
-            status: item.status,
-            note: item.note,
-            service_id: item.service_id,
+            status: item.status || undefined,
+            note: item.note || undefined,
+            service_id: item.service_id || undefined,
             service: item.service,
             artist: null // Default to null
           };
@@ -59,12 +80,11 @@ export const useCustomerBookings = () => {
             !('error' in item.artist) && 
             item.artist !== null
           ) {
-            // Use type assertion to help TypeScript understand the structure
-            const artistData = item.artist as { id: string; full_name: string; avatar_url?: string };
+            // After the check above, we know item.artist is not null
             booking.artist = {
-              id: artistData.id,
-              full_name: artistData.full_name,
-              avatar_url: artistData.avatar_url
+              id: item.artist.id,
+              full_name: item.artist.full_name,
+              avatar_url: item.artist.avatar_url
             };
           }
           
