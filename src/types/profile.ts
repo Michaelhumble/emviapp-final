@@ -80,14 +80,12 @@ export interface EmviUser {
 }
 
 export interface ArtistProfile extends UserProfile {
-  // Artist-specific fields here
   specialties?: string[];
   portfolio?: string[];
   awards?: string[];
 }
 
 export interface SalonProfile extends UserProfile {
-  // Salon-specific fields here
   salonName?: string;
   address?: string;
   employees?: string[];
@@ -95,7 +93,6 @@ export interface SalonProfile extends UserProfile {
 }
 
 export interface CustomerProfile extends UserProfile {
-  // Customer-specific fields here
   preferences?: string[];
   bookingHistory?: string[];
 }

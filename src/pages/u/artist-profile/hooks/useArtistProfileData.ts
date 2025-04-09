@@ -31,7 +31,8 @@ export const useArtistProfileData = (username?: string) => {
         
         if (profileData) {
           setProfile(profileData as UserProfile);
-          // Safely access profile_views and ensure it's treated as a number
+          
+          // Safely access profile_views with proper type checking
           const views = typeof profileData.profile_views === 'number' ? profileData.profile_views : 0;
           setViewCount(views);
           
