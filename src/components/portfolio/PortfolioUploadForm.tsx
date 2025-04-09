@@ -11,7 +11,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { ImageUpload, X, Loader2 } from 'lucide-react';
+import { Upload, X, Loader2, Image } from 'lucide-react';
 import { PortfolioFormData } from '@/types/portfolio';
 import { useForm } from 'react-hook-form';
 
@@ -128,7 +128,7 @@ const PortfolioUploadForm = ({ onSubmit, isUploading, onCancel }: PortfolioUploa
               ) : (
                 <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-md border-gray-300 cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <ImageUpload className="h-12 w-12 text-gray-400 mb-2" />
+                    <Image className="h-12 w-12 text-gray-400 mb-2" />
                     <p className="mb-2 text-sm text-gray-500">
                       Click to upload an image
                     </p>
