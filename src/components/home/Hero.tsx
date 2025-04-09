@@ -77,15 +77,15 @@ const Hero = () => {
   }, [randomizedImages.length]);
 
   return (
-    <div className="relative h-[100vh] md:h-[85vh] w-full flex items-center justify-center overflow-hidden">
+    <div className="relative h-screen w-full flex items-center justify-center overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#FDFDFD] to-[#F6F6F6] z-0"></div>
       
-      {/* New dark gradient overlay */}
+      {/* Dark gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A] via-[#1A1A1A]/70 to-transparent z-5"></div>
       
-      {/* Enhanced blur glass effect with better opacity */}
-      <div className="absolute inset-0 backdrop-blur-md bg-black/50 border-0 shadow-lg z-10"></div>
+      {/* Enhanced blur glass effect */}
+      <div className="absolute inset-0 backdrop-blur-md bg-black/60 shadow-lg z-10"></div>
       
       {/* Image carousel placed in front of glass background */}
       <div className="absolute inset-0 w-full h-full overflow-hidden z-20">

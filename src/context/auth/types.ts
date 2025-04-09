@@ -1,4 +1,3 @@
-
 export interface UserProfile {
   id: string;
   user_id?: string;
