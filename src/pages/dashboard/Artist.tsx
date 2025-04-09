@@ -11,6 +11,7 @@ import DashboardCard from "@/components/dashboard/DashboardCard";
 import InviteBanner from "@/components/dashboard/InviteBanner";
 import { toast } from "sonner";
 import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
+import ArtistPortfolioSection from "@/components/portfolio/ArtistPortfolioSection";
 
 const ArtistDashboard = () => {
   const { userProfile } = useAuth();
@@ -74,6 +75,9 @@ const ArtistDashboard = () => {
                   <div className="text-xs text-purple-500">Next: Tomorrow, 2pm</div>
                 </div>
               </div>
+              
+              {/* Portfolio Section */}
+              <ArtistPortfolioSection />
               
               {/* Invite Banner */}
               <InviteBanner className="mb-6" />

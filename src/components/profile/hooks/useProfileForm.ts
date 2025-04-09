@@ -61,7 +61,7 @@ export const useProfileForm = ({ onProfileUpdate }: UseProfileFormProps = {}) =>
     
     try {
       // Generate referral code if none exists
-      let referralCode = userProfile?.referral_code;
+      let referralCode = userProfile?.affiliate_code;
       if (!referralCode) {
         referralCode = `EMVI${Math.floor(1000 + Math.random() * 9000)}`;
       }
@@ -75,7 +75,7 @@ export const useProfileForm = ({ onProfileUpdate }: UseProfileFormProps = {}) =>
           location: formData.location,
           instagram: formData.instagram,
           website: formData.website,
-          referral_code: referralCode,
+          affiliate_code: referralCode,
           updated_at: new Date().toISOString()
         })
         .eq('id', user.id);
@@ -96,7 +96,7 @@ export const useProfileForm = ({ onProfileUpdate }: UseProfileFormProps = {}) =>
           location: formData.location,
           instagram: formData.instagram,
           website: formData.website,
-          referral_code: referralCode,
+          affiliate_code: referralCode,
           preferred_language: userProfile.preferred_language as "en" | "vi" | "es" | undefined
         };
         
