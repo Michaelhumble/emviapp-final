@@ -35,32 +35,45 @@ const ArtistProfilePictureUpload = () => {
       
       // Create bucket if it doesn't exist
       if (!bucketExists) {
-        await supabase.storage.createBucket('profile_images', {
+        const { data, error } = await supabase.storage.createBucket('profile_images', {
           public: true,
           fileSizeLimit: 5 * 1024 * 1024 // 5MB
         });
-        console.log("Created profile_images bucket");
+        
+        if (error) {
+          console.error("Error creating bucket:", error);
+          return false;
+        }
+        
+        console.log("Created profile_images bucket:", data);
       }
+      return true;
     } catch (error) {
       console.error("Error checking/creating bucket:", error);
       // Continue anyway as the bucket might exist but user doesn't have permission to list
+      return true;
     }
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !user) return;
+    if (!file || !user) {
+      console.log("No file selected or user not found");
+      return;
+    }
 
     // Validate file type
     const validTypes = ["image/jpeg", "image/jpg", "image/png"];
     if (!validTypes.includes(file.type)) {
       toast.error("Please upload a JPG or PNG image");
+      console.log("Invalid file type:", file.type);
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast.error("File size should be less than 5MB");
+      console.log("File too large:", file.size);
       return;
     }
 
@@ -72,12 +85,18 @@ const ArtistProfilePictureUpload = () => {
       const objectUrl = URL.createObjectURL(file);
       setPreviewUrl(objectUrl);
 
-      // Ensure bucket exists
-      await createBucketIfNeeded();
+      // Ensure bucket exists before uploading
+      const bucketCreated = await createBucketIfNeeded();
+      if (!bucketCreated) {
+        throw new Error("Failed to create storage bucket");
+      }
 
       // Get file extension
-      const fileExt = file.name.split(".").pop();
-      const filePath = `${user.id}/avatar.${fileExt}`;
+      const fileExt = file.name.split(".").pop()?.toLowerCase() || 'jpg';
+      const fileName = `avatar.${fileExt}`;
+      const filePath = `${user.id}/${fileName}`;
+
+      console.log("Uploading to path:", filePath);
 
       // Upload to Supabase Storage with upsert
       const { error: uploadError } = await supabase.storage
@@ -87,7 +106,10 @@ const ArtistProfilePictureUpload = () => {
           contentType: file.type,
         });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error("Upload error:", uploadError);
+        throw uploadError;
+      }
 
       // Get public URL
       const { data: publicUrlData } = supabase.storage
@@ -106,7 +128,10 @@ const ArtistProfilePictureUpload = () => {
         })
         .eq("id", user.id);
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error("Database update error:", updateError);
+        throw updateError;
+      }
 
       // Refresh user profile in auth context to update the UI
       await refreshUserProfile();
@@ -127,6 +152,10 @@ const ArtistProfilePictureUpload = () => {
       }
     } finally {
       setIsUploading(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
