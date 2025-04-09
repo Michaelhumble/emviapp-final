@@ -10,6 +10,7 @@ import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
 import DashboardCard from "@/components/dashboard/DashboardCard";
 import InviteBanner from "@/components/dashboard/InviteBanner";
 import { toast } from "sonner";
+import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
 
 const ArtistDashboard = () => {
   const { userProfile } = useAuth();
@@ -50,6 +51,11 @@ const ArtistDashboard = () => {
         <div className="container px-4 mx-auto py-12">
           <RoleDashboardLayout>
             <div className="space-y-8">
+              {/* Profile Completion Card */}
+              <div className="mb-6">
+                <ProfileCompletionCard />
+              </div>
+              
               {/* Stats Overview */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
