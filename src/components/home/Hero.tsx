@@ -44,7 +44,7 @@ const Hero = () => {
       style={{
         width: '100vw',
         maxWidth: '100%',
-        height: 'calc(150vh)',
+        height: isMobile ? 'calc(100vh - 6rem)' : 'calc(150vh)',
         marginLeft: '0',  // No margin on left side
         marginRight: 'calc(-50vw + 50%)',  // Extend only to the right
         border: 'none',
@@ -71,7 +71,7 @@ const Hero = () => {
       </div>
       
       {/* Scroll indicator */}
-      <ScrollIndicator />
+      {!isMobile && <ScrollIndicator />}
 
       {/* Mobile app-like status bar */}
       {isMobile && (
