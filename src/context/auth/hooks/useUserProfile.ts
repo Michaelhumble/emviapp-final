@@ -22,11 +22,25 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
       if (profile) {
         console.log("[UserProfile] Profile fetched successfully:", profile.role);
         setUserProfile(profile);
-        setUserRole(profile.role as UserRole);
         
-        // Store role in localStorage as a backup
+        // Make sure we have a valid role (not just null or undefined)
         if (profile.role) {
+          setUserRole(profile.role as UserRole);
+          
+          // Store role in localStorage for redundancy
           localStorage.setItem('emviapp_user_role', profile.role);
+          console.log("[UserProfile] Role saved to localStorage:", profile.role);
+        } else {
+          console.log("[UserProfile] No role found in profile, checking localStorage");
+          // Check localStorage if profile doesn't have a role
+          const cachedRole = localStorage.getItem('emviapp_user_role');
+          if (cachedRole) {
+            console.log("[UserProfile] Using cached role from localStorage:", cachedRole);
+            setUserRole(cachedRole as UserRole);
+          } else {
+            console.log("[UserProfile] No role found in localStorage, defaulting to null");
+            setUserRole(null);
+          }
         }
       } else {
         console.log("[UserProfile] No profile found for user:", userId);
@@ -36,11 +50,15 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
         if (cachedRole) {
           console.log("[UserProfile] Using cached role from localStorage:", cachedRole);
           setUserRole(cachedRole as UserRole);
+        } else {
+          console.log("[UserProfile] No cached role found, role remains null");
+          setUserRole(null);
         }
       }
       
     } catch (err) {
       console.error("[UserProfile] Error in getUserProfile:", err);
+      setUserRole(null);
     } finally {
       setLoading(false);
     }
