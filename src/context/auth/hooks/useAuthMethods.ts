@@ -99,12 +99,14 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
           console.error("[SignUp] Error saving role to users table:", updateError);
           
           // Try to create the user record explicitly if update failed
+          // Ensure we include all required fields according to the database schema
           const { error: insertError } = await supabase
             .from('users')
             .insert({
               id: response.data.user.id,
               email: email,
               role: role,
+              full_name: "", // Add the required field with an empty default
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString()
             });

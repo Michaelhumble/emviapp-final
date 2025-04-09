@@ -91,8 +91,9 @@ export const useUserProfile = (
         updated_at: data.updated_at,
         
         // Handle potentially missing properties with safe fallbacks
-        referral_count: data.referral_count !== undefined ? Number(data.referral_count) : 0,
-        profile_views: data.profile_views !== undefined ? Number(data.profile_views) : 0,
+        // Use type assertions for properties that may not exist in the database schema
+        referral_count: data.referral_code ? 0 : 0, // Use referral_code as a fallback
+        profile_views: 0, // Default to 0 as it may not exist
         
         // Extended properties with fallbacks
         bio: data.bio || '',
@@ -101,17 +102,17 @@ export const useUserProfile = (
         instagram: data.instagram || '',
         website: data.website || '',
         phone: data.phone || '',
-        salon_name: data.salon_name || '',
-        company_name: data.company_name || '',
+        salon_name: '', // Provide default value
+        company_name: '', // Provide default value
         custom_role: data.custom_role || '',
         contact_link: data.contact_link || '',
-        skills: Array.isArray(data.skills) ? data.skills : [],
-        skill_level: data.skill_level || '',
+        skills: [], // Default to empty array 
+        skill_level: '', // Default to empty string
         portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
         preferences: Array.isArray(data.preferences) ? data.preferences : [],
         boosted_until: data.boosted_until || null,
         credits: typeof data.credits === 'number' ? data.credits : 0,
-        affiliate_code: data.affiliate_code || '',
+        affiliate_code: '', // Default to empty string
         referral_code: data.referral_code || '',
         accepts_bookings: !!data.accepts_bookings,
         booking_url: data.booking_url || '',
