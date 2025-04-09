@@ -16,15 +16,14 @@ export const usePortfolio = () => {
 
     try {
       setIsLoading(true);
-      // Using string literal type for the table name since it's new and not in TypeScript types yet
       const { data, error } = await supabase
-        .from('portfolio_items' as any)
+        .from('portfolio_items')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setPortfolioItems(data as unknown as PortfolioItem[]);
+      setPortfolioItems(data as PortfolioItem[]);
     } catch (error) {
       console.error('Error fetching portfolio items:', error);
       toast.error('Failed to load portfolio items');
@@ -65,7 +64,7 @@ export const usePortfolio = () => {
 
       // Save portfolio item to database
       const { error: insertError } = await supabase
-        .from('portfolio_items' as any)
+        .from('portfolio_items')
         .insert({
           user_id: user.id,
           title: formData.title,
@@ -91,7 +90,7 @@ export const usePortfolio = () => {
     try {
       // Delete the database record
       const { error: deleteError } = await supabase
-        .from('portfolio_items' as any)
+        .from('portfolio_items')
         .delete()
         .eq('id', id)
         .eq('user_id', user.id);
