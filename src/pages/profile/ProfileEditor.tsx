@@ -9,6 +9,7 @@ import ArtistProfileForm from "@/components/profile/artist/ArtistProfileForm";
 import SalonProfileForm from "@/components/profile/SalonProfileForm";
 import CustomerProfileForm from "@/components/profile/CustomerProfileForm";
 import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
+import PopulateProfileButton from "@/components/profile/PopulateProfileButton";
 
 const ProfileEditor = () => {
   const { user, userRole, loading: authLoading } = useAuth();
@@ -55,9 +56,15 @@ const ProfileEditor = () => {
         <div className="max-w-3xl mx-auto">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold">Edit Profile</h1>
-            <Button variant="outline" onClick={() => navigate(-1)}>
-              Back
-            </Button>
+            <div className="flex gap-2">
+              <PopulateProfileButton onComplete={() => {
+                // Force refresh the page after populating profile
+                window.location.reload();
+              }} />
+              <Button variant="outline" onClick={() => navigate(-1)}>
+                Back
+              </Button>
+            </div>
           </div>
           
           {/* Profile Completion Card */}
