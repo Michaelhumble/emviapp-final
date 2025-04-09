@@ -60,6 +60,12 @@ export const useProfileForm = ({ onProfileUpdate }: UseProfileFormProps = {}) =>
     setUpdating(true);
     
     try {
+      // Generate referral code if none exists
+      let referralCode = userProfile?.referral_code;
+      if (!referralCode) {
+        referralCode = `EMVI${Math.floor(1000 + Math.random() * 9000)}`;
+      }
+      
       const { error } = await supabase
         .from('users')
         .update({
@@ -69,6 +75,7 @@ export const useProfileForm = ({ onProfileUpdate }: UseProfileFormProps = {}) =>
           location: formData.location,
           instagram: formData.instagram,
           website: formData.website,
+          referral_code: referralCode,
           updated_at: new Date().toISOString()
         })
         .eq('id', user.id);
@@ -89,6 +96,7 @@ export const useProfileForm = ({ onProfileUpdate }: UseProfileFormProps = {}) =>
           location: formData.location,
           instagram: formData.instagram,
           website: formData.website,
+          referral_code: referralCode,
           preferred_language: userProfile.preferred_language as "en" | "vi" | "es" | undefined
         };
         
