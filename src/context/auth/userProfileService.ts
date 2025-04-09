@@ -12,7 +12,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
   try {
     // Get user profile data
     const { data, error } = await supabase
-      .from('profiles')
+      .from('users')
       .select('*')
       .eq('id', userId)
       .single();
@@ -69,12 +69,66 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       profile_completion: data.profile_completion || 0,
       completed_profile_tasks: data.completed_profile_tasks || [],
       portfolio_urls: data.portfolio_urls || [],
+      credits: data.credits || 0,
+      custom_role: data.custom_role || '',
+      contact_link: data.contact_link || '',
     };
     
     return profile;
   } catch (error) {
     console.error('Error fetching user profile:', error);
     toast.error('Failed to load profile information');
+    return null;
+  }
+};
+
+/**
+ * Create a new user profile in Supabase
+ */
+export const createUserProfile = async (user: any): Promise<UserProfile | null> => {
+  if (!user || !user.id) {
+    console.error('User data is required to create a profile');
+    return null;
+  }
+  
+  try {
+    // Extract basic information from user object
+    const email = user.email || '';
+    const fullName = user.user_metadata?.full_name || '';
+    const role = (user.user_metadata?.role as UserRole) || 'customer';
+    
+    // Default profile data
+    const profileData = {
+      id: user.id,
+      email,
+      full_name: fullName,
+      role,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      profile_completion: 0,
+      credits: 0,
+      completed_profile_tasks: [],
+    };
+    
+    // Insert new profile into database
+    const { data, error } = await supabase
+      .from('users')
+      .upsert(profileData)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    
+    if (!data) {
+      toast.error('Profile creation failed: No data returned');
+      return null;
+    }
+    
+    // Transform response to UserProfile type
+    return await fetchUserProfile(user.id);
+  } catch (error) {
+    console.error('Error creating user profile:', error);
+    toast.error('Failed to create profile');
     return null;
   }
 };
@@ -92,8 +146,11 @@ export const updateUserProfile = async (profile: Partial<UserProfile>): Promise<
   try {
     // Update profile in database
     const { data, error } = await supabase
-      .from('profiles')
-      .update(profile)
+      .from('users')
+      .update({
+        ...profile,
+        updated_at: new Date().toISOString()
+      })
       .eq('id', profile.id)
       .select()
       .single();

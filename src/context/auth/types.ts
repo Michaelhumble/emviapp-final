@@ -24,7 +24,7 @@ export interface UserProfile {
   facebook?: string;
   twitter?: string;
   website?: string;
-  preferred_language?: 'en' | 'vi' | 'es';
+  preferred_language?: 'en' | 'vi' | 'es' | 'English';
   profile_views?: number;
   account_type?: 'free' | 'pro' | 'enterprise';
   affiliate_code?: string;
@@ -39,6 +39,9 @@ export interface UserProfile {
   profile_completion?: number;
   completed_profile_tasks?: string[];
   portfolio_urls?: string[];
+  credits?: number;
+  custom_role?: string;
+  contact_link?: string;
 }
 
 export interface SocialLinks {
@@ -67,6 +70,9 @@ export interface AuthContextType {
   user: any | null;
   userRole: UserRole | undefined;
   userProfile: UserProfile | null;
+  session: any | null;
+  isNewUser: boolean;
+  clearIsNewUser: () => void;
   signIn: (email: string, password: string) => Promise<any>;
   signOut: () => Promise<void>;
   signUp: (email: string, password: string, userData?: Partial<UserProfile>) => Promise<any>;

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { AuthContext } from './AuthContext';
-import { fetchUserProfile, createUserProfile } from './userProfileService';
+import { fetchUserProfile, createUserProfile, updateUserProfile } from './userProfileService';
 import { UserRole, UserProfile } from './types';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -45,6 +45,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
+    }
+  };
+
+  // Update user profile
+  const updateProfile = async (data: Partial<UserProfile>): Promise<UserProfile | null> => {
+    if (!user) return null;
+    
+    try {
+      const updatedProfile = await updateUserProfile({
+        ...data,
+        id: user.id
+      });
+      
+      if (updatedProfile) {
+        setUserProfile(updatedProfile);
+        if (updatedProfile.role && updatedProfile.role !== userRole) {
+          setUserRole(updatedProfile.role);
+        }
+      }
+      
+      return updatedProfile;
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      return null;
+    }
+  };
+
+  // Set user role
+  const setUserRoleFunction = async (role: UserRole): Promise<void> => {
+    if (!user) return;
+    
+    try {
+      const updatedProfile = await updateProfile({ role });
+      if (updatedProfile && updatedProfile.role) {
+        setUserRole(updatedProfile.role);
+      }
+    } catch (error) {
+      console.error('Error updating user role:', error);
     }
   };
 
@@ -99,12 +137,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // Sign up function
-  const signUp = async (email: string, password: string, options = {}) => {
+  const signUp = async (email: string, password: string, userData = {}) => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options,
+        options: {
+          data: {
+            ...userData
+          }
+        }
       });
 
       if (error) {
@@ -123,6 +165,55 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await supabase.auth.signOut();
   };
 
+  // Reset password function
+  const resetPassword = async (email: string) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email);
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      throw error;
+    }
+  };
+
+  // Update password function
+  const updatePassword = async (newPassword: string) => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error updating password:', error);
+      throw error;
+    }
+  };
+
+  // Update email function
+  const updateEmail = async (newEmail: string) => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        email: newEmail
+      });
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error updating email:', error);
+      throw error;
+    }
+  };
+
+  // Delete account function
+  const deleteAccount = async () => {
+    try {
+      // This would typically be handled by a server-side function
+      // for security reasons. This is a placeholder.
+      throw new Error('Account deletion requires a server-side function');
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      throw error;
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -137,7 +228,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         signIn,
         signUp,
         signOut,
+        resetPassword,
+        updateProfile,
+        updatePassword,
+        updateEmail,
+        deleteAccount,
         refreshUserProfile,
+        setUserRole: setUserRoleFunction,
       }}
     >
       {children}
