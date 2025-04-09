@@ -46,11 +46,12 @@ const Hero = () => {
         margin: 0,
         padding: 0,
         border: 'none',
-        maxWidth: '100%',
+        maxWidth: '100vw',
+        overflow: 'hidden'
       }}
     >
       {/* Background image carousel */}
-      <div className="absolute inset-0 w-full h-full">
+      <div className="absolute inset-0 w-screen h-screen">
         <HeroCarousel 
           images={heroImages} 
           activeIndex={currentImageIndex} 

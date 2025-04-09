@@ -1,154 +1,104 @@
-
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { UserProfile } from "@/types/profile";
-import { Service, PortfolioImage } from "../types";
+import { useState } from "react";
+import { ArtistProfile } from "../types";
 
-export const useArtistProfileData = (username?: string) => {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [services, setServices] = useState<Service[]>([]);
-  const [portfolioImages, setPortfolioImages] = useState<PortfolioImage[]>([]);
-  const [viewCount, setViewCount] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
+export const useArtistProfileData = (username: string) => {
+  const [profile, setProfile] = useState<ArtistProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [isSalonOwner, setIsSalonOwner] = useState(false);
 
-  useEffect(() => {
-    if (!username) return;
-    
-    const fetchProfileData = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch artist profile
-        const { data: profileData, error: profileError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', username)
-          .single();
-        
-        if (profileError) throw profileError;
-        
-        if (profileData) {
-          // Convert database record to UserProfile type with safe profile_views access
-          const userProfile: UserProfile = {
-            ...profileData,
-            profile_views: profileData.profile_views !== undefined ? profileData.profile_views : 0,
-          };
-          
-          setProfile(userProfile);
-          setViewCount(userProfile.profile_views || 0);
-          
-          // Check if salon owner
-          if (profileData.role === 'salon' || profileData.role === 'owner') {
-            setIsSalonOwner(true);
-          }
-          
-          // Fetch services (mock data for now)
-          const mockServices: Service[] = [
-            {
-              id: '1',
-              title: 'Basic Manicure',
-              price: 35,
-              duration_minutes: 45,
-              description: 'Classic manicure with polish of your choice',
-              is_visible: true
-            },
-            {
-              id: '2',
-              title: 'Gel Nail Extension',
-              price: 65,
-              duration_minutes: 90,
-              description: 'Full gel extensions with custom design options',
-              is_visible: true
-            },
-            {
-              id: '3',
-              title: 'Nail Art Design',
-              price: 25,
-              duration_minutes: 30,
-              description: 'Creative custom nail art per your request',
-              is_visible: true
-            }
-          ];
-          
-          setServices(mockServices);
-          
-          // Fetch portfolio images (mock data for now)
-          const mockPortfolio: PortfolioImage[] = [
-            {
-              id: '1',
-              url: 'https://images.unsplash.com/photo-1610992434884-29786a354f88?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-              name: 'French Manicure'
-            },
-            {
-              id: '2',
-              url: 'https://images.unsplash.com/photo-1604902396830-efe67c2edc64?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-              name: 'Gel Extension'
-            },
-            {
-              id: '3',
-              url: 'https://images.unsplash.com/photo-1604902396106-58a7239de795?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-              name: 'Summer Design'
-            }
-          ];
-          
-          setPortfolioImages(mockPortfolio);
-        }
-      } catch (err) {
-        console.error("Error fetching artist profile:", err);
-        setError(err as Error);
-      } finally {
-        setLoading(false);
+  const fetchProfileData = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('username', username)
+        .single();
+
+      if (error) {
+        throw error;
       }
+
+      if (data) {
+        const processedData = processProfileData(data);
+        setProfile(processedData);
+        return processedData;
+      } else {
+        return null;
+      }
+    } catch (err: any) {
+      setError(err);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useQuery(['artistProfile', username], fetchProfileData);
+
+  const processProfileData = (rawProfileData: any): ArtistProfile => {
+    return {
+      id: rawProfileData.id,
+      created_at: rawProfileData.created_at,
+      email: rawProfileData.email,
+      full_name: rawProfileData.full_name,
+      avatar_url: rawProfileData.avatar_url,
+      website: rawProfileData.website,
+      instagram: rawProfileData.instagram,
+      tiktok: rawProfileData.tiktok,
+      youtube: rawProfileData.youtube,
+      city: rawProfileData.city,
+      state: rawProfileData.state,
+      country: rawProfileData.country,
+      bio: rawProfileData.bio,
+      services: rawProfileData.services,
+      specialties: rawProfileData.specialties,
+      title: rawProfileData.title,
+      username: rawProfileData.username,
+      phone_number: rawProfileData.phone_number,
+      business_name: rawProfileData.business_name,
+      profile_views: rawProfileData.profile_views || 0,
+      location: rawProfileData.location,
+      job_types: rawProfileData.job_types,
+      verification_status: rawProfileData.verification_status,
+      stripe_account_id: rawProfileData.stripe_account_id,
+      stripe_customer_id: rawProfileData.stripe_customer_id,
+      is_stripe_account_onboarded: rawProfileData.is_stripe_account_onboarded,
+      email_confirmed: rawProfileData.email_confirmed,
+      is_visible: rawProfileData.is_visible,
+      address: rawProfileData.address,
+      lat: rawProfileData.lat,
+      lng: rawProfileData.lng,
+      zip: rawProfileData.zip,
+      timezone: rawProfileData.timezone,
+      ratings: rawProfileData.ratings,
+      num_reviews: rawProfileData.num_reviews,
+      avg_rating: rawProfileData.avg_rating,
     };
-    
-    fetchProfileData();
-  }, [username]);
-
-  // Function to increment view count
-  const incrementViewCount = async () => {
-    if (!profile || !profile.id) return;
-    
-    try {
-      // Get current view count with default of 0
-      const currentViews = profile.profile_views || 0;
-      
-      // Update with the incremented count
-      await updateProfileViews(profile.id, currentViews + 1);
-      
-      // Update local state
-      setViewCount(currentViews + 1);
-    } catch (error) {
-      console.error("Error incrementing view count:", error);
-    }
   };
 
-  // When updating profile views in the database function:
-  const updateProfileViews = async (profileId: string, newCount: number) => {
+  const updateProfileViews = async (currentViews: number) => {
     try {
-      // Update only the profile_views field
-      const { error } = await supabase
-        .from('users')
+      const { data, error } = await supabase
+        .from('profiles')
         .update({ 
-          profile_views: newCount 
+          profile_views: currentViews + 1,
         })
-        .eq('id', profileId);
-      
-      if (error) throw error;
-    } catch (error) {
-      console.error("Error updating profile views:", error);
+        .eq('username', username);
+        
+      if (error) {
+        console.error("Error updating profile views:", error);
+      } else {
+        console.log("Profile views updated successfully:", data);
+      }
+    } catch (err) {
+      console.error("Error updating profile views:", err);
     }
   };
 
-  return {
-    profile,
-    services,
-    portfolioImages,
-    viewCount,
-    loading,
-    error,
-    isSalonOwner,
-    incrementViewCount
-  };
+  return { profile, isLoading, error, updateProfileViews };
 };
+
+export default useArtistProfileData;
