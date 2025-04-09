@@ -30,10 +30,10 @@ export const useArtistProfileData = (username?: string) => {
         if (profileError) throw profileError;
         
         if (profileData) {
-          // Convert database record to UserProfile type
+          // Convert database record to UserProfile type with safe profile_views access
           const userProfile: UserProfile = {
             ...profileData,
-            profile_views: typeof profileData.profile_views === 'number' ? profileData.profile_views : 0,
+            profile_views: profileData.profile_views !== undefined ? profileData.profile_views : 0,
           };
           
           setProfile(userProfile);

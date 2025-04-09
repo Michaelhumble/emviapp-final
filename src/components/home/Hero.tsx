@@ -42,9 +42,10 @@ const Hero = () => {
     <section 
       className="relative flex items-center justify-center overflow-hidden"
       style={{
-        width: 'calc(140% - 2px)',
+        width: '100%',
+        maxWidth: '100vw',
         height: 'calc(140vh - 2px)',
-        margin: '1px',
+        margin: '0 auto',
         border: '1px solid rgba(255,255,255,0.1)',
       }}
     >
@@ -58,12 +59,14 @@ const Hero = () => {
       </div>
       
       {/* Main content */}
-      <HeroContent 
-        activeIndex={currentImageIndex}
-        setActiveIndex={handleDotClick}
-        heroImages={heroImages}
-        isMobile={isMobile}
-      />
+      <div className="relative z-10 w-full h-full flex items-center justify-center">
+        <HeroContent 
+          activeIndex={currentImageIndex}
+          setActiveIndex={handleDotClick}
+          heroImages={heroImages}
+          isMobile={isMobile}
+        />
+      </div>
       
       {/* Scroll indicator */}
       <ScrollIndicator />

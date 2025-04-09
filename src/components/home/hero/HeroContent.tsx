@@ -35,7 +35,7 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages, isMobile = false
   };
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-30 flex h-full items-center">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex h-full items-center justify-center">
       <div className="flex flex-col items-center text-center max-w-5xl mx-auto w-full my-8 md:my-0">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
