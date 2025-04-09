@@ -1,4 +1,3 @@
-
 import { UserRole, LegacyUserRole } from "@/context/auth/types";
 import { supabase } from "@/integrations/supabase/client";
 

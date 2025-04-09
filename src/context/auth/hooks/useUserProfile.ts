@@ -91,8 +91,8 @@ export const useUserProfile = (
         updated_at: data.updated_at,
         
         // Handle potentially missing properties with safe fallbacks
-        referral_count: typeof data.referral_count === 'number' ? data.referral_count : 0,
-        profile_views: typeof data.profile_views === 'number' ? data.profile_views : 0,
+        referral_count: data.referral_count !== undefined ? Number(data.referral_count) : 0,
+        profile_views: data.profile_views !== undefined ? Number(data.profile_views) : 0,
         
         // Extended properties with fallbacks
         bio: data.bio || '',

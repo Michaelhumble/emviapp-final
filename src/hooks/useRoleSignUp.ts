@@ -49,7 +49,7 @@ export const useRoleSignUp = () => {
       const userId = signUpResponse.data.user.id;
       console.log(`[SignUp] User created with ID: ${userId} and role: ${selectedRole}`);
       
-      // Double-check that role was properly set
+      // Double-check that role was properly set - CRITICAL FIX HERE
       const { data: userData, error: userError } = await supabase
         .from('users')
         .select('role')
@@ -61,7 +61,7 @@ export const useRoleSignUp = () => {
       } else {
         console.log(`[SignUp] Role verification - Database has role: ${userData?.role}`);
         
-        // If role doesn't match or isn't set, update it directly
+        // If role doesn't match or isn't set, update it directly - IMPROVED ERROR HANDLING
         if (!userData?.role || userData.role !== selectedRole) {
           console.warn(`[SignUp] Role mismatch! Fixing role in database from ${userData?.role || 'none'} to ${selectedRole}`);
           
@@ -72,23 +72,20 @@ export const useRoleSignUp = () => {
             
           if (updateError) {
             console.error("[SignUp] Failed to update role in database:", updateError);
+            // Continue anyway, we'll try again with auth metadata
           }
         }
       }
       
-      // Also ensure auth metadata has the correct role
-      const { data: authUser, error: authError } = await supabase.auth.getUser();
-      if (!authError && authUser?.user) {
-        const currentMetadataRole = authUser.user.user_metadata?.role;
-        
-        if (currentMetadataRole !== selectedRole) {
-          console.warn(`[SignUp] Role mismatch in auth metadata! Fixing from ${currentMetadataRole || 'none'} to ${selectedRole}`);
-          
-          await supabase.auth.updateUser({
-            data: { role: selectedRole }
-          });
-        }
-      }
+      // Also ensure auth metadata has the correct role - CRITICAL FIX
+      await supabase.auth.updateUser({
+        data: { role: selectedRole }
+      });
+      
+      console.log("[SignUp] Updated auth metadata with role:", selectedRole);
+      
+      // Force a small delay to let database updates complete
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       // Log success
       toast.success("Account created successfully!");

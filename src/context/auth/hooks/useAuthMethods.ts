@@ -61,11 +61,14 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
   const signUp = async (email: string, password: string, role?: UserRole): Promise<AuthResponse> => {
     setLoading(true);
     try {
-      // Use the provided role directly without normalizing first
-      // (we'll normalize later if needed)
+      // Debug the role being passed to signup
       console.log(`[SignUp] Using explicitly provided role: ${role || 'none provided'}`);
       
-      // Sign up with auth API, including role in metadata
+      if (role) {
+        console.log(`[SignUp] Normalized role for signup: ${normalizeUserRole(role)}`);
+      }
+      
+      // Sign up with auth API, explicitly including role in metadata
       const response = await supabase.auth.signUp({
         email,
         password,
@@ -83,7 +86,10 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
         // Successfully created auth user, now ensure role is set in users table
         console.log(`[SignUp] Setting role in users table for user ${response.data.user.id}: ${role}`);
         
-        // Update role in the users table
+        // Delay slightly to ensure auth record is fully created
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // Update role in the users table with explicit error handling
         const { error: updateError } = await supabase
           .from('users')
           .update({ role: role })
@@ -91,13 +97,30 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
           
         if (updateError) {
           console.error("[SignUp] Error saving role to users table:", updateError);
-          toast.error("Account created but role preference could not be saved. Please update your profile.");
+          
+          // Try to create the user record explicitly if update failed
+          const { error: insertError } = await supabase
+            .from('users')
+            .insert({
+              id: response.data.user.id,
+              email: email,
+              role: role,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            });
+            
+          if (insertError) {
+            console.error("[SignUp] Error creating user record:", insertError);
+            toast.error("Account created but role preference could not be saved. Please update your profile.");
+          } else {
+            console.log("[SignUp] User record created with role:", role);
+          }
         } else {
           console.log("[SignUp] Role saved successfully to both auth and users table");
-          toast.success("Verification email sent! Please check your inbox.");
+          toast.success("Account created successfully!");
         }
       } else {
-        toast.success("Verification email sent! Please check your inbox.");
+        toast.success("Account created! Please verify your email.");
       }
       
       return response;
