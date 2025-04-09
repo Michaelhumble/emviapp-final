@@ -18,8 +18,8 @@ import Profile from '@/pages/Profile';
 import UserProfilePage from '@/pages/profile/UserProfilePage';
 import ProfileEdit from '@/pages/profile/edit';
 import UserProfileByUsername from '@/pages/profile/[username]';
-// Match the actual filename casing in the filesystem
-import SalonDashboard from '@/pages/dashboard/salon'; // Matching actual file casing
+// Use index import to avoid casing issues
+import SalonDashboard from '@/pages/dashboard/index';
 import SalonOwnerDashboard from '@/pages/dashboard/SalonOwnerDashboard';
 import ArtistDashboard from '@/pages/dashboard/Artist';
 import SupplierDashboard from '@/pages/dashboard/Supplier';
