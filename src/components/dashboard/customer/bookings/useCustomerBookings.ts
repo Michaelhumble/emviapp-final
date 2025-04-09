@@ -19,27 +19,7 @@ export const useCustomerBookings = () => {
         setLoading(true);
         setError(null);
         
-        // Define explicit type for the raw data to prevent excessive type instantiation
-        type BookingRawData = {
-          id: string;
-          created_at: string;
-          date_requested: string | null;
-          time_requested: string | null;
-          status: string | null;
-          note: string | null;
-          service_id: string | null;
-          service: {
-            id: string;
-            title: string;
-            price: number;
-          } | null;
-          artist: {
-            id: string;
-            full_name: string;
-            avatar_url?: string;
-          } | null;
-        };
-        
+        // Get bookings directly without trying to join with artist
         const { data, error } = await supabase
           .from('bookings')
           .select(`
@@ -51,47 +31,50 @@ export const useCustomerBookings = () => {
             note,
             service_id,
             service:service_id (id, title, price),
-            artist:artist_id (id, full_name, avatar_url)
+            recipient_id
           `)
-          .eq('customer_id', user.id)
+          .eq('sender_id', user.id)
           .order('created_at', { ascending: false });
         
         if (error) throw error;
         
-        // Transform the data to ensure it matches the CustomerBooking type
-        const typedBookings: CustomerBooking[] = (data as BookingRawData[]).map(item => {
-          // Create the booking object with default null for artist
-          const booking: CustomerBooking = {
-            id: item.id,
-            created_at: item.created_at,
-            date_requested: item.date_requested,
-            time_requested: item.time_requested,
-            status: item.status || undefined,
-            note: item.note || undefined,
-            service_id: item.service_id || undefined,
-            service: item.service,
-            artist: null // Default to null
-          };
+        if (!data) {
+          setBookings([]);
+          return;
+        }
+        
+        // Now we need to fetch artist details separately
+        const enhancedBookings = await Promise.all(data.map(async (booking) => {
+          let artistData = null;
           
-          // Only set artist if it's a valid object with the expected properties
-          if (
-            item.artist && 
-            typeof item.artist === 'object' && 
-            !('error' in item.artist) && 
-            item.artist !== null
-          ) {
-            // After the check above, we know item.artist is not null
-            booking.artist = {
-              id: item.artist.id,
-              full_name: item.artist.full_name,
-              avatar_url: item.artist.avatar_url
-            };
+          // Fetch artist (recipient) details
+          if (booking.recipient_id) {
+            const { data: artist, error: artistError } = await supabase
+              .from('users')
+              .select('id, full_name, avatar_url')
+              .eq('id', booking.recipient_id)
+              .single();
+              
+            if (!artistError && artist) {
+              artistData = artist;
+            }
           }
           
-          return booking;
-        });
+          // Create the booking object with the right structure
+          return {
+            id: booking.id,
+            created_at: booking.created_at,
+            date_requested: booking.date_requested,
+            time_requested: booking.time_requested,
+            status: booking.status || undefined,
+            note: booking.note || undefined,
+            service_id: booking.service_id || undefined,
+            service: booking.service,
+            artist: artistData // May be null if not found
+          } as CustomerBooking;
+        }));
         
-        setBookings(typedBookings);
+        setBookings(enhancedBookings);
       } catch (error) {
         console.error('Error fetching bookings:', error);
         setError('Failed to load bookings. Please try again later.');
