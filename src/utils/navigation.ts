@@ -7,7 +7,7 @@ import { toast } from "sonner";
  * Normalizes user roles to handle variations and aliases
  * IMPORTANT: This is the single source of truth for role normalization
  */
-const normalizeRole = (role: UserRole | null): UserRole | null => {
+export const normalizeRole = (role: UserRole | null): UserRole | null => {
   if (!role) return null;
   
   // Convert role to lowercase for case-insensitive comparison
