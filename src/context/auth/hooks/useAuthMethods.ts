@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { UserRole } from "@/context/auth/types";
 import { normalizeUserRole } from "@/utils/roleUtils";
+import { getUserRole } from "@/utils/getUserRole";
+import { navigateToRoleDashboard } from "@/utils/navigation";
 
 /**
  * Custom hook to handle auth methods
@@ -26,31 +28,16 @@ export const useAuthMethods = (setLoading: (loading: boolean) => void) => {
         // After successful login, check if we need to synchronize roles
         if (response.data.user) {
           try {
-            // First see if user has a role in the users table
-            const { data: userData, error: userError } = await supabase
-              .from('users')
-              .select('role')
-              .eq('id', response.data.user.id)
-              .single();
+            console.log(`[Auth] User logged in: ${response.data.user.id}`);
             
-            // If user metadata doesn't have role but users table does, update metadata
-            if (!response.data.user.user_metadata.role && userData?.role) {
-              const normalizedRole = normalizeUserRole(userData.role);
-              console.log(`[Auth] Syncing role from database to auth metadata: ${normalizedRole}`);
-              
-              await supabase.auth.updateUser({
-                data: { role: normalizedRole }
-              });
-            }
-            // If users table doesn't have role but metadata does, update users table
-            else if (response.data.user.user_metadata.role && (!userData?.role || userData.role !== response.data.user.user_metadata.role)) {
-              const normalizedMetadataRole = normalizeUserRole(response.data.user.user_metadata.role);
-              console.log(`[Auth] Syncing role from metadata to database: ${normalizedMetadataRole}`);
-              
-              await supabase
-                .from('users')
-                .update({ role: normalizedMetadataRole })
-                .eq('id', response.data.user.id);
+            // Get user role using our dedicated utility
+            const userRole = await getUserRole(response.data.user.id);
+            console.log(`[Auth] Detected user role for routing: ${userRole || 'none'}`);
+            
+            // If no role, user will be directed to choose one later
+            if (!userRole) {
+              console.warn("[Auth] No role found for logged in user - will prompt to choose role");
+              toast.info("Please select your role to continue");
             }
           } catch (syncError) {
             console.error("[Auth] Role sync error:", syncError);

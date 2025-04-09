@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import { navigateToRoleDashboard } from "@/utils/navigation";
-import { normalizeUserRole } from "@/utils/roleUtils";
+import { getUserRole } from "@/utils/getUserRole";
 
 /**
  * Dashboard page that handles loading user profile and redirecting to role-specific dashboards
@@ -38,20 +38,30 @@ const DashboardPage = () => {
     }
   };
 
-  // Function to force refresh user profile
+  // Function to force refresh user profile and role
   const handleForceRefresh = async () => {
     if (user && !isRefreshing) {
       setIsRefreshing(true);
       try {
         toast.info("Refreshing your profile data...");
-        await refreshUserProfile();
-        toast.success("Profile refreshed successfully");
         
-        // After successful refresh, try direct navigation based on role
-        if (userRole) {
-          console.log("[Dashboard] Direct navigation after refresh to:", userRole);
-          navigateToRoleDashboard(navigate, userRole);
+        // First refresh the user profile via the Auth context
+        await refreshUserProfile();
+        
+        // Then directly fetch the role from Supabase for routing
+        const freshRole = await getUserRole(user.id);
+        console.log("[Dashboard] Direct role check returned:", freshRole);
+        
+        if (freshRole) {
+          console.log("[Dashboard] Direct navigation after refresh to:", freshRole);
+          navigateToRoleDashboard(navigate, freshRole);
+        } else {
+          console.warn("[Dashboard] No role found after direct check, redirecting to role selection");
+          navigate("/choose-role");
+          toast.info("Please select your role to continue");
         }
+        
+        toast.success("Profile refreshed successfully");
       } catch (error) {
         console.error("Profile refresh failed:", error);
         toast.error("Failed to refresh profile");
@@ -91,18 +101,40 @@ const DashboardPage = () => {
       return;
     }
     
-    // If we have a role, redirect to the appropriate dashboard
+    // If we have a role from context, redirect to the appropriate dashboard
     if (userRole) {
-      console.log("[Dashboard Router] User role detected:", userRole);
+      console.log("[Dashboard Router] User role from context:", userRole);
       console.log("[Dashboard Router] Redirecting to role-specific dashboard");
       
       // Use the navigation utility to ensure consistent routing
       navigateToRoleDashboard(navigate, userRole);
     } else {
-      // If no role but user is logged in, redirect to role selection
-      console.log("[Dashboard Router] No role detected for user, redirecting to role selection");
-      navigate("/choose-role");
-      toast.info("Please select your role to access your dashboard");
+      console.log("[Dashboard Router] No role from context, checking directly with Supabase");
+      
+      // If no role from context, check directly with Supabase
+      const checkRoleDirectly = async () => {
+        if (!user?.id) return;
+        
+        try {
+          const directRole = await getUserRole(user.id);
+          console.log("[Dashboard Router] Direct role check returned:", directRole);
+          
+          if (directRole) {
+            // Use the navigation utility with the directly fetched role
+            navigateToRoleDashboard(navigate, directRole);
+          } else {
+            // If no role detected at all, redirect to role selection
+            console.warn("[Dashboard Router] No role detected, redirecting to role selection");
+            navigate("/choose-role");
+            toast.info("Please select your role to continue");
+          }
+        } catch (error) {
+          console.error("[Dashboard Router] Error checking role directly:", error);
+          setError("Unable to determine your user role. Please try again.");
+        }
+      };
+      
+      checkRoleDirectly();
     }
   }, [user, userRole, loading, navigate, isRefreshing]);
   

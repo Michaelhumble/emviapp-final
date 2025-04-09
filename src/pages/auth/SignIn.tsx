@@ -1,5 +1,4 @@
 
-// Create this file if it doesn't exist
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
@@ -10,6 +9,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Loader2 } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { toast } from "sonner";
+import { getUserRole } from "@/utils/getUserRole";
+import { navigateToRoleDashboard } from "@/utils/navigation";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -28,10 +29,40 @@ const SignIn = () => {
     setIsSubmitting(true);
 
     try {
-      await signIn(email, password);
-      navigate("/dashboard");
+      const response = await signIn(email, password);
+      
+      if (response.error) {
+        console.error("[SignIn] Login error:", response.error.message);
+        setIsSubmitting(false);
+        return;
+      }
+      
+      if (!response.data.user) {
+        console.error("[SignIn] No user returned after login");
+        toast.error("Login failed. Please try again.");
+        setIsSubmitting(false);
+        return;
+      }
+      
+      console.log("[SignIn] User logged in successfully:", response.data.user.id);
+      
+      // Get user role and redirect to appropriate dashboard
+      const userRole = await getUserRole(response.data.user.id);
+      console.log("[SignIn] Detected role for routing:", userRole);
+      
+      if (userRole) {
+        // Use our utility to navigate to the correct dashboard
+        console.log(`[SignIn] Routing user with role ${userRole} to appropriate dashboard`);
+        navigateToRoleDashboard(navigate, userRole);
+      } else {
+        // If no role, redirect to role selection
+        console.warn("[SignIn] No role detected, redirecting to role selection");
+        navigate("/choose-role");
+        toast.info("Please select your role to continue");
+      }
     } catch (error) {
-      console.error("Sign in error:", error);
+      console.error("[SignIn] Unexpected error:", error);
+      toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
