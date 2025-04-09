@@ -1,5 +1,5 @@
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/context/auth";
@@ -12,121 +12,18 @@ const ArtistProfilePictureUpload = () => {
   const { user, userProfile, refreshUserProfile } = useAuth();
   const { markTaskComplete, isTaskComplete } = useProfileCompletion();
   const [isUploading, setIsUploading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   // Check if profile picture task is already complete
   const profilePictureTaskComplete = isTaskComplete("profile_picture");
 
-  // Initialize preview with profile image if available
+  // Initialize with profile image if available
   useEffect(() => {
     if (userProfile?.avatar_url) {
-      setPreviewUrl(userProfile.avatar_url);
-      console.log("Loaded profile image:", userProfile.avatar_url);
+      setImageUrl(userProfile.avatar_url);
+      console.log("Loaded existing profile image:", userProfile.avatar_url);
     }
   }, [userProfile]);
-
-  // Create profile_images bucket if it doesn't exist
-  const ensureStorageBucket = async () => {
-    try {
-      const { data: buckets } = await supabase.storage.listBuckets();
-      const bucketExists = buckets?.some(bucket => bucket.name === 'profile_images');
-      
-      if (!bucketExists) {
-        console.log("Creating profile_images bucket...");
-        const { error } = await supabase.storage.createBucket('profile_images', {
-          public: true
-        });
-        
-        if (error) {
-          console.error("Error creating bucket:", error);
-          return false;
-        }
-        
-        console.log("Successfully created profile_images bucket");
-      } else {
-        console.log("profile_images bucket already exists");
-      }
-      
-      return true;
-    } catch (error) {
-      console.error("Error checking/creating bucket:", error);
-      return false;
-    }
-  };
-
-  const uploadProfilePicture = async (file: File) => {
-    if (!user) {
-      toast.error("You must be logged in to upload a profile picture");
-      return false;
-    }
-
-    try {
-      // Ensure the storage bucket exists
-      const bucketReady = await ensureStorageBucket();
-      if (!bucketReady) {
-        toast.error("Failed to prepare storage. Please try again later.");
-        return false;
-      }
-
-      // Create a file path with user ID and file extension
-      const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-      const filePath = `${user.id}/avatar.${fileExt}`;
-      
-      console.log("Uploading file to:", filePath);
-
-      // Upload the file to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from('profile_images')
-        .upload(filePath, file, {
-          upsert: true,
-          contentType: file.type
-        });
-
-      if (uploadError) {
-        console.error("Upload error:", uploadError);
-        throw new Error(`Upload failed: ${uploadError.message}`);
-      }
-
-      // Get the public URL of the uploaded image
-      const { data: urlData } = supabase.storage
-        .from('profile_images')
-        .getPublicUrl(filePath);
-
-      if (!urlData || !urlData.publicUrl) {
-        throw new Error("Failed to get public URL for uploaded image");
-      }
-
-      console.log("Image uploaded successfully. Public URL:", urlData.publicUrl);
-
-      // Update the user profile with the new avatar URL
-      const { error: updateError } = await supabase
-        .from('users')
-        .update({ 
-          avatar_url: urlData.publicUrl,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
-
-      if (updateError) {
-        console.error("Database update error:", updateError);
-        throw new Error(`Failed to update profile: ${updateError.message}`);
-      }
-
-      console.log("Profile updated with new avatar URL");
-      
-      // Refresh the user profile to see the changes
-      await refreshUserProfile();
-      
-      // Mark the task as complete
-      markTaskComplete("profile_picture");
-      
-      return true;
-    } catch (error) {
-      console.error("Error in uploadProfilePicture:", error);
-      return false;
-    }
-  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -145,52 +42,98 @@ const ArtistProfilePictureUpload = () => {
       return;
     }
 
-    setIsUploading(true);
-    
     try {
-      // Create a preview URL for immediate feedback
-      const objectUrl = URL.createObjectURL(file);
-      setPreviewUrl(objectUrl);
-      
+      setIsUploading(true);
       toast.info("Uploading profile picture...");
       
+      // Create a file path with user ID
+      const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const fileName = `${user?.id}/avatar.${fileExt}`;
+      
+      console.log("Starting upload...");
+      
+      // First check if the bucket exists
+      const { data: buckets } = await supabase.storage.listBuckets();
+      if (!buckets?.some(b => b.name === 'profile_images')) {
+        console.log("Creating profile_images bucket...");
+        const { error: bucketError } = await supabase.storage.createBucket('profile_images', {
+          public: true
+        });
+        
+        if (bucketError) {
+          throw new Error(`Failed to create storage bucket: ${bucketError.message}`);
+        }
+      }
+      
       // Upload the file
-      const success = await uploadProfilePicture(file);
-      
-      if (success) {
-        toast.success("Profile picture uploaded successfully");
-      } else {
-        throw new Error("Failed to upload profile picture");
+      const { error: uploadError } = await supabase.storage
+        .from('profile_images')
+        .upload(fileName, file, { 
+          upsert: true,
+          contentType: file.type
+        });
+
+      if (uploadError) {
+        throw new Error(`Upload failed: ${uploadError.message}`);
       }
+
+      // Get the public URL
+      const { data: urlData } = supabase.storage
+        .from('profile_images')
+        .getPublicUrl(fileName);
+
+      if (!urlData?.publicUrl) {
+        throw new Error("Failed to get public URL");
+      }
+
+      const publicUrl = urlData.publicUrl;
+      console.log("Image uploaded successfully. Public URL:", publicUrl);
+
+      // Update the user profile with the new avatar URL
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ 
+          avatar_url: publicUrl,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user?.id);
+
+      if (updateError) {
+        throw new Error(`Failed to update profile: ${updateError.message}`);
+      }
+
+      // Update local state
+      setImageUrl(publicUrl);
+      
+      // Refresh user profile
+      await refreshUserProfile();
+      
+      // Mark task as complete
+      markTaskComplete("profile_picture");
+      
+      toast.success("Profile picture uploaded successfully");
     } catch (error: any) {
-      console.error("Error in handleFileChange:", error);
+      console.error("Error in upload process:", error);
       toast.error(error.message || "Failed to upload profile picture");
-      
-      // Reset preview if upload failed but we have an existing avatar
-      if (userProfile?.avatar_url) {
-        setPreviewUrl(userProfile.avatar_url);
-      } else {
-        setPreviewUrl(null);
-      }
     } finally {
       setIsUploading(false);
       
       // Reset the file input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+      if (e.target) {
+        e.target.value = '';
       }
     }
   };
 
   const removeProfilePicture = async () => {
-    if (!user || isUploading) return;
+    if (!user?.id || isUploading) return;
 
     try {
       setIsUploading(true);
       toast.info("Removing profile picture...");
 
       // Update the user record to remove the avatar URL
-      const { error } = await supabase
+      const { error: updateError } = await supabase
         .from("users")
         .update({ 
           avatar_url: null, 
@@ -198,24 +141,32 @@ const ArtistProfilePictureUpload = () => {
         })
         .eq("id", user.id);
 
-      if (error) throw error;
+      if (updateError) {
+        throw new Error(`Failed to update profile: ${updateError.message}`);
+      }
 
-      // Try to remove the files from storage
+      // Try to delete the files from storage
       try {
-        await supabase.storage
+        const { error: deleteError } = await supabase.storage
           .from("profile_images")
           .remove([
             `${user.id}/avatar.jpg`, 
             `${user.id}/avatar.jpeg`, 
             `${user.id}/avatar.png`
           ]);
+          
+        if (deleteError) {
+          console.warn("Warning: Could not delete all storage files:", deleteError);
+        }
       } catch (storageError) {
-        console.log("Storage delete warning:", storageError);
+        console.warn("Storage deletion warning:", storageError);
         // Continue even if storage deletion fails
       }
 
-      // Reset preview and refresh profile
-      setPreviewUrl(null);
+      // Reset UI state
+      setImageUrl(null);
+      
+      // Refresh user profile
       await refreshUserProfile();
 
       toast.success("Profile picture removed");
@@ -228,10 +179,10 @@ const ArtistProfilePictureUpload = () => {
   };
 
   return (
-    <Card className="shadow-sm border-border/50">
+    <Card className="shadow-sm border-border/50 overflow-hidden">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-medium flex items-center">
-          Add Your Profile Picture
+          Profile Picture
           {profilePictureTaskComplete && (
             <span className="ml-2 text-green-500">
               <Check className="h-5 w-5" />
@@ -239,26 +190,21 @@ const ArtistProfilePictureUpload = () => {
           )}
         </CardTitle>
       </CardHeader>
-      <CardContent className="pt-4">
-        <div className="flex flex-col items-center space-y-4">
+      <CardContent className="pt-4 space-y-6">
+        <div className="flex flex-col items-center gap-4">
+          {/* Profile Image Display */}
           <div className="relative">
-            <div className="h-32 w-32 rounded-full overflow-hidden border-2 border-primary/20 flex items-center justify-center bg-muted">
-              {previewUrl ? (
+            <div className="h-32 w-32 rounded-full overflow-hidden border-2 border-primary/20 bg-muted flex items-center justify-center shadow-sm">
+              {imageUrl ? (
                 <img
-                  src={previewUrl}
-                  alt="Profile Preview"
+                  src={imageUrl}
+                  alt="Profile"
                   className="h-full w-full object-cover"
                   onError={(e) => {
-                    console.error("Image failed to load:", previewUrl);
+                    console.error("Error loading image:", imageUrl);
                     const target = e.target as HTMLImageElement;
-                    target.onerror = null; // Prevent infinite error loop
-                    target.src = ''; // Clear src
-                    if (userProfile?.avatar_url) {
-                      // Try the original URL without preview changes
-                      setTimeout(() => {
-                        target.src = userProfile.avatar_url || '';
-                      }, 100);
-                    }
+                    target.onerror = null; // Prevent infinite loop
+                    target.src = ''; // Clear the src
                   }}
                 />
               ) : (
@@ -274,7 +220,7 @@ const ArtistProfilePictureUpload = () => {
               )}
             </div>
 
-            {previewUrl && !isUploading && (
+            {imageUrl && !isUploading && (
               <button
                 onClick={removeProfilePicture}
                 className="absolute -top-2 -right-2 p-1 bg-red-100 rounded-full border border-red-200 text-red-500 hover:bg-red-200 transition-colors"
@@ -285,14 +231,14 @@ const ArtistProfilePictureUpload = () => {
             )}
           </div>
 
+          {/* Upload Button */}
           <div className="flex flex-col gap-2 items-center">
             <input
+              id="profile-picture-input"
               type="file"
-              ref={fileInputRef}
               onChange={handleFileChange}
               accept="image/jpeg,image/jpg,image/png"
               className="hidden"
-              id="profile-picture-input"
               disabled={isUploading}
             />
 
@@ -300,14 +246,14 @@ const ArtistProfilePictureUpload = () => {
               type="button"
               variant="outline"
               className="flex items-center gap-2"
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => document.getElementById('profile-picture-input')?.click()}
               disabled={isUploading}
             >
               <CloudUpload className="h-4 w-4" />
-              {previewUrl ? "Change Photo" : "Upload Photo"}
+              {imageUrl ? "Change Photo" : "Upload Photo"}
             </Button>
 
-            <p className="text-xs text-muted-foreground max-w-xs text-center">
+            <p className="text-xs text-muted-foreground max-w-xs text-center mt-2">
               Upload a professional photo that clearly shows your face. 
               JPG or PNG, max 5MB.
             </p>
