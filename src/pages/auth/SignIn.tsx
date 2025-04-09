@@ -33,6 +33,7 @@ const SignIn = () => {
       
       if (response.error) {
         console.error("[SignIn] Login error:", response.error.message);
+        toast.error(response.error.message || "Failed to sign in");
         setIsSubmitting(false);
         return;
       }

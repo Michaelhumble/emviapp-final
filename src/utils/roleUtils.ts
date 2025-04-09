@@ -1,4 +1,3 @@
-
 import { UserRole, LegacyUserRole } from "@/context/auth/types";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -65,7 +64,7 @@ export const normalizeUserRole = (role: string | null): UserRole | null => {
     case 'freelancer':
       return normalizedRole as UserRole;
       
-    // CHANGED: Now log a warning for unknown roles but return null instead of 'other'
+    // Now log a warning for unknown roles but return null instead of 'other'
     default:
       console.warn(`[Role] Unknown role: ${role}, returning null (no default fallback)`);
       return null;
