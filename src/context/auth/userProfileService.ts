@@ -51,21 +51,21 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       preferred_language: data.preferred_language || '',
       
       // TypeScript-safe property access with defaults for missing properties
-      salon_name: data.salon_name || '',
-      custom_role: data.custom_role || '',
-      contact_link: data.contact_link || '',
+      salon_name: data.salon_name as string || '',
+      custom_role: data.custom_role as string || '',
+      contact_link: data.contact_link as string || '',
       skills: Array.isArray(data.skills) ? data.skills : [],
-      skill_level: data.skill_level || '',
-      profile_views: data.profile_views || 0,
+      skill_level: data.skill_level as string || '',
+      profile_views: data.profile_views as number || 0,
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
-      affiliate_code: data.affiliate_code || '',
-      referral_code: data.referral_code || '',
-      referral_count: data.referral_count || 0,
-      credits: data.credits || 0,
-      boosted_until: data.boosted_until || null,
+      affiliate_code: data.affiliate_code as string || '',
+      referral_code: data.referral_code as string || '',
+      referral_count: data.referral_count as number || 0,
+      credits: data.credits as number || 0,
+      boosted_until: data.boosted_until as string || null,
       portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
-      accepts_bookings: data.accepts_bookings || false,
-      booking_url: data.booking_url || '',
+      accepts_bookings: data.accepts_bookings as boolean || false,
+      booking_url: data.booking_url as string || '',
       completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : []
     };
     

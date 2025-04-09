@@ -1,5 +1,5 @@
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { AuthProvider } from '@/context/auth';
 import { ProfileProvider } from '@/context/profile';
@@ -9,24 +9,22 @@ import '@/App.css';
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <ProfileProvider>
-          <ProfileCompletionProvider>
-            <Routes>
-              {routes.map((route) => (
-                <Route
-                  key={route.path}
-                  path={route.path}
-                  element={route.element}
-                />
-              ))}
-            </Routes>
-            <Toaster position="top-right" richColors />
-          </ProfileCompletionProvider>
-        </ProfileProvider>
-      </AuthProvider>
-    </Router>
+    <AuthProvider>
+      <ProfileProvider>
+        <ProfileCompletionProvider>
+          <Routes>
+            {routes.map((route) => (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={route.element}
+              />
+            ))}
+          </Routes>
+          <Toaster position="top-right" richColors />
+        </ProfileCompletionProvider>
+      </ProfileProvider>
+    </AuthProvider>
   );
 }
 
