@@ -54,7 +54,7 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages, isMobile = false
           transition={{ duration: 0.7, delay: 0.2 }}
           style={{ textShadow: '0px 3px 8px rgba(0,0,0,0.7)' }}
         >
-          {isMobile ? 'The Beauty Industry's Missing Piece' : 'The Beauty Industry's Missing Piece — We Just Built It.'}
+          {isMobile ? "The Beauty Industry's Missing Piece" : "The Beauty Industry's Missing Piece — We Just Built It."}
         </motion.h1>
         <motion.p 
           className={`${isMobile ? 'text-base sm:text-lg' : 'text-lg sm:text-xl md:text-2xl'} text-white mb-6 sm:mb-10 max-w-3xl font-sans px-2`}
@@ -137,7 +137,7 @@ const HeroContent = ({ activeIndex, setActiveIndex, heroImages, isMobile = false
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent className="bg-gray-900/90 text-white border-none backdrop-blur-md">
-                  <p className="text-sm">💬 Let's find where you truly belong.</p>
+                  <p className="text-sm">💬 Let&apos;s find where you truly belong.</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
