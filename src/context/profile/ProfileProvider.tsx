@@ -2,6 +2,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import RoleDebugger from '@/components/debug/RoleDebugger';
+import { supabase } from '@/integrations/supabase/client';
+
+// Add debugging log to check Supabase connection
+console.log("[ProfileProvider] Initializing with Supabase client:", 
+  supabase ? "Supabase client initialized" : "Supabase client missing");
 
 export const ProfileContext = createContext({});
 
