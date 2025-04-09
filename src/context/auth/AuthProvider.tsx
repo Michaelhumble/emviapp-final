@@ -1,12 +1,16 @@
-
 import React, { useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { AuthContext } from './AuthContext';
 import { fetchUserProfile, createUserProfile, updateUserProfile } from './userProfileService';
 import { UserRole, UserProfile } from './types';
+import { toast } from 'sonner';
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -14,12 +18,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState(false);
 
-  // Clear new user flag
   const clearIsNewUser = () => {
     setIsNewUser(false);
   };
 
-  // Fetch user profile
   const refreshUserProfile = async () => {
     if (!user) return;
     
@@ -32,14 +34,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } else {
         console.log('No profile found, creating one...');
-        // Create profile if it doesn't exist
         const newProfile = await createUserProfile(user);
         if (newProfile) {
           setUserProfile(newProfile);
           if (newProfile.role) {
             setUserRole(newProfile.role);
           }
-          // Mark as new user
           setIsNewUser(true);
         }
       }
@@ -48,7 +48,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Update user profile
   const updateProfile = async (data: Partial<UserProfile>): Promise<UserProfile | null> => {
     if (!user) return null;
     
@@ -72,8 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Set user role
-  const setUserRoleFunction = async (role: UserRole): Promise<void> => {
+  const setUserRoleAction = async (role: UserRole): Promise<void> => {
     if (!user) return;
     
     try {
@@ -86,16 +84,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Set up auth state listener
   useEffect(() => {
-    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user || null);
       setLoading(false);
     });
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user || null);
@@ -107,7 +102,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  // Fetch profile whenever user changes
   useEffect(() => {
     if (user) {
       refreshUserProfile();
@@ -117,7 +111,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [user]);
 
-  // Sign in function
   const signIn = async (email: string, password: string) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -136,7 +129,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Sign up function
   const signUp = async (email: string, password: string, userData = {}) => {
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -160,12 +152,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Sign out function
   const signOut = async () => {
     await supabase.auth.signOut();
   };
 
-  // Reset password function
   const resetPassword = async (email: string) => {
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email);
@@ -176,7 +166,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Update password function
   const updatePassword = async (newPassword: string) => {
     try {
       const { error } = await supabase.auth.updateUser({
@@ -189,7 +178,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Update email function
   const updateEmail = async (newEmail: string) => {
     try {
       const { error } = await supabase.auth.updateUser({
@@ -202,11 +190,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Delete account function
   const deleteAccount = async () => {
     try {
-      // This would typically be handled by a server-side function
-      // for security reasons. This is a placeholder.
       throw new Error('Account deletion requires a server-side function');
     } catch (error) {
       console.error('Error deleting account:', error);
@@ -234,7 +219,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updateEmail,
         deleteAccount,
         refreshUserProfile,
-        setUserRole: setUserRoleFunction,
+        setUserRole: setUserRoleAction,
       }}
     >
       {children}
