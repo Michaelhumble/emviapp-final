@@ -99,8 +99,8 @@ export const useRoleSignUp = () => {
       console.log(`[useRoleSignUp] Normalized role for navigation: ${normalizedRole}`);
       
       if (normalizedRole === 'salon_owner') {
-        console.log("[useRoleSignUp] Explicit navigation for salon owner to: /dashboard/salon");
-        navigate("/dashboard/salon");
+        console.log("[useRoleSignUp] Explicit navigation for salon owner to: /dashboard/salon_owner");
+        navigate("/dashboard/salon_owner");
       } else {
         console.log("[useRoleSignUp] Using navigation utility for role:", selectedRole);
         navigateToRoleDashboard(navigate, selectedRole);

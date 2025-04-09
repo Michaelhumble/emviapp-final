@@ -31,12 +31,6 @@ const SalonOwnerDashboardContent = () => {
   
   return (
     <div className="space-y-6">
-      {/* Welcome Banner */}
-      <SalonDashboardBanner userName={adaptedProfile?.salon_name} />
-      
-      {/* Quick Stats */}
-      <SalonQuickStats />
-      
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Appointments Section */}

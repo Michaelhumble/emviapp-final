@@ -1,3 +1,4 @@
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
@@ -17,8 +18,9 @@ import Profile from '@/pages/Profile';
 import UserProfilePage from '@/pages/profile/UserProfilePage';
 import ProfileEdit from '@/pages/profile/edit';
 import UserProfileByUsername from '@/pages/profile/[username]';
-import SalonDashboard from '@/pages/dashboard/salon';
-import SalonOwnerDashboard from '@/pages/dashboard/salon_owner';
+// Fix casing import
+import SalonDashboard from '@/pages/dashboard/Salon';
+import SalonOwnerDashboard from '@/pages/dashboard/SalonOwnerDashboard';
 import ArtistDashboard from '@/pages/dashboard/Artist';
 import SupplierDashboard from '@/pages/dashboard/Supplier';
 import FreelancerDashboard from '@/pages/dashboard/Freelancer';
