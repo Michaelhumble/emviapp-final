@@ -1,5 +1,5 @@
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/context/auth";
@@ -12,11 +12,18 @@ const ArtistProfilePictureUpload = () => {
   const { user, userProfile, refreshUserProfile } = useAuth();
   const { markTaskComplete, isTaskComplete } = useProfileCompletion();
   const [isUploading, setIsUploading] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(userProfile?.avatar_url || null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Check if avatar task is already complete
   const avatarTaskComplete = isTaskComplete("avatar");
+
+  // Initialize preview with profile image if available
+  useEffect(() => {
+    if (userProfile?.avatar_url) {
+      setPreviewUrl(userProfile.avatar_url);
+    }
+  }, [userProfile]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -45,9 +52,8 @@ const ArtistProfilePictureUpload = () => {
       // Get file extension
       const fileExt = file.name.split(".").pop();
       const fileName = `${user.id}.${fileExt}`;
-      const filePath = `${fileName}`;
 
-      // Check if bucket exists, if not don't error out
+      // Check if bucket exists, if not create it
       const { data: buckets } = await supabase
         .storage
         .listBuckets();
@@ -57,34 +63,29 @@ const ArtistProfilePictureUpload = () => {
       // First ensure bucket exists
       if (!profileBucketExists) {
         console.log("Creating profile_images bucket");
-        const { error: bucketError } = await supabase
+        await supabase
           .storage
           .createBucket('profile_images', {
             public: true,
             fileSizeLimit: 5 * 1024 * 1024
           });
-          
-        if (bucketError) {
-          console.error("Error creating bucket:", bucketError);
-          // Continue anyway, might be permissions issue but bucket exists
-        }
       }
 
       // Upload to Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from("profile_images")
-        .upload(filePath, file, {
+        .upload(fileName, file, {
           upsert: true,
           contentType: file.type,
         });
 
       if (uploadError) throw uploadError;
 
-      // Get public URL - ensure we're getting the fresh URL with cache-busting
+      // Get public URL with cache-busting
       const timestamp = new Date().getTime();
       const { data: publicUrlData } = supabase.storage
         .from("profile_images")
-        .getPublicUrl(`${filePath}?t=${timestamp}`);
+        .getPublicUrl(`${fileName}?t=${timestamp}`);
 
       const publicUrl = publicUrlData.publicUrl.split('?')[0]; // Remove query params for storage
 
@@ -99,8 +100,7 @@ const ArtistProfilePictureUpload = () => {
 
       if (updateError) throw updateError;
 
-      // Refresh user profile in auth context with a slight delay
-      // to ensure Supabase has processed the update
+      // Refresh user profile in auth context
       setTimeout(async () => {
         await refreshUserProfile();
         

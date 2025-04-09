@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 export interface PortfolioImage {
   url: string;
   id: string; // Used for identification in the UI
+  name?: string;
 }
 
 export interface ImageItemProps {

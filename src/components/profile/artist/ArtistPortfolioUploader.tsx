@@ -1,31 +1,37 @@
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Check } from "lucide-react";
+import { Check, Image as ImageIcon } from "lucide-react";
 import { useProfileCompletion } from "../hooks/useProfileCompletion";
 import { v4 as uuidv4 } from "uuid";
 
-// Import the new components
+// Import the components
 import PortfolioUploadArea from "./components/PortfolioUploadArea";
 import PortfolioImageGrid from "./components/PortfolioImageGrid";
 import PortfolioInfo from "./components/PortfolioInfo";
+import PortfolioEmptyState from "./components/PortfolioEmptyState";
 
 const ArtistPortfolioUploader = () => {
   const { user, userProfile, refreshUserProfile } = useAuth();
   const { markTaskComplete, isTaskComplete } = useProfileCompletion();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [portfolioImages, setPortfolioImages] = useState<string[]>(
-    userProfile?.portfolio_urls || []
-  );
+  const [portfolioImages, setPortfolioImages] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Check if portfolio task is already complete
   const portfolioTaskComplete = isTaskComplete("portfolio");
+
+  // Load portfolio images on mount
+  useEffect(() => {
+    if (userProfile?.portfolio_urls && userProfile.portfolio_urls.length > 0) {
+      setPortfolioImages(userProfile.portfolio_urls);
+    }
+  }, [userProfile]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -71,9 +77,9 @@ const ArtistPortfolioUploader = () => {
       const file = files[i];
       
       // Validate file type
-      const validTypes = ["image/jpeg", "image/jpg", "image/png"];
+      const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
       if (!validTypes.includes(file.type)) {
-        toast.error(`File ${file.name} is not a valid image type. Please upload JPG or PNG files.`);
+        toast.error(`File ${file.name} is not a valid image type. Please upload JPG, PNG, or WEBP files.`);
         errorCount++;
         continue;
       }
@@ -129,24 +135,20 @@ const ArtistPortfolioUploader = () => {
         if (error) throw error;
         
         // Mark task as complete if this is the first upload
-        if (!portfolioTaskComplete) {
+        if (!portfolioTaskComplete && updatedUrls.length > 0) {
           markTaskComplete("portfolio");
         }
         
         // Refresh user profile in auth context
-        setTimeout(async () => {
-          await refreshUserProfile();
-          
-          toast.success(
-            `Successfully uploaded ${successCount} image${successCount !== 1 ? 's' : ''}.`
-          );
-          
-          setIsUploading(false);
-          setUploadProgress(0);
-        }, 1000);
+        await refreshUserProfile();
+        
+        toast.success(
+          `Successfully uploaded ${successCount} image${successCount !== 1 ? 's' : ''}.`
+        );
       } catch (error: any) {
         console.error("Error updating user profile:", error);
         toast.error(error.message || "Failed to update portfolio images");
+      } finally {
         setIsUploading(false);
         setUploadProgress(0);
       }
@@ -200,7 +202,9 @@ const ArtistPortfolioUploader = () => {
       console.error("Error removing portfolio image:", error);
       toast.error(error.message || "Failed to remove image");
       // Restore the original state on failure
-      setPortfolioImages(userProfile?.portfolio_urls || []);
+      if (userProfile?.portfolio_urls) {
+        setPortfolioImages(userProfile.portfolio_urls);
+      }
     } finally {
       setIsUploading(false);
     }
@@ -246,12 +250,16 @@ const ArtistPortfolioUploader = () => {
           {/* Portfolio limit info */}
           <PortfolioInfo imageCount={portfolioImages.length} />
 
-          {/* Portfolio image grid */}
-          <PortfolioImageGrid 
-            images={portfolioImages}
-            onRemoveImage={handleRemoveImage}
-            isUploading={isUploading}
-          />
+          {/* Empty state or portfolio grid */}
+          {portfolioImages.length === 0 ? (
+            <PortfolioEmptyState isUploading={isUploading} />
+          ) : (
+            <PortfolioImageGrid 
+              images={portfolioImages}
+              onRemoveImage={handleRemoveImage}
+              isUploading={isUploading}
+            />
+          )}
         </div>
       </CardContent>
     </Card>
