@@ -90,7 +90,7 @@ export const useUserProfile = (
         created_at: data.created_at,
         updated_at: data.updated_at,
         
-        // Handle numeric fields with safe defaults
+        // Handle potentially missing properties with safe fallbacks
         referral_count: typeof data.referral_count === 'number' ? data.referral_count : 0,
         profile_views: typeof data.profile_views === 'number' ? data.profile_views : 0,
         
