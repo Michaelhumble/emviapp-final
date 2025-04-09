@@ -1,7 +1,6 @@
 
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
-import { useAuth } from "@/context/auth";
 import { UserRole } from "@/context/auth/types";
 import DashboardRouteProtection from "@/components/dashboard/DashboardRouteProtection";
 import CustomerDashboardLayout from "@/components/dashboard/customer/CustomerDashboardLayout";

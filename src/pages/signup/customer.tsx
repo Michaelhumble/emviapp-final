@@ -19,7 +19,7 @@ import Layout from "@/components/layout/Layout";
 const formSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
   location: z.string().optional(),
   beautyPreferences: z.string().optional(),
 });
@@ -45,7 +45,7 @@ const CustomerSignupPage = () => {
     setIsLoading(true);
     
     try {
-      // Sign up with Supabase
+      // Sign up with Supabase - explicitly set role to "customer"
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -60,6 +60,7 @@ const CustomerSignupPage = () => {
       
       if (authError) {
         toast.error(authError.message);
+        setIsLoading(false);
         return;
       }
       
@@ -71,16 +72,16 @@ const CustomerSignupPage = () => {
             full_name: data.fullName,
             location: data.location || null,
             preferences: data.beautyPreferences ? [data.beautyPreferences] : [],
-            role: "customer",
+            role: "customer", // Explicitly set role again in users table
           })
           .eq("id", authData.user.id);
           
         if (profileError) {
           console.error("Error updating profile:", profileError);
-          // Still allow continued signup even if this fails
+          // Continue despite error to ensure the user can still use the app
         }
         
-        toast.success("Account created successfully!");
+        toast.success("Customer account created successfully!");
         navigate("/dashboard/customer");
       }
     } catch (error) {
@@ -103,7 +104,7 @@ const CustomerSignupPage = () => {
           <div className="h-2 bg-gradient-to-r from-pink-500 to-rose-500"></div>
           <CardHeader>
             <CardTitle className="text-2xl font-serif">Join as a Beauty Enthusiast</CardTitle>
-            <CardDescription>Create your customer account to discover beauty services</CardDescription>
+            <CardDescription>Welcome to EmviApp — Your beauty journey starts here.</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -143,7 +144,7 @@ const CustomerSignupPage = () => {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="Create a password" {...field} />
+                        <Input type="password" placeholder="Create a password (min 8 characters)" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
