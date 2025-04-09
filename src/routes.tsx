@@ -32,6 +32,7 @@ import SellSalonIndex from '@/pages/sell-salon/index';
 import NewSalonSalePage from '@/pages/sell-salon/new';
 import SalonSaleDetail from '@/pages/sell-salon/[id]';
 import ArtistDirectory from '@/pages/explore/artists';
+import Welcome from '@/pages/Welcome';
 
 // Define the routes
 const routes = [
@@ -58,6 +59,10 @@ const routes = [
   {
     path: '/analysis',
     element: <Analysis />
+  },
+  {
+    path: '/welcome',
+    element: <Welcome />
   },
   {
     path: '/auth/signin',

@@ -42,7 +42,7 @@ export interface UserProfile {
   preferences?: string[] | null;
   referred_by?: string | null;
   
-  // Add missing properties referenced throughout the app
+  // Add previously missing properties
   salon_name?: string | null;
   affiliate_code?: string | null;
   referral_count?: number | null;

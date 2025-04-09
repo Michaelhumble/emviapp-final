@@ -50,22 +50,22 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       updated_at: data.updated_at || new Date().toISOString(),
       preferred_language: data.preferred_language || '',
       
-      // TypeScript-safe property access with defaults for missing properties
-      salon_name: data.salon_name as string || '',
-      custom_role: data.custom_role as string || '',
-      contact_link: data.contact_link as string || '',
+      // Safely access properties with proper type checking
+      salon_name: typeof data.salon_name === 'string' ? data.salon_name : '',
+      custom_role: typeof data.custom_role === 'string' ? data.custom_role : '',
+      contact_link: typeof data.contact_link === 'string' ? data.contact_link : '',
       skills: Array.isArray(data.skills) ? data.skills : [],
-      skill_level: data.skill_level as string || '',
-      profile_views: data.profile_views as number || 0,
+      skill_level: typeof data.skill_level === 'string' ? data.skill_level : '',
+      profile_views: typeof data.profile_views === 'number' ? data.profile_views : 0,
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
-      affiliate_code: data.affiliate_code as string || '',
-      referral_code: data.referral_code as string || '',
-      referral_count: data.referral_count as number || 0,
-      credits: data.credits as number || 0,
-      boosted_until: data.boosted_until as string || null,
+      affiliate_code: typeof data.affiliate_code === 'string' ? data.affiliate_code : '',
+      referral_code: typeof data.referral_code === 'string' ? data.referral_code : '',
+      referral_count: typeof data.referral_count === 'number' ? data.referral_count : 0,
+      credits: typeof data.credits === 'number' ? data.credits : 0,
+      boosted_until: typeof data.boosted_until === 'string' ? data.boosted_until : null,
       portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
-      accepts_bookings: data.accepts_bookings as boolean || false,
-      booking_url: data.booking_url as string || '',
+      accepts_bookings: typeof data.accepts_bookings === 'boolean' ? data.accepts_bookings : false,
+      booking_url: typeof data.booking_url === 'string' ? data.booking_url : '',
       completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : []
     };
     
