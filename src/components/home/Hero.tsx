@@ -40,13 +40,15 @@ const Hero = () => {
 
   return (
     <section 
-      className="relative flex items-center justify-center overflow-hidden mx-auto"
+      className="relative flex items-center justify-center overflow-hidden w-full"
       style={{
-        width: '100%',
-        maxWidth: '100vw',
+        width: '100vw',
+        maxWidth: '100%',
         height: 'calc(150vh)',
+        marginLeft: 'calc(-50vw + 50%)',
+        marginRight: 'calc(-50vw + 50%)',
         border: isMobile ? 'none' : '1px solid rgba(255,255,255,0.1)',
-        borderRadius: isMobile ? '0' : '8px',
+        borderRadius: isMobile ? '0' : '0',
       }}
     >
       {/* Background image carousel */}
