@@ -7,7 +7,7 @@ import { normalizeUserRole } from "@/utils/roleUtils";
  * Adapts the auth context UserProfile to the application UserProfile type
  * This resolves type compatibility issues between different profile definitions
  */
-export const adaptUserProfile = (profile: AuthUserProfile | null): AppUserProfile | null => {
+export const adaptUserProfile = (profile: any | null): AppUserProfile | null => {
   if (!profile) return null;
   
   // Normalize the role to ensure type safety with UserRole enum
@@ -44,18 +44,18 @@ export const adaptUserProfile = (profile: AuthUserProfile | null): AppUserProfil
     facebook: '',
     twitter: '',
     website: profile.website || '',
-    preferred_language: profile.preferred_language as 'en' | 'vi' | 'es' || 'en',
+    preferred_language: profile.preferred_language as ('en' | 'vi' | 'es') || 'en',
     profile_views: profile.profile_views || 0,
     account_type: 'free',
     affiliate_code: profile.affiliate_code || '',
     referral_count: profile.referral_count || 0,
     skill_level: profile.skill_level || '',
-    skills: profile.skills || [],
-    preferences: profile.preferences || [],
+    skills: Array.isArray(profile.skills) ? profile.skills : [],
+    preferences: Array.isArray(profile.preferences) ? profile.preferences : [],
     accepts_bookings: profile.accepts_bookings || false,
     booking_url: profile.booking_url || '',
     boosted_until: profile.boosted_until || '',
-    portfolio_urls: profile.portfolio_urls || [],
+    portfolio_urls: Array.isArray(profile.portfolio_urls) ? profile.portfolio_urls : [],
     referral_code: profile.referral_code || ''
   };
   
