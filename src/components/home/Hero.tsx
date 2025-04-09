@@ -44,7 +44,7 @@ const Hero = () => {
       style={{
         width: '100%',
         maxWidth: '100vw',
-        height: 'calc(120vh)',
+        height: 'calc(130vh)',
         border: '1px solid rgba(255,255,255,0.1)',
       }}
     >
