@@ -35,8 +35,8 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       location: data.location || '',
       social_links: {
         instagram: data.instagram || '',
-        facebook: data.instagram || '', // Use instagram as fallback since facebook doesn't exist
-        twitter: data.instagram || '', // Use instagram as fallback since twitter doesn't exist
+        facebook: data.instagram || '', // Use instagram as fallback
+        twitter: data.instagram || '', // Use instagram as fallback
         website: data.website || '',
       },
       avatar_url: data.avatar_url || '',
@@ -49,7 +49,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       
       // Optional fields with null-coalescing to handle potential undefined values
       salon_name: data.salon_name || '',
-      company_name: data.salon_name || '', // Use salon_name as fallback
+      company_name: data.salon_name || '', // Use salon_name as fallback if it exists
       product_type: data.specialty || '', // Use specialty as fallback
       instagram: data.instagram || '',
       facebook: data.instagram || '', // Use instagram as fallback
