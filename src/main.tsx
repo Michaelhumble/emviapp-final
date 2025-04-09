@@ -18,8 +18,8 @@ import Profile from '@/pages/Profile';
 import UserProfilePage from '@/pages/profile/UserProfilePage';
 import ProfileEdit from '@/pages/profile/edit';
 import UserProfileByUsername from '@/pages/profile/[username]';
-// Fix casing import
-import SalonDashboard from '@/pages/dashboard/Salon';
+// Import with correct casing
+import SalonDashboard from '@/pages/dashboard/salon';
 import SalonOwnerDashboard from '@/pages/dashboard/SalonOwnerDashboard';
 import ArtistDashboard from '@/pages/dashboard/Artist';
 import SupplierDashboard from '@/pages/dashboard/Supplier';

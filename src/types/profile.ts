@@ -1,4 +1,5 @@
 
+
 export interface UserProfile {
   id: string;
   user_id?: string;
@@ -70,3 +71,4 @@ export type UserRole =
   | 'nail technician/artist'
   | 'renter'
   | 'other';
+

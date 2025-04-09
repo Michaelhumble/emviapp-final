@@ -48,6 +48,11 @@ export const normalizeUserRole = (role: string | null): UserRole | null => {
     case 'freelancer':
       return 'freelancer';
       
+    case 'customer':
+    case 'client':
+    case 'user':
+      return 'customer';
+      
     case 'other':
       return 'other';
       
@@ -57,6 +62,7 @@ export const normalizeUserRole = (role: string | null): UserRole | null => {
     case 'salon_owner':
     case 'supplier':
     case 'freelancer':
+    case 'customer':
       return normalizedRole as UserRole;
       
     // Now log a warning for unknown roles but return null instead of 'other'
