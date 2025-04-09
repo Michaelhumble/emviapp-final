@@ -45,8 +45,8 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
             style={{ 
               background: isMobile 
                 ? 'linear-gradient(to top, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.03) 50%, rgba(0,0,0,0.02) 100%)' 
-                : 'linear-gradient(to top, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.1) 100%)',
-              backdropFilter: isMobile ? 'blur(0px)' : 'blur(2px)'
+                : 'linear-gradient(to top, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.03) 50%, rgba(0,0,0,0.02) 100%)',
+              backdropFilter: isMobile ? 'blur(0px)' : 'blur(0px)'
             }}
             aria-hidden="true"
           ></div>
