@@ -1,7 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+
+import React from 'react';
 import { Loader2 } from 'lucide-react';
 import { 
   Card, 
@@ -12,118 +10,23 @@ import {
   CardFooter 
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { UserProfile } from '@/types/profile';
-
-const SPECIALTIES = [
-  "Nail Technician",
-  "Hair Stylist",
-  "Makeup Artist",
-  "Esthetician",
-  "Tattoo Artist",
-  "Microblading",
-  "Barber",
-  "Lash Tech",
-  "Other"
-];
+import FormField from './components/FormField';
+import SpecialtySelector from './components/SpecialtySelector';
+import { useProfileForm } from './hooks/useProfileForm';
 
 interface ProfileFormProps {
   onProfileUpdate?: (updatedProfile: UserProfile) => void;
 }
 
 const ProfileForm = ({ onProfileUpdate }: ProfileFormProps) => {
-  const { user, userProfile, refreshUserProfile } = useAuth();
-  const [updating, setUpdating] = useState(false);
-  const [formData, setFormData] = useState({
-    full_name: '',
-    bio: '',
-    specialty: '',
-    location: '',
-    instagram: '',
-    website: '',
-  });
-
-  // Load initial data
-  useEffect(() => {
-    if (userProfile) {
-      setFormData({
-        full_name: userProfile.full_name || '',
-        bio: userProfile.bio || '',
-        specialty: userProfile.specialty || '',
-        location: userProfile.location || '',
-        instagram: userProfile.instagram || '',
-        website: userProfile.website || '',
-      });
-    }
-  }, [userProfile]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSpecialtyChange = (value: string) => {
-    setFormData(prev => ({ ...prev, specialty: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
-    
-    setUpdating(true);
-    
-    try {
-      const { error } = await supabase
-        .from('users')
-        .update({
-          full_name: formData.full_name,
-          bio: formData.bio,
-          specialty: formData.specialty,
-          location: formData.location,
-          instagram: formData.instagram,
-          website: formData.website,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
-      
-      if (error) throw error;
-      
-      await refreshUserProfile();
-      toast.success("Profile updated successfully");
-      
-      if (onProfileUpdate && userProfile) {
-        // When calling onProfileUpdate, we need to make sure the object conforms to UserProfile
-        // Make a copy of the userProfile and spread in our form data to maintain type compatibility
-        const updatedProfile: UserProfile = {
-          ...userProfile,
-          full_name: formData.full_name,
-          bio: formData.bio,
-          specialty: formData.specialty,
-          location: formData.location,
-          instagram: formData.instagram,
-          website: formData.website,
-          preferred_language: userProfile.preferred_language as "en" | "vi" | "es" | undefined
-        };
-        
-        // Now this will satisfy TypeScript's type checking
-        onProfileUpdate(updatedProfile);
-      }
-    } catch (error: any) {
-      console.error('Error updating profile:', error);
-      toast.error("Failed to update profile. Please try again.");
-    } finally {
-      setUpdating(false);
-    }
-  };
+  const { 
+    formData, 
+    updating, 
+    handleChange, 
+    handleSpecialtyChange, 
+    handleSubmit 
+  } = useProfileForm({ onProfileUpdate });
 
   return (
     <Card>
@@ -137,84 +40,63 @@ const ProfileForm = ({ onProfileUpdate }: ProfileFormProps) => {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Display Name */}
-            <div className="space-y-2">
-              <Label htmlFor="full_name">Display Name</Label>
-              <Input
-                id="full_name"
-                name="full_name"
-                value={formData.full_name}
-                onChange={handleChange}
-                placeholder="Your professional name"
-                required
-              />
-            </div>
+            <FormField
+              id="full_name"
+              name="full_name"
+              label="Display Name"
+              value={formData.full_name}
+              onChange={handleChange}
+              placeholder="Your professional name"
+              required
+            />
             
             {/* Specialty */}
-            <div className="space-y-2">
-              <Label htmlFor="specialty">Specialty</Label>
-              <Select
-                value={formData.specialty}
-                onValueChange={handleSpecialtyChange}
-              >
-                <SelectTrigger id="specialty">
-                  <SelectValue placeholder="Select your specialty" />
-                </SelectTrigger>
-                <SelectContent>
-                  {SPECIALTIES.map(specialty => (
-                    <SelectItem key={specialty} value={specialty}>
-                      {specialty}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <SpecialtySelector
+              value={formData.specialty}
+              onValueChange={handleSpecialtyChange}
+            />
             
             {/* Location */}
-            <div className="space-y-2">
-              <Label htmlFor="location">Location</Label>
-              <Input
-                id="location"
-                name="location"
-                value={formData.location}
-                onChange={handleChange}
-                placeholder="City, State"
-              />
-            </div>
+            <FormField
+              id="location"
+              name="location"
+              label="Location"
+              value={formData.location}
+              onChange={handleChange}
+              placeholder="City, State"
+            />
             
             {/* Instagram URL */}
-            <div className="space-y-2">
-              <Label htmlFor="instagram">Instagram</Label>
-              <Input
-                id="instagram"
-                name="instagram"
-                value={formData.instagram}
-                onChange={handleChange}
-                placeholder="@yourusername"
-              />
-            </div>
+            <FormField
+              id="instagram"
+              name="instagram"
+              label="Instagram"
+              value={formData.instagram}
+              onChange={handleChange}
+              placeholder="@yourusername"
+            />
             
             {/* Website URL */}
-            <div className="space-y-2">
-              <Label htmlFor="website">Website</Label>
-              <Input
-                id="website"
-                name="website"
-                value={formData.website}
-                onChange={handleChange}
-                placeholder="https://yourwebsite.com"
-              />
-            </div>
+            <FormField
+              id="website"
+              name="website"
+              label="Website"
+              value={formData.website}
+              onChange={handleChange}
+              placeholder="https://yourwebsite.com"
+              type="url"
+            />
             
             {/* Bio - Full width */}
-            <div className="space-y-2 col-span-1 md:col-span-2">
-              <Label htmlFor="bio">Bio</Label>
-              <Textarea
+            <div className="col-span-1 md:col-span-2">
+              <FormField
                 id="bio"
                 name="bio"
+                label="Bio"
                 value={formData.bio}
                 onChange={handleChange}
                 placeholder="Tell clients about yourself and your work..."
-                className="min-h-[120px] resize-none"
+                type="textarea"
               />
             </div>
           </div>
