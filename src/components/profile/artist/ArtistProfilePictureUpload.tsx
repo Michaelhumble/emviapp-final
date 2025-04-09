@@ -26,18 +26,16 @@ const ArtistProfilePictureUpload = () => {
     }
   }, [userProfile]);
 
-  // Ensure the storage bucket exists
-  const createBucketIfNeeded = async () => {
+  // Create profile_images bucket if it doesn't exist
+  const ensureStorageBucket = async () => {
     try {
-      // Check if bucket exists
       const { data: buckets } = await supabase.storage.listBuckets();
       const bucketExists = buckets?.some(bucket => bucket.name === 'profile_images');
       
-      // Create bucket if it doesn't exist
       if (!bucketExists) {
-        const { data, error } = await supabase.storage.createBucket('profile_images', {
-          public: true,
-          fileSizeLimit: 5 * 1024 * 1024 // 5MB
+        console.log("Creating profile_images bucket...");
+        const { error } = await supabase.storage.createBucket('profile_images', {
+          public: true
         });
         
         if (error) {
@@ -45,106 +43,130 @@ const ArtistProfilePictureUpload = () => {
           return false;
         }
         
-        console.log("Created profile_images bucket:", data);
+        console.log("Successfully created profile_images bucket");
+      } else {
+        console.log("profile_images bucket already exists");
       }
+      
       return true;
     } catch (error) {
       console.error("Error checking/creating bucket:", error);
-      // Continue anyway as the bucket might exist but user doesn't have permission to list
+      return false;
+    }
+  };
+
+  const uploadProfilePicture = async (file: File) => {
+    if (!user) {
+      toast.error("You must be logged in to upload a profile picture");
+      return false;
+    }
+
+    try {
+      // Ensure the storage bucket exists
+      const bucketReady = await ensureStorageBucket();
+      if (!bucketReady) {
+        toast.error("Failed to prepare storage. Please try again later.");
+        return false;
+      }
+
+      // Create a file path with user ID and file extension
+      const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const filePath = `${user.id}/avatar.${fileExt}`;
+      
+      console.log("Uploading file to:", filePath);
+
+      // Upload the file to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('profile_images')
+        .upload(filePath, file, {
+          upsert: true,
+          contentType: file.type
+        });
+
+      if (uploadError) {
+        console.error("Upload error:", uploadError);
+        throw new Error(`Upload failed: ${uploadError.message}`);
+      }
+
+      // Get the public URL of the uploaded image
+      const { data: urlData } = supabase.storage
+        .from('profile_images')
+        .getPublicUrl(filePath);
+
+      if (!urlData || !urlData.publicUrl) {
+        throw new Error("Failed to get public URL for uploaded image");
+      }
+
+      console.log("Image uploaded successfully. Public URL:", urlData.publicUrl);
+
+      // Update the user profile with the new avatar URL
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ 
+          avatar_url: urlData.publicUrl,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (updateError) {
+        console.error("Database update error:", updateError);
+        throw new Error(`Failed to update profile: ${updateError.message}`);
+      }
+
+      console.log("Profile updated with new avatar URL");
+      
+      // Refresh the user profile to see the changes
+      await refreshUserProfile();
+      
+      // Mark the task as complete
+      markTaskComplete("profile_picture");
+      
       return true;
+    } catch (error) {
+      console.error("Error in uploadProfilePicture:", error);
+      return false;
     }
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !user) {
-      console.log("No file selected or user not found");
-      return;
-    }
+    if (!file) return;
 
     // Validate file type
     const validTypes = ["image/jpeg", "image/jpg", "image/png"];
     if (!validTypes.includes(file.type)) {
       toast.error("Please upload a JPG or PNG image");
-      console.log("Invalid file type:", file.type);
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast.error("File size should be less than 5MB");
-      console.log("File too large:", file.size);
       return;
     }
 
+    setIsUploading(true);
+    
     try {
-      setIsUploading(true);
-      toast.info("Uploading profile picture...");
-
-      // Create preview for immediate UI feedback
+      // Create a preview URL for immediate feedback
       const objectUrl = URL.createObjectURL(file);
       setPreviewUrl(objectUrl);
-
-      // Ensure bucket exists before uploading
-      const bucketCreated = await createBucketIfNeeded();
-      if (!bucketCreated) {
-        throw new Error("Failed to create storage bucket");
-      }
-
-      // Get file extension
-      const fileExt = file.name.split(".").pop()?.toLowerCase() || 'jpg';
-      const fileName = `avatar.${fileExt}`;
-      const filePath = `${user.id}/${fileName}`;
-
-      console.log("Uploading to path:", filePath);
-
-      // Upload to Supabase Storage with upsert
-      const { error: uploadError } = await supabase.storage
-        .from("profile_images")
-        .upload(filePath, file, {
-          upsert: true,
-          contentType: file.type,
-        });
-
-      if (uploadError) {
-        console.error("Upload error:", uploadError);
-        throw uploadError;
-      }
-
-      // Get public URL
-      const { data: publicUrlData } = supabase.storage
-        .from("profile_images")
-        .getPublicUrl(filePath);
-
-      const publicUrl = publicUrlData.publicUrl;
-      console.log("Profile image URL saved:", publicUrl);
-
-      // Update user record in the database
-      const { error: updateError } = await supabase
-        .from("users")
-        .update({ 
-          avatar_url: publicUrl, 
-          updated_at: new Date().toISOString() 
-        })
-        .eq("id", user.id);
-
-      if (updateError) {
-        console.error("Database update error:", updateError);
-        throw updateError;
-      }
-
-      // Refresh user profile in auth context to update the UI
-      await refreshUserProfile();
       
-      // Mark task as complete
-      markTaskComplete("profile_picture");
+      toast.info("Uploading profile picture...");
       
-      toast.success("Profile picture updated successfully");
+      // Upload the file
+      const success = await uploadProfilePicture(file);
+      
+      if (success) {
+        toast.success("Profile picture uploaded successfully");
+      } else {
+        throw new Error("Failed to upload profile picture");
+      }
     } catch (error: any) {
-      console.error("Error uploading profile picture:", error);
+      console.error("Error in handleFileChange:", error);
       toast.error(error.message || "Failed to upload profile picture");
       
-      // Reset preview if upload failed
+      // Reset preview if upload failed but we have an existing avatar
       if (userProfile?.avatar_url) {
         setPreviewUrl(userProfile.avatar_url);
       } else {
@@ -152,7 +174,8 @@ const ArtistProfilePictureUpload = () => {
       }
     } finally {
       setIsUploading(false);
-      // Reset file input
+      
+      // Reset the file input
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -166,25 +189,32 @@ const ArtistProfilePictureUpload = () => {
       setIsUploading(true);
       toast.info("Removing profile picture...");
 
-      // Remove the profile picture URL from the user record
+      // Update the user record to remove the avatar URL
       const { error } = await supabase
         .from("users")
-        .update({ avatar_url: null, updated_at: new Date().toISOString() })
+        .update({ 
+          avatar_url: null, 
+          updated_at: new Date().toISOString() 
+        })
         .eq("id", user.id);
 
       if (error) throw error;
 
-      // Try to remove the file from storage (don't fail if it doesn't exist)
+      // Try to remove the files from storage
       try {
         await supabase.storage
           .from("profile_images")
-          .remove([`${user.id}/avatar.jpg`, `${user.id}/avatar.jpeg`, `${user.id}/avatar.png`]);
+          .remove([
+            `${user.id}/avatar.jpg`, 
+            `${user.id}/avatar.jpeg`, 
+            `${user.id}/avatar.png`
+          ]);
       } catch (storageError) {
         console.log("Storage delete warning:", storageError);
         // Continue even if storage deletion fails
       }
 
-      // Update preview and refresh user profile
+      // Reset preview and refresh profile
       setPreviewUrl(null);
       await refreshUserProfile();
 
