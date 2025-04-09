@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import HeroCarousel from "./hero/HeroCarousel";
 import FloatingParticles from "./hero/FloatingParticles";
@@ -92,7 +93,7 @@ const Hero = () => {
   }, [activeIndex, randomizedImages]);
 
   return (
-    <div className="relative pt-24 pb-28 overflow-hidden h-screen max-h-[100vh] md:max-h-[95vh] min-h-[80vh] md:min-h-[85vh] w-full">
+    <div className="relative h-screen w-full overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#FDFDFD] to-[#F6F6F6] z-0"></div>
       
