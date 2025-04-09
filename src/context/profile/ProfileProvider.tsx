@@ -8,6 +8,7 @@ interface ProfileCompletionContextType {
   completionPercentage: number;
   markTaskComplete: (taskId: string) => void;
   isTaskComplete: (taskId: string) => boolean;
+  pendingTasks: { id: string; name: string }[];
 }
 
 const ProfileCompletionContext = createContext<ProfileCompletionContextType>({
@@ -15,6 +16,7 @@ const ProfileCompletionContext = createContext<ProfileCompletionContextType>({
   completionPercentage: 0,
   markTaskComplete: () => {},
   isTaskComplete: () => false,
+  pendingTasks: [],
 });
 
 const LOCAL_STORAGE_KEY = 'emviapp_profile_completed_tasks';
@@ -26,12 +28,15 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // List of all tasks that need to be completed
   const allTasks = [
-    'bio', 
-    'specialty', 
-    'location', 
-    'profile_picture', 
-    'portfolio'
+    { id: 'bio', name: 'Bio' },
+    { id: 'specialty', name: 'Specialty' },
+    { id: 'location', name: 'Location' },
+    { id: 'profile_picture', name: 'Profile Picture' },
+    { id: 'portfolio', name: 'Portfolio' }
   ];
+
+  // Calculate pending tasks based on completed tasks
+  const pendingTasks = allTasks.filter(task => !completedTasks.includes(task.id));
 
   // Load completed tasks from localStorage and check profile data
   useEffect(() => {
@@ -72,6 +77,8 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const markTaskComplete = (taskId: string) => {
     if (!user?.id) return;
     
+    console.log(`Marking task as complete: ${taskId}`);
+    
     // Only add the task if it's not already completed
     if (!completedTasks.includes(taskId)) {
       const updatedTasks = [...completedTasks, taskId];
@@ -99,7 +106,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (!user?.id) return;
     
     try {
-      await supabase
+      const { error } = await supabase
         .from('users')
         .update({
           profile_completion: percentage,
@@ -107,6 +114,10 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
           updated_at: new Date().toISOString()
         })
         .eq('id', user.id);
+        
+      if (error) {
+        console.error('Error updating profile progress:', error);
+      }
     } catch (error) {
       console.error('Error updating profile progress:', error);
     }
@@ -118,7 +129,8 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
         completedTasks,
         completionPercentage,
         markTaskComplete,
-        isTaskComplete
+        isTaskComplete,
+        pendingTasks
       }}
     >
       {children}
