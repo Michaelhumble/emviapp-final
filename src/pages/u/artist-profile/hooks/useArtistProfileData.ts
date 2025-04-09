@@ -31,8 +31,8 @@ export const useArtistProfileData = (username?: string) => {
         
         if (profileData) {
           setProfile(profileData as UserProfile);
-          // Safely access profile_views and ensure it's treated as a valid property of UserProfile
-          const views = 'profile_views' in profileData ? profileData.profile_views : 0;
+          // Safely access profile_views and ensure it's treated as a number
+          const views = typeof profileData.profile_views === 'number' ? profileData.profile_views : 0;
           setViewCount(views);
           
           // Check if salon owner
@@ -108,7 +108,7 @@ export const useArtistProfileData = (username?: string) => {
     
     try {
       // Safely access profile_views with a fallback to 0
-      const currentViews = profile.profile_views ?? 0;
+      const currentViews = typeof profile.profile_views === 'number' ? profile.profile_views : 0;
       
       // Update with the incremented count
       await updateProfileViews(profile.id, currentViews + 1);
@@ -123,13 +123,12 @@ export const useArtistProfileData = (username?: string) => {
   // When updating profile views in the database function:
   const updateProfileViews = async (profileId: string, newCount: number) => {
     try {
-      // Use 'users' table and make sure we're only updating properties that exist in UserProfile
+      // Update only the profile_views field
       const { error } = await supabase
         .from('users')
         .update({ 
-          // Using a type assertion to avoid TypeScript errors since profile_views may not be explicitly defined in the type
           profile_views: newCount 
-        } as Partial<UserProfile>)
+        })
         .eq('id', profileId);
       
       if (error) throw error;
