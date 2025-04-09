@@ -1,109 +1,51 @@
 
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
-import { BadgeCheck, Sparkles, TrendingUp } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { useAuth } from "@/context/auth";
+import { getPersonalizedGreeting } from "@/utils/navigation";
 
-interface CustomerWelcomeBannerProps {
-  isProfileTrending?: boolean;
-}
-
-const motivationalQuotes = [
-  {
-    quote: "Every self-care moment is an investment in your wellbeing.",
-    author: "EmviApp Team"
-  },
-  {
-    quote: "Beauty begins the moment you decide to be yourself.",
-    author: "Coco Chanel"
-  },
-  {
-    quote: "Take time to do what makes your soul happy.",
-    author: "Anonymous"
-  },
-  {
-    quote: "Investing in yourself is the best investment you will ever make.",
-    author: "Warren Buffett"
-  },
-  {
-    quote: "Self-care is not selfish; you cannot serve from an empty vessel.",
-    author: "Eleanor Brown"
-  },
-  {
-    quote: "Discover your own beauty and let it shine.",
-    author: "EmviApp Team"
-  }
-];
-
-const CustomerWelcomeBanner = ({ isProfileTrending = false }: CustomerWelcomeBannerProps) => {
-  const { userProfile } = useAuth();
-  const [quote, setQuote] = useState(motivationalQuotes[0]);
-  
-  // Rotate quotes every 10 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const randomIndex = Math.floor(Math.random() * motivationalQuotes.length);
-      setQuote(motivationalQuotes[randomIndex]);
-    }, 10000);
-    
-    return () => clearInterval(interval);
-  }, []);
+const CustomerWelcomeBanner = () => {
+  const { userProfile, userRole } = useAuth();
+  const userName = userProfile?.full_name?.split(' ')[0] || 'Beauty Enthusiast';
   
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className="mb-8"
+    <motion.div 
+      className="relative mb-8 overflow-hidden rounded-xl shadow-sm"
+      initial={{ y: 20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ delay: 0.2 }}
     >
-      <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-r from-rose-500 to-pink-600">
-        <CardContent className="p-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
-            <div className="text-white">
-              <h1 className="text-2xl font-bold mb-2 flex items-center">
-                Welcome back, {userProfile?.full_name?.split(' ')[0] || 'Beauty Enthusiast'}
-                {isProfileTrending && (
-                  <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                    className="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800"
-                  >
-                    <TrendingUp className="h-3 w-3 mr-1" />
-                    Trending
-                  </motion.div>
-                )}
-              </h1>
-              
-              <motion.p
-                key={quote.quote}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="text-white/90 max-w-xl italic"
-              >
-                "{quote.quote}"
-                <span className="block text-xs mt-1 text-white/70">— {quote.author}</span>
-              </motion.p>
-            </div>
-            
-            <motion.div
-              className="mt-4 sm:mt-0 flex-shrink-0 bg-white/10 rounded-lg p-3 backdrop-blur-sm"
-              whileHover={{ scale: 1.03 }}
-              transition={{ type: "spring", stiffness: 400, damping: 10 }}
-            >
-              <div className="text-white text-center">
-                <div className="flex items-center justify-center">
-                  <Sparkles className="h-5 w-5 text-amber-300 mr-2" />
-                  <span className="font-medium">Today's Goal</span>
-                </div>
-                <p className="text-sm mt-1 text-white/80">Discover a new beauty service</p>
-              </div>
-            </motion.div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-rose-500 opacity-90"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_50%,rgba(255,255,255,0.15),transparent_60%)]"></div>
+      <motion.div 
+        className="absolute -right-10 -bottom-16 w-48 h-48 rounded-full bg-white/10 backdrop-blur-md"
+        animate={{ 
+          scale: [1, 1.1, 1],
+          opacity: [0.5, 0.7, 0.5] 
+        }}
+        transition={{ 
+          duration: 6,
+          repeat: Infinity,
+          ease: "easeInOut" 
+        }}
+      />
+      <div className="relative p-6 md:p-8 z-10">
+        <h1 className="text-2xl md:text-3xl font-serif text-white mb-2">
+          {getPersonalizedGreeting(userName, userRole)}
+        </h1>
+        <p className="text-white/90 max-w-lg">
+          Explore new services, discover trending styles, and book your next beauty experience.
+        </p>
+        <motion.div 
+          className="mt-4 inline-flex items-center px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.8 }}
+        >
+          <Sparkles className="h-3.5 w-3.5 mr-2 text-amber-200" />
+          <span>Personalized recommendations ready for you</span>
+        </motion.div>
+      </div>
     </motion.div>
   );
 };
