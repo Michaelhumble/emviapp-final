@@ -7,6 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, MapPin, Phone, Instagram, Globe } from "lucide-react";
+import { toast } from "sonner";
+import { debugRoutes } from "@/utils/routeDebugger";
 
 const SalonsPage = () => {
   const { userProfile } = useAuth();
@@ -16,12 +18,15 @@ const SalonsPage = () => {
   
   useEffect(() => {
     document.title = "Browse Salons | EmviApp";
+    console.log("SalonsPage component loaded");
+    debugRoutes(); // Log the current route for debugging
     fetchSalons();
   }, []);
   
   const fetchSalons = async () => {
     try {
       setLoading(true);
+      console.log("Fetching salons...");
       
       const { data, error } = await supabase
         .from('users')
@@ -29,11 +34,17 @@ const SalonsPage = () => {
         .eq('role', 'salon')
         .order('created_at', { ascending: false });
         
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching salons:", error);
+        toast.error("Failed to load salons");
+        throw error;
+      }
       
+      console.log("Salons fetched:", data?.length || 0);
       setSalons(data || []);
     } catch (error) {
-      console.error("Error fetching salons:", error);
+      console.error("Error in fetchSalons:", error);
+      toast.error("There was a problem loading salons");
     } finally {
       setLoading(false);
     }
