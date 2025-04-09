@@ -54,6 +54,16 @@ export interface UserProfile {
   accepts_bookings?: boolean;
   booking_url?: string;
   preferred_language?: string;
+  
+  // Salon owner specific fields
+  business_name?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
+  hours?: string;
+  description?: string;
+  business_type?: string;
 }
 
 // Auth context interface
