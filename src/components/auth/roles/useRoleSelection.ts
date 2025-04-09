@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { navigateToRoleDashboard } from "@/utils/navigation";
 
 export const useRoleSelection = (userId: string, onOpenChange: (open: boolean) => void) => {
-  const [selectedRole, setSelectedRole] = useState<UserRole>("artist"); // Default to artist instead of customer
+  const [selectedRole, setSelectedRole] = useState<UserRole>("artist"); // Default to artist 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 

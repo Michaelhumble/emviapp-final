@@ -1,6 +1,6 @@
 
 import { UserRole, LegacyUserRole } from "@/context/auth/types";
-import { User, Scissors, Building2, Briefcase, ShoppingBag, HelpCircle } from "lucide-react";
+import { Scissors, Building2, Briefcase, ShoppingBag, HelpCircle } from "lucide-react";
 import React from "react";
 
 export type RoleOption = {
@@ -22,12 +22,6 @@ export const roleOptions: RoleOption[] = [
     label: "Salon Owner (Business)",
     description: "I'm a salon owner hiring, managing my team, or selling my salon.",
     icon: React.createElement(Building2, { className: "h-5 w-5 text-primary" })
-  },
-  {
-    id: "customer",
-    label: "Customer",
-    description: "I'm looking for beauty services and offers from top professionals.",
-    icon: React.createElement(User, { className: "h-5 w-5 text-primary" })
   },
   {
     id: "freelancer",

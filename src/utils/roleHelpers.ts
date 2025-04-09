@@ -47,7 +47,6 @@ export const getRoleDisplayName = (userRole: UserRole | null): string => {
   
   // Standard roles
   switch(userRole) {
-    case 'customer': return "Customer";
     case 'freelancer': return "Freelancer";
     case 'other': return "User";
     default: return "User";
@@ -63,7 +62,6 @@ export const getRoleThemeClass = (userRole: UserRole | null): string => {
   if (isSupplierRole(userRole)) return "text-emerald-600";
   
   switch(userRole) {
-    case 'customer': return "text-rose-600";
     case 'freelancer': return "text-amber-600";
     case 'other': return "text-gray-600";
     default: return "text-gray-600";

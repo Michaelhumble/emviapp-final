@@ -1,3 +1,4 @@
+
 import { AuthResponse } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";

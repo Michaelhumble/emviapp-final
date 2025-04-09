@@ -1,3 +1,4 @@
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
@@ -17,8 +18,7 @@ import Profile from '@/pages/Profile';
 import UserProfilePage from '@/pages/profile/UserProfilePage';
 import ProfileEdit from '@/pages/profile/edit';
 import UserProfileByUsername from '@/pages/profile/[username]';
-import CustomerDashboard from '@/pages/dashboard/Customer';
-import SalonDashboard from '@/pages/dashboard/Salon';
+import SalonDashboard from '@/pages/dashboard/salon';
 import ArtistDashboard from '@/pages/dashboard/Artist';
 import SupplierDashboard from '@/pages/dashboard/Supplier';
 import FreelancerDashboard from '@/pages/dashboard/Freelancer';
@@ -118,10 +118,6 @@ const router = createBrowserRouter([
       {
         path: 'dashboard',
         element: <Dashboard />
-      },
-      {
-        path: 'dashboard/customer',
-        element: <CustomerDashboard />
       },
       {
         path: 'dashboard/salon',

@@ -1,3 +1,4 @@
+
 import { UserRole, LegacyUserRole } from "@/context/auth/types";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -44,11 +45,6 @@ export const normalizeUserRole = (role: string | null): UserRole | null => {
     case 'supply_partner': // Legacy format
       return 'supplier';
       
-    case 'client':
-    case 'customer':
-    case 'user':
-      return 'customer';
-      
     case 'freelancer':
       return 'freelancer';
       
@@ -57,7 +53,6 @@ export const normalizeUserRole = (role: string | null): UserRole | null => {
       
     // If the role is already one of our valid values, just return it
     // This ensures we don't lose information by over-normalizing
-    case 'customer':
     case 'artist':
     case 'salon_owner':
     case 'supplier':
@@ -171,7 +166,7 @@ export const getUserRole = async (userId: string): Promise<UserRole | null> => {
       return normalizedMetadataRole;
     }
     
-    // CHANGED: If no role detected, log this critical issue but don't default to any role
+    // If no role detected, log this critical issue but don't default to any role
     console.warn("[getUserRole] ⚠️ CRITICAL: No role found in users table or auth metadata");
     return null;
   } catch (err) {
