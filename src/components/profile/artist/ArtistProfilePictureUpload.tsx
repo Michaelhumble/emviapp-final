@@ -15,8 +15,8 @@ const ArtistProfilePictureUpload = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Check if avatar task is already complete
-  const avatarTaskComplete = isTaskComplete("profile_picture");
+  // Check if profile picture task is already complete
+  const profilePictureTaskComplete = isTaskComplete("profile_picture");
 
   // Initialize preview with profile image if available
   useEffect(() => {
@@ -26,6 +26,7 @@ const ArtistProfilePictureUpload = () => {
     }
   }, [userProfile]);
 
+  // Ensure the storage bucket exists
   const createBucketIfNeeded = async () => {
     try {
       // Check if bucket exists
@@ -36,7 +37,7 @@ const ArtistProfilePictureUpload = () => {
       if (!bucketExists) {
         await supabase.storage.createBucket('profile_images', {
           public: true,
-          fileSizeLimit: 5 * 1024 * 1024
+          fileSizeLimit: 5 * 1024 * 1024 // 5MB
         });
         console.log("Created profile_images bucket");
       }
@@ -88,15 +89,12 @@ const ArtistProfilePictureUpload = () => {
 
       if (uploadError) throw uploadError;
 
-      // Get public URL with cache-busting timestamp
-      const timestamp = new Date().getTime();
+      // Get public URL
       const { data: publicUrlData } = supabase.storage
         .from("profile_images")
-        .getPublicUrl(`${filePath}?t=${timestamp}`);
+        .getPublicUrl(filePath);
 
-      // Store the URL without the timestamp to avoid double parameters
-      const publicUrl = publicUrlData.publicUrl.split('?')[0];
-
+      const publicUrl = publicUrlData.publicUrl;
       console.log("Profile image URL saved:", publicUrl);
 
       // Update user record in the database
@@ -175,7 +173,7 @@ const ArtistProfilePictureUpload = () => {
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-medium flex items-center">
           Add Your Profile Picture
-          {avatarTaskComplete && (
+          {profilePictureTaskComplete && (
             <span className="ml-2 text-green-500">
               <Check className="h-5 w-5" />
             </span>
