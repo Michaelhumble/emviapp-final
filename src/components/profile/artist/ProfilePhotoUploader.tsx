@@ -73,29 +73,36 @@ const ProfilePhotoUploader = ({ onSuccess }: ProfilePhotoUploaderProps) => {
       
       setUploading(true);
       
-      // Ensure the avatars bucket exists
-      const { error: bucketError } = await supabase.storage.getBucket('avatars');
-      if (bucketError && bucketError.message.includes('does not exist')) {
+      // Create a unique file path
+      const fileExt = fileSelected.name.split('.').pop();
+      const fileName = `${user.id}-${Date.now()}`;
+      const filePath = `${fileName}.${fileExt}`;
+      
+      // First, check if avatars bucket exists
+      const { data: buckets } = await supabase.storage.listBuckets();
+      const avatarsBucketExists = buckets?.some(bucket => bucket.name === 'avatars');
+      
+      // Create bucket if it doesn't exist
+      if (!avatarsBucketExists) {
         const { error: createBucketError } = await supabase.storage.createBucket('avatars', {
           public: true,
         });
         
         if (createBucketError) {
           console.error('Error creating avatars bucket:', createBucketError);
-          toast.error("Failed to create storage bucket. Please try again.");
+          toast.error("Failed to create storage for profile pictures. Please try again.");
           setUploading(false);
           return;
         }
       }
       
-      // Create a unique file path
-      const fileExt = fileSelected.name.split('.').pop();
-      const filePath = `${user.id}-${Date.now()}.${fileExt}`;
-      
       // Upload the file
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, fileSelected);
+        .upload(filePath, fileSelected, {
+          cacheControl: '3600',
+          upsert: true
+        });
         
       if (uploadError) {
         console.error('Error uploading avatar:', uploadError);
@@ -133,7 +140,7 @@ const ProfilePhotoUploader = ({ onSuccess }: ProfilePhotoUploaderProps) => {
       // Refresh user profile in context
       await refreshUserProfile();
       
-      toast.success("Profile picture updated successfully!");
+      toast.success("Profile picture uploaded successfully!");
       
       // Call onSuccess callback if provided
       if (onSuccess) {

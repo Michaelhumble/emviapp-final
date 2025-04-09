@@ -2,13 +2,13 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, XCircle, UserCheck, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { useProfileCompletion } from "./hooks/useProfileCompletion";
-import { useAuth } from '@/context/auth';
+import { CheckCircle2, Circle, ChevronRight, UserCircle, StarIcon } from "lucide-react";
+import { useProfileCompletion } from "@/context/profile";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/context/auth";
 
 const ProfileCompletionCard = () => {
   const { userProfile } = useAuth();
@@ -16,7 +16,7 @@ const ProfileCompletionCard = () => {
   const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
-    // Simulate loading for smoother transition
+    // Wait for profile data to load
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 800);
@@ -24,19 +24,17 @@ const ProfileCompletionCard = () => {
     return () => clearTimeout(timer);
   }, []);
   
-  // Animation variants
+  // Card animation variants
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { 
       opacity: 1, 
       y: 0,
-      transition: { 
-        duration: 0.6,
-        delay: 0.1
-      }
+      transition: { duration: 0.6 }
     }
   };
   
+  // Progress animation variants
   const progressVariants = {
     hidden: { width: '0%' },
     visible: { 
@@ -49,6 +47,7 @@ const ProfileCompletionCard = () => {
     }
   };
   
+  // Item animation variants
   const itemVariants = {
     hidden: { opacity: 0, x: -5 },
     visible: (i: number) => ({ 
@@ -61,20 +60,11 @@ const ProfileCompletionCard = () => {
     })
   };
   
-  // Define all profile completion tasks
-  const allTasks = [
-    { id: 'profile_picture', label: 'Upload profile photo' },
-    { id: 'bio', label: 'Add your bio' },
-    { id: 'specialty', label: 'Add specialty' },
-    { id: 'location', label: 'Add location' },
-    { id: 'portfolio', label: 'Upload portfolio' }
-  ];
-  
   // Determine the progress color based on percentage
   const getProgressColor = () => {
     if (completionPercentage >= 80) return "bg-gradient-to-r from-green-400 to-emerald-500";
     if (completionPercentage >= 50) return "bg-gradient-to-r from-amber-400 to-yellow-500";
-    return "bg-gradient-to-r from-rose-400 to-red-500";
+    return "bg-gradient-to-r from-violet-400 to-purple-500";
   };
   
   if (isLoading) {
@@ -82,7 +72,7 @@ const ProfileCompletionCard = () => {
       <Card className="border border-purple-100 shadow-sm overflow-hidden backdrop-blur-sm bg-white/90">
         <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50 pb-4">
           <CardTitle className="flex items-center text-lg font-medium">
-            <UserCheck className="h-5 w-5 text-purple-500 mr-2" />
+            <UserCircle className="h-5 w-5 text-purple-500 mr-2" />
             Your Profile Progress
           </CardTitle>
         </CardHeader>
@@ -113,7 +103,7 @@ const ProfileCompletionCard = () => {
       <Card className="border border-purple-100 shadow-sm overflow-hidden backdrop-blur-sm bg-white/90">
         <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50 pb-4">
           <CardTitle className="flex items-center text-lg font-medium">
-            <UserCheck className="h-5 w-5 text-purple-500 mr-2" />
+            <UserCircle className="h-5 w-5 text-purple-500 mr-2" />
             Your Profile Progress
           </CardTitle>
         </CardHeader>
@@ -125,7 +115,7 @@ const ProfileCompletionCard = () => {
                 {completionPercentage}% Complete
               </div>
               <div className="text-sm text-gray-500">
-                {completedTasks.length} of {allTasks.length} tasks done
+                {completedTasks.length} of {completedTasks.length + pendingTasks.length} tasks done
               </div>
             </div>
             
@@ -140,38 +130,129 @@ const ProfileCompletionCard = () => {
           </div>
           
           <div className="space-y-3 mb-6">
-            {allTasks.map((task, index) => (
-              <motion.div 
-                key={index}
-                custom={index}
-                variants={itemVariants}
-                initial="hidden"
-                animate="visible"
-                className="flex items-center"
-              >
-                {completedTasks.includes(task.id) ? (
-                  <div className="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center mr-2">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                  </div>
-                ) : (
-                  <div className="h-5 w-5 rounded-full bg-gray-100 flex items-center justify-center mr-2">
-                    <XCircle className="h-4 w-4 text-gray-400" />
-                  </div>
-                )}
-                <span className={`text-sm ${completedTasks.includes(task.id) ? 'text-gray-800' : 'text-gray-500'}`}>
-                  {task.label}
-                </span>
-              </motion.div>
-            ))}
+            {/* Bio Task */}
+            <motion.div 
+              custom={0}
+              variants={itemVariants}
+              initial="hidden"
+              animate="visible"
+              className="flex items-center"
+            >
+              {completedTasks.includes('bio') ? (
+                <div className="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center mr-2">
+                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                </div>
+              ) : (
+                <div className="h-5 w-5 rounded-full bg-gray-100 flex items-center justify-center mr-2">
+                  <Circle className="h-4 w-4 text-gray-400" />
+                </div>
+              )}
+              <span className={`text-sm ${completedTasks.includes('bio') ? 'text-gray-800' : 'text-gray-500'}`}>
+                Add your bio
+              </span>
+            </motion.div>
+            
+            {/* Specialty Task */}
+            <motion.div 
+              custom={1}
+              variants={itemVariants}
+              initial="hidden"
+              animate="visible"
+              className="flex items-center"
+            >
+              {completedTasks.includes('specialty') ? (
+                <div className="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center mr-2">
+                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                </div>
+              ) : (
+                <div className="h-5 w-5 rounded-full bg-gray-100 flex items-center justify-center mr-2">
+                  <Circle className="h-4 w-4 text-gray-400" />
+                </div>
+              )}
+              <span className={`text-sm ${completedTasks.includes('specialty') ? 'text-gray-800' : 'text-gray-500'}`}>
+                Add specialty
+              </span>
+            </motion.div>
+            
+            {/* Location Task */}
+            <motion.div 
+              custom={2}
+              variants={itemVariants}
+              initial="hidden"
+              animate="visible"
+              className="flex items-center"
+            >
+              {completedTasks.includes('location') ? (
+                <div className="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center mr-2">
+                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                </div>
+              ) : (
+                <div className="h-5 w-5 rounded-full bg-gray-100 flex items-center justify-center mr-2">
+                  <Circle className="h-4 w-4 text-gray-400" />
+                </div>
+              )}
+              <span className={`text-sm ${completedTasks.includes('location') ? 'text-gray-800' : 'text-gray-500'}`}>
+                Add location
+              </span>
+            </motion.div>
+            
+            {/* Profile Picture Task */}
+            <motion.div 
+              custom={3}
+              variants={itemVariants}
+              initial="hidden"
+              animate="visible"
+              className="flex items-center"
+            >
+              {completedTasks.includes('profile_picture') ? (
+                <div className="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center mr-2">
+                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                </div>
+              ) : (
+                <div className="h-5 w-5 rounded-full bg-gray-100 flex items-center justify-center mr-2">
+                  <Circle className="h-4 w-4 text-gray-400" />
+                </div>
+              )}
+              <span className={`text-sm ${completedTasks.includes('profile_picture') ? 'text-gray-800' : 'text-gray-500'}`}>
+                Upload profile photo
+              </span>
+            </motion.div>
+            
+            {/* Portfolio Task */}
+            <motion.div 
+              custom={4}
+              variants={itemVariants}
+              initial="hidden"
+              animate="visible"
+              className="flex items-center"
+            >
+              {completedTasks.includes('portfolio') ? (
+                <div className="h-5 w-5 rounded-full bg-green-100 flex items-center justify-center mr-2">
+                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                </div>
+              ) : (
+                <div className="h-5 w-5 rounded-full bg-gray-100 flex items-center justify-center mr-2">
+                  <Circle className="h-4 w-4 text-gray-400" />
+                </div>
+              )}
+              <span className={`text-sm ${completedTasks.includes('portfolio') ? 'text-gray-800' : 'text-gray-500'}`}>
+                Upload portfolio
+              </span>
+            </motion.div>
           </div>
           
           <div className="mb-4">
-            <p className="text-sm text-center text-gray-600">
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7 }}
+              className="text-sm text-center text-gray-600"
+            >
               {completionPercentage === 100 ? 
                 'Your profile is complete! Keep it updated.' :
                 'Complete your profile to unlock more bookings!'
               }
-            </p>
+            </motion.p>
           </div>
           
           <Button asChild className="w-full" variant={completionPercentage === 100 ? "outline" : "default"}>

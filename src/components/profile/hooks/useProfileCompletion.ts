@@ -1,5 +1,4 @@
 
-// This file re-exports the hook from the context for backward compatibility
-import { useProfileCompletion as useProfileCompletionHook } from '@/context/profile/ProfileProvider';
+import { useProfileCompletion as useProfileCompletionHook } from '@/context/profile';
 
 export const useProfileCompletion = useProfileCompletionHook;

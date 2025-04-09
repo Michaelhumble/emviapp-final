@@ -1,20 +1,19 @@
+
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
 import { Paintbrush, MessageSquare, Calendar, Image, UserPlus, Zap, Trophy } from "lucide-react";
 import { useAuth } from "@/context/auth";
-import { useUserRole } from "@/hooks/useUserRole";
 import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
 import DashboardCard from "@/components/dashboard/DashboardCard";
 import InviteBanner from "@/components/dashboard/InviteBanner";
 import { toast } from "sonner";
 import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
-import ArtistPortfolioSection from "@/components/portfolio/ArtistPortfolioSection";
+import ArtistPortfolioSection from "@/components/dashboard/artist/ArtistPortfolioSection";
 
 const ArtistDashboard = () => {
   const { userProfile } = useAuth();
-  const { userRole } = useUserRole(userProfile?.id);
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -51,7 +50,7 @@ const ArtistDashboard = () => {
         <div className="container px-4 mx-auto py-12">
           <RoleDashboardLayout>
             <div className="space-y-8">
-              {/* Profile Completion Card */}
+              {/* Profile Completion Card - using our new component */}
               <div className="mb-6">
                 <ProfileCompletionCard />
               </div>
@@ -75,7 +74,7 @@ const ArtistDashboard = () => {
                 </div>
               </div>
               
-              {/* Portfolio Section - Now passing updated component */}
+              {/* Portfolio Section */}
               <ArtistPortfolioSection />
               
               {/* Invite Banner */}
