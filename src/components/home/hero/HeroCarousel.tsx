@@ -39,14 +39,14 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
             />
           </div>
           
-          {/* Enhanced glass effect overlay for mobile with stronger blur and transparency */}
+          {/* Lighter overlay for mobile to make images more visible */}
           <div 
             className="absolute inset-0 z-10"
             style={{ 
               background: isMobile 
-                ? 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.2) 100%)' 
+                ? 'linear-gradient(to top, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.1) 100%)' 
                 : 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.3) 100%)',
-              backdropFilter: isMobile ? 'blur(8px)' : 'blur(2px)'
+              backdropFilter: isMobile ? 'blur(4px)' : 'blur(2px)'
             }}
             aria-hidden="true"
           ></div>
