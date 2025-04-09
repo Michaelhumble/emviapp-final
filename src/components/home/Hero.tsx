@@ -2,65 +2,22 @@
 import { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowDown, ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, ArrowDown, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-
-interface HeroImage {
-  url: string;
-  alt: string;
-  category: string;
-}
-
-// Define our hero images with categories
-const heroImages: HeroImage[] = [
-  {
-    url: "/lovable-uploads/1b5ea814-ad33-4a65-b01e-6c406c98ffc1.png",
-    alt: "Close-up of manicurist applying nail polish with precision",
-    category: "Nail Artistry"
-  },
-  {
-    url: "/lovable-uploads/253b19a3-141f-40c7-9cce-fc10464f0615.png",
-    alt: "Person getting a professional manicure with blue gloves",
-    category: "Nail Artistry"
-  },
-  {
-    url: "/lovable-uploads/e930cd80-e3b9-4783-a57c-9486ffa34cdf.png",
-    alt: "Manicurist working on client's nails in a pink salon setting",
-    category: "Nail Artistry"
-  },
-  {
-    url: "/lovable-uploads/a3c08446-c1cb-492d-a361-7ec4aca18cfd.png",
-    alt: "Hair stylist blow drying client's hair in a salon",
-    category: "Hair Styling"
-  },
-  {
-    url: "/lovable-uploads/5b0dc7b0-886f-4c09-93c1-33f17d236690.png",
-    alt: "Barber trimming client's beard in a professional setting",
-    category: "Barber Services"
-  },
-  {
-    url: "/lovable-uploads/acf28832-50ab-40f1-8268-f15a5bbc1bd7.png",
-    alt: "Professional providing facial treatment to client in spa setting",
-    category: "Spa & Wellness"
-  }
-];
+import { heroImages } from "./hero/heroData";
 
 const Hero = () => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [images, setImages] = useState<HeroImage[]>([...heroImages]);
+  const [sortedImages, setSortedImages] = useState([...heroImages]);
   const isMobile = useIsMobile();
-  
-  // Prioritize nail images and randomize on component mount
+
+  // Sort and randomize images on component mount
   useEffect(() => {
-    // Sort to prioritize nail artistry images
-    const nailImages = heroImages.filter(img => img.category === "Nail Artistry");
-    const otherImages = heroImages.filter(img => img.category !== "Nail Artistry");
-    
-    // Fisher-Yates shuffle for both arrays
-    const shuffle = (arr: HeroImage[]) => {
+    // Fisher-Yates shuffle algorithm
+    const shuffle = (arr) => {
       const newArr = [...arr];
       for (let i = newArr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -69,56 +26,75 @@ const Hero = () => {
       return newArr;
     };
     
-    // Interleave the arrays, starting with a nail image
-    const nailShuffled = shuffle(nailImages);
-    const otherShuffled = shuffle(otherImages);
-    const combined = [];
+    // Get nail-related images first (approximately first half of the array)
+    const nailImages = heroImages.filter(img => 
+      img.alt.toLowerCase().includes("nail") || 
+      img.alt.toLowerCase().includes("manicure") || 
+      img.alt.toLowerCase().includes("polish")
+    );
     
-    // First image is always nail-related
-    if (nailShuffled.length > 0) {
-      combined.push(nailShuffled[0]);
-    }
+    const otherImages = heroImages.filter(img => 
+      !img.alt.toLowerCase().includes("nail") && 
+      !img.alt.toLowerCase().includes("manicure") && 
+      !img.alt.toLowerCase().includes("polish")
+    );
     
-    // Alternate between nail and other images
-    const maxLength = Math.max(nailShuffled.length, otherShuffled.length);
-    for (let i = 0; i < maxLength; i++) {
-      if (i + 1 < nailShuffled.length) {
-        combined.push(nailShuffled[i + 1]);
-      }
-      if (i < otherShuffled.length) {
-        combined.push(otherShuffled[i]);
-      }
-    }
+    // Shuffle both arrays
+    const shuffledNailImages = shuffle(nailImages);
+    const shuffledOtherImages = shuffle(otherImages);
     
-    setImages(combined);
+    // Combine with nail images first, then others
+    setSortedImages([...shuffledNailImages, ...shuffledOtherImages]);
   }, []);
-  
+
   // Auto-advance carousel
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveIndex(prev => (prev + 1) % images.length);
+      setActiveIndex(prev => (prev + 1) % sortedImages.length);
     }, 6000);
     return () => clearInterval(interval);
-  }, [images.length]);
+  }, [sortedImages.length]);
   
-  // Preload next images
+  // Preload next images for smoother transitions
   useEffect(() => {
-    const nextIndexes = [1, 2].map(i => (activeIndex + i) % images.length);
-    nextIndexes.forEach(index => {
+    const nextIndex = (activeIndex + 1) % sortedImages.length;
+    const nextNextIndex = (activeIndex + 2) % sortedImages.length;
+    
+    const preloadImage = (index) => {
       const img = new Image();
-      img.src = images[index]?.url;
-    });
-  }, [activeIndex, images]);
+      img.src = sortedImages[index]?.url;
+    };
+    
+    preloadImage(nextIndex);
+    preloadImage(nextNextIndex);
+  }, [activeIndex, sortedImages]);
+
+  // Extract category from image alt text
+  const getCategory = (alt) => {
+    if (alt.toLowerCase().includes("nail") || alt.toLowerCase().includes("manicure")) {
+      return "Nail Artistry";
+    } else if (alt.toLowerCase().includes("hair") || alt.toLowerCase().includes("salon")) {
+      return "Hair Styling";
+    } else if (alt.toLowerCase().includes("barber") || alt.toLowerCase().includes("beard")) {
+      return "Barber Services";
+    } else if (alt.toLowerCase().includes("spa") || alt.toLowerCase().includes("facial")) {
+      return "Spa & Wellness";
+    } else if (alt.toLowerCase().includes("makeup")) {
+      return "Makeup & Beauty";
+    } else {
+      return "Beauty Industry";
+    }
+  };
 
   return (
-    <div className="relative w-full h-screen overflow-hidden" style={{ height: "100vh", maxHeight: "100vh" }}>
-      {/* Background layer */}
+    <div className="relative w-full h-[100vh] overflow-hidden">
+      {/* Background gradient layer */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#FDFDFD] to-[#F6F6F6] z-0"></div>
-
+      
       {/* Image carousel */}
       <div className="absolute inset-0 w-full h-full z-10">
         <AnimatePresence>
-          {images.map((image, index) => (
+          {sortedImages.map((image, index) => (
             <motion.div
               key={index}
               className="absolute inset-0 w-full h-full"
@@ -140,7 +116,7 @@ const Hero = () => {
                 className="w-full h-full object-cover"
               />
               
-              {/* Gradient overlay for better text readability */}
+              {/* Gradient overlay for better text visibility */}
               <div 
                 className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20"
                 aria-hidden="true"
@@ -150,10 +126,9 @@ const Hero = () => {
         </AnimatePresence>
       </div>
 
-      {/* Decorative elements */}
+      {/* Decorative floating elements */}
       <div className="absolute inset-0 z-20 overflow-hidden">
-        {/* Animated particles */}
-        {[...Array(12)].map((_, i) => (
+        {[...Array(10)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute rounded-full bg-white/30 backdrop-blur-sm"
@@ -198,7 +173,7 @@ const Hero = () => {
               variant="outline" 
               className="mb-4 px-3 py-1 text-sm bg-white/20 backdrop-blur-sm text-white/90 border-white/30"
             >
-              {images[activeIndex]?.category || "Beauty Industry"}
+              {sortedImages[activeIndex] ? getCategory(sortedImages[activeIndex].alt) : "Beauty Industry"}
             </Badge>
           </motion.div>
 
@@ -281,7 +256,7 @@ const Hero = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2, duration: 0.5 }}
           >
-            {images.map((_, index) => (
+            {sortedImages.map((_, index) => (
               <button
                 key={index}
                 className={`w-2 h-2 rounded-full transition-all duration-300 ${index === activeIndex ? 'bg-white w-6' : 'bg-white/40'}`}
