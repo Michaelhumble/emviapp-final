@@ -24,6 +24,7 @@ import SignUp from './pages/auth/SignUp';
 import ProfileRedirect from './components/profile/ProfileRedirect';
 import SalonOwners from './pages/SalonOwners';
 import Settings from './pages/Settings';
+import Salons from './pages/Salons';
 
 const routes = [
   {
@@ -45,6 +46,10 @@ const routes = [
   {
     path: '/salons',
     element: <SalonsPage />,
+  },
+  {
+    path: '/salons-directory',
+    element: <Salons />,
   },
   {
     path: '/sell-salon',
