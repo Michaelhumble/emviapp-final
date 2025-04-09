@@ -28,11 +28,11 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
           }}
           aria-hidden={activeIndex !== index}
         >
-          <div className={`w-full h-full ${isMobile ? 'flex items-center justify-center' : ''}`}>
+          <div className="w-full h-full">
             <img 
               src={image.url} 
               alt={image.alt}
-              className={`w-full h-full ${isMobile ? 'object-contain scale-[1.95]' : 'object-cover'}`}
+              className="w-full h-full object-cover"
               style={{ 
                 objectPosition: "center",
               }}
