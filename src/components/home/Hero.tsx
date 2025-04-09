@@ -76,8 +76,24 @@ const Hero = () => {
     return () => clearInterval(interval);
   }, [randomizedImages.length]);
 
+  // Preload the next few images to prevent white flashes
+  useEffect(() => {
+    const preloadCount = 3; // Preload next 3 images
+    const imagesToPreload = [];
+    
+    for (let i = 1; i <= preloadCount; i++) {
+      const nextIndex = (activeIndex + i) % randomizedImages.length;
+      imagesToPreload.push(randomizedImages[nextIndex].url);
+    }
+    
+    imagesToPreload.forEach(imageUrl => {
+      const img = new Image();
+      img.src = imageUrl;
+    });
+  }, [activeIndex, randomizedImages]);
+
   return (
-    <div className="relative pt-24 pb-28 overflow-hidden">
+    <div className="relative pt-24 pb-28 overflow-hidden max-h-[80vh] h-full w-full">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#FDFDFD] to-[#F6F6F6] z-0"></div>
       
