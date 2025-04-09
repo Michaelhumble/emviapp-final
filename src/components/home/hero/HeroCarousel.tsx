@@ -31,12 +31,12 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
           <img 
             src={image.url} 
             alt={image.alt}
-            className="w-full h-full object-cover object-center rounded-lg"
+            className="w-full h-full object-cover object-center"
           />
           
-          {/* Enhanced gradient overlay for text readability */}
+          {/* Enhanced gradient overlay for better text readability and visual appeal */}
           <div 
-            className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30 z-10 rounded-lg"
+            className="absolute inset-0 z-10"
             style={{ 
               background: isMobile 
                 ? 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.3) 100%)' 
