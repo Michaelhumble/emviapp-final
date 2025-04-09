@@ -40,12 +40,11 @@ const Hero = () => {
 
   return (
     <section 
-      className="relative flex items-center justify-center overflow-hidden"
+      className="relative flex items-center justify-center overflow-hidden mx-auto"
       style={{
         width: '100%',
         maxWidth: '100vw',
-        height: 'calc(140vh - 2px)',
-        margin: '0 auto',
+        height: 'calc(110vh)',
         border: '1px solid rgba(255,255,255,0.1)',
       }}
     >
