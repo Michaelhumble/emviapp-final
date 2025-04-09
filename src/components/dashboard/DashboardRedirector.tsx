@@ -52,12 +52,8 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
           navigate('/dashboard/artist');
           return;
         } else if (normalizedRole === 'salon_owner') {
-          console.log("[DashboardRedirector] DIRECT ROUTING: Salon to salon dashboard");
-          navigate('/dashboard/salon');
-          return;
-        } else if (normalizedRole === 'customer') {
-          console.log("[DashboardRedirector] DIRECT ROUTING: Customer to customer dashboard");
-          navigate('/dashboard/customer');
+          console.log("[DashboardRedirector] DIRECT ROUTING: Salon Owner to salon owner dashboard");
+          navigate('/dashboard/salon_owner');
           return;
         } else if (normalizedRole === 'supplier') {
           console.log("[DashboardRedirector] DIRECT ROUTING: Supplier to supplier dashboard");
@@ -89,7 +85,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         throw new Error(`Failed to fetch user role: ${error.message}`);
       }
       
-      // CHANGED: If no role found, show role selection modal without defaulting to customer
+      // CHANGED: If no role found, show role selection modal without defaulting
       if (!profile || !profile.role) {
         console.log("[DashboardRedirector] No role found, showing role selection modal");
         setShowRoleModal(true);
@@ -121,13 +117,8 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         await refreshUserProfile();
         return;
       } else if (normalizedDbRole === 'salon_owner') {
-        console.log("[DashboardRedirector] DIRECT ROUTING: Salon to salon dashboard");
-        navigate('/dashboard/salon');
-        await refreshUserProfile();
-        return;
-      } else if (normalizedDbRole === 'customer') {
-        console.log("[DashboardRedirector] DIRECT ROUTING: Customer to customer dashboard");
-        navigate('/dashboard/customer');
+        console.log("[DashboardRedirector] DIRECT ROUTING: Salon Owner to salon owner dashboard");
+        navigate('/dashboard/salon_owner');
         await refreshUserProfile();
         return;
       } else if (normalizedDbRole === 'supplier') {

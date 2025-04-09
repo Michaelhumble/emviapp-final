@@ -37,6 +37,16 @@ export interface UserProfile {
   portfolio_urls?: string[];
   referral_code?: string;
   credits?: number;
+  
+  // Adding salon owner profile fields
+  business_name?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
+  hours?: string;
+  description?: string;
+  business_type?: string;
 }
 
 export interface SocialLinks {
