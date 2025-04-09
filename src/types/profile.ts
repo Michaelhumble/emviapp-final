@@ -1,99 +1,57 @@
+import { motion } from "framer-motion";
 
-export interface UserProfile {
-  uid?: string;
-  email?: string | null;
-  displayName?: string | null;
-  photoURL?: string | null;
-  bio?: string;
-  location?: string;
-  website?: string;
-  phoneNumber?: string;
-  servicesOffered?: string[];
-  yearsOfExperience?: number;
-  socialLinks?: {
-    instagram?: string;
-    facebook?: string;
-    twitter?: string;
-    linkedin?: string;
-    website?: string;
-  };
-  gallery?: string[];
-  pricing?: {
-    hourlyRate?: number;
-    fixedProject?: number;
-  };
-  paymentPreferences?: {
-    paypal?: string;
-    venmo?: string;
-    cashApp?: string;
-  };
-  schedulingOptions?: {
-    availability?: string[];
-    bookingLink?: string;
-  };
-  reviews?: string[];
-  averageRating?: number;
-  additionalNotes?: string;
-  lastSeen?: number;
-  accountType?: string;
-  profile_views?: number;
-  is_active?: boolean;
-  created_at?: number | string;
-  updated_at?: number | string;
-  stripeCustomerId?: string;
-  stripeSubscriptionId?: string;
-  stripePriceId?: string;
-  stripeCurrentPeriodEnd?: number;
-  emailVerified?: boolean;
-  username?: string;
-  firstName?: string;
-  lastName?: string;
-  gender?: string;
-  birthDate?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
-  preferred_language?: string;
-  full_name?: string;
-  id?: string;
-  accepts_bookings?: boolean;
-  phone?: string;
-  instagram?: string;
-  avatar_url?: string;
-  specialty?: string;
-  years_experience?: number;
-  boosted_until?: string;
-  role?: string;
-  salon_name?: string;
-  company_name?: string;
-  booking_url?: string;
-  completed_profile_tasks?: string[];
-  badges?: any;
-  contact_link?: string;
-  preferences?: string[];
-  affiliate_code?: string;
-  referral_count?: number;
+interface HeroImage {
+  url: string;
+  alt: string;
 }
 
-export interface EmviUser {
-  profile?: UserProfile;
+interface HeroCarouselProps {
+  images: HeroImage[];
+  activeIndex: number;
+  isMobile?: boolean;
 }
 
-export interface ArtistProfile extends UserProfile {
-  specialties?: string[];
-  portfolio?: string[];
-  awards?: string[];
-}
+const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselProps) => {
+  return (
+    <>
+      {images.map((image, index) => (
+        <motion.div 
+          key={index}
+          className="absolute inset-0 w-full h-full overflow-hidden transition-opacity duration-1000 ease-in-out"
+          initial={{ opacity: 0 }}
+          animate={{ 
+            opacity: activeIndex === index ? 1 : 0,
+          }}
+          transition={{ 
+            opacity: { duration: 1.5, ease: "easeInOut" },
+          }}
+          aria-hidden={activeIndex !== index}
+        >
+          <div className={`w-full h-full ${isMobile ? 'flex items-center justify-center' : ''}`}>
+            <img 
+              src={image.url} 
+              alt={image.alt}
+              className={`${isMobile ? 'w-[95%] h-[95%] object-contain' : 'w-full h-full object-cover'}`}
+              style={{ 
+                objectPosition: "center",
+              }}
+            />
+          </div>
+          
+          {/* Enhanced gradient overlay for better text readability and visual appeal */}
+          <div 
+            className="absolute inset-0 z-10"
+            style={{ 
+              background: isMobile 
+                ? 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.3) 100%)' 
+                : 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.3) 100%)'
+            }}
+            aria-hidden="true"
+          ></div>
+        </motion.div>
+      ))}
+    </>
+  );
+};
 
-export interface SalonProfile extends UserProfile {
-  salonName?: string;
-  address?: string;
-  employees?: string[];
-  amenities?: string[];
-}
-
-export interface CustomerProfile extends UserProfile {
-  preferences?: string[];
-  bookingHistory?: string[];
-}
+export default HeroCarousel;

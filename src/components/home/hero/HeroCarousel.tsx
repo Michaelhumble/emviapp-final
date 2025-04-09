@@ -32,7 +32,7 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
             <img 
               src={image.url} 
               alt={image.alt}
-              className={`${isMobile ? 'w-[75%] h-[75%] object-contain' : 'w-full h-full object-cover'}`}
+              className={`${isMobile ? 'w-[95%] h-[95%] object-contain' : 'w-full h-full object-cover'}`}
               style={{ 
                 objectPosition: "center",
               }}
