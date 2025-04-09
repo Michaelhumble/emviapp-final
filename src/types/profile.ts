@@ -72,9 +72,11 @@ export interface UserProfile {
   completed_profile_tasks?: string[];
   badges?: any;
   contact_link?: string;
+  preferences?: string[];
+  affiliate_code?: string;
 }
 
-export interface EmviUser extends User {
+export interface EmviUser {
   profile?: UserProfile;
 }
 
