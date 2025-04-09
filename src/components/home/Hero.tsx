@@ -1,38 +1,69 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { motion } from "framer-motion";
 
 const Hero = () => {
   const isMobile = useIsMobile();
 
   return (
     <section className="h-screen w-full flex items-center justify-center overflow-hidden bg-black relative">
-      {/* Background image with overlay */}
-      <div className="absolute inset-0 bg-[url('/lovable-uploads/b8dd2904-7dc6-412d-89be-c962ca4ae5f8.png')] bg-cover bg-center opacity-40 z-0"></div>
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-md z-10"></div>
+      {/* Animated gradient background */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/40 to-pink-600/30 animate-pulse-glow"></div>
+        <div className="absolute inset-0 bg-[url('/lovable-uploads/b8dd2904-7dc6-412d-89be-c962ca4ae5f8.png')] bg-cover bg-center opacity-30 mix-blend-overlay"></div>
+      </div>
+      
+      {/* Blur glass overlay */}
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-md z-10"></div>
 
       {/* Content container */}
-      <div className="relative z-20 container mx-auto px-4 text-center">
-        <h1 className="font-playfair font-bold text-4xl md:text-5xl lg:text-6xl text-white leading-tight mb-6 max-w-5xl mx-auto">
+      <motion.div 
+        className="relative z-20 container mx-auto px-4 text-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
+        <motion.h1 
+          className="font-playfair font-bold text-4xl md:text-5xl lg:text-6xl text-white leading-tight mb-6 max-w-5xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+        >
           The Beauty Industry's Missing Piece — We Just Built It.
-        </h1>
+        </motion.h1>
         
-        <p className="text-white text-lg md:text-xl mb-6 max-w-3xl mx-auto">
+        <motion.p 
+          className="text-white/90 text-lg md:text-xl mb-6 max-w-3xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+        >
           Hair, Nails, Makeup, Tattoos, Brows, Barbers, Booth Rentals — All in One Powerful App. Finally.
-        </p>
+        </motion.p>
         
-        <p className="text-pink-200 italic text-base md:text-lg mb-8 max-w-2xl mx-auto">
+        <motion.p 
+          className="text-pink-200 italic text-base md:text-lg mb-10 max-w-2xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
+        >
           Chúng tôi nói tiếng Việt — EmviApp là ngôi nhà mới cho cộng đồng làm đẹp của bạn.
-        </p>
+        </motion.p>
         
         {/* CTA Buttons */}
-        <div className="flex flex-col md:flex-row gap-4 mt-8 justify-center">
+        <motion.div 
+          className="flex flex-col md:flex-row gap-4 mt-8 justify-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
+        >
           <Link to="/auth/signup">
             <Button 
               size={isMobile ? "default" : "lg"} 
-              className="w-full md:w-auto font-medium px-8 py-6 text-lg bg-pink-500 hover:bg-pink-600 text-white rounded-xl shadow-lg"
+              className="w-full md:w-auto font-medium px-8 py-6 text-lg bg-pink-500 hover:bg-pink-600 hover:shadow-lg hover:shadow-pink-500/25 text-white rounded-xl transition-all duration-300"
             >
               Join The Movement
             </Button>
@@ -42,12 +73,19 @@ const Hero = () => {
             <Button 
               size={isMobile ? "default" : "lg"} 
               variant="outline" 
-              className="w-full md:w-auto font-medium px-8 py-6 text-lg text-white border-white hover:bg-white hover:text-black transition-colors rounded-xl"
+              className="w-full md:w-auto font-medium px-8 py-6 text-lg text-white border-white hover:bg-white hover:text-black transition-all duration-300 rounded-xl"
             >
               Find My Next Opportunity
             </Button>
           </Link>
-        </div>
+        </motion.div>
+      </motion.div>
+      
+      {/* Optional subtle animated particle effect */}
+      <div aria-hidden="true" className="absolute inset-0 z-10 pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-pink-500/10 rounded-full filter blur-3xl animate-blob animation-delay-2000"></div>
+        <div className="absolute top-2/3 right-1/3 w-40 h-40 bg-purple-500/10 rounded-full filter blur-3xl animate-blob"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-36 h-36 bg-blue-500/10 rounded-full filter blur-3xl animate-blob animation-delay-4000"></div>
       </div>
     </section>
   );
