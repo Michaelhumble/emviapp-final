@@ -29,6 +29,8 @@ export const navigateToRoleDashboard = (
     return;
   }
   
+  console.log("[Dashboard Navigation] Using normalized role for routing:", normalizedRole);
+  
   let targetDashboard = '';
   
   switch (normalizedRole) {

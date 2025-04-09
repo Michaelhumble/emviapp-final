@@ -93,8 +93,18 @@ export const useRoleSignUp = () => {
       
       toast.success("Account created successfully!");
       
-      // Navigate to the appropriate dashboard based on role
-      navigateToRoleDashboard(navigate, selectedRole);
+      // Navigate to the appropriate dashboard based on role - Now with extra logging
+      console.log(`[useRoleSignUp] About to navigate using role: ${selectedRole}`);
+      const normalizedRole = normalizeUserRole(selectedRole);
+      console.log(`[useRoleSignUp] Normalized role for navigation: ${normalizedRole}`);
+      
+      if (normalizedRole === 'salon_owner') {
+        console.log("[useRoleSignUp] Explicit navigation for salon owner to: /dashboard/salon");
+        navigate("/dashboard/salon");
+      } else {
+        console.log("[useRoleSignUp] Using navigation utility for role:", selectedRole);
+        navigateToRoleDashboard(navigate, selectedRole);
+      }
       
     } catch (error) {
       console.error("[useRoleSignUp] Unexpected error:", error);
