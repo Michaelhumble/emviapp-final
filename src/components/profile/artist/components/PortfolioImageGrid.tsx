@@ -30,7 +30,7 @@ const PortfolioImageGrid = ({ images, onRemoveImage, isUploading }: ImageGridPro
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {images.map((url, index) => (
           <div key={`portfolio-image-${index}`} className="relative group aspect-square">
             <div className="h-full w-full rounded-md overflow-hidden border border-border">

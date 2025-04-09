@@ -22,8 +22,29 @@ const ArtistProfilePictureUpload = () => {
   useEffect(() => {
     if (userProfile?.avatar_url) {
       setPreviewUrl(userProfile.avatar_url);
+      console.log("Loaded profile image:", userProfile.avatar_url);
     }
   }, [userProfile]);
+
+  const createBucketIfNeeded = async () => {
+    try {
+      // Check if bucket exists
+      const { data: buckets } = await supabase.storage.listBuckets();
+      const bucketExists = buckets?.some(bucket => bucket.name === 'profile_images');
+      
+      // Create bucket if it doesn't exist
+      if (!bucketExists) {
+        await supabase.storage.createBucket('profile_images', {
+          public: true,
+          fileSizeLimit: 5 * 1024 * 1024
+        });
+        console.log("Created profile_images bucket");
+      }
+    } catch (error) {
+      console.error("Error checking/creating bucket:", error);
+      // Continue anyway as the bucket might exist but user doesn't have permission to list
+    }
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -44,49 +65,41 @@ const ArtistProfilePictureUpload = () => {
 
     try {
       setIsUploading(true);
+      toast.info("Uploading profile picture...");
 
-      // Create preview
+      // Create preview for immediate UI feedback
       const objectUrl = URL.createObjectURL(file);
       setPreviewUrl(objectUrl);
 
+      // Ensure bucket exists
+      await createBucketIfNeeded();
+
       // Get file extension
       const fileExt = file.name.split(".").pop();
-      const fileName = `${user.id}.${fileExt}`;
+      const filePath = `${user.id}/avatar.${fileExt}`;
 
-      // Check if profile_images bucket exists
-      const { data: buckets } = await supabase.storage.listBuckets();
-      
-      const bucketExists = buckets?.some(bucket => bucket.name === 'profile_images');
-      
-      // Create bucket if it doesn't exist
-      if (!bucketExists) {
-        await supabase.storage.createBucket('profile_images', {
-          public: true,
-          fileSizeLimit: 5 * 1024 * 1024
-        });
-      }
-
-      // Upload to Supabase Storage
+      // Upload to Supabase Storage with upsert
       const { error: uploadError } = await supabase.storage
         .from("profile_images")
-        .upload(fileName, file, {
+        .upload(filePath, file, {
           upsert: true,
           contentType: file.type,
         });
 
       if (uploadError) throw uploadError;
 
-      // Get public URL with cache-busting
+      // Get public URL with cache-busting timestamp
       const timestamp = new Date().getTime();
       const { data: publicUrlData } = supabase.storage
         .from("profile_images")
-        .getPublicUrl(`${fileName}?t=${timestamp}`);
+        .getPublicUrl(`${filePath}?t=${timestamp}`);
 
-      const publicUrl = publicUrlData.publicUrl.split('?')[0]; // Remove query params for storage
+      // Store the URL without the timestamp to avoid double parameters
+      const publicUrl = publicUrlData.publicUrl.split('?')[0];
 
       console.log("Profile image URL saved:", publicUrl);
 
-      // Update user record
+      // Update user record in the database
       const { error: updateError } = await supabase
         .from("users")
         .update({ 
@@ -97,15 +110,13 @@ const ArtistProfilePictureUpload = () => {
 
       if (updateError) throw updateError;
 
-      // Refresh user profile in auth context
+      // Refresh user profile in auth context to update the UI
       await refreshUserProfile();
       
       // Mark task as complete
       markTaskComplete("avatar");
       
       toast.success("Profile picture updated successfully");
-      setIsUploading(false);
-      
     } catch (error: any) {
       console.error("Error uploading profile picture:", error);
       toast.error(error.message || "Failed to upload profile picture");
@@ -116,6 +127,7 @@ const ArtistProfilePictureUpload = () => {
       } else {
         setPreviewUrl(null);
       }
+    } finally {
       setIsUploading(false);
     }
   };
@@ -125,6 +137,7 @@ const ArtistProfilePictureUpload = () => {
 
     try {
       setIsUploading(true);
+      toast.info("Removing profile picture...");
 
       // Remove the profile picture URL from the user record
       const { error } = await supabase
@@ -138,7 +151,7 @@ const ArtistProfilePictureUpload = () => {
       try {
         await supabase.storage
           .from("profile_images")
-          .remove([`${user.id}.jpg`, `${user.id}.jpeg`, `${user.id}.png`]);
+          .remove([`${user.id}/avatar.jpg`, `${user.id}/avatar.jpeg`, `${user.id}/avatar.png`]);
       } catch (storageError) {
         console.log("Storage delete warning:", storageError);
         // Continue even if storage deletion fails

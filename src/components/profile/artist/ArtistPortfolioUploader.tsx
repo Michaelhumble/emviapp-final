@@ -34,6 +34,34 @@ const ArtistPortfolioUploader = () => {
     }
   }, [userProfile]);
 
+  const createBucketIfNeeded = async () => {
+    try {
+      // Check if bucket exists
+      const { data: buckets } = await supabase.storage.listBuckets();
+      
+      const portfolioBucketExists = buckets?.some(bucket => bucket.name === 'portfolio_images');
+      
+      // Create bucket if it doesn't exist
+      if (!portfolioBucketExists) {
+        console.log("Creating portfolio_images bucket");
+        const { error: bucketError } = await supabase
+          .storage
+          .createBucket('portfolio_images', {
+            public: true,
+            fileSizeLimit: 5 * 1024 * 1024
+          });
+          
+        if (bucketError) {
+          console.error("Error creating bucket:", bucketError);
+          // Continue anyway, might be permissions issue but bucket exists
+        }
+      }
+    } catch (error) {
+      console.error("Error checking/creating bucket:", error);
+      // Continue anyway as the bucket might exist but user doesn't have permission to list
+    }
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || !files.length || !user) return;
@@ -46,33 +74,14 @@ const ArtistPortfolioUploader = () => {
 
     setIsUploading(true);
     setUploadProgress(0);
+    toast.info("Uploading portfolio images...");
+
+    // Ensure bucket exists
+    await createBucketIfNeeded();
 
     const uploadedUrls: string[] = [];
     let successCount = 0;
     let errorCount = 0;
-
-    // Check if bucket exists, if not create it
-    const { data: buckets } = await supabase
-      .storage
-      .listBuckets();
-    
-    const portfolioBucketExists = buckets?.some(bucket => bucket.name === 'portfolio_images');
-    
-    // First ensure bucket exists
-    if (!portfolioBucketExists) {
-      console.log("Creating portfolio_images bucket");
-      const { error: bucketError } = await supabase
-        .storage
-        .createBucket('portfolio_images', {
-          public: true,
-          fileSizeLimit: 5 * 1024 * 1024
-        });
-        
-      if (bucketError) {
-        console.error("Error creating bucket:", bucketError);
-        // Continue anyway, might be permissions issue but bucket exists
-      }
-    }
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -130,7 +139,10 @@ const ArtistPortfolioUploader = () => {
         
         const { error } = await supabase
           .from('users')
-          .update({ portfolio_urls: updatedUrls })
+          .update({ 
+            portfolio_urls: updatedUrls,
+            updated_at: new Date().toISOString()
+          })
           .eq('id', user.id);
 
         if (error) throw error;
@@ -173,6 +185,7 @@ const ArtistPortfolioUploader = () => {
 
     try {
       setIsUploading(true);
+      toast.info("Removing image...");
 
       // Remove from local state first for immediate UI feedback
       const updatedImages = portfolioImages.filter(url => url !== urlToRemove);
@@ -191,7 +204,10 @@ const ArtistPortfolioUploader = () => {
       // Update the user profile
       const { error } = await supabase
         .from('users')
-        .update({ portfolio_urls: updatedImages })
+        .update({ 
+          portfolio_urls: updatedImages,
+          updated_at: new Date().toISOString()
+        })
         .eq('id', user.id);
 
       if (error) throw error;
