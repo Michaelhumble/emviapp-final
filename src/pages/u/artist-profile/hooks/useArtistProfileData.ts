@@ -50,7 +50,7 @@ export const useArtistProfileData = (username?: string) => {
             website: profileData.website,
             accepts_bookings: profileData.accepts_bookings,
             booking_url: profileData.booking_url,
-            years_experience: profileData.years_experience,
+            years_experience: profileData.years_experience || 0,
             profile_views: profileData.profile_views || 0
           };
           
