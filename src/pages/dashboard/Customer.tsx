@@ -8,6 +8,7 @@ import CustomerDashboard from "@/components/dashboard/customer/CustomerDashboard
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import { hasRoleAccess } from "@/utils/navigation";
+import { UserRole } from "@/context/auth/types";
 
 const CustomerDashboardPage = () => {
   const { userProfile, userRole, loading } = useAuth();
@@ -21,7 +22,7 @@ const CustomerDashboardPage = () => {
     
     // SECURITY CHECK: Ensure user is authorized to view this dashboard
     // Only customers can access the customer dashboard
-    const allowedRoles = ['customer'];
+    const allowedRoles: UserRole[] = ['customer'];
     
     if (userRole && !hasRoleAccess(userRole, allowedRoles)) {
       console.log(`[CustomerDashboard] User with role ${userRole} attempted to access customer dashboard`);

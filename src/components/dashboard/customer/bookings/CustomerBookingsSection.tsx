@@ -17,6 +17,7 @@ interface Booking {
   time_requested?: string | null;
   status?: string;
   note?: string;
+  service_id?: string;
   service?: {
     id: string;
     title: string;
@@ -55,7 +56,18 @@ const CustomerBookingsSection = () => {
         .order('created_at', { ascending: false });
         
       if (error) throw error;
-      return data as Booking[];
+      
+      // Transform data to handle potential errors with the artist relation
+      return (data || []).map(item => {
+        // If artist is an error object, replace with null
+        if (item.artist && 'error' in item.artist) {
+          return {
+            ...item,
+            artist: null
+          };
+        }
+        return item;
+      }) as Booking[];
     },
     enabled: !!user,
   });
@@ -145,7 +157,7 @@ const CustomerBookingsSection = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {bookings.map((booking) => (
+          {bookings?.map((booking) => (
             <div 
               key={booking.id}
               className="flex justify-between items-center border rounded-lg p-4 hover:bg-gray-50 transition-colors"

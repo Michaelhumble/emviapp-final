@@ -8,6 +8,7 @@ import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import { hasRoleAccess } from "@/utils/navigation";
+import { UserRole } from "@/context/auth/types";
 
 const ArtistDashboardPage = () => {
   const { userProfile, userRole, loading } = useAuth();
@@ -21,7 +22,7 @@ const ArtistDashboardPage = () => {
     
     // SECURITY CHECK: Ensure user is authorized to view this dashboard
     // Artist, nail technician/artist, and renters can access the artist dashboard
-    const allowedRoles = ['artist', 'nail technician/artist', 'renter'];
+    const allowedRoles: UserRole[] = ['artist', 'nail technician/artist', 'renter'];
     
     if (userRole && !hasRoleAccess(userRole, allowedRoles)) {
       console.log(`[ArtistDashboard] User with role ${userRole} attempted to access artist dashboard`);
