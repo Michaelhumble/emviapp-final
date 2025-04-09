@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Loader2, Upload, Trash2 } from "lucide-react";
+import { getInitials } from "@/utils/userUtils";
 
 const ArtistProfilePhotoUpload = () => {
   const { user, refreshUserProfile } = useAuth();
@@ -72,16 +73,18 @@ const ArtistProfilePhotoUpload = () => {
       
       const newAvatarUrl = publicUrlData.publicUrl;
       
+      // Get current completed tasks
+      const currentTasks = await getCompletedTasks();
+      
       // Update user profile with the avatar URL
       const { error: updateError } = await supabase
         .from('users')
         .update({ 
           avatar_url: newAvatarUrl,
           updated_at: new Date().toISOString(),
-          completed_profile_tasks: supabase.rpc('array_append_unique', { 
-            arr: await getCompletedTasks(), 
-            item: 'profile_picture' 
-          })
+          completed_profile_tasks: currentTasks.includes('profile_picture') 
+            ? currentTasks 
+            : [...currentTasks, 'profile_picture']
         })
         .eq('id', user.id);
       
@@ -144,22 +147,16 @@ const ArtistProfilePhotoUpload = () => {
         .eq('id', user.id)
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error getting completed tasks:', error);
+        return [];
+      }
       
       return data.completed_profile_tasks || [];
     } catch (error) {
       console.error('Error getting completed tasks:', error);
       return [];
     }
-  };
-  
-  const getInitials = (name: string = 'User') => {
-    return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase()
-      .substring(0, 2);
   };
   
   return (

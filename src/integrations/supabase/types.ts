@@ -891,6 +891,7 @@ export type Database = {
           bio: string | null
           booking_url: string | null
           boosted_until: string | null
+          completed_profile_tasks: string[] | null
           contact_link: string | null
           created_at: string | null
           credits: number | null
@@ -918,6 +919,7 @@ export type Database = {
           bio?: string | null
           booking_url?: string | null
           boosted_until?: string | null
+          completed_profile_tasks?: string[] | null
           contact_link?: string | null
           created_at?: string | null
           credits?: number | null
@@ -945,6 +947,7 @@ export type Database = {
           bio?: string | null
           booking_url?: string | null
           boosted_until?: string | null
+          completed_profile_tasks?: string[] | null
           contact_link?: string | null
           created_at?: string | null
           credits?: number | null
@@ -1028,6 +1031,10 @@ export type Database = {
       }
     }
     Functions: {
+      array_append_unique: {
+        Args: { arr: string[]; item: string }
+        Returns: string[]
+      }
       award_credits: {
         Args: {
           p_user_id: string
