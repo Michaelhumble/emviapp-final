@@ -53,11 +53,17 @@ export const useCustomerBookings = () => {
           };
           
           // Only set artist if it's a valid object with the expected properties
-          if (item.artist && typeof item.artist === 'object' && !('error' in item.artist) && 'id' in item.artist && 'full_name' in item.artist) {
+          if (
+            item.artist && 
+            typeof item.artist === 'object' && 
+            !('error' in item.artist) && 
+            item.artist !== null
+          ) {
+            const artistData = item.artist as { id: string; full_name: string; avatar_url?: string };
             booking.artist = {
-              id: item.artist.id,
-              full_name: item.artist.full_name,
-              avatar_url: item.artist.avatar_url
+              id: artistData.id,
+              full_name: artistData.full_name,
+              avatar_url: artistData.avatar_url
             };
           }
           
