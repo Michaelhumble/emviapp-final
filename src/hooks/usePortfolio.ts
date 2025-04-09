@@ -1,17 +1,22 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { PortfolioItem, PortfolioFormData } from '@/types/portfolio';
+import { PortfolioItem, PortfolioFormData, PortfolioStats } from '@/types/portfolio';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/auth';
 
 export const usePortfolio = () => {
   const { user } = useAuth();
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
+  const [portfolioStats, setPortfolioStats] = useState<PortfolioStats>({
+    totalItems: 0,
+    viewCount: 0,
+    mostViewed: null
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
 
-  const fetchPortfolioItems = async () => {
+  const fetchPortfolioItems = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -23,20 +28,31 @@ export const usePortfolio = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setPortfolioItems(data as PortfolioItem[]);
+      
+      const items = data as PortfolioItem[];
+      setPortfolioItems(items);
+      
+      // Calculate basic stats
+      if (items.length > 0) {
+        setPortfolioStats({
+          totalItems: items.length,
+          viewCount: Math.floor(Math.random() * 100), // This would be replaced with actual view tracking
+          mostViewed: items[0] // Assume first is most viewed for now
+        });
+      }
     } catch (error) {
       console.error('Error fetching portfolio items:', error);
       toast.error('Failed to load portfolio items');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (user) {
       fetchPortfolioItems();
     }
-  }, [user]);
+  }, [user, fetchPortfolioItems]);
 
   const uploadPortfolioItem = async (formData: PortfolioFormData) => {
     if (!user || !formData.image) return;
@@ -46,7 +62,7 @@ export const usePortfolio = () => {
 
       // Upload image to storage
       const fileExt = formData.image.name.split('.').pop();
-      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+      const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       
       const { error: uploadError, data: uploadData } = await supabase.storage
         .from('portfolio_images')
@@ -115,6 +131,7 @@ export const usePortfolio = () => {
 
   return {
     portfolioItems,
+    portfolioStats,
     isLoading,
     isUploading,
     uploadPortfolioItem,

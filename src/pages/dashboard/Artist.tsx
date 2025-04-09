@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -76,7 +75,7 @@ const ArtistDashboard = () => {
                 </div>
               </div>
               
-              {/* Portfolio Section */}
+              {/* Portfolio Section - Now passing updated component */}
               <ArtistPortfolioSection />
               
               {/* Invite Banner */}
@@ -93,6 +92,7 @@ const ArtistDashboard = () => {
                     onClick={() => handleCardClick("portfolio")}
                     variant="primary"
                   />
+                  
                   <DashboardCard 
                     title="Check Messages" 
                     description="Respond to client inquiries" 

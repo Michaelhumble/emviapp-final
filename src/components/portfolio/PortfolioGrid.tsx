@@ -11,7 +11,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { Trash2, Loader2, ImageIcon } from 'lucide-react';
+import { Trash2, Loader2, ImageIcon, ZoomIn, Edit } from 'lucide-react';
 import { PortfolioItem } from '@/types/portfolio';
 
 interface PortfolioGridProps {
@@ -23,6 +23,7 @@ interface PortfolioGridProps {
 const PortfolioGrid = ({ items, isLoading, onDelete }: PortfolioGridProps) => {
   const [itemToDelete, setItemToDelete] = useState<PortfolioItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [expandedItem, setExpandedItem] = useState<PortfolioItem | null>(null);
 
   const handleDelete = async () => {
     if (!itemToDelete) return;
@@ -57,7 +58,7 @@ const PortfolioGrid = ({ items, isLoading, onDelete }: PortfolioGridProps) => {
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {items.map((item) => (
-          <div key={item.id} className="group relative bg-white rounded-lg overflow-hidden shadow-sm border">
+          <div key={item.id} className="group relative bg-white rounded-lg overflow-hidden shadow-sm border hover:shadow-md transition-shadow">
             <div className="aspect-square relative">
               <img 
                 src={item.image_url} 
@@ -68,23 +69,36 @@ const PortfolioGrid = ({ items, isLoading, onDelete }: PortfolioGridProps) => {
                 <div className="absolute bottom-0 left-0 right-0 p-4">
                   <h3 className="text-white font-medium truncate">{item.title}</h3>
                   {item.description && (
-                    <p className="text-white/80 text-sm truncate">{item.description}</p>
+                    <p className="text-white/80 text-sm line-clamp-2">{item.description}</p>
                   )}
                 </div>
               </div>
             </div>
-            <Button
-              variant="destructive"
-              size="icon"
-              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-              onClick={() => setItemToDelete(item)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            
+            <div className="absolute top-2 right-2 flex flex-col gap-2">
+              <Button
+                variant="secondary"
+                size="icon"
+                className="opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                onClick={() => setExpandedItem(item)}
+              >
+                <ZoomIn className="h-4 w-4" />
+              </Button>
+              
+              <Button
+                variant="destructive"
+                size="icon"
+                className="opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                onClick={() => setItemToDelete(item)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         ))}
       </div>
 
+      {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!itemToDelete} onOpenChange={(open) => !open && setItemToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -111,6 +125,38 @@ const PortfolioGrid = ({ items, isLoading, onDelete }: PortfolioGridProps) => {
               )}
             </AlertDialogAction>
           </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Image Preview Dialog */}
+      <AlertDialog open={!!expandedItem} onOpenChange={(open) => !open && setExpandedItem(null)}>
+        <AlertDialogContent className="max-w-3xl p-0 overflow-hidden">
+          <div className="relative max-h-[80vh]">
+            {expandedItem && (
+              <img 
+                src={expandedItem.image_url} 
+                alt={expandedItem.title} 
+                className="w-full object-contain"
+              />
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-2 right-2 bg-black/20 hover:bg-black/40 text-white"
+              onClick={() => setExpandedItem(null)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="p-4 bg-white">
+            <h3 className="text-lg font-medium">{expandedItem?.title}</h3>
+            {expandedItem?.description && (
+              <p className="text-gray-600 mt-1">{expandedItem.description}</p>
+            )}
+            <p className="text-xs text-gray-400 mt-2">
+              Added on {expandedItem && new Date(expandedItem.created_at).toLocaleDateString()}
+            </p>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
     </>

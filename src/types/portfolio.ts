@@ -13,3 +13,10 @@ export interface PortfolioFormData {
   description: string;
   image: File | null;
 }
+
+// Add a new type for portfolio statistics
+export interface PortfolioStats {
+  totalItems: number;
+  viewCount: number;
+  mostViewed: PortfolioItem | null;
+}

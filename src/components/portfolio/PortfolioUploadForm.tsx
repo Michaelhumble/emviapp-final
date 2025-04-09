@@ -11,7 +11,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Upload, X, Loader2, Image } from 'lucide-react';
+import { Upload, X, Loader2, Image, FileImage } from 'lucide-react';
 import { PortfolioFormData } from '@/types/portfolio';
 import { useForm } from 'react-hook-form';
 
@@ -23,6 +23,7 @@ interface PortfolioUploadFormProps {
 
 const PortfolioUploadForm = ({ onSubmit, isUploading, onCancel }: PortfolioUploadFormProps) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [fileSize, setFileSize] = useState<string | null>(null);
   
   const form = useForm<PortfolioFormData>({
     defaultValues: {
@@ -34,23 +35,52 @@ const PortfolioUploadForm = ({ onSubmit, isUploading, onCancel }: PortfolioUploa
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
-    form.setValue('image', file);
     
     if (file) {
+      // Validate file size (max 5MB)
+      const fileSizeInMB = file.size / (1024 * 1024);
+      if (fileSizeInMB > 5) {
+        form.setError('image', { 
+          type: 'manual', 
+          message: 'Image must be less than 5MB' 
+        });
+        return;
+      }
+      
+      form.setValue('image', file);
+      form.clearErrors('image');
+      
+      // Calculate and format file size
+      setFileSize(fileSizeInMB < 1 
+        ? `${Math.round(fileSizeInMB * 1024)} KB` 
+        : `${fileSizeInMB.toFixed(2)} MB`);
+      
+      // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewUrl(reader.result as string);
       };
       reader.readAsDataURL(file);
     } else {
+      form.setValue('image', null);
       setPreviewUrl(null);
+      setFileSize(null);
     }
   };
 
   const handleSubmit = async (data: PortfolioFormData) => {
+    if (!data.image) {
+      form.setError('image', { 
+        type: 'manual', 
+        message: 'Please select an image' 
+      });
+      return;
+    }
+    
     await onSubmit(data);
     form.reset();
     setPreviewUrl(null);
+    setFileSize(null);
   };
 
   return (
@@ -112,6 +142,9 @@ const PortfolioUploadForm = ({ onSubmit, isUploading, onCancel }: PortfolioUploa
                     alt="Preview" 
                     className="object-cover w-full h-full"
                   />
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-2">
+                    {fileSize && <span>Size: {fileSize}</span>}
+                  </div>
                   <Button
                     type="button"
                     variant="destructive"
@@ -120,6 +153,7 @@ const PortfolioUploadForm = ({ onSubmit, isUploading, onCancel }: PortfolioUploa
                     onClick={() => {
                       form.setValue('image', null);
                       setPreviewUrl(null);
+                      setFileSize(null);
                     }}
                   >
                     <X className="h-4 w-4" />
@@ -128,7 +162,7 @@ const PortfolioUploadForm = ({ onSubmit, isUploading, onCancel }: PortfolioUploa
               ) : (
                 <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-md border-gray-300 cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
                   <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                    <Image className="h-12 w-12 text-gray-400 mb-2" />
+                    <FileImage className="h-12 w-12 text-gray-400 mb-2" />
                     <p className="mb-2 text-sm text-gray-500">
                       Click to upload an image
                     </p>
@@ -164,7 +198,7 @@ const PortfolioUploadForm = ({ onSubmit, isUploading, onCancel }: PortfolioUploa
             </Button>
             <Button 
               type="submit" 
-              disabled={isUploading || !previewUrl}
+              disabled={isUploading || !form.getValues('image')}
             >
               {isUploading ? (
                 <>
