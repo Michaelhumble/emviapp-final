@@ -11,7 +11,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { Trash2, Loader2, ImageIcon, ZoomIn, Edit } from 'lucide-react';
+import { Trash2, Loader2, ImageIcon, ZoomIn, Edit, X } from 'lucide-react';
 import { PortfolioItem } from '@/types/portfolio';
 
 interface PortfolioGridProps {
