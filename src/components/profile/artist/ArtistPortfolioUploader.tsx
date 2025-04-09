@@ -5,9 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { CloudUpload, Loader2, X, Image, AlertCircle, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { useProfileCompletion } from "../hooks/useProfileCompletion";
 import { v4 as uuidv4 } from "uuid";
+
+// Import the new components
+import PortfolioUploadArea from "./components/PortfolioUploadArea";
+import PortfolioImageGrid from "./components/PortfolioImageGrid";
+import PortfolioInfo from "./components/PortfolioInfo";
 
 const ArtistPortfolioUploader = () => {
   const { user, userProfile, refreshUserProfile } = useAuth();
@@ -229,91 +234,24 @@ const ArtistPortfolioUploader = () => {
       <CardContent className="pt-4">
         <div className="flex flex-col space-y-4">
           {/* Drag and drop area */}
-          <div 
-            className="border-2 border-dashed border-border rounded-lg p-6 text-center bg-muted/30 cursor-pointer"
-            onDragOver={dragOver}
-            onDrop={dropHandler}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              accept="image/jpeg,image/jpg,image/png"
-              className="hidden"
-              id="portfolio-input"
-              disabled={isUploading}
-              multiple
-            />
-            
-            {isUploading ? (
-              <div className="flex flex-col items-center justify-center py-4">
-                <Loader2 className="h-10 w-10 text-primary animate-spin mb-2" />
-                <p className="text-sm font-medium">Uploading... {uploadProgress}%</p>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-4">
-                <CloudUpload className="h-10 w-10 text-muted-foreground mb-2" strokeWidth={1.5} />
-                <p className="text-sm font-medium">Drag & drop images here</p>
-                <p className="text-xs text-muted-foreground mt-1">or click to browse</p>
-                <Button type="button" className="mt-4">
-                  <CloudUpload className="h-4 w-4 mr-2" />
-                  Upload Images
-                </Button>
-              </div>
-            )}
-          </div>
+          <PortfolioUploadArea
+            onFileChange={handleFileChange}
+            isUploading={isUploading}
+            uploadProgress={uploadProgress}
+            fileInputRef={fileInputRef}
+            dragOver={dragOver}
+            dropHandler={dropHandler}
+          />
 
           {/* Portfolio limit info */}
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <span>
-              {portfolioImages.length} of 12 images
-            </span>
-            <span className="flex items-center">
-              <AlertCircle className="h-4 w-4 mr-1" />
-              Max 5MB per image
-            </span>
-          </div>
+          <PortfolioInfo imageCount={portfolioImages.length} />
 
           {/* Portfolio image grid */}
-          {portfolioImages.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
-              {portfolioImages.map((url, index) => (
-                <div key={index} className="group relative aspect-square rounded-md overflow-hidden border">
-                  <img
-                    src={url}
-                    alt={`Portfolio image ${index + 1}`}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.onerror = null; // Prevent infinite error loop
-                      target.src = '';
-                      target.classList.add('bg-muted');
-                      target.parentElement?.classList.add('bg-muted');
-                    }}
-                  />
-                  <button
-                    className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleRemoveImage(url);
-                    }}
-                    disabled={isUploading}
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {portfolioImages.length === 0 && !isUploading && (
-            <div className="text-center p-4 bg-muted/20 rounded-lg mt-2">
-              <Image className="h-8 w-8 mx-auto text-muted-foreground" />
-              <p className="mt-2 text-sm text-muted-foreground">No portfolio images uploaded yet.</p>
-              <p className="text-xs text-muted-foreground">Upload your best work to attract more clients.</p>
-            </div>
-          )}
+          <PortfolioImageGrid 
+            images={portfolioImages}
+            onRemoveImage={handleRemoveImage}
+            isUploading={isUploading}
+          />
         </div>
       </CardContent>
     </Card>
