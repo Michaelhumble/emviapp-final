@@ -38,8 +38,8 @@ export interface UserProfile {
   accountType?: string;
   profile_views?: number;
   is_active?: boolean;
-  created_at?: number;
-  updated_at?: number;
+  created_at?: number | string;
+  updated_at?: number | string;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
   stripePriceId?: string;
@@ -54,7 +54,6 @@ export interface UserProfile {
   city?: string;
   state?: string;
   zipCode?: string;
-  // Additional properties needed based on the error messages
   preferred_language?: string;
   full_name?: string;
   id?: string;
