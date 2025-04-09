@@ -18,7 +18,7 @@ import Profile from '@/pages/Profile';
 import UserProfilePage from '@/pages/profile/UserProfilePage';
 import ProfileEdit from '@/pages/profile/edit';
 import UserProfileByUsername from '@/pages/profile/[username]';
-import SalonDashboard from '@/pages/dashboard/Salon';
+import SalonDashboard from '@/pages/dashboard/salon';
 import SalonOwnerDashboard from '@/pages/dashboard/salon_owner';
 import ArtistDashboard from '@/pages/dashboard/Artist';
 import SupplierDashboard from '@/pages/dashboard/Supplier';
