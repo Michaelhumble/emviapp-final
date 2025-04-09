@@ -34,8 +34,8 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       location: data.location || '',
       social_links: {
         instagram: data.instagram || '',
-        facebook: data.facebook || data.instagram || '', // Use instagram as fallback
-        twitter: data.twitter || data.instagram || '', // Use instagram as fallback
+        facebook: data.instagram || '', // Use instagram as fallback since facebook doesn't exist
+        twitter: data.instagram || '', // Use instagram as fallback since twitter doesn't exist
         website: data.website || '',
       },
       avatar_url: data.avatar_url || '',
@@ -47,26 +47,26 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       updated_at: data.updated_at || '',
       
       // Optional fields with default values
-      salon_name: data.salon_name || '',
-      company_name: data.company_name || data.salon_name || '', 
-      product_type: data.product_type || data.specialty || '', // Use specialty as fallback
+      salon_name: '', // Set default since this property doesn't exist in DB
+      company_name: '', // Set default since this property doesn't exist in DB
+      product_type: data.specialty || '', // Use specialty as fallback
       instagram: data.instagram || '',
-      facebook: data.facebook || data.instagram || '', // Use instagram as fallback
-      twitter: data.twitter || data.instagram || '', // Use instagram as fallback
+      facebook: data.instagram || '', // Use instagram as fallback since facebook doesn't exist
+      twitter: data.instagram || '', // Use instagram as fallback since twitter doesn't exist
       website: data.website || '',
       preferred_language: (data.preferred_language as any) || 'en',
-      profile_views: data.profile_views || 0,
-      account_type: data.account_type || 'free',
-      affiliate_code: data.affiliate_code || data.referral_code || '', // Use referral_code as fallback
+      profile_views: 0, // Set default since this property doesn't exist in DB
+      account_type: 'free', // Set default since this property doesn't exist in DB
+      affiliate_code: data.referral_code || '', // Use referral_code as fallback
       referral_code: data.referral_code || '',
-      referral_count: data.referral_count || 0,
-      skill_level: data.skill_level || data.specialty || '', // Use specialty as fallback
-      skills: Array.isArray(data.skills) ? data.skills : [], 
+      referral_count: 0, // Set default since this property doesn't exist in DB
+      skill_level: data.specialty || '', // Use specialty as fallback
+      skills: [], // Set default since this property doesn't exist in DB
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       accepts_bookings: Boolean(data.accepts_bookings),
       booking_url: data.booking_url || '',
       boosted_until: data.boosted_until || null,
-      profile_completion: data.profile_completion || (typeof data.credits === 'number' ? data.credits : 0), 
+      profile_completion: 0, // Set default since this property doesn't exist in DB
       completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],
       portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
       credits: data.credits || 0,
