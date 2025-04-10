@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import { fetchSalonJobs, fetchUserData, fetchApplicantsForJobs } from "@/utils/salon/statsQueries";
-import { calculateProfileCompletion, formatFieldName } from "@/utils/salon/profileUtils";
+import { calculateProfileCompletion } from "@/utils/salon/profileUtils";
 
 export interface SalonStats {
   applicantsThisMonth: number;
@@ -69,7 +68,7 @@ export function useSalonStats() {
       setStats({
         activeJobPosts: jobsResponse.data?.length || 0,
         applicantsThisMonth: applicantsCount,
-        creditsRemaining: userDataResponse.data.credits || 0,
+        creditsRemaining: userDataResponse.data?.credits || 0,
         profileCompletion: {
           percentage: completionPercentage,
           incompleteFields: incompleteFields

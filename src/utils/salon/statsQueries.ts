@@ -23,9 +23,10 @@ export const fetchSalonJobs = async (salonId: string) => {
  * Fetches user data including credits and profile information
  */
 export const fetchUserData = async (userId: string) => {
+  // Checking if the user exists first and getting the proper fields
   const response = await supabase
     .from('users')
-    .select('credits, full_name, salon_name, location, bio, phone, instagram, website, avatar_url')
+    .select('credits, full_name, location, bio, phone, instagram, website, avatar_url')
     .eq('id', userId)
     .single();
     
