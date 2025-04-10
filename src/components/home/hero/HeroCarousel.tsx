@@ -14,11 +14,18 @@ interface HeroCarouselProps {
 
 const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselProps) => {
   return (
-    <div className="absolute inset-0 w-full h-full overflow-hidden">
+    <div 
+      className="fixed inset-0 w-full h-full overflow-hidden" 
+      style={{ 
+        touchAction: "none", 
+        userSelect: "none",
+        pointerEvents: "none"
+      }}
+    >
       {images.map((image, index) => (
         <motion.div 
           key={index}
-          className="absolute inset-0 w-full h-full"
+          className="fixed inset-0 w-full h-full"
           initial={{ opacity: 0 }}
           animate={{ 
             opacity: activeIndex === index ? 1 : 0,
@@ -28,28 +35,35 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
           }}
           aria-hidden={activeIndex !== index}
           style={{
-            position: 'absolute',
+            touchAction: "none",
+            userSelect: "none",
+            pointerEvents: "none",
+            position: 'fixed',
             left: 0,
             top: 0,
             right: 0,
             bottom: 0,
-            width: '100%',
-            height: '100%',
+            width: '100vw',
+            height: '100vh',
             overflow: 'hidden',
           }}
         >
-          <div className="fixed-image-container absolute inset-0">
+          <div className="fixed inset-0" style={{ pointerEvents: "none" }}>
             <img 
               src={image.url} 
               alt={image.alt}
               className="w-screen h-screen object-cover"
+              draggable="false"
               style={{ 
                 objectPosition: "center",
                 width: "100vw",
                 height: "100vh",
                 maxWidth: "100vw",
                 maxHeight: "100vh",
-                position: "absolute",
+                position: "fixed",
+                touchAction: "none",
+                userSelect: "none",
+                pointerEvents: "none",
                 left: 0,
                 top: 0,
                 right: 0,
@@ -59,9 +73,10 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
             
             {/* Subtle overlay for better text readability */}
             <div 
-              className="absolute inset-0 z-10"
+              className="fixed inset-0 z-10"
               style={{ 
-                background: 'linear-gradient(to top, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.1) 100%)'
+                background: 'linear-gradient(to top, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.1) 100%)',
+                pointerEvents: "none"
               }}
               aria-hidden="true"
             ></div>
