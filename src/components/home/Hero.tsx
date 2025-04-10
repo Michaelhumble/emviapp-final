@@ -48,7 +48,7 @@ const Hero = () => {
         border: 'none',
         maxWidth: '100vw',
         maxHeight: '100vh',
-        position: 'relative',
+        position: 'fixed', // Changed from 'relative' to 'fixed'
         left: 0,
         top: 0,
         right: 0,

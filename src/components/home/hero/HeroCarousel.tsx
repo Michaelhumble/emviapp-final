@@ -23,6 +23,16 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
             -moz-user-select: none;
             user-select: none;
           }
+          
+          /* Prevent any horizontal movement */
+          .fixed-image-container {
+            overflow: hidden;
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            top: 0;
+            left: 0;
+          }
         `}
       </style>
       {images.map((image, index) => (
