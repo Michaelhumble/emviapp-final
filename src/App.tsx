@@ -26,6 +26,7 @@ import PostJob from "./pages/PostJob";
 import Messages from "./pages/Messages";
 import Team from "./pages/dashboard/salon/Team";
 import SalonSettings from "./pages/dashboard/SalonSettings";
+import AppModifier from "./App-Modifier";
 
 // Initialize Stripe with publishable key
 const stripePromise = loadStripe(
@@ -44,6 +45,7 @@ function App() {
       <AuthProvider>
         <SubscriptionProvider>
           <Elements stripe={stripePromise}>
+            <AppModifier />
             <AppContent />
           </Elements>
         </SubscriptionProvider>
