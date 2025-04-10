@@ -4,7 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"; 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { UserPlus, UserMinus, Mail, AlertCircle, RefreshCw } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { UserPlus, UserMinus, Mail, AlertCircle, RefreshCw, Check, X } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -17,6 +20,7 @@ interface TeamMember {
   avatar_url: string | null;
   role: string;
   specialty?: string;
+  status?: 'active' | 'inactive'; // Added status field
 }
 
 const SalonTeamManagement = () => {
@@ -24,8 +28,11 @@ const SalonTeamManagement = () => {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteName, setInviteName] = useState("");
+  const [inviteRole, setInviteRole] = useState("artist");
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   useEffect(() => {
     if (user?.id) {
@@ -57,7 +64,8 @@ const SalonTeamManagement = () => {
           email: "tina@example.com",
           avatar_url: null,
           role: "artist",
-          specialty: "Hair Coloring"
+          specialty: "Hair Coloring",
+          status: "active"
         },
         {
           id: "2",
@@ -65,7 +73,17 @@ const SalonTeamManagement = () => {
           email: "mark@example.com",
           avatar_url: null,
           role: "artist",
-          specialty: "Men's Cuts"
+          specialty: "Men's Cuts",
+          status: "active"
+        },
+        {
+          id: "3",
+          full_name: "Laura Nail Tech",
+          email: "laura@example.com",
+          avatar_url: null,
+          role: "nail technician/artist",
+          specialty: "Gel Manicures",
+          status: "inactive"
         }
       ];
       
@@ -83,18 +101,40 @@ const SalonTeamManagement = () => {
       toast.error("Please enter a valid email address");
       return;
     }
+
+    if (!inviteName.trim()) {
+      toast.error("Please enter the team member's name");
+      return;
+    }
     
     setIsSending(true);
     
     try {
-      // In a real implementation, this would send an invitation email
-      // and create a pending invite record in the database
+      // In a real implementation, this would:
+      // 1. Create a pending invitation record in the database
+      // 2. Send an email to the person with a signup link
+      // 3. When they sign up, associate them with this salon's ID
       
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      // Add to local state for immediate feedback
+      const newMember: TeamMember = {
+        id: `temp-${Date.now()}`,
+        full_name: inviteName,
+        email: inviteEmail,
+        avatar_url: null,
+        role: inviteRole,
+        status: "active"
+      };
+      
+      setTeamMembers(prev => [...prev, newMember]);
+      
       toast.success(`Invitation sent to ${inviteEmail}`);
       setInviteEmail("");
+      setInviteName("");
+      setInviteRole("artist");
+      setIsInviteModalOpen(false);
     } catch (err) {
       console.error("Error sending invite:", err);
       toast.error("Failed to send invitation. Please try again.");
@@ -125,13 +165,40 @@ const SalonTeamManagement = () => {
     }
   };
   
+  const toggleMemberStatus = async (memberId: string, currentStatus: 'active' | 'inactive' | undefined) => {
+    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Update local state
+      setTeamMembers(prev => 
+        prev.map(member => 
+          member.id === memberId 
+            ? { ...member, status: newStatus as 'active' | 'inactive' } 
+            : member
+        )
+      );
+      
+      toast.success(`Team member status updated to ${newStatus}`);
+    } catch (err) {
+      console.error("Error updating member status:", err);
+      toast.error("Failed to update status. Please try again.");
+    }
+  };
+  
   return (
     <Card className="border-blue-100">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg flex items-center">
           <UserPlus className="h-5 w-5 text-blue-500 mr-2" />
           Team Management
         </CardTitle>
+        <Button size="sm" onClick={() => setIsInviteModalOpen(true)}>
+          <UserPlus className="h-4 w-4 mr-2" />
+          Invite Artist
+        </Button>
       </CardHeader>
       
       <CardContent>
@@ -143,26 +210,6 @@ const SalonTeamManagement = () => {
         )}
         
         <div className="space-y-4">
-          {/* Invite Form */}
-          <div className="flex items-center space-x-2">
-            <Input 
-              placeholder="Email address" 
-              type="email" 
-              value={inviteEmail}
-              onChange={(e) => setInviteEmail(e.target.value)}
-              className="flex-1"
-              disabled={isSending}
-            />
-            <Button 
-              onClick={sendInvite} 
-              disabled={isSending || !inviteEmail} 
-              className="whitespace-nowrap"
-            >
-              {isSending ? <RefreshCw className="h-4 w-4 animate-spin mr-2" /> : <UserPlus className="h-4 w-4 mr-2" />}
-              Invite Artist
-            </Button>
-          </div>
-          
           {/* Team List */}
           <div className="divide-y divide-gray-100">
             {loading ? (
@@ -185,31 +232,129 @@ const SalonTeamManagement = () => {
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium">{member.full_name}</p>
+                      <div className="flex items-center">
+                        <p className="font-medium">{member.full_name}</p>
+                        {member.status && (
+                          <span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${
+                            member.status === 'active' 
+                              ? 'bg-green-100 text-green-700' 
+                              : 'bg-gray-100 text-gray-700'
+                          }`}>
+                            {member.status.charAt(0).toUpperCase() + member.status.slice(1)}
+                          </span>
+                        )}
+                      </div>
                       <div className="flex items-center text-sm text-gray-500">
                         <Mail className="h-3 w-3 mr-1" />
                         <span>{member.email}</span>
                       </div>
-                      {member.specialty && (
-                        <span className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">
-                          {member.specialty}
-                        </span>
-                      )}
+                      <div className="flex items-center mt-1">
+                        {member.role && (
+                          <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full mr-2">
+                            {member.role}
+                          </span>
+                        )}
+                        {member.specialty && (
+                          <span className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">
+                            {member.specialty}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                    onClick={() => removeTeamMember(member.id, member.full_name)}
-                  >
-                    <UserMinus className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className={`h-8 w-8 p-0 ${
+                        member.status === 'active' 
+                          ? 'text-green-500 hover:text-green-700 hover:bg-green-50' 
+                          : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                      }`}
+                      onClick={() => toggleMemberStatus(member.id, member.status)}
+                      title={member.status === 'active' ? 'Set as Inactive' : 'Set as Active'}
+                    >
+                      {member.status === 'active' ? (
+                        <Check className="h-4 w-4" />
+                      ) : (
+                        <X className="h-4 w-4" />
+                      )}
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                      onClick={() => removeTeamMember(member.id, member.full_name)}
+                    >
+                      <UserMinus className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               ))
             )}
           </div>
         </div>
+        
+        {/* Invite Team Member Modal */}
+        <Dialog open={isInviteModalOpen} onOpenChange={setIsInviteModalOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Invite New Team Member</DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4 py-2">
+              <div className="space-y-2">
+                <Label htmlFor="inviteName">Full Name</Label>
+                <Input
+                  id="inviteName"
+                  placeholder="e.g., Jane Smith"
+                  value={inviteName}
+                  onChange={(e) => setInviteName(e.target.value)}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="inviteEmail">Email Address</Label>
+                <Input
+                  id="inviteEmail"
+                  type="email"
+                  placeholder="e.g., jane@example.com"
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="inviteRole">Role</Label>
+                <Select value={inviteRole} onValueChange={setInviteRole}>
+                  <SelectTrigger id="inviteRole">
+                    <SelectValue placeholder="Select role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="artist">Hair Artist</SelectItem>
+                    <SelectItem value="nail technician/artist">Nail Technician</SelectItem>
+                    <SelectItem value="renter">Booth Renter</SelectItem>
+                    <SelectItem value="stylist">Stylist</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
+              <Button 
+                onClick={sendInvite} 
+                disabled={isSending || !inviteEmail || !inviteName}
+              >
+                {isSending ? <RefreshCw className="h-4 w-4 animate-spin mr-2" /> : <UserPlus className="h-4 w-4 mr-2" />}
+                Send Invitation
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
   );
