@@ -1,4 +1,3 @@
-
 // Make sure the file uses proper TypeScript with proper data access
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -36,7 +35,7 @@ export const useAuthProvider = (): AuthContextType => {
           // Fetch user profile data
           const profile = await fetchUserProfile(currentSession.user.id);
           setUserProfile(profile);
-          setUserRole(profile?.role);
+          setUserRole(profile?.role as UserRole); // Cast to UserRole
         }
       } catch (error) {
         console.error('Error fetching initial session:', error);
@@ -64,10 +63,10 @@ export const useAuthProvider = (): AuthContextType => {
               setIsNewUser(true);
               const newProfile = await createUserProfile(newSession.user);
               setUserProfile(newProfile);
-              setUserRole(newProfile?.role);
+              setUserRole(newProfile?.role as UserRole); // Cast to UserRole
             } else {
               setUserProfile(profile);
-              setUserRole(profile.role);
+              setUserRole(profile.role as UserRole); // Cast to UserRole
             }
           }
         } else {
@@ -125,13 +124,13 @@ export const useAuthProvider = (): AuthContextType => {
         });
         
         setIsNewUser(true);
-        return { user: data.user, profile: newProfile };
+        return { user: data.user, error: null };
       }
       
-      return data;
+      return { user: data?.user || null, error: null };
     } catch (error: any) {
       toast.error(error.message || 'Error signing up');
-      throw error;
+      return { user: null, error: error };
     }
   };
   
@@ -261,12 +260,12 @@ export const useAuthProvider = (): AuthContextType => {
     try {
       const updatedProfile = await updateUserProfile({
         id: userProfile.id,
-        role
+        role: role as string // Convert enum to string for DB
       });
       
       if (updatedProfile) {
         setUserProfile(updatedProfile);
-        setUserRole(updatedProfile.role);
+        setUserRole(updatedProfile.role as UserRole); // Cast back to UserRole
       }
     } catch (error) {
       console.error('Error setting user role:', error);

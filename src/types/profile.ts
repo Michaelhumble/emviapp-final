@@ -1,4 +1,3 @@
-
 export interface UserProfile {
   uid?: string;
   email?: string | null;
@@ -75,6 +74,12 @@ export interface UserProfile {
   affiliate_code?: string;
   referral_count?: number;
   portfolio_urls?: string[];
+  credits?: number;
+  skills?: string[];
+  referral_code?: string;
+  custom_role?: string;
+  account_type?: string;
+  user_id?: string;
 }
 
 export interface EmviUser {

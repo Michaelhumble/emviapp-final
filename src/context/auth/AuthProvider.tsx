@@ -22,15 +22,56 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsNewUser(false);
   };
 
+  const signIn = async (email: string, password: string) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+      
+      return { success: true, data };
+    } catch (error) {
+      console.error('Error signing in:', error);
+      return { success: false, error: 'An unexpected error occurred' };
+    }
+  };
+
+  const signUp = async (email: string, password: string, userData = {}) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            ...userData
+          }
+        }
+      });
+
+      if (error) {
+        return { success: false, error: error.message, user: null };
+      }
+      
+      return { success: true, user: data.user };
+    } catch (error) {
+      console.error('Error signing up:', error);
+      return { success: false, error: 'An unexpected error occurred', user: null };
+    }
+  };
+
   const refreshUserProfile = async () => {
-    if (!user) return;
+    if (!user) return false;
     
     try {
       const profile = await fetchUserProfile(user.id);
       if (profile) {
         setUserProfile(profile);
         if (profile.role) {
-          setUserRole(profile.role);
+          setUserRole(profile.role as UserRole); // Cast role to UserRole
         }
       } else {
         console.log('No profile found, creating one...');
@@ -38,13 +79,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (newProfile) {
           setUserProfile(newProfile);
           if (newProfile.role) {
-            setUserRole(newProfile.role);
+            setUserRole(newProfile.role as UserRole); // Cast role to UserRole
           }
           setIsNewUser(true);
         }
       }
+      return true;
     } catch (error) {
       console.error('Error fetching user profile:', error);
+      return false;
     }
   };
 
@@ -110,47 +153,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUserRole('customer');
     }
   }, [user]);
-
-  const signIn = async (email: string, password: string) => {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        return { success: false, error: error.message };
-      }
-      
-      return { success: true };
-    } catch (error) {
-      console.error('Error signing in:', error);
-      return { success: false, error: 'An unexpected error occurred' };
-    }
-  };
-
-  const signUp = async (email: string, password: string, userData = {}) => {
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            ...userData
-          }
-        }
-      });
-
-      if (error) {
-        return { success: false, error: error.message };
-      }
-      
-      return { success: true };
-    } catch (error) {
-      console.error('Error signing up:', error);
-      return { success: false, error: 'An unexpected error occurred' };
-    }
-  };
 
   const signOut = async () => {
     await supabase.auth.signOut();

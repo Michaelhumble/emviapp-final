@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { User } from "@supabase/supabase-js";
 import { UserProfile, UserRole } from "../types";
@@ -59,7 +58,7 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
       // If we successfully retrieved profile data, update state
       if (result.profile) {
         setUserProfile(result.profile);
-        if (result.role) setUserRole(result.role);
+        if (result.role) setUserRole(result.role as UserRole); // Cast role to UserRole
       }
       
     } catch (error) {
@@ -95,7 +94,7 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
           setUserProfile(result.profile);
         }
         if (result.role) {
-          setUserRole(result.role);
+          setUserRole(result.role as UserRole); // Cast role to UserRole
         }
         
         return true;

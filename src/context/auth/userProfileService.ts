@@ -24,7 +24,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
     // Transform database record to UserProfile type
     const profile: UserProfile = {
       id: data.id,
-      user_id: data.id, // Use id as user_id since it might not exist in DB
+      // Removed user_id since it's now in UserProfile
       full_name: data.full_name || '',
       email: data.email || '',
       phone: data.phone || '',
@@ -47,21 +47,21 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       updated_at: data.updated_at || '',
       
       // Optional fields with default values
-      salon_name: '', // Set default since this property doesn't exist in DB
-      company_name: '', // Set default since this property doesn't exist in DB
+      salon_name: data.salon_name || '', 
+      company_name: data.company_name || '', 
       product_type: data.specialty || '', // Use specialty as fallback
       instagram: data.instagram || '',
       facebook: data.instagram || '', // Use instagram as fallback since facebook doesn't exist
       twitter: data.instagram || '', // Use instagram as fallback since twitter doesn't exist
       website: data.website || '',
       preferred_language: (data.preferred_language as any) || 'en',
-      profile_views: 0, // Set default since this property doesn't exist in DB
-      account_type: 'free', // Set default since this property doesn't exist in DB
+      profile_views: data.profile_views || 0,
+      account_type: data.account_type || 'free',
       affiliate_code: data.referral_code || '', // Use referral_code as fallback
       referral_code: data.referral_code || '',
-      referral_count: 0, // Set default since this property doesn't exist in DB
+      referral_count: data.referral_count || 0,
       skill_level: data.specialty || '', // Use specialty as fallback
-      skills: [], // Set default since this property doesn't exist in DB
+      skills: data.skills || [], // Add skills property
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       accepts_bookings: Boolean(data.accepts_bookings),
       booking_url: data.booking_url || '',
@@ -69,10 +69,11 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       profile_completion: 0, // Set default since this property doesn't exist in DB
       completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],
       portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
-      credits: data.credits || 0,
-      custom_role: data.custom_role || '',
+      credits: data.credits || 0, // Add credits property
+      custom_role: data.custom_role || '', // Add custom_role property
       contact_link: data.contact_link || '',
       badges: data.badges || [],
+      user_id: data.id, // Add user_id matching id
     };
     
     return profile;
@@ -145,13 +146,16 @@ export const updateUserProfile = async (profile: Partial<UserProfile>): Promise<
   }
   
   try {
+    // Create update object with only valid properties for Supabase
+    const updateData: any = {
+      ...profile,
+      updated_at: new Date().toISOString()
+    };
+    
     // Update profile in database
     const { data, error } = await supabase
       .from('users')
-      .update({
-        ...profile,
-        updated_at: new Date().toISOString()
-      })
+      .update(updateData)
       .eq('id', profile.id)
       .select()
       .single();
