@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import SalonCard from "@/components/salons/SalonCard";
@@ -14,6 +13,7 @@ import { motion } from "framer-motion";
 import useSalonsData from "@/hooks/useSalonsData";
 import { getSalonsForSale } from "@/utils/featuredContent";
 import { ensureSalonsForSale } from "@/utils/jobs/mockJobData";
+import { Job } from "@/types/job";
 
 const Salons = () => {
   const { 
@@ -29,10 +29,9 @@ const Salons = () => {
     suggestedKeywords
   } = useSalonsData();
 
-  const [salonsForSale, setSalonsForSale] = useState<any[]>([]);
+  const [salonsForSale, setSalonsForSale] = useState<Job[]>([]);
   
   useEffect(() => {
-    // Get 20+ salon listings for sale
     const forSaleSalons = ensureSalonsForSale(25);
     setSalonsForSale(forSaleSalons);
   }, []);
@@ -41,7 +40,12 @@ const Salons = () => {
     setSearchTerm(e.target.value);
   };
 
-  const handleViewDetails = (salon: any) => {
+  const isExpired = (salon: Job) => {
+    if (salon.id === "104") return true; // Sample expired salon
+    return false;
+  };
+
+  const handleViewDetails = (salon: Job) => {
     console.log("View details for:", salon);
     // Later this will navigate to the salon detail page
     // history.push(`/salons/${salon.id}`)
@@ -58,7 +62,6 @@ const Salons = () => {
             </p>
           </div>
 
-          {/* Search Bar */}
           <div className="max-w-2xl mx-auto mb-6">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -72,7 +75,6 @@ const Salons = () => {
             </div>
           </div>
 
-          {/* Filter Tags */}
           <div className="max-w-5xl mx-auto mb-8">
             <div className="flex flex-wrap gap-2 justify-center">
               {suggestedKeywords.slice(0, 8).map((keyword) => (
@@ -88,10 +90,8 @@ const Salons = () => {
             </div>
           </div>
 
-          {/* Main Content */}
           <div className="mt-8">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-              {/* Left Sidebar - Filters */}
               <div className="col-span-1">
                 <SalonFilter 
                   filters={filters} 
@@ -103,7 +103,6 @@ const Salons = () => {
                 />
               </div>
 
-              {/* Right Content - Tabs and Salon Cards */}
               <div className="col-span-1 lg:col-span-3">
                 <Tabs defaultValue="for-sale">
                   <TabsList className="mb-6 w-full md:w-auto">
@@ -137,7 +136,9 @@ const Salons = () => {
                         {salons.map((salon, index) => (
                           <SalonCard 
                             key={salon.id || index} 
-                            salon={salon} 
+                            salon={salon}
+                            index={index}
+                            isExpired={isExpired(salon)} 
                             onViewDetails={handleViewDetails}
                           />
                         ))}
@@ -162,7 +163,9 @@ const Salons = () => {
                         {featuredSalons.map((salon, index) => (
                           <SalonCard 
                             key={salon.id || index} 
-                            salon={salon} 
+                            salon={salon}
+                            index={index}
+                            isExpired={isExpired(salon)}
                             onViewDetails={handleViewDetails}
                           />
                         ))}
@@ -190,7 +193,9 @@ const Salons = () => {
                         {salonsForSale.map((salon, index) => (
                           <SalonCard 
                             key={salon.id || index} 
-                            salon={salon} 
+                            salon={salon}
+                            index={index}
+                            isExpired={isExpired(salon)}
                             onViewDetails={handleViewDetails}
                           />
                         ))}
@@ -207,7 +212,6 @@ const Salons = () => {
             </div>
           </div>
 
-          {/* Promotion Banner */}
           <div className="mt-16">
             <SalonPromotion />
           </div>

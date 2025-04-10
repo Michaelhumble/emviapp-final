@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Job } from '@/types/job';
 import { Input } from "@/components/ui/input";
@@ -11,6 +10,20 @@ interface RequirementsSectionProps {
 }
 
 const RequirementsSection = ({ details, onChange }: RequirementsSectionProps) => {
+  // Handle requirements that could be string or string[]
+  const getRequirementsValue = () => {
+    if (!details.requirements) return '';
+    if (typeof details.requirements === 'string') return details.requirements;
+    return details.requirements.join('\n');
+  };
+
+  // Handle the change by converting to string[]
+  const handleRequirementsChange = (value: string) => {
+    // Convert string to array by splitting on newlines or keep as string based on your needs
+    const requirementsArray = value.split('\n').filter(line => line.trim() !== '');
+    onChange({ ...details, requirements: requirementsArray.length > 0 ? requirementsArray : value });
+  };
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Requirements</h2>
@@ -22,8 +35,8 @@ const RequirementsSection = ({ details, onChange }: RequirementsSectionProps) =>
           <textarea
             id="requirements"
             className="min-h-[100px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-            value={details.requirements || ''}
-            onChange={(e) => onChange({ ...details, requirements: e.target.value })}
+            value={getRequirementsValue()}
+            onChange={(e) => handleRequirementsChange(e.target.value)}
             placeholder="Experience required, certifications needed, language skills, etc."
           />
         </div>

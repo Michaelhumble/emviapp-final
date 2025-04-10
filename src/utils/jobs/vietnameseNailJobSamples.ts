@@ -1,121 +1,119 @@
+import { Job } from '@/types/job';
 
-import { Job } from "@/types/job";
-
-// Sample Vietnamese nail technician job data
-const vietnameseJobTemplate: Partial<Job> = {
-  title: "Cần thợ nails gấp (urgently hiring nail techs)",
-  description: "Tiệm đông khách, cần thợ bột và thợ chân tay nước. Lương cao, chia 6/4 thợ ăn 6. Bao lương $800-$1200 nếu thợ làm nhiều kinh nghiệm.",
-  vietnamese_description: "Tiệm đông khách, cần thợ bột và thợ chân tay nước. Lương cao, chia 6/4 thợ ăn 6. Bao lương $800-$1200 nếu thợ làm nhiều kinh nghiệm.",
-  company: "Luxury Nails & Spa",
-  location: "Houston, TX",
-  employment_type: "Full-time",
-  salary_range: "$800-1200/week",
-  weekly_pay: true,
-  owner_will_train: true,
-  has_housing: true,
-  no_supply_deduction: true,
-  specialties: ["bột", "chân tay nước", "gel", "waxing"],
-  contact_info: {
-    owner_name: "Hoa Nguyen",
-    phone: "(123) 456-7890",
-    email: "luxurynails@example.com"
-  },
-  tip_range: "$150-300/day",
-  is_featured: true,
-  is_remote: false,
-};
-
-// Generate Vietnamese nail jobs with variations
+// Generate Vietnamese nail job listings with appropriate details
 export const generateVietnameseNailJobs = (count: number = 5): Job[] => {
-  const cities = [
-    "Houston, TX",
-    "Dallas, TX",
-    "San Jose, CA",
-    "Orlando, FL",
-    "Atlanta, GA",
-    "Philadelphia, PA",
-    "Los Angeles, CA",
-    "San Diego, CA",
-    "Denver, CO"
+  const locations = [
+    'Houston, TX',
+    'Atlanta, GA',
+    'Orlando, FL',
+    'Dallas, TX',
+    'San Jose, CA',
+    'Philadelphia, PA',
+    'Seattle, WA',
+    'Denver, CO',
+    'Charlotte, NC',
+    'Las Vegas, NV'
   ];
-  
-  const salons = [
-    "Luxury Nails & Spa",
-    "Diamond Nails",
-    "Queen Nails",
-    "Crystal Nails",
-    "Happy Nails",
-    "Lovely Nails",
-    "Perfect Nails",
-    "Beautiful Nails",
-    "VIP Nails"
+
+  const salonNames = [
+    'Luxury Nails & Spa',
+    'Diamond Nails',
+    'VIP Nails',
+    'Crystal Nail Salon',
+    'Perfect Nails',
+    'Queen Nails',
+    'Royal Nails',
+    'Elite Nails',
+    'Golden Nails',
+    'Star Nails & Spa'
   ];
-  
-  const jobTitles = [
-    "Cần thợ nail gấp",
-    "Cần thợ bột và thợ chân tay nước",
-    "Tiệm mới khai trương cần thợ",
-    "Thợ có kinh nghiệm lương cao",
-    "Bao lương thợ nail"
+
+  const specialties = [
+    ['Acrylic', 'Gel', 'Dipping Powder', 'Nail Art'],
+    ['Gel', 'Pedicure', 'Manicure', 'Waxing'],
+    ['Acrylic', 'Dipping Powder', 'Nail Design', 'Pedicure'],
+    ['Gel-X', 'Acrylic', 'Ombre', 'Nail Art'],
+    ['Pedicure', 'Manicure', 'Gel Polish', 'Paraffin Treatment'],
+    ['Acrylic', 'Gel', 'Nail Art', 'Massage'],
+    ['Dipping Powder', 'Gel', 'Acrylic', 'Nail Repair'],
+    ['Acrylic', 'Gel', 'Pedicure', 'Waxing'],
+    ['Nail Art', 'Gel', 'Acrylic', 'Pedicure'],
+    ['Gel-X', 'Dipping Powder', 'Acrylic', 'Nail Design']
   ];
-  
-  const descriptions = [
-    "Tiệm đông khách, cần thợ bột và thợ chân tay nước. Lương cao, chia 6/4 thợ ăn 6.",
-    "Cần thợ nail có kinh nghiệm, bao lương từ $800-$1200/tuần tùy theo khả năng.",
-    "Tiệm mới khai trương, khu Mỹ trắng, cần nhiều thợ nail. Tip cao, chủ dễ tính.",
-    "Income cao, chỗ ở thoải mái. Có thể bao lương nếu cần.",
-    "Cần thợ biết làm đủ thứ, lương 6/4 hoặc có thể bao lương tùy khả năng."
+
+  const vietnameseDescriptions = [
+    'Tiệm nail ở khu Mỹ trắng, đông khách, cần thợ nail biết làm đủ thứ (bột, gel, chân tay nước). Bao lương $1,000-$1,200/tuần, hơn chia 6/4. Chỗ làm vui vẻ, không khí gia đình.',
+    'Cần thợ nail gấp, bao lương $900-$1,100/tuần. Tiệm đông khách, tip cao. Chủ lo chỗ ở, có thể đón từ xa tới. Môi trường làm việc thoải mái.',
+    'Tiệm rộng rãi, khu Mỹ trắng, giàu, cần thợ nail có kinh nghiệm. Lương $800-$1,000/tuần hơn chia 6/4. Chủ lo nhà ở, có phòng riêng.',
+    'Cần thợ bột và chân tay nước, bao lương $900-$1,300 tùy theo khả năng. Tiệm khu Mỹ trắng, giá cao, tip hậu. Chỗ làm vui vẻ, không drama.',
+    'Tiệm khu sang, khách tip hậu, cần thợ nail biết làm đủ thứ. Thu nhập $1,200-$1,500/tuần. Bao ăn ở, đón từ xa.',
+    'Cần thợ nail nam nữ, bao lương $800-$1,000/tuần. Tiệm lớn, khu Mỹ trắng, tip cao. Chủ lo chỗ ở, có phòng riêng.',
+    'Tiệm mới, sang trọng, cần thợ nail có kinh nghiệm. Lương $1,000-$1,300/tuần. Môi trường làm việc thân thiện, vui vẻ.',
+    'Cần thợ nail gấp, bao lương $900-$1,100/tuần. Tiệm đông khách, khu Mỹ trắng, tip hậu. Chủ lo chỗ ở, có thể đón từ xa.',
+    'Tiệm khu Mỹ trắng, khách sang, cần thợ nail full-time hoặc part-time. Thu nhập $1,000-$1,400/tuần. Chỗ làm vui vẻ, thoải mái.',
+    'Cần thợ nail biết làm đủ thứ, bao lương $1,100-$1,400/tuần. Tiệm đẹp, sang trọng, khu Mỹ trắng, tip cao.'
   ];
-  
-  const specialtiesList = [
-    ["bột", "chân tay nước", "gel"],
-    ["bột", "chân tay nước", "waxing"],
-    ["bột", "dipping", "gel"],
-    ["full set", "pedicure", "waxing"],
-    ["nail art", "chân tay nước", "bột"]
-  ];
-  
-  const result: Job[] = [];
-  
+
+  const jobs: Job[] = [];
+
   for (let i = 0; i < count; i++) {
-    const randomNum = Math.floor(Math.random() * 5);
+    const index = i % 10;
+    const id = `vn-${Date.now()}-${i}`;
     
     const job: Job = {
-      id: `vn-job-${i + 1}`,
-      title: jobTitles[randomNum % jobTitles.length],
-      company: salons[i % salons.length],
-      location: cities[i % cities.length],
-      employment_type: Math.random() > 0.3 ? "Full-time" : "Part-time",
-      description: descriptions[randomNum],
-      vietnamese_description: descriptions[randomNum],
-      salary_range: `$${800 + randomNum * 100}-${1100 + randomNum * 100}/week`,
-      weekly_pay: Math.random() > 0.3,
-      owner_will_train: Math.random() > 0.5,
-      has_housing: Math.random() > 0.7,
-      no_supply_deduction: Math.random() > 0.6,
-      specialties: specialtiesList[randomNum],
-      contact_info: {
-        owner_name: `Owner ${i + 1}`,
-        phone: `(${100 + i}) 555-${1000 + i}`,
-        email: `salon${i + 1}@example.com`
-      },
-      tip_range: `$${100 + randomNum * 20}-${200 + randomNum * 30}/day`,
-      created_at: new Date().toISOString(),
-      expires_at: new Date(Date.now() + (30 + Math.floor(Math.random() * 30)) * 86400000).toISOString(),
-      status: "active",
-      compensation_type: "commission",
-      compensation_details: `${60 + randomNum * 5}/${40 - randomNum * 5} split`,
-      is_featured: Math.random() > 0.6,
+      id,
+      role: 'Nail Technician',
+      role_normalized: 'nail_technician',
+      title: `Nail Technician / Thợ Nail - ${salonNames[index]}`,
+      company: salonNames[index],
+      location: locations[index],
+      posted_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
+      created_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
+      experience_level: 'All Levels',
+      employment_type: 'Full-Time',
+      description: `${salonNames[index]} is looking for experienced nail technicians to join our team. We offer competitive pay, flexible hours, and a friendly work environment. Our salon is located in a busy shopping center with a loyal client base.`,
+      vietnamese_description: vietnameseDescriptions[index],
+      requirements: ['Experience with acrylic and gel nails', 'Customer service skills', 'Reliable transportation'],
+      specialties: specialties[index],
+      benefits: ['Competitive pay', 'Flexible schedule', 'Growth opportunities'],
+      is_featured: Math.random() > 0.7,
       is_remote: false,
-      experience_level: Math.random() > 0.5 ? "Experienced" : "Any level",
-      requirements: "Valid work authorization required",
-      posted_date: new Date().toISOString(),
-      closing_date: null,
-      contact_email: `salon${i + 1}@example.com`,
+      is_urgent: Math.random() > 0.7,
+      weekly_pay: true,
+      has_housing: Math.random() > 0.5,
+      owner_will_train: Math.random() > 0.7,
+      no_supply_deduction: Math.random() > 0.6,
+      tip_range: '$100-200/day',
+      salary_range: '$900-1,400/week',
+      contact_info: {
+        phone: `(${Math.floor(Math.random() * 900) + 100}) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
+        email: `${salonNames[index].toLowerCase().replace(/\s+/g, '')}@gmail.com`,
+        owner_name: getRandomVietnameseName()
+      },
+      trust_indicators: {
+        verified: true,
+        activelyHiring: true,
+        chatAvailable: Math.random() > 0.5
+      }
     };
     
-    result.push(job);
+    jobs.push(job);
   }
   
-  return result;
+  return jobs;
 };
+
+// Helper function to generate random Vietnamese names
+function getRandomVietnameseName(): string {
+  const firstNames = ['Nguyen', 'Tran', 'Le', 'Pham', 'Hoang', 'Huynh', 'Vo', 'Dang', 'Bui', 'Do'];
+  const middleNames = ['Van', 'Thi', 'Huu', 'Duc', 'Dinh', 'Minh', 'Quoc', 'Thanh', 'Tuan', 'Kim'];
+  const lastNames = ['Anh', 'Linh', 'Hoa', 'Tuan', 'Minh', 'Hai', 'Hung', 'Phuong', 'Thao', 'Dung'];
+  
+  const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+  const middleName = middleNames[Math.floor(Math.random() * middleNames.length)];
+  const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+  
+  return `${firstName} ${middleName} ${lastName}`;
+}
+
+export default generateVietnameseNailJobs;

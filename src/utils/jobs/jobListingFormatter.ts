@@ -21,12 +21,13 @@ export const formatJobListing = (dbJob: any): Job => {
   const job: Job = {
     id: id || `job-${Math.random().toString(36).substring(2, 9)}`,
     title: title || "Job Title",
+    role: title || "Job Title", // Adding role property
     company: dbJob.company || "Company Name",
     location: dbJob.location || "Remote",
     employment_type: dbJob.employment_type || "Full-time",
     description: description || "",
     salary_range: dbJob.salary_range || compensation_details || "Competitive",
-    posted_date: created_at || new Date().toISOString(),
+    posted_at: created_at || new Date().toISOString(),
     closing_date: dbJob.closing_date || null,
     contact_email: dbJob.contact_email || "contact@example.com",
     is_featured: dbJob.is_featured || false,
@@ -37,7 +38,7 @@ export const formatJobListing = (dbJob: any): Job => {
     compensation_details: compensation_details || "",
     status: status || "active",
     expires_at: expires_at || new Date(Date.now() + 30 * 86400000).toISOString(),
-    requirements: requirements || "",
+    requirements: requirements || [],
   };
 
   // If it's a Vietnamese job, enhance with additional data

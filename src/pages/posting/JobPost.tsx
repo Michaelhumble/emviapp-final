@@ -22,7 +22,7 @@ const JobPost = () => {
     location: '',
     employment_type: 'full-time',
     description: '',
-    requirements: '',
+    requirements: [] as string[], // Initialize as an empty string array
     compensation_type: 'hourly',
     compensation_details: '',
     contact_info: {

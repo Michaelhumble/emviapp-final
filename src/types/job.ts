@@ -12,7 +12,7 @@ export interface Job {
   experience_level?: string;
   employment_type?: string;
   description: string;
-  requirements?: string[];
+  requirements?: string[] | string;
   specialties?: string[];
   benefits?: string[];
   is_featured?: boolean;
@@ -31,7 +31,7 @@ export interface Job {
   contact_info?: {
     phone?: string;
     email?: string;
-    owner_name?: string; // Added owner_name property
+    owner_name?: string;
   };
   emvi_ai_boosted?: boolean;
   status?: string;
@@ -46,10 +46,16 @@ export interface Job {
   weekly_pay?: boolean;
   no_supply_deduction?: boolean;
   preferred_languages?: string[];
-  trust_indicators?: string[];
+  trust_indicators?: {
+    verified?: boolean;
+    activelyHiring?: boolean;
+    chatAvailable?: boolean;
+    [key: string]: boolean | undefined;
+  };
   user_id?: string;
   expires_at?: string;
   has_wax_room?: boolean;
   has_dining_room?: boolean;
   has_laundry?: boolean;
+  salon_id?: string;
 }

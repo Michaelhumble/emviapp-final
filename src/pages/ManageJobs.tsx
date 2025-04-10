@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -46,17 +45,20 @@ const ManageJobs = () => {
         
         return {
           id: post.id,
+          role: post.title || 'Job Role',
+          company: metadata.company_name || 'Company Name',
+          location: metadata.location || 'Location Unknown',
           title: post.title,
           compensation_type: metadata.compensation_type || '',
           compensation_details: metadata.compensation_details || '',
+          posted_at: post.created_at,
           created_at: post.created_at,
           expires_at: post.expires_at,
           status: post.status,
-          requirements: metadata.requirements,
+          requirements: metadata.requirements || [],
           description: post.content,
-          // Add application count if available
           _count: { 
-            applications: Math.floor(Math.random() * 5) // Mock data for now
+            applications: Math.floor(Math.random() * 5)
           }
         };
       });
