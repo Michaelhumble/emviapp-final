@@ -16,7 +16,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [userRole, setUserRole] = useState<UserRole>('customer');
+  const [userRole, setUserRole] = useState<UserRole | null>('customer');
   const [loading, setLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -74,7 +74,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (profile) {
         setUserProfile(profile);
         if (profile.role) {
-          setUserRole(normalizeRole(profile.role) as UserRole); // Cast normalized role to UserRole
+          const normalizedRole = normalizeRole(profile.role as UserRole);
+          setUserRole(normalizedRole);
         }
       } else {
         console.log('No profile found, creating one...');
@@ -82,7 +83,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (newProfile) {
           setUserProfile(newProfile);
           if (newProfile.role) {
-            setUserRole(normalizeRole(newProfile.role) as UserRole); // Cast normalized role to UserRole
+            const normalizedRole = normalizeRole(newProfile.role as UserRole);
+            setUserRole(normalizedRole);
           }
           setIsNewUser(true);
         }
@@ -107,7 +109,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (updatedProfile) {
         setUserProfile(updatedProfile);
         if (updatedProfile.role && updatedProfile.role !== userRole) {
-          setUserRole(normalizeRole(updatedProfile.role) as UserRole); // Cast normalized role to UserRole
+          const normalizedRole = normalizeRole(updatedProfile.role as UserRole);
+          setUserRole(normalizedRole);
         }
       }
       
@@ -124,7 +127,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const updatedProfile = await updateProfile({ role: role as string });
       if (updatedProfile && updatedProfile.role) {
-        setUserRole(normalizeRole(updatedProfile.role) as UserRole); // Cast normalized role to UserRole
+        const normalizedRole = normalizeRole(updatedProfile.role as UserRole);
+        setUserRole(normalizedRole);
       }
     } catch (error) {
       console.error('Error updating user role:', error);
@@ -160,49 +164,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signOut = async () => {
     await supabase.auth.signOut();
-  };
-
-  const resetPassword = async (email: string) => {
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email);
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error resetting password:', error);
-      throw error;
-    }
-  };
-
-  const updatePassword = async (newPassword: string) => {
-    try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
-      });
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error updating password:', error);
-      throw error;
-    }
-  };
-
-  const updateEmail = async (newEmail: string) => {
-    try {
-      const { error } = await supabase.auth.updateUser({
-        email: newEmail
-      });
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error updating email:', error);
-      throw error;
-    }
-  };
-
-  const deleteAccount = async () => {
-    try {
-      throw new Error('Account deletion requires a server-side function');
-    } catch (error) {
-      console.error('Error deleting account:', error);
-      throw error;
-    }
   };
 
   return (

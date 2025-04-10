@@ -49,7 +49,7 @@ const ProfileEdit = () => {
     }
   }, [userRole]);
   
-  // Optimized refresh function
+  // Optimized refresh function - convert Promise<boolean> to Promise<void>
   const handleRefresh = useCallback(async () => {
     if (!refreshUserProfile) return;
     
@@ -58,11 +58,9 @@ const ProfileEdit = () => {
       if (!success) {
         toast.error("Could not load your profile. Please try again later.");
       }
-      return success;
     } catch (error) {
       console.error("Error refreshing profile:", error);
       toast.error("Could not load your profile. Please try again later.");
-      return false;
     }
   }, [refreshUserProfile]);
   
@@ -74,10 +72,7 @@ const ProfileEdit = () => {
         <ProfileLoadingManager 
           message="Loading your profile editor..."
           duration={3000}
-          onRefresh={async () => {
-            await handleRefresh();
-            return true;
-          }}
+          onRefresh={handleRefresh}
           loadingType="edit"
         />
       );
@@ -88,10 +83,7 @@ const ProfileEdit = () => {
       return (
         <ProfileLoadingManager 
           isError={true}
-          onRefresh={async () => {
-            await handleRefresh();
-            return true;
-          }}
+          onRefresh={handleRefresh}
           loadingType="edit"
         />
       );

@@ -11,7 +11,7 @@ export const useAuthProvider = (): AuthContextType => {
   const [session, setSession] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [userRole, setUserRole] = useState<UserRole | undefined>(undefined);
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -39,7 +39,8 @@ export const useAuthProvider = (): AuthContextType => {
           const profile = await fetchUserProfile(currentSession.user.id);
           setUserProfile(profile);
           if (profile?.role) {
-            setUserRole(normalizeRole(profile.role) as UserRole); // Cast to UserRole
+            const normalizedRole = normalizeRole(profile.role as UserRole);
+            setUserRole(normalizedRole);
           }
         }
       } catch (error) {
@@ -70,19 +71,21 @@ export const useAuthProvider = (): AuthContextType => {
               const newProfile = await createUserProfile(newSession.user);
               setUserProfile(newProfile);
               if (newProfile?.role) {
-                setUserRole(normalizeRole(newProfile.role) as UserRole); // Cast to UserRole
+                const normalizedRole = normalizeRole(newProfile.role as UserRole);
+                setUserRole(normalizedRole);
               }
             } else {
               setUserProfile(profile);
               if (profile.role) {
-                setUserRole(normalizeRole(profile.role) as UserRole); // Cast to UserRole
+                const normalizedRole = normalizeRole(profile.role as UserRole);
+                setUserRole(normalizedRole);
               }
             }
           }
         } else {
           setUser(null);
           setUserProfile(null);
-          setUserRole(undefined);
+          setUserRole(null);
         }
       }
     );
@@ -171,7 +174,8 @@ export const useAuthProvider = (): AuthContextType => {
       if (updatedProfile) {
         setUserProfile(updatedProfile);
         if (updatedProfile.role) {
-          setUserRole(normalizeRole(updatedProfile.role) as UserRole); // Cast to UserRole
+          const normalizedRole = normalizeRole(updatedProfile.role as UserRole);
+          setUserRole(normalizedRole);
         }
       }
       
@@ -192,7 +196,8 @@ export const useAuthProvider = (): AuthContextType => {
       if (profile) {
         setUserProfile(profile);
         if (profile.role) {
-          setUserRole(normalizeRole(profile.role) as UserRole); // Cast to UserRole
+          const normalizedRole = normalizeRole(profile.role as UserRole);
+          setUserRole(normalizedRole);
         }
       }
       return true;
@@ -216,7 +221,8 @@ export const useAuthProvider = (): AuthContextType => {
       if (updatedProfile) {
         setUserProfile(updatedProfile);
         if (updatedProfile.role) {
-          setUserRole(normalizeRole(updatedProfile.role) as UserRole); // Cast to UserRole
+          const normalizedRole = normalizeRole(updatedProfile.role as UserRole);
+          setUserRole(normalizedRole);
         }
       }
     } catch (error) {

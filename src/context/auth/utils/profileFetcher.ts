@@ -27,7 +27,8 @@ export const fetchFreshProfileData = async (userId: string): Promise<{
     let role: UserRole | null = null;
     
     if (!authError && authUser?.user_metadata?.role) {
-      role = normalizeRole(authUser.user_metadata.role) as UserRole;
+      const rawRole = authUser.user_metadata.role as string;
+      role = normalizeRole(rawRole as UserRole);
       localStorage.setItem('emviapp_user_role', role || '');
     }
     
@@ -42,7 +43,7 @@ export const fetchFreshProfileData = async (userId: string): Promise<{
       if (!role) {
         const cachedRole = localStorage.getItem('emviapp_user_role');
         if (cachedRole) {
-          role = normalizeRole(cachedRole) as UserRole;
+          role = normalizeRole(cachedRole as UserRole);
         }
       }
       
@@ -52,7 +53,8 @@ export const fetchFreshProfileData = async (userId: string): Promise<{
       
       // If we didn't get a role from metadata, use the database role
       if (!role && profile?.role) {
-        role = normalizeRole(profile.role) as UserRole;
+        const dbRole = profile.role as string;
+        role = normalizeRole(dbRole as UserRole);
         localStorage.setItem('emviapp_user_role', role || '');
         
         // Sync role back to auth (don't wait for this)

@@ -1,8 +1,9 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { User } from "@supabase/supabase-js";
 import { UserProfile, UserRole } from "../types";
 import { normalizeRole } from "@/utils/roles";
-import { getCachedProfile, getCacheStatus } from "../utils/profileCache";
+import { getCachedProfile } from "../utils/profileCache";
 import { fetchFreshProfileData } from "../utils/profileFetcher";
 
 /**
@@ -24,7 +25,7 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
         const cacheStatus = cachedData.status;
         
         // Always use cached data first to improve perceived performance
-        if (cacheStatus !== 'expired') {
+        if (cacheStatus === 'fresh' || cacheStatus === 'stale') {
           console.log(`Using ${cacheStatus} cached profile data`);
           setUserProfile(cachedData.profile);
           setUserRole(cachedData.role);
@@ -58,7 +59,7 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
       // Final fallback - check localStorage
       const cachedRole = localStorage.getItem('emviapp_user_role');
       if (cachedRole && !userRole) {
-        const normalizedRole = normalizeRole(cachedRole) as UserRole;
+        const normalizedRole = normalizeRole(cachedRole as UserRole);
         setUserRole(normalizedRole);
       } else {
         setUserRole(null);

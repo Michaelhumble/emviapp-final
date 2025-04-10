@@ -23,10 +23,7 @@ const ArtistCreditsRedemption = () => {
     isProcessing,
     redeemSuccess,
     handleRedeemAction
-  } = useCreditRedemption(credits, boostStatus, async () => {
-    await refreshUserProfile();
-    return true; // Convert to proper format for useCreditRedemption
-  });
+  } = useCreditRedemption(credits, boostStatus, refreshUserProfile);
 
   return (
     <div className="space-y-6">

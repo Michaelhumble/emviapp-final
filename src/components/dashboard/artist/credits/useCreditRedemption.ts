@@ -2,110 +2,126 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { BoostStatus } from "./useProfileBoost";
 import { useAuth } from "@/context/auth";
-import { format } from "date-fns";
-import { BoostStatus } from "./types";
 
 export const useCreditRedemption = (
-  credits: number, 
+  credits: number,
   boostStatus: BoostStatus,
-  refreshUserProfile: () => Promise<void>
+  refreshUser: () => Promise<boolean> 
 ) => {
   const { user } = useAuth();
-  const [isProcessing, setIsProcessing] = useState<{ [key: string]: boolean }>({
-    profileBoost: false,
-    jobPost: false,
-    marketplace: false
-  });
-  const [redeemSuccess, setRedeemSuccess] = useState<{ [key: string]: boolean }>({
-    profileBoost: false,
-    jobPost: false,
-    marketplace: false
-  });
+  const [isProcessing, setIsProcessing] = useState<Record<string, boolean>>({});
+  const [redeemSuccess, setRedeemSuccess] = useState<Record<string, boolean>>({});
 
-  // Reset success state after a delay
-  const resetSuccessState = (actionType: string) => {
-    setTimeout(() => {
-      setRedeemSuccess(prev => ({ ...prev, [actionType]: false }));
-    }, 5000);
-  };
-
-  const handleRedeemAction = async (action: string, requiredCredits: number, actionType: string) => {
-    if (!user) {
-      toast.error("You must be logged in to redeem credits");
+  const handleRedeemAction = async (
+    rewardName: string,
+    creditCost: number,
+    rewardId: string
+  ) => {
+    if (credits < creditCost) {
+      toast.error("You don't have enough credits for this reward");
       return;
     }
 
-    // Check if user has enough credits
-    if (credits < requiredCredits) {
-      toast.error(`You need ${requiredCredits} credits to use this feature. You currently have ${credits}.`);
-      return;
-    }
+    if (isProcessing[rewardId]) return;
 
     // Set processing state
-    setIsProcessing(prev => ({ ...prev, [actionType]: true }));
+    setIsProcessing(prev => ({ ...prev, [rewardId]: true }));
 
     try {
-      // Calculate boost expiry date (7 days from now) if it's a profile boost
-      const expiryDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-      
-      // Try to update with or without boosted_until depending on the action type
-      let updateData: Record<string, any> = {
-        credits: credits - requiredCredits
-      };
-      
-      // Only add boosted_until for profile boost action
-      if (actionType === 'profileBoost') {
-        updateData.boosted_until = expiryDate;
-      }
-
-      // Update the user's credits in Supabase
-      const { error } = await supabase
-        .from('users')
-        .update(updateData)
-        .eq('id', user.id);
-
-      if (error) {
-        console.error("Error updating credits:", error);
-        
-        // If the error is about boosted_until not existing, try without it
-        if (error.message.includes("boosted_until") && actionType === 'profileBoost') {
-          const { error: retryError } = await supabase
-            .from('users')
-            .update({ credits: credits - requiredCredits })
-            .eq('id', user.id);
-            
-          if (retryError) {
-            throw retryError;
-          }
-        } else {
-          throw error;
+      // Check for profile boost special case
+      if (rewardId === "profileBoost") {
+        if (boostStatus.isActive) {
+          toast.error("You already have an active profile boost");
+          setIsProcessing(prev => ({ ...prev, [rewardId]: false }));
+          return;
         }
-      }
-
-      // Set success state and reset after delay
-      setRedeemSuccess(prev => ({ ...prev, [actionType]: true }));
-      resetSuccessState(actionType);
-      
-      // If it's a profile boost, show success message
-      if (actionType === 'profileBoost') {
-        toast.success("✅ Boost Activated! You'll appear in top results for 7 days.", {
-          description: `Your profile is now boosted until ${format(new Date(expiryDate), 'MMM dd, yyyy')}`
-        });
+        
+        await handleProfileBoost(creditCost);
       } else {
-        toast.success(`Successfully redeemed ${requiredCredits} credits for ${action}!`, {
-          description: `Your new balance is ${credits - requiredCredits} credits.`
-        });
+        // Handle other reward types here
+        await handleGenericReward(creditCost, rewardName, rewardId);
       }
       
-      // Refresh user profile to get updated credit balance
-      await refreshUserProfile();
-    } catch (err) {
-      console.error("Unexpected error during redemption:", err);
-      toast.error("An unexpected error occurred. Please try again later.");
+      // Update UI to show success
+      setRedeemSuccess(prev => ({ ...prev, [rewardId]: true }));
+      
+      // Reset success state after 3 seconds
+      setTimeout(() => {
+        setRedeemSuccess(prev => ({ ...prev, [rewardId]: false }));
+      }, 3000);
+      
+      // Refresh user profile to get updated credits
+      try {
+        await refreshUser();
+      } catch (error) {
+        console.error("Failed to refresh user profile:", error);
+      }
+      
+    } catch (error) {
+      console.error(`Error redeeming ${rewardName}:`, error);
+      toast.error(`Failed to redeem ${rewardName}. Please try again.`);
     } finally {
-      setIsProcessing(prev => ({ ...prev, [actionType]: false }));
+      // Set processing state back to false
+      setIsProcessing(prev => ({ ...prev, [rewardId]: false }));
     }
+  };
+
+  // Handle profile boost reward
+  const handleProfileBoost = async (creditCost: number) => {
+    if (!user) return;
+    
+    // Calculate 30 days from now for boost expiry
+    const thirtyDaysFromNow = new Date();
+    thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+    
+    // First deduct credits
+    const { error: creditError } = await supabase
+      .from('users')
+      .update({ 
+        credits: credits - creditCost,
+        boosted_until: thirtyDaysFromNow.toISOString() 
+      })
+      .eq('id', user.id);
+    
+    if (creditError) throw creditError;
+    
+    toast.success(`Profile boost activated for 30 days!`);
+  };
+  
+  // Handle other generic rewards
+  const handleGenericReward = async (creditCost: number, rewardName: string, rewardId: string) => {
+    if (!user) return;
+    
+    // Deduct credits 
+    const { error: creditError } = await supabase
+      .from('users')
+      .update({ credits: credits - creditCost })
+      .eq('id', user.id);
+    
+    if (creditError) throw creditError;
+    
+    // Log the redemption in a separate table (if needed)
+    const { error: logError } = await supabase
+      .from('credit_earnings')
+      .insert({
+        user_id: user.id,
+        amount: -creditCost,
+        type: 'redemption',
+        status: 'completed',
+        metadata: { 
+          reward_name: rewardName,
+          reward_id: rewardId
+        }
+      });
+    
+    if (logError) {
+      console.error("Failed to log redemption:", logError);
+      // Non-critical error, don't throw
+    }
+    
+    toast.success(`You've redeemed ${rewardName}!`);
   };
 
   return {

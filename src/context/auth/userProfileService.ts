@@ -59,6 +59,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       accepts_bookings: Boolean(data.accepts_bookings),
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],
+      services: data.services || []
     };
     
     return profile;
@@ -131,12 +132,13 @@ export const updateUserProfile = async (profile: Partial<UserProfile>): Promise<
   
   try {
     // Create update object with only valid properties for Supabase
-    const updateData = {
+    const updateData: any = {
       ...profile,
       updated_at: new Date().toISOString()
     };
     
-    delete updateData.uid; // Remove properties that don't exist in the DB schema
+    // Remove properties that don't exist in the DB schema
+    delete updateData.uid;
     delete updateData.displayName;
     delete updateData.photoURL;
     delete updateData.phoneNumber;
