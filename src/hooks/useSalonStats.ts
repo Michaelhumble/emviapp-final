@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
@@ -57,10 +56,8 @@ export function useSalonStats() {
           .single()
       ]);
       
-      // Handle any errors from the job posts query
+      // Handle errors from the queries
       if (jobsResponse.error) throw jobsResponse.error;
-      
-      // Handle any errors from the user data query
       if (userData.error) throw userData.error;
       
       // Prepare for applicants query (only if we have job posts)
@@ -138,7 +135,7 @@ export function useSalonStats() {
       setStats({
         activeJobPosts: jobsResponse.data?.length || 0,
         applicantsThisMonth: applicantsCount,
-        creditsRemaining: userData?.data?.credits || 0,
+        creditsRemaining: userData.data?.credits || 0,
         profileCompletion: {
           percentage: completionPercentage,
           incompleteFields: [

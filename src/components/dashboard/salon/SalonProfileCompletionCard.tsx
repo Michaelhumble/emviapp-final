@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertCircle, Check, ChevronRight } from "lucide-react";
+import { AlertCircle, Check, ChevronRight, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface SalonProfileCompletionCardProps {
@@ -83,7 +83,10 @@ const SalonProfileCompletionCard = ({
   }
   
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden border-l-4" 
+          style={{ borderLeftColor: completionPercentage === 100 ? '#10b981' : 
+                                   completionPercentage >= 80 ? '#f59e0b' : 
+                                   '#ef4444' }}>
       <CardContent className="py-4">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-base font-medium">Salon Profile Completion</h3>
