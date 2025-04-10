@@ -132,11 +132,16 @@ export const updateUserProfile = async (profile: Partial<UserProfile>): Promise<
   }
   
   try {
-    // Create update object with only valid properties for Supabase
-    const updateData: any = {
+    // Convert any number values for created_at to string to satisfy TypeScript
+    const updateData: Record<string, any> = {
       ...profile,
       updated_at: new Date().toISOString()
     };
+    
+    // Ensure created_at is a string if it exists
+    if (updateData.created_at && typeof updateData.created_at === 'number') {
+      updateData.created_at = new Date(updateData.created_at).toISOString();
+    }
     
     // Update profile in database
     const { error } = await supabase
