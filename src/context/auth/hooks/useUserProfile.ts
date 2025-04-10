@@ -6,18 +6,23 @@ import { supabase } from "@/integrations/supabase/client";
 import { normalizeRole } from "@/utils/roles";
 import { toast } from "sonner";
 
-// Simple cache for profiles to avoid repeated fetching
-const profileCache = new Map<string, {
-  profile: UserProfile | null,
-  timestamp: number,
-  role: UserRole | null
-}>();
+// Enhanced cache for profiles with proper typing
+interface ProfileCacheEntry {
+  profile: UserProfile | null;
+  timestamp: number;
+  role: UserRole | null;
+  status: 'fresh' | 'stale' | 'expired';
+}
 
-// Cache expiration time - 5 minutes
-const CACHE_EXPIRATION = 5 * 60 * 1000;
+// Cache with proper Map typing
+const profileCache = new Map<string, ProfileCacheEntry>();
+
+// Cache durations - 5 minutes fresh, up to 15 minutes stale
+const CACHE_FRESH_DURATION = 5 * 60 * 1000;    // 5 minutes
+const CACHE_STALE_DURATION = 15 * 60 * 1000;   // 15 minutes
 
 /**
- * Hook to handle user profile management with optimized loading
+ * Hook to handle user profile management with optimized loading and caching
  */
 export const useUserProfile = (user: User | null, setLoading: (loading: boolean) => void) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -27,22 +32,69 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
   // Function to fetch user profile with optimized flow
   const getUserProfile = async (userId: string) => {
     try {
-      setLoading(true);
-      setIsError(false);
-      console.log("Fetching user profile for:", userId);
-      
-      // Check cache first
-      const cachedData = profileCache.get(userId);
       const now = Date.now();
       
-      if (cachedData && (now - cachedData.timestamp < CACHE_EXPIRATION)) {
-        console.log("Using cached profile data");
-        setUserProfile(cachedData.profile);
-        setUserRole(cachedData.role);
-        setLoading(false);
-        return;
+      // Check cache first with proper status check
+      const cachedData = profileCache.get(userId);
+      if (cachedData) {
+        const age = now - cachedData.timestamp;
+        
+        // Update cache status based on age
+        if (age < CACHE_FRESH_DURATION) {
+          cachedData.status = 'fresh';
+        } else if (age < CACHE_STALE_DURATION) {
+          cachedData.status = 'stale';
+        } else {
+          cachedData.status = 'expired';
+        }
+        
+        // Use cache data for fresh or stale entries
+        if (cachedData.status !== 'expired') {
+          console.log(`Using ${cachedData.status} cached profile data from ${Math.round(age/1000)}s ago`);
+          setUserProfile(cachedData.profile);
+          setUserRole(cachedData.role);
+          
+          // If stale, trigger background refresh but don't wait for it
+          if (cachedData.status === 'stale') {
+            console.log("Cache is stale, refreshing in background");
+            setLoading(false); // Don't block UI while refreshing stale data
+            setTimeout(() => fetchFreshProfileData(userId), 0);
+            return;
+          }
+          
+          setLoading(false);
+          return;
+        }
       }
       
+      // No usable cache, fetch fresh data
+      await fetchFreshProfileData(userId);
+      
+    } catch (error) {
+      console.error("Error in getUserProfile:", error);
+      setIsError(true);
+      
+      // Final fallback - check localStorage
+      const cachedRole = localStorage.getItem('emviapp_user_role');
+      if (cachedRole && !userRole) {
+        const normalizedRole = normalizeRole(cachedRole as UserRole);
+        setUserRole(normalizedRole);
+      } else {
+        setUserRole(null);
+      }
+      
+      setUserProfile(null);
+      setLoading(false);
+    }
+  };
+  
+  // Function to fetch fresh profile data with parallel requests
+  const fetchFreshProfileData = async (userId: string) => {
+    console.log("Fetching fresh profile data for:", userId);
+    setLoading(true);
+    setIsError(false);
+    
+    try {
       // Fetch both auth user and database profile in parallel
       const [authResponse, profileResponse] = await Promise.all([
         supabase.auth.getUser(),
@@ -106,22 +158,13 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
         profileCache.set(userId, {
           profile,
           role,
-          timestamp: now
+          timestamp: Date.now(),
+          status: 'fresh'
         });
       }
-    } catch (err) {
-      console.error("Error in getUserProfile:", err);
+    } catch (error) {
+      console.error("Error fetching profile data:", error);
       setIsError(true);
-      
-      // Final fallback - check localStorage
-      const cachedRole = localStorage.getItem('emviapp_user_role');
-      if (cachedRole && !userRole) {
-        const normalizedRole = normalizeRole(cachedRole as UserRole);
-        setUserRole(normalizedRole);
-      } else {
-        setUserRole(null);
-      }
-      
       setUserProfile(null);
     } finally {
       setLoading(false);
@@ -135,8 +178,10 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
       // Remove from cache to force fresh data
       profileCache.delete(user.id);
       await getUserProfile(user.id);
+      return true;
     } else {
       console.warn("Cannot refresh profile: no user");
+      return false;
     }
   }, [user]);
 

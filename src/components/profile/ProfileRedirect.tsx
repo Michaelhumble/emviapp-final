@@ -1,16 +1,61 @@
-import { useEffect, useState } from "react";
+
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
-import { Loader2, AlertCircle, RefreshCw } from "lucide-react";
+import { Loader2, AlertCircle, RefreshCw, ArrowRight, Home } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 
 const ProfileRedirect = () => {
   const { userRole, isSignedIn, loading, userProfile, refreshUserProfile } = useAuth();
   const navigate = useNavigate();
+  const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingTimeout, setLoadingTimeout] = useState(false);
   const [extendedTimeout, setExtendedTimeout] = useState(false);
   const [loadingError, setLoadingError] = useState<string | null>(null);
+  const [loadingPhase, setLoadingPhase] = useState<string>("Initializing");
+  
+  // Progress bar simulation
+  useEffect(() => {
+    if (!loading) {
+      setLoadingProgress(100);
+      return;
+    }
+    
+    // Reset progress when loading starts
+    setLoadingProgress(10);
+    
+    // Simulate progress
+    const interval = setInterval(() => {
+      setLoadingProgress((currentProgress) => {
+        // Slow down as we get higher to simulate real loading
+        if (currentProgress < 40) return currentProgress + 5;
+        if (currentProgress < 70) return currentProgress + 2;
+        if (currentProgress < 90) return currentProgress + 0.5;
+        // Don't reach 100% until actually done
+        return currentProgress;
+      });
+      
+      // Update loading phase
+      const phases = [
+        "Initializing",
+        "Retrieving user data",
+        "Verifying credentials",
+        "Loading profile information",
+        "Preparing your dashboard"
+      ];
+      
+      const phaseIndex = Math.min(
+        Math.floor(loadingProgress / 20),
+        phases.length - 1
+      );
+      
+      setLoadingPhase(phases[phaseIndex]);
+    }, 350);
+    
+    return () => clearInterval(interval);
+  }, [loading, loadingProgress]);
   
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -69,13 +114,14 @@ const ProfileRedirect = () => {
     };
   }, [userRole, isSignedIn, loading, navigate, userProfile]);
   
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
     if (refreshUserProfile) {
       toast.info("Refreshing your profile data...");
+      setLoadingProgress(10); // Reset progress
       refreshUserProfile().then(() => {
         setTimeout(() => {
           if (loading) {
-            toast.info("Still working on it. Please be patient or try reloading the page.");
+            toast.info("Still working on it. Please wait a moment or try reloading the page.");
           }
         }, 3000);
       }).catch(err => {
@@ -86,11 +132,11 @@ const ProfileRedirect = () => {
     } else {
       window.location.reload();
     }
-  };
+  }, [refreshUserProfile, loading]);
   
   if (loadingError) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-4">
+      <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50">
         <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 text-center">
           <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold mb-2">Profile Error</h2>
@@ -105,6 +151,7 @@ const ProfileRedirect = () => {
               onClick={() => navigate("/dashboard")} 
               className="w-full"
             >
+              <Home className="mr-2 h-4 w-4" />
               Go to Dashboard
             </Button>
             <Button 
@@ -122,12 +169,22 @@ const ProfileRedirect = () => {
   
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow p-6 text-center">
-        <Loader2 className="h-10 w-10 animate-spin mb-4 mx-auto text-primary" />
+      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 text-center">
+        <div className="relative w-20 h-20 mx-auto mb-4">
+          <Loader2 className="h-20 w-20 animate-spin text-primary absolute inset-0" />
+          <div className="absolute inset-0 flex items-center justify-center text-sm font-semibold">
+            {Math.round(loadingProgress)}%
+          </div>
+        </div>
+        
         <h2 className="text-xl font-semibold mb-2">Loading Your Profile</h2>
-        <p className="text-gray-600 mb-6">
-          We're getting everything ready for you...
+        <p className="text-gray-600 mb-3">
+          {loadingPhase}...
         </p>
+        
+        <div className="w-full mb-6">
+          <Progress value={loadingProgress} className="h-2" />
+        </div>
         
         {loadingTimeout && (
           <div className="mt-6 border border-amber-200 bg-amber-50 rounded-md p-4 text-left">
@@ -162,6 +219,7 @@ const ProfileRedirect = () => {
                 className="flex-1"
                 variant="outline"
               >
+                <Home className="mr-2 h-4 w-4" />
                 Go to Dashboard
               </Button>
             </div>
@@ -174,7 +232,7 @@ const ProfileRedirect = () => {
                   onClick={() => navigate("/auth/signin")} 
                   className="text-amber-900 p-0 h-auto underline text-sm"
                 >
-                  Sign out and sign back in
+                  Sign out and sign back in <ArrowRight className="h-3 w-3 ml-1 inline" />
                 </Button>
               </div>
             )}
