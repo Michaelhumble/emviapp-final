@@ -24,6 +24,10 @@ import SalonTeamManagement from "@/components/dashboard/salon/SalonTeamManagemen
 import SalonServiceManager from "@/components/dashboard/salon/SalonServiceManager";
 import SalonBoostCreditPanel from "@/components/dashboard/salon/SalonBoostCreditPanel";
 import SalonProfileCompletionMeter from "@/components/dashboard/salon/SalonProfileCompletionMeter";
+import SalonBookingCalendar from "@/components/dashboard/salon/SalonBookingCalendar";
+import SalonClientManagement from "@/components/dashboard/salon/SalonClientManagement";
+import SalonAnalytics from "@/components/dashboard/salon/SalonAnalytics";
+import SalonMessagingCenter from "@/components/dashboard/salon/SalonMessagingCenter";
 import confetti from "canvas-confetti";
 
 const OwnerDashboard = () => {
@@ -81,11 +85,14 @@ const OwnerDashboard = () => {
               
               {/* Dashboard Tabs */}
               <Tabs value={activeTab} onValueChange={handleTabChange}>
-                <TabsList className="grid grid-cols-4 mb-8">
+                <TabsList className="grid grid-cols-7 mb-8">
                   <TabsTrigger value="overview">Overview</TabsTrigger>
+                  <TabsTrigger value="bookings">Bookings</TabsTrigger>
+                  <TabsTrigger value="clients">Clients</TabsTrigger>
                   <TabsTrigger value="team">Team</TabsTrigger>
                   <TabsTrigger value="services">Services</TabsTrigger>
                   <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                  <TabsTrigger value="messages">Messages</TabsTrigger>
                 </TabsList>
                 
                 {/* Overview Tab */}
@@ -125,6 +132,18 @@ const OwnerDashboard = () => {
                     </div>
                   </div>
                 </TabsContent>
+
+                {/* Bookings Tab - New in Phase 3 */}
+                <TabsContent value="bookings" className="space-y-8">
+                  {/* Booking Calendar */}
+                  <SalonBookingCalendar />
+                </TabsContent>
+                
+                {/* Clients Tab - New in Phase 3 */}
+                <TabsContent value="clients" className="space-y-8">
+                  {/* Client Management */}
+                  <SalonClientManagement />
+                </TabsContent>
                 
                 {/* Team Tab */}
                 <TabsContent value="team" className="space-y-8">
@@ -144,9 +163,12 @@ const OwnerDashboard = () => {
                   <SalonCreditStatus />
                 </TabsContent>
                 
-                {/* Analytics Tab */}
+                {/* Analytics Tab - Enhanced in Phase 3 */}
                 <TabsContent value="analytics" className="space-y-8">
-                  {/* Analytics Cards */}
+                  {/* Revenue & Booking Analytics - New in Phase 3 */}
+                  <SalonAnalytics />
+                  
+                  {/* Original Analytics Cards */}
                   <SalonAnalyticsCards />
                   
                   {/* Jobs & Listings Section */}
@@ -154,6 +176,12 @@ const OwnerDashboard = () => {
                   
                   {/* Posted Jobs Section */}
                   <SalonPostedJobsSection />
+                </TabsContent>
+                
+                {/* Messages Tab - New in Phase 3 */}
+                <TabsContent value="messages" className="space-y-8">
+                  {/* Messaging Center */}
+                  <SalonMessagingCenter />
                   
                   {/* Notification Center */}
                   <SalonNotificationCenter />
