@@ -45,9 +45,7 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
                 height: "100vh",
                 userSelect: "none",
                 touchAction: "none",
-                WebkitUserDrag: "none" as any,
-                MozUserDrag: "none" as any,
-                msUserDrag: "none" as any,
+                WebkitTouchCallout: "none",
               }}
               draggable="false"
               onDragStart={(e) => e.preventDefault()}
