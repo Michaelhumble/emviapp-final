@@ -4,6 +4,7 @@ import { AuthProvider } from '@/context/auth';
 import { ProfileProvider } from '@/context/profile';
 import { ProfileCompletionProvider } from '@/context/profile/ProfileCompletionProvider';
 import { NotificationProvider } from '@/context/notification';
+import { Toaster } from 'sonner';
 import routes from './routes';
 import '@/App.css';
 
@@ -22,6 +23,7 @@ function App() {
                 />
               ))}
             </Routes>
+            <Toaster position="top-right" />
           </NotificationProvider>
         </ProfileCompletionProvider>
       </ProfileProvider>
@@ -30,4 +32,3 @@ function App() {
 }
 
 export default App;
-

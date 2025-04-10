@@ -1,14 +1,10 @@
 
 import { useBookingNotifications } from '@/hooks/useBookingNotifications';
-import { Toaster } from 'sonner';
 
 export const BookingNotificationProvider = () => {
   // Set up booking notification listeners
   useBookingNotifications();
 
-  return (
-    <>
-      <Toaster position="top-right" />
-    </>
-  );
+  // Don't render a Toaster here, we already have one in App.tsx
+  return null;
 };
