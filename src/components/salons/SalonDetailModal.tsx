@@ -156,6 +156,12 @@ const SalonDetailModal = ({ salon, isOpen, onClose }: SalonDetailModalProps) => 
                   }
                 >
                   <div className="space-y-2">
+                    {salon.contact_info?.owner_name && (
+                      <div className="flex items-center">
+                        <Info className="w-4 h-4 mr-2 text-gray-500" />
+                        <span>Owner: {salon.contact_info.owner_name}</span>
+                      </div>
+                    )}
                     {salon.contact_info?.phone && (
                       <div className="flex items-center">
                         <Phone className="w-4 h-4 mr-2 text-gray-500" />
@@ -166,12 +172,6 @@ const SalonDetailModal = ({ salon, isOpen, onClose }: SalonDetailModalProps) => 
                       <div className="flex items-center">
                         <Mail className="w-4 h-4 mr-2 text-gray-500" />
                         <span>{salon.contact_info.email}</span>
-                      </div>
-                    )}
-                    {salon.contact_info?.owner_name && (
-                      <div className="flex items-center text-gray-600">
-                        <Info className="w-4 h-4 mr-2 text-gray-500" />
-                        <span>Owner: {salon.contact_info.owner_name}</span>
                       </div>
                     )}
                     {salon.contact_info?.notes && (
