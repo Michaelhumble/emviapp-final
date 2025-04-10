@@ -1,58 +1,47 @@
 
-import { Plus, HelpCircle } from "lucide-react";
+import { BadgeDollarSign, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/hooks/useTranslation";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { toTranslatableText } from "../SalonTranslationHelper";
 
 interface CreditBalanceProps {
   credits: number;
   handleBuyCredits: () => void;
-  loading?: boolean;
+  loading: boolean;
 }
 
-const CreditBalance = ({ credits, handleBuyCredits, loading = false }: CreditBalanceProps) => {
+const CreditBalance = ({ credits, handleBuyCredits, loading }: CreditBalanceProps) => {
   const { t } = useTranslation();
   
   return (
-    <div className="bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-xl flex justify-between items-center">
-      <div className="flex items-center">
+    <div className="bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-lg">
+      <div className="flex justify-between items-center">
         <div>
-          <div className="flex items-center gap-1">
-            <p className="text-sm text-purple-600">{t("Current Balance")}</p>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-5 w-5 p-0">
-                    <HelpCircle className="h-3.5 w-3.5 text-purple-400" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-xs">
-                  <p className="text-xs">
-                    {t("Credits can be used for boosting your salon, featuring job listings, and accessing premium tools.")}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-          <p className="text-2xl font-bold text-purple-800">
-            {credits} 
-            <span className="ml-1 text-sm font-medium">{t("credits")}</span>
+          <p className="text-sm text-purple-700 font-medium">
+            {t(toTranslatableText("Your Credit Balance"))}
           </p>
+          <div className="flex items-center space-x-1">
+            <BadgeDollarSign className="h-5 w-5 text-purple-600" />
+            <span className="text-2xl font-bold text-purple-800">
+              {loading ? (
+                <RefreshCw className="h-4 w-4 animate-spin" />
+              ) : (
+                credits
+              )}
+            </span>
+            <span className="text-sm text-purple-700">
+              {t(toTranslatableText("credits"))}
+            </span>
+          </div>
         </div>
+        <Button 
+          onClick={handleBuyCredits}
+          className="bg-white hover:bg-blue-50 text-blue-600 border border-blue-200"
+          disabled={loading}
+        >
+          {t(toTranslatableText("Buy Credits"))}
+        </Button>
       </div>
-      <Button 
-        className="bg-white text-purple-600 hover:bg-purple-50 border border-purple-200 shadow-sm"
-        onClick={handleBuyCredits}
-        disabled={loading}
-      >
-        <Plus className="h-4 w-4 mr-1" />
-        {t("Add Credits")}
-      </Button>
     </div>
   );
 };

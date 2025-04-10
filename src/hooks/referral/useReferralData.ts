@@ -5,79 +5,68 @@ import { supabase } from '@/integrations/supabase/client';
 import { Referral } from '@/components/referral/types';
 
 export const useReferralData = () => {
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const [loading, setLoading] = useState(true);
   const [referralCode, setReferralCode] = useState<string | null>(null);
-  const [referralLink, setReferralLink] = useState<string>('');
+  const [referralLink, setReferralLink] = useState('');
   const [referrals, setReferrals] = useState<Referral[]>([]);
 
   useEffect(() => {
-    if (user) {
-      fetchReferralData();
-    } else {
+    if (!user) {
       setLoading(false);
+      return;
     }
-  }, [user]);
 
-  const fetchReferralData = async () => {
-    if (!user) return;
-    
-    try {
+    const loadReferralData = async () => {
       setLoading(true);
       
-      // Fetch user's referral code
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('referral_code')
-        .eq('id', user.id)
-        .single();
-      
-      if (userError) throw userError;
-      
-      const referralCode = userData?.referral_code || null;
-      setReferralCode(referralCode);
-      
-      // Create referral link
-      const baseUrl = window.location.origin;
-      setReferralLink(referralCode ? `${baseUrl}/join?ref=${referralCode}` : `${baseUrl}/join`);
-      
-      // Fetch referrals
-      // In a full implementation, this would fetch actual referrals from the database
-      // For now, we'll use mock data
-      const mockReferrals: Referral[] = [
-        {
-          id: '1',
-          referredId: 'user1',
-          referredName: 'Jennifer Tran',
-          status: 'completed',
-          createdAt: '2025-03-01T12:00:00Z',
-          completedAt: '2025-03-03T15:30:00Z',
-          reward: 20
-        },
-        {
-          id: '2',
-          referredId: 'user2',
-          referredName: 'Mike Lee',
-          status: 'completed',
-          createdAt: '2025-03-10T09:15:00Z',
-          completedAt: '2025-03-12T14:20:00Z',
-          reward: 20
-        },
-        {
-          id: '3',
-          referredId: 'user3',
-          status: 'pending',
-          createdAt: '2025-04-05T10:30:00Z'
+      try {
+        // Get user's referral code
+        const code = userProfile?.referral_code;
+        setReferralCode(code || null);
+        
+        // Create referral link
+        if (code) {
+          setReferralLink(`https://emviapp.com/join?ref=${code}`);
         }
-      ];
-      
-      setReferrals(mockReferrals);
-    } catch (error) {
-      console.error('Error fetching referral data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+        
+        // Fetch referrals
+        if (user.id) {
+          const { data, error } = await supabase
+            .from('referrals')
+            .select(`
+              id,
+              referred_id,
+              created_at,
+              status,
+              verified_at,
+              users:referred_id(full_name, email)
+            `)
+            .eq('referrer_id', user.id)
+            .order('created_at', { ascending: false });
+            
+          if (!error && data) {
+            const formattedReferrals: Referral[] = data.map(item => ({
+              id: item.id,
+              referredId: item.referred_id,
+              referredName: item.users?.full_name || 'Unknown User',
+              status: item.status === 'completed' ? 'completed' : 'pending',
+              createdAt: item.created_at,
+              completedAt: item.verified_at || undefined
+            }));
+            
+            setReferrals(formattedReferrals);
+          }
+        }
+      } catch (err) {
+        console.error("Error loading referral data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadReferralData();
+  }, [user, userProfile]);
 
   return {
     loading,
