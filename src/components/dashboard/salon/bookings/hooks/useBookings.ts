@@ -125,12 +125,20 @@ export const useBookings = () => {
     if (!user?.id) return;
     
     try {
-      // Now we can properly use the metadata field to store assigned_staff_id
+      // Need to explicitly type the update to include the metadata field
+      interface BookingUpdate {
+        metadata: {
+          assigned_staff_id: string;
+        };
+      }
+      
+      const updateData: BookingUpdate = {
+        metadata: { assigned_staff_id: staffId }
+      };
+      
       const { error } = await supabase
         .from("bookings")
-        .update({ 
-          metadata: { assigned_staff_id: staffId }
-        })
+        .update(updateData)
         .eq("id", bookingId)
         .eq("recipient_id", user.id);
       
