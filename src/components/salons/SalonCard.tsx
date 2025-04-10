@@ -2,7 +2,7 @@
 import { Job } from "@/types/job";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, DollarSign, Clock, Grid, ExternalLink } from "lucide-react";
+import { MapPin, DollarSign, Clock, Grid, ExternalLink, Info, Home, Building } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export interface SalonCardProps {
@@ -20,9 +20,12 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
     return numericValue ? `$${numericValue.toLocaleString()}` : value;
   };
 
+  // Determine if this is a Vietnamese salon
+  const isVietnameseSalon = salon.vietnamese_description || (salon.id && salon.id.startsWith('vn-salon'));
+
   return (
     <Card 
-      className={`h-full flex flex-col ${isExpired ? 'opacity-70' : ''}`}
+      className={`h-full flex flex-col ${isExpired ? 'opacity-70' : ''} transition-all duration-300 hover:shadow-md`}
       style={{
         animationDelay: `${index * 0.05}s`,
       }}
@@ -35,8 +38,8 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
               style={{ backgroundImage: `url(${salon.image})` }}
             />
           ) : (
-            <div className="h-40 w-full bg-gradient-to-r from-pink-100 to-blue-100 rounded-md flex items-center justify-center">
-              <span className="text-gray-400">No image available</span>
+            <div className={`h-40 w-full ${isVietnameseSalon ? 'bg-gradient-to-r from-red-50 to-yellow-50' : 'bg-gradient-to-r from-pink-100 to-blue-100'} rounded-md flex items-center justify-center`}>
+              <span className="text-gray-500 font-medium">{salon.company || "Salon for Sale"}</span>
             </div>
           )}
         </div>
@@ -58,21 +61,47 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
             {salon.asking_price && (
               <div className="flex items-center text-gray-600">
                 <DollarSign className="h-4 w-4 mr-2 text-gray-400" />
-                <span>Asking Price: {formatCurrency(salon.asking_price)}</span>
+                <span>Asking: {formatCurrency(salon.asking_price)}</span>
               </div>
             )}
             
-            {salon.square_feet && (
-              <div className="flex items-center text-gray-600">
-                <Grid className="h-4 w-4 mr-2 text-gray-400" />
-                <span>{salon.square_feet} sq ft</span>
-              </div>
-            )}
+            <div className="flex flex-wrap gap-2">
+              {salon.number_of_stations && (
+                <div className="flex items-center text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                  <span>{salon.number_of_stations} stations</span>
+                </div>
+              )}
+              
+              {salon.square_feet && (
+                <div className="flex items-center text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                  <span>{salon.square_feet} sq ft</span>
+                </div>
+              )}
+              
+              {salon.has_wax_room && (
+                <div className="flex items-center text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                  <span>Wax Room</span>
+                </div>
+              )}
+              
+              {salon.has_housing && (
+                <div className="flex items-center text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                  <Home className="h-3 w-3 mr-1" />
+                  <span>Housing</span>
+                </div>
+              )}
+            </div>
           </div>
           
-          <p className="mt-3 line-clamp-3 text-gray-600 text-sm">
-            {salon.description}
-          </p>
+          {isVietnameseSalon && salon.vietnamese_description ? (
+            <div className="mt-3 italic text-sm text-gray-700 line-clamp-2 bg-amber-50 px-2 py-1 rounded">
+              {salon.vietnamese_description.split('.')[0]}.
+            </div>
+          ) : (
+            <p className="mt-3 line-clamp-3 text-gray-600 text-sm">
+              {salon.description}
+            </p>
+          )}
         </div>
         
         <div className="mt-4 pt-4 border-t border-gray-100">

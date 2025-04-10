@@ -18,9 +18,9 @@ let cachedSalons: Job[] | null = null;
  */
 export const getSalonsForSale = (count?: number): Job[] => {
   if (USE_VIETNAMESE_GENERATOR) {
-    // Generate or use cached salons with 60% Vietnamese representation
+    // Generate or use cached salons with 70% Vietnamese representation
     if (!cachedSalons) {
-      cachedSalons = generateMixedSalons(40, 0.6); // Generate 40 salons, 60% Vietnamese
+      cachedSalons = generateMixedSalons(40, 0.7); // Generate 40 salons, 70% Vietnamese
     }
     
     // Return all or a subset
@@ -38,8 +38,6 @@ export const getFeaturedSalonsForSale = (count: number = 3): Job[] => {
   const featured = allSalons.filter(salon => salon.is_featured && salon.status !== 'expired');
   return featured.slice(0, count);
 };
-
-// Add the missing functions that are being imported by other components
 
 /**
  * Get featured salons (not for sale) - this is needed by home components
@@ -104,6 +102,9 @@ export const getFeaturedJobs = (count: number = 3): Job[] => {
       weekly_pay: Math.random() > 0.7,
       has_housing: Math.random() > 0.8,
       owner_will_train: Math.random() > 0.6,
+      no_supply_deduction: Math.random() > 0.6,
+      tip_range: '$100-200/day',
+      salary_range: '$900-1,400/week',
     };
   });
   
@@ -111,7 +112,11 @@ export const getFeaturedJobs = (count: number = 3): Job[] => {
   return featured.slice(0, count);
 };
 
-// Ensure we have placeholder implementations for other potential utilities
+/**
+ * Get a specific salon by its ID
+ * @param id The salon ID to find
+ * @returns The salon object or undefined if not found
+ */
 export const getSalonById = (id: string): Job | undefined => {
   const allSalons = getSalonsForSale();
   return allSalons.find(salon => salon.id === id);
