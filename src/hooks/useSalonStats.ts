@@ -61,7 +61,8 @@ export function useSalonStats() {
       if (jobsResponse.error) throw jobsResponse.error;
       if (userDataResponse.error) throw userDataResponse.error;
       
-      // Now we know userDataResponse is not an error and has data
+      // After error checks, we know userDataResponse.data is not null
+      // TypeScript needs this explicit declaration to understand the type
       const userData = userDataResponse.data;
       
       // Prepare for applicants query (only if we have job posts)
@@ -139,7 +140,7 @@ export function useSalonStats() {
       setStats({
         activeJobPosts: jobsResponse.data?.length || 0,
         applicantsThisMonth: applicantsCount,
-        creditsRemaining: userData.credits || 0,
+        creditsRemaining: userData?.credits || 0,
         profileCompletion: {
           percentage: completionPercentage,
           incompleteFields: [
