@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
@@ -32,6 +31,7 @@ export function useSalonStats() {
   const fetchStats = useCallback(async () => {
     if (!user?.id) return;
     
+    console.log("Fetching salon stats for user:", user.id);
     setLoading(true);
     setError(null);
     
@@ -58,8 +58,15 @@ export function useSalonStats() {
       ]);
       
       // Handle errors from the queries
-      if (jobsResponse.error) throw jobsResponse.error;
-      if (userDataResponse.error) throw userDataResponse.error;
+      if (jobsResponse.error) {
+        console.error("Error fetching jobs data:", jobsResponse.error);
+        throw new Error(`Failed to fetch jobs data: ${jobsResponse.error.message}`);
+      }
+      
+      if (userDataResponse.error) {
+        console.error("Error fetching user data:", userDataResponse.error);
+        throw new Error(`Failed to fetch user data: ${userDataResponse.error.message}`);
+      }
       
       // Now that we've checked for errors, we can safely access the data
       // Type assertion is valid here since we've verified there's no error
@@ -76,12 +83,14 @@ export function useSalonStats() {
       };
       
       const userData = userDataResponse.data as UserData;
+      console.log("User data fetched successfully:", userData);
       
       // Prepare for applicants query (only if we have job posts)
       let applicantsCount = 0;
       
       if (jobsResponse.data && jobsResponse.data.length > 0) {
         const jobIds = jobsResponse.data.map(job => job.id);
+        console.log(`Found ${jobIds.length} active jobs, fetching applicants...`);
         
         // Query 3: Fetch applicants this month (only needed if we have jobs)
         const applicantsResponse = await supabase
@@ -90,9 +99,15 @@ export function useSalonStats() {
           .in('job_id', jobIds)
           .gte('created_at', firstDayOfMonth.toISOString());
           
-        if (applicantsResponse.error) throw applicantsResponse.error;
+        if (applicantsResponse.error) {
+          console.error("Error fetching applicants:", applicantsResponse.error);
+          throw new Error(`Failed to fetch applicants: ${applicantsResponse.error.message}`);
+        }
         
         applicantsCount = applicantsResponse.data?.length || 0;
+        console.log(`Found ${applicantsCount} applicants this month`);
+      } else {
+        console.log("No active jobs found, skipping applicants query");
       }
       
       // Calculate profile completion percentage and missing fields
@@ -136,6 +151,7 @@ export function useSalonStats() {
         : 0;
         
       const completionPercentage = Math.round((requiredCompletion + optionalCompletion) * 100);
+      console.log(`Profile completion: ${completionPercentage}%`);
       
       // Format field names for display
       const formatFieldName = (field: string): string => {
@@ -163,9 +179,17 @@ export function useSalonStats() {
       });
       
       setLastFetched(new Date());
+      console.log("Stats updated successfully:", new Date().toISOString());
     } catch (err) {
       console.error("Error fetching salon stats:", err);
-      setError(err instanceof Error ? err : new Error(String(err)));
+      
+      // Improved error handling - ensure we always set a proper Error object
+      if (err instanceof Error) {
+        setError(err);
+      } else {
+        // Create an Error object if we received something else
+        setError(new Error(String(err)));
+      }
       
       // Keep previous stats if there's an error
       toast.error("Failed to update dashboard stats. Please try again later.");

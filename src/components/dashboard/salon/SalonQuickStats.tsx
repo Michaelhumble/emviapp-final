@@ -14,13 +14,30 @@ const SalonQuickStats = () => {
   const { t } = useTranslation();
   const { stats, loading, lastFetched, refresh, error } = useSalonStats();
   
-  // If there's an error, display the error state
+  // Improved error handling to properly display error message
+  const getErrorMessage = () => {
+    if (!error) return "Something went wrong, please try again later.";
+    
+    if (typeof error === 'string') return error;
+    
+    if (error instanceof Error) return error.message;
+    
+    try {
+      // Attempt to stringify the error safely
+      return JSON.stringify(error, null, 2);
+    } catch (e) {
+      console.error("Failed to stringify error:", e);
+      return "An unexpected error occurred. Please try again.";
+    }
+  };
+  
+  // If there's an error, display the error state with improved message
   if (error) {
     return (
       <div className="space-y-2">
         <h2 className="text-lg font-medium mb-2">Quick Statistics</h2>
         <SalonErrorState 
-          error={error} 
+          error={new Error(getErrorMessage())} 
           retryAction={refresh} 
         />
       </div>
