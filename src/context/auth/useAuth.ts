@@ -17,6 +17,8 @@ interface AuthContextType {
   isNewUser: boolean;
   clearIsNewUser: () => void;
   refreshUserProfile: () => Promise<void>;
+  signIn: (email: string, password: string) => Promise<any>; 
+  signUp: (email: string, password: string, userData?: any) => Promise<any>;
   signOut: () => Promise<void>;
 }
 
