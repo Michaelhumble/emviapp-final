@@ -42,26 +42,26 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       instagram: data.instagram || '',
       website: data.website || '',
       
-      // Additional fields 
-      salon_name: data.salon_name || '', 
-      company_name: data.company_name || '', 
+      // Additional fields - ensure these exist in the database or handle them properly
+      salon_name: data.salon_name !== undefined ? data.salon_name : '',
+      company_name: data.company_name !== undefined ? data.company_name : '',
       preferred_language: data.preferred_language || 'en',
-      profile_views: data.profile_views || 0,
+      profile_views: data.profile_views !== undefined ? data.profile_views : 0,
       account_type: data.account_type || 'free',
       referral_code: data.referral_code || '',
-      referral_count: data.referral_count || 0,
+      referral_count: data.referral_count !== undefined ? data.referral_count : 0,
       booking_url: data.booking_url || '',
       boosted_until: data.boosted_until || null,
-      skills: data.skills || [],
-      portfolio_urls: data.portfolio_urls || [],
-      credits: data.credits || 0,
+      skills: Array.isArray(data.skills) ? data.skills : [],
+      portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
+      credits: data.credits !== undefined ? data.credits : 0,
       custom_role: data.custom_role || '',
       contact_link: data.contact_link || '',
       badges: data.badges || [],
       accepts_bookings: Boolean(data.accepts_bookings),
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],
-      services: data.services || []
+      services: data.services !== undefined ? data.services : []
     };
     
     // Also update the cache for faster subsequent access

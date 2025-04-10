@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { AuthContext } from './AuthContext';
@@ -97,35 +97,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const updateProfile = async (data: Partial<UserProfile>): Promise<UserProfile | null> => {
-    if (!user) return null;
-    
-    try {
-      const updatedProfile = await updateUserProfile({
-        ...data,
-        id: user.id
-      });
-      
-      if (updatedProfile) {
-        setUserProfile(updatedProfile);
-        if (updatedProfile.role && updatedProfile.role !== userRole) {
-          const normalizedRole = normalizeRole(updatedProfile.role as UserRole);
-          setUserRole(normalizedRole);
-        }
-      }
-      
-      return updatedProfile;
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      return null;
-    }
-  };
-
-  const setUserRoleAction = async (role: UserRole): Promise<void> => {
+  const updateUserRole = async (role: UserRole): Promise<void> => {
     if (!user) return;
     
     try {
-      const updatedProfile = await updateProfile({ role: role as string });
+      const updatedProfile = await updateUserProfile({ 
+        id: user.id,
+        role: role as string 
+      });
+      
       if (updatedProfile && updatedProfile.role) {
         const normalizedRole = normalizeRole(updatedProfile.role as UserRole);
         setUserRole(normalizedRole);
@@ -135,14 +115,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const signOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      // Clear user state and localStorage
+      setUser(null);
+      setUserProfile(null);
+      setUserRole('customer');
+      localStorage.removeItem('emviapp_user_role');
+      localStorage.removeItem('emviapp_new_user');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      toast.error('Failed to sign out. Please try again.');
+    }
+  };
+
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user || null);
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user || null);
       setLoading(false);
@@ -162,10 +159,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [user]);
 
-  const signOut = async () => {
-    await supabase.auth.signOut();
-  };
-
   return (
     <AuthContext.Provider
       value={{
@@ -175,11 +168,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         loading,
         isSignedIn: !!user,
         isError,
+        isNewUser,
+        clearIsNewUser,
         signIn,
         signUp,
         signOut,
         refreshUserProfile,
-        updateUserRole: setUserRoleAction,
+        updateUserRole,
       }}
     >
       {children}
