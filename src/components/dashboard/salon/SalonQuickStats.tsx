@@ -8,6 +8,7 @@ import { useSalonStats } from "@/hooks/useSalonStats";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDistanceToNow } from "date-fns";
 import SalonErrorState from "@/components/dashboard/salon/SalonErrorState";
+import SalonProfileCompletionCard from "@/components/dashboard/salon/SalonProfileCompletionCard";
 
 const SalonQuickStats = () => {
   const { t } = useTranslation();
@@ -27,7 +28,7 @@ const SalonQuickStats = () => {
   }
   
   return (
-    <div className="space-y-2">
+    <div className="space-y-6">
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-lg font-medium">Quick Statistics</h2>
         {lastFetched && (
@@ -50,6 +51,7 @@ const SalonQuickStats = () => {
         )}
       </div>
       
+      {/* Main Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="border-blue-100 hover:shadow-md transition-shadow">
           <CardContent className="p-6 flex flex-col items-center justify-center">
@@ -93,6 +95,13 @@ const SalonQuickStats = () => {
           </CardContent>
         </Card>
       </div>
+      
+      {/* Profile Completion Card */}
+      <SalonProfileCompletionCard 
+        completionPercentage={stats.profileCompletion.percentage}
+        incompleteFields={stats.profileCompletion.incompleteFields}
+        loading={loading}
+      />
     </div>
   );
 };

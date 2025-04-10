@@ -8,6 +8,10 @@ export interface SalonStats {
   applicantsThisMonth: number;
   activeJobPosts: number;
   creditsRemaining: number;
+  profileCompletion: {
+    percentage: number;
+    incompleteFields: string[];
+  };
 }
 
 export function useSalonStats() {
@@ -15,7 +19,11 @@ export function useSalonStats() {
   const [stats, setStats] = useState<SalonStats>({
     applicantsThisMonth: 0,
     activeJobPosts: 0,
-    creditsRemaining: 0
+    creditsRemaining: 0,
+    profileCompletion: {
+      percentage: 0,
+      incompleteFields: []
+    }
   });
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
@@ -41,10 +49,10 @@ export function useSalonStats() {
           .eq('salon_id', user.id)
           .eq('status', 'active'),
           
-        // Query 2: Fetch user credits
+        // Query 2: Fetch user credits and profile data
         supabase
           .from('users')
-          .select('credits')
+          .select('credits, full_name, salon_name, location, bio, phone, instagram, website, avatar_url')
           .eq('id', user.id)
           .single()
       ]);
@@ -73,11 +81,71 @@ export function useSalonStats() {
         applicantsCount = applicantsResponse.data?.length || 0;
       }
       
+      // Calculate profile completion percentage and missing fields
+      const profile = userData.data;
+      const requiredFields = [
+        'full_name',
+        'salon_name', 
+        'location', 
+        'bio', 
+        'phone',
+        'avatar_url'
+      ];
+      
+      const optionalFields = [
+        'instagram',
+        'website'
+      ];
+      
+      const missingRequiredFields = requiredFields.filter(
+        field => !profile || !profile[field as keyof typeof profile]
+      );
+      
+      const missingOptionalFields = optionalFields.filter(
+        field => !profile || !profile[field as keyof typeof profile]
+      );
+      
+      // Calculate weighted completion percentage (required fields count more)
+      const requiredFieldsCompleted = requiredFields.length - missingRequiredFields.length;
+      const optionalFieldsCompleted = optionalFields.length - missingOptionalFields.length;
+      
+      // Required fields are 80% of the weight, optional are 20%
+      const requiredWeight = 0.8;
+      const optionalWeight = 0.2;
+      
+      const requiredCompletion = requiredFields.length > 0 
+        ? (requiredFieldsCompleted / requiredFields.length) * requiredWeight 
+        : 0;
+        
+      const optionalCompletion = optionalFields.length > 0 
+        ? (optionalFieldsCompleted / optionalFields.length) * optionalWeight 
+        : 0;
+        
+      const completionPercentage = Math.round((requiredCompletion + optionalCompletion) * 100);
+      
+      // Format field names for display
+      const formatFieldName = (field: string): string => {
+        switch (field) {
+          case 'full_name': return 'Business Name';
+          case 'salon_name': return 'Salon Name';
+          case 'avatar_url': return 'Logo/Photo';
+          default:
+            return field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+        }
+      };
+      
       // Update state with all fetched data
       setStats({
         activeJobPosts: jobsResponse.data?.length || 0,
         applicantsThisMonth: applicantsCount,
-        creditsRemaining: userData?.data?.credits || 0
+        creditsRemaining: userData?.data?.credits || 0,
+        profileCompletion: {
+          percentage: completionPercentage,
+          incompleteFields: [
+            ...missingRequiredFields.map(formatFieldName),
+            ...missingOptionalFields.map(formatFieldName)
+          ]
+        }
       });
       
       setLastFetched(new Date());
