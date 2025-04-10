@@ -30,6 +30,10 @@ import SalonAnalytics from "@/components/dashboard/salon/SalonAnalytics";
 import SalonMessagingCenter from "@/components/dashboard/salon/SalonMessagingCenter";
 import SalonBookingManager from "@/components/dashboard/salon/bookings/SalonBookingManager";
 import confetti from "canvas-confetti";
+import BookingRemindersBanner from "@/components/dashboard/salon/bookings/components/BookingRemindersBanner";
+import BookingAnalyticsCard from "@/components/dashboard/salon/analytics/BookingAnalyticsCard";
+import CreditUsageHistory from "@/components/dashboard/salon/credits/CreditUsageHistory";
+import MonthlyReportDownload from "@/components/dashboard/salon/reports/MonthlyReportDownload";
 
 const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -79,6 +83,9 @@ const OwnerDashboard = () => {
             <div className="space-y-8">
               <SalonDashboardBanner userName={userProfile?.salon_name || userProfile?.full_name} />
               
+              {/* New: Booking Reminders Banner */}
+              <BookingRemindersBanner />
+              
               <Tabs value={activeTab} onValueChange={handleTabChange}>
                 <TabsList className="grid grid-cols-7 mb-8">
                   <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -121,6 +128,18 @@ const OwnerDashboard = () => {
                 <TabsContent value="bookings" className="space-y-8">
                   <SalonBookingManager />
                   
+                  <BookingAnalyticsCard />
+                  
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="lg:col-span-1">
+                      <CreditUsageHistory />
+                    </div>
+                    
+                    <div className="lg:col-span-1">
+                      <MonthlyReportDownload />
+                    </div>
+                  </div>
+                  
                   <SalonBookingCalendar />
                 </TabsContent>
                 
@@ -142,6 +161,12 @@ const OwnerDashboard = () => {
                 
                 <TabsContent value="analytics" className="space-y-8">
                   <SalonAnalytics />
+                  
+                  <BookingAnalyticsCard />
+                  
+                  <CreditUsageHistory />
+                  
+                  <MonthlyReportDownload />
                   
                   <SalonAnalyticsCards />
                   
