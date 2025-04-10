@@ -1,18 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  useNavigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
 import { AuthProvider } from "./context/auth/AuthContext";
 import { SubscriptionProvider } from "./context/subscription/SubscriptionProvider";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { Toaster } from "sonner";
 import { useAuth } from "./context/auth";
-
-// Import pages
 import Home from "./pages/Home";
 import Pricing from "./pages/Pricing";
 import SignIn from "./pages/SignIn";
@@ -41,7 +34,6 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate loading
     setTimeout(() => setLoading(false), 1000);
   }, []);
 
@@ -63,7 +55,6 @@ function AppContent() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Redirect authenticated users away from sign-in and sign-up pages
     if (isSignedIn) {
       const currentPath = window.location.pathname;
       if (currentPath === "/sign-in" || currentPath === "/sign-up") {

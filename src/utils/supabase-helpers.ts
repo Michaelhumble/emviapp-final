@@ -7,7 +7,7 @@ export const calculateProfileCompletion = (profile: UserProfile | null, role: Us
   if (!profile) return 0;
   
   // Define the fields required for each role
-  const requiredFields: Record<UserRole, string[]> = {
+  const requiredFields: Record<string, string[]> = {
     'artist': ['full_name', 'email', 'avatar_url', 'bio', 'specialty', 'location', 'instagram', 'portfolio_urls'],
     'customer': ['full_name', 'email', 'avatar_url'],
     'salon': ['full_name', 'email', 'salon_name', 'location', 'phone'],

@@ -24,7 +24,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
     if (!data) return null;
     
     // Transform database record to UserProfile type with safe fallbacks
-    // Use type assertion and optional chaining to safely access properties
+    // Use type assertion to safely access properties
     const profile: UserProfile = {
       id: data.id,
       user_id: data.id, // Add user_id matching id

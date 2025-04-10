@@ -38,13 +38,13 @@ const roleOptions: RoleOption[] = [
     icon: <Scissors className="h-5 w-5 text-indigo-500" />
   },
   {
-    id: "vendor",
+    id: "supplier" as UserRole,
     label: "Vendor",
     description: "I sell beauty products/supplies",
     icon: <ShoppingBag className="h-5 w-5 text-indigo-500" />
   },
   {
-    id: "other",
+    id: "other" as UserRole,
     label: "Other",
     description: "None of the above",
     icon: <HelpCircle className="h-5 w-5 text-indigo-500" />
