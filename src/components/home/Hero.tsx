@@ -39,7 +39,7 @@ const Hero = () => {
 
   return (
     <section 
-      className="relative overflow-hidden"
+      className="relative overflow-hidden w-screen h-screen m-0 p-0 max-w-[100vw] max-h-[100vh]"
       style={{
         width: '100vw',
         height: '100vh',
@@ -49,6 +49,7 @@ const Hero = () => {
         maxWidth: '100vw',
         maxHeight: '100vh',
         position: 'relative',
+        touchAction: 'none',
       }}
     >
       {/* Background image carousel */}

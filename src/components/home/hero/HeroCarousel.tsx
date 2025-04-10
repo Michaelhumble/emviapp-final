@@ -28,11 +28,14 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
           }}
           aria-hidden={activeIndex !== index}
         >
-          <div className="absolute inset-0 w-full h-full overflow-hidden">
+          <div 
+            className="absolute inset-0 w-full h-full overflow-hidden"
+            style={{ pointerEvents: "none" }}
+          >
             <img 
               src={image.url} 
               alt={image.alt}
-              className="w-full h-full object-cover pointer-events-none"
+              className="w-full h-full object-cover select-none"
               style={{ 
                 objectPosition: "center",
                 position: "fixed",
@@ -41,9 +44,13 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
                 width: "100vw",
                 height: "100vh",
                 userSelect: "none",
-                touchAction: "none"
+                touchAction: "none",
+                WebkitUserDrag: "none",
+                MozUserDrag: "none",
+                msUserDrag: "none",
               }}
               draggable="false"
+              onDragStart={(e) => e.preventDefault()}
             />
             
             {/* Subtle overlay for better text readability */}
