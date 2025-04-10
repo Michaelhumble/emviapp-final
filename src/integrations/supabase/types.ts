@@ -41,6 +41,7 @@ export type Database = {
           created_at: string | null
           date_requested: string | null
           id: string
+          metadata: Json | null
           note: string | null
           recipient_id: string
           reminder_sent: boolean | null
@@ -54,6 +55,7 @@ export type Database = {
           created_at?: string | null
           date_requested?: string | null
           id?: string
+          metadata?: Json | null
           note?: string | null
           recipient_id: string
           reminder_sent?: boolean | null
@@ -67,6 +69,7 @@ export type Database = {
           created_at?: string | null
           date_requested?: string | null
           id?: string
+          metadata?: Json | null
           note?: string | null
           recipient_id?: string
           reminder_sent?: boolean | null
