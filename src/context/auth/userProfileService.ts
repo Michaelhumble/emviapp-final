@@ -24,6 +24,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
     if (!data) return null;
     
     // Transform database record to UserProfile type with safe fallbacks
+    // Use type assertion and optional chaining to safely access properties
     const profile: UserProfile = {
       id: data.id,
       user_id: data.id, // Add user_id matching id
@@ -42,18 +43,18 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       instagram: data.instagram || '',
       website: data.website || '',
       
-      // Additional fields with safe access
-      salon_name: data.salon_name || '',
-      company_name: data.company_name || '',
+      // Additional fields with safe access using optional chaining and type casting
+      salon_name: (data as any).salon_name || '',
+      company_name: (data as any).company_name || '',
       preferred_language: data.preferred_language || 'en',
-      profile_views: data.profile_views !== undefined ? data.profile_views : 0,
-      account_type: data.account_type || 'free',
+      profile_views: (data as any).profile_views !== undefined ? Number((data as any).profile_views) : 0,
+      account_type: (data as any).account_type || 'free',
       referral_code: data.referral_code || '',
       affiliate_code: data.referral_code || '', // Map referral_code to affiliate_code for compatibility
-      referral_count: data.referral_count !== undefined ? data.referral_count : 0,
+      referral_count: (data as any).referral_count !== undefined ? Number((data as any).referral_count) : 0,
       booking_url: data.booking_url || '',
       boosted_until: data.boosted_until || null,
-      skills: Array.isArray(data.skills) ? data.skills : [],
+      skills: Array.isArray((data as any).skills) ? (data as any).skills : [],
       portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
       credits: typeof data.credits === 'number' ? data.credits : 0,
       custom_role: data.custom_role || '',
@@ -62,7 +63,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       accepts_bookings: Boolean(data.accepts_bookings),
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],
-      services: Array.isArray(data.services) ? data.services : []
+      services: Array.isArray((data as any).services) ? (data as any).services : []
     };
     
     // Also update the cache for faster subsequent access
