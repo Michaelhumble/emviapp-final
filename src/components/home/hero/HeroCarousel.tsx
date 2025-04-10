@@ -15,6 +15,16 @@ interface HeroCarouselProps {
 const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselProps) => {
   return (
     <div className="absolute inset-0 w-full h-full overflow-hidden">
+      <style>
+        {`
+          .hero-image {
+            -webkit-user-drag: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+          }
+        `}
+      </style>
       {images.map((image, index) => (
         <motion.div 
           key={index}
@@ -42,7 +52,7 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
             <img 
               src={image.url} 
               alt={image.alt}
-              className="w-screen h-screen object-cover"
+              className="hero-image w-screen h-screen object-cover"
               style={{ 
                 objectPosition: "center",
                 width: "100vw",
@@ -53,8 +63,11 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
                 left: 0,
                 top: 0,
                 right: 0,
-                bottom: 0
+                bottom: 0,
+                touchAction: "none",
+                pointerEvents: "none"
               }}
+              draggable="false"
             />
             
             {/* Subtle overlay for better text readability */}
