@@ -7,10 +7,24 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useSalonStats } from "@/hooks/useSalonStats";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDistanceToNow } from "date-fns";
+import SalonErrorState from "@/components/dashboard/salon/SalonErrorState";
 
 const SalonQuickStats = () => {
   const { t } = useTranslation();
-  const { stats, loading, lastFetched, refresh } = useSalonStats();
+  const { stats, loading, lastFetched, refresh, error } = useSalonStats();
+  
+  // If there's an error, display the error state
+  if (error) {
+    return (
+      <div className="space-y-2">
+        <h2 className="text-lg font-medium mb-2">Quick Statistics</h2>
+        <SalonErrorState 
+          error={error} 
+          retryAction={refresh} 
+        />
+      </div>
+    );
+  }
   
   return (
     <div className="space-y-2">
