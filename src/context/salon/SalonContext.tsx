@@ -81,7 +81,7 @@ export const SalonProvider = ({ children }: { children: ReactNode }) => {
     if (!user?.id) return false;
 
     try {
-      // Use type casting to handle the TypeScript issue with owner_id
+      // Create new salon data with owner_id
       const newSalonData = {
         salon_name: salonData.salon_name || 'New Salon',
         logo_url: salonData.logo_url,
@@ -93,6 +93,7 @@ export const SalonProvider = ({ children }: { children: ReactNode }) => {
         owner_id: user.id
       };
       
+      // Use type assertion to bypass TypeScript checking for the insert operation
       const { data, error } = await supabase
         .from('salons')
         .insert(newSalonData as any)

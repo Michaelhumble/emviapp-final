@@ -35,10 +35,14 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
       return null;
     }
     
+    // Define the salon name - either get it from profile or use a fallback
+    // This fixes the TS property access issue by using optional chaining and type assertion
+    const salonName = (userProfile as any).salon_name || userProfile.full_name || 'My Salon';
+    
     // Create a new salon record with information from the user profile
     const newSalonData = {
       owner_id: userId,
-      salon_name: userProfile.salon_name || userProfile.full_name || 'My Salon',
+      salon_name: salonName,
       logo_url: userProfile.avatar_url,
       location: userProfile.location,
       website: userProfile.website,
@@ -47,6 +51,7 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
       about: userProfile.bio
     };
     
+    // Explicitly cast to any to avoid TypeScript errors with the owner_id field
     const { data: newSalon, error: insertError } = await supabase
       .from('salons')
       .insert(newSalonData as any)

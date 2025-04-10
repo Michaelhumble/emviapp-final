@@ -1,5 +1,5 @@
 
-export interface TeamMember {
+export type TeamMember = {
   id: string;
   full_name: string;
   email: string;
@@ -7,4 +7,4 @@ export interface TeamMember {
   role: string;
   specialty?: string;
   status?: 'active' | 'inactive';
-}
+};

@@ -28,14 +28,25 @@ export const useTeamMembers = () => {
         
       if (error) throw error;
       
-      // Cast the data to ensure it matches the TeamMember type
-      setTeamMembers(data?.map(item => ({
-        ...item,
-        avatar_url: item.avatar_url,
-        status: (item.status === 'active' || item.status === 'inactive') 
-          ? item.status as 'active' | 'inactive'
-          : undefined
-      })) || []);
+      // Transform the data and ensure status is properly typed
+      if (data) {
+        const typedMembers: TeamMember[] = data.map(item => ({
+          id: item.id,
+          full_name: item.full_name,
+          email: item.email,
+          avatar_url: item.avatar_url,
+          role: item.role,
+          specialty: item.specialty,
+          // Ensure status is only 'active' or 'inactive'
+          status: (item.status === 'active' || item.status === 'inactive') 
+            ? item.status 
+            : 'inactive' // Default value if status is invalid
+        }));
+        
+        setTeamMembers(typedMembers);
+      } else {
+        setTeamMembers([]);
+      }
     } catch (err) {
       console.error("Error fetching team members:", err);
       setError("Failed to load team members. Please try again.");
