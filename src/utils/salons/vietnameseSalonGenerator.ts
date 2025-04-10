@@ -1,0 +1,306 @@
+
+import { Job } from "@/types/job";
+import { formatJobListing } from "@/utils/jobs/jobListingFormatter";
+import { mapSampleJobData } from "@/utils/jobs/sampleJobMapper";
+
+// Vietnamese salon name generator
+const generateVietnameseSalonName = (): string => {
+  const prefixes = [
+    "Tiffany", "KT", "Thanh", "Lucky", "Kelly", "Luxury", "VIP", "Diamond", 
+    "Crystal", "Kim", "Lilly", "Happy", "Cindy", "Linda", "Anh", "Elegant", 
+    "Perfect", "Queen", "Royal", "Elite", "Golden", "Star", "Bella", "Cherry",
+    "Deluxe", "Jenny", "Rose", "Sunshine", "Orchid", "Allure"
+  ];
+  
+  const suffixes = [
+    "Nails & Spa", "Nails", "Beauty Lounge", "Nail Bar", "Nail Salon", 
+    "Beauty Salon", "Nail Studio", "Spa & Beauty", "Nail Lounge", "Beauty",
+    "Nails & Beauty", "Spa", "Beauty Studio", "Salon & Spa", "Nail Art Studio"
+  ];
+  
+  const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+  const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+  
+  return `${prefix} ${suffix}`;
+};
+
+// Vietnamese owner name generator
+const generateVietnameseOwnerName = (): string => {
+  const firstNames = [
+    "Nguyen", "Tran", "Le", "Pham", "Hoang", "Huynh", "Vo", "Dang", "Bui", "Do",
+    "Vu", "Ngo", "Duong", "Ly", "Trinh", "Dinh", "Ha", "Mai", "Truong", "Lam"
+  ];
+  
+  const middleNames = [
+    "Van", "Thi", "Huu", "Dinh", "Quoc", "Thanh", "Tuan", "Kim", "Duc", "Minh",
+    "Hong", "Hoai", "Thu", "My", "Ngoc", "Thuy", "Anh", "Tuan", "Quang", "Phuong"
+  ];
+  
+  const lastNames = [
+    "Anh", "Linh", "Hoa", "Tuan", "Minh", "Hai", "Hung", "Phuong", "Thao", "Dung",
+    "Lan", "Huong", "Trang", "Thuy", "Binh", "Nga", "Phat", "Tam", "Thu", "Trinh",
+    "Kim", "Tiffany", "Jenny", "Kelly", "Linda", "Nancy", "Anna", "Lisa", "Cindy", "Amy"
+  ];
+  
+  // For salon owners in America, sometimes they use American names too
+  const americanNames = [
+    "Amy", "Anna", "Cindy", "Jenny", "Kelly", "Kim", "Linda", "Lisa", "Nancy", "Tiffany",
+    "Tony", "Tommy", "Kevin", "Jimmy", "Johnny", "Danny", "Andy", "Henry", "Kenny", "Terry"
+  ];
+  
+  // 40% chance to use American name instead
+  if (Math.random() < 0.4) {
+    return americanNames[Math.floor(Math.random() * americanNames.length)] + " " + firstNames[Math.floor(Math.random() * firstNames.length)];
+  }
+  
+  const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+  const middleName = middleNames[Math.floor(Math.random() * middleNames.length)];
+  const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+  
+  return `${firstName} ${middleName} ${lastName}`;
+};
+
+// Vietnamese salon locations focused on areas with large Vietnamese communities
+const getVietnameseSalonLocation = (): string => {
+  const locations = [
+    "San Jose, CA", "Houston, TX", "Westminster, CA", "Garden Grove, CA", 
+    "Atlanta, GA", "Boston, MA", "Philadelphia, PA", "Dallas, TX", "Orlando, FL", 
+    "Seattle, WA", "Oklahoma City, OK", "San Diego, CA", "Las Vegas, NV", 
+    "Chicago, IL", "Portland, OR", "Charlotte, NC", "Phoenix, AZ", 
+    "Sacramento, CA", "New Orleans, LA", "Denver, CO", "Minneapolis, MN",
+    "Falls Church, VA", "Annandale, VA", "Arlington, VA"
+  ];
+  
+  return locations[Math.floor(Math.random() * locations.length)];
+};
+
+// Generate a salon description with cultural touches
+const generateVietnameseSalonDescription = (salonName: string, ownerName: string, years: number, stations: number): string => {
+  const culturalElements = [
+    "family-owned and operated",
+    "bringing traditional Asian beauty techniques with a modern approach",
+    "a warm, welcoming environment for all clients",
+    "specializing in both American and Vietnamese nail art styles",
+    "offering complimentary tea to clients",
+    "inspired by both Eastern and Western beauty traditions",
+    "where hospitality meets excellence",
+    "meticulous attention to detail in every service",
+    "staff fluent in both English and Vietnamese",
+    "providing the highest level of sanitation and client care"
+  ];
+  
+  const specialties = [
+    "gel extensions", "dipping powder", "acrylic overlays", "intricate nail art",
+    "luxury pedicures", "3D nail designs", "SNS nails", "gel-X extensions",
+    "chrome finishes", "ombré nail art", "crystal embellishments"
+  ];
+  
+  const selected = culturalElements[Math.floor(Math.random() * culturalElements.length)];
+  const specialty1 = specialties[Math.floor(Math.random() * specialties.length)];
+  const specialty2 = specialties[Math.floor(Math.random() * specialties.length)];
+  
+  return `${salonName} is a ${selected} nail salon established ${years} years ago by ${ownerName}. With ${stations} stations, we pride ourselves on providing exceptional nail services including ${specialty1} and ${specialty2}. Our goal is to create a relaxing experience while delivering beautiful results for every client. We maintain the highest standards of cleanliness and use premium products for all our services.`;
+};
+
+// Generate salon features with a mix of standard and cultural elements
+const generateSalonFeatures = (): string[] => {
+  const standardFeatures = [
+    "Premium equipment", "Online booking", "Walk-ins welcome", 
+    "Free WiFi", "Complimentary beverages", "Loyalty program",
+    "Private rooms available", "Wheelchair accessible", "Group bookings", 
+    "Gift certificates", "Validated parking"
+  ];
+  
+  const culturalFeatures = [
+    "Bilingual staff", "Asian-inspired decor", "Complimentary tea service", 
+    "Family-owned business", "Traditional techniques", "Asian magazines available",
+    "Asian beauty products for sale", "Cultural celebrations", "Vietnamese music"
+  ];
+  
+  const features: string[] = [];
+  
+  // Add 3-5 standard features
+  const numStandard = Math.floor(Math.random() * 3) + 3;
+  const shuffledStandard = [...standardFeatures].sort(() => 0.5 - Math.random());
+  features.push(...shuffledStandard.slice(0, numStandard));
+  
+  // Add 1-3 cultural features
+  const numCultural = Math.floor(Math.random() * 3) + 1;
+  const shuffledCultural = [...culturalFeatures].sort(() => 0.5 - Math.random());
+  features.push(...shuffledCultural.slice(0, numCultural));
+  
+  return features;
+};
+
+// Generate a realistic asking price based on location
+const generateAskingPrice = (location: string): string => {
+  // Base price ranges by region
+  let baseMin = 60000;
+  let baseMax = 120000;
+  
+  // Adjust price based on location
+  if (location.includes("CA") || location.includes("NY") || location.includes("MA")) {
+    // Higher prices in California, New York, Massachusetts
+    baseMin = 85000;
+    baseMax = 180000;
+  } else if (location.includes("TX") || location.includes("GA") || location.includes("NC") || location.includes("FL")) {
+    // Lower prices in Texas, Georgia, North Carolina, Florida
+    baseMin = 45000;
+    baseMax = 95000;
+  }
+  
+  // Add some randomness
+  const adjustment = Math.random() * 15000;
+  const price = Math.round((baseMin + Math.random() * (baseMax - baseMin) + adjustment) / 5000) * 5000;
+  
+  return price.toString();
+};
+
+// Generate a single Vietnamese salon listing
+export const generateVietnameseSalon = (id: string): Job => {
+  const salonName = generateVietnameseSalonName();
+  const ownerName = generateVietnameseOwnerName();
+  const location = getVietnameseSalonLocation();
+  const yearsEstablished = Math.floor(Math.random() * 10) + 3; // 3-12 years
+  const stations = Math.floor(Math.random() * 6) + 4; // 4-9 stations
+  const askingPrice = generateAskingPrice(location);
+  const squareFeet = ((Math.floor(Math.random() * 10) + 8) * 100).toString(); // 800-1700 sq ft
+  
+  const reasonForSelling = [
+    "Owner relocating", "Owner retiring", "Moving to a bigger location", 
+    "Health reasons", "Family obligations", "Career change", 
+    "Other business opportunities"
+  ][Math.floor(Math.random() * 7)];
+  
+  const description = generateVietnameseSalonDescription(salonName, ownerName, yearsEstablished, stations);
+  const features = generateSalonFeatures();
+  
+  // Create the salon listing
+  const salon: Job = {
+    id,
+    role: "Salon Owner",
+    company: salonName,
+    location,
+    posted_at: new Date(Date.now() - Math.floor(Math.random() * 30) * 86400000).toISOString(),
+    created_at: new Date(Date.now() - Math.floor(Math.random() * 30) * 86400000).toISOString(),
+    description,
+    for_sale: true,
+    asking_price: askingPrice,
+    number_of_stations: stations.toString(),
+    square_feet: squareFeet,
+    reason_for_selling: reasonForSelling,
+    salon_features: features,
+    contact_info: {
+      owner_name: ownerName,
+      phone: `(${Math.floor(Math.random() * 900) + 100}) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
+      email: `${salonName.toLowerCase().replace(/\s+/g, '')}@gmail.com`
+    },
+    is_featured: Math.random() < 0.2, // 20% chance to be featured
+    status: Math.random() < 0.85 ? "active" : "expired" // 15% chance to be expired
+  };
+  
+  return mapSampleJobData(salon);
+};
+
+// Generate multiple Vietnamese salon listings
+export const generateVietnameseSalons = (count: number): Job[] => {
+  const salons: Job[] = [];
+  
+  for (let i = 0; i < count; i++) {
+    const id = `vn-salon-${Date.now()}-${i}`;
+    salons.push(generateVietnameseSalon(id));
+  }
+  
+  return salons;
+};
+
+// Generate a mix of Vietnamese and non-Vietnamese salons
+export const generateMixedSalons = (totalCount: number, vietnamesePercentage: number = 0.6): Job[] => {
+  const vietnameseCount = Math.round(totalCount * vietnamesePercentage);
+  const nonVietnameseCount = totalCount - vietnameseCount;
+  
+  // Generate Vietnamese salons
+  const vietnameseSalons = generateVietnameseSalons(vietnameseCount);
+  
+  // Use the existing salon data for non-Vietnamese salons
+  // This would normally come from salonData.ts or another source
+  // For now, we'll create generic non-Vietnamese salons
+  const nonVietnameseSalons: Job[] = [];
+  for (let i = 0; i < nonVietnameseCount; i++) {
+    nonVietnameseSalons.push(generateNonVietnameseSalon(`nv-salon-${Date.now()}-${i}`));
+  }
+  
+  // Combine and shuffle the lists
+  return [...vietnameseSalons, ...nonVietnameseSalons].sort(() => 0.5 - Math.random());
+};
+
+// Generate a single non-Vietnamese salon listing
+const generateNonVietnameseSalon = (id: string): Job => {
+  const salonNames = [
+    "Elegance Hair & Spa", "Modern Beauty", "Urban Chic Salon", "The Styling Room", 
+    "Bella Salon & Spa", "Luxe Beauty Bar", "Serenity Spa", "Pure Bliss Salon",
+    "Prestige Hair Studio", "Glamour Salon", "Essence Beauty Lounge", "Fusion Spa"
+  ];
+  
+  const owners = [
+    "Sarah Johnson", "Michael Smith", "Emily Davis", "Jessica Brown", 
+    "David Wilson", "Amanda Miller", "Robert Taylor", "Jennifer Martinez",
+    "Christopher Anderson", "Elizabeth Thomas", "Matthew Jackson", "Ashley White"
+  ];
+  
+  const locations = [
+    "Los Angeles, CA", "New York, NY", "Chicago, IL", "Miami, FL", 
+    "Austin, TX", "Nashville, TN", "Seattle, WA", "Denver, CO",
+    "Portland, OR", "Atlanta, GA", "Dallas, TX", "Boston, MA"
+  ];
+  
+  const salonName = salonNames[Math.floor(Math.random() * salonNames.length)];
+  const ownerName = owners[Math.floor(Math.random() * owners.length)];
+  const location = locations[Math.floor(Math.random() * locations.length)];
+  const yearsEstablished = Math.floor(Math.random() * 10) + 3;
+  const stations = Math.floor(Math.random() * 6) + 4;
+  const askingPrice = generateAskingPrice(location);
+  const squareFeet = ((Math.floor(Math.random() * 10) + 8) * 100).toString();
+  
+  const reasonForSelling = [
+    "Owner relocating", "Owner retiring", "Moving to a bigger location", 
+    "Health reasons", "Family obligations", "Career change", 
+    "Other business opportunities"
+  ][Math.floor(Math.random() * 7)];
+  
+  const features = [
+    "Premium equipment", "Online booking", "Walk-ins welcome", 
+    "Free WiFi", "Complimentary beverages", "Loyalty program",
+    "Private rooms available", "Wheelchair accessible", "Group bookings", 
+    "Gift certificates", "Validated parking"
+  ].sort(() => 0.5 - Math.random()).slice(0, Math.floor(Math.random() * 3) + 3);
+  
+  const description = `${salonName} is a well-established salon with ${yearsEstablished} years in business and a loyal clientele. Featuring ${stations} stations in a ${squareFeet} sq ft space, this turnkey operation includes all equipment and inventory. Currently profitable with growth potential. ${ownerName} is selling due to ${reasonForSelling.toLowerCase()}.`;
+  
+  const salon: Job = {
+    id,
+    role: "Salon Owner",
+    company: salonName,
+    location,
+    posted_at: new Date(Date.now() - Math.floor(Math.random() * 30) * 86400000).toISOString(),
+    created_at: new Date(Date.now() - Math.floor(Math.random() * 30) * 86400000).toISOString(),
+    description,
+    for_sale: true,
+    asking_price: askingPrice,
+    number_of_stations: stations.toString(),
+    square_feet: squareFeet,
+    reason_for_selling: reasonForSelling,
+    salon_features: features,
+    contact_info: {
+      owner_name: ownerName,
+      phone: `(${Math.floor(Math.random() * 900) + 100}) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
+      email: `${salonName.toLowerCase().replace(/\s+/g, '')}@gmail.com`
+    },
+    is_featured: Math.random() < 0.2,
+    status: Math.random() < 0.85 ? "active" : "expired"
+  };
+  
+  return mapSampleJobData(salon);
+};
+
+export default generateMixedSalons;

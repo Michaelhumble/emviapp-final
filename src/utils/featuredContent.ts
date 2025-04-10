@@ -1,130 +1,45 @@
 
-import { Job } from "@/types/job";
-import { Salon } from "@/types/salon";
-import sampleJobs from "@/data/sampleJobs";
-import sampleSalons from "@/data/sampleSalons";
+import { Job } from '@/types/job';
+import salonData from '@/data/salonData';
+import { fixSampleJobsData } from '@/utils/jobs/sampleJobMapper';
+import generateMixedSalons from '@/utils/salons/vietnameseSalonGenerator';
+
+// Set this to true to use the new Vietnamese salon generator
+const USE_VIETNAMESE_GENERATOR = true;
+
+// Cache the generated salons
+let cachedSalons: Job[] | null = null;
 
 /**
- * Retrieves featured salons for display on homepage and other prominent sections
+ * Get a list of salons for sale
+ * @param count Number of salons to return (default: all)
+ * @returns Array of salon listings
  */
-export const getFeaturedSalons = (limit = 6): Salon[] => {
-  // First get all salons marked as featured
-  const featuredSalons = sampleSalons.filter(salon => salon.featured);
-  
-  // If we don't have enough featured salons, add some non-featured ones
-  if (featuredSalons.length < limit) {
-    const nonFeatured = sampleSalons
-      .filter(salon => !salon.featured)
-      .slice(0, limit - featuredSalons.length);
+export const getSalonsForSale = (count?: number): Job[] => {
+  if (USE_VIETNAMESE_GENERATOR) {
+    // Generate or use cached salons with 60% Vietnamese representation
+    if (!cachedSalons) {
+      cachedSalons = generateMixedSalons(40, 0.6); // Generate 40 salons, 60% Vietnamese
+    }
     
-    return [...featuredSalons, ...nonFeatured];
+    // Return all or a subset
+    return count ? cachedSalons.slice(0, count) : cachedSalons;
+  } else {
+    // Use the original salon data
+    const salons = fixSampleJobsData(salonData);
+    return count ? salons.slice(0, count) : salons;
   }
-  
-  // If we have more than enough featured salons, just return the limit
-  return featuredSalons.slice(0, limit);
 };
 
-/**
- * Retrieves featured job listings for display on homepage and other prominent sections
- */
-export const getFeaturedJobs = (limit = 6): Job[] => {
-  // First get all jobs marked as featured
-  const featuredJobs = sampleJobs.filter(job => job.is_featured);
-  
-  // If we don't have enough featured jobs, add some non-featured ones
-  if (featuredJobs.length < limit) {
-    const nonFeatured = sampleJobs
-      .filter(job => !job.is_featured)
-      .slice(0, limit - featuredJobs.length);
-    
-    return [...featuredJobs, ...nonFeatured];
-  }
-  
-  // If we have more than enough featured jobs, just return the limit
-  return featuredJobs.slice(0, limit);
+// Export additional helper functions if needed
+export const getFeaturedSalonsForSale = (count: number = 3): Job[] => {
+  const allSalons = getSalonsForSale();
+  const featured = allSalons.filter(salon => salon.is_featured && salon.status !== 'expired');
+  return featured.slice(0, count);
 };
 
-/**
- * Filters jobs by specialty type
- */
-export const getJobsBySpecialty = (specialty: string, limit = 10): Job[] => {
-  const filteredJobs = sampleJobs.filter(job => 
-    job.specialties && 
-    job.specialties.some(s => s.toLowerCase().includes(specialty.toLowerCase()))
-  );
-  
-  return filteredJobs.slice(0, limit);
-};
-
-/**
- * Filters salons by specialty type
- */
-export const getSalonsBySpecialty = (specialty: string, limit = 10): Salon[] => {
-  const filteredSalons = sampleSalons.filter(salon => 
-    salon.specialty.toLowerCase().includes(specialty.toLowerCase())
-  );
-  
-  return filteredSalons.slice(0, limit);
-};
-
-/**
- * Gets random jobs for displaying in various sections
- */
-export const getRandomJobs = (limit = 6): Job[] => {
-  const shuffled = [...sampleJobs].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, limit);
-};
-
-/**
- * Gets random salons for displaying in various sections
- */
-export const getRandomSalons = (limit = 6): Salon[] => {
-  const shuffled = [...sampleSalons].sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, limit);
-};
-
-/**
- * Gets salons by city
- */
-export const getSalonsByCity = (city: string, limit = 10): Salon[] => {
-  const filteredSalons = sampleSalons.filter(salon => 
-    salon.city.toLowerCase().includes(city.toLowerCase())
-  );
-  
-  return filteredSalons.slice(0, limit);
-};
-
-/**
- * Gets hiring salons
- */
-export const getHiringSalons = (limit = 10): Salon[] => {
-  const hiringSalons = sampleSalons.filter(salon => salon.isHiring);
-  return hiringSalons.slice(0, limit);
-};
-
-/**
- * Gets salons for sale
- * This is a new function to specifically get salons marked for sale
- */
-export const getSalonsForSale = (limit = 20): Job[] => {
-  const saleJobs = sampleJobs.filter(job => job.for_sale === true);
-  return saleJobs.slice(0, limit); 
-};
-
-/**
- * Gets recently added salons
- */
-export const getRecentSalons = (limit = 10): Salon[] => {
-  // In a real app, this would sort by created_at timestamp
-  // For sample data, we'll just return a random subset
-  return getRandomSalons(limit);
-};
-
-/**
- * Gets recently added jobs
- */
-export const getRecentJobs = (limit = 10): Job[] => {
-  // In a real app, this would sort by created_at timestamp
-  // For sample data, we'll just return a random subset
-  return getRandomJobs(limit);
+// Ensure we have placeholder implementations for other potential utilities
+export const getSalonById = (id: string): Job | undefined => {
+  const allSalons = getSalonsForSale();
+  return allSalons.find(salon => salon.id === id);
 };
