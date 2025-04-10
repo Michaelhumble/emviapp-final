@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -5,6 +6,7 @@ import { AuthContext } from './AuthContext';
 import { fetchUserProfile, createUserProfile, updateUserProfile } from './userProfileService';
 import { UserRole, UserProfile } from './types';
 import { toast } from 'sonner';
+import { normalizeRole } from '@/utils/roles';
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -17,6 +19,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [userRole, setUserRole] = useState<UserRole>('customer');
   const [loading, setLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   const clearIsNewUser = () => {
     setIsNewUser(false);
@@ -71,7 +74,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (profile) {
         setUserProfile(profile);
         if (profile.role) {
-          setUserRole(profile.role as UserRole); // Cast role to UserRole
+          setUserRole(normalizeRole(profile.role) as UserRole); // Cast normalized role to UserRole
         }
       } else {
         console.log('No profile found, creating one...');
@@ -79,7 +82,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (newProfile) {
           setUserProfile(newProfile);
           if (newProfile.role) {
-            setUserRole(newProfile.role as UserRole); // Cast role to UserRole
+            setUserRole(normalizeRole(newProfile.role) as UserRole); // Cast normalized role to UserRole
           }
           setIsNewUser(true);
         }
@@ -87,6 +90,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return true;
     } catch (error) {
       console.error('Error fetching user profile:', error);
+      setIsError(true);
       return false;
     }
   };
@@ -103,7 +107,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (updatedProfile) {
         setUserProfile(updatedProfile);
         if (updatedProfile.role && updatedProfile.role !== userRole) {
-          setUserRole(updatedProfile.role);
+          setUserRole(normalizeRole(updatedProfile.role) as UserRole); // Cast normalized role to UserRole
         }
       }
       
@@ -118,9 +122,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (!user) return;
     
     try {
-      const updatedProfile = await updateProfile({ role });
+      const updatedProfile = await updateProfile({ role: role as string });
       if (updatedProfile && updatedProfile.role) {
-        setUserRole(updatedProfile.role);
+        setUserRole(normalizeRole(updatedProfile.role) as UserRole); // Cast normalized role to UserRole
       }
     } catch (error) {
       console.error('Error updating user role:', error);
@@ -204,24 +208,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   return (
     <AuthContext.Provider
       value={{
-        session,
         user,
         userProfile,
         userRole,
         loading,
         isSignedIn: !!user,
-        isNewUser,
-        clearIsNewUser,
+        isError,
         signIn,
         signUp,
         signOut,
-        resetPassword,
-        updateProfile,
-        updatePassword,
-        updateEmail,
-        deleteAccount,
         refreshUserProfile,
-        setUserRole: setUserRoleAction,
+        updateUserRole: setUserRoleAction,
       }}
     >
       {children}

@@ -24,11 +24,11 @@ export interface AuthContextType {
   loading: boolean;
   isSignedIn: boolean;
   isError: boolean; 
-  signIn: (email: string, password: string) => Promise<any>; // Changed return type
-  signUp: (email: string, password: string) => Promise<any>; // Changed return type
+  signIn: (email: string, password: string) => Promise<any>; // Changed to any to accept different return types
+  signUp: (email: string, password: string) => Promise<any>; // Changed to any to accept different return types
   signOut: () => Promise<void>;
   updateUserRole: (role: UserRole) => Promise<void>;
-  refreshUserProfile: () => Promise<boolean>; // Keep boolean return type
+  refreshUserProfile: () => Promise<boolean>; // Keep boolean return for flexibility
 }
 
 export type { UserProfile };

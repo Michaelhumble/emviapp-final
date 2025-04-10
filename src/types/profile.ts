@@ -80,6 +80,7 @@ export interface UserProfile {
   custom_role?: string;
   account_type?: string;
   user_id?: string;
+  services?: any[];
 }
 
 export interface EmviUser {

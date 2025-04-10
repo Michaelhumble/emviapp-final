@@ -1,9 +1,11 @@
+
 // Make sure the file uses proper TypeScript with proper data access
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile, UserRole, AuthContextType } from '../types';
 import { fetchUserProfile, createUserProfile, updateUserProfile } from '../userProfileService';
 import { toast } from 'sonner';
+import { normalizeRole } from '@/utils/roles';
 
 export const useAuthProvider = (): AuthContextType => {
   const [session, setSession] = useState<any>(null);
@@ -12,6 +14,7 @@ export const useAuthProvider = (): AuthContextType => {
   const [userRole, setUserRole] = useState<UserRole | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   // Check for session on mount
   useEffect(() => {
@@ -35,10 +38,13 @@ export const useAuthProvider = (): AuthContextType => {
           // Fetch user profile data
           const profile = await fetchUserProfile(currentSession.user.id);
           setUserProfile(profile);
-          setUserRole(profile?.role as UserRole); // Cast to UserRole
+          if (profile?.role) {
+            setUserRole(normalizeRole(profile.role) as UserRole); // Cast to UserRole
+          }
         }
       } catch (error) {
         console.error('Error fetching initial session:', error);
+        setIsError(true);
       } finally {
         setLoading(false);
       }
@@ -63,10 +69,14 @@ export const useAuthProvider = (): AuthContextType => {
               setIsNewUser(true);
               const newProfile = await createUserProfile(newSession.user);
               setUserProfile(newProfile);
-              setUserRole(newProfile?.role as UserRole); // Cast to UserRole
+              if (newProfile?.role) {
+                setUserRole(normalizeRole(newProfile.role) as UserRole); // Cast to UserRole
+              }
             } else {
               setUserProfile(profile);
-              setUserRole(profile.role as UserRole); // Cast to UserRole
+              if (profile.role) {
+                setUserRole(normalizeRole(profile.role) as UserRole); // Cast to UserRole
+              }
             }
           }
         } else {
@@ -145,18 +155,6 @@ export const useAuthProvider = (): AuthContextType => {
     }
   };
   
-  // Reset password
-  const resetPassword = async (email: string) => {
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email);
-      if (error) throw error;
-      toast.success('Password reset email sent');
-    } catch (error: any) {
-      toast.error(error.message || 'Error resetting password');
-      throw error;
-    }
-  };
-  
   // Update user profile
   const updateProfile = async (data: Partial<UserProfile>) => {
     if (!user?.id) {
@@ -172,7 +170,9 @@ export const useAuthProvider = (): AuthContextType => {
       
       if (updatedProfile) {
         setUserProfile(updatedProfile);
-        setUserRole(updatedProfile.role);
+        if (updatedProfile.role) {
+          setUserRole(normalizeRole(updatedProfile.role) as UserRole); // Cast to UserRole
+        }
       }
       
       return updatedProfile;
@@ -182,75 +182,25 @@ export const useAuthProvider = (): AuthContextType => {
     }
   };
   
-  // Update user password
-  const updatePassword = async (newPassword: string) => {
-    try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
-      });
-      
-      if (error) throw error;
-      toast.success('Password updated successfully');
-    } catch (error: any) {
-      toast.error(error.message || 'Error updating password');
-      throw error;
-    }
-  };
-  
-  // Update user email
-  const updateEmail = async (newEmail: string) => {
-    try {
-      const { error } = await supabase.auth.updateUser({
-        email: newEmail
-      });
-      
-      if (error) throw error;
-      toast.success('Verification email sent to new address');
-    } catch (error: any) {
-      toast.error(error.message || 'Error updating email');
-      throw error;
-    }
-  };
-  
-  // Delete user account
-  const deleteAccount = async () => {
-    if (!user?.id) {
-      toast.error('You must be logged in to delete your account');
-      return;
-    }
-    
-    try {
-      // Delete from auth
-      const { error } = await supabase.auth.admin.deleteUser(user.id);
-      if (error) throw error;
-      
-      // Sign out
-      await signOut();
-      toast.success('Account deleted successfully');
-    } catch (error: any) {
-      toast.error(error.message || 'Error deleting account');
-      throw error;
-    }
-  };
-  
   // Refresh user profile
   const refreshUserProfile = async () => {
-    if (!user?.id) return;
+    if (!user?.id) return false;
     
     try {
+      setIsError(false);
       const profile = await fetchUserProfile(user.id);
       if (profile) {
         setUserProfile(profile);
-        setUserRole(profile.role);
+        if (profile.role) {
+          setUserRole(normalizeRole(profile.role) as UserRole); // Cast to UserRole
+        }
       }
+      return true;
     } catch (error) {
       console.error('Error refreshing user profile:', error);
+      setIsError(true);
+      return false;
     }
-  };
-  
-  // Clear isNewUser flag
-  const clearIsNewUser = () => {
-    setIsNewUser(false);
   };
   
   // Set user role
@@ -265,7 +215,9 @@ export const useAuthProvider = (): AuthContextType => {
       
       if (updatedProfile) {
         setUserProfile(updatedProfile);
-        setUserRole(updatedProfile.role as UserRole); // Cast back to UserRole
+        if (updatedProfile.role) {
+          setUserRole(normalizeRole(updatedProfile.role) as UserRole); // Cast to UserRole
+        }
       }
     } catch (error) {
       console.error('Error setting user role:', error);
@@ -278,18 +230,11 @@ export const useAuthProvider = (): AuthContextType => {
     user,
     userRole,
     userProfile,
-    session,
-    isNewUser,
-    clearIsNewUser,
+    isError,
     signIn,
     signOut,
     signUp,
-    resetPassword,
-    updateProfile,
-    updatePassword,
-    updateEmail,
-    deleteAccount,
     refreshUserProfile,
-    setUserRole: setUserRoleAction
+    updateUserRole: setUserRoleAction
   };
 };

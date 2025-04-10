@@ -24,56 +24,41 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
     // Transform database record to UserProfile type
     const profile: UserProfile = {
       id: data.id,
-      // Removed user_id since it's now in UserProfile
+      user_id: data.id, // Add user_id matching id
       full_name: data.full_name || '',
       email: data.email || '',
       phone: data.phone || '',
       bio: data.bio || '',
       specialty: data.specialty || '',
-      services: [], // Initialize with empty array since it doesn't exist in DB
       location: data.location || '',
-      social_links: {
-        instagram: data.instagram || '',
-        facebook: data.instagram || '', // Use instagram as fallback since facebook doesn't exist
-        twitter: data.instagram || '', // Use instagram as fallback since twitter doesn't exist
-        website: data.website || '',
-      },
       avatar_url: data.avatar_url || '',
-      gallery: [], // Initialize with empty array since it doesn't exist in DB
-      availability: [], // Initialize with empty array since it doesn't exist in DB
-      role: (data.role as UserRole) || 'customer',
-      verification_status: 'pending', // Default since it doesn't exist in DB
+      role: (data.role as string) || 'customer',
       created_at: data.created_at || '',
       updated_at: data.updated_at || '',
       
-      // Optional fields with default values
+      // Social media fields
+      instagram: data.instagram || '',
+      website: data.website || '',
+      
+      // Additional fields that might exist in DB
       salon_name: data.salon_name || '', 
       company_name: data.company_name || '', 
-      product_type: data.specialty || '', // Use specialty as fallback
-      instagram: data.instagram || '',
-      facebook: data.instagram || '', // Use instagram as fallback since facebook doesn't exist
-      twitter: data.instagram || '', // Use instagram as fallback since twitter doesn't exist
-      website: data.website || '',
-      preferred_language: (data.preferred_language as any) || 'en',
+      preferred_language: data.preferred_language || 'en',
       profile_views: data.profile_views || 0,
       account_type: data.account_type || 'free',
-      affiliate_code: data.referral_code || '', // Use referral_code as fallback
       referral_code: data.referral_code || '',
       referral_count: data.referral_count || 0,
-      skill_level: data.specialty || '', // Use specialty as fallback
-      skills: data.skills || [], // Add skills property
-      preferences: Array.isArray(data.preferences) ? data.preferences : [],
-      accepts_bookings: Boolean(data.accepts_bookings),
       booking_url: data.booking_url || '',
       boosted_until: data.boosted_until || null,
-      profile_completion: 0, // Set default since this property doesn't exist in DB
-      completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],
-      portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
-      credits: data.credits || 0, // Add credits property
-      custom_role: data.custom_role || '', // Add custom_role property
+      skills: data.skills || [],
+      portfolio_urls: data.portfolio_urls || [],
+      credits: data.credits || 0,
+      custom_role: data.custom_role || '',
       contact_link: data.contact_link || '',
       badges: data.badges || [],
-      user_id: data.id, // Add user_id matching id
+      accepts_bookings: Boolean(data.accepts_bookings),
+      preferences: Array.isArray(data.preferences) ? data.preferences : [],
+      completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],
     };
     
     return profile;
@@ -97,7 +82,7 @@ export const createUserProfile = async (user: any): Promise<UserProfile | null> 
     // Extract basic information from user object
     const email = user.email || '';
     const fullName = user.user_metadata?.full_name || '';
-    const role = (user.user_metadata?.role as UserRole) || 'customer';
+    const role = (user.user_metadata?.role as string) || 'customer';
     
     // Default profile data
     const profileData = {
@@ -107,7 +92,6 @@ export const createUserProfile = async (user: any): Promise<UserProfile | null> 
       role,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      profile_completion: 0,
       credits: 0,
       completed_profile_tasks: [],
     };
@@ -147,10 +131,41 @@ export const updateUserProfile = async (profile: Partial<UserProfile>): Promise<
   
   try {
     // Create update object with only valid properties for Supabase
-    const updateData: any = {
+    const updateData = {
       ...profile,
       updated_at: new Date().toISOString()
     };
+    
+    delete updateData.uid; // Remove properties that don't exist in the DB schema
+    delete updateData.displayName;
+    delete updateData.photoURL;
+    delete updateData.phoneNumber;
+    delete updateData.servicesOffered;
+    delete updateData.socialLinks;
+    delete updateData.gallery;
+    delete updateData.pricing;
+    delete updateData.paymentPreferences;
+    delete updateData.schedulingOptions;
+    delete updateData.reviews;
+    delete updateData.additionalNotes;
+    delete updateData.lastSeen;
+    delete updateData.accountType;
+    delete updateData.is_active;
+    delete updateData.stripeCustomerId;
+    delete updateData.stripeSubscriptionId;
+    delete updateData.stripePriceId;
+    delete updateData.stripeCurrentPeriodEnd;
+    delete updateData.emailVerified;
+    delete updateData.username;
+    delete updateData.firstName;
+    delete updateData.lastName;
+    delete updateData.gender;
+    delete updateData.birthDate;
+    delete updateData.address;
+    delete updateData.city;
+    delete updateData.state;
+    delete updateData.zipCode;
+    delete updateData.years_experience;
     
     // Update profile in database
     const { data, error } = await supabase

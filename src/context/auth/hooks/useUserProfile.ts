@@ -36,16 +36,6 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
           }
           
           // Don't block UI even for expired cache - load new data in background
-          if (cacheStatus === 'expired') {
-            console.log("Cache is expired, but using it temporarily while loading fresh data");
-            setLoading(true); // Keep loading state active
-            setTimeout(async () => {
-              await fetchFreshProfileData(userId);
-              setLoading(false);
-            }, 0);
-            return;
-          }
-          
           setLoading(false);
           return;
         }
@@ -58,7 +48,7 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
       // If we successfully retrieved profile data, update state
       if (result.profile) {
         setUserProfile(result.profile);
-        if (result.role) setUserRole(result.role as UserRole); // Cast role to UserRole
+        if (result.role) setUserRole(result.role); // Use role as is
       }
       
     } catch (error) {
@@ -68,7 +58,7 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
       // Final fallback - check localStorage
       const cachedRole = localStorage.getItem('emviapp_user_role');
       if (cachedRole && !userRole) {
-        const normalizedRole = normalizeRole(cachedRole as UserRole);
+        const normalizedRole = normalizeRole(cachedRole) as UserRole;
         setUserRole(normalizedRole);
       } else {
         setUserRole(null);
@@ -94,7 +84,7 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
           setUserProfile(result.profile);
         }
         if (result.role) {
-          setUserRole(result.role as UserRole); // Cast role to UserRole
+          setUserRole(result.role); // Use role as is
         }
         
         return true;
