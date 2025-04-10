@@ -13,6 +13,11 @@ export const validateRoute = (path: string): boolean => {
   return isKnownRoute(path, availableRoutes);
 };
 
+// Check if a path exists and provide fallback if it doesn't
+export const getSafePath = (path: string, fallback: string = '/dashboard'): string => {
+  return validateRoute(path) ? path : fallback;
+};
+
 // Get a human-readable name for the current route
 export const getCurrentRouteName = (): string => {
   const currentPath = window.location.pathname;
@@ -27,6 +32,23 @@ export const getCurrentRouteName = (): string => {
   });
   
   return matchingRoute ? matchingRoute.path : 'Unknown Route';
+};
+
+// Find closest matching route for a 404 fallback suggestion
+export const getClosestMatchingRoute = (path: string): string | null => {
+  const segments = path.split('/').filter(Boolean);
+  if (segments.length === 0) return null;
+  
+  const rootSegment = segments[0];
+  const availableRoutes = getRoutePaths();
+  
+  // Try to find a route that starts with the same root segment
+  const matchingRoute = availableRoutes.find(route => {
+    const routeSegments = route.split('/').filter(Boolean);
+    return routeSegments[0] === rootSegment;
+  });
+  
+  return matchingRoute || null;
 };
 
 // Log route validation for debugging

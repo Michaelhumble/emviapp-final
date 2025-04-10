@@ -24,15 +24,18 @@ import {
   UserPlus, 
   MessageSquare 
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { NotificationCenter } from "@/components/notifications/NotificationCenter";
 import { useTranslation } from "@/hooks/useTranslation";
+import { toast } from "sonner";
+import { validateRoute } from "@/utils/routeValidator";
 
 export function UserMenu() {
   const { user, signOut, userProfile } = useAuth();
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
+  const navigate = useNavigate();
   
   const handleSignOut = async () => {
     try {
@@ -51,6 +54,16 @@ export function UserMenu() {
       return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
     }
     return names[0][0].toUpperCase();
+  };
+  
+  const handleNavigation = (path: string, featureName: string) => {
+    if (validateRoute(path)) {
+      navigate(path);
+    } else {
+      toast.info(`${t(featureName)} feature coming soon!`);
+      navigate("/dashboard");
+    }
+    setOpen(false);
   };
   
   return (
@@ -81,61 +94,79 @@ export function UserMenu() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem asChild>
-              <Link to="/dashboard" className="cursor-pointer w-full">
-                <LayoutDashboard className="mr-2 h-4 w-4" />
-                <span>{t({
-                  english: "Dashboard",
-                  vietnamese: "Bảng điều khiển"
-                })}</span>
-              </Link>
+            <DropdownMenuItem 
+              onClick={() => handleNavigation("/dashboard", "Dashboard")}
+              className="cursor-pointer"
+            >
+              <LayoutDashboard className="mr-2 h-4 w-4" />
+              <span>{t({
+                english: "Dashboard",
+                vietnamese: "Bảng điều khiển"
+              })}</span>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to="/profile" className="cursor-pointer w-full">
-                <User className="mr-2 h-4 w-4" />
-                <span>{t({
-                  english: "Profile",
-                  vietnamese: "Hồ sơ"
-                })}</span>
-              </Link>
+            <DropdownMenuItem 
+              onClick={() => handleNavigation("/profile", "Profile")}
+              className="cursor-pointer"
+            >
+              <User className="mr-2 h-4 w-4" />
+              <span>{t({
+                english: "Profile",
+                vietnamese: "Hồ sơ"
+              })}</span>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to="/messages" className="cursor-pointer w-full">
-                <MessageSquare className="mr-2 h-4 w-4" />
-                <span>{t({
-                  english: "Messages",
-                  vietnamese: "Tin nhắn"
-                })}</span>
-              </Link>
+            <DropdownMenuItem 
+              onClick={() => {
+                toast.info(t("Messages feature coming soon!"));
+                navigate("/dashboard");
+                setOpen(false);
+              }}
+              className="cursor-pointer"
+            >
+              <MessageSquare className="mr-2 h-4 w-4" />
+              <span>{t({
+                english: "Messages",
+                vietnamese: "Tin nhắn"
+              })}</span>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to="/checkout" className="cursor-pointer w-full">
-                <CreditCard className="mr-2 h-4 w-4" />
-                <span>{t({
-                  english: "Credits",
-                  vietnamese: "Tín dụng"
-                })}</span>
-              </Link>
+            <DropdownMenuItem 
+              onClick={() => {
+                toast.info(t("Credits feature coming soon!"));
+                navigate("/dashboard");
+                setOpen(false);
+              }}
+              className="cursor-pointer"
+            >
+              <CreditCard className="mr-2 h-4 w-4" />
+              <span>{t({
+                english: "Credits",
+                vietnamese: "Tín dụng"
+              })}</span>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to="/settings" className="cursor-pointer w-full">
-                <Settings className="mr-2 h-4 w-4" />
-                <span>{t({
-                  english: "Settings",
-                  vietnamese: "Cài đặt"
-                })}</span>
-              </Link>
+            <DropdownMenuItem 
+              onClick={() => handleNavigation("/settings", "Settings")}
+              className="cursor-pointer"
+            >
+              <Settings className="mr-2 h-4 w-4" />
+              <span>{t({
+                english: "Settings",
+                vietnamese: "Cài đặt"
+              })}</span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <Link to="/referrals" className="cursor-pointer w-full">
-              <UserPlus className="mr-2 h-4 w-4" />
-              <span>{t({
-                english: "Invite Friends",
-                vietnamese: "Mời bạn bè"
-              })}</span>
-            </Link>
+          <DropdownMenuItem 
+            onClick={() => {
+              toast.info(t("Referrals feature coming soon!"));
+              navigate("/dashboard");
+              setOpen(false);
+            }}
+            className="cursor-pointer"
+          >
+            <UserPlus className="mr-2 h-4 w-4" />
+            <span>{t({
+              english: "Invite Friends",
+              vietnamese: "Mời bạn bè"
+            })}</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">

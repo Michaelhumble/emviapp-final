@@ -3,7 +3,9 @@ import React, { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { validateRoute } from '@/utils/routeValidator';
 
 interface MobileMenuProps {
   user: any;
@@ -12,8 +14,19 @@ interface MobileMenuProps {
 
 const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
   const closeMenu = () => setOpen(false);
+  
+  const handleNavigation = (path: string, label: string) => {
+    if (validateRoute(path)) {
+      navigate(path);
+    } else {
+      toast.info(`${label} feature coming soon!`);
+      navigate("/dashboard");
+    }
+    closeMenu();
+  };
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -33,58 +46,55 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
         
         <div className="flex-1 py-6">
           <div className="flex flex-col space-y-3">
-            <Link 
-              to="/" 
-              className="px-2 py-1.5 text-md hover:bg-gray-100 rounded"
-              onClick={closeMenu}
+            <div 
+              className="px-2 py-1.5 text-md hover:bg-gray-100 rounded cursor-pointer"
+              onClick={() => handleNavigation("/", "Home")}
             >
               Home
-            </Link>
-            <Link 
-              to="/artists" 
-              className="px-2 py-1.5 text-md hover:bg-gray-100 rounded"
-              onClick={closeMenu}
+            </div>
+            <div 
+              className="px-2 py-1.5 text-md hover:bg-gray-100 rounded cursor-pointer"
+              onClick={() => handleNavigation("/artists", "Find Artists")}
             >
               Find Artists
-            </Link>
-            <Link 
-              to="/salon-owners" 
-              className="px-2 py-1.5 text-md hover:bg-gray-100 rounded"
-              onClick={closeMenu}
+            </div>
+            <div 
+              className="px-2 py-1.5 text-md hover:bg-gray-100 rounded cursor-pointer"
+              onClick={() => handleNavigation("/salon-owners", "For Salon Owners")}
             >
               For Salon Owners
-            </Link>
-            <Link 
-              to="/jobs" 
-              className="px-2 py-1.5 text-md hover:bg-gray-100 rounded"
-              onClick={closeMenu}
+            </div>
+            <div 
+              className="px-2 py-1.5 text-md hover:bg-gray-100 rounded cursor-pointer"
+              onClick={() => handleNavigation("/jobs", "Jobs")}
             >
               Jobs
-            </Link>
+            </div>
             
             {user && (
               <>
-                <Link 
-                  to="/dashboard" 
-                  className="px-2 py-1.5 text-md hover:bg-gray-100 rounded"
-                  onClick={closeMenu}
+                <div 
+                  className="px-2 py-1.5 text-md hover:bg-gray-100 rounded cursor-pointer"
+                  onClick={() => handleNavigation("/dashboard", "Dashboard")}
                 >
                   Dashboard
-                </Link>
-                <Link 
-                  to="/profile" 
-                  className="px-2 py-1.5 text-md hover:bg-gray-100 rounded"
-                  onClick={closeMenu}
+                </div>
+                <div 
+                  className="px-2 py-1.5 text-md hover:bg-gray-100 rounded cursor-pointer"
+                  onClick={() => handleNavigation("/profile", "Profile")}
                 >
                   Profile
-                </Link>
-                <Link 
-                  to="/referrals" 
-                  className="px-2 py-1.5 text-md hover:bg-gray-100 rounded"
-                  onClick={closeMenu}
+                </div>
+                <div 
+                  className="px-2 py-1.5 text-md hover:bg-gray-100 rounded cursor-pointer"
+                  onClick={() => {
+                    toast.info("Referrals feature coming soon!");
+                    navigate("/dashboard");
+                    closeMenu();
+                  }}
                 >
                   Referrals
-                </Link>
+                </div>
               </>
             )}
           </div>
@@ -104,16 +114,19 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
             </Button>
           ) : (
             <div className="grid grid-cols-2 gap-2 w-full">
-              <Link to="/auth/signin" className="w-full" onClick={closeMenu}>
-                <Button variant="outline" className="w-full">
-                  Sign In
-                </Button>
-              </Link>
-              <Link to="/auth/signup" className="w-full" onClick={closeMenu}>
-                <Button className="w-full">
-                  Sign Up
-                </Button>
-              </Link>
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => handleNavigation("/auth/signin", "Sign In")}
+              >
+                Sign In
+              </Button>
+              <Button 
+                className="w-full"
+                onClick={() => handleNavigation("/auth/signup", "Sign Up")}
+              >
+                Sign Up
+              </Button>
             </div>
           )}
         </SheetFooter>
