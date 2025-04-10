@@ -1,61 +1,42 @@
 
-// Job type definition
 export interface Job {
   id: string;
-  role: string;
-  role_normalized?: string;
+  role?: string;
   company: string;
   location: string;
-  for_sale?: boolean;
-  posted_at: string;
-  created_at: string;
-  experience_level?: string;
-  employment_type?: string;
-  description: string;
-  requirements?: string[] | string;
-  specialties?: string[];
-  benefits?: string[];
-  is_featured?: boolean;
-  is_remote?: boolean;
-  is_urgent?: boolean;
-  salon_features?: string[];
+  description?: string;
   vietnamese_description?: string;
-  monthly_rent?: string;
+  for_sale?: boolean;
   asking_price?: string;
   number_of_stations?: string;
   square_feet?: string;
-  reason_for_selling?: string;
-  has_housing?: boolean;
-  owner_will_train?: boolean;
+  monthly_rent?: string;
   revenue?: string;
-  contact_info?: {
-    phone?: string;
-    email?: string;
-    owner_name?: string;
-  };
-  emvi_ai_boosted?: boolean;
-  status?: string;
-  image?: string;
-  
-  // Additional properties needed by components
-  title?: string;
-  compensation_type?: string;
-  compensation_details?: string;
-  salary_range?: string;
-  tip_range?: string;
-  weekly_pay?: boolean;
-  no_supply_deduction?: boolean;
-  preferred_languages?: string[];
-  trust_indicators?: {
-    verified?: boolean;
-    activelyHiring?: boolean;
-    chatAvailable?: boolean;
-    [key: string]: boolean | undefined;
-  };
-  user_id?: string;
-  expires_at?: string;
+  reason_for_selling?: string;
+  salon_features?: string[];
+  specialties?: string[];
   has_wax_room?: boolean;
   has_dining_room?: boolean;
   has_laundry?: boolean;
-  salon_id?: string;
+  has_housing?: boolean;
+  owner_will_train?: boolean;
+  created_at?: string;
+  posted_at?: string;
+  contact_info?: {
+    owner_name?: string;
+    phone?: string;
+    email?: string;
+    notes?: string; // Added the notes property to fix the type error
+  };
+  is_featured?: boolean;
+  price_range?: string;
+  rating?: number;
+  employment_type?: string;
+  compensation_details?: string;
+  status?: string;
+  image?: string;
+  weekly_pay?: boolean;
+  tip_range?: string;
+  salary_range?: string;
+  no_supply_deduction?: boolean;
 }
