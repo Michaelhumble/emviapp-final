@@ -18,43 +18,13 @@ export const useTeamMembers = () => {
     try {
       // In a real implementation, this would query team members by salon_id
       const { data, error } = await supabase
-        .from('users')
-        .select('id, full_name, email, avatar_url, role, specialty');
+        .from('salon_staff')
+        .select('id, full_name, email, avatar_url, role, specialty, status')
+        .eq('salon_id', user?.id);
         
       if (error) throw error;
       
-      // Mock data - in production this would come from actual filtering
-      const mockTeamMembers: TeamMember[] = [
-        {
-          id: "1",
-          full_name: "Tina Stylist",
-          email: "tina@example.com",
-          avatar_url: null,
-          role: "artist",
-          specialty: "Hair Coloring",
-          status: "active"
-        },
-        {
-          id: "2",
-          full_name: "Mark Barber",
-          email: "mark@example.com",
-          avatar_url: null,
-          role: "artist",
-          specialty: "Men's Cuts",
-          status: "active"
-        },
-        {
-          id: "3",
-          full_name: "Laura Nail Tech",
-          email: "laura@example.com",
-          avatar_url: null,
-          role: "nail technician/artist",
-          specialty: "Gel Manicures",
-          status: "inactive"
-        }
-      ];
-      
-      setTeamMembers(mockTeamMembers);
+      setTeamMembers(data || []);
     } catch (err) {
       console.error("Error fetching team members:", err);
       setError("Failed to load team members. Please try again.");
@@ -75,25 +45,24 @@ export const useTeamMembers = () => {
     }
     
     try {
-      // In a real implementation, this would:
-      // 1. Create a pending invitation record in the database
-      // 2. Send an email to the person with a signup link
-      // 3. When they sign up, associate them with this salon's ID
+      // Add the new team member to the salon_staff table
+      const { data, error } = await supabase
+        .from('salon_staff')
+        .insert({
+          salon_id: user?.id,
+          full_name: name,
+          email: email,
+          role: role
+        })
+        .select()
+        .single();
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (error) throw error;
       
       // Add to local state for immediate feedback
-      const newMember: TeamMember = {
-        id: `temp-${Date.now()}`,
-        full_name: name,
-        email: email,
-        avatar_url: null,
-        role: role,
-        status: "active"
-      };
-      
-      setTeamMembers(prev => [...prev, newMember]);
+      if (data) {
+        setTeamMembers(prev => [...prev, data as TeamMember]);
+      }
       
       toast.success(`Invitation sent to ${email}`);
     } catch (err) {
@@ -109,11 +78,13 @@ export const useTeamMembers = () => {
     }
     
     try {
-      // In a real implementation, this would update the user record to remove salon_id
-      // or change their status to inactive
+      // Delete the team member from the salon_staff table
+      const { error } = await supabase
+        .from('salon_staff')
+        .delete()
+        .eq('id', memberId);
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 800));
+      if (error) throw error;
       
       // Update local state
       setTeamMembers(prev => prev.filter(member => member.id !== memberId));
@@ -129,8 +100,13 @@ export const useTeamMembers = () => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Update the team member's status in the salon_staff table
+      const { error } = await supabase
+        .from('salon_staff')
+        .update({ status: newStatus })
+        .eq('id', memberId);
+      
+      if (error) throw error;
       
       // Update local state
       setTeamMembers(prev => 
