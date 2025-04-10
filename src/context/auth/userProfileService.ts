@@ -42,13 +42,14 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       instagram: data.instagram || '',
       website: data.website || '',
       
-      // Additional fields - ensure these exist in the database or handle them properly
+      // Additional fields
       salon_name: data.salon_name || '',
       company_name: data.company_name || '',
       preferred_language: data.preferred_language || 'en',
       profile_views: data.profile_views || 0,
       account_type: data.account_type || 'free',
       referral_code: data.referral_code || '',
+      affiliate_code: data.referral_code || '', // Map referral_code to affiliate_code for compatibility
       referral_count: data.referral_count || 0,
       booking_url: data.booking_url || '',
       boosted_until: data.boosted_until || null,
@@ -57,7 +58,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       credits: data.credits || 0,
       custom_role: data.custom_role || '',
       contact_link: data.contact_link || '',
-      badges: data.badges || [],
+      badges: Array.isArray(data.badges) ? data.badges : [],
       accepts_bookings: Boolean(data.accepts_bookings),
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],

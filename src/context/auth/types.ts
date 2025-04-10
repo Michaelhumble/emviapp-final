@@ -1,7 +1,7 @@
 
 import { User } from '@supabase/supabase-js';
 
-export type UserRole = 'customer' | 'artist' | 'salon' | 'owner' | 'freelancer' | 'supplier' | 'vendor' | 'beauty supplier' | 'nail technician/artist' | 'other';
+export type UserRole = 'customer' | 'artist' | 'salon' | 'owner' | 'freelancer' | 'supplier' | 'vendor' | 'beauty supplier' | 'nail technician/artist' | 'renter' | 'other';
 
 export interface UserProfile {
   id: string;
@@ -28,6 +28,7 @@ export interface UserProfile {
   profile_views?: number;
   account_type?: string;
   referral_code?: string;
+  affiliate_code?: string;
   referral_count?: number;
   booking_url?: string;
   boosted_until?: string | null;

@@ -1,4 +1,3 @@
-
 // Make sure the file uses proper TypeScript with proper data access
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,6 +14,10 @@ export const useAuthProvider = (): AuthContextType => {
   const [loading, setLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState(false);
   const [isError, setIsError] = useState(false);
+
+  const clearIsNewUser = () => {
+    setIsNewUser(false);
+  };
 
   // Check for session on mount
   useEffect(() => {
@@ -237,6 +240,8 @@ export const useAuthProvider = (): AuthContextType => {
     userRole,
     userProfile,
     isError,
+    isNewUser,
+    clearIsNewUser,
     signIn,
     signOut,
     signUp,
