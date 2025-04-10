@@ -59,8 +59,8 @@ const Hero = () => {
         isMobile={isMobile}
       />
       
-      {/* Glass effect overlay */}
-      <div className="absolute inset-0 z-5 glass-effect bg-opacity-10 pointer-events-none"></div>
+      {/* Enhanced glass effect overlay covering entire section */}
+      <div className="absolute inset-0 z-5 backdrop-blur-md bg-white/10 border-white/20 pointer-events-none"></div>
       
       {/* Main content */}
       <div className="relative z-10 w-full h-full flex items-center justify-center">

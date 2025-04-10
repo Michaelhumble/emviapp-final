@@ -45,14 +45,20 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
                 height: "100vh",
                 userSelect: "none",
                 touchAction: "none",
-                WebkitTouchCallout: "none" as any,
-                WebkitUserDrag: "none" as any,
-                MozUserDrag: "none" as any,
-                msUserDrag: "none" as any,
               }}
               draggable="false"
               onDragStart={(e) => e.preventDefault()}
             />
+            
+            {/* Apply non-standard CSS properties via className instead of inline style */}
+            <style jsx>{`
+              img {
+                -webkit-touch-callout: none;
+                -webkit-user-drag: none;
+                -moz-user-drag: none;
+                -ms-user-drag: none;
+              }
+            `}</style>
             
             {/* Subtle overlay for better text readability */}
             <div 
