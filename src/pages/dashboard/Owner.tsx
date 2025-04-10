@@ -33,6 +33,8 @@ import BookingRemindersBanner from "@/components/dashboard/salon/bookings/compon
 import BookingAnalyticsCard from "@/components/dashboard/salon/analytics/BookingAnalyticsCard";
 import CreditUsageHistory from "@/components/dashboard/salon/credits/CreditUsageHistory";
 import MonthlyReportDownload from "@/components/dashboard/salon/reports/MonthlyReportDownload";
+import { SalonProvider } from "@/context/salon/SalonContext";
+import SalonSwitcher from "@/components/dashboard/salon/SalonSwitcher";
 
 const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -71,128 +73,133 @@ const OwnerDashboard = () => {
   };
   
   return (
-    <Layout>
-      <div className="container px-4 mx-auto py-12">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <RoleDashboardLayout>
-            <div className="space-y-8">
-              <SalonDashboardBanner userName={userProfile?.salon_name || userProfile?.full_name} />
-              
-              {/* New: Booking Reminders Banner */}
-              <BookingRemindersBanner />
-              
-              <Tabs value={activeTab} onValueChange={handleTabChange}>
-                <TabsList className="grid grid-cols-7 mb-8">
-                  <TabsTrigger value="overview">Overview</TabsTrigger>
-                  <TabsTrigger value="bookings">Bookings</TabsTrigger>
-                  <TabsTrigger value="clients">Clients</TabsTrigger>
-                  <TabsTrigger value="team">Team</TabsTrigger>
-                  <TabsTrigger value="services">Services</TabsTrigger>
-                  <TabsTrigger value="analytics">Analytics</TabsTrigger>
-                  <TabsTrigger value="messages">Messages</TabsTrigger>
-                </TabsList>
+    <SalonProvider>
+      <Layout>
+        <div className="container px-4 mx-auto py-12">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <RoleDashboardLayout>
+              <div className="space-y-8">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                  <SalonDashboardBanner userName={userProfile?.salon_name || userProfile?.full_name} />
+                  <SalonSwitcher />
+                </div>
                 
-                <TabsContent value="overview" className="space-y-8">
-                  <SalonProfileCompletionMeter />
+                {/* New: Booking Reminders Banner */}
+                <BookingRemindersBanner />
+                
+                <Tabs value={activeTab} onValueChange={handleTabChange}>
+                  <TabsList className="grid grid-cols-7 mb-8">
+                    <TabsTrigger value="overview">Overview</TabsTrigger>
+                    <TabsTrigger value="bookings">Bookings</TabsTrigger>
+                    <TabsTrigger value="clients">Clients</TabsTrigger>
+                    <TabsTrigger value="team">Team</TabsTrigger>
+                    <TabsTrigger value="services">Services</TabsTrigger>
+                    <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                    <TabsTrigger value="messages">Messages</TabsTrigger>
+                  </TabsList>
                   
-                  <SalonQuickStats />
+                  <TabsContent value="overview" className="space-y-8">
+                    <SalonProfileCompletionMeter />
                   
-                  <SalonBoostCreditPanel />
-                  
-                  <NextStepsSmart />
-                  
-                  <SalonAnalyticsCards />
-                  
-                  <SalonDashboardActionButtons />
-                  
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-1">
-                      <SalonCreditPromotion />
-                    </div>
+                    <SalonQuickStats />
                     
-                    <div className="lg:col-span-1">
-                      <TopLocalArtists />
-                    </div>
+                    <SalonBoostCreditPanel />
                     
-                    <div className="lg:col-span-1">
-                      <SalonReferralCard />
+                    <NextStepsSmart />
+                    
+                    <SalonAnalyticsCards />
+                    
+                    <SalonDashboardActionButtons />
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                      <div className="lg:col-span-1">
+                        <SalonCreditPromotion />
+                      </div>
+                      
+                      <div className="lg:col-span-1">
+                        <TopLocalArtists />
+                      </div>
+                      
+                      <div className="lg:col-span-1">
+                        <SalonReferralCard />
+                      </div>
                     </div>
-                  </div>
-                </TabsContent>
+                  </TabsContent>
 
-                <TabsContent value="bookings" className="space-y-8">
-                  <SalonBookingManager />
-                  
-                  <BookingAnalyticsCard />
-                  
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div className="lg:col-span-1">
-                      <CreditUsageHistory />
+                  <TabsContent value="bookings" className="space-y-8">
+                    <SalonBookingManager />
+                    
+                    <BookingAnalyticsCard />
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                      <div className="lg:col-span-1">
+                        <CreditUsageHistory />
+                      </div>
+                      
+                      <div className="lg:col-span-1">
+                        <MonthlyReportDownload />
+                      </div>
                     </div>
                     
-                    <div className="lg:col-span-1">
-                      <MonthlyReportDownload />
-                    </div>
-                  </div>
+                    <SalonBookingCalendar />
+                  </TabsContent>
                   
-                  <SalonBookingCalendar />
-                </TabsContent>
+                  <TabsContent value="clients" className="space-y-8">
+                    <SalonClientManagement />
+                  </TabsContent>
+                  
+                  <TabsContent value="team" className="space-y-8">
+                    <SalonTeamManagement />
+                    
+                    <SalonReferralCard />
+                  </TabsContent>
+                  
+                  <TabsContent value="services" className="space-y-8">
+                    <SalonServiceManager />
+                    
+                    <SalonCreditStatus />
+                  </TabsContent>
+                  
+                  <TabsContent value="analytics" className="space-y-8">
+                    <SalonAnalytics />
+                    
+                    <BookingAnalyticsCard />
+                    
+                    <CreditUsageHistory />
+                    
+                    <MonthlyReportDownload />
+                    
+                    <SalonAnalyticsCards />
+                    
+                    <SalonListingsManagement />
+                    
+                    <SalonPostedJobsSection />
+                  </TabsContent>
+                  
+                  <TabsContent value="messages" className="space-y-8">
+                    <SalonMessagingCenter />
+                    
+                    <SalonNotificationCenter />
+                  </TabsContent>
+                </Tabs>
                 
-                <TabsContent value="clients" className="space-y-8">
-                  <SalonClientManagement />
-                </TabsContent>
-                
-                <TabsContent value="team" className="space-y-8">
-                  <SalonTeamManagement />
-                  
-                  <SalonReferralCard />
-                </TabsContent>
-                
-                <TabsContent value="services" className="space-y-8">
-                  <SalonServiceManager />
-                  
-                  <SalonCreditStatus />
-                </TabsContent>
-                
-                <TabsContent value="analytics" className="space-y-8">
-                  <SalonAnalytics />
-                  
-                  <BookingAnalyticsCard />
-                  
-                  <CreditUsageHistory />
-                  
-                  <MonthlyReportDownload />
-                  
-                  <SalonAnalyticsCards />
-                  
-                  <SalonListingsManagement />
-                  
-                  <SalonPostedJobsSection />
-                </TabsContent>
-                
-                <TabsContent value="messages" className="space-y-8">
-                  <SalonMessagingCenter />
-                  
-                  <SalonNotificationCenter />
-                </TabsContent>
-              </Tabs>
-              
-              <SalonSuggestionBox />
-            </div>
-          </RoleDashboardLayout>
-        </motion.div>
-      </div>
-      
-      {showNotification && (
-        <VisibilityNotification 
-          onClose={() => setShowNotification(false)} 
-        />
-      )}
-    </Layout>
+                <SalonSuggestionBox />
+              </div>
+            </RoleDashboardLayout>
+          </motion.div>
+        </div>
+        
+        {showNotification && (
+          <VisibilityNotification 
+            onClose={() => setShowNotification(false)} 
+          />
+        )}
+      </Layout>
+    </SalonProvider>
   );
 };
 

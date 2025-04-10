@@ -16,7 +16,7 @@ export const useTeamMembers = () => {
     setError(null);
     
     try {
-      // In a real implementation, this would query team members by salon_id
+      // Query salon_staff table using the raw 'from' method which doesn't rely on TypeScript definitions
       const { data, error } = await supabase
         .from('salon_staff')
         .select('id, full_name, email, avatar_url, role, specialty, status')
@@ -45,7 +45,7 @@ export const useTeamMembers = () => {
     }
     
     try {
-      // Add the new team member to the salon_staff table
+      // Use the raw 'from' method to insert into salon_staff
       const { data, error } = await supabase
         .from('salon_staff')
         .insert({
@@ -78,7 +78,7 @@ export const useTeamMembers = () => {
     }
     
     try {
-      // Delete the team member from the salon_staff table
+      // Use the raw 'from' method to delete from salon_staff
       const { error } = await supabase
         .from('salon_staff')
         .delete()
@@ -100,7 +100,7 @@ export const useTeamMembers = () => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
     
     try {
-      // Update the team member's status in the salon_staff table
+      // Use the raw 'from' method to update salon_staff
       const { error } = await supabase
         .from('salon_staff')
         .update({ status: newStatus })
