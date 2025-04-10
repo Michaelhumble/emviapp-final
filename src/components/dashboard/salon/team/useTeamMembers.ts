@@ -4,27 +4,38 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
 import { TeamMember } from "./types";
+import { useSalon } from "@/context/salon/SalonContext";
 
 export const useTeamMembers = () => {
   const { user } = useAuth();
+  const { currentSalon } = useSalon();
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchTeamMembers = async () => {
+    if (!currentSalon?.id) return;
+    
     setLoading(true);
     setError(null);
     
     try {
-      // Query salon_staff table using the raw 'from' method which doesn't rely on TypeScript definitions
+      // Query salon_staff table using the salon_id instead of user.id
       const { data, error } = await supabase
         .from('salon_staff')
         .select('id, full_name, email, avatar_url, role, specialty, status')
-        .eq('salon_id', user?.id);
+        .eq('salon_id', currentSalon.id);
         
       if (error) throw error;
       
-      setTeamMembers(data || []);
+      // Cast the data to ensure it matches the TeamMember type
+      setTeamMembers(data?.map(item => ({
+        ...item,
+        avatar_url: item.avatar_url,
+        status: (item.status === 'active' || item.status === 'inactive') 
+          ? item.status as 'active' | 'inactive'
+          : undefined
+      })) || []);
     } catch (err) {
       console.error("Error fetching team members:", err);
       setError("Failed to load team members. Please try again.");
@@ -34,6 +45,11 @@ export const useTeamMembers = () => {
   };
 
   const sendInvite = async (email: string, name: string, role: string) => {
+    if (!currentSalon?.id) {
+      toast.error("No salon selected");
+      return;
+    }
+
     if (!email || !email.includes('@')) {
       toast.error("Please enter a valid email address");
       return;
@@ -45,14 +61,15 @@ export const useTeamMembers = () => {
     }
     
     try {
-      // Use the raw 'from' method to insert into salon_staff
+      // Use salon_id instead of user?.id
       const { data, error } = await supabase
         .from('salon_staff')
         .insert({
-          salon_id: user?.id,
+          salon_id: currentSalon.id,
           full_name: name,
           email: email,
-          role: role
+          role: role,
+          status: 'active'
         })
         .select()
         .single();
@@ -78,7 +95,6 @@ export const useTeamMembers = () => {
     }
     
     try {
-      // Use the raw 'from' method to delete from salon_staff
       const { error } = await supabase
         .from('salon_staff')
         .delete()
@@ -100,7 +116,6 @@ export const useTeamMembers = () => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
     
     try {
-      // Use the raw 'from' method to update salon_staff
       const { error } = await supabase
         .from('salon_staff')
         .update({ status: newStatus })
@@ -112,7 +127,7 @@ export const useTeamMembers = () => {
       setTeamMembers(prev => 
         prev.map(member => 
           member.id === memberId 
-            ? { ...member, status: newStatus as 'active' | 'inactive' } 
+            ? { ...member, status: newStatus } 
             : member
         )
       );
@@ -125,10 +140,10 @@ export const useTeamMembers = () => {
   };
 
   useEffect(() => {
-    if (user?.id) {
+    if (currentSalon?.id) {
       fetchTeamMembers();
     }
-  }, [user]);
+  }, [currentSalon?.id]);
 
   return {
     teamMembers,

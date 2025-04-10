@@ -7,10 +7,15 @@ import { toast } from "sonner";
 export const migrateSingleToMultiSalon = async (userId: string): Promise<string | null> => {
   try {
     // Check if user has any salons already
-    const { data: existingSalons } = await supabase
+    const { data: existingSalons, error: salonsError } = await supabase
       .from('salons')
       .select('id')
       .eq('owner_id', userId);
+    
+    if (salonsError) {
+      console.error('Error checking for existing salons:', salonsError);
+      return null;
+    }
     
     // If they already have salons, no need to migrate
     if (existingSalons && existingSalons.length > 0) {
@@ -19,35 +24,37 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
     }
     
     // Get the user profile to extract salon-related information
-    const { data: userProfile } = await supabase
+    const { data: userProfile, error: profileError } = await supabase
       .from('users')
       .select('*')
       .eq('id', userId)
       .single();
     
-    if (!userProfile) {
-      console.error('User profile not found for migration');
+    if (profileError || !userProfile) {
+      console.error('User profile not found for migration:', profileError);
       return null;
     }
     
     // Create a new salon record with information from the user profile
-    const { data: newSalon, error } = await supabase
+    const newSalonData = {
+      owner_id: userId,
+      salon_name: userProfile.salon_name || userProfile.full_name || 'My Salon',
+      logo_url: userProfile.avatar_url,
+      location: userProfile.location,
+      website: userProfile.website,
+      instagram: userProfile.instagram,
+      phone: userProfile.phone,
+      about: userProfile.bio
+    };
+    
+    const { data: newSalon, error: insertError } = await supabase
       .from('salons')
-      .insert({
-        owner_id: userId,
-        salon_name: userProfile.salon_name || userProfile.full_name || 'My Salon',
-        logo_url: userProfile.avatar_url,
-        location: userProfile.location,
-        website: userProfile.website,
-        instagram: userProfile.instagram,
-        phone: userProfile.phone,
-        about: userProfile.bio
-      })
+      .insert(newSalonData as any)
       .select()
       .single();
     
-    if (error) {
-      console.error('Failed to create salon during migration:', error);
+    if (insertError) {
+      console.error('Failed to create salon during migration:', insertError);
       toast.error('Failed to set up your salon. Please try again.');
       return null;
     }

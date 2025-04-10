@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 
 export type Salon = {
   id: string;
+  owner_id?: string;
   salon_name: string;
   logo_url?: string;
   location?: string;
@@ -14,6 +15,7 @@ export type Salon = {
   instagram?: string;
   phone?: string;
   created_at: string;
+  updated_at?: string;
 };
 
 type SalonContextType = {
@@ -79,18 +81,21 @@ export const SalonProvider = ({ children }: { children: ReactNode }) => {
     if (!user?.id) return false;
 
     try {
+      // Use type casting to handle the TypeScript issue with owner_id
+      const newSalonData = {
+        salon_name: salonData.salon_name || 'New Salon',
+        logo_url: salonData.logo_url,
+        location: salonData.location,
+        about: salonData.about,
+        website: salonData.website,
+        instagram: salonData.instagram,
+        phone: salonData.phone,
+        owner_id: user.id
+      };
+      
       const { data, error } = await supabase
         .from('salons')
-        .insert({
-          owner_id: user.id,
-          salon_name: salonData.salon_name || 'New Salon',
-          logo_url: salonData.logo_url,
-          location: salonData.location,
-          about: salonData.about,
-          website: salonData.website,
-          instagram: salonData.instagram,
-          phone: salonData.phone
-        })
+        .insert(newSalonData as any)
         .select()
         .single();
 

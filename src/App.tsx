@@ -6,6 +6,7 @@ import { ProfileCompletionProvider } from '@/context/profile/ProfileCompletionPr
 import { NotificationProvider } from '@/context/notification';
 import { SubscriptionProvider } from '@/context/subscription';
 import { Toaster } from 'sonner';
+import AppModifier from './App-Modifier';
 import routes from './routes';
 import '@/App.css';
 
@@ -16,6 +17,7 @@ function App() {
         <ProfileCompletionProvider>
           <SubscriptionProvider>
             <NotificationProvider>
+              <AppModifier />
               <Routes>
                 {routes.map((route) => (
                   <Route
