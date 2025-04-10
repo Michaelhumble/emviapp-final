@@ -32,6 +32,7 @@ export const useReferralData = () => {
         
         // Fetch referrals
         if (user.id) {
+          // Query referrals data
           const { data, error } = await supabase
             .from('referrals')
             .select(`
@@ -39,21 +40,32 @@ export const useReferralData = () => {
               referred_id,
               created_at,
               status,
-              verified_at,
-              users:referred_id(full_name, email)
+              verified_at
             `)
             .eq('referrer_id', user.id)
             .order('created_at', { ascending: false });
             
           if (!error && data) {
-            const formattedReferrals: Referral[] = data.map(item => ({
-              id: item.id,
-              referredId: item.referred_id,
-              referredName: item.users?.full_name || 'Unknown User',
-              status: item.status === 'completed' ? 'completed' : 'pending',
-              createdAt: item.created_at,
-              completedAt: item.verified_at || undefined
-            }));
+            // For each referral, fetch the user data separately
+            const formattedReferrals: Referral[] = await Promise.all(
+              data.map(async (item) => {
+                // Fetch the user data for the referred user
+                const { data: userData, error: userError } = await supabase
+                  .from('users')
+                  .select('full_name, email')
+                  .eq('id', item.referred_id)
+                  .single();
+                
+                return {
+                  id: item.id,
+                  referredId: item.referred_id,
+                  referredName: userData?.full_name || 'Unknown User',
+                  status: item.status === 'completed' ? 'completed' : 'pending',
+                  createdAt: item.created_at,
+                  completedAt: item.verified_at || undefined
+                };
+              })
+            );
             
             setReferrals(formattedReferrals);
           }
