@@ -39,7 +39,7 @@ const Hero = () => {
 
   return (
     <section 
-      className="fixed inset-0 overflow-hidden"
+      className="relative overflow-hidden"
       style={{
         width: '100vw',
         height: '100vh',
@@ -48,13 +48,11 @@ const Hero = () => {
         border: 'none',
         maxWidth: '100vw',
         maxHeight: '100vh',
-        position: 'fixed',
+        position: 'relative',
         left: 0,
         top: 0,
         right: 0,
-        bottom: 0,
-        zIndex: 0,
-        touchAction: "none",
+        bottom: 0
       }}
     >
       {/* Background image carousel */}
@@ -65,7 +63,7 @@ const Hero = () => {
       />
       
       {/* Main content */}
-      <div className="relative z-10 w-full h-full flex items-center justify-center" style={{ pointerEvents: "auto" }}>
+      <div className="relative z-10 w-full h-full flex items-center justify-center">
         <HeroContent 
           activeIndex={currentImageIndex}
           setActiveIndex={handleDotClick}
