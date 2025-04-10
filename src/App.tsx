@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
 import { AuthProvider } from "./context/auth/AuthContext";
@@ -26,6 +27,7 @@ import Messages from "./pages/Messages";
 import Team from "./pages/dashboard/salon/Team";
 import SalonSettings from "./pages/dashboard/SalonSettings";
 
+// Initialize Stripe with publishable key
 const stripePromise = loadStripe(
   process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || ""
 );

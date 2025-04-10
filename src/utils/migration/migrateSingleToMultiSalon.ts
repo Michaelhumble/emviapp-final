@@ -35,8 +35,11 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
       return null;
     }
     
-    // Define the salon name - use type assertion to avoid recursive type issues
-    const salonName = (userProfile as any).salon_name || (userProfile as any).full_name || 'My Salon';
+    // Use type assertion to avoid recursive type issues
+    const userProfileData = userProfile as any;
+    
+    // Define the salon name from profile data
+    const salonName = userProfileData.salon_name || userProfileData.full_name || 'My Salon';
     
     // Create a new salon record with information from the user profile
     // Generate UUID for the salon
@@ -46,12 +49,12 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
       id: salonId,
       owner_id: userId,
       salon_name: salonName,
-      logo_url: (userProfile as any).avatar_url,
-      location: (userProfile as any).location,
-      website: (userProfile as any).website,
-      instagram: (userProfile as any).instagram,
-      phone: (userProfile as any).phone,
-      about: (userProfile as any).bio
+      logo_url: userProfileData.avatar_url,
+      location: userProfileData.location,
+      website: userProfileData.website,
+      instagram: userProfileData.instagram,
+      phone: userProfileData.phone,
+      about: userProfileData.bio
     };
     
     const { data: newSalon, error: insertError } = await supabase
