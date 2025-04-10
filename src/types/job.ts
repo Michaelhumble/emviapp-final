@@ -2,6 +2,7 @@
 export interface Job {
   id: string;
   role?: string;
+  title?: string;
   company: string;
   location: string;
   description?: string;
@@ -26,7 +27,7 @@ export interface Job {
     owner_name?: string;
     phone?: string;
     email?: string;
-    notes?: string; // Added the notes property to fix the type error
+    notes?: string;
   };
   is_featured?: boolean;
   price_range?: string;
@@ -39,4 +40,22 @@ export interface Job {
   tip_range?: string;
   salary_range?: string;
   no_supply_deduction?: boolean;
+  
+  // Additional properties needed by the job components
+  user_id?: string;
+  requirements?: string[] | string;
+  compensation_type?: string;
+  preferred_languages?: string[];
+  benefits?: string[];
+  experience_level?: string;
+  expires_at?: string;
+  is_remote?: boolean;
+  is_urgent?: boolean;
+  role_normalized?: string;
+  trust_indicators?: {
+    verified?: boolean;
+    activelyHiring?: boolean;
+    chatAvailable?: boolean;
+    [key: string]: boolean | undefined;
+  };
 }
