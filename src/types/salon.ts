@@ -31,6 +31,7 @@ export interface Salon {
     tiktok?: string;
     twitter?: string;
     pinterest?: string;
+    youtube?: string;
   };
   bookingLink?: string;
   isHiring?: boolean;
