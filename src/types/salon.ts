@@ -35,4 +35,17 @@ export interface Salon {
   bookingLink?: string;
   isHiring?: boolean;
   featured?: boolean;
+  // Additional properties for salon listings
+  owner?: string;
+  email?: string;
+  phone?: string;
+  website?: string;
+  teamSize?: number;
+  certifications?: string[];
+  awards?: string[];
+  paymentMethods?: string[];
+  languages?: string[];
+  accessibilityFeatures?: string[];
+  virtualTours?: string[];
+  beforeAfterGallery?: string[];
 }
