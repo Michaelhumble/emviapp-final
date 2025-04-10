@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
@@ -40,7 +41,7 @@ export function useSalonStats() {
       const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
       
       // Run all queries in parallel using Promise.all
-      const [jobsResponse, userData] = await Promise.all([
+      const [jobsResponse, userDataResponse] = await Promise.all([
         // Query 1: Fetch active job posts
         supabase
           .from('jobs')
@@ -58,7 +59,10 @@ export function useSalonStats() {
       
       // Handle errors from the queries
       if (jobsResponse.error) throw jobsResponse.error;
-      if (userData.error) throw userData.error;
+      if (userDataResponse.error) throw userDataResponse.error;
+      
+      // Now we know userDataResponse is not an error, so we can safely access data
+      const userData = userDataResponse.data;
       
       // Prepare for applicants query (only if we have job posts)
       let applicantsCount = 0;
@@ -79,7 +83,7 @@ export function useSalonStats() {
       }
       
       // Calculate profile completion percentage and missing fields
-      const profile = userData.data;
+      const profile = userData;
       const requiredFields = [
         'full_name',
         'salon_name', 
@@ -135,7 +139,7 @@ export function useSalonStats() {
       setStats({
         activeJobPosts: jobsResponse.data?.length || 0,
         applicantsThisMonth: applicantsCount,
-        creditsRemaining: userData.data?.credits || 0,
+        creditsRemaining: userData?.credits || 0,
         profileCompletion: {
           percentage: completionPercentage,
           incompleteFields: [
