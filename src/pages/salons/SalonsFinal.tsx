@@ -52,7 +52,7 @@ const SalonsFinal: React.FC = () => {
     return true;
   });
   
-  // Check if a salon is expired based on status
+  // Helper function to determine if a salon is expired based on status
   const isExpired = (salon: any) => {
     return salon.status === "expired";
   };
