@@ -14,9 +14,10 @@ interface AuthContextType {
   userRole: UserRole | null;
   loading: boolean;
   isSignedIn: boolean;
+  isError: boolean;
   isNewUser: boolean;
   clearIsNewUser: () => void;
-  refreshUserProfile: () => Promise<void>;
+  refreshUserProfile: () => Promise<boolean>;
   signIn: (email: string, password: string) => Promise<any>; 
   signUp: (email: string, password: string, userData?: any) => Promise<any>;
   signOut: () => Promise<void>;
