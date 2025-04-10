@@ -27,39 +27,28 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
             opacity: { duration: 1.5, ease: "easeInOut" },
           }}
           aria-hidden={activeIndex !== index}
-          style={{
-            position: 'absolute',
-            left: 0,
-            top: 0,
-            right: 0,
-            bottom: 0,
-            width: '100%',
-            height: '100%',
-            overflow: 'hidden',
-          }}
         >
-          <div className="fixed-image-container absolute inset-0">
+          <div className="absolute inset-0 w-full h-full overflow-hidden">
             <img 
               src={image.url} 
               alt={image.alt}
-              className="w-screen h-screen object-cover"
+              className="w-full h-full object-cover pointer-events-none"
               style={{ 
                 objectPosition: "center",
+                position: "fixed",
+                top: 0,
+                left: 0,
                 width: "100vw",
                 height: "100vh",
-                maxWidth: "100vw",
-                maxHeight: "100vh",
-                position: "absolute",
-                left: 0,
-                top: 0,
-                right: 0,
-                bottom: 0
+                userSelect: "none",
+                touchAction: "none"
               }}
+              draggable="false"
             />
             
             {/* Subtle overlay for better text readability */}
             <div 
-              className="absolute inset-0 z-10"
+              className="absolute inset-0 z-10 pointer-events-none"
               style={{ 
                 background: 'linear-gradient(to top, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.1) 100%)'
               }}

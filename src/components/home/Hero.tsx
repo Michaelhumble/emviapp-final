@@ -49,10 +49,6 @@ const Hero = () => {
         maxWidth: '100vw',
         maxHeight: '100vh',
         position: 'relative',
-        left: 0,
-        top: 0,
-        right: 0,
-        bottom: 0
       }}
     >
       {/* Background image carousel */}
