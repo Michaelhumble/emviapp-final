@@ -3,17 +3,19 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, MapPin, DollarSign, Grid, Star, Phone, Mail, Info, Home, Building, Calendar, Users, TrendingUp, Check } from 'lucide-react';
+import { ArrowLeft, MapPin, DollarSign, Grid, Star, Phone, Mail, Info, Home, Building, Calendar, Users, TrendingUp, Check, Lock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { getSalonById } from '@/utils/featuredContent';
 import { Job } from '@/types/job';
 import { Helmet } from 'react-helmet';
+import AuthGuard from '@/components/auth/AuthGuard';
 
 const SalonDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [salon, setSalon] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
+  const [viewCount, setViewCount] = useState<number>(0);
   
   useEffect(() => {
     if (id) {
@@ -24,6 +26,9 @@ const SalonDetail: React.FC = () => {
         setSalon(salonData);
         // Update document title with salon name
         document.title = `${salonData.company} | EmviApp Salon Detail`;
+        
+        // Generate a random view count for demonstration
+        setViewCount(Math.floor(Math.random() * 50) + 5);
       }
       setLoading(false);
     }
@@ -78,6 +83,12 @@ const SalonDetail: React.FC = () => {
                     <Star className="mr-1 h-3 w-3" /> Featured
                   </Badge>
                 )}
+                
+                {viewCount > 0 && (
+                  <Badge className="absolute top-4 left-4 bg-blue-100 text-blue-800">
+                    <Users className="mr-1 h-3 w-3" /> {viewCount} views today
+                  </Badge>
+                )}
               </div>
               
               <div className="p-6">
@@ -108,12 +119,21 @@ const SalonDetail: React.FC = () => {
                       <div className="bg-amber-50 p-4 rounded-lg border border-amber-100 mb-6">
                         <h3 className="font-medium mb-2 text-amber-800">Thông Tin Tiệm</h3>
                         <p className="text-gray-800 font-medium mb-2">{salon.vietnamese_description}</p>
-                        {salon.contact_info?.notes && (
-                          <p className="text-sm text-amber-700 italic mt-2">
-                            <Info className="inline h-3 w-3 mr-1 mb-1" />
-                            {salon.contact_info.notes}
-                          </p>
-                        )}
+                        <AuthGuard
+                          fallback={
+                            <div className="mt-2 text-amber-700 italic text-sm flex items-center">
+                              <Lock className="h-3 w-3 mr-1" />
+                              <span>Đăng nhập để xem thông tin liên hệ</span>
+                            </div>
+                          }
+                        >
+                          {salon.contact_info?.notes && (
+                            <p className="text-sm text-amber-700 italic mt-2">
+                              <Info className="inline h-3 w-3 mr-1 mb-1" />
+                              {salon.contact_info.notes}
+                            </p>
+                          )}
+                        </AuthGuard>
                       </div>
                     )}
                     
@@ -227,34 +247,50 @@ const SalonDetail: React.FC = () => {
                       
                       <h3 className="font-medium mb-4">Contact Information</h3>
                       
-                      {salon.contact_info ? (
+                      <AuthGuard
+                        fallback={
+                          <div className="bg-gray-100 p-4 rounded-lg text-center">
+                            <div className="flex justify-center mb-3">
+                              <Lock className="h-5 w-5 text-gray-500" />
+                            </div>
+                            <p className="text-sm font-medium mb-2">Sign in to view contact details</p>
+                            <p className="text-xs text-gray-600 mb-3">
+                              This information is hidden to protect our community
+                            </p>
+                            <div className="flex justify-center space-x-3">
+                              <Link to="/auth/signin">
+                                <Button size="sm" variant="outline">Sign In</Button>
+                              </Link>
+                              <Link to="/auth/signup">
+                                <Button size="sm">Sign Up</Button>
+                              </Link>
+                            </div>
+                          </div>
+                        }
+                      >
                         <div className="space-y-3">
-                          {salon.contact_info.owner_name && (
+                          {salon.contact_info?.owner_name && (
                             <div className="flex justify-between items-center">
                               <span className="text-gray-600">Owner:</span>
                               <span className="font-medium">{salon.contact_info.owner_name}</span>
                             </div>
                           )}
                           
-                          {salon.contact_info.phone && (
+                          {salon.contact_info?.phone && (
                             <div className="flex items-center">
                               <Phone className="h-4 w-4 mr-2 text-gray-400" />
                               <span>{salon.contact_info.phone}</span>
                             </div>
                           )}
                           
-                          {salon.contact_info.email && (
+                          {salon.contact_info?.email && (
                             <div className="flex items-center">
                               <Mail className="h-4 w-4 mr-2 text-gray-400" />
                               <span className="break-all">{salon.contact_info.email}</span>
                             </div>
                           )}
                         </div>
-                      ) : (
-                        <div className="text-gray-500 text-center p-2">
-                          Sign in to view contact details
-                        </div>
-                      )}
+                      </AuthGuard>
                     </div>
                   </div>
                 </div>
@@ -264,9 +300,17 @@ const SalonDetail: React.FC = () => {
                     <Button variant="outline">Back to Listings</Button>
                   </Link>
                   
-                  <Button className="bg-purple-600 hover:bg-purple-700">
-                    Contact Seller
-                  </Button>
+                  <AuthGuard
+                    fallback={
+                      <Button className="bg-purple-600 hover:bg-purple-700" asChild>
+                        <Link to="/auth/signup">Sign Up to Contact</Link>
+                      </Button>
+                    }
+                  >
+                    <Button className="bg-purple-600 hover:bg-purple-700">
+                      Contact Seller
+                    </Button>
+                  </AuthGuard>
                 </div>
               </div>
             </div>

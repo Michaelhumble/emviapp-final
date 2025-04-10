@@ -42,6 +42,9 @@ const AuthGuard = ({
           <div className="bg-white p-4 rounded-lg shadow-lg text-center">
             <Lock className="h-6 w-6 mx-auto mb-2 text-gray-500" />
             <h4 className="text-sm font-medium">Sign in to view contact info</h4>
+            <p className="text-xs text-gray-500 mb-2">
+              This information is hidden to protect our community
+            </p>
             <div className="flex justify-center space-x-3 mt-3">
               <Link to="/auth/signin">
                 <Button size="sm" variant="outline">Sign In</Button>

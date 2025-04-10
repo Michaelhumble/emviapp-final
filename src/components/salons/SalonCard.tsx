@@ -2,8 +2,10 @@
 import { Job } from "@/types/job";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, DollarSign, Clock, Grid, ExternalLink, Info, Home, Building } from "lucide-react";
+import { MapPin, DollarSign, Clock, Grid, ExternalLink, Info, Home, Building, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/auth";
+import AuthGuard from "@/components/auth/AuthGuard";
 
 export interface SalonCardProps {
   salon: Job;
@@ -13,6 +15,8 @@ export interface SalonCardProps {
 }
 
 const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCardProps) => {
+  const { isSignedIn } = useAuth();
+  
   // Function to format currency 
   const formatCurrency = (value?: string) => {
     if (!value) return "N/A";
@@ -110,14 +114,29 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
               This listing has expired
             </div>
           ) : (
-            <Button 
-              variant="outline" 
-              className="w-full" 
-              onClick={() => onViewDetails(salon)}
+            <AuthGuard
+              requiresAuth={false}
+              blurContent={false}
+              fallback={
+                <Button 
+                  variant="outline" 
+                  className="w-full flex items-center justify-center"
+                  onClick={() => onViewDetails(salon)}
+                >
+                  <Lock className="h-4 w-4 mr-2" />
+                  <span>Sign in to view details</span>
+                </Button>
+              }
             >
-              <ExternalLink className="h-4 w-4 mr-2" />
-              View Details
-            </Button>
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                onClick={() => onViewDetails(salon)}
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                View Details
+              </Button>
+            </AuthGuard>
           )}
         </div>
       </CardContent>

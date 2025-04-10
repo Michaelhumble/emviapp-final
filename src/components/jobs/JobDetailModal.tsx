@@ -3,7 +3,7 @@ import React from "react";
 import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Phone, Mail, Clock, CalendarClock, DollarSign, Home, BriefcaseBusiness, Search, Languages } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, CalendarClock, DollarSign, Home, BriefcaseBusiness, Search, Languages, Lock } from "lucide-react";
 import { Job } from "@/types/job";
 import { Separator } from "@/components/ui/separator";
 import AuthGuard from "@/components/auth/AuthGuard";
@@ -24,13 +24,11 @@ const JobDetailModal = ({ job, isOpen, onClose }: JobDetailModalProps) => {
   // Convert created_at to a Date object if it exists
   const createdAt = job.created_at ? new Date(job.created_at) : new Date();
   
-  const isContactInfoVisible = isSignedIn;
-  
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-3xl overflow-y-auto max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-serif">{job.title}</DialogTitle>
+          <DialogTitle className="text-2xl font-serif">{job.title || job.role || job.company}</DialogTitle>
         </DialogHeader>
         
         <div className="grid grid-cols-1 gap-6">
@@ -51,7 +49,7 @@ const JobDetailModal = ({ job, isOpen, onClose }: JobDetailModalProps) => {
             <div className="overflow-hidden rounded-md">
               <img 
                 src={job.image} 
-                alt={job.title} 
+                alt={job.title || job.role || job.company} 
                 className="w-full h-48 object-cover"
               />
             </div>
@@ -80,7 +78,9 @@ const JobDetailModal = ({ job, isOpen, onClose }: JobDetailModalProps) => {
                 <div>
                   <h3 className="font-medium mb-2">Requirements</h3>
                   <div className="text-gray-700">
-                    {job.requirements}
+                    {typeof job.requirements === 'string' 
+                      ? job.requirements 
+                      : job.requirements.join(', ')}
                   </div>
                 </div>
                 <Separator />
@@ -132,11 +132,31 @@ const JobDetailModal = ({ job, isOpen, onClose }: JobDetailModalProps) => {
               <AuthGuard
                 fallback={
                   <div className="bg-gray-50 p-4 rounded-md text-center">
-                    <p className="text-sm">Sign in to view contact details</p>
+                    <div className="flex justify-center mb-2">
+                      <Lock className="h-5 w-5 text-gray-500" />
+                    </div>
+                    <p className="text-sm font-medium mb-2">Sign in to view contact details</p>
+                    <p className="text-xs text-gray-600 mb-3">
+                      This information is hidden to protect our community
+                    </p>
+                    <div className="flex justify-center space-x-3">
+                      <Link to="/auth/signin">
+                        <Button size="sm" variant="outline">Sign In</Button>
+                      </Link>
+                      <Link to="/auth/signup">
+                        <Button size="sm">Sign Up</Button>
+                      </Link>
+                    </div>
                   </div>
                 }
               >
                 <div className="space-y-2">
+                  {job.contact_info?.owner_name && (
+                    <div className="flex items-center">
+                      <BriefcaseBusiness className="h-4 w-4 mr-2 text-gray-500" />
+                      <span>Contact: {job.contact_info.owner_name}</span>
+                    </div>
+                  )}
                   {job.contact_info?.phone && (
                     <div className="flex items-center">
                       <Phone className="h-4 w-4 mr-2 text-gray-500" />
@@ -147,6 +167,11 @@ const JobDetailModal = ({ job, isOpen, onClose }: JobDetailModalProps) => {
                     <div className="flex items-center">
                       <Mail className="h-4 w-4 mr-2 text-gray-500" />
                       <span>{job.contact_info.email}</span>
+                    </div>
+                  )}
+                  {job.contact_info?.notes && (
+                    <div className="text-sm italic bg-amber-50 p-2 rounded-md">
+                      <span>{job.contact_info.notes}</span>
                     </div>
                   )}
                 </div>

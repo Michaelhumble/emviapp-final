@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
   MapPin, Phone, DollarSign, Users, Building, Ruler, 
-  Mail, Home, Calendar, Check, Clock, Info 
+  Mail, Home, Calendar, Check, Clock, Info, Lock
 } from "lucide-react";
 import { Job } from "@/types/job";
 import { Separator } from "@/components/ui/separator";
@@ -139,8 +139,19 @@ const SalonDetailModal = ({ salon, isOpen, onClose }: SalonDetailModalProps) => 
                 <h3 className="font-medium mb-2">Contact Information</h3>
                 <AuthGuard
                   fallback={
-                    <div className="bg-gray-50 p-4 rounded-md text-center">
-                      <p className="text-sm">Sign in to view contact details</p>
+                    <div className="bg-gray-50 p-4 rounded-md">
+                      <div className="flex items-center justify-center mb-2 text-gray-500">
+                        <Lock className="h-5 w-5 mr-2" />
+                        <p className="text-sm font-medium">Contact info is hidden</p>
+                      </div>
+                      <p className="text-xs text-center text-gray-500 mb-3">
+                        This information is hidden to protect our community.
+                      </p>
+                      <div className="flex justify-center">
+                        <Link to="/auth/signup">
+                          <Button size="sm" variant="outline">Create Free Account</Button>
+                        </Link>
+                      </div>
                     </div>
                   }
                 >
@@ -155,6 +166,17 @@ const SalonDetailModal = ({ salon, isOpen, onClose }: SalonDetailModalProps) => 
                       <div className="flex items-center">
                         <Mail className="w-4 h-4 mr-2 text-gray-500" />
                         <span>{salon.contact_info.email}</span>
+                      </div>
+                    )}
+                    {salon.contact_info?.owner_name && (
+                      <div className="flex items-center text-gray-600">
+                        <Info className="w-4 h-4 mr-2 text-gray-500" />
+                        <span>Owner: {salon.contact_info.owner_name}</span>
+                      </div>
+                    )}
+                    {salon.contact_info?.notes && (
+                      <div className="text-sm italic bg-amber-50 p-2 rounded-md">
+                        <span>{salon.contact_info.notes}</span>
                       </div>
                     )}
                   </div>
