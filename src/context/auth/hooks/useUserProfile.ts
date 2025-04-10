@@ -1,4 +1,5 @@
 
+// First part of the file stays the same
 import { useState, useEffect, useCallback } from "react";
 import { User } from "@supabase/supabase-js";
 import { UserProfile, UserRole } from "../types";
