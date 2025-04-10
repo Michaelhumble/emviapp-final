@@ -1,3 +1,4 @@
+
 import { Job } from '@/types/job';
 import { generateVietnameseNailJobs } from './vietnameseNailJobSamples';
 
@@ -27,7 +28,9 @@ export const formatJobListing = (dbJob: any): Job => {
     description: description || "",
     salary_range: dbJob.salary_range || compensation_details || "Competitive",
     posted_at: created_at || new Date().toISOString(),
-    contact_email: dbJob.contact_email || "contact@example.com",
+    contact_info: dbJob.contact_info || {
+      email: dbJob.email || "contact@example.com"
+    },
     is_featured: dbJob.is_featured || false,
     is_remote: dbJob.is_remote || false,
     experience_level: dbJob.experience_level || "Not specified",
