@@ -1,16 +1,19 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import SalonCard from "@/components/salons/SalonCard";
 import SalonFilter from "@/components/salons/SalonFilter";
 import SalonPromotion from "@/components/salons/SalonPromotion";
 import SalonsEmptyState from "@/components/salons/SalonsEmptyState";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Briefcase, MapPin } from "lucide-react";
+import { Search, Briefcase, MapPin, Store } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import useSalonsData from "@/hooks/useSalonsData";
+import { getSalonsForSale } from "@/utils/featuredContent";
+import { ensureSalonsForSale } from "@/utils/jobs/mockJobData";
 
 const Salons = () => {
   const { 
@@ -25,6 +28,14 @@ const Salons = () => {
     featuredSalons,
     suggestedKeywords
   } = useSalonsData();
+
+  const [salonsForSale, setSalonsForSale] = useState<any[]>([]);
+  
+  useEffect(() => {
+    // Get 20+ salon listings for sale
+    const forSaleSalons = ensureSalonsForSale(25);
+    setSalonsForSale(forSaleSalons);
+  }, []);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -94,7 +105,7 @@ const Salons = () => {
 
               {/* Right Content - Tabs and Salon Cards */}
               <div className="col-span-1 lg:col-span-3">
-                <Tabs defaultValue="all">
+                <Tabs defaultValue="for-sale">
                   <TabsList className="mb-6 w-full md:w-auto">
                     <TabsTrigger value="all" className="flex-1 md:flex-none">
                       <Briefcase className="h-4 w-4 mr-2" /> All Salons
@@ -103,7 +114,7 @@ const Salons = () => {
                       <MapPin className="h-4 w-4 mr-2" /> Featured
                     </TabsTrigger>
                     <TabsTrigger value="for-sale" className="flex-1 md:flex-none">
-                      <MapPin className="h-4 w-4 mr-2" /> For Sale
+                      <Store className="h-4 w-4 mr-2" /> For Sale
                     </TabsTrigger>
                   </TabsList>
 
@@ -165,18 +176,26 @@ const Salons = () => {
                   </TabsContent>
 
                   <TabsContent value="for-sale">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {salons
-                        .filter(salon => salon.for_sale === true)
-                        .map((salon, index) => (
+                    {loading ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {Array.from({ length: 6 }).map((_, index) => (
+                          <div 
+                            key={index} 
+                            className="animate-pulse bg-gray-100 rounded-lg h-64"
+                          ></div>
+                        ))}
+                      </div>
+                    ) : salonsForSale.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {salonsForSale.map((salon, index) => (
                           <SalonCard 
                             key={salon.id || index} 
                             salon={salon} 
                             onViewDetails={handleViewDetails}
                           />
                         ))}
-                    </div>
-                    {salons.filter(salon => salon.for_sale === true).length === 0 && (
+                      </div>
+                    ) : (
                       <div className="text-center py-12">
                         <p className="text-gray-500">No salons for sale at the moment.</p>
                         <Button variant="outline" className="mt-4">See All Salons</Button>

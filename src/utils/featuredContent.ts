@@ -103,6 +103,15 @@ export const getHiringSalons = (limit = 10): Salon[] => {
 };
 
 /**
+ * Gets salons for sale
+ * This is a new function to specifically get salons marked for sale
+ */
+export const getSalonsForSale = (limit = 20): Job[] => {
+  const saleJobs = sampleJobs.filter(job => job.for_sale === true);
+  return saleJobs.slice(0, limit); 
+};
+
+/**
  * Gets recently added salons
  */
 export const getRecentSalons = (limit = 10): Salon[] => {

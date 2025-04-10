@@ -6,6 +6,7 @@ import { differenceInDays } from 'date-fns';
 
 // Use mock data for now
 import { salonsForSaleJobs } from "@/utils/jobs/mockJobData";
+import { getSalonsForSale } from "@/utils/featuredContent";
 
 export interface SalonFilters {
   featured?: boolean;
@@ -47,17 +48,8 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
     try {
       console.log("Fetching salons with filters:", filters);
       
-      // In a production environment, this would be a call to Supabase
-      // const { data, error } = await supabase
-      //   .from('users')
-      //   .select('*')
-      //   .eq('role', 'salon')
-      //   .order('created_at', { ascending: false });
-      
-      // if (error) throw error;
-      
-      // For now, we'll use the mock data
-      let filteredSalons = [...salonsForSaleJobs];
+      // Use the new getSalonsForSale function to get more salon listings
+      let filteredSalons = getSalonsForSale(30);
       
       // Apply keyword search
       if (searchTerm) {
@@ -110,16 +102,15 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
       });
 
       // Set featured salons
-      const featured = salonsForSaleJobs
-        .filter(salon => salon.is_featured && salon.status !== 'expired')
-        .slice(0, 3);
+      const featured = getSalonsForSale(3)
+        .filter(salon => salon.is_featured && salon.status !== 'expired');
       
       setFeaturedSalons(featured);
       setSalons(filteredSalons);
       
       // Generate suggested keywords from actual data
       const keywords = new Set<string>(suggestedKeywords);
-      salonsForSaleJobs.forEach(salon => {
+      filteredSalons.forEach(salon => {
         if (salon.salon_features) {
           salon.salon_features.forEach(f => keywords.add(f));
         }
