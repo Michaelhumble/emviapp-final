@@ -1,16 +1,40 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/context/auth';
 import Layout from '@/components/layout/Layout';
 import ArtistProfileEditor from '@/components/profile/ArtistProfileEditor';
 import SalonProfileEditor from '@/components/profile/SalonProfileEditor';
 import CustomerProfileEditor from '@/components/profile/CustomerProfileEditor';
 import OtherProfileEditor from '@/components/profile/OtherProfileEditor';
-import { Loader2 } from 'lucide-react';
+import ProfileLoading from '@/components/profile/ProfileLoading';
+import { toast } from 'sonner';
+import { AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 const ProfileEdit = () => {
-  const { userProfile, userRole, loading } = useAuth();
+  const { userProfile, userRole, loading, refreshUserProfile } = useAuth();
   const [pageTitle, setPageTitle] = useState('Edit Profile');
+  const [loadError, setLoadError] = useState(false);
+  const [longLoading, setLongLoading] = useState(false);
+  const navigate = useNavigate();
+  
+  // Set up error and extended loading detection
+  useEffect(() => {
+    let timeoutId: number | undefined;
+    
+    if (loading) {
+      timeoutId = window.setTimeout(() => {
+        setLongLoading(true);
+      }, 5000);
+    } else {
+      setLongLoading(false);
+    }
+    
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [loading]);
   
   useEffect(() => {
     if (userRole) {
@@ -42,12 +66,50 @@ const ProfileEdit = () => {
     }
   }, [userRole]);
   
+  const handleRefresh = useCallback(async () => {
+    if (!refreshUserProfile) return;
+    
+    try {
+      setLoadError(false);
+      await refreshUserProfile();
+    } catch (error) {
+      console.error("Error refreshing profile:", error);
+      setLoadError(true);
+      toast.error("Could not load your profile. Please try again later.");
+    }
+  }, [refreshUserProfile]);
+  
   const renderProfileEditor = () => {
     if (loading) {
       return (
-        <div className="animate-pulse space-y-4 my-8">
-          <div className="h-12 bg-muted rounded w-1/3"></div>
-          <div className="h-64 bg-muted rounded"></div>
+        <ProfileLoading 
+          message="Loading your profile editor..."
+          duration={5000}
+          onRefresh={handleRefresh}
+          loadingType="edit"
+        />
+      );
+    }
+    
+    if (loadError || !userProfile) {
+      return (
+        <div className="text-center py-12">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-50 mb-4">
+            <AlertCircle className="h-8 w-8 text-red-500" />
+          </div>
+          <h2 className="text-xl font-semibold mb-2">Could not load your profile</h2>
+          <p className="text-gray-600 mb-6 max-w-md mx-auto">
+            There was a problem loading your profile information. This might be due to 
+            a connection issue or the profile may not be available.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button onClick={handleRefresh} variant="default">
+              Try Again
+            </Button>
+            <Button onClick={() => navigate('/dashboard')} variant="outline">
+              Go to Dashboard
+            </Button>
+          </div>
         </div>
       );
     }
