@@ -6,94 +6,108 @@ import { supabase } from "@/integrations/supabase/client";
 import { normalizeRole } from "@/utils/roles";
 import { toast } from "sonner";
 
+// Simple cache for profiles to avoid repeated fetching
+const profileCache = new Map<string, {
+  profile: UserProfile | null,
+  timestamp: number,
+  role: UserRole | null
+}>();
+
+// Cache expiration time - 5 minutes
+const CACHE_EXPIRATION = 5 * 60 * 1000;
+
 /**
- * Hook to handle user profile management
+ * Hook to handle user profile management with optimized loading
  */
 export const useUserProfile = (user: User | null, setLoading: (loading: boolean) => void) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [isError, setIsError] = useState<boolean>(false);
 
-  // Function to fetch user profile
+  // Function to fetch user profile with optimized flow
   const getUserProfile = async (userId: string) => {
     try {
       setLoading(true);
       setIsError(false);
       console.log("Fetching user profile for:", userId);
       
-      // First, try to get role from auth metadata (most accurate)
-      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+      // Check cache first
+      const cachedData = profileCache.get(userId);
+      const now = Date.now();
+      
+      if (cachedData && (now - cachedData.timestamp < CACHE_EXPIRATION)) {
+        console.log("Using cached profile data");
+        setUserProfile(cachedData.profile);
+        setUserRole(cachedData.role);
+        setLoading(false);
+        return;
+      }
+      
+      // Fetch both auth user and database profile in parallel
+      const [authResponse, profileResponse] = await Promise.all([
+        supabase.auth.getUser(),
+        supabase.from('users').select('*').eq('id', userId).single()
+      ]);
+      
+      // Process auth user result
+      const authUser = authResponse.data?.user;
+      const authError = authResponse.error;
+      let role: UserRole | null = null;
       
       if (authError) {
         console.error("Auth metadata fetch error:", authError);
-      } else {
-        console.log("Auth user data:", authUser);
+      } else if (authUser?.user_metadata?.role) {
+        role = normalizeRole(authUser.user_metadata.role as UserRole);
+        console.log("Setting role from metadata:", role);
+        setUserRole(role);
+        localStorage.setItem('emviapp_user_role', role || '');
       }
       
-      if (!authError && authUser?.user_metadata?.role) {
-        // Check for role in user metadata
-        const metadataRole = authUser?.user_metadata?.role as UserRole | null;
+      // Process profile result
+      const profileError = profileResponse.error;
+      const profile = profileResponse.data as unknown as UserProfile;
+      
+      if (profileError) {
+        console.error("User profile fetch error:", profileError);
         
-        if (metadataRole) {
-          const normalizedRole = normalizeRole(metadataRole);
-          console.log("Setting role from metadata:", normalizedRole);
-          setUserRole(normalizedRole);
-          localStorage.setItem('emviapp_user_role', normalizedRole || '');
-        }
-      }
-      
-      // Always also get the profile from the database
-      const { data: profile, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', userId)
-        .single();
-      
-      if (error) {
-        console.error("User profile fetch error:", error);
-        setIsError(true);
-        throw error;
-      }
-      
-      if (profile) {
-        console.log("User profile data retrieved successfully");
-        setUserProfile(profile as unknown as UserProfile);
-        
-        // If we didn't get a role from metadata, use the database role
-        if (!authUser?.user_metadata?.role && profile.role) {
-          const normalizedRole = normalizeRole(profile.role as UserRole);
-          console.log("Setting role from database:", normalizedRole);
-          setUserRole(normalizedRole);
-          
-          // Store role in localStorage for redundancy
-          localStorage.setItem('emviapp_user_role', normalizedRole || '');
-          
-          // Since metadata didn't have role, update it (sync back to auth)
-          if (profile.role) {
-            try {
-              await supabase.auth.updateUser({
-                data: { role: profile.role }
-              });
-            } catch (updateErr) {
-              // Silent error - continue anyway
-              console.warn("Failed to update auth metadata with role:", updateErr);
-            }
-          }
-        }
-      } else {
-        console.warn("No user profile found in database");
-        // Fallback to cached role only if no profile and no metadata role
-        if (!authUser?.user_metadata?.role) {
+        // Try fallback to cached role if available
+        if (!role) {
           const cachedRole = localStorage.getItem('emviapp_user_role');
           if (cachedRole) {
             const normalizedRole = normalizeRole(cachedRole as UserRole);
             setUserRole(normalizedRole);
-          } else {
-            setUserRole(null);
           }
         }
         
+        setIsError(true);
         setUserProfile(null);
+      } else {
+        console.log("User profile data retrieved successfully");
+        setUserProfile(profile);
+        
+        // If we didn't get a role from metadata, use the database role
+        if (!role && profile?.role) {
+          role = normalizeRole(profile.role as UserRole);
+          console.log("Setting role from database:", role);
+          setUserRole(role);
+          localStorage.setItem('emviapp_user_role', role || '');
+          
+          // Sync role back to auth (don't wait for this)
+          if (profile.role) {
+            supabase.auth.updateUser({
+              data: { role: profile.role }
+            }).catch(updateErr => {
+              console.warn("Failed to update auth metadata with role:", updateErr);
+            });
+          }
+        }
+        
+        // Store in cache
+        profileCache.set(userId, {
+          profile,
+          role,
+          timestamp: now
+        });
       }
     } catch (err) {
       console.error("Error in getUserProfile:", err);
@@ -114,10 +128,12 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
     }
   };
 
-  // Refresh user profile
+  // Refresh user profile with cache busting
   const refreshUserProfile = useCallback(async () => {
     if (user) {
       console.log("Refreshing user profile");
+      // Remove from cache to force fresh data
+      profileCache.delete(user.id);
       await getUserProfile(user.id);
     } else {
       console.warn("Cannot refresh profile: no user");
