@@ -82,7 +82,7 @@ const FeaturedJobsShowcase = () => {
                     </Badge>
                     <div className="text-xs text-gray-500 flex items-center">
                       <Clock className="w-3 h-3 mr-1" />
-                      {job.posted_date ? formatPostedDate(job.posted_date) : "Recently posted"}
+                      {formatPostedDate(job.created_at)}
                     </div>
                   </div>
                   

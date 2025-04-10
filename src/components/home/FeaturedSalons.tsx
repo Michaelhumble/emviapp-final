@@ -4,33 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { MapPin, Star } from "lucide-react";
 import { motion } from "framer-motion";
-
-const featuredSalons = [
-  {
-    id: 1,
-    name: "Glossy Nail Studio",
-    location: "San Francisco, CA",
-    image: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    rating: 4.9,
-    positions: 3
-  },
-  {
-    id: 2,
-    name: "Elite Beauty Bar",
-    location: "Los Angeles, CA",
-    image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    rating: 4.8,
-    positions: 2
-  },
-  {
-    id: 3,
-    name: "Luxe Nail Lounge",
-    location: "New York, NY",
-    image: "https://images.unsplash.com/photo-1522337660859-02fbefca4702?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    rating: 4.7,
-    positions: 4
-  }
-];
+import { getFeaturedSalons } from "@/utils/featuredContent";
+import { useEffect, useState } from "react";
+import { Salon } from "@/types/salon";
 
 const container = {
   hidden: { opacity: 0 },
@@ -48,6 +24,13 @@ const item = {
 };
 
 const FeaturedSalons = () => {
+  const [salons, setSalons] = useState<Salon[]>([]);
+  
+  useEffect(() => {
+    const featuredSalons = getFeaturedSalons(3);
+    setSalons(featuredSalons);
+  }, []);
+
   return (
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
@@ -71,7 +54,7 @@ const FeaturedSalons = () => {
           whileInView="show"
           viewport={{ once: true }}
         >
-          {featuredSalons.map((salon) => (
+          {salons.map((salon) => (
             <motion.div key={salon.id} variants={item}>
               <Card className="overflow-hidden h-full transition-shadow hover:shadow-lg">
                 <div className="relative h-48 overflow-hidden">
@@ -91,14 +74,14 @@ const FeaturedSalons = () => {
                   </div>
                   <div className="flex items-center text-gray-500 mb-4">
                     <MapPin className="w-4 h-4 mr-1" />
-                    <span className="text-sm">{salon.location}</span>
+                    <span className="text-sm">{salon.city}</span>
                   </div>
                   <p className="text-primary font-medium">
-                    {salon.positions} open positions
+                    {salon.isHiring ? "Currently Hiring" : "Contact for Opportunities"}
                   </p>
                 </CardContent>
                 <CardFooter className="pt-0">
-                  <Link to={`/salons`} className="text-primary hover:text-primary/80 text-sm font-medium">
+                  <Link to={`/salons/${salon.id}`} className="text-primary hover:text-primary/80 text-sm font-medium">
                     View details →
                   </Link>
                 </CardFooter>
