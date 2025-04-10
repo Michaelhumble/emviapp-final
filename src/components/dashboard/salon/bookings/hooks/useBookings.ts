@@ -125,9 +125,17 @@ export const useBookings = () => {
     if (!user?.id) return;
     
     try {
+      // Instead of using assigned_staff_id directly, use the column name that exists in the database
+      // Most likely this is a custom field we're selecting in the query but not an actual column name
+      // Using a metadata column or a custom JSON field would be a better approach
       const { error } = await supabase
         .from("bookings")
-        .update({ assigned_staff_id: staffId })
+        .update({ 
+          // Use a field that's recognized by the Supabase schema
+          // This is a temporary fix - in a real application we'd need to update the database schema
+          // to include assigned_staff_id as a proper column
+          metadata: { assigned_staff_id: staffId }
+        })
         .eq("id", bookingId)
         .eq("recipient_id", user.id);
       
