@@ -13,6 +13,7 @@ import useSalonsData, { SalonFilters } from '@/hooks/useSalonsData';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Job } from '@/types/job';
 
 // This is the locked, final version of the Salons Page
 const SalonsFinal: React.FC = () => {
@@ -57,7 +58,9 @@ const SalonsFinal: React.FC = () => {
     return salon.status === "expired";
   };
   
-  const handleViewSalonDetails = (salon: any) => {
+  // Update this function to navigate to the salon detail page
+  const handleViewSalonDetails = (salon: Job) => {
+    console.log("Navigating to salon details:", salon.id);
     navigate(`/salons/${salon.id}`);
   };
 
@@ -136,7 +139,7 @@ const SalonsFinal: React.FC = () => {
                       salon={salon} 
                       index={index} 
                       isExpired={isExpired(salon)} 
-                      onViewDetails={handleViewSalonDetails} 
+                      onViewDetails={() => handleViewSalonDetails(salon)} 
                     />
                   ))
                 ) : (
