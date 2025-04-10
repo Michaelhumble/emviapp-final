@@ -27,6 +27,7 @@ import SalonBookingCalendar from "@/components/dashboard/salon/SalonBookingCalen
 import SalonClientManagement from "@/components/dashboard/salon/SalonClientManagement";
 import SalonAnalytics from "@/components/dashboard/salon/SalonAnalytics";
 import SalonMessagingCenter from "@/components/dashboard/salon/SalonMessagingCenter";
+import SalonBookingManager from "@/components/dashboard/salon/bookings/SalonBookingManager";
 import confetti from "canvas-confetti";
 
 const OwnerDashboard = () => {
@@ -39,11 +40,9 @@ const OwnerDashboard = () => {
     document.title = "Salon Owner Dashboard | EmviApp";
     console.log("Owner Dashboard rendered with profile:", userProfile);
     
-    // Check if we should show confetti (e.g., first login, recent referred user, etc.)
     const shouldShowConfetti = localStorage.getItem('salon_success');
     
     if (shouldShowConfetti) {
-      // Remove the flag so it only shows once
       localStorage.removeItem('salon_success');
       
       setTimeout(() => {
@@ -56,14 +55,12 @@ const OwnerDashboard = () => {
       }, 1000);
     }
 
-    // Restore active tab from localStorage if available
     const savedTab = localStorage.getItem('salon_dashboard_tab');
     if (savedTab) {
       setActiveTab(savedTab);
     }
   }, [userProfile]);
 
-  // Save active tab to localStorage when it changes
   const handleTabChange = (value: string) => {
     setActiveTab(value);
     localStorage.setItem('salon_dashboard_tab', value);
@@ -79,10 +76,8 @@ const OwnerDashboard = () => {
         >
           <RoleDashboardLayout>
             <div className="space-y-8">
-              {/* Salon Welcome Banner with Vietnamese text */}
               <SalonDashboardBanner userName={userProfile?.salon_name || userProfile?.full_name} />
               
-              {/* Dashboard Tabs */}
               <Tabs value={activeTab} onValueChange={handleTabChange}>
                 <TabsList className="grid grid-cols-7 mb-8">
                   <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -94,107 +89,79 @@ const OwnerDashboard = () => {
                   <TabsTrigger value="messages">Messages</TabsTrigger>
                 </TabsList>
                 
-                {/* Overview Tab */}
                 <TabsContent value="overview" className="space-y-8">
-                  {/* Profile Completion Meter */}
                   <SalonProfileCompletionMeter />
                   
-                  {/* Quick Stats Grid */}
                   <SalonQuickStats />
                   
-                  {/* NEW: Salon Boost & Credit Panel */}
                   <SalonBoostCreditPanel />
                   
-                  {/* NEW: Next Steps Smart Panel */}
                   <NextStepsSmart />
                   
-                  {/* NEW: Analytics Cards */}
                   <SalonAnalyticsCards />
                   
-                  {/* Action Buttons with Vietnamese text */}
                   <SalonDashboardActionButtons />
                   
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* NEW: Credit Promotion Card */}
                     <div className="lg:col-span-1">
                       <SalonCreditPromotion />
                     </div>
                     
-                    {/* NEW: Top Local Artists widget */}
                     <div className="lg:col-span-1">
                       <TopLocalArtists />
                     </div>
                     
-                    {/* Posted Jobs Section - Now in a column span */}
                     <div className="lg:col-span-1">
                       <SalonReferralCard />
                     </div>
                   </div>
                 </TabsContent>
 
-                {/* Bookings Tab - New in Phase 3 */}
                 <TabsContent value="bookings" className="space-y-8">
-                  {/* Booking Calendar */}
+                  <SalonBookingManager />
+                  
                   <SalonBookingCalendar />
                 </TabsContent>
                 
-                {/* Clients Tab - New in Phase 3 */}
                 <TabsContent value="clients" className="space-y-8">
-                  {/* Client Management */}
                   <SalonClientManagement />
                 </TabsContent>
                 
-                {/* Team Tab */}
                 <TabsContent value="team" className="space-y-8">
-                  {/* Team Management Panel */}
                   <SalonTeamManagement />
                   
-                  {/* Referral Card (repurposed for team invites) */}
                   <SalonReferralCard />
                 </TabsContent>
                 
-                {/* Services Tab */}
                 <TabsContent value="services" className="space-y-8">
-                  {/* Service Manager */}
                   <SalonServiceManager />
                   
-                  {/* Credit Status (for service boosts) */}
                   <SalonCreditStatus />
                 </TabsContent>
                 
-                {/* Analytics Tab - Enhanced in Phase 3 */}
                 <TabsContent value="analytics" className="space-y-8">
-                  {/* Revenue & Booking Analytics - New in Phase 3 */}
                   <SalonAnalytics />
                   
-                  {/* Original Analytics Cards */}
                   <SalonAnalyticsCards />
                   
-                  {/* Jobs & Listings Section */}
                   <SalonListingsManagement />
                   
-                  {/* Posted Jobs Section */}
                   <SalonPostedJobsSection />
                 </TabsContent>
                 
-                {/* Messages Tab - New in Phase 3 */}
                 <TabsContent value="messages" className="space-y-8">
-                  {/* Messaging Center */}
                   <SalonMessagingCenter />
                   
-                  {/* Notification Center */}
                   <SalonNotificationCenter />
                 </TabsContent>
               </Tabs>
               
-              {/* Suggestion Box */}
               <SalonSuggestionBox />
             </div>
           </RoleDashboardLayout>
         </motion.div>
       </div>
       
-      {/* Visibility upgrade notification */}
       {showNotification && (
         <VisibilityNotification 
           onClose={() => setShowNotification(false)} 
