@@ -37,6 +37,7 @@ import { SalonProvider } from "@/context/salon/SalonContext";
 import SalonSwitcher from "@/components/dashboard/salon/SalonSwitcher";
 import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
+import SalonMarketingTools from "@/components/dashboard/salon/SalonMarketingTools";
 
 const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);

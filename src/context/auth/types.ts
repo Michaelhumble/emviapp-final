@@ -38,6 +38,7 @@ export interface UserProfile {
   services?: any[];
   created_at?: string;
   updated_at?: string;
+  google_review_link?: string; // Added this field for Google review link
 }
 
 export interface AuthContextType {

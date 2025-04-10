@@ -1,45 +1,61 @@
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Building, MapPin } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 
 interface SalonBasicInfoTabProps {
   salonName: string;
   location: string;
+  googleReviewLink?: string; // Added this prop
   setSalonName: (value: string) => void;
   setLocation: (value: string) => void;
+  setGoogleReviewLink?: (value: string) => void; // Added this prop
 }
 
-const SalonBasicInfoTab = ({ salonName, location, setSalonName, setLocation }: SalonBasicInfoTabProps) => {
+const SalonBasicInfoTab = ({
+  salonName,
+  location,
+  googleReviewLink,
+  setSalonName,
+  setLocation,
+  setGoogleReviewLink
+}: SalonBasicInfoTabProps) => {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium">Salon Information</h3>
-      
-      <div className="grid gap-4">
-        <div className="grid gap-2">
-          <Label htmlFor="salonName" className="flex items-center gap-1">
-            <Building className="h-4 w-4" /> Salon Name
-          </Label>
-          <Input
-            id="salonName"
-            placeholder="Your salon's name"
-            value={salonName}
-            onChange={(e) => setSalonName(e.target.value)}
-          />
-        </div>
-        
-        <div className="grid gap-2">
-          <Label htmlFor="location" className="flex items-center gap-1">
-            <MapPin className="h-4 w-4" /> Location
-          </Label>
-          <Input
-            id="location"
-            placeholder="Salon address or city/state"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          />
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="salonName">Salon Name</Label>
+        <Input
+          id="salonName"
+          placeholder="Enter your salon name"
+          value={salonName}
+          onChange={(e) => setSalonName(e.target.value)}
+        />
       </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor="location">Location</Label>
+        <Input
+          id="location"
+          placeholder="City, State or Full Address"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+        />
+      </div>
+      
+      {setGoogleReviewLink && (
+        <div className="space-y-2">
+          <Label htmlFor="googleReviewLink">Google Review Link</Label>
+          <Input
+            id="googleReviewLink"
+            placeholder="https://g.page/r/YOUR_CODE/review"
+            value={googleReviewLink || ''}
+            onChange={(e) => setGoogleReviewLink(e.target.value)}
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Add your Google review link to encourage customers to leave reviews
+          </p>
+        </div>
+      )}
     </div>
   );
 };

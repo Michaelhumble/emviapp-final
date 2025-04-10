@@ -30,6 +30,7 @@ const SalonProfileEditor = () => {
     website,
     logoUrl,
     logoPreview,
+    googleReviewLink,
     isLoading,
     setSalonName,
     setLocation,
@@ -37,6 +38,7 @@ const SalonProfileEditor = () => {
     setPhone,
     setInstagram,
     setWebsite,
+    setGoogleReviewLink,
     handleFileChange,
     removeLogo,
     handleSaveProfile
@@ -68,8 +70,10 @@ const SalonProfileEditor = () => {
             <SalonBasicInfoTab
               salonName={salonName}
               location={location}
+              googleReviewLink={googleReviewLink}
               setSalonName={setSalonName}
               setLocation={setLocation}
+              setGoogleReviewLink={setGoogleReviewLink}
             />
           </TabsContent>
           
