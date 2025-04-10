@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
@@ -125,10 +124,12 @@ const SalonsFinal: React.FC = () => {
                 {loading ? (
                   <SalonsLoadingState count={6} />
                 ) : filteredSalons.length > 0 ? (
-                  filteredSalons.map((salon) => (
+                  filteredSalons.map((salon, index) => (
                     <SalonCard 
                       key={salon.id} 
                       salon={salon} 
+                      index={index} 
+                      isExpired={false} 
                       onViewDetails={handleViewSalonDetails} 
                     />
                   ))

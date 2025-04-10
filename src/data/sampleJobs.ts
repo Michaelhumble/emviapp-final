@@ -1,8 +1,9 @@
 
 import { Job } from "@/types/job";
+import { fixSampleJobsData } from "@/utils/jobs/sampleJobMapper";
 
-// Sample job listings with diverse positions and locations
-const sampleJobs: Job[] = [
+// Raw sample job listings data
+const rawSampleJobs = [
   {
     id: "1",
     title: "Senior Nail Technician",
@@ -974,5 +975,8 @@ const sampleJobs: Job[] = [
     experience_level: "Senior"
   }
 ];
+
+// Process the raw sample jobs to ensure they conform to the Job type
+const sampleJobs: Job[] = fixSampleJobsData(rawSampleJobs);
 
 export default sampleJobs;

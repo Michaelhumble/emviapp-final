@@ -1,273 +1,117 @@
 import { Job } from "@/types/job";
 
-// Hiring salons data (jobs)
-export const hiringSalons = [
-  {
-    id: "1",
-    name: "Luxury Nails & Spa",
-    location: "Houston, TX",
-    jobTitle: {
-      vi: "Cần thợ gấp",
-      en: "Nail Tech Needed ASAP"
-    },
-    salary: "$800-1200/week",
-    features: ["Weekly Pay", "Tips", "Bao Lương Nếu Cần"],
-    phone: "(713) 555-1234",
-    image: "https://images.unsplash.com/photo-1632345031435-8727f6897d53?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60"
-  },
-  {
-    id: "2",
-    name: "Diamond Nails",
-    location: "Dallas, TX",
-    jobTitle: {
-      vi: "Tuyển thợ bột",
-      en: "Seeking Powder Specialist"
-    },
-    salary: "$1000-1500/week",
-    features: ["Full-Time", "Tips"],
-    phone: "(214) 555-2345",
-    image: "https://images.unsplash.com/photo-1607779097040-26e80aa78e66?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60"
-  },
-  {
-    id: "3",
-    name: "Queen Nails",
-    location: "San Jose, CA",
-    jobTitle: {
-      vi: "Cần thợ nail",
-      en: "Nail Technician Position"
-    },
-    salary: "Call for salary",
-    features: ["Weekly Pay", "Bao Lương Nếu Cần"],
-    phone: "(408) 555-3456",
-    image: "https://images.unsplash.com/photo-1610992015732-2449b76344bc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60"
-  },
-  {
-    id: "4",
-    name: "Crystal Spa & Nails",
-    location: "Atlanta, GA",
-    jobTitle: {
-      vi: "Tuyển thợ có kinh nghiệm",
-      en: "Experienced Nail Tech Wanted"
-    },
-    salary: "$900-1400/week",
-    features: ["Full-Time", "Tips"],
-    phone: "(404) 555-4567",
-    image: "https://images.unsplash.com/photo-1613966802194-d46a163af70c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzJ8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60"
-  }
-];
-
-// Enhanced salons for sale data
-export const salonsForSale: Partial<Job>[] = [
+// Sample salon for sale listings
+const salonData: Job[] = [
   {
     id: "101",
-    created_at: new Date().toISOString(),
-    title: "Salon for Sale",
-    company: "Elite Nails & Spa",
-    location: "Orlando, FL",
-    user_id: "sample-user-1",
-    asking_price: "$120,000",
-    monthly_rent: "$3,500/month",
-    number_of_stations: 6,
-    number_of_chairs: 8,
-    square_feet: "1,800",
-    revenue: "$28,000/month",
-    salon_features: ["10 Years Established", "High Traffic Area", "Full Equipment"],
-    vietnamese_description: "Tiệm rộng 1800sf, 6 ghế nail, 6 ghế spa pedicure. Tiệm đông khách, khu Mỹ trắng, income cao.",
-    description: "1800sf salon, 6 nail stations, 6 spa pedicure chairs. Busy salon in upscale area with high income.",
+    role: "Salon Owner",
+    company: "Elegant Nails & Spa",
+    location: "Denver, CO",
+    posted_at: "2023-12-01T10:00:00Z",
+    created_at: "2023-12-01T10:00:00Z",
+    description: "Established nail salon for sale in prime Denver location. 7 years in business with loyal clientele. Fully equipped with 8 manicure stations, 6 pedicure chairs, and 2 private treatment rooms. Current owner relocating out of state. Great opportunity for an experienced nail technician looking to own their own business.",
+    for_sale: true,
+    asking_price: "85000",
+    number_of_stations: "8",
+    square_feet: "1200",
+    reason_for_selling: "Owner relocating",
+    salon_features: ["High-end equipment", "Loyal clientele", "Prime location", "Parking available"],
     contact_info: {
-      phone: "(407) 555-6789",
-      email: "contact@elitespa.com"
+      owner_name: "Jennifer Lee",
+      phone: "(303) 555-1234",
+      email: "jennifer@elegantnailsspa.com"
     },
-    has_housing: true,
-    has_wax_room: true,
-    has_dining_room: true,
-    has_laundry: true,
-    owner_will_train: true,
-    reason_for_selling: "Về hưu / Retirement",
-    image: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bmFpbCUyMHNhbG9ufGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60",
-    emvi_ai_boosted: true,
-    compensation_type: "Sale",
-    compensation_details: "$120,000",
-    expires_at: new Date(Date.now() + 30 * 86400000).toISOString(),
+    is_featured: true,
     status: "active"
   },
   {
     id: "102",
-    created_at: new Date().toISOString(),
-    title: "Salon for Sale",
-    company: "Golden Nails",
-    location: "San Diego, CA",
-    user_id: "sample-user-2",
-    asking_price: "$180,000",
-    monthly_rent: "$4,200/month",
-    number_of_stations: 8,
-    number_of_chairs: 10,
-    square_feet: "2,200",
-    revenue: "$35,000/month",
-    salon_features: ["Prime Location", "Owner Will Train", "Loyal Customers"],
-    vietnamese_description: "Tiệm đẹp khu Mỹ trắng, income ổn định. Chủ bán vì về hưu, sẽ training lại cho chủ mới.",
-    description: "Beautiful salon in upscale area with stable income. Owner selling due to retirement, will train new owner.",
+    role: "Salon Owner",
+    company: "Luxe Beauty Lounge",
+    location: "Miami, FL",
+    posted_at: "2023-11-15T14:30:00Z",
+    created_at: "2023-11-15T14:30:00Z",
+    description: "Upscale beauty salon for sale in trendy Miami neighborhood. Established 5 years ago and has built a strong reputation for quality service. Fully equipped with 6 styling stations, 3 treatment rooms, and a dedicated nail area. Seller is retiring. Perfect opportunity for a stylist or entrepreneur looking to own a successful salon.",
+    for_sale: true,
+    asking_price: "120000",
+    number_of_stations: "6",
+    square_feet: "1500",
+    reason_for_selling: "Owner retiring",
+    salon_features: ["Upscale clientele", "Modern decor", "Full service salon", "Strong social media presence"],
     contact_info: {
-      phone: "(619) 555-7890",
-      email: "info@goldennails.com"
+      owner_name: "Carlos Rodriguez",
+      phone: "(305) 555-6789",
+      email: "carlos@luxebeautylounge.com"
     },
-    has_housing: false,
-    has_wax_room: true,
-    has_dining_room: true,
-    has_laundry: false,
-    owner_will_train: true,
-    reason_for_selling: "Chuyển tiểu bang / Moving",
-    image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bmFpbCUyMHNhbG9ufGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60"
+    is_featured: true,
+    status: "active"
   },
   {
     id: "103",
-    created_at: new Date().toISOString(),
-    title: "Salon for Sale",
-    company: "Serenity Nails & Spa",
-    location: "Chicago, IL",
-    user_id: "sample-user-3",
-    asking_price: "$95,000",
-    monthly_rent: "$3,800/month",
-    number_of_stations: 5,
-    number_of_chairs: 6,
-    square_feet: "1,500",
-    revenue: "$22,000/month",
-    salon_features: ["New Equipment", "Near Shopping Center", "Parking Available"],
-    vietnamese_description: "Tiệm vị trí đắc địa, gần trung tâm mua sắm lớn. Mới trang bị lại toàn bộ thiết bị.",
-    description: "Salon in ideal location near major shopping center. Recently upgraded all equipment.",
+    role: "Salon Owner",
+    company: "Polished Nail Bar",
+    location: "Charlotte, NC",
+    posted_at: "2023-12-10T09:15:00Z",
+    created_at: "2023-12-10T09:15:00Z",
+    description: "Profitable nail salon for sale in busy shopping center. Established 3 years with growing clientele. Fully equipped with 5 manicure stations and 4 pedicure chairs. Current owner has other business interests. Great opportunity for a nail technician looking to be their own boss.",
+    for_sale: true,
+    asking_price: "65000",
+    number_of_stations: "5",
+    square_feet: "900",
+    reason_for_selling: "Owner has other business interests",
+    salon_features: ["High foot traffic", "Modern equipment", "Established clientele", "Recently renovated"],
     contact_info: {
-      phone: "(312) 555-8901",
-      email: "hello@serenitynails.com"
+      owner_name: "Michelle Kim",
+      phone: "(704) 555-4321",
+      email: "michelle@polishednailbar.com"
     },
-    has_housing: true,
-    has_wax_room: false,
-    has_dining_room: false,
-    has_laundry: true,
-    owner_will_train: false,
-    reason_for_selling: "Đổi ngành / Career change",
-    image: "https://images.unsplash.com/photo-1604654894611-6973b376cbde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60"
+    is_featured: false,
+    status: "active"
   },
   {
     id: "104",
-    created_at: new Date().toISOString(),
-    title: "Salon for Sale",
-    company: "Bliss Nails",
+    role: "Salon Owner",
+    company: "Glamour Hair Studio",
     location: "Seattle, WA",
-    user_id: "sample-user-4",
-    asking_price: "$155,000",
-    monthly_rent: "$4,500/month",
-    number_of_stations: 7,
-    number_of_chairs: 9,
-    square_feet: "1,900",
-    revenue: "$32,000/month",
-    salon_features: ["Established 12 Years", "Owner Retiring", "High-End Clientele"],
-    vietnamese_description: "Tiệm cao cấp đã hoạt động 12 năm, khách hàng ổn định. Chủ bán vì về hưu.",
-    description: "Upscale salon established for 12 years with stable clientele. Owner selling due to retirement.",
+    posted_at: "2023-10-05T11:45:00Z",
+    created_at: "2023-10-05T11:45:00Z",
+    description: "Well-established hair salon for sale in upscale Seattle neighborhood. 10 years in business with loyal clientele. Fully equipped with 8 styling stations and a dedicated color area. Current owner moving out of state. Perfect for an experienced stylist ready to own their own salon.",
+    for_sale: true,
+    asking_price: "95000",
+    number_of_stations: "8",
+    square_feet: "1300",
+    reason_for_selling: "Owner relocating",
+    salon_features: ["Premium location", "High-end clientele", "Established brand", "Fully staffed"],
     contact_info: {
-      phone: "(206) 555-9012",
-      email: "info@blissnails.com"
+      owner_name: "David Wilson",
+      phone: "(206) 555-8765",
+      email: "david@glamourhairstudio.com"
     },
-    has_housing: false,
-    has_wax_room: true,
-    has_dining_room: true,
-    has_laundry: true,
-    owner_will_train: true,
-    reason_for_selling: "Về hưu / Retirement",
-    image: "https://images.unsplash.com/photo-1610384104075-e05c8cf200c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzZ8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60"
+    is_featured: false,
+    status: "expired"
   },
   {
     id: "105",
-    created_at: new Date().toISOString(),
-    title: "Salon for Sale",
-    company: "Pearl Beauty & Nail Spa",
-    location: "Miami, FL",
-    user_id: "sample-user-5",
-    asking_price: "$210,000",
-    monthly_rent: "$5,200/month",
-    number_of_stations: 10,
-    number_of_chairs: 12,
-    square_feet: "2,500",
-    revenue: "$42,000/month",
-    salon_features: ["Beach Location", "Luxury Clientele", "Full Service Spa"],
-    vietnamese_description: "Tiệm spa cao cấp gần bãi biển, khách hàng giàu có. Đầy đủ dịch vụ spa.",
-    description: "Luxury full-service spa near the beach with high-end clientele. Complete spa services available.",
+    role: "Salon Owner",
+    company: "Zen Day Spa",
+    location: "Austin, TX",
+    posted_at: "2023-11-20T13:00:00Z",
+    created_at: "2023-11-20T13:00:00Z",
+    description: "Profitable day spa for sale in growing Austin neighborhood. Established 4 years ago with excellent reputation. Includes 4 treatment rooms, relaxation area, and retail space. Current owner pursuing new career. Great opportunity for a licensed esthetician or massage therapist looking to own their own business.",
+    for_sale: true,
+    asking_price: "110000",
+    number_of_stations: "4",
+    square_feet: "1100",
+    reason_for_selling: "Owner changing careers",
+    salon_features: ["Relaxing atmosphere", "Loyal clientele", "Strong online presence", "Growing area"],
     contact_info: {
-      phone: "(305) 555-1234",
-      email: "contact@pearlbeautyspa.com"
+      owner_name: "Sarah Johnson",
+      phone: "(512) 555-9876",
+      email: "sarah@zendayspa.com"
     },
-    has_housing: false,
-    has_wax_room: true,
-    has_dining_room: true,
-    has_laundry: true,
-    owner_will_train: true,
-    reason_for_selling: "Mở thêm chi nhánh mới / Opening new locations",
-    image: "https://images.unsplash.com/photo-1610992015732-2449b76344bc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60",
-    emvi_ai_boosted: true
+    is_featured: true,
+    status: "active"
   }
 ];
 
-salonsForSale.forEach(salon => {
-  if (!salon.compensation_type) salon.compensation_type = "Sale";
-  if (!salon.compensation_details) salon.compensation_details = salon.asking_price || "";
-  if (!salon.expires_at) salon.expires_at = new Date(Date.now() + 30 * 86400000).toISOString();
-  if (!salon.status) salon.status = "active";
-});
-
-export const salonListings = [
-  {
-    id: "salon1",
-    name: "Luxury Nails & Spa",
-    location: "Houston, TX",
-    jobTitle: {
-      vi: "Cần thợ gấp",
-      en: "Nail Tech Needed ASAP"
-    },
-    salary: "$800-1200/week",
-    features: ["Weekly Pay", "Tips", "Bao Lương Nếu Cần"],
-    phone: "(713) 555-1234",
-    image: "https://images.unsplash.com/photo-1632345031435-8727f6897d53?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60",
-    number_of_stations: 10
-  },
-  {
-    id: "2",
-    name: "Diamond Nails",
-    location: "Dallas, TX",
-    jobTitle: {
-      vi: "Tuyển thợ bột",
-      en: "Seeking Powder Specialist"
-    },
-    salary: "$1000-1500/week",
-    features: ["Full-Time", "Tips"],
-    phone: "(214) 555-2345",
-    image: "https://images.unsplash.com/photo-1607779097040-26e80aa78e66?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60",
-    number_of_stations: 8
-  },
-  {
-    id: "3",
-    name: "Queen Nails",
-    location: "San Jose, CA",
-    jobTitle: {
-      vi: "Cần thợ nail",
-      en: "Nail Technician Position"
-    },
-    salary: "Call for salary",
-    features: ["Weekly Pay", "Bao Lương Nếu Cần"],
-    phone: "(408) 555-3456",
-    image: "https://images.unsplash.com/photo-1610992015732-2449b76344bc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60",
-    number_of_stations: 6
-  },
-  {
-    id: "4",
-    name: "Crystal Spa & Nails",
-    location: "Atlanta, GA",
-    jobTitle: {
-      vi: "Tuyển thợ có kinh nghiệm",
-      en: "Experienced Nail Tech Wanted"
-    },
-    salary: "$900-1400/week",
-    features: ["Full-Time", "Tips"],
-    phone: "(404) 555-4567",
-    image: "https://images.unsplash.com/photo-1613966802194-d46a163af70c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzJ8fG5haWwlMjBzYWxvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60",
-    number_of_stations: 7
-  }
-];
+export default salonData;
