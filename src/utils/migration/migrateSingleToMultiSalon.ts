@@ -40,7 +40,11 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
     const salonName = userProfileAny.salon_name || userProfileAny.full_name || 'My Salon';
     
     // Create a new salon record with information from the user profile
+    // Generate UUID for the salon
+    const salonId = crypto.randomUUID();
+    
     const newSalonData = {
+      id: salonId, // Add the ID field which is required
       owner_id: userId,
       salon_name: salonName,
       logo_url: userProfileAny.avatar_url,
@@ -51,7 +55,6 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
       about: userProfileAny.bio
     };
     
-    // Use type assertion to avoid TypeScript errors
     const { data: newSalon, error: insertError } = await supabase
       .from('salons')
       .insert(newSalonData)
