@@ -36,18 +36,19 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
     }
     
     // Define the salon name - either get it from profile or use a fallback
-    const salonName = userProfile.salon_name || userProfile.full_name || 'My Salon';
+    // Use optional chaining for type safety
+    const salonName = userProfile?.salon_name || userProfile?.full_name || 'My Salon';
     
     // Create a new salon record with information from the user profile
     const newSalonData = {
       owner_id: userId,
       salon_name: salonName,
-      logo_url: userProfile.avatar_url,
-      location: userProfile.location,
-      website: userProfile.website,
-      instagram: userProfile.instagram,
-      phone: userProfile.phone,
-      about: userProfile.bio
+      logo_url: userProfile?.avatar_url,
+      location: userProfile?.location,
+      website: userProfile?.website,
+      instagram: userProfile?.instagram,
+      phone: userProfile?.phone,
+      about: userProfile?.bio
     };
     
     // Use type assertion to avoid TypeScript errors
