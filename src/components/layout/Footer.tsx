@@ -1,6 +1,7 @@
 
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
+import EmviLogo from "@/components/branding/EmviLogo";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -11,7 +12,9 @@ const Footer = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-xl font-bold mb-4">EmviApp</h3>
+            <div className="mb-4">
+              <EmviLogo className="inline-block" />
+            </div>
             <p className="text-gray-400 mb-4">
               Connecting beauty professionals with clients and salons.
               Built with love for the beauty world.

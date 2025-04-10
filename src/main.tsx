@@ -9,6 +9,12 @@ import './index.css';
 // Create query client
 const queryClient = new QueryClient();
 
+// Set favicon
+const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+if (link) {
+  link.href = "/lovable-uploads/aa25a147-5384-4b72-86f0-e3cc8caba2cc.png";
+}
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>

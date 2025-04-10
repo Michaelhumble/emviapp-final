@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UserRole } from "@/context/auth/types";
+import EmviLogo from "@/components/branding/EmviLogo";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -63,6 +64,10 @@ const SignUp = () => {
     <Layout>
       <div className="flex items-center justify-center min-h-[70vh] p-4 bg-background">
         <Card className="w-full max-w-md">
+          <div className="flex justify-center pt-6">
+            <EmviLogo size="large" />
+          </div>
+          
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">Create an Account</CardTitle>
             <CardDescription className="text-center">

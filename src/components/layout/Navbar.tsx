@@ -23,7 +23,7 @@ const Navbar = () => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
       <div className="container flex items-center justify-between mx-auto h-16 px-4">
         <Link to="/" className="flex items-center">
-          <EmviLogo className="h-8 w-auto" />
+          <EmviLogo size="small" />
         </Link>
 
         {/* Main navigation */}

@@ -1,5 +1,4 @@
 
-// Create this file if it doesn't exist
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
@@ -10,6 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Loader2 } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { toast } from "sonner";
+import EmviLogo from "@/components/branding/EmviLogo";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -41,6 +41,10 @@ const SignIn = () => {
     <Layout>
       <div className="flex items-center justify-center min-h-[70vh] p-4 bg-background">
         <Card className="w-full max-w-md">
+          <div className="flex justify-center pt-6">
+            <EmviLogo size="large" />
+          </div>
+          
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">Sign In</CardTitle>
             <CardDescription className="text-center">

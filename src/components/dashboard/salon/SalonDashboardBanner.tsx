@@ -1,30 +1,27 @@
 
-import { useAuth } from "@/context/auth";
-import { useTranslation } from "@/hooks/useTranslation";
-import { toTranslatableText } from "./SalonTranslationHelper";
+import React from "react";
+import EmviLogo from "@/components/branding/EmviLogo";
 
 interface SalonDashboardBannerProps {
   userName?: string;
 }
 
-const SalonDashboardBanner = ({ userName }: SalonDashboardBannerProps) => {
-  const { userProfile } = useAuth();
-  const { t } = useTranslation();
-  const displayName = userName || userProfile?.salon_name || userProfile?.full_name || "Salon Owner";
-  
+const SalonDashboardBanner: React.FC<SalonDashboardBannerProps> = ({ 
+  userName = "Salon Owner"
+}) => {
   return (
-    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-100 shadow-sm">
-      <h1 className="text-2xl font-bold text-blue-800">
-        {t(toTranslatableText("Welcome back, " + displayName + "!"))}
-      </h1>
-      <p className="text-blue-600 mt-2">
-        {t(toTranslatableText("Let's grow your salon today."))}
-      </p>
-      
-      {/* Vietnamese welcome text for salon owners - making it more prominent */}
-      <p className="text-blue-700 text-sm font-medium mt-3 bg-blue-50 px-3 py-2 inline-block rounded-md border border-blue-100">
-        {t(toTranslatableText("Cùng nhau phát triển tiệm làm đẹp của bạn.", "Cùng nhau phát triển tiệm làm đẹp của bạn."))} <span className="text-blue-500 ml-1">{t(toTranslatableText("Let's grow your beauty business together.", "Let's grow your beauty business together."))}</span>
-      </p>
+    <div className="bg-gradient-to-r from-primary-50 to-blue-50 rounded-lg p-6 border border-blue-100">
+      <div className="flex items-center gap-4">
+        <EmviLogo size="small" />
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Welcome back, {userName}!
+          </h1>
+          <p className="text-gray-600">
+            Manage your salon, track bookings, and connect with potential clients and artists.
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

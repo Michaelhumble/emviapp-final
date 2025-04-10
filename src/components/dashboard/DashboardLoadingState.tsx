@@ -1,6 +1,7 @@
 
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import EmviLogo from "@/components/branding/EmviLogo";
 
 interface DashboardLoadingStateProps {
   loadingTime: number;
@@ -11,6 +12,7 @@ const DashboardLoadingState = ({ loadingTime, handleEmergencyLogout }: Dashboard
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
       <div className="flex flex-col items-center space-y-4 mb-4">
+        <EmviLogo size="large" className="mb-4" />
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
         <div className="flex flex-col items-center">
           <span className="text-lg font-medium">Loading your dashboard...</span>
