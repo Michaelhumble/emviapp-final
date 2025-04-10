@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
@@ -50,6 +51,11 @@ const SalonsFinal: React.FC = () => {
     
     return true;
   });
+  
+  // Check if a salon is expired based on status
+  const isExpired = (salon: any) => {
+    return salon.status === "expired";
+  };
   
   const handleViewSalonDetails = (salon: any) => {
     navigate(`/salons/${salon.id}`);
@@ -129,7 +135,7 @@ const SalonsFinal: React.FC = () => {
                       key={salon.id} 
                       salon={salon} 
                       index={index} 
-                      isExpired={false} 
+                      isExpired={isExpired(salon)} 
                       onViewDetails={handleViewSalonDetails} 
                     />
                   ))
