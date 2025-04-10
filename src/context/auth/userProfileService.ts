@@ -2,9 +2,11 @@
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile, UserRole } from './types';
 import { toast } from 'sonner';
+import { cacheProfile } from './utils/profileCache';
 
 /**
- * Fetch user profile from Supabase
+ * Enhanced fetch user profile from Supabase with improved error handling
+ * and optimized for performance
  */
 export const fetchUserProfile = async (userId: string): Promise<UserProfile | null> => {
   if (!userId) return null;
@@ -62,10 +64,16 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       services: data.services || []
     };
     
+    // Also update the cache for faster subsequent access
+    cacheProfile(userId, profile, profile.role as UserRole || null);
+    
     return profile;
   } catch (error) {
     console.error('Error fetching user profile:', error);
-    toast.error('Failed to load profile information');
+    // Only show toast in interactive contexts, not during initial loading
+    if ((error as any)?.code !== 'PGRST116') { // Not the "No rows returned" error
+      toast.error('Failed to load profile information');
+    }
     return null;
   }
 };
@@ -98,20 +106,13 @@ export const createUserProfile = async (user: any): Promise<UserProfile | null> 
     };
     
     // Insert new profile into database
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('users')
-      .upsert(profileData)
-      .select()
-      .single();
+      .upsert(profileData);
     
     if (error) throw error;
     
-    if (!data) {
-      toast.error('Profile creation failed: No data returned');
-      return null;
-    }
-    
-    // Transform response to UserProfile type
+    // Fetch the full profile after creating
     return await fetchUserProfile(user.id);
   } catch (error) {
     console.error('Error creating user profile:', error);
@@ -137,56 +138,17 @@ export const updateUserProfile = async (profile: Partial<UserProfile>): Promise<
       updated_at: new Date().toISOString()
     };
     
-    // Remove properties that don't exist in the DB schema
-    delete updateData.uid;
-    delete updateData.displayName;
-    delete updateData.photoURL;
-    delete updateData.phoneNumber;
-    delete updateData.servicesOffered;
-    delete updateData.socialLinks;
-    delete updateData.gallery;
-    delete updateData.pricing;
-    delete updateData.paymentPreferences;
-    delete updateData.schedulingOptions;
-    delete updateData.reviews;
-    delete updateData.additionalNotes;
-    delete updateData.lastSeen;
-    delete updateData.accountType;
-    delete updateData.is_active;
-    delete updateData.stripeCustomerId;
-    delete updateData.stripeSubscriptionId;
-    delete updateData.stripePriceId;
-    delete updateData.stripeCurrentPeriodEnd;
-    delete updateData.emailVerified;
-    delete updateData.username;
-    delete updateData.firstName;
-    delete updateData.lastName;
-    delete updateData.gender;
-    delete updateData.birthDate;
-    delete updateData.address;
-    delete updateData.city;
-    delete updateData.state;
-    delete updateData.zipCode;
-    delete updateData.years_experience;
-    
     // Update profile in database
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('users')
       .update(updateData)
-      .eq('id', profile.id)
-      .select()
-      .single();
+      .eq('id', profile.id);
     
     if (error) throw error;
     
-    if (!data) {
-      toast.error('Profile update failed: No data returned');
-      return null;
-    }
-    
     toast.success('Profile updated successfully');
     
-    // Transform response to UserProfile type
+    // Fetch the updated profile - this also updates the cache
     return await fetchUserProfile(profile.id);
   } catch (error) {
     console.error('Error updating user profile:', error);

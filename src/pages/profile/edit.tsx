@@ -49,11 +49,12 @@ const ProfileEdit = () => {
     }
   }, [userRole]);
   
-  // Optimized refresh function - convert Promise<boolean> to Promise<void>
+  // Optimized refresh function with type adapter pattern
   const handleRefresh = useCallback(async () => {
     if (!refreshUserProfile) return;
     
     try {
+      // Adapt the boolean return to void to satisfy TypeScript
       const success = await refreshUserProfile();
       if (!success) {
         toast.error("Could not load your profile. Please try again later.");

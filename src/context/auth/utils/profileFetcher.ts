@@ -6,7 +6,7 @@ import { normalizeRole } from "@/utils/roles";
 import { cacheProfile } from "./profileCache";
 
 /**
- * Fetch fresh profile data from Supabase
+ * Fetch fresh profile data from Supabase with optimized parallel fetching
  */
 export const fetchFreshProfileData = async (userId: string): Promise<{ 
   profile: UserProfile | null; 
@@ -15,11 +15,33 @@ export const fetchFreshProfileData = async (userId: string): Promise<{
   console.log("Fetching fresh profile data for:", userId);
   
   try {
-    // Use Promise.all for parallel requests
-    const [authResponse, profileResponse] = await Promise.all([
+    // Use Promise.all for parallel requests - optimized with early timeout handling
+    const fetchPromise = Promise.all([
       supabase.auth.getUser(),
       supabase.from('users').select('*').eq('id', userId).single()
     ]);
+    
+    // Add a timeout to prevent long-running requests
+    const timeoutPromise = new Promise<null>((resolve) => {
+      setTimeout(() => {
+        console.log("Profile fetch timeout reached, using cached data");
+        resolve(null);
+      }, 5000); // 5-second timeout
+    });
+    
+    // Race between fetch and timeout
+    const result = await Promise.race([fetchPromise, timeoutPromise]);
+    
+    // If timeout won, try to use cached data
+    if (!result) {
+      const cachedRole = localStorage.getItem('emviapp_user_role');
+      return { 
+        profile: null, 
+        role: cachedRole ? normalizeRole(cachedRole as UserRole) : null 
+      };
+    }
+    
+    const [authResponse, profileResponse] = result;
     
     // Process auth user result
     const authUser = authResponse.data?.user;
@@ -59,21 +81,29 @@ export const fetchFreshProfileData = async (userId: string): Promise<{
         
         // Sync role back to auth (don't wait for this)
         if (profile.role) {
-          supabase.auth.updateUser({
-            data: { role: profile.role }
-          }).catch(updateErr => {
-            console.warn("Failed to update auth metadata with role:", updateErr);
+          // Use background task pattern
+          Promise.resolve().then(() => {
+            supabase.auth.updateUser({
+              data: { role: profile.role }
+            }).catch(updateErr => {
+              console.warn("Failed to update auth metadata with role:", updateErr);
+            });
           });
         }
       }
       
-      // Store in cache
+      // Store in cache - use optimized caching
       cacheProfile(userId, profile, role);
       
       return { profile, role };
     }
   } catch (error) {
     console.error("Error fetching profile data:", error);
-    return { profile: null, role: null };
+    // Return minimal profile with cached role as fallback
+    const cachedRole = localStorage.getItem('emviapp_user_role');
+    return { 
+      profile: null, 
+      role: cachedRole ? normalizeRole(cachedRole as UserRole) : null 
+    };
   }
 };

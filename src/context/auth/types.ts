@@ -30,25 +30,69 @@ export interface AuthContextType {
   refreshUserProfile: () => Promise<boolean>; // Keep boolean return for flexibility
 }
 
+// Comprehensive UserProfile interface with all possible properties used throughout the app
 export interface UserProfile {
-  uid?: string;
+  // Core Fields
+  id?: string;
+  user_id?: string;
   email?: string | null;
+  full_name?: string | null;
+  phone?: string;
+  bio?: string;
+  avatar_url?: string | null;
+  location?: string;
+  
+  // Social Media
+  instagram?: string;
+  website?: string;
+  
+  // Professional Information
+  role?: string;
+  custom_role?: string;
+  specialty?: string;
+  salon_name?: string;
+  company_name?: string;
+  
+  // Portfolio & Gallery
+  portfolio_urls?: string[];
+  gallery?: string[];
+  
+  // Timing & Dates
+  created_at?: number | string;
+  updated_at?: number | string;
+  lastSeen?: number;
+  years_experience?: number;
+  boosted_until?: string;
+  
+  // Services & Bookings
+  accepts_bookings?: boolean;
+  booking_url?: string;
+  services?: any[];
+  servicesOffered?: string[];
+  
+  // Stats & Metrics
+  credits?: number;
+  profile_views?: number;
+  averageRating?: number;
+  referral_code?: string;
+  referral_count?: number;
+  
+  // Settings & Preferences
+  preferred_language?: string;
+  account_type?: string;
+  skills?: string[];
+  badges?: any;
+  contact_link?: string;
+  preferences?: string[];
+  completed_profile_tasks?: string[];
+  
+  // Deprecated Fields (kept for backward compatibility)
+  uid?: string;
   displayName?: string | null;
   photoURL?: string | null;
-  bio?: string;
-  location?: string;
-  website?: string;
-  phoneNumber?: string;
-  servicesOffered?: string[];
-  yearsOfExperience?: number;
-  socialLinks?: {
-    instagram?: string;
-    facebook?: string;
-    twitter?: string;
-    linkedin?: string;
-    website?: string;
-  };
-  gallery?: string[];
+  reviews?: string[];
+  
+  // Payment Related Fields
   pricing?: {
     hourlyRate?: number;
     fixedProject?: number;
@@ -58,23 +102,27 @@ export interface UserProfile {
     venmo?: string;
     cashApp?: string;
   };
-  schedulingOptions?: {
-    availability?: string[];
-    bookingLink?: string;
-  };
-  reviews?: string[];
-  averageRating?: number;
-  additionalNotes?: string;
-  lastSeen?: number;
-  accountType?: string;
-  profile_views?: number;
-  is_active?: boolean;
-  created_at?: number | string;
-  updated_at?: number | string;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
   stripePriceId?: string;
   stripeCurrentPeriodEnd?: number;
+  
+  // Scheduling
+  schedulingOptions?: {
+    availability?: string[];
+    bookingLink?: string;
+  };
+  
+  // Additional Fields
+  socialLinks?: {
+    instagram?: string;
+    facebook?: string;
+    twitter?: string;
+    linkedin?: string;
+    website?: string;
+  };
+  additionalNotes?: string;
+  is_active?: boolean;
   emailVerified?: boolean;
   username?: string;
   firstName?: string;
@@ -85,32 +133,5 @@ export interface UserProfile {
   city?: string;
   state?: string;
   zipCode?: string;
-  preferred_language?: string;
-  full_name?: string;
-  id?: string;
-  accepts_bookings?: boolean;
-  phone?: string;
-  instagram?: string;
-  avatar_url?: string;
-  specialty?: string;
-  years_experience?: number;
-  boosted_until?: string;
-  role?: string;
-  salon_name?: string;
-  company_name?: string;
-  booking_url?: string;
-  completed_profile_tasks?: string[];
-  badges?: any;
-  contact_link?: string;
-  preferences?: string[];
   affiliate_code?: string;
-  referral_count?: number;
-  portfolio_urls?: string[];
-  credits?: number;
-  skills?: string[];
-  referral_code?: string;
-  custom_role?: string;
-  account_type?: string;
-  user_id?: string;
-  services?: any[];
 }
