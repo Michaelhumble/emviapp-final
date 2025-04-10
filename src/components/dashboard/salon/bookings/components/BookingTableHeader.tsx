@@ -1,8 +1,14 @@
 
 import React from "react";
-import { TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { TableHeader, TableRow, TableHead } from "@/components/ui/table";
 
-const BookingTableHeader: React.FC = () => {
+interface BookingTableHeaderProps {
+  showStaffColumn?: boolean;
+}
+
+const BookingTableHeader: React.FC<BookingTableHeaderProps> = ({ 
+  showStaffColumn = false 
+}) => {
   return (
     <TableHeader>
       <TableRow>
@@ -11,6 +17,7 @@ const BookingTableHeader: React.FC = () => {
         <TableHead className="hidden md:table-cell">Date</TableHead>
         <TableHead className="hidden md:table-cell">Time</TableHead>
         <TableHead>Status</TableHead>
+        {showStaffColumn && <TableHead>Assigned Staff</TableHead>}
         <TableHead className="hidden md:table-cell">Notes</TableHead>
         <TableHead className="text-right">Actions</TableHead>
       </TableRow>

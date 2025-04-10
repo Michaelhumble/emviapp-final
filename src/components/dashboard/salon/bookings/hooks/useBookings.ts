@@ -11,6 +11,7 @@ export const useBookings = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [staffMembers, setStaffMembers] = useState<Array<{id: string, name: string}>>([]);
 
   const fetchBookings = useCallback(async () => {
     if (!user?.id) return;
@@ -23,7 +24,8 @@ export const useBookings = () => {
         .select(`
           *,
           sender:sender_id(id, full_name, email, phone),
-          service:service_id(id, title, price, duration_minutes)
+          service:service_id(id, title, price, duration_minutes),
+          assigned_staff:assigned_staff_id(id, full_name)
         `)
         .eq("recipient_id", user.id);
       
@@ -44,6 +46,8 @@ export const useBookings = () => {
         status: booking.status,
         notes: booking.note || "",
         createdAt: booking.created_at,
+        assignedStaffId: booking.assigned_staff_id || null,
+        assignedStaffName: booking.assigned_staff?.full_name || null
       }));
       
       formattedBookings.sort((a, b) => {
@@ -59,6 +63,30 @@ export const useBookings = () => {
       console.error("Error fetching bookings:", err);
       setError("Failed to load bookings. Please try again.");
       setLoading(false);
+    }
+  }, [user?.id]);
+
+  const fetchStaffMembers = useCallback(async () => {
+    if (!user?.id) return;
+    
+    try {
+      // In a real implementation, you'd fetch staff members associated with this salon
+      // For now, using a mock approach since salon_id field might not exist yet
+      const { data, error } = await supabase
+        .from("users")
+        .select("id, full_name")
+        .eq("role", "artist");
+      
+      if (error) {
+        throw error;
+      }
+      
+      setStaffMembers(data.map(staff => ({
+        id: staff.id,
+        name: staff.full_name
+      })));
+    } catch (err: any) {
+      console.error("Error fetching staff members:", err);
     }
   }, [user?.id]);
 
@@ -84,7 +112,7 @@ export const useBookings = () => {
         )
       );
       
-      toast.success(`Booking ${newStatus === "completed" ? "marked as completed" : "cancelled"}`);
+      toast.success(`Booking ${newStatus === "completed" ? "marked as completed" : "status updated"}`);
       return true;
     } catch (err: any) {
       console.error("Error updating booking status:", err);
@@ -92,18 +120,105 @@ export const useBookings = () => {
       return false;
     }
   };
+
+  const assignStaffToBooking = async (bookingId: string, staffId: string) => {
+    if (!user?.id) return;
+    
+    try {
+      const { error } = await supabase
+        .from("bookings")
+        .update({ assigned_staff_id: staffId })
+        .eq("id", bookingId)
+        .eq("recipient_id", user.id);
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Find the staff name for display
+      const staffMember = staffMembers.find(s => s.id === staffId);
+      
+      setBookings(prevBookings => 
+        prevBookings.map(booking => 
+          booking.id === bookingId 
+            ? { 
+                ...booking, 
+                assignedStaffId: staffId,
+                assignedStaffName: staffMember?.name || null
+              } 
+            : booking
+        )
+      );
+      
+      toast.success("Staff assigned successfully");
+      return true;
+    } catch (err: any) {
+      console.error("Error assigning staff to booking:", err);
+      toast.error("Failed to assign staff. Please try again.");
+      return false;
+    }
+  };
+
+  const updateBookingDetails = async (bookingId: string, updates: {
+    date?: Date,
+    time?: string,
+    notes?: string
+  }) => {
+    if (!user?.id) return;
+    
+    try {
+      const updateData: any = {};
+      if (updates.date) updateData.date_requested = updates.date.toISOString().split('T')[0];
+      if (updates.time) updateData.time_requested = updates.time;
+      if (updates.notes !== undefined) updateData.note = updates.notes;
+      
+      const { error } = await supabase
+        .from("bookings")
+        .update(updateData)
+        .eq("id", bookingId)
+        .eq("recipient_id", user.id);
+      
+      if (error) {
+        throw error;
+      }
+      
+      setBookings(prevBookings => 
+        prevBookings.map(booking => 
+          booking.id === bookingId 
+            ? { 
+                ...booking, 
+                date: updates.date || booking.date,
+                time: updates.time || booking.time,
+                notes: updates.notes !== undefined ? updates.notes : booking.notes
+              } 
+            : booking
+        )
+      );
+      
+      toast.success("Booking updated successfully");
+      return true;
+    } catch (err: any) {
+      console.error("Error updating booking details:", err);
+      toast.error("Failed to update booking. Please try again.");
+      return false;
+    }
+  };
   
   useEffect(() => {
     if (user?.id) {
       fetchBookings();
+      fetchStaffMembers();
     }
-  }, [user?.id, fetchBookings]);
+  }, [user?.id, fetchBookings, fetchStaffMembers]);
 
   return {
     bookings,
     loading,
     error,
+    staffMembers,
     refresh: fetchBookings,
-    updateBookingStatus
+    updateBookingStatus,
+    assignStaffToBooking,
+    updateBookingDetails
   };
 };

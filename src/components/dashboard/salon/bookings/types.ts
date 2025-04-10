@@ -12,6 +12,8 @@ export interface Booking {
   status: string;
   notes: string;
   createdAt: string;
+  assignedStaffId: string | null;
+  assignedStaffName: string | null;
 }
 
 export type BookingStatus = "all" | "pending" | "accepted" | "completed" | "cancelled" | "declined";

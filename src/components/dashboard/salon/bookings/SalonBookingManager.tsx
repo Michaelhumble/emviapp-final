@@ -13,7 +13,16 @@ import BookingLoadingState from "./components/BookingLoadingState";
 import BookingErrorState from "./components/BookingErrorState";
 
 const SalonBookingManager = () => {
-  const { bookings, loading, error, refresh, updateBookingStatus } = useBookings();
+  const { 
+    bookings, 
+    loading, 
+    error, 
+    staffMembers,
+    refresh, 
+    updateBookingStatus,
+    assignStaffToBooking,
+    updateBookingDetails
+  } = useBookings();
   const [activeView, setActiveView] = React.useState<"list" | "calendar">("list");
   
   const {
@@ -77,8 +86,11 @@ const SalonBookingManager = () => {
                 />
               ) : (
                 <BookingTable 
-                  bookings={filteredBookings} 
-                  onStatusUpdate={updateBookingStatus} 
+                  bookings={filteredBookings}
+                  staffMembers={staffMembers}
+                  onStatusUpdate={updateBookingStatus}
+                  onStaffAssign={assignStaffToBooking}
+                  onBookingUpdate={updateBookingDetails}
                 />
               )}
             </TabsContent>
