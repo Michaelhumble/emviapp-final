@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
 import SalonDashboardBanner from "@/components/dashboard/salon/SalonDashboardBanner";
 import SalonQuickStats from "@/components/dashboard/salon/SalonQuickStats";
@@ -19,12 +20,17 @@ import SalonListingsManagement from "@/components/dashboard/salon/SalonListingsM
 import SalonCreditPromotion from "@/components/dashboard/salon/SalonCreditPromotion";
 import TopLocalArtists from "@/components/dashboard/salon/TopLocalArtists";
 import NextStepsSmart from "@/components/dashboard/salon/NextStepsSmart";
+import SalonTeamManagement from "@/components/dashboard/salon/SalonTeamManagement";
+import SalonServiceManager from "@/components/dashboard/salon/SalonServiceManager";
+import SalonBoostCreditPanel from "@/components/dashboard/salon/SalonBoostCreditPanel";
+import SalonProfileCompletionMeter from "@/components/dashboard/salon/SalonProfileCompletionMeter";
 import confetti from "canvas-confetti";
 
 const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
   const { userProfile } = useAuth();
   const [showConfetti, setShowConfetti] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
   
   useEffect(() => {
     document.title = "Salon Owner Dashboard | EmviApp";
@@ -46,7 +52,19 @@ const OwnerDashboard = () => {
         });
       }, 1000);
     }
+
+    // Restore active tab from localStorage if available
+    const savedTab = localStorage.getItem('salon_dashboard_tab');
+    if (savedTab) {
+      setActiveTab(savedTab);
+    }
   }, [userProfile]);
+
+  // Save active tab to localStorage when it changes
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    localStorage.setItem('salon_dashboard_tab', value);
+  };
   
   return (
     <Layout>
@@ -57,62 +75,90 @@ const OwnerDashboard = () => {
           transition={{ duration: 0.5 }}
         >
           <RoleDashboardLayout>
-            {/* Using explicit salon components instead of generic DashboardContent */}
             <div className="space-y-8">
               {/* Salon Welcome Banner with Vietnamese text */}
               <SalonDashboardBanner userName={userProfile?.salon_name || userProfile?.full_name} />
               
-              {/* NEW: Salon Boost Status */}
-              <SalonBoostStatus />
-
-              {/* NEW: Next Steps Smart Panel */}
-              <NextStepsSmart />
-              
-              {/* Salon Quick Stats */}
-              <SalonQuickStats />
-              
-              {/* NEW: Analytics Cards */}
-              <SalonAnalyticsCards />
-              
-              {/* NEW: Salon Listings Management */}
-              <SalonListingsManagement />
-              
-              {/* Action Buttons with Vietnamese text */}
-              <SalonDashboardActionButtons />
-
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* NEW: Credit Promotion Card */}
-                <div className="lg:col-span-1">
-                  <SalonCreditPromotion />
-                </div>
+              {/* Dashboard Tabs */}
+              <Tabs value={activeTab} onValueChange={handleTabChange}>
+                <TabsList className="grid grid-cols-4 mb-8">
+                  <TabsTrigger value="overview">Overview</TabsTrigger>
+                  <TabsTrigger value="team">Team</TabsTrigger>
+                  <TabsTrigger value="services">Services</TabsTrigger>
+                  <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                </TabsList>
                 
-                {/* NEW: Top Local Artists widget */}
-                <div className="lg:col-span-1">
-                  <TopLocalArtists />
-                </div>
+                {/* Overview Tab */}
+                <TabsContent value="overview" className="space-y-8">
+                  {/* Profile Completion Meter */}
+                  <SalonProfileCompletionMeter />
+                  
+                  {/* Quick Stats Grid */}
+                  <SalonQuickStats />
+                  
+                  {/* NEW: Salon Boost & Credit Panel */}
+                  <SalonBoostCreditPanel />
+                  
+                  {/* NEW: Next Steps Smart Panel */}
+                  <NextStepsSmart />
+                  
+                  {/* NEW: Analytics Cards */}
+                  <SalonAnalyticsCards />
+                  
+                  {/* Action Buttons with Vietnamese text */}
+                  <SalonDashboardActionButtons />
+                  
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* NEW: Credit Promotion Card */}
+                    <div className="lg:col-span-1">
+                      <SalonCreditPromotion />
+                    </div>
+                    
+                    {/* NEW: Top Local Artists widget */}
+                    <div className="lg:col-span-1">
+                      <TopLocalArtists />
+                    </div>
+                    
+                    {/* Posted Jobs Section - Now in a column span */}
+                    <div className="lg:col-span-1">
+                      <SalonReferralCard />
+                    </div>
+                  </div>
+                </TabsContent>
                 
-                {/* Posted Jobs Section - Now in a column span */}
-                <div className="lg:col-span-1">
+                {/* Team Tab */}
+                <TabsContent value="team" className="space-y-8">
+                  {/* Team Management Panel */}
+                  <SalonTeamManagement />
+                  
+                  {/* Referral Card (repurposed for team invites) */}
                   <SalonReferralCard />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Credit Status Card */}
-                <div className="lg:col-span-1">
+                </TabsContent>
+                
+                {/* Services Tab */}
+                <TabsContent value="services" className="space-y-8">
+                  {/* Service Manager */}
+                  <SalonServiceManager />
+                  
+                  {/* Credit Status (for service boosts) */}
                   <SalonCreditStatus />
-                </div>
+                </TabsContent>
                 
-                {/* NEW: Notification Center and Suggestion Box */}
-                <div className="lg:col-span-1 space-y-6">
-                  <SalonNotificationCenter />
-                </div>
-                
-                {/* Jobs Section */}
-                <div className="lg:col-span-1">
+                {/* Analytics Tab */}
+                <TabsContent value="analytics" className="space-y-8">
+                  {/* Analytics Cards */}
+                  <SalonAnalyticsCards />
+                  
+                  {/* Jobs & Listings Section */}
+                  <SalonListingsManagement />
+                  
+                  {/* Posted Jobs Section */}
                   <SalonPostedJobsSection />
-                </div>
-              </div>
+                  
+                  {/* Notification Center */}
+                  <SalonNotificationCenter />
+                </TabsContent>
+              </Tabs>
               
               {/* Suggestion Box */}
               <SalonSuggestionBox />

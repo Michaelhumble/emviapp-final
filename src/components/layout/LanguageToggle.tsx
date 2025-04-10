@@ -23,8 +23,8 @@ const LanguageToggle: React.FC<LanguageToggleProps> = ({ className }) => {
     if (value) {
       setLanguage(value);
       localStorage.setItem('emvi_language_preference', value);
-      // In a real app, you would handle language switching more thoroughly
-      // This is just a UI demonstration
+      // Dispatch a custom event that other components can listen for
+      window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: value } }));
     }
   };
 
