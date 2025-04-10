@@ -20,13 +20,18 @@ import InviteBanner from "@/components/dashboard/InviteBanner";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
+// This component must not import or render any profile components
 const SalonDashboard = () => {
   const { userProfile } = useAuth();
   const { userRole } = useUserRole(userProfile?.id);
   const navigate = useNavigate();
   
   useEffect(() => {
+    // Set document title for this specific dashboard
     document.title = "Salon Dashboard | EmviApp";
+    
+    // Add a debug log to confirm the right component is rendering
+    console.log("SalonDashboard component rendering");
   }, []);
   
   const handleCardClick = (action: string) => {
@@ -35,7 +40,7 @@ const SalonDashboard = () => {
         navigate("/post/job");
         break;
       case "manage-profile":
-        navigate("/profile/salon/setup");
+        navigate("/profile/edit");
         break;
       case "messages":
         navigate("/messages");

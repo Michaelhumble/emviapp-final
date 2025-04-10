@@ -21,10 +21,11 @@ import OtherDashboard from './pages/dashboard/Other';
 import ProfileEditor from './pages/profile/ProfileEditor';
 import SignIn from './pages/auth/SignIn';
 import SignUp from './pages/auth/SignUp';
-import ProfileRedirect from './components/profile/ProfileRedirect';
+import UserProfilePage from './pages/profile/UserProfilePage';
 import SalonOwners from './pages/SalonOwners';
 import Settings from './pages/Settings';
 import SalonDetail from './pages/salons/SalonDetail';
+import ProfileRedirect from './pages/profile/ProfileRedirect';
 
 const routes = [
   {
@@ -105,6 +106,10 @@ const routes = [
   },
   {
     path: '/profile',
+    element: <UserProfilePage />,
+  },
+  {
+    path: '/profile/redirect',
     element: <ProfileRedirect />,
   },
   {

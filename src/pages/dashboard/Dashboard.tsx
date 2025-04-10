@@ -19,6 +19,13 @@ const Dashboard = () => {
   const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {
+    // Debug log to track component rendering
+    console.log("[Dashboard] Component mounted/updated", { 
+      user: !!user, 
+      userRole, 
+      loading 
+    });
+    
     const redirectToDashboard = async () => {
       if (loading) return;
       
@@ -48,7 +55,7 @@ const Dashboard = () => {
           .from('users')
           .select('role')
           .eq('id', user.id)
-          .single();
+          .maybeSingle(); // Changed from single() to prevent errors
         
         if (dbError) {
           console.error("[Dashboard] Error fetching user role from DB:", dbError);
@@ -67,7 +74,12 @@ const Dashboard = () => {
           localStorage.setItem('emviapp_user_role', finalRole);
           
           // Use the determined role for redirection
-          navigateToRoleDashboard(navigate, finalRole);
+          if (finalRole === 'salon') {
+            console.log("[Dashboard] Redirecting salon user to /dashboard/salon");
+            navigate("/dashboard/salon");
+          } else {
+            navigateToRoleDashboard(navigate, finalRole);
+          }
         } else {
           console.log("[Dashboard] No role found, redirecting to profile edit");
           toast.error("Please complete your profile to access your dashboard");
@@ -76,6 +88,8 @@ const Dashboard = () => {
       } catch (error) {
         console.error("[Dashboard] Error in role validation:", error);
         setError("Unable to load your dashboard. Please try again.");
+        setLocalLoading(false);
+      } finally {
         setLocalLoading(false);
       }
     };
