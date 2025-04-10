@@ -7,13 +7,51 @@ import ProfileLoading from "./ProfileLoading";
 import ProfileAISupport from "./ProfileAISupport";
 import { getRoleTheme } from "./utils/themeHelpers";
 import { UserProfile as UserProfileType } from "@/types/profile";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 const UserProfile = () => {
-  const { userProfile, userRole } = useAuth();
+  const { userProfile, userRole, loading } = useAuth();
   const theme = getRoleTheme(userRole);
+  
+  // Add a timeout to show a message if loading takes too long
+  useEffect(() => {
+    let timeoutId: number | undefined;
+    
+    if (loading) {
+      timeoutId = window.setTimeout(() => {
+        toast.info("Still loading your profile data. This may take a moment...");
+      }, 5000);
+    }
+    
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [loading]);
 
-  if (!userProfile) {
+  // If still loading, show loading state
+  if (loading) {
     return <ProfileLoading />;
+  }
+  
+  // If no user profile after loading complete, show error message
+  if (!userProfile && !loading) {
+    return (
+      <div className="min-h-screen bg-[#FDFDFD] flex flex-col items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <h2 className="text-xl font-semibold mb-2">Profile not available</h2>
+          <p className="text-gray-600 mb-4">
+            We couldn't retrieve your profile information. This might be due to a connection issue or your profile may not be fully set up yet.
+          </p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (

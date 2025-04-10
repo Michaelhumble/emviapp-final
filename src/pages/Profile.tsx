@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -21,6 +22,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("profile");
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
 
   useEffect(() => {
     document.title = "My Profile | EmviApp";
@@ -29,6 +31,16 @@ const Profile = () => {
     if (!authLoading) {
       setLoading(false);
     }
+    
+    // Add a timeout to show a helpful message if loading takes too long
+    const timeoutId = setTimeout(() => {
+      if (authLoading || loading) {
+        setLoadingTimeout(true);
+        console.log("Profile loading timeout triggered");
+      }
+    }, 10000);
+    
+    return () => clearTimeout(timeoutId);
   }, [authLoading, userProfile]);
   
   const getRoleColor = (role?: string | null) => {
@@ -57,8 +69,60 @@ const Profile = () => {
   if (authLoading || loading) {
     return (
       <Layout>
-        <div className="flex items-center justify-center min-h-[50vh]">
-          <Loader2 className="h-8 w-8 animate-spin" />
+        <div className="flex flex-col items-center justify-center min-h-[50vh]">
+          <Loader2 className="h-8 w-8 animate-spin mb-4" />
+          <div className="text-center">
+            <div className="font-medium">Loading your profile...</div>
+            {loadingTimeout && (
+              <div className="mt-4 max-w-md text-sm text-amber-600">
+                <p>This is taking longer than expected. You may want to:</p>
+                <ul className="list-disc list-inside mt-2">
+                  <li>Refresh the page</li>
+                  <li>Check your internet connection</li>
+                  <li>
+                    <Button 
+                      variant="link" 
+                      className="p-0 h-auto text-primary" 
+                      onClick={() => navigate('/dashboard')}
+                    >
+                      Return to dashboard
+                    </Button>
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+  
+  if (!user && !authLoading) {
+    return <Navigate to="/auth/signin" replace />;
+  }
+  
+  // Show message if profile failed to load but user is authenticated
+  if (!userProfile && user && !authLoading && !loading) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-md mx-auto text-center bg-white p-8 rounded-lg shadow-sm">
+            <h1 className="text-2xl font-bold mb-4">Profile Not Available</h1>
+            <p className="text-gray-600 mb-6">
+              We couldn't load your profile information. This might be due to a connection issue or your profile may need to be set up.
+            </p>
+            <div className="flex flex-col gap-3">
+              <Button onClick={() => window.location.reload()}>
+                Retry Loading Profile
+              </Button>
+              <Button variant="outline" onClick={() => navigate('/profile/edit')}>
+                Set Up Profile
+              </Button>
+              <Button variant="ghost" onClick={() => navigate('/dashboard')}>
+                Return to Dashboard
+              </Button>
+            </div>
+          </div>
         </div>
       </Layout>
     );
