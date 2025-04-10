@@ -1,80 +1,20 @@
 
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { BadgeDollarSign, Rocket, Plus, RefreshCw, Shield, TrendingUp } from "lucide-react";
-import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
+import { useSalonCredits } from "@/hooks/useSalonCredits";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const SalonBoostCreditPanel = () => {
-  const { user } = useAuth();
-  const [credits, setCredits] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
+  const { credits, boostStatus, loading, refreshCredits } = useSalonCredits();
   const [boosting, setBoosting] = useState(false);
-  const [boostStatus, setBoostStatus] = useState<{
-    isActive: boolean;
-    expiresAt: Date | null;
-  }>({
-    isActive: false,
-    expiresAt: null
-  });
-  const [isBoostDialogOpen, setIsBoostDialogOpen] = useState(false);
-
-  useEffect(() => {
-    if (user?.id) {
-      fetchCreditData();
-      fetchBoostStatus();
-    }
-  }, [user]);
-
-  const fetchCreditData = async () => {
-    setLoading(true);
-    
-    try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('credits')
-        .eq('id', user?.id)
-        .single();
-        
-      if (error) throw error;
-      
-      setCredits(data?.credits || 0);
-    } catch (err) {
-      console.error("Error fetching credit data:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  const fetchBoostStatus = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('boosted_until')
-        .eq('id', user?.id)
-        .single();
-        
-      if (error) throw error;
-      
-      const boostedUntil = data?.boosted_until ? new Date(data.boosted_until) : null;
-      const isActive = boostedUntil ? boostedUntil > new Date() : false;
-      
-      setBoostStatus({
-        isActive,
-        expiresAt: boostedUntil
-      });
-    } catch (err) {
-      console.error("Error fetching boost status:", err);
-    }
-  };
   
   const handleBuyCredits = () => {
-    // In a real implementation, this would open a payment modal or redirect to a payment page
-    toast.info("Credit purchase functionality coming soon!");
+    toast.info(t("Credit purchase will be available soon!"));
   };
   
   const handleBoost = async () => {
@@ -83,39 +23,8 @@ const SalonBoostCreditPanel = () => {
       return;
     }
     
-    setBoosting(true);
-    
-    try {
-      // Calculate boost expiration (7 days from now)
-      const boostExpiration = new Date();
-      boostExpiration.setDate(boostExpiration.getDate() + 7);
-      
-      // Update the database
-      const { error } = await supabase
-        .from('users')
-        .update({ 
-          boosted_until: boostExpiration.toISOString(),
-          credits: credits - 10
-        })
-        .eq('id', user?.id);
-        
-      if (error) throw error;
-      
-      // Update local state
-      setCredits(prev => prev - 10);
-      setBoostStatus({
-        isActive: true,
-        expiresAt: boostExpiration
-      });
-      
-      toast.success("Your listing has been boosted for 7 days!");
-      setIsBoostDialogOpen(false);
-    } catch (err) {
-      console.error("Error boosting listing:", err);
-      toast.error("Failed to boost your listing. Please try again.");
-    } finally {
-      setBoosting(false);
-    }
+    // This is a placeholder for future payment flow
+    toast.info("Boost functionality will be implemented in a future update!");
   };
   
   const formatDate = (date: Date | null) => {
@@ -179,7 +88,7 @@ const SalonBoostCreditPanel = () => {
                   <p className="text-sm text-blue-600">
                     {boostStatus.isActive 
                       ? `Active until ${formatDate(boostStatus.expiresAt)}`
-                      : "Inactive"}
+                      : credits === 0 ? "Inactive" : "Not active"}
                   </p>
                 </div>
                 
@@ -193,7 +102,7 @@ const SalonBoostCreditPanel = () => {
                     size="sm"
                     className="bg-white border-blue-200 text-blue-700 hover:bg-blue-50"
                     disabled={credits < 10}
-                    onClick={() => setIsBoostDialogOpen(true)}
+                    onClick={handleBoost}
                   >
                     <Rocket className="h-3 w-3 mr-1" />
                     Boost Now
@@ -234,66 +143,6 @@ const SalonBoostCreditPanel = () => {
             </div>
           </>
         )}
-        
-        {/* Boost Confirmation Dialog */}
-        <Dialog open={isBoostDialogOpen} onOpenChange={setIsBoostDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Boost Your Salon Listing</DialogTitle>
-            </DialogHeader>
-            
-            <div className="py-4">
-              <div className="flex items-center justify-center mb-6">
-                <Rocket className="h-12 w-12 text-blue-500" />
-              </div>
-              
-              <p className="text-center mb-4">
-                Boost your salon's visibility for 7 days for just <strong>10 credits</strong>.
-              </p>
-              
-              <div className="bg-blue-50 p-3 rounded-md mb-4">
-                <p className="text-sm text-blue-700">
-                  Your salon will appear at the top of search results and be featured in the "Recommended Salons" section.
-                </p>
-              </div>
-              
-              <div className="flex items-center justify-between bg-gray-50 p-3 rounded-md">
-                <span className="text-gray-700">Your current balance:</span>
-                <span className={`font-bold ${credits < 10 ? 'text-red-500' : 'text-green-600'}`}>
-                  {credits} credits
-                </span>
-              </div>
-              
-              {credits < 10 && (
-                <div className="mt-4 bg-red-50 p-3 rounded-md text-red-700 text-sm">
-                  You don't have enough credits. You need at least 10 credits to boost your listing.
-                </div>
-              )}
-            </div>
-            
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
-              </DialogClose>
-              <Button 
-                onClick={handleBoost} 
-                disabled={credits < 10 || boosting}
-              >
-                {boosting ? (
-                  <>
-                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                    Processing
-                  </>
-                ) : (
-                  <>
-                    <Rocket className="h-4 w-4 mr-2" />
-                    Boost Now (10 credits)
-                  </>
-                )}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </CardContent>
     </Card>
   );
