@@ -42,15 +42,15 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       instagram: data.instagram || '',
       website: data.website || '',
       
-      // Additional fields - with proper null checks
+      // Additional fields with safe access
       salon_name: data.salon_name || '',
       company_name: data.company_name || '',
       preferred_language: data.preferred_language || 'en',
-      profile_views: typeof data.profile_views === 'number' ? data.profile_views : 0,
+      profile_views: data.profile_views !== undefined ? data.profile_views : 0,
       account_type: data.account_type || 'free',
       referral_code: data.referral_code || '',
       affiliate_code: data.referral_code || '', // Map referral_code to affiliate_code for compatibility
-      referral_count: typeof data.referral_count === 'number' ? data.referral_count : 0,
+      referral_count: data.referral_count !== undefined ? data.referral_count : 0,
       booking_url: data.booking_url || '',
       boosted_until: data.boosted_until || null,
       skills: Array.isArray(data.skills) ? data.skills : [],
