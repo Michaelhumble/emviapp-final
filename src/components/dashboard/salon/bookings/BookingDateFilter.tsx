@@ -10,11 +10,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-
-interface DateRange {
-  from: Date | undefined;
-  to: Date | undefined;
-}
+import { DateRange } from "./types";
 
 interface BookingDateFilterProps {
   dateRange: DateRange;
@@ -59,13 +55,17 @@ const BookingDateFilter: React.FC<BookingDateFilterProps> = ({ dateRange, onChan
             initialFocus
             mode="range"
             defaultMonth={dateRange.from}
-            selected={dateRange}
+            selected={{
+              from: dateRange.from,
+              to: dateRange.to
+            }}
             onSelect={(range) => {
               if (range) {
                 onChange(range);
               }
             }}
             numberOfMonths={2}
+            className="pointer-events-auto"
           />
         </PopoverContent>
       </Popover>

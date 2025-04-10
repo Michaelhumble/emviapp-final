@@ -15,3 +15,8 @@ export interface Booking {
 }
 
 export type BookingStatus = "all" | "pending" | "accepted" | "completed" | "cancelled" | "declined";
+
+export interface DateRange {
+  from: Date | undefined;
+  to?: Date | undefined;
+}

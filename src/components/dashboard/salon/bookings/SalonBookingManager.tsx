@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,7 +9,7 @@ import BookingStatusFilter from "./BookingStatusFilter";
 import BookingDateFilter from "./BookingDateFilter";
 import BookingTable from "./BookingTable";
 import EmptyBookingState from "./EmptyBookingState";
-import { Booking, BookingStatus } from "./types";
+import { Booking, BookingStatus, DateRange } from "./types";
 import { format, isAfter, isBefore, parseISO, startOfDay, endOfDay, addDays } from "date-fns";
 import { toast } from "sonner";
 
@@ -24,15 +23,11 @@ const SalonBookingManager = () => {
   
   // Filters
   const [statusFilter, setStatusFilter] = useState<BookingStatus>("all");
-  const [dateRange, setDateRange] = useState<{
-    from: Date | undefined;
-    to: Date | undefined;
-  }>({
+  const [dateRange, setDateRange] = useState<DateRange>({
     from: startOfDay(new Date()),
     to: endOfDay(addDays(new Date(), 30)),
   });
 
-  // Fetch bookings from Supabase
   useEffect(() => {
     const fetchBookings = async () => {
       if (!user?.id) return;
@@ -53,7 +48,6 @@ const SalonBookingManager = () => {
           throw error;
         }
         
-        // Transform and sort the data
         const formattedBookings = data.map((booking: any): Booking => ({
           id: booking.id,
           clientName: booking.sender?.full_name || "Unknown Client",
@@ -69,7 +63,6 @@ const SalonBookingManager = () => {
           createdAt: booking.created_at,
         }));
         
-        // Sort by date - newest first
         formattedBookings.sort((a, b) => {
           if (!a.date && !b.date) return 0;
           if (!a.date) return 1;
@@ -89,17 +82,14 @@ const SalonBookingManager = () => {
     fetchBookings();
   }, [user?.id]);
   
-  // Apply filters
   useEffect(() => {
     const applyFilters = () => {
       let result = [...bookings];
       
-      // Apply status filter
       if (statusFilter !== "all") {
         result = result.filter(booking => booking.status === statusFilter);
       }
       
-      // Apply date range filter
       if (dateRange.from || dateRange.to) {
         result = result.filter(booking => {
           if (!booking.date) return false;
@@ -122,7 +112,6 @@ const SalonBookingManager = () => {
     applyFilters();
   }, [bookings, statusFilter, dateRange]);
   
-  // Handle booking status updates
   const handleStatusUpdate = async (bookingId: string, newStatus: BookingStatus) => {
     if (!user?.id) return;
     
@@ -137,7 +126,6 @@ const SalonBookingManager = () => {
         throw error;
       }
       
-      // Update local state after successful update
       setBookings(prevBookings => 
         prevBookings.map(booking => 
           booking.id === bookingId 
@@ -157,7 +145,6 @@ const SalonBookingManager = () => {
     setLoading(true);
     setError(null);
     
-    // Re-fetch the bookings
     const fetchBookings = async () => {
       if (!user?.id) return;
       
@@ -175,7 +162,6 @@ const SalonBookingManager = () => {
           throw error;
         }
         
-        // Transform and sort the data
         const formattedBookings = data.map((booking: any): Booking => ({
           id: booking.id,
           clientName: booking.sender?.full_name || "Unknown Client",
@@ -227,7 +213,6 @@ const SalonBookingManager = () => {
       
       <CardContent>
         <div className="space-y-6">
-          {/* Filters Section */}
           <div className="flex flex-col sm:flex-row justify-between gap-4">
             <BookingStatusFilter 
               value={statusFilter} 
@@ -239,7 +224,6 @@ const SalonBookingManager = () => {
             />
           </div>
           
-          {/* Tabs for Views */}
           <Tabs 
             value={activeView} 
             onValueChange={(v) => setActiveView(v as "list" | "calendar")}
