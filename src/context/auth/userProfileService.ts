@@ -42,7 +42,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       instagram: data.instagram || '',
       website: data.website || '',
       
-      // Additional fields that might exist in DB
+      // Additional fields 
       salon_name: data.salon_name || '', 
       company_name: data.company_name || '', 
       preferred_language: data.preferred_language || 'en',
