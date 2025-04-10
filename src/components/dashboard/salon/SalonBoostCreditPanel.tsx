@@ -102,7 +102,7 @@ const SalonBoostCreditPanel = () => {
                   </h3>
                   <p className="text-sm text-blue-600">
                     {boostStatus.isActive 
-                      ? t("Active until {{date}}", { date: formatDate(boostStatus.expiresAt) })
+                      ? `${t("Active until")} ${formatDate(boostStatus.expiresAt)}`
                       : credits === 0 ? t("Inactive") : t("Not active")}
                   </p>
                 </div>

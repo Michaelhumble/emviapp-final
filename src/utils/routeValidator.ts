@@ -31,7 +31,8 @@ export const getCurrentRouteName = (): string => {
     return route.path === currentPath;
   });
   
-  return matchingRoute ? matchingRoute.name || matchingRoute.path : 'Unknown Route';
+  // Fixed: Removed accessing 'name' property which doesn't exist on route objects
+  return matchingRoute ? matchingRoute.path : 'Unknown Route';
 };
 
 // Find closest matching route for a 404 fallback suggestion
