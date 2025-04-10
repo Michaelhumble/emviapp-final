@@ -1,3 +1,4 @@
+
 import { UserProfile, UserRole } from "@/context/auth/types";
 import { supabase } from "@/integrations/supabase/client";
 

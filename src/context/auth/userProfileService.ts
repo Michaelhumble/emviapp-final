@@ -23,7 +23,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
     
     if (!data) return null;
     
-    // Transform database record to UserProfile type
+    // Transform database record to UserProfile type with safe fallbacks
     const profile: UserProfile = {
       id: data.id,
       user_id: data.id, // Add user_id matching id
@@ -42,27 +42,27 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       instagram: data.instagram || '',
       website: data.website || '',
       
-      // Additional fields
+      // Additional fields - with proper null checks
       salon_name: data.salon_name || '',
       company_name: data.company_name || '',
       preferred_language: data.preferred_language || 'en',
-      profile_views: data.profile_views || 0,
+      profile_views: typeof data.profile_views === 'number' ? data.profile_views : 0,
       account_type: data.account_type || 'free',
       referral_code: data.referral_code || '',
       affiliate_code: data.referral_code || '', // Map referral_code to affiliate_code for compatibility
-      referral_count: data.referral_count || 0,
+      referral_count: typeof data.referral_count === 'number' ? data.referral_count : 0,
       booking_url: data.booking_url || '',
       boosted_until: data.boosted_until || null,
       skills: Array.isArray(data.skills) ? data.skills : [],
       portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
-      credits: data.credits || 0,
+      credits: typeof data.credits === 'number' ? data.credits : 0,
       custom_role: data.custom_role || '',
       contact_link: data.contact_link || '',
       badges: Array.isArray(data.badges) ? data.badges : [],
       accepts_bookings: Boolean(data.accepts_bookings),
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],
-      services: data.services || []
+      services: Array.isArray(data.services) ? data.services : []
     };
     
     // Also update the cache for faster subsequent access

@@ -22,6 +22,20 @@ const UserProfile = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [showCachedData, setShowCachedData] = useState(false);
   const [localProfile, setLocalProfile] = useState<UserProfileType | null>(null);
+  const [loadTimeout, setLoadTimeout] = useState(false);
+  
+  // Set a loading timeout to prevent infinite loading
+  useEffect(() => {
+    // Only set timeout if we're in loading state
+    if (loading) {
+      const timeoutId = setTimeout(() => {
+        setLoadTimeout(true);
+        console.log("Profile loading timeout reached after 15 seconds");
+      }, 15000); // 15 second timeout
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [loading]);
   
   // Enhanced caching logic
   useEffect(() => {
@@ -40,6 +54,7 @@ const UserProfile = () => {
       lastLoadedTime = Date.now();
       setLocalProfile(userProfile);
       setShowCachedData(false);
+      setLoadTimeout(false); // Reset timeout if profile loaded successfully
     }
   }, [userProfile, loading]);
   
@@ -51,6 +66,7 @@ const UserProfile = () => {
     try {
       await refreshUserProfile();
       toast.success("Profile refreshed successfully");
+      setLoadTimeout(false); // Reset timeout on successful refresh
     } catch (error) {
       console.error("Profile refresh error:", error);
       toast.error("Couldn't refresh profile. Please try again.");
@@ -91,6 +107,28 @@ const UserProfile = () => {
     );
   }
   
+  // If loading timeout occurred, show error state with retry button
+  if (loadTimeout && loading) {
+    return (
+      <div className="min-h-screen bg-[#FDFDFD] p-8">
+        <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-sm text-center">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold mb-2">Loading Timeout</h2>
+          <p className="text-gray-600 mb-4">
+            Your profile is taking longer than expected to load. This might be due to connection issues.
+          </p>
+          <button 
+            onClick={handleRefresh}
+            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+            disabled={refreshing}
+          >
+            {refreshing ? "Refreshing..." : "Retry Loading"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
   // Loading state with improved visual feedback
   if (loading) {
     return <ProfileLoadingManager 
@@ -98,6 +136,7 @@ const UserProfile = () => {
       duration={3000}
       onRefresh={handleRefresh}
       loadingType="profile"
+      maxLoadingTime={15000} // 15 second max loading time
     />;
   }
   

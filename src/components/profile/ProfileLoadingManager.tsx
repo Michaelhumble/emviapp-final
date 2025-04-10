@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Loader2, Clock, RefreshCw, CheckCircle2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,6 +13,7 @@ interface ProfileLoadingManagerProps {
   cachedProfile?: UserProfile | null;
   isError?: boolean;
   showFullPageLoader?: boolean;
+  maxLoadingTime?: number; // New prop for maximum loading time before showing error
 }
 
 const ProfileLoadingManager: React.FC<ProfileLoadingManagerProps> = ({ 
@@ -22,7 +23,8 @@ const ProfileLoadingManager: React.FC<ProfileLoadingManagerProps> = ({
   loadingType = 'profile',
   cachedProfile = null,
   isError = false,
-  showFullPageLoader = true
+  showFullPageLoader = true,
+  maxLoadingTime = 15000 // Default 15 seconds max loading time
 }) => {
   const [extendedLoading, setExtendedLoading] = useState(false);
   const [longLoading, setLongLoading] = useState(false);
@@ -30,6 +32,19 @@ const ProfileLoadingManager: React.FC<ProfileLoadingManagerProps> = ({
   const [dots, setDots] = useState('');
   const [loadingSteps, setLoadingSteps] = useState<{step: string, complete: boolean}[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
+
+  // Handle loading timeout - automatically show error state after maxLoadingTime
+  useEffect(() => {
+    if (isError) return; // Don't set timer if already in error state
+    
+    const timer = setTimeout(() => {
+      setLoadingTimeout(true);
+      console.log("Loading timeout reached - showing error state");
+    }, maxLoadingTime);
+    
+    return () => clearTimeout(timer);
+  }, [maxLoadingTime, isError]);
   
   // Configure loading steps based on type
   useEffect(() => {
@@ -134,6 +149,10 @@ const ProfileLoadingManager: React.FC<ProfileLoadingManagerProps> = ({
     setRefreshing(true);
     try {
       await onRefresh();
+      // Reset timeout state on successful refresh
+      setLoadingTimeout(false);
+    } catch (error) {
+      console.error("Error during refresh:", error);
     } finally {
       setRefreshing(false);
     }
@@ -165,17 +184,19 @@ const ProfileLoadingManager: React.FC<ProfileLoadingManagerProps> = ({
     );
   }
   
-  // If there's an error, show error state
-  if (isError) {
+  // If loading timeout or there's an error, show error state
+  if (loadingTimeout || isError) {
     return (
       <div className="min-h-[30vh] flex flex-col items-center justify-center p-8">
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold mb-3">
-            Failed to load profile
+            {loadingTimeout ? "Loading took too long" : "Failed to load profile"}
           </h2>
           <p className="text-gray-600 mb-4 max-w-md mx-auto">
-            We encountered an issue while loading your profile. This might be due to connection problems.
+            {loadingTimeout 
+              ? "We're having trouble loading your profile data. This might be due to connection problems or server issues."
+              : "We encountered an issue while loading your profile. This might be due to connection problems."}
           </p>
           <Button
             onClick={handleRefresh}
