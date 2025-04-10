@@ -8,6 +8,7 @@ import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 
+// Define the interface explicitly to avoid deep type instantiation issues
 interface CompletionTask {
   id: string;
   label: string;
