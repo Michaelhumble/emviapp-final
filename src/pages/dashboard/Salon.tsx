@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
@@ -31,8 +30,10 @@ const SalonDashboard = () => {
     document.title = "Salon Dashboard | EmviApp";
     
     // Add a debug log to confirm the right component is rendering
-    console.log("SalonDashboard component rendering");
-  }, []);
+    console.log("SalonDashboard component rendering with userProfile:", 
+      userProfile?.id ? "Present" : "Missing", 
+      "and userRole:", userRole);
+  }, [userProfile, userRole]);
   
   const handleCardClick = (action: string) => {
     switch (action) {
@@ -64,6 +65,13 @@ const SalonDashboard = () => {
       >
         <div className="container px-4 mx-auto py-12">
           <RoleDashboardLayout>
+            {/* Debug info - remove in production */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="bg-blue-50 border border-blue-200 p-2 mb-4 text-xs">
+                Salon Dashboard Loaded ✓ | Role: {userRole || 'loading...'}
+              </div>
+            )}
+            
             <div className="space-y-8">
               {/* Statistics Overview */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

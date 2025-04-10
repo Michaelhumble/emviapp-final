@@ -55,7 +55,7 @@ const Dashboard = () => {
           .from('users')
           .select('role')
           .eq('id', user.id)
-          .maybeSingle(); // Changed from single() to prevent errors
+          .maybeSingle();
         
         if (dbError) {
           console.error("[Dashboard] Error fetching user role from DB:", dbError);
@@ -73,12 +73,30 @@ const Dashboard = () => {
           // Save to localStorage for redundancy
           localStorage.setItem('emviapp_user_role', finalRole);
           
-          // Use the determined role for redirection
-          if (finalRole === 'salon') {
-            console.log("[Dashboard] Redirecting salon user to /dashboard/salon");
-            navigate("/dashboard/salon");
-          } else {
-            navigateToRoleDashboard(navigate, finalRole);
+          // CRITICAL FIX: Direct navigation to specific dashboard route
+          // Ensure that each role has a specific route mapped
+          switch (finalRole) {
+            case 'salon':
+              navigate("/dashboard/salon", { replace: true });
+              break;
+            case 'owner':
+              navigate("/dashboard/owner", { replace: true });
+              break;
+            case 'artist':
+            case 'nail technician/artist':
+              navigate("/dashboard/artist", { replace: true });
+              break;
+            case 'customer':
+              navigate("/dashboard/customer", { replace: true });
+              break;
+            case 'freelancer':
+              navigate("/dashboard/freelancer", { replace: true });
+              break;
+            case 'supplier':
+              navigate("/dashboard/supplier", { replace: true });
+              break;
+            default:
+              navigate("/dashboard/other", { replace: true });
           }
         } else {
           console.log("[Dashboard] No role found, redirecting to profile edit");

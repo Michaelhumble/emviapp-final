@@ -10,6 +10,7 @@ const UserProfilePage = () => {
   const { user, loading, userProfile } = useAuth();
   const [localLoading, setLocalLoading] = useState(true);
   const [loadTimeout, setLoadTimeout] = useState(false);
+  const [loadAttempts, setLoadAttempts] = useState(0);
   
   useEffect(() => {
     document.title = "Your Profile | EmviApp";
@@ -28,8 +29,20 @@ const UserProfilePage = () => {
       setLocalLoading(false);
     }
     
+    // Track loading attempts to break out of infinite loops
+    setLoadAttempts(prev => prev + 1);
+    
     return () => clearTimeout(timeoutId);
   }, [loading]);
+
+  // Stop infinite loading cycles after 3 attempts
+  useEffect(() => {
+    if (loadAttempts > 3 && (loading || localLoading)) {
+      console.log("UserProfilePage - Too many loading attempts, forcing timeout");
+      setLoadTimeout(true);
+      setLocalLoading(false);
+    }
+  }, [loadAttempts, loading, localLoading]);
 
   // Not logged in, redirect to sign in
   if (!user && !loading) {

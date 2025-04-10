@@ -26,6 +26,7 @@ import SalonOwners from './pages/SalonOwners';
 import Settings from './pages/Settings';
 import SalonDetail from './pages/salons/SalonDetail';
 import ProfileRedirect from './pages/profile/ProfileRedirect';
+import Profile from './pages/Profile';
 
 const routes = [
   {
@@ -106,7 +107,11 @@ const routes = [
   },
   {
     path: '/profile',
-    element: <UserProfilePage />,
+    element: <Profile />, // Use the Profile component for /profile route
+  },
+  {
+    path: '/profile/view',
+    element: <UserProfilePage />, // Move UserProfilePage to a different route
   },
   {
     path: '/profile/redirect',
