@@ -39,7 +39,7 @@ const Hero = () => {
 
   return (
     <section 
-      className="relative overflow-hidden w-screen h-screen m-0 p-0 max-w-[100vw] max-h-[100vh]"
+      className="relative overflow-hidden"
       style={{
         width: '100vw',
         height: '100vh',
@@ -49,7 +49,10 @@ const Hero = () => {
         maxWidth: '100vw',
         maxHeight: '100vh',
         position: 'relative',
-        touchAction: 'none',
+        left: 0,
+        top: 0,
+        right: 0,
+        bottom: 0
       }}
     >
       {/* Background image carousel */}
@@ -58,9 +61,6 @@ const Hero = () => {
         activeIndex={currentImageIndex} 
         isMobile={isMobile}
       />
-      
-      {/* Enhanced glass effect overlay covering entire section */}
-      <div className="absolute inset-0 z-5 backdrop-blur-md bg-white/10 border-white/20 pointer-events-none"></div>
       
       {/* Main content */}
       <div className="relative z-10 w-full h-full flex items-center justify-center">
