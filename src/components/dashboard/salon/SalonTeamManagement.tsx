@@ -41,12 +41,13 @@ const SalonTeamManagement = () => {
       // In a real implementation, this would query team members by salon_id
       const { data, error } = await supabase
         .from('users')
-        .select('id, full_name, email, avatar_url, role, specialty')
-        .eq('salon_id', user?.id);
+        .select('id, full_name, email, avatar_url, role, specialty');
         
       if (error) throw error;
       
-      setTeamMembers(data || []);
+      // Filter the data manually to avoid type issues
+      const filteredData = data?.filter(member => member.salon_id === user?.id) || [];
+      setTeamMembers(filteredData as TeamMember[]);
     } catch (err) {
       console.error("Error fetching team members:", err);
       setError("Failed to load team members. Please try again.");
