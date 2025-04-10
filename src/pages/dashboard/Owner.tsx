@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
@@ -36,6 +35,8 @@ import CreditUsageHistory from "@/components/dashboard/salon/credits/CreditUsage
 import MonthlyReportDownload from "@/components/dashboard/salon/reports/MonthlyReportDownload";
 import { SalonProvider } from "@/context/salon/SalonContext";
 import SalonSwitcher from "@/components/dashboard/salon/SalonSwitcher";
+import { Button } from "@/components/ui/button";
+import { Settings } from "lucide-react";
 
 const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -100,7 +101,6 @@ const OwnerDashboard = () => {
                   </div>
                 </div>
                 
-                {/* New: Booking Reminders Banner */}
                 <BookingRemindersBanner />
                 
                 <Tabs value={activeTab} onValueChange={handleTabChange}>

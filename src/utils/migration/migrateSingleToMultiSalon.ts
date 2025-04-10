@@ -35,26 +35,26 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
       return null;
     }
     
-    // Define the salon name - either get it from profile or use a fallback
-    // Use optional chaining for type safety
-    const salonName = userProfile?.salon_name || userProfile?.full_name || 'My Salon';
+    // Define the salon name - use type assertions to handle potential missing properties
+    const userProfileAny = userProfile as any; // Using any type to avoid deep type issues
+    const salonName = userProfileAny.salon_name || userProfileAny.full_name || 'My Salon';
     
     // Create a new salon record with information from the user profile
     const newSalonData = {
       owner_id: userId,
       salon_name: salonName,
-      logo_url: userProfile?.avatar_url,
-      location: userProfile?.location,
-      website: userProfile?.website,
-      instagram: userProfile?.instagram,
-      phone: userProfile?.phone,
-      about: userProfile?.bio
+      logo_url: userProfileAny.avatar_url,
+      location: userProfileAny.location,
+      website: userProfileAny.website,
+      instagram: userProfileAny.instagram,
+      phone: userProfileAny.phone,
+      about: userProfileAny.bio
     };
     
     // Use type assertion to avoid TypeScript errors
     const { data: newSalon, error: insertError } = await supabase
       .from('salons')
-      .insert(newSalonData as any)
+      .insert(newSalonData)
       .select()
       .single();
     
