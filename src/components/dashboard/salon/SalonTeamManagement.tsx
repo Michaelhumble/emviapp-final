@@ -42,8 +42,7 @@ const SalonTeamManagement = () => {
       const { data, error } = await supabase
         .from('users')
         .select('id, full_name, email, avatar_url, role, specialty')
-        .eq('salon_id', user?.id)
-        .order('full_name');
+        .eq('salon_id', user?.id);
         
       if (error) throw error;
       
