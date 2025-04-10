@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
@@ -27,48 +28,56 @@ export function useSalonStats() {
     setError(null);
     
     try {
-      // Fetch active job posts
-      const { data: jobsData, error: jobsError } = await supabase
-        .from('jobs')
-        .select('id')
-        .eq('salon_id', user.id)
-        .eq('status', 'active');
-        
-      if (jobsError) throw jobsError;
-      
-      // Fetch applicants this month
+      // Set up date range for applicants this month
       const today = new Date();
       const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
       
+      // Run all queries in parallel using Promise.all
+      const [jobsResponse, userData] = await Promise.all([
+        // Query 1: Fetch active job posts
+        supabase
+          .from('jobs')
+          .select('id')
+          .eq('salon_id', user.id)
+          .eq('status', 'active'),
+          
+        // Query 2: Fetch user credits
+        supabase
+          .from('users')
+          .select('credits')
+          .eq('id', user.id)
+          .single()
+      ]);
+      
+      // Handle any errors from the job posts query
+      if (jobsResponse.error) throw jobsResponse.error;
+      
+      // Handle any errors from the user data query
+      if (userData.error) throw userData.error;
+      
+      // Prepare for applicants query (only if we have job posts)
       let applicantsCount = 0;
       
-      if (jobsData && jobsData.length > 0) {
-        const jobIds = jobsData.map(job => job.id);
+      if (jobsResponse.data && jobsResponse.data.length > 0) {
+        const jobIds = jobsResponse.data.map(job => job.id);
         
-        const { data: applicantsData, error: applicantsError } = await supabase
+        // Query 3: Fetch applicants this month (only needed if we have jobs)
+        const applicantsResponse = await supabase
           .from('job_applications')
           .select('id')
           .in('job_id', jobIds)
           .gte('created_at', firstDayOfMonth.toISOString());
           
-        if (applicantsError) throw applicantsError;
+        if (applicantsResponse.error) throw applicantsResponse.error;
         
-        applicantsCount = applicantsData?.length || 0;
+        applicantsCount = applicantsResponse.data?.length || 0;
       }
       
-      // Fetch user credits
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('credits')
-        .eq('id', user.id)
-        .single();
-        
-      if (userError) throw userError;
-      
+      // Update state with all fetched data
       setStats({
-        activeJobPosts: jobsData?.length || 0,
+        activeJobPosts: jobsResponse.data?.length || 0,
         applicantsThisMonth: applicantsCount,
-        creditsRemaining: userData?.credits || 0
+        creditsRemaining: userData?.data?.credits || 0
       });
       
       setLastFetched(new Date());
