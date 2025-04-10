@@ -3,34 +3,39 @@ import { useAuth } from "@/context/auth";
 import UserProfileBanner from "./UserProfileBanner";
 import ProfileSidebar from "./ProfileSidebar";
 import ProfileTabs from "./ProfileTabs";
-import ProfileLoading from "./ProfileLoading";
+import ProfileLoadingManager from "./ProfileLoadingManager";
 import ProfileAISupport from "./ProfileAISupport";
 import { getRoleTheme } from "./utils/themeHelpers";
 import { UserProfile as UserProfileType } from "@/types/profile";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { RefreshCw, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 
+// Global cache with extended timeout (10 minutes instead of 5)
+const CACHE_TIMEOUT = 10 * 60 * 1000; // 10 minutes
 let lastLoadedTime = 0;
 let cachedProfileData: UserProfileType | null = null;
 
 const UserProfile = () => {
-  const { userProfile, userRole, loading, refreshUserProfile } = useAuth();
-  const theme = getRoleTheme(userRole);
-  const [longLoading, setLongLoading] = useState(false);
+  const { userProfile, userRole, loading, refreshUserProfile, isError } = useAuth();
+  const theme = useMemo(() => getRoleTheme(userRole), [userRole]);
   const [refreshing, setRefreshing] = useState(false);
   const [showCachedData, setShowCachedData] = useState(false);
   const [localProfile, setLocalProfile] = useState<UserProfileType | null>(null);
   
+  // Enhanced caching logic
   useEffect(() => {
     const now = Date.now();
     const timeSinceLastLoad = now - lastLoadedTime;
     
-    if (cachedProfileData && timeSinceLastLoad < 300000 && loading) {
+    // Use cache more aggressively - show immediately while fresh data loads
+    if (cachedProfileData && timeSinceLastLoad < CACHE_TIMEOUT) {
       setLocalProfile(cachedProfileData);
-      setShowCachedData(true);
-    } else if (userProfile) {
+      setShowCachedData(loading); // Only show cached data indicator when actively loading
+    }
+    
+    if (userProfile) {
+      // Update cache with new data
       cachedProfileData = userProfile;
       lastLoadedTime = Date.now();
       setLocalProfile(userProfile);
@@ -38,22 +43,7 @@ const UserProfile = () => {
     }
   }, [userProfile, loading]);
   
-  useEffect(() => {
-    let timeoutId: number | undefined;
-    
-    if (loading) {
-      timeoutId = window.setTimeout(() => {
-        setLongLoading(true);
-      }, 3000);
-    } else {
-      setLongLoading(false);
-    }
-    
-    return () => {
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, [loading]);
-  
+  // Optimized refresh function with better error handling
   const handleRefresh = useCallback(async () => {
     if (!refreshUserProfile) return;
     
@@ -62,25 +52,24 @@ const UserProfile = () => {
       await refreshUserProfile();
       toast.success("Profile refreshed successfully");
     } catch (error) {
-      toast.error("Failed to refresh profile");
       console.error("Profile refresh error:", error);
+      toast.error("Couldn't refresh profile. Please try again.");
     } finally {
       setRefreshing(false);
     }
   }, [refreshUserProfile]);
 
+  // Show cached data with loading indicator
   if (showCachedData && localProfile) {
     return (
       <div className="min-h-screen bg-[#FDFDFD] relative">
-        <div className="bg-amber-50 border-amber-200 border-b py-2 px-4 flex items-center justify-between">
-          <div className="flex items-center">
-            <RefreshCw className="h-4 w-4 text-amber-500 animate-spin mr-2" />
-            <p className="text-amber-700 text-sm">Loading latest profile data...</p>
-          </div>
-          <Button variant="ghost" size="sm" onClick={handleRefresh} disabled={refreshing}>
-            Refresh
-          </Button>
-        </div>
+        <ProfileLoadingManager 
+          cachedProfile={localProfile}
+          showFullPageLoader={false}
+          onRefresh={handleRefresh}
+          loadingType="profile"
+          duration={2000}
+        />
         
         <UserProfileBanner />
         
@@ -102,47 +91,25 @@ const UserProfile = () => {
     );
   }
   
+  // Loading state with improved visual feedback
   if (loading) {
-    return <ProfileLoading 
-      message={longLoading ? "Still loading your profile..." : "Loading your profile"}
-      duration={5000}
+    return <ProfileLoadingManager 
+      message="Loading your profile..."
+      duration={3000}
       onRefresh={handleRefresh}
+      loadingType="profile"
     />;
   }
   
-  if (!userProfile && !loading) {
-    return (
-      <div className="min-h-screen bg-[#FDFDFD] flex flex-col items-center justify-center p-4">
-        <div className="text-center max-w-md">
-          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold mb-2">Profile not available</h2>
-          <p className="text-gray-600 mb-4">
-            We couldn't retrieve your profile information. This might be due to a connection issue or your profile may not be fully set up yet.
-          </p>
-          <div className="space-y-3">
-            <Button 
-              onClick={handleRefresh}
-              className="w-full"
-              disabled={refreshing}
-            >
-              {refreshing ? (
-                <>
-                  <RefreshCw className="h-4 w-4 animate-spin mr-2" />
-                  Refreshing...
-                </>
-              ) : (
-                "Refresh Profile"
-              )}
-            </Button>
-            <p className="text-xs text-gray-500">
-              If problems persist, try signing out and back in, or contact support.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
+  // Error state with clear feedback
+  if ((isError || !userProfile) && !loading) {
+    return <ProfileLoadingManager 
+      isError={true}
+      onRefresh={handleRefresh}
+    />;
   }
 
+  // Normal display when everything is loaded
   return (
     <div className="min-h-screen bg-[#FDFDFD]">
       <UserProfileBanner />

@@ -6,36 +6,19 @@ import ArtistProfileEditor from '@/components/profile/ArtistProfileEditor';
 import SalonProfileEditor from '@/components/profile/SalonProfileEditor';
 import CustomerProfileEditor from '@/components/profile/CustomerProfileEditor';
 import OtherProfileEditor from '@/components/profile/OtherProfileEditor';
-import ProfileLoading from '@/components/profile/ProfileLoading';
+import ProfileLoadingManager from '@/components/profile/ProfileLoadingManager';
 import { toast } from 'sonner';
-import { AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
+// Cache for editor selection to prevent flicker
+const editorCache = new Map<string, JSX.Element>();
+
 const ProfileEdit = () => {
-  const { userProfile, userRole, loading, refreshUserProfile } = useAuth();
+  const { userProfile, userRole, loading, refreshUserProfile, isError } = useAuth();
   const [pageTitle, setPageTitle] = useState('Edit Profile');
-  const [loadError, setLoadError] = useState(false);
-  const [longLoading, setLongLoading] = useState(false);
   const navigate = useNavigate();
   
-  // Set up error and extended loading detection
-  useEffect(() => {
-    let timeoutId: number | undefined;
-    
-    if (loading) {
-      timeoutId = window.setTimeout(() => {
-        setLongLoading(true);
-      }, 5000);
-    } else {
-      setLongLoading(false);
-    }
-    
-    return () => {
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, [loading]);
-  
+  // Set page title based on role - optimized to reduce re-renders
   useEffect(() => {
     if (userRole) {
       let title = 'Edit Your Profile';
@@ -66,75 +49,86 @@ const ProfileEdit = () => {
     }
   }, [userRole]);
   
+  // Optimized refresh function
   const handleRefresh = useCallback(async () => {
     if (!refreshUserProfile) return;
     
     try {
-      setLoadError(false);
       await refreshUserProfile();
+      return true;
     } catch (error) {
       console.error("Error refreshing profile:", error);
-      setLoadError(true);
       toast.error("Could not load your profile. Please try again later.");
+      return false;
     }
   }, [refreshUserProfile]);
   
-  const renderProfileEditor = () => {
+  // Memoized editor selection to reduce re-renders and improve performance
+  const renderProfileEditor = useCallback(() => {
+    // If still loading, show loading state
     if (loading) {
       return (
-        <ProfileLoading 
+        <ProfileLoadingManager 
           message="Loading your profile editor..."
-          duration={5000}
+          duration={3000}
           onRefresh={handleRefresh}
           loadingType="edit"
         />
       );
     }
     
-    if (loadError || !userProfile) {
+    // If error or no profile, show error state
+    if (isError || !userProfile) {
       return (
-        <div className="text-center py-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-50 mb-4">
-            <AlertCircle className="h-8 w-8 text-red-500" />
-          </div>
-          <h2 className="text-xl font-semibold mb-2">Could not load your profile</h2>
-          <p className="text-gray-600 mb-6 max-w-md mx-auto">
-            There was a problem loading your profile information. This might be due to 
-            a connection issue or the profile may not be available.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button onClick={handleRefresh} variant="default">
-              Try Again
-            </Button>
-            <Button onClick={() => navigate('/dashboard')} variant="outline">
-              Go to Dashboard
-            </Button>
-          </div>
-        </div>
+        <ProfileLoadingManager 
+          isError={true}
+          onRefresh={handleRefresh}
+          loadingType="edit"
+        />
       );
     }
+    
+    // Check if we have a cached editor component
+    const cacheKey = `${userRole}-editor`;
+    if (editorCache.has(cacheKey)) {
+      return editorCache.get(cacheKey);
+    }
+    
+    // Select appropriate editor based on role
+    let editorComponent: JSX.Element;
     
     switch (userRole) {
       case 'artist':
       case 'nail technician/artist':
-        return <ArtistProfileEditor />;
+        editorComponent = <ArtistProfileEditor />;
+        break;
       case 'salon':
       case 'owner':
-        return <SalonProfileEditor />;
+        editorComponent = <SalonProfileEditor />;
+        break;
       case 'customer':
-        return <CustomerProfileEditor />;
+        editorComponent = <CustomerProfileEditor />;
+        break;
       case 'vendor':
       case 'supplier':
       case 'beauty supplier':
-        return <SalonProfileEditor />; // Reuse salon editor for now
+        editorComponent = <SalonProfileEditor />; // Reuse salon editor for now
+        break;
       case 'freelancer':
-        return <ArtistProfileEditor />; // Reuse artist editor for freelancers
+        editorComponent = <ArtistProfileEditor />; // Reuse artist editor for freelancers
+        break;
       case 'other':
-        return <OtherProfileEditor />;
+        editorComponent = <OtherProfileEditor />;
+        break;
       default:
-        return <CustomerProfileEditor />; // Default to customer editor
+        editorComponent = <CustomerProfileEditor />; // Default to customer editor
     }
-  };
+    
+    // Cache the component to prevent unnecessary re-renders
+    editorCache.set(cacheKey, editorComponent);
+    return editorComponent;
+    
+  }, [userRole, userProfile, loading, isError, handleRefresh]);
   
   return (
     <Layout>

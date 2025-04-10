@@ -4,9 +4,8 @@ import { User } from "@supabase/supabase-js";
 import { UserProfile, UserRole } from "../types";
 import { supabase } from "@/integrations/supabase/client";
 import { normalizeRole } from "@/utils/roles";
-import { toast } from "sonner";
 
-// Enhanced cache for profiles with proper typing
+// Enhanced cache with better performance characteristics
 interface ProfileCacheEntry {
   profile: UserProfile | null;
   timestamp: number;
@@ -14,88 +13,27 @@ interface ProfileCacheEntry {
   status: 'fresh' | 'stale' | 'expired';
 }
 
-// Cache with proper Map typing
+// Improved cache with proper Map typing and longer timeouts
 const profileCache = new Map<string, ProfileCacheEntry>();
 
-// Cache durations - 5 minutes fresh, up to 15 minutes stale
-const CACHE_FRESH_DURATION = 5 * 60 * 1000;    // 5 minutes
-const CACHE_STALE_DURATION = 15 * 60 * 1000;   // 15 minutes
+// Increased cache durations for better performance
+const CACHE_FRESH_DURATION = 10 * 60 * 1000;   // 10 minutes fresh (doubled)
+const CACHE_STALE_DURATION = 30 * 60 * 1000;   // 30 minutes stale (doubled)
 
 /**
- * Hook to handle user profile management with optimized loading and caching
+ * Optimized hook to handle user profile management with improved loading and caching
  */
 export const useUserProfile = (user: User | null, setLoading: (loading: boolean) => void) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [isError, setIsError] = useState<boolean>(false);
 
-  // Function to fetch user profile with optimized flow
-  const getUserProfile = async (userId: string) => {
-    try {
-      const now = Date.now();
-      
-      // Check cache first with proper status check
-      const cachedData = profileCache.get(userId);
-      if (cachedData) {
-        const age = now - cachedData.timestamp;
-        
-        // Update cache status based on age
-        if (age < CACHE_FRESH_DURATION) {
-          cachedData.status = 'fresh';
-        } else if (age < CACHE_STALE_DURATION) {
-          cachedData.status = 'stale';
-        } else {
-          cachedData.status = 'expired';
-        }
-        
-        // Use cache data for fresh or stale entries
-        if (cachedData.status !== 'expired') {
-          console.log(`Using ${cachedData.status} cached profile data from ${Math.round(age/1000)}s ago`);
-          setUserProfile(cachedData.profile);
-          setUserRole(cachedData.role);
-          
-          // If stale, trigger background refresh but don't wait for it
-          if (cachedData.status === 'stale') {
-            console.log("Cache is stale, refreshing in background");
-            setLoading(false); // Don't block UI while refreshing stale data
-            setTimeout(() => fetchFreshProfileData(userId), 0);
-            return;
-          }
-          
-          setLoading(false);
-          return;
-        }
-      }
-      
-      // No usable cache, fetch fresh data
-      await fetchFreshProfileData(userId);
-      
-    } catch (error) {
-      console.error("Error in getUserProfile:", error);
-      setIsError(true);
-      
-      // Final fallback - check localStorage
-      const cachedRole = localStorage.getItem('emviapp_user_role');
-      if (cachedRole && !userRole) {
-        const normalizedRole = normalizeRole(cachedRole as UserRole);
-        setUserRole(normalizedRole);
-      } else {
-        setUserRole(null);
-      }
-      
-      setUserProfile(null);
-      setLoading(false);
-    }
-  };
-  
-  // Function to fetch fresh profile data with parallel requests
-  const fetchFreshProfileData = async (userId: string) => {
+  // Optimized profile fetching with parallel requests and better error handling
+  const fetchFreshProfileData = useCallback(async (userId: string) => {
     console.log("Fetching fresh profile data for:", userId);
-    setLoading(true);
-    setIsError(false);
     
     try {
-      // Fetch both auth user and database profile in parallel
+      // Use Promise.all for truly parallel requests
       const [authResponse, profileResponse] = await Promise.all([
         supabase.auth.getUser(),
         supabase.from('users').select('*').eq('id', userId).single()
@@ -106,11 +44,8 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
       const authError = authResponse.error;
       let role: UserRole | null = null;
       
-      if (authError) {
-        console.error("Auth metadata fetch error:", authError);
-      } else if (authUser?.user_metadata?.role) {
+      if (!authError && authUser?.user_metadata?.role) {
         role = normalizeRole(authUser.user_metadata.role as UserRole);
-        console.log("Setting role from metadata:", role);
         setUserRole(role);
         localStorage.setItem('emviapp_user_role', role || '');
       }
@@ -133,6 +68,7 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
         
         setIsError(true);
         setUserProfile(null);
+        return { profile: null, role };
       } else {
         console.log("User profile data retrieved successfully");
         setUserProfile(profile);
@@ -140,7 +76,6 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
         // If we didn't get a role from metadata, use the database role
         if (!role && profile?.role) {
           role = normalizeRole(profile.role as UserRole);
-          console.log("Setting role from database:", role);
           setUserRole(role);
           localStorage.setItem('emviapp_user_role', role || '');
           
@@ -161,35 +96,142 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
           timestamp: Date.now(),
           status: 'fresh'
         });
+        
+        return { profile, role };
       }
     } catch (error) {
       console.error("Error fetching profile data:", error);
       setIsError(true);
       setUserProfile(null);
+      return { profile: null, role: null };
+    }
+  }, []);
+
+  // Optimized function to fetch user profile with improved caching
+  const getUserProfile = useCallback(async (userId: string) => {
+    try {
+      const now = Date.now();
+      setIsError(false);
+      
+      // Check cache first with optimized flow
+      const cachedData = profileCache.get(userId);
+      if (cachedData) {
+        const age = now - cachedData.timestamp;
+        
+        // Update cache status based on age
+        if (age < CACHE_FRESH_DURATION) {
+          cachedData.status = 'fresh';
+        } else if (age < CACHE_STALE_DURATION) {
+          cachedData.status = 'stale';
+        } else {
+          cachedData.status = 'expired';
+        }
+        
+        // Always use cached data first to improve perceived performance
+        if (cachedData.status !== 'expired') {
+          console.log(`Using ${cachedData.status} cached profile data from ${Math.round(age/1000)}s ago`);
+          setUserProfile(cachedData.profile);
+          setUserRole(cachedData.role);
+          
+          // For stale cache, trigger background refresh without waiting
+          if (cachedData.status === 'stale') {
+            console.log("Cache is stale, refreshing in background");
+            setTimeout(() => fetchFreshProfileData(userId), 0);
+          }
+          
+          // Don't block UI even for expired cache - load new data in background
+          if (cachedData.status === 'expired') {
+            console.log("Cache is expired, but using it temporarily while loading fresh data");
+            setLoading(true); // Keep loading state active
+            setTimeout(async () => {
+              await fetchFreshProfileData(userId);
+              setLoading(false);
+            }, 0);
+            return;
+          }
+          
+          setLoading(false);
+          return;
+        }
+      }
+      
+      // No usable cache, fetch fresh data
+      setLoading(true);
+      const result = await fetchFreshProfileData(userId);
+      
+      // If we successfully retrieved profile data, update state
+      if (result.profile) {
+        setUserProfile(result.profile);
+        if (result.role) setUserRole(result.role);
+      }
+      
+    } catch (error) {
+      console.error("Error in getUserProfile:", error);
+      setIsError(true);
+      
+      // Final fallback - check localStorage
+      const cachedRole = localStorage.getItem('emviapp_user_role');
+      if (cachedRole && !userRole) {
+        const normalizedRole = normalizeRole(cachedRole as UserRole);
+        setUserRole(normalizedRole);
+      } else {
+        setUserRole(null);
+      }
+      
+      setUserProfile(null);
     } finally {
       setLoading(false);
     }
-  };
-
-  // Refresh user profile with cache busting
+  }, [fetchFreshProfileData, setLoading]);
+  
+  // Refresh user profile with optimized caching
   const refreshUserProfile = useCallback(async () => {
     if (user) {
       console.log("Refreshing user profile");
-      // Remove from cache to force fresh data
-      profileCache.delete(user.id);
-      await getUserProfile(user.id);
-      return true;
+      setLoading(true);
+      try {
+        // Instead of removing from cache completely, mark as stale to maintain UI
+        const cachedEntry = profileCache.get(user.id);
+        if (cachedEntry) {
+          cachedEntry.status = 'stale';
+          profileCache.set(user.id, cachedEntry);
+        }
+        
+        // Fetch fresh data in parallel
+        await fetchFreshProfileData(user.id);
+        return true;
+      } catch (error) {
+        console.error("Error refreshing profile:", error);
+        setIsError(true);
+        return false;
+      } finally {
+        setLoading(false);
+      }
     } else {
       console.warn("Cannot refresh profile: no user");
       return false;
     }
-  }, [user]);
+  }, [user, fetchFreshProfileData, setLoading]);
 
-  // Fetch user profile when user changes
+  // Fetch user profile when user changes - optimized to reduce fetch frequency
   useEffect(() => {
     if (user) {
       console.log("User changed, fetching profile");
-      // Use a slight delay to avoid potential deadlocks with Supabase client
+      
+      // Check if we already have fresh data for this user
+      const cachedData = profileCache.get(user.id);
+      const now = Date.now();
+      
+      if (cachedData && now - cachedData.timestamp < CACHE_FRESH_DURATION) {
+        // Use cached data without fetching again
+        console.log("Using cached profile data for user change");
+        setUserProfile(cachedData.profile);
+        setUserRole(cachedData.role);
+        setLoading(false);
+        return;
+      }
+      
+      // If no fresh data, fetch with slight delay
       const timer = setTimeout(() => {
         getUserProfile(user.id);
       }, 10);
@@ -200,7 +242,7 @@ export const useUserProfile = (user: User | null, setLoading: (loading: boolean)
       setUserProfile(null);
       setUserRole(null);
     }
-  }, [user]);
+  }, [user, getUserProfile, setLoading]);
 
   return {
     userProfile,
