@@ -61,9 +61,9 @@ export function useSalonStats() {
       if (jobsResponse.error) throw jobsResponse.error;
       if (userDataResponse.error) throw userDataResponse.error;
       
-      // At this point, we know userDataResponse.data exists and is not an error
-      // Explicitly type the userData to help TypeScript understand
-      const userData: {
+      // Now that we've checked for errors, we can safely access the data
+      // Type assertion is valid here since we've verified there's no error
+      type UserData = {
         credits?: number;
         full_name?: string;
         salon_name?: string;
@@ -73,7 +73,9 @@ export function useSalonStats() {
         instagram?: string;
         website?: string;
         avatar_url?: string;
-      } = userDataResponse.data;
+      };
+      
+      const userData = userDataResponse.data as UserData;
       
       // Prepare for applicants query (only if we have job posts)
       let applicantsCount = 0;
