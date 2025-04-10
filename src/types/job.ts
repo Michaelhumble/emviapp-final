@@ -31,8 +31,25 @@ export interface Job {
   contact_info?: {
     phone?: string;
     email?: string;
+    owner_name?: string; // Added owner_name property
   };
   emvi_ai_boosted?: boolean;
   status?: string;
   image?: string;
+  
+  // Additional properties needed by components
+  title?: string;
+  compensation_type?: string;
+  compensation_details?: string;
+  salary_range?: string;
+  tip_range?: string;
+  weekly_pay?: boolean;
+  no_supply_deduction?: boolean;
+  preferred_languages?: string[];
+  trust_indicators?: string[];
+  user_id?: string;
+  expires_at?: string;
+  has_wax_room?: boolean;
+  has_dining_room?: boolean;
+  has_laundry?: boolean;
 }

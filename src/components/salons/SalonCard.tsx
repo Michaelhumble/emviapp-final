@@ -1,65 +1,51 @@
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, DollarSign, Calendar, Home, Sparkles } from "lucide-react";
-import { differenceInDays } from 'date-fns';
+import { Button } from "@/components/ui/button";
+import { 
+  MapPin, Phone, DollarSign, Users, Building, 
+  Ruler, Sparkles, Info, Check, Home 
+} from "lucide-react";
+import { Job } from "@/types/job";
 
 interface SalonCardProps {
-  salon: any;
-  onViewDetails: (salon: any) => void;
+  salon: Job;
+  index: number;
+  isExpired: boolean;
+  onViewDetails: (salon: Job) => void;
 }
 
-const SalonCard: React.FC<SalonCardProps> = ({ salon, onViewDetails }) => {
-  const isExpired = () => {
-    if (salon.status === 'expired') return true;
-    
-    const createdDate = new Date(salon.created_at);
-    const now = new Date();
-    return differenceInDays(now, createdDate) >= 30;
-  };
-  
-  const expired = isExpired();
-  const daysAgo = differenceInDays(new Date(), new Date(salon.created_at));
-
-  // Default fallback image if salon doesn't have one
-  const fallbackImage = 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60';
-  
+const SalonCard = ({ salon, index, isExpired, onViewDetails }: SalonCardProps) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+      transition={{ duration: 0.3, delay: (parseInt(salon.id) - 100) * 0.1 }}
     >
-      <Card className={`overflow-hidden transition-all hover:shadow-md border ${expired ? 'border-orange-200 bg-orange-50/30' : 'border-gray-100'}`}>
-        {expired && (
-          <div className="bg-orange-100 border-b border-orange-200 p-2 text-center">
-            <p className="text-orange-800 text-xs font-medium">
-              This listing has expired
+      <Card className={`overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full ${isExpired ? 'border-orange-200' : ''}`}>
+        {isExpired && (
+          <div className="bg-orange-50 border-b border-orange-200 p-3 text-center">
+            <p className="text-orange-800 text-sm">
+              Tin đã hết hạn – Vui lòng đăng lại để tiếp tục tiếp cận khách hàng mới.
             </p>
           </div>
         )}
         
         <div 
-          className="h-48 bg-center bg-cover relative" 
-          style={{ 
-            backgroundImage: salon.image ? 
-              `url(${salon.image})` : 
-              `url(${fallbackImage})`
-          }}
+          className="h-56 bg-center bg-cover relative" 
+          style={{ backgroundImage: `url(${salon.image || ''})` }}
         >
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
-            <div className="p-4 text-white flex justify-between w-full items-end">
-              <Badge className="bg-purple-600 hover:bg-purple-700 text-white text-sm py-1.5 px-3">
+          <div className="absolute inset-0 bg-black/30 flex items-end">
+            <div className="p-4 w-full flex justify-between items-end">
+              <Badge className="bg-primary/90 hover:bg-primary text-white text-lg py-1 px-3">
                 {salon.asking_price}
               </Badge>
               
-              {salon.is_featured && (
+              {salon.emvi_ai_boosted && (
                 <Badge className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
                   <Sparkles className="h-3.5 w-3.5 mr-1" />
-                  Featured
+                  Được EmviAI quảng bá toàn quốc
                 </Badge>
               )}
             </div>
@@ -67,53 +53,91 @@ const SalonCard: React.FC<SalonCardProps> = ({ salon, onViewDetails }) => {
         </div>
         
         <CardContent className="p-5">
-          <h3 className="font-semibold text-lg mb-1">{salon.company || salon.salon_name || 'Unnamed Salon'}</h3>
-          <div className="flex items-center text-sm text-gray-500 mb-2">
-            <MapPin className="h-3.5 w-3.5 mr-1" /> {salon.location}
-          </div>
-          
-          <div className="grid grid-cols-2 gap-2 text-sm mb-3">
-            <div className="flex items-center text-gray-600">
-              <DollarSign className="h-3.5 w-3.5 mr-1" /> 
-              Rent: {salon.monthly_rent}
-            </div>
-            <div className="flex items-center text-gray-600">
-              <Calendar className="h-3.5 w-3.5 mr-1" />
-              {daysAgo} days ago
+          <div className="mb-3">
+            <h3 className="font-bold text-lg font-serif">{salon.company}</h3>
+            <div className="flex items-center text-sm text-gray-500">
+              <MapPin className="w-4 h-4 mr-1" />
+              <span>{salon.location}</span>
             </div>
           </div>
           
-          {salon.vietnamese_description && (
-            <p className="text-sm text-gray-600 italic mb-2 line-clamp-2">
-              {salon.vietnamese_description}
-            </p>
-          )}
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="flex items-center text-sm">
+              <Building className="w-4 h-4 mr-2 text-gray-500" />
+              <span>Rent: {salon.monthly_rent}</span>
+            </div>
+            <div className="flex items-center text-sm">
+              <Users className="w-4 h-4 mr-2 text-gray-500" />
+              <span>{salon.number_of_stations} Stations</span>
+            </div>
+            <div className="flex items-center text-sm">
+              <DollarSign className="w-4 h-4 mr-2 text-gray-500" />
+              <span>Rev: {salon.revenue}</span>
+            </div>
+            <div className="flex items-center text-sm">
+              <Ruler className="w-4 h-4 mr-2 text-gray-500" />
+              <span>{salon.square_feet} sqft</span>
+            </div>
+          </div>
           
-          <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-            {salon.description}
-          </p>
-          
-          <div className="flex flex-wrap gap-1 mb-4">
-            {salon.has_housing && (
-              <Badge variant="outline" className="bg-green-50 text-green-800 text-xs">
-                <Home className="h-3 w-3 mr-1" /> Housing
-              </Badge>
-            )}
-            {salon.salon_features?.slice(0, 3).map((feature: string, i: number) => (
-              <Badge key={i} variant="outline" className="bg-blue-50 text-blue-800 text-xs">
+          <div className="flex flex-wrap gap-2 mb-4">
+            {salon.salon_features?.map((feature, index) => (
+              <Badge key={index} variant="outline" className="bg-purple-50">
                 {feature}
               </Badge>
             ))}
+            
+            {salon.has_housing && (
+              <Badge variant="outline" className="bg-green-50 text-green-800">
+                <Home className="w-3 h-3 mr-1" />
+                Chỗ ở
+              </Badge>
+            )}
+            
+            {salon.owner_will_train && (
+              <Badge variant="outline" className="bg-blue-50 text-blue-800">
+                <Check className="w-3 h-3 mr-1" />
+                Training
+              </Badge>
+            )}
           </div>
           
-          <Button 
-            size="sm" 
-            variant="default" 
-            className="w-full bg-purple-600 hover:bg-purple-700"
-            onClick={() => onViewDetails(salon)}
-          >
-            View Details
-          </Button>
+          <div className="mt-3 mb-4 text-sm border-l-2 border-primary pl-3 italic">
+            <p className="mb-1">{salon.vietnamese_description}</p>
+            <p className="text-gray-600">{salon.description}</p>
+          </div>
+          
+          <div className="mt-3 mb-2 text-sm">
+            <div className="flex items-center text-gray-700">
+              <Info className="w-4 h-4 mr-2 text-gray-500" />
+              <span>Lý do bán: {salon.reason_for_selling}</span>
+            </div>
+          </div>
+          
+          <div className="flex justify-between mt-4">
+            {!isExpired ? (
+              <>
+                <Button variant="outline" className="gap-1">
+                  <Phone className="h-4 w-4" />
+                  {salon.contact_info?.phone}
+                </Button>
+                <Button onClick={() => onViewDetails(salon)}>
+                  View Details
+                </Button>
+              </>
+            ) : (
+              <div className="w-full">
+                <Button className="w-full" variant="outline">
+                  Contact for more information
+                </Button>
+              </div>
+            )}
+          </div>
+          
+          <div className="text-xs text-center text-gray-500 mt-4 pt-2 border-t">
+            Want your ad seen nationwide? 
+            <Button variant="link" className="text-xs p-0 h-auto ml-1">Boost Ad</Button>
+          </div>
         </CardContent>
       </Card>
     </motion.div>
