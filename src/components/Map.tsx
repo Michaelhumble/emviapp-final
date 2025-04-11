@@ -7,8 +7,12 @@ interface MapProps {
   height?: string;
   width?: string;
   className?: string;
-  mapTypeId?: google.maps.MapTypeId;
-  styles?: google.maps.MapTypeStyle[];
+  mapTypeId?: string;
+  styles?: Array<{
+    featureType?: string;
+    elementType?: string;
+    stylers: Array<Record<string, any>>;
+  }>;
 }
 
 const Map = ({
@@ -17,7 +21,7 @@ const Map = ({
   height = '400px',
   width = '100%',
   className = '',
-  mapTypeId = google.maps.MapTypeId.ROADMAP,
+  mapTypeId = 'roadmap',
   styles = [
     {
       featureType: "water",
@@ -91,7 +95,7 @@ const Map = ({
   const mapRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [map, setMap] = useState<any | null>(null);
 
   useEffect(() => {
     // Function to load the Google Maps script

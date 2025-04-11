@@ -13,5 +13,22 @@ interface ImportMeta {
 
 // Add Google Maps API type definitions
 interface Window {
-  google?: any;
+  google?: {
+    maps: {
+      Map: new (mapDiv: HTMLElement, options: any) => any;
+      Marker: new (options: any) => any;
+      MapTypeId: {
+        ROADMAP: string;
+        SATELLITE: string;
+        HYBRID: string;
+        TERRAIN: string;
+      };
+      MapTypeStyle: Array<{
+        featureType?: string;
+        elementType?: string;
+        stylers: Array<Record<string, any>>;
+      }>;
+    };
+  };
 }
+
