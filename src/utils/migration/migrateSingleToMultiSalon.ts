@@ -1,9 +1,10 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 // This utility will help migrate users who already have a single salon in the system
 // to the new multi-salon model by creating a salon entry for them
-export const migrateSingleToMultiSalon = (data: any): any => {
+export const migrateSingleToMultiSalon = async (data: any): Promise<any> => {
   try {
     // Check if user has any salons already
     const { data: existingSalons, error: salonsError } = await supabase
