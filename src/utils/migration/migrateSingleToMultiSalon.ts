@@ -48,7 +48,7 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
       return null;
     }
     
-    // Explicitly type as any to avoid deep instantiation
+    // Cast to any to avoid deep instantiation
     const profile = userProfile as any;
     
     // Define the salon name - either get it from profile or use a fallback

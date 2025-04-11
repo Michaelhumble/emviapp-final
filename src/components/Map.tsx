@@ -7,6 +7,8 @@ interface MapProps {
   height?: string;
   width?: string;
   className?: string;
+  mapTypeId?: google.maps.MapTypeId;
+  styles?: google.maps.MapTypeStyle[];
 }
 
 const Map = ({
@@ -15,10 +17,81 @@ const Map = ({
   height = '400px',
   width = '100%',
   className = '',
+  mapTypeId = google.maps.MapTypeId.ROADMAP,
+  styles = [
+    {
+      featureType: "water",
+      elementType: "geometry",
+      stylers: [{ color: "#e9e9e9" }, { lightness: 17 }]
+    },
+    {
+      featureType: "landscape",
+      elementType: "geometry",
+      stylers: [{ color: "#f5f5f5" }, { lightness: 20 }]
+    },
+    {
+      featureType: "road.highway",
+      elementType: "geometry.fill",
+      stylers: [{ color: "#ffffff" }, { lightness: 17 }]
+    },
+    {
+      featureType: "road.highway",
+      elementType: "geometry.stroke",
+      stylers: [{ color: "#ffffff" }, { lightness: 29 }, { weight: 0.2 }]
+    },
+    {
+      featureType: "road.arterial",
+      elementType: "geometry",
+      stylers: [{ color: "#ffffff" }, { lightness: 18 }]
+    },
+    {
+      featureType: "road.local",
+      elementType: "geometry",
+      stylers: [{ color: "#ffffff" }, { lightness: 16 }]
+    },
+    {
+      featureType: "poi",
+      elementType: "geometry",
+      stylers: [{ color: "#f5f5f5" }, { lightness: 21 }]
+    },
+    {
+      featureType: "poi.park",
+      elementType: "geometry",
+      stylers: [{ color: "#dedede" }, { lightness: 21 }]
+    },
+    {
+      elementType: "labels.text.stroke",
+      stylers: [{ visibility: "on" }, { color: "#ffffff" }, { lightness: 16 }]
+    },
+    {
+      elementType: "labels.text.fill",
+      stylers: [{ saturation: 36 }, { color: "#333333" }, { lightness: 40 }]
+    },
+    {
+      elementType: "labels.icon",
+      stylers: [{ visibility: "off" }]
+    },
+    {
+      featureType: "transit",
+      elementType: "geometry",
+      stylers: [{ color: "#f2f2f2" }, { lightness: 19 }]
+    },
+    {
+      featureType: "administrative",
+      elementType: "geometry.fill",
+      stylers: [{ color: "#fefefe" }, { lightness: 20 }]
+    },
+    {
+      featureType: "administrative",
+      elementType: "geometry.stroke",
+      stylers: [{ color: "#fefefe" }, { lightness: 17 }, { weight: 1.2 }]
+    }
+  ]
 }: MapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [map, setMap] = useState<google.maps.Map | null>(null);
 
   useEffect(() => {
     // Function to load the Google Maps script
@@ -67,13 +140,25 @@ const Map = ({
       if (!mapRef.current || !window.google) return;
       
       try {
-        new window.google.maps.Map(mapRef.current, {
+        const mapOptions = {
           center,
           zoom,
+          mapTypeId,
           mapTypeControl: true,
           streetViewControl: true,
           fullscreenControl: true,
           zoomControl: true,
+          styles
+        };
+
+        const newMap = new window.google.maps.Map(mapRef.current, mapOptions);
+        setMap(newMap);
+        
+        // Add a marker at the center location
+        new window.google.maps.Marker({
+          position: center,
+          map: newMap,
+          title: "Los Angeles"
         });
       } catch (error) {
         console.error('Error initializing Google Map:', error);
@@ -82,7 +167,14 @@ const Map = ({
     };
 
     loadGoogleMapsScript();
-  }, [center, zoom]);
+    
+    // Cleanup function
+    return () => {
+      if (map) {
+        // Remove any event listeners or other cleanup if needed
+      }
+    };
+  }, [center, zoom, mapTypeId, styles]);
 
   return (
     <div className={`google-map-container ${className}`} style={{ position: 'relative' }}>
