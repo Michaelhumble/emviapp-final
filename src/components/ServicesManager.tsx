@@ -52,6 +52,7 @@ const ServicesManager = () => {
     queryFn: async () => {
       if (!user?.id) return [];
       
+      // Use a more generic approach to avoid type issues
       const { data, error } = await supabase
         .from('artist_services')
         .select('*')
@@ -59,7 +60,9 @@ const ServicesManager = () => {
         .order('created_at', { ascending: false });
         
       if (error) throw error;
-      return data as ArtistService[];
+      
+      // Cast the result to our expected type
+      return (data || []) as ArtistService[];
     },
     enabled: !!user?.id && isArtist
   });
@@ -69,6 +72,7 @@ const ServicesManager = () => {
     mutationFn: async (service: Omit<ArtistService, 'id' | 'user_id' | 'created_at'>) => {
       if (!user?.id) throw new Error('User not authenticated');
       
+      // Use a more generic approach to avoid type issues
       const { data, error } = await supabase
         .from('artist_services')
         .insert({
@@ -78,11 +82,12 @@ const ServicesManager = () => {
           duration: service.duration,
           description: service.description
         })
-        .select()
-        .single();
+        .select();
         
       if (error) throw error;
-      return data;
+      
+      // Return the first item
+      return data?.[0] as ArtistService;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['artist-services', user?.id] });
@@ -99,6 +104,7 @@ const ServicesManager = () => {
   // Update service mutation
   const updateServiceMutation = useMutation({
     mutationFn: async (service: ArtistService) => {
+      // Use a more generic approach to avoid type issues
       const { data, error } = await supabase
         .from('artist_services')
         .update({
@@ -108,11 +114,12 @@ const ServicesManager = () => {
           description: service.description
         })
         .eq('id', service.id)
-        .select()
-        .single();
+        .select();
         
       if (error) throw error;
-      return data;
+      
+      // Return the first item
+      return data?.[0] as ArtistService;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['artist-services', user?.id] });
@@ -129,6 +136,7 @@ const ServicesManager = () => {
   // Delete service mutation
   const deleteServiceMutation = useMutation({
     mutationFn: async (serviceId: string) => {
+      // Use a more generic approach to avoid type issues
       const { error } = await supabase
         .from('artist_services')
         .delete()
