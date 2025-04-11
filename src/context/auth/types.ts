@@ -1,4 +1,3 @@
-
 import { User } from '@supabase/supabase-js';
 
 export type UserRole = 'customer' | 'artist' | 'salon' | 'owner' | 'supplier' | 'freelancer' | 'vendor' | 'beauty supplier' | 'nail technician/artist' | 'renter' | 'other';
@@ -38,7 +37,7 @@ export interface UserProfile {
   services?: any[];
   created_at?: string;
   updated_at?: string;
-  google_review_link?: string;
+  google_review_link?: string; // Added this property
 }
 
 export interface AuthContextType {

@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 // This utility will help migrate users who already have a single salon in the system
 // to the new multi-salon model by creating a salon entry for them
-export const migrateSingleToMultiSalon = async (data: any): Promise<any> => {
+export const migrateSingleToMultiSalon = async (data: {userId: string}): Promise<string | null> => {
   try {
     // Check if user has any salons already
     const { data: existingSalons, error: salonsError } = await supabase
@@ -35,8 +35,17 @@ export const migrateSingleToMultiSalon = async (data: any): Promise<any> => {
       return null;
     }
     
-    // Use type assertion to avoid excessive type instantiation
-    const userProfileData = userProfile as Record<string, any>;
+    // Use type assertion with a simpler type
+    const userProfileData = userProfile as {
+      salon_name?: string;
+      full_name?: string;
+      avatar_url?: string;
+      location?: string;
+      website?: string;
+      instagram?: string;
+      phone?: string;
+      bio?: string;
+    };
     
     // Define the salon name from profile data
     const salonName = userProfileData.salon_name || userProfileData.full_name || 'My Salon';
