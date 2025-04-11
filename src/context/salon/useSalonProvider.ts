@@ -16,13 +16,11 @@ export const useSalonProvider = (userId: string | undefined) => {
 
     try {
       // Using type assertion to avoid deep type instantiation issues
-      const response = await supabase
+      const { data, error } = await supabase
         .from('salons')
         .select('*')
         .eq('id', userId)
-        .order('created_at', { ascending: false });
-
-      const { data, error } = response;
+        .order('created_at', { ascending: false }) as { data: Salon[] | null, error: any };
 
       if (error) throw error;
 
@@ -62,13 +60,11 @@ export const useSalonProvider = (userId: string | undefined) => {
       };
       
       // Use explicit type assertion to avoid type checking issues
-      const response = await supabase
+      const { data, error } = await supabase
         .from('salons')
         .insert(newSalonData as any)
-        .select();
+        .select() as { data: Salon[] | null, error: any };
         
-      const { data, error } = response;
-
       if (error) {
         if (error.message.includes('maximum of 3 salons')) {
           toast.error('You have reached the maximum limit of 3 salons');
@@ -102,7 +98,7 @@ export const useSalonProvider = (userId: string | undefined) => {
         .from('salons')
         .update(data as any)
         .eq('id', salonId)
-        .eq('owner_id', userId);
+        .eq('owner_id', userId) as { error: any };
 
       if (error) throw error;
 
@@ -134,11 +130,12 @@ export const useSalonProvider = (userId: string | undefined) => {
     }
 
     try {
+      // Use type assertion to avoid deep type instantiation issues
       const { error } = await supabase
         .from('salons')
         .delete()
         .eq('id', salonId)
-        .eq('owner_id', userId);
+        .eq('owner_id', userId) as { error: any };
 
       if (error) throw error;
 
