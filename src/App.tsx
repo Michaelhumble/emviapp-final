@@ -23,14 +23,16 @@ function App() {
   }, []);
 
   return (
-    <AuthProvider>
-      <SubscriptionProvider>
-        <Elements stripe={stripePromise}>
-          <AppModifier />
-          <AppContent />
-        </Elements>
-      </SubscriptionProvider>
-    </AuthProvider>
+    <>
+      <AuthProvider>
+        <SubscriptionProvider>
+          <Elements stripe={stripePromise}>
+            <AppModifier />
+            <AppContent />
+          </Elements>
+        </SubscriptionProvider>
+      </AuthProvider>
+    </>
   );
 }
 
