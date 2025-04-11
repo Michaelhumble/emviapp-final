@@ -98,7 +98,7 @@ export const useSalonProvider = (userId: string | undefined) => {
         .from('salons')
         .update(data as any)
         .eq('id', salonId)
-        .eq('owner_id', userId) as { error: any };
+        .eq('owner_id', userId) as any;
 
       if (error) throw error;
 
@@ -135,7 +135,7 @@ export const useSalonProvider = (userId: string | undefined) => {
         .from('salons')
         .delete()
         .eq('id', salonId)
-        .eq('owner_id', userId) as { error: any };
+        .eq('owner_id', userId) as any;
 
       if (error) throw error;
 
