@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 import './index.css';
 import ErrorBoundary from './components/error/ErrorBoundary';
+import { NotificationProvider } from './context/notification/NotificationProvider';
 
 // Create query client
 const queryClient = new QueryClient();
@@ -21,7 +22,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <Router>
-          <App />
+          <NotificationProvider>
+            <App />
+          </NotificationProvider>
         </Router>
       </QueryClientProvider>
     </ErrorBoundary>

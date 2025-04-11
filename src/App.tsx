@@ -23,33 +23,29 @@ function App() {
   }, []);
 
   return (
-    <>
+    <ErrorBoundary>
       <AuthProvider>
         <SubscriptionProvider>
           <Elements stripe={stripePromise}>
             <AppModifier />
             <AppContent />
+            <Toaster position="top-center" richColors closeButton />
           </Elements>
         </SubscriptionProvider>
       </AuthProvider>
-    </>
+    </ErrorBoundary>
   );
 }
 
 function AppContent() {
-  const navigate = useNavigate();
-
   return (
-    <>
-      <Toaster position="top-center" richColors closeButton />
-      <ErrorBoundary>
-        <Routes>
-          {routes.map((route, index) => (
-            <Route key={index} path={route.path} element={route.element} />
-          ))}
-        </Routes>
-      </ErrorBoundary>
-    </>
+    <ErrorBoundary>
+      <Routes>
+        {routes.map((route, index) => (
+          <Route key={index} path={route.path} element={route.element} />
+        ))}
+      </Routes>
+    </ErrorBoundary>
   );
 }
 

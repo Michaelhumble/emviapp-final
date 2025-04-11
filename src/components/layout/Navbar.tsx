@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import EmviLogo from "@/components/branding/EmviLogo";
@@ -10,32 +10,30 @@ import AuthButtons from "./navbar/AuthButtons";
 import MobileMenu from "./navbar/MobileMenu";
 
 const Navbar = () => {
-  let navigate;
-  let user = null;
-  let signOut = async () => {};
+  const [user, setUser] = useState(null);
+  const [signOutFn, setSignOutFn] = useState<() => Promise<void>>(() => async () => {
+    console.log("Default sign out function");
+  });
   
-  try {
-    navigate = useNavigate();
-  } catch (error) {
-    console.error("Router context not available in Navbar:", error);
-  }
-  
+  // Safely try to get auth context
   try {
     const auth = useAuth();
-    user = auth.user;
-    signOut = auth.signOut;
+    if (auth && auth.user) {
+      if (user !== auth.user) {
+        setUser(auth.user);
+      }
+      if (signOutFn !== auth.signOut) {
+        setSignOutFn(() => auth.signOut);
+      }
+    }
   } catch (error) {
     console.error("Auth context not available in Navbar:", error);
   }
 
   const handleSignOut = async () => {
     try {
-      await signOut();
-      if (navigate) {
-        navigate("/");
-      } else {
-        window.location.href = "/";
-      }
+      await signOutFn();
+      window.location.href = "/";
       toast.success("You've been signed out successfully");
     } catch (error) {
       console.error("Error signing out:", error);
