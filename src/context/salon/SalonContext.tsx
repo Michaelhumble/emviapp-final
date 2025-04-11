@@ -52,8 +52,13 @@ export const SalonProvider = ({ children }: { children: ReactNode }) => {
     setIsLoadingSalons(true);
 
     try {
-      // Use a simpler type approach
-      const { data, error } = await supabase
+      // Explicitly type the response to avoid deep inference issues
+      type SupabaseSalonResponse = {
+        data: Salon[] | null;
+        error: any;
+      };
+
+      const { data, error }: SupabaseSalonResponse = await supabase
         .from('salons')
         .select('*')
         .eq('owner_id', user.id)
