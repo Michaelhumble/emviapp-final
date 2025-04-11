@@ -15,12 +15,15 @@ export const useSalonProvider = (userId: string | undefined) => {
     setIsLoadingSalons(true);
 
     try {
-      // Using type assertion to avoid deep type instantiation issues
+      // Use explicit type casting to avoid deep instantiation issues
       const { data, error } = await supabase
         .from('salons')
         .select('*')
         .eq('id', userId)
-        .order('created_at', { ascending: false }) as { data: Salon[] | null, error: any };
+        .order('created_at', { ascending: false }) as unknown as { 
+          data: Salon[] | null; 
+          error: any; 
+        };
 
       if (error) throw error;
 
@@ -59,11 +62,14 @@ export const useSalonProvider = (userId: string | undefined) => {
         owner_id: userId
       };
       
-      // Use explicit type assertion to avoid type checking issues
+      // Use explicit type casting to avoid deep instantiation issues
       const { data, error } = await supabase
         .from('salons')
-        .insert(newSalonData as any)
-        .select() as { data: Salon[] | null, error: any };
+        .insert(newSalonData)
+        .select() as unknown as { 
+          data: Salon[] | null; 
+          error: any; 
+        };
         
       if (error) {
         if (error.message.includes('maximum of 3 salons')) {
@@ -93,12 +99,14 @@ export const useSalonProvider = (userId: string | undefined) => {
   // Update a salon
   const updateSalon = async (salonId: string, data: Partial<Salon>): Promise<boolean> => {
     try {
-      // Use type assertion to avoid deep type instantiation issues
+      // Use explicit type casting to avoid deep instantiation issues
       const { error } = await supabase
         .from('salons')
-        .update(data as any)
+        .update(data)
         .eq('id', salonId)
-        .eq('owner_id', userId) as any;
+        .eq('owner_id', userId) as unknown as { 
+          error: any; 
+        };
 
       if (error) throw error;
 
@@ -130,12 +138,14 @@ export const useSalonProvider = (userId: string | undefined) => {
     }
 
     try {
-      // Use type assertion to avoid deep type instantiation issues
+      // Use explicit type casting to avoid deep instantiation issues
       const { error } = await supabase
         .from('salons')
         .delete()
         .eq('id', salonId)
-        .eq('owner_id', userId) as any;
+        .eq('owner_id', userId) as unknown as { 
+          error: any; 
+        };
 
       if (error) throw error;
 
