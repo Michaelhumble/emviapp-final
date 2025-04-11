@@ -1,10 +1,10 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
 import DashboardContent from '@/components/dashboard/DashboardContent';
 import Layout from '@/components/layout/Layout';
+import ErrorBoundary from '@/components/error/ErrorBoundary';
 
 const Dashboard = () => {
   const { userRole, isSignedIn } = useAuth();
@@ -40,11 +40,13 @@ const Dashboard = () => {
   }, [isSignedIn, userRole, navigate]);
   
   return (
-    <Layout>
-      <div className="container mx-auto max-w-7xl px-4 py-6">
-        <DashboardContent />
-      </div>
-    </Layout>
+    <ErrorBoundary>
+      <Layout>
+        <div className="container mx-auto max-w-7xl px-4 py-6">
+          <DashboardContent />
+        </div>
+      </Layout>
+    </ErrorBoundary>
   );
 };
 
