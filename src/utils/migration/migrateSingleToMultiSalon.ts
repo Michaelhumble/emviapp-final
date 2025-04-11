@@ -2,6 +2,19 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+// Define simplified types to avoid deep instantiation
+type SalonData = {
+  id: string;
+  owner_id: string;
+  salon_name: string;
+  logo_url: string | null;
+  location: string | null;
+  website: string | null;
+  instagram: string | null;
+  phone: string | null;
+  about: string | null;
+};
+
 // This utility will help migrate users who already have a single salon in the system
 // to the new multi-salon model by creating a salon entry for them
 export const migrateSingleToMultiSalon = async (userId: string): Promise<string | null> => {
@@ -40,7 +53,7 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
     const salonName = profileData.salon_name || profileData.full_name || 'My Salon';
     
     // Create a new salon record with information from the user profile
-    const newSalonData = {
+    const newSalonData: SalonData = {
       id: crypto.randomUUID(), // Generate a UUID for the salon
       owner_id: userId,
       salon_name: salonName,
