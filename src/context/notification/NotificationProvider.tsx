@@ -63,7 +63,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
         createdAt: item.created_at,
         isRead: item.is_read,
         link: item.link || undefined,
-        metadata: item.metadata || {}
+        metadata: item.metadata ? (typeof item.metadata === 'object' ? item.metadata : {}) : undefined
       }));
       
       // Calculate unread count
@@ -155,7 +155,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
             createdAt: payload.new.created_at,
             isRead: payload.new.is_read,
             link: payload.new.link,
-            metadata: payload.new.metadata || {}
+            metadata: payload.new.metadata ? (typeof payload.new.metadata === 'object' ? payload.new.metadata : {}) : undefined
           };
           
           // Add to local state
