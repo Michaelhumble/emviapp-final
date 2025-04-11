@@ -42,6 +42,7 @@ export interface UserProfile {
   preferences?: string[];
   completed_profile_tasks?: string[];
   services?: any[];
+  google_review_link?: string;
 }
 
 export interface AuthContextType {

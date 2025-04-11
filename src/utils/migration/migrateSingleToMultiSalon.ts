@@ -50,10 +50,10 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
       about: userProfile.bio
     };
     
-    // Use type assertion to avoid TypeScript errors
+    // Insert the new salon data
     const { data: newSalon, error: insertError } = await supabase
       .from('salons')
-      .insert(newSalonData as any)
+      .insert([newSalonData])
       .select()
       .single();
     
