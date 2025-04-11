@@ -37,7 +37,7 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
     
     // Get user profile to get the salon name
     const { data: userProfile, error: profileError } = await supabase
-      .from('profiles')
+      .from('users')
       .select('*')
       .eq('id', userId)
       .single();

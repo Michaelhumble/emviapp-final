@@ -16,3 +16,4 @@ export interface MapProps extends Partial<MapOptions> {
   className?: string;
   title?: string;
 }
+
