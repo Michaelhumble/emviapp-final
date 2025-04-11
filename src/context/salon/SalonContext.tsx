@@ -52,6 +52,7 @@ export const SalonProvider = ({ children }: { children: ReactNode }) => {
     setIsLoadingSalons(true);
 
     try {
+      // Use a more generic approach to avoid deep type instantiation issues
       const { data, error } = await supabase
         .from('salons')
         .select('*')
@@ -60,13 +61,15 @@ export const SalonProvider = ({ children }: { children: ReactNode }) => {
 
       if (error) throw error;
 
-      setSalons(data || []);
+      // Explicitly cast the data to the Salon type array
+      const salonData = (data || []) as Salon[];
+      setSalons(salonData);
       
       // If there's at least one salon and no current salon is set, select the first one
-      if (data && data.length > 0 && !currentSalon) {
-        setCurrentSalon(data[0]);
+      if (salonData && salonData.length > 0 && !currentSalon) {
+        setCurrentSalon(salonData[0]);
         // Save selected salon to localStorage
-        localStorage.setItem('selected_salon_id', data[0].id);
+        localStorage.setItem('selected_salon_id', salonData[0].id);
       }
     } catch (err) {
       console.error('Error fetching salons:', err);
@@ -93,12 +96,11 @@ export const SalonProvider = ({ children }: { children: ReactNode }) => {
         owner_id: user.id
       };
       
-      // Use type assertion to bypass TypeScript checking for the insert operation
+      // Use explicit typing to avoid deep type instantiation
       const { data, error } = await supabase
         .from('salons')
-        .insert(newSalonData as any)
-        .select()
-        .single();
+        .insert(newSalonData)
+        .select();
 
       if (error) {
         if (error.message.includes('maximum of 3 salons')) {
@@ -109,10 +111,11 @@ export const SalonProvider = ({ children }: { children: ReactNode }) => {
         throw error;
       }
 
-      if (data) {
-        setSalons(prev => [data, ...prev]);
-        setCurrentSalon(data);
-        localStorage.setItem('selected_salon_id', data.id);
+      if (data && data.length > 0) {
+        const newSalon = data[0] as Salon;
+        setSalons(prev => [newSalon, ...prev]);
+        setCurrentSalon(newSalon);
+        localStorage.setItem('selected_salon_id', newSalon.id);
         toast.success('New salon created successfully');
         return true;
       }
