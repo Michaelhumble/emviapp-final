@@ -82,7 +82,7 @@ export const GoogleMapsProvider: React.FC<GoogleMapsProviderProps> = ({
     }
     
     try {
-      const mapOptions = {
+      const mapOptions: google.maps.MapOptions = {
         center: options.center,
         zoom: options.zoom || 11,
         mapTypeId: options.mapTypeId || 'roadmap',

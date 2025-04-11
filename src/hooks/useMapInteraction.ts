@@ -1,9 +1,10 @@
+
 import { useEffect, useState } from 'react';
 import { useGoogleMaps } from '@/context/maps/GoogleMapsContext';
 
 interface MapInteractionOptions {
-  center?: { lat: number; lng: number };
-  onMapClick?: (event: google.maps.MapMouseEvent) => void;
+  center?: google.maps.LatLngLiteral;
+  onMapClick?: (event: any) => void;
   enableMarkers?: boolean;
 }
 

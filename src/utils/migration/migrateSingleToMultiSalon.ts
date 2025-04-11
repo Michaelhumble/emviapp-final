@@ -9,6 +9,16 @@ interface SalonData {
   created_at?: string;
 }
 
+// Define a simple type for user profile to avoid type errors
+interface UserProfile {
+  id: string;
+  full_name?: string;
+  email?: string;
+  salon_name?: string;
+  business_name?: string;
+  [key: string]: any;
+}
+
 /**
  * This utility function ensures that salon owners who signed up before
  * the multi-salon feature was implemented have a salon record created.
@@ -36,16 +46,19 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
     }
     
     // Get user profile to get the salon name
-    const { data: userProfile, error: profileError } = await supabase
+    const { data: userProfileData, error: profileError } = await supabase
       .from('users')
       .select('*')
       .eq('id', userId)
       .single();
       
-    if (profileError || !userProfile) {
+    if (profileError || !userProfileData) {
       console.error('Error fetching user profile:', profileError);
       return null;
     }
+    
+    // Cast to our simpler interface to avoid type issues
+    const userProfile = userProfileData as unknown as UserProfile;
     
     // Use salon_name from profile or fallback to business_name or default
     const salonName = 
@@ -59,9 +72,13 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
       name: salonName,
     };
     
+    // Insert the new salon - we're providing the name field but the DB expects salon_name
     const { data: insertedSalon, error: insertError } = await supabase
       .from('salons')
-      .insert(newSalon)
+      .insert({
+        owner_id: userId,
+        salon_name: salonName
+      })
       .select()
       .single();
       
