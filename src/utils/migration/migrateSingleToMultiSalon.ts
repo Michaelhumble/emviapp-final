@@ -2,8 +2,8 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-// Define simplified types to avoid deep instantiation
-type SalonData = {
+// Define simplified interface to avoid deep instantiation
+interface SalonData {
   id: string;
   owner_id: string;
   salon_name: string;
@@ -13,7 +13,7 @@ type SalonData = {
   instagram: string | null;
   phone: string | null;
   about: string | null;
-};
+}
 
 // This utility will help migrate users who already have a single salon in the system
 // to the new multi-salon model by creating a salon entry for them
@@ -48,27 +48,29 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
       return null;
     }
     
+    // Explicitly type as any to avoid deep instantiation
+    const profile = userProfile as any;
+    
     // Define the salon name - either get it from profile or use a fallback
-    const profileData = userProfile as any; // Use a simple any type to avoid deep instantiation
-    const salonName = profileData.salon_name || profileData.full_name || 'My Salon';
+    const salonName = profile.salon_name || profile.full_name || 'My Salon';
     
     // Create a new salon record with information from the user profile
-    const newSalonData: SalonData = {
+    const newSalon: SalonData = {
       id: crypto.randomUUID(), // Generate a UUID for the salon
       owner_id: userId,
       salon_name: salonName,
-      logo_url: profileData.avatar_url || null,
-      location: profileData.location || null,
-      website: profileData.website || null,
-      instagram: profileData.instagram || null,
-      phone: profileData.phone || null,
-      about: profileData.bio || null
+      logo_url: profile.avatar_url || null,
+      location: profile.location || null,
+      website: profile.website || null,
+      instagram: profile.instagram || null,
+      phone: profile.phone || null,
+      about: profile.bio || null
     };
     
     // Insert the new salon data
-    const { data: newSalon, error: insertError } = await supabase
+    const { data: insertedSalon, error: insertError } = await supabase
       .from('salons')
-      .insert(newSalonData)
+      .insert(newSalon)
       .select()
       .single();
     
@@ -79,9 +81,9 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
     }
     
     // Migration successful
-    console.log('Successfully migrated user to multi-salon model', newSalon);
+    console.log('Successfully migrated user to multi-salon model', insertedSalon);
     toast.success('Your salon has been set up successfully!');
-    return newSalon.id;
+    return insertedSalon.id;
   } catch (err) {
     console.error('Error during salon migration:', err);
     toast.error('An unexpected error occurred. Please try again.');
