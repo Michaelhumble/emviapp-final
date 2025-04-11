@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Salon } from './types';
@@ -96,9 +97,10 @@ export const useSalonProvider = (userId: string | undefined) => {
   // Update a salon
   const updateSalon = async (salonId: string, data: Partial<Salon>): Promise<boolean> => {
     try {
+      // Use type assertion to avoid deep type instantiation issues
       const { error } = await supabase
         .from('salons')
-        .update(data)
+        .update(data as any)
         .eq('id', salonId)
         .eq('owner_id', userId);
 
