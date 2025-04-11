@@ -1,4 +1,3 @@
-
 import { ReactNode, useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -16,29 +15,41 @@ interface LayoutProps {
 }
 
 const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
-  const location = useLocation();
-  const navigate = useNavigate();
+  let location;
+  let navigate;
+  let isAuthPage = false;
+  let isHomePage = false;
+  let isDashboardPage = false;
+  let isProfilePage = false;
+  
+  try {
+    location = useLocation();
+    navigate = useNavigate();
+    
+    isAuthPage = location.pathname === "/auth/signin" || location.pathname === "/auth/signup" ||
+      location.pathname === "/sign-in" || location.pathname === "/sign-up";
+    isHomePage = location.pathname === "/";
+    isDashboardPage = location.pathname.startsWith("/dashboard");
+    isProfilePage = location.pathname === "/profile" || location.pathname === "/profile/edit";
+  } catch (error) {
+    console.error("Router context not available:", error);
+    isAuthPage = false;
+    isHomePage = true;
+    isDashboardPage = false;
+    isProfilePage = false;
+  }
+  
   const { isSignedIn, userRole } = useAuth();
   const [showStickyCta, setShowStickyCta] = useState(false);
   const [showDashboardCta, setShowDashboardCta] = useState(false);
   const isMobile = useIsMobile();
-  
-  const isAuthPage = location.pathname === "/auth/signin" || location.pathname === "/auth/signup" ||
-    location.pathname === "/sign-in" || location.pathname === "/sign-up";
-  const isHomePage = location.pathname === "/";
-  const isDashboardPage = location.pathname.startsWith("/dashboard");
-  const isProfilePage = location.pathname === "/profile" || location.pathname === "/profile/edit";
 
-  // Control visibility of sticky CTA based on scroll position
   useEffect(() => {
     if (!isHomePage) return;
     
     const handleScroll = () => {
       const scrollY = window.scrollY;
-      // Show CTA after scrolling 800px
       setShowStickyCta(scrollY > 800);
-      
-      // Show dashboard CTA for signed-in users on homepage after scrolling 400px
       setShowDashboardCta(isSignedIn && scrollY > 400);
     };
     
@@ -46,12 +57,14 @@ const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isHomePage, isSignedIn]);
 
-  // Redirect to appropriate dashboard
   const goToDashboard = () => {
-    navigate("/dashboard");
+    if (navigate) {
+      navigate("/dashboard");
+    } else {
+      window.location.href = "/dashboard";
+    }
   };
 
-  // Get role-specific dashboard button text
   const getDashboardButtonText = () => {
     if (!userRole) return "Go to Dashboard";
     
@@ -79,7 +92,6 @@ const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
       </main>
       {!isMobile && <Footer />}
       
-      {/* Sticky CTA for home page */}
       {isHomePage && !isMobile && (
         <AnimatePresence>
           {showStickyCta && (
@@ -122,7 +134,6 @@ const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
         </AnimatePresence>
       )}
       
-      {/* Dashboard CTA for signed-in users on profile pages */}
       {isProfilePage && isSignedIn && !isDashboardPage && !isMobile && (
         <div className="fixed bottom-6 right-6 z-40">
           <Button 
@@ -137,7 +148,6 @@ const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
         </div>
       )}
       
-      {/* Dashboard CTA for signed-in users on home page */}
       {isHomePage && isSignedIn && !isDashboardPage && !isMobile && (
         <AnimatePresence>
           {showDashboardCta && (
@@ -165,7 +175,6 @@ const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
         </AnimatePresence>
       )}
       
-      {/* Mobile App Bottom Navigation Bar */}
       {isMobile && (
         <div className="fixed bottom-0 left-0 right-0 h-16 bg-white shadow-lg border-t border-gray-200 z-50 flex justify-around items-center">
           <Link to="/" className="flex flex-col items-center">

@@ -44,6 +44,11 @@ class ErrorBoundary extends Component<Props, State> {
         return this.props.fallback;
       }
 
+      // Check for specific router errors
+      const isRouterError = this.state.error?.message?.includes('Router') || 
+                           this.state.error?.message?.includes('useLocation') ||
+                           this.state.error?.message?.includes('useNavigate');
+
       // Default error UI
       return (
         <ErrorLayout>
@@ -64,9 +69,13 @@ class ErrorBoundary extends Component<Props, State> {
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Something went wrong</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              {isRouterError ? "Navigation Error" : "Something went wrong"}
+            </h3>
             <p className="text-sm text-gray-500 mb-6 max-w-md">
-              The application encountered an unexpected error. Please try refreshing the page.
+              {isRouterError 
+                ? "There was a problem with the application navigation. This is usually a temporary issue." 
+                : "The application encountered an unexpected error. Please try refreshing the page."}
             </p>
             {this.state.error && (
               <div className="text-xs text-gray-400 bg-gray-50 p-3 rounded mb-6 max-w-md overflow-auto">
@@ -83,12 +92,12 @@ class ErrorBoundary extends Component<Props, State> {
                 <RefreshCcw className="h-4 w-4" />
                 Refresh Page
               </Button>
-              <Link to="/">
+              <a href="/">
                 <Button variant="outline" className="flex items-center gap-2">
                   <Home className="h-4 w-4" />
                   Go to Home
                 </Button>
-              </Link>
+              </a>
             </div>
           </div>
         </ErrorLayout>

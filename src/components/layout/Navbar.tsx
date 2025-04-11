@@ -10,12 +10,23 @@ import AuthButtons from "./navbar/AuthButtons";
 import MobileMenu from "./navbar/MobileMenu";
 
 const Navbar = () => {
+  let navigate;
+  
+  try {
+    navigate = useNavigate();
+  } catch (error) {
+    console.error("Router context not available in Navbar:", error);
+  }
+  
   const { user, signOut } = useAuth();
-  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     await signOut();
-    navigate("/");
+    if (navigate) {
+      navigate("/");
+    } else {
+      window.location.href = "/";
+    }
     toast.success("You've been signed out successfully");
   };
 

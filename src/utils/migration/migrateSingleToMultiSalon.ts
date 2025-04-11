@@ -1,16 +1,15 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 // This utility will help migrate users who already have a single salon in the system
 // to the new multi-salon model by creating a salon entry for them
-export const migrateSingleToMultiSalon = async (userId: string): Promise<string | null> => {
+export const migrateSingleToMultiSalon = (data: any): any => {
   try {
     // Check if user has any salons already
     const { data: existingSalons, error: salonsError } = await supabase
       .from('salons')
       .select('id')
-      .eq('owner_id', userId);
+      .eq('owner_id', data.userId);
     
     if (salonsError) {
       console.error('Error checking for existing salons:', salonsError);
@@ -27,7 +26,7 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
     const { data: userProfile, error: profileError } = await supabase
       .from('users')
       .select('*')
-      .eq('id', userId)
+      .eq('id', data.userId)
       .single();
     
     if (profileError || !userProfile) {
@@ -35,7 +34,7 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
       return null;
     }
     
-    // Use type assertion to avoid recursive type issues
+    // Use type assertion to avoid excessive type instantiation
     const userProfileData = userProfile as Record<string, any>;
     
     // Define the salon name from profile data
@@ -47,7 +46,7 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
     
     const newSalonData = {
       id: salonId,
-      owner_id: userId,
+      owner_id: data.userId,
       salon_name: salonName,
       logo_url: userProfileData.avatar_url,
       location: userProfileData.location,
