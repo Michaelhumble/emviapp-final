@@ -36,6 +36,36 @@ export type Database = {
         }
         Relationships: []
       }
+      artist_services: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration: number | null
+          id: string
+          name: string
+          price: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration?: number | null
+          id?: string
+          name: string
+          price: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration?: number | null
+          id?: string
+          name?: string
+          price?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           created_at: string | null
