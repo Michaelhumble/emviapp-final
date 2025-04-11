@@ -50,8 +50,10 @@ export const useSalonProvider = (userId: string | undefined) => {
     if (!userId) return false;
 
     try {
-      // Create new salon data with owner_id
+      // Create new salon data with owner_id and set id to be the same as userId
+      // This is required by the Supabase schema based on the error message
       const newSalonData = {
+        id: userId, // Using userId as the salon ID based on schema requirements
         salon_name: salonData.salon_name || 'New Salon',
         logo_url: salonData.logo_url,
         location: salonData.location,
@@ -59,7 +61,6 @@ export const useSalonProvider = (userId: string | undefined) => {
         website: salonData.website,
         instagram: salonData.instagram,
         phone: salonData.phone,
-        owner_id: userId
       };
       
       // Use explicit type casting to avoid deep instantiation issues
@@ -103,8 +104,7 @@ export const useSalonProvider = (userId: string | undefined) => {
       const { error } = await supabase
         .from('salons')
         .update(data)
-        .eq('id', salonId)
-        .eq('owner_id', userId) as unknown as { 
+        .eq('id', salonId) as unknown as { 
           error: any; 
         };
 
@@ -142,8 +142,7 @@ export const useSalonProvider = (userId: string | undefined) => {
       const { error } = await supabase
         .from('salons')
         .delete()
-        .eq('id', salonId)
-        .eq('owner_id', userId) as unknown as { 
+        .eq('id', salonId) as unknown as { 
           error: any; 
         };
 
