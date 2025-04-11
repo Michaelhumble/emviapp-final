@@ -6,6 +6,7 @@ import FeaturesSection from "@/components/salon-owners/FeaturesSection";
 import ArtistProfilesSection from "@/components/salon-owners/ArtistProfilesSection";
 import PostJobSection from "@/components/salon-owners/PostJobSection";
 import CtaSection from "@/components/salon-owners/CtaSection";
+import Map from "@/components/Map";
 
 const SalonOwners = () => {
   return (
@@ -18,6 +19,12 @@ const SalonOwners = () => {
 
       {/* AI Features Section */}
       <FeaturesSection />
+
+      {/* Map Section */}
+      <div className="container mx-auto px-4 py-12">
+        <h2 className="text-3xl font-bold text-center mb-8">Find Salons in Los Angeles</h2>
+        <Map height="500px" className="rounded-lg shadow-lg" />
+      </div>
 
       {/* Artist Profiles Section */}
       <ArtistProfilesSection />
