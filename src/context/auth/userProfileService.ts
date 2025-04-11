@@ -63,7 +63,8 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       accepts_bookings: Boolean(data.accepts_bookings),
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],
-      services: Array.isArray((data as any).services) ? (data as any).services : []
+      services: Array.isArray((data as any).services) ? (data as any).services : [],
+      google_review_link: (data as any).google_review_link || ''
     };
     
     // Also update the cache for faster subsequent access

@@ -35,7 +35,7 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
       return null;
     }
     
-    // Use explicit type assertion to avoid recursive type issues
+    // Use type assertion to avoid recursive type issues
     const userProfileData = userProfile as Record<string, any>;
     
     // Define the salon name from profile data
