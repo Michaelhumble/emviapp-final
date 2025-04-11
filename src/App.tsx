@@ -13,7 +13,7 @@ import ErrorBoundary from "./components/error/ErrorBoundary";
 
 // Initialize Stripe with publishable key
 const stripePromise = loadStripe(
-  process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || ""
+  import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || ""
 );
 
 function App() {

@@ -1,3 +1,4 @@
+
 import { User } from '@supabase/supabase-js';
 
 export type UserRole = 'customer' | 'artist' | 'salon' | 'owner' | 'supplier' | 'freelancer' | 'vendor' | 'beauty supplier' | 'nail technician/artist' | 'renter' | 'other';
