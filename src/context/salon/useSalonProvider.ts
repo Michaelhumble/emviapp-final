@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Salon } from './types';
@@ -19,7 +18,7 @@ export const useSalonProvider = (userId: string | undefined) => {
       const response = await supabase
         .from('salons')
         .select('*')
-        .eq('owner_id', userId)
+        .eq('id', userId)
         .order('created_at', { ascending: false });
 
       const { data, error } = response;
