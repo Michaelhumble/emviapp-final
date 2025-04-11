@@ -36,25 +36,26 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
     }
     
     // Define the salon name - either get it from profile or use a fallback
-    const profileData = userProfile as any;
+    const profileData = userProfile as Record<string, any>;
     const salonName = profileData.salon_name || profileData.full_name || 'My Salon';
     
     // Create a new salon record with information from the user profile
     const newSalonData = {
+      id: crypto.randomUUID(), // Generate a UUID for the salon
       owner_id: userId,
       salon_name: salonName,
-      logo_url: profileData.avatar_url,
-      location: profileData.location,
-      website: profileData.website,
-      instagram: profileData.instagram,
-      phone: profileData.phone,
-      about: profileData.bio
+      logo_url: profileData.avatar_url || null,
+      location: profileData.location || null,
+      website: profileData.website || null,
+      instagram: profileData.instagram || null,
+      phone: profileData.phone || null,
+      about: profileData.bio || null
     };
     
     // Insert the new salon data
     const { data: newSalon, error: insertError } = await supabase
       .from('salons')
-      .insert([newSalonData])
+      .insert(newSalonData)
       .select()
       .single();
     
