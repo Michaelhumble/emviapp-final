@@ -56,12 +56,12 @@ export const SalonProvider = ({ children }: { children: ReactNode }) => {
         .from('salons')
         .select('*')
         .eq('owner_id', user.id)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }) as { data: Salon[] | null, error: any };
 
       if (error) throw error;
 
       // Cast the data to our Salon type
-      const salonData = data as Salon[] || [];
+      const salonData = data || [];
       setSalons(salonData);
       
       // If there's at least one salon and no current salon is set, select the first one
@@ -96,11 +96,10 @@ export const SalonProvider = ({ children }: { children: ReactNode }) => {
       };
       
       // Using any to bypass the type checking since we know the schema is correct
-      // but TypeScript is having issues with the type definitions
       const { data, error } = await supabase
         .from('salons')
         .insert(newSalonData as any)
-        .select();
+        .select() as { data: Salon[] | null, error: any };
 
       if (error) {
         if (error.message.includes('maximum of 3 salons')) {
@@ -112,7 +111,7 @@ export const SalonProvider = ({ children }: { children: ReactNode }) => {
       }
 
       if (data && data.length > 0) {
-        const newSalon = data[0] as Salon;
+        const newSalon = data[0];
         setSalons(prev => [newSalon, ...prev]);
         setCurrentSalon(newSalon);
         localStorage.setItem('selected_salon_id', newSalon.id);
@@ -134,7 +133,7 @@ export const SalonProvider = ({ children }: { children: ReactNode }) => {
         .from('salons')
         .update(data)
         .eq('id', salonId)
-        .eq('owner_id', user?.id);
+        .eq('owner_id', user?.id) as { error: any };
 
       if (error) throw error;
 
@@ -170,7 +169,7 @@ export const SalonProvider = ({ children }: { children: ReactNode }) => {
         .from('salons')
         .delete()
         .eq('id', salonId)
-        .eq('owner_id', user?.id);
+        .eq('owner_id', user?.id) as { error: any };
 
       if (error) throw error;
 
