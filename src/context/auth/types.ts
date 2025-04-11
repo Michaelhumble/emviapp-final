@@ -1,21 +1,27 @@
 
 import { User } from '@supabase/supabase-js';
 
-export type UserRole = 'customer' | 'artist' | 'salon' | 'owner' | 'supplier' | 'freelancer' | 'vendor' | 'beauty supplier' | 'nail technician/artist' | 'renter' | 'other';
+export type UserRole = 'customer' | 'artist' | 'salon' | 'owner' | 'freelancer' | 'supplier' | 'vendor' | 'beauty supplier' | 'nail technician/artist' | 'renter' | 'other';
 
 export interface UserProfile {
   id: string;
-  user_id?: string;
-  full_name?: string;
-  email?: string;
+  user_id: string;
+  full_name: string;
+  email: string;
   phone?: string;
-  role?: string;
-  avatar_url?: string;
+  bio?: string;
   specialty?: string;
   location?: string;
-  bio?: string;
-  website?: string;
+  avatar_url?: string;
+  role?: string;
+  created_at?: string;
+  updated_at?: string;
+  
+  // Social media fields
   instagram?: string;
+  website?: string;
+  
+  // Additional fields
   salon_name?: string;
   company_name?: string;
   preferred_language?: string;
@@ -36,17 +42,14 @@ export interface UserProfile {
   preferences?: string[];
   completed_profile_tasks?: string[];
   services?: any[];
-  created_at?: string;
-  updated_at?: string;
-  google_review_link?: string;
 }
 
 export interface AuthContextType {
   user: User | null;
   userProfile: UserProfile | null;
   userRole: UserRole | null;
-  isSignedIn: boolean;
   loading: boolean;
+  isSignedIn: boolean;
   isError: boolean;
   isNewUser: boolean;
   clearIsNewUser: () => void;

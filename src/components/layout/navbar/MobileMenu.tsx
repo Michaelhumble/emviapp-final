@@ -14,33 +14,18 @@ interface MobileMenuProps {
 
 const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
   const [open, setOpen] = useState(false);
-  
-  // Safe navigator function that won't break outside Router context
-  const safeNavigate = (path: string) => {
-    try {
-      window.location.href = path;
-    } catch (error) {
-      console.error("Navigation error:", error);
-    }
-  };
+  const navigate = useNavigate();
 
   const closeMenu = () => setOpen(false);
   
   const handleNavigation = (path: string, label: string) => {
-    try {
-      if (validateRoute(path)) {
-        safeNavigate(path);
-      } else {
-        toast.info(`${label} feature coming soon!`);
-        safeNavigate("/dashboard");
-      }
-      closeMenu();
-    } catch (error) {
-      console.error("Navigation error:", error);
-      // Fallback to basic navigation
-      window.location.href = path;
-      closeMenu();
+    if (validateRoute(path)) {
+      navigate(path);
+    } else {
+      toast.info(`${label} feature coming soon!`);
+      navigate("/dashboard");
     }
+    closeMenu();
   };
 
   return (
@@ -104,7 +89,7 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
                   className="px-2 py-1.5 text-md hover:bg-gray-100 rounded cursor-pointer"
                   onClick={() => {
                     toast.info("Referrals feature coming soon!");
-                    safeNavigate("/dashboard");
+                    navigate("/dashboard");
                     closeMenu();
                   }}
                 >

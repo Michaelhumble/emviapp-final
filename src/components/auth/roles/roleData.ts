@@ -36,13 +36,13 @@ export const roleOptions: RoleOption[] = [
     icon: React.createElement(Briefcase, { className: "h-5 w-5 text-primary" })
   },
   {
-    id: "supplier" as UserRole,
+    id: "vendor",
     label: "Vendor (Beauty Supplier)",
     description: "I sell products or tools for beauty salons and professionals.",
     icon: React.createElement(ShoppingBag, { className: "h-5 w-5 text-primary" })
   },
   {
-    id: "other" as UserRole,
+    id: "other",
     label: "Other",
     description: "I'm not sure yet — I just want to explore.",
     icon: React.createElement(HelpCircle, { className: "h-5 w-5 text-primary" })

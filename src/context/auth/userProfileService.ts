@@ -24,7 +24,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
     if (!data) return null;
     
     // Transform database record to UserProfile type with safe fallbacks
-    // Use type assertion to safely access properties
+    // Use type assertion and optional chaining to safely access properties
     const profile: UserProfile = {
       id: data.id,
       user_id: data.id, // Add user_id matching id
@@ -63,8 +63,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       accepts_bookings: Boolean(data.accepts_bookings),
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],
-      services: Array.isArray((data as any).services) ? (data as any).services : [],
-      google_review_link: (data as any).google_review_link || ''
+      services: Array.isArray((data as any).services) ? (data as any).services : []
     };
     
     // Also update the cache for faster subsequent access

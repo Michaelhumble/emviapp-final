@@ -49,9 +49,6 @@ export const normalizeRole = (role: UserRole | string | null): UserRole | null =
     case 'chair renter':
       return 'renter';
       
-    case 'other':
-      return 'other';
-      
     default:
       // If it's already a valid UserRole, return it
       if (role === 'customer' || 

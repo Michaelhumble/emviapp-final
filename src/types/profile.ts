@@ -1,4 +1,3 @@
-
 export interface UserProfile {
   uid?: string;
   email?: string | null;
@@ -82,7 +81,6 @@ export interface UserProfile {
   account_type?: string;
   user_id?: string;
   services?: any[];
-  google_review_link?: string;
 }
 
 export interface EmviUser {

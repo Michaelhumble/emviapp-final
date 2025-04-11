@@ -4,13 +4,13 @@ import { toast } from "sonner";
 
 // This utility will help migrate users who already have a single salon in the system
 // to the new multi-salon model by creating a salon entry for them
-export const migrateSingleToMultiSalon = async (data: {userId: string}): Promise<string | null> => {
+export const migrateSingleToMultiSalon = async (userId: string): Promise<string | null> => {
   try {
     // Check if user has any salons already
     const { data: existingSalons, error: salonsError } = await supabase
       .from('salons')
       .select('id')
-      .eq('owner_id', data.userId);
+      .eq('owner_id', userId);
     
     if (salonsError) {
       console.error('Error checking for existing salons:', salonsError);
@@ -27,7 +27,7 @@ export const migrateSingleToMultiSalon = async (data: {userId: string}): Promise
     const { data: userProfile, error: profileError } = await supabase
       .from('users')
       .select('*')
-      .eq('id', data.userId)
+      .eq('id', userId)
       .single();
     
     if (profileError || !userProfile) {
@@ -35,43 +35,25 @@ export const migrateSingleToMultiSalon = async (data: {userId: string}): Promise
       return null;
     }
     
-    // Create a simple type for the data we need to access
-    interface BasicProfileData {
-      salon_name?: string;
-      full_name?: string;
-      avatar_url?: string;
-      location?: string;
-      website?: string;
-      instagram?: string;
-      phone?: string;
-      bio?: string;
-    }
-    
-    // Use type assertion with a simpler, non-recursive type
-    const profileData = userProfile as BasicProfileData;
-    
-    // Define the salon name from profile data
-    const salonName = profileData.salon_name || profileData.full_name || 'My Salon';
+    // Define the salon name - either get it from profile or use a fallback
+    const salonName = userProfile.salon_name || userProfile.full_name || 'My Salon';
     
     // Create a new salon record with information from the user profile
-    // Generate UUID for the salon
-    const salonId = crypto.randomUUID();
-    
     const newSalonData = {
-      id: salonId,
-      owner_id: data.userId,
+      owner_id: userId,
       salon_name: salonName,
-      logo_url: profileData.avatar_url,
-      location: profileData.location,
-      website: profileData.website,
-      instagram: profileData.instagram,
-      phone: profileData.phone,
-      about: profileData.bio
+      logo_url: userProfile.avatar_url,
+      location: userProfile.location,
+      website: userProfile.website,
+      instagram: userProfile.instagram,
+      phone: userProfile.phone,
+      about: userProfile.bio
     };
     
+    // Use type assertion to avoid TypeScript errors
     const { data: newSalon, error: insertError } = await supabase
       .from('salons')
-      .insert(newSalonData)
+      .insert(newSalonData as any)
       .select()
       .single();
     

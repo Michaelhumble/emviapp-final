@@ -1,56 +1,33 @@
 
 import React from 'react';
-// First import the core components that don't depend on others
-import NotFound from './pages/NotFound';
-import Layout from './components/layout/Layout';
-import ErrorLayout from './components/layout/ErrorLayout';
-
-// Simple page components with minimal dependencies
 import Index from './pages/Index';
 import Welcome from './pages/Welcome';
+import NotFound from './pages/NotFound';
 import Artists from './pages/Artists';
 import JobsPage from './pages/jobs';
+import SalonsPage from './pages/salons/SalonsFinal';
+import SellSalon from './pages/salons/SellSalon';
 import Customers from './pages/Customers';
 import Suppliers from './pages/Suppliers';
 import Freelancers from './pages/Freelancers';
-import Settings from './pages/Settings';
+import Dashboard from './pages/dashboard';
+import ArtistDashboard from './pages/dashboard/Artist';
+import CustomerDashboard from './pages/dashboard/Customer';
+import SalonDashboard from './pages/dashboard/Salon';
+import OwnerDashboard from './pages/dashboard/Owner';
+import FreelancerDashboard from './pages/dashboard/Freelancer';
+import SupplierDashboard from './pages/dashboard/Supplier';
+import OtherDashboard from './pages/dashboard/Other';
+import ProfileEditor from './pages/profile/ProfileEditor';
 import SignIn from './pages/auth/SignIn';
 import SignUp from './pages/auth/SignUp';
+import UserProfilePage from './pages/profile/UserProfilePage';
+import SalonOwners from './pages/SalonOwners';
+import Settings from './pages/Settings';
+import SalonDetail from './pages/salons/SalonDetail';
+import ProfileRedirect from './pages/profile/ProfileRedirect';
 import Profile from './pages/Profile';
 
-// Import salon related pages
-import SalonsPage from './pages/salons/SalonsFinal';
-import SellSalon from './pages/salons/SellSalon';
-import SalonOwners from './pages/SalonOwners';
-import SalonDetail from './pages/salons/SalonDetail';
-
-// Import profile related pages
-import ProfileEditor from './pages/profile/ProfileEditor';
-import UserProfilePage from './pages/profile/UserProfilePage';
-import ProfileRedirect from './pages/profile/ProfileRedirect';
-
-// Define the main dashboard component separately to avoid circular reference
-const Dashboard = React.lazy(() => import('./pages/Dashboard'));
-
-// Import role-specific dashboard pages using lazy loading
-const ArtistDashboard = React.lazy(() => import('./pages/dashboard/Artist'));
-const CustomerDashboard = React.lazy(() => import('./pages/dashboard/Customer'));
-const SalonDashboard = React.lazy(() => import('./pages/dashboard/Salon'));
-const OwnerDashboard = React.lazy(() => import('./pages/dashboard/Owner'));
-const FreelancerDashboard = React.lazy(() => import('./pages/dashboard/Freelancer'));
-const SupplierDashboard = React.lazy(() => import('./pages/dashboard/Supplier'));
-const OtherDashboard = React.lazy(() => import('./pages/dashboard/Other'));
-
-// Create a loading component for lazy-loaded routes
-const LazyLoadingComponent = () => (
-  <ErrorLayout>
-    <div className="flex justify-center items-center min-h-[300px]">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-    </div>
-  </ErrorLayout>
-);
-
-// Define all routes
 const routes = [
   {
     path: '/',
@@ -98,75 +75,43 @@ const routes = [
   },
   {
     path: '/dashboard',
-    element: (
-      <React.Suspense fallback={<LazyLoadingComponent />}>
-        <Dashboard />
-      </React.Suspense>
-    ),
+    element: <Dashboard />,
   },
   {
     path: '/dashboard/artist',
-    element: (
-      <React.Suspense fallback={<LazyLoadingComponent />}>
-        <ArtistDashboard />
-      </React.Suspense>
-    ),
+    element: <ArtistDashboard />,
   },
   {
     path: '/dashboard/customer',
-    element: (
-      <React.Suspense fallback={<LazyLoadingComponent />}>
-        <CustomerDashboard />
-      </React.Suspense>
-    ),
+    element: <CustomerDashboard />,
   },
   {
     path: '/dashboard/salon',
-    element: (
-      <React.Suspense fallback={<LazyLoadingComponent />}>
-        <SalonDashboard />
-      </React.Suspense>
-    ),
+    element: <SalonDashboard />,
   },
   {
     path: '/dashboard/owner',
-    element: (
-      <React.Suspense fallback={<LazyLoadingComponent />}>
-        <OwnerDashboard />
-      </React.Suspense>
-    ),
+    element: <OwnerDashboard />,
   },
   {
     path: '/dashboard/freelancer',
-    element: (
-      <React.Suspense fallback={<LazyLoadingComponent />}>
-        <FreelancerDashboard />
-      </React.Suspense>
-    ),
+    element: <FreelancerDashboard />,
   },
   {
     path: '/dashboard/supplier',
-    element: (
-      <React.Suspense fallback={<LazyLoadingComponent />}>
-        <SupplierDashboard />
-      </React.Suspense>
-    ),
+    element: <SupplierDashboard />,
   },
   {
     path: '/dashboard/other',
-    element: (
-      <React.Suspense fallback={<LazyLoadingComponent />}>
-        <OtherDashboard />
-      </React.Suspense>
-    ),
+    element: <OtherDashboard />,
   },
   {
     path: '/profile',
-    element: <Profile />,
+    element: <Profile />, // Use the Profile component for /profile route
   },
   {
     path: '/profile/view',
-    element: <UserProfilePage />,
+    element: <UserProfilePage />, // Move UserProfilePage to a different route
   },
   {
     path: '/profile/redirect',

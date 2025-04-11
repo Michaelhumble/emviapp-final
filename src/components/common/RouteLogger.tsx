@@ -5,21 +5,11 @@ import { useAuth } from '@/context/auth';
 import { logRouteAccess } from '@/utils/routeChecker';
 
 const RouteLogger = () => {
-  let location;
-  
-  try {
-    location = useLocation();
-  } catch (error) {
-    console.error("Router context not available in RouteLogger:", error);
-    return null;
-  }
-  
+  const location = useLocation();
   const { user } = useAuth();
   
   useEffect(() => {
     try {
-      if (!location) return;
-      
       // Log route access for analytics
       logRouteAccess(location.pathname);
       
@@ -32,7 +22,7 @@ const RouteLogger = () => {
     } catch (error) {
       console.error("Error in RouteLogger:", error);
     }
-  }, [location?.pathname, user]);
+  }, [location.pathname, user]);
   
   // This is a utility component that doesn't render anything
   return null;
