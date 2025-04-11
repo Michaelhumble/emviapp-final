@@ -1,15 +1,13 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
-// Define a simpler type for the salon data to avoid deep type instantiation
+// Define interface for salon data with correct field names
 interface SalonData {
-  id?: string;
-  owner_id: string;
-  name: string;
-  created_at?: string;
+  salon_name: string;
+  owner_id?: string; // We'll add this only for local use, not for DB insertion
 }
 
-// Define a simple type for user profile to avoid type errors
+// Define a simple type for user profile
 interface UserProfile {
   id: string;
   full_name?: string;
@@ -32,7 +30,7 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
     const { data: existingSalons, error: checkError } = await supabase
       .from('salons')
       .select('id')
-      .eq('owner_id', userId);
+      .eq('id', userId);
       
     if (checkError) {
       console.error('Error checking for existing salons:', checkError);
@@ -57,8 +55,7 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
       return null;
     }
     
-    // Cast to our simpler interface to avoid type issues
-    const userProfile = userProfileData as unknown as UserProfile;
+    const userProfile = userProfileData as UserProfile;
     
     // Use salon_name from profile or fallback to business_name or default
     const salonName = 
@@ -66,17 +63,12 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
       userProfile.business_name || 
       `${userProfile.full_name || 'New'}'s Salon`;
     
-    // Create a new salon for the user
-    const newSalon: SalonData = {
-      owner_id: userId,
-      name: salonName,
-    };
-    
-    // Insert the new salon - we're providing the name field but the DB expects salon_name
+    // Create a new salon record in the database
+    // Note: The salons table uses the user ID as the salon ID (based on our schema)
     const { data: insertedSalon, error: insertError } = await supabase
       .from('salons')
       .insert({
-        owner_id: userId,
+        id: userId, // Use the user ID as the salon ID (primary key)
         salon_name: salonName
       })
       .select()
