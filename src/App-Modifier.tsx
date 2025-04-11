@@ -17,11 +17,15 @@ const AppModifier = () => {
         // Only run once per user
         if (!hasMigrationRun) {
           console.log('Running salon migration for user:', user.id);
-          const salonId = await migrateSingleToMultiSalon(user.id);
-          
-          if (salonId) {
-            localStorage.setItem('salon_migration_complete', 'true');
-            localStorage.setItem('selected_salon_id', salonId);
+          try {
+            const salonId = await migrateSingleToMultiSalon(user.id);
+            
+            if (salonId) {
+              localStorage.setItem('salon_migration_complete', 'true');
+              localStorage.setItem('selected_salon_id', salonId);
+            }
+          } catch (error) {
+            console.error('Error during salon migration:', error);
           }
         }
       }

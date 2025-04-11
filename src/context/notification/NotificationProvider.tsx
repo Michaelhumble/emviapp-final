@@ -190,5 +190,3 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     </NotificationContext.Provider>
   );
 };
-
-export { NotificationProvider };
