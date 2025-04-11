@@ -11,6 +11,7 @@ interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
 
+// Add Google Maps API type definitions
 interface Window {
   google?: any;
 }

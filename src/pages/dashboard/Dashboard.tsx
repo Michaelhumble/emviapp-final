@@ -12,7 +12,7 @@ const DashboardPage = () => {
 
   useEffect(() => {
     // If user exists and is a salon owner, check if we need to migrate
-    if (user && userRole === "salon_owner") {
+    if (user && userRole === "owner") {
       migrateSingleToMultiSalon(user.id)
         .then((salonId) => {
           if (salonId) {
@@ -34,7 +34,7 @@ const DashboardPage = () => {
   if (user) {
     if (userRole === "artist") {
       return <Navigate to="/dashboard/artist" replace />;
-    } else if (userRole === "salon_owner") {
+    } else if (userRole === "owner") {
       return <Navigate to="/dashboard/owner" replace />;
     } else if (userRole === "customer") {
       return <Navigate to="/dashboard/customer" replace />;
