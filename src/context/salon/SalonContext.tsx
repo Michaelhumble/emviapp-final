@@ -56,12 +56,12 @@ export const SalonProvider = ({ children }: { children: ReactNode }) => {
         .from('salons')
         .select('*')
         .eq('owner_id', user.id)
-        .order('created_at', { ascending: false }) as { data: Salon[] | null, error: any };
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      // Cast the data to our Salon type
-      const salonData = data || [];
+      // Properly cast the data
+      const salonData: Salon[] = data || [];
       setSalons(salonData);
       
       // If there's at least one salon and no current salon is set, select the first one
@@ -95,11 +95,13 @@ export const SalonProvider = ({ children }: { children: ReactNode }) => {
         owner_id: user.id
       };
       
-      // Using any to bypass the type checking since we know the schema is correct
-      const { data, error } = await supabase
+      // Use explicit any type to avoid TypeScript issues
+      const result = await supabase
         .from('salons')
-        .insert(newSalonData as any)
-        .select() as { data: Salon[] | null, error: any };
+        .insert(newSalonData)
+        .select();
+        
+      const { data, error } = result;
 
       if (error) {
         if (error.message.includes('maximum of 3 salons')) {
@@ -111,7 +113,7 @@ export const SalonProvider = ({ children }: { children: ReactNode }) => {
       }
 
       if (data && data.length > 0) {
-        const newSalon = data[0];
+        const newSalon = data[0] as Salon;
         setSalons(prev => [newSalon, ...prev]);
         setCurrentSalon(newSalon);
         localStorage.setItem('selected_salon_id', newSalon.id);
@@ -129,11 +131,13 @@ export const SalonProvider = ({ children }: { children: ReactNode }) => {
   // Update a salon
   const updateSalon = async (salonId: string, data: Partial<Salon>): Promise<boolean> => {
     try {
-      const { error } = await supabase
+      const result = await supabase
         .from('salons')
         .update(data)
         .eq('id', salonId)
-        .eq('owner_id', user?.id) as { error: any };
+        .eq('owner_id', user?.id);
+        
+      const { error } = result;
 
       if (error) throw error;
 
@@ -165,11 +169,13 @@ export const SalonProvider = ({ children }: { children: ReactNode }) => {
     }
 
     try {
-      const { error } = await supabase
+      const result = await supabase
         .from('salons')
         .delete()
         .eq('id', salonId)
-        .eq('owner_id', user?.id) as { error: any };
+        .eq('owner_id', user?.id);
+        
+      const { error } = result;
 
       if (error) throw error;
 
