@@ -11,14 +11,7 @@ import SellSalon from './pages/salons/SellSalon';
 import Customers from './pages/Customers';
 import Suppliers from './pages/Suppliers';
 import Freelancers from './pages/Freelancers';
-import Dashboard from './pages/dashboard';
-import ArtistDashboard from './pages/dashboard/Artist';
-import CustomerDashboard from './pages/dashboard/Customer';
-import SalonDashboard from './pages/dashboard/Salon';
-import OwnerDashboard from './pages/dashboard/Owner';
-import FreelancerDashboard from './pages/dashboard/Freelancer';
-import SupplierDashboard from './pages/dashboard/Supplier';
-import OtherDashboard from './pages/dashboard/Other';
+import Dashboard from './pages/Dashboard';
 import ProfileEditor from './pages/profile/ProfileEditor';
 import SignIn from './pages/auth/SignIn';
 import SignUp from './pages/auth/SignUp';
@@ -28,6 +21,14 @@ import Settings from './pages/Settings';
 import SalonDetail from './pages/salons/SalonDetail';
 import ProfileRedirect from './pages/profile/ProfileRedirect';
 import Profile from './pages/Profile';
+// Import dashboard pages separately to avoid circular dependencies
+import ArtistDashboard from './pages/dashboard/Artist';
+import CustomerDashboard from './pages/dashboard/Customer';
+import SalonDashboard from './pages/dashboard/Salon';
+import OwnerDashboard from './pages/dashboard/Owner';
+import FreelancerDashboard from './pages/dashboard/Freelancer';
+import SupplierDashboard from './pages/dashboard/Supplier';
+import OtherDashboard from './pages/dashboard/Other';
 
 // Define all routes
 const routes = [
