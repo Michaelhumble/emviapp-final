@@ -49,7 +49,7 @@ export const migrateSingleToMultiSalon = async (userId: string): Promise<string 
     }
     
     // Define the salon name - either get it from profile or use a fallback
-    const profileData = userProfile as Record<string, any>;
+    const profileData = userProfile as any; // Use a simple any type to avoid deep instantiation
     const salonName = profileData.salon_name || profileData.full_name || 'My Salon';
     
     // Create a new salon record with information from the user profile
