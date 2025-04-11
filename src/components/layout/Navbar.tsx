@@ -11,6 +11,8 @@ import MobileMenu from "./navbar/MobileMenu";
 
 const Navbar = () => {
   let navigate;
+  let user = null;
+  let signOut = async () => {};
   
   try {
     navigate = useNavigate();
@@ -18,16 +20,27 @@ const Navbar = () => {
     console.error("Router context not available in Navbar:", error);
   }
   
-  const { user, signOut } = useAuth();
+  try {
+    const auth = useAuth();
+    user = auth.user;
+    signOut = auth.signOut;
+  } catch (error) {
+    console.error("Auth context not available in Navbar:", error);
+  }
 
   const handleSignOut = async () => {
-    await signOut();
-    if (navigate) {
-      navigate("/");
-    } else {
-      window.location.href = "/";
+    try {
+      await signOut();
+      if (navigate) {
+        navigate("/");
+      } else {
+        window.location.href = "/";
+      }
+      toast.success("You've been signed out successfully");
+    } catch (error) {
+      console.error("Error signing out:", error);
+      toast.error("Failed to sign out. Please try again.");
     }
-    toast.success("You've been signed out successfully");
   };
 
   return (

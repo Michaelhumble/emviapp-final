@@ -39,7 +39,19 @@ const Layout = ({ children, hideNavbar = false }: LayoutProps) => {
     isProfilePage = false;
   }
   
-  const { isSignedIn, userRole } = useAuth();
+  let isSignedIn = false;
+  let userRole = null;
+  
+  try {
+    const auth = useAuth();
+    isSignedIn = auth.isSignedIn;
+    userRole = auth.userRole;
+  } catch (error) {
+    console.error("Auth context not available:", error);
+    isSignedIn = false;
+    userRole = null;
+  }
+  
   const [showStickyCta, setShowStickyCta] = useState(false);
   const [showDashboardCta, setShowDashboardCta] = useState(false);
   const isMobile = useIsMobile();

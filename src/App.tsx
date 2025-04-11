@@ -1,12 +1,11 @@
 
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useState } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { AuthProvider } from "./context/auth/AuthContext";
 import { SubscriptionProvider } from "./context/subscription/SubscriptionProvider";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { Toaster } from "sonner";
-import { useAuth } from "./context/auth";
 import routes from "./routes";
 import AppModifier from "./App-Modifier";
 import ErrorBoundary from "./components/error/ErrorBoundary";
@@ -36,17 +35,7 @@ function App() {
 }
 
 function AppContent() {
-  const { isSignedIn } = useAuth();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (isSignedIn) {
-      const currentPath = window.location.pathname;
-      if (currentPath === "/sign-in" || currentPath === "/sign-up") {
-        navigate("/dashboard");
-      }
-    }
-  }, [isSignedIn, navigate]);
 
   return (
     <>
