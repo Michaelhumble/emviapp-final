@@ -5,6 +5,7 @@ import { ProfileProvider } from '@/context/profile';
 import { ProfileCompletionProvider } from '@/context/profile/ProfileCompletionProvider';
 import { NotificationProvider } from '@/context/notification';
 import { SubscriptionProvider } from '@/context/subscription';
+import { GoogleMapsProvider } from '@/context/maps/GoogleMapsContext';
 import { Toaster } from 'sonner';
 import AppModifier from './App-Modifier';
 import routes from './routes';
@@ -17,17 +18,19 @@ function App() {
         <ProfileCompletionProvider>
           <SubscriptionProvider>
             <NotificationProvider>
-              <AppModifier />
-              <Routes>
-                {routes.map((route) => (
-                  <Route
-                    key={route.path}
-                    path={route.path}
-                    element={route.element}
-                  />
-                ))}
-              </Routes>
-              <Toaster position="top-right" />
+              <GoogleMapsProvider>
+                <AppModifier />
+                <Routes>
+                  {routes.map((route) => (
+                    <Route
+                      key={route.path}
+                      path={route.path}
+                      element={route.element}
+                    />
+                  ))}
+                </Routes>
+                <Toaster position="top-right" />
+              </GoogleMapsProvider>
             </NotificationProvider>
           </SubscriptionProvider>
         </ProfileCompletionProvider>
