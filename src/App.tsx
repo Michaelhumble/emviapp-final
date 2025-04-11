@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import { AuthProvider } from "./context/auth/AuthContext";
 import { SubscriptionProvider } from "./context/subscription/SubscriptionProvider";
 import { Elements } from "@stripe/react-stripe-js";
@@ -15,6 +15,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Checkout from "./pages/Checkout";
 import Dashboard from "./pages/Dashboard";
+// Import dashboard components
 import ArtistDashboard from "./pages/dashboard/Artist";
 import SalonDashboard from "./pages/dashboard/Salon";
 import OwnerDashboard from "./pages/dashboard/Owner";

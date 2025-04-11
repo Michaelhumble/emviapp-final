@@ -1,5 +1,6 @@
 
 import React from 'react';
+// Import all page components
 import Index from './pages/Index';
 import Welcome from './pages/Welcome';
 import NotFound from './pages/NotFound';
@@ -28,6 +29,7 @@ import SalonDetail from './pages/salons/SalonDetail';
 import ProfileRedirect from './pages/profile/ProfileRedirect';
 import Profile from './pages/Profile';
 
+// Define all routes
 const routes = [
   {
     path: '/',
@@ -107,11 +109,11 @@ const routes = [
   },
   {
     path: '/profile',
-    element: <Profile />, // Use the Profile component for /profile route
+    element: <Profile />,
   },
   {
     path: '/profile/view',
-    element: <UserProfilePage />, // Move UserProfilePage to a different route
+    element: <UserProfilePage />,
   },
   {
     path: '/profile/redirect',
