@@ -15,12 +15,14 @@ export const useSalonProvider = (userId: string | undefined) => {
     setIsLoadingSalons(true);
 
     try {
-      // Simplify typing - avoid complex type inference
-      const { data, error } = await supabase
+      // Using type assertion to avoid deep type instantiation issues
+      const response = await supabase
         .from('salons')
         .select('*')
         .eq('owner_id', userId)
         .order('created_at', { ascending: false });
+
+      const { data, error } = response;
 
       if (error) throw error;
 
@@ -59,11 +61,13 @@ export const useSalonProvider = (userId: string | undefined) => {
         owner_id: userId
       };
       
-      // Use type assertion to avoid type checking issues during insertion
-      const { data, error } = await supabase
+      // Use explicit type assertion to avoid type checking issues
+      const response = await supabase
         .from('salons')
         .insert(newSalonData as any)
         .select();
+        
+      const { data, error } = response;
 
       if (error) {
         if (error.message.includes('maximum of 3 salons')) {

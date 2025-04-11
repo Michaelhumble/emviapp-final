@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
@@ -33,7 +34,7 @@ import BookingRemindersBanner from "@/components/dashboard/salon/bookings/compon
 import BookingAnalyticsCard from "@/components/dashboard/salon/analytics/BookingAnalyticsCard";
 import CreditUsageHistory from "@/components/dashboard/salon/credits/CreditUsageHistory";
 import MonthlyReportDownload from "@/components/dashboard/salon/reports/MonthlyReportDownload";
-import { SalonProvider } from "@/context/salon/SalonContext";
+import { SalonProvider } from "@/context/salon";
 import SalonSwitcher from "@/components/dashboard/salon/SalonSwitcher";
 
 const OwnerDashboard = () => {

@@ -1,89 +1,77 @@
 
 import { supabase } from '@/integrations/supabase/client';
-
-// Define interface for salon data with correct field names
-interface SalonData {
-  salon_name: string;
-  owner_id?: string; // We'll add this only for local use, not for DB insertion
-}
-
-// Define a simple type for user profile
-interface UserProfile {
-  id: string;
-  full_name?: string;
-  email?: string;
-  salon_name?: string;
-  business_name?: string;
-  [key: string]: any;
-}
+import { toast } from 'sonner';
 
 /**
- * This utility function ensures that salon owners who signed up before
- * the multi-salon feature was implemented have a salon record created.
+ * This utility function migrates a user from the old single-salon model
+ * to the new multi-salon model by creating a salon entity based on
+ * their existing user profile data.
  * 
  * @param userId The ID of the user to migrate
- * @returns The ID of the created salon, or null if no migration needed
+ * @returns The ID of the created salon, or null if migration failed
  */
 export const migrateSingleToMultiSalon = async (userId: string): Promise<string | null> => {
   try {
-    // First, check if user already has a salon
-    const { data: existingSalons, error: checkError } = await supabase
+    console.log(`Starting migration for user ${userId}...`);
+    
+    // First, check if the user already has salons
+    const { data: existingSalons } = await supabase
       .from('salons')
       .select('id')
-      .eq('id', userId);
+      .eq('owner_id', userId);
       
-    if (checkError) {
-      console.error('Error checking for existing salons:', checkError);
-      return null;
-    }
-    
-    // If user already has a salon, no migration needed
     if (existingSalons && existingSalons.length > 0) {
-      console.log('User already has salon(s), no migration needed');
-      return null;
+      console.log('User already has salons, no migration needed');
+      return existingSalons[0].id;
     }
     
-    // Get user profile to get the salon name
-    const { data: userProfileData, error: profileError } = await supabase
+    // Get user profile data to create a salon
+    const { data: userData, error: userError } = await supabase
       .from('users')
       .select('*')
       .eq('id', userId)
       .single();
       
-    if (profileError || !userProfileData) {
-      console.error('Error fetching user profile:', profileError);
+    if (userError) {
+      console.error('Error fetching user data:', userError);
       return null;
     }
     
-    const userProfile = userProfileData as UserProfile;
+    if (!userData) {
+      console.error('No user data found');
+      return null;
+    }
     
-    // Use salon_name from profile or fallback to business_name or default
-    const salonName = 
-      userProfile.salon_name || 
-      userProfile.business_name || 
-      `${userProfile.full_name || 'New'}'s Salon`;
-    
-    // Create a new salon record in the database
-    // Note: The salons table uses the user ID as the salon ID (based on our schema)
-    const { data: insertedSalon, error: insertError } = await supabase
+    // Create a new salon based on user profile data
+    const { data: salonData, error: salonError } = await supabase
       .from('salons')
       .insert({
-        id: userId, // Use the user ID as the salon ID (primary key)
-        salon_name: salonName
+        owner_id: userId,
+        salon_name: userData.salon_name || userData.full_name || 'My Salon',
+        logo_url: userData.avatar_url,
+        location: userData.location,
+        about: userData.bio,
+        website: userData.website,
+        instagram: userData.instagram,
+        phone: userData.phone,
+        created_at: new Date().toISOString()
       })
-      .select()
-      .single();
+      .select();
       
-    if (insertError || !insertedSalon) {
-      console.error('Error creating salon during migration:', insertError);
+    if (salonError) {
+      console.error('Error creating salon:', salonError);
       return null;
     }
     
-    console.log('Successfully migrated user to multi-salon:', insertedSalon.id);
-    return insertedSalon.id;
+    if (salonData && salonData.length > 0) {
+      console.log('Migration successful, salon created with ID:', salonData[0].id);
+      toast.success('Your salon profile has been migrated to the new system!');
+      return salonData[0].id;
+    }
     
+    return null;
   } catch (error) {
-    console.error('Unexpected error during salon migration:', error);
+    console.error('Migration error:', error);
     return null;
   }
 };
