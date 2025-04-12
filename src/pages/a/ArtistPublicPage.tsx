@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { UserProfile } from "@/types/profile";
+import { UserProfile, getLocationString } from "@/types/profile";
 import Layout from "@/components/layout/Layout";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
