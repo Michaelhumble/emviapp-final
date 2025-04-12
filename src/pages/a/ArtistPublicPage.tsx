@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,7 +11,6 @@ import ContactSection from "@/components/artist-profile/ContactSection";
 import { Card, CardContent } from "@/components/ui/card";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
-// Types for portfolio images and services
 interface PortfolioImage {
   id: string;
   url: string;
@@ -50,14 +48,12 @@ const ArtistPublicPage = () => {
       try {
         setLoading(true);
         
-        // First try to find by username
         let { data: userData, error: userError } = await supabase
           .from('users')
           .select('*')
           .eq('instagram', username)
           .single();
         
-        // If not found by username, try with ID
         if (userError || !userData) {
           const { data: idData, error: idError } = await supabase
             .from('users')
@@ -74,7 +70,6 @@ const ArtistPublicPage = () => {
           userData = idData;
         }
         
-        // Ensure this is actually an artist
         if (userData.role !== 'artist' && userData.role !== 'nail technician/artist' && userData.role !== 'freelancer') {
           setError("This user is not an artist");
           setLoading(false);
@@ -83,7 +78,6 @@ const ArtistPublicPage = () => {
         
         setProfile(userData);
         
-        // Increment view count
         if (userData.id) {
           const newCount = (userData.profile_views || 0) + 1;
           await supabase
@@ -93,7 +87,6 @@ const ArtistPublicPage = () => {
           setViewCount(newCount);
         }
         
-        // Fetch portfolio images
         if (userData.id) {
           const { data: portfolioData } = await supabase
             .from('portfolio_items')
@@ -111,7 +104,6 @@ const ArtistPublicPage = () => {
             );
           }
           
-          // Fetch services
           const { data: servicesData } = await supabase
             .from('services')
             .select('*')
@@ -220,7 +212,6 @@ const ArtistPublicPage = () => {
           onBookingRequest={handleBooking} 
         />
         
-        {/* Testimonials placeholder - can be expanded later */}
         {false && (
           <div className="mt-12">
             <h2 className="text-2xl font-serif font-semibold mb-4">Client Testimonials</h2>
@@ -231,7 +222,6 @@ const ArtistPublicPage = () => {
         )}
       </div>
       
-      {/* Booking Modal - stub for now */}
       {showBookingModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <Card className="w-full max-w-md">
