@@ -1,418 +1,446 @@
 
-import { useState, useRef, ChangeEvent, DragEvent } from 'react';
-import { Button } from '@/components/ui/button';
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
-  CardTitle, 
-  CardDescription 
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogDescription
-} from '@/components/ui/dialog';
-import { 
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { 
-  UploadCloud, 
-  Trash2, 
-  Loader2, 
-  X, 
-  Plus, 
-  ImageIcon, 
-  ZoomIn,
-  Info
-} from 'lucide-react';
-import { usePortfolioImages, PortfolioImage } from '@/hooks/portfolio/usePortfolioImages';
-import { useAuth } from '@/context/auth';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useRef, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import { usePortfolioImages } from "@/hooks/portfolio/usePortfolioImages";
+import { useAuth } from "@/context/auth";
+import { Image, Upload, X, AlertCircle, Trash2, Loader } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
-export default function PortfolioGallery() {
-  const { user } = useAuth();
-  const { 
-    images, 
-    isLoading, 
-    isUploading, 
-    uploadProgress, 
-    fileInputRef, 
+const PortfolioGallery = () => {
+  const { user, userRole } = useAuth();
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
+  const [currentImage, setCurrentImage] = useState<string | null>(null);
+  const [currentImageId, setCurrentImageId] = useState<string | null>(null);
+  const [imageTitle, setImageTitle] = useState("");
+  const [imageDescription, setImageDescription] = useState("");
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const isMobile = useIsMobile();
+  
+  const fadeInAnimation = useScrollAnimation({ animation: 'fade-in', delay: 100 });
+  
+  const {
+    images,
+    isLoading,
+    isUploading,
+    uploadProgress,
+    fileInputRef,
     uploadImage,
     deleteImage,
     isArtist
   } = usePortfolioImages();
-  
-  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [previewImageOpen, setPreviewImageOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<PortfolioImage | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  
-  // Form state for upload
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  
-  // File selection handler
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setSelectedFile(e.target.files[0]);
+
+  const handleDrag = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const file = e.dataTransfer.files[0];
+      handleFileSelect(file);
+    }
+  }, []);
+
+  const handleFileSelect = (file: File) => {
+    // Validate file type
+    const fileExt = file.name.split('.').pop()?.toLowerCase();
+    if (!['jpg', 'jpeg', 'png', 'webp'].includes(fileExt || '')) {
+      toast.error('File type not supported. Please upload JPG, PNG, or WebP images');
+      return;
+    }
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File size too large. Maximum allowed is 5MB');
+      return;
+    }
+
+    setSelectedFile(file);
+    
+    // Generate preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImagePreview(e.target?.result as string || null);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      handleFileSelect(e.target.files[0]);
     }
   };
-  
-  // Upload form handler
+
   const handleUpload = async () => {
-    if (!selectedFile) return;
+    if (!selectedFile) {
+      toast.error('Please select a file to upload');
+      return;
+    }
+
+    if (!imageTitle.trim()) {
+      toast.error('Please enter a title for your image');
+      return;
+    }
+
+    const result = await uploadImage(selectedFile, imageTitle, imageDescription);
     
-    await uploadImage(selectedFile, title, description);
-    
-    // Reset form
-    setTitle('');
-    setDescription('');
-    setSelectedFile(null);
-    setUploadDialogOpen(false);
+    if (result) {
+      setSelectedFile(null);
+      setImagePreview(null);
+      setImageTitle("");
+      setImageDescription("");
+      setUploadModalOpen(false);
+      toast.success('Image uploaded successfully!');
+    }
   };
-  
-  // Delete confirmation handler
+
+  const handleDeleteClick = (imageId: string, imageUrl: string) => {
+    setCurrentImageId(imageId);
+    setCurrentImage(imageUrl);
+    setDeleteConfirmOpen(true);
+  };
+
   const handleDeleteConfirm = async () => {
-    if (!selectedImage) return;
-    
-    const success = await deleteImage(selectedImage.id, selectedImage.url);
-    if (success) {
-      setSelectedImage(null);
-      setDeleteDialogOpen(false);
+    if (currentImageId) {
+      const success = await deleteImage(currentImageId, currentImage || '');
+      if (success) {
+        setDeleteConfirmOpen(false);
+        setCurrentImageId(null);
+        setCurrentImage(null);
+        toast.success('Image deleted successfully');
+      }
     }
   };
-  
-  // Drag and drop handlers
-  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(true);
+
+  const handlePreviewImage = (imageUrl: string) => {
+    setCurrentImage(imageUrl);
+    setPreviewModalOpen(true);
   };
-  
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-  
-  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      setSelectedFile(e.dataTransfer.files[0]);
-      setUploadDialogOpen(true);
-    }
-  };
-  
-  // Check if user is authorized
+
   if (!user || !isArtist) {
     return (
-      <Card className="border-red-100">
-        <CardHeader>
-          <CardTitle className="text-xl font-serif">Portfolio Gallery</CardTitle>
-          <CardDescription>
-            Only artists can manage their portfolio
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center py-10 text-center">
-          <Info className="h-12 w-12 text-red-400 mb-4" />
-          <h3 className="text-lg font-medium mb-2">Access Restricted</h3>
-          <p className="text-muted-foreground max-w-md">
-            You need to be logged in as an artist to view and manage your portfolio.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-center p-6 bg-gray-50 rounded-md text-center">
+        <div>
+          <AlertCircle className="h-10 w-10 text-gray-400 mx-auto mb-3" />
+          <p className="text-gray-500">You need to be logged in as an artist to view and manage your portfolio.</p>
+        </div>
+      </div>
     );
   }
-  
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 24
+      }
+    }
+  };
+
   return (
-    <Card className="border-purple-100 shadow-sm">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-xl font-serif">Portfolio Gallery</CardTitle>
-        <CardDescription>
-          Showcase your best work to attract clients
-        </CardDescription>
-      </CardHeader>
-      
-      <CardContent>
-        {/* Upload Button */}
-        <div className="mb-6">
-          <Button
-            onClick={() => setUploadDialogOpen(true)}
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+    <div 
+      ref={fadeInAnimation.ref as React.RefObject<HTMLDivElement>} 
+      className={fadeInAnimation.className}
+    >
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-lg font-medium">Your Portfolio</h3>
+        <Button 
+          onClick={() => setUploadModalOpen(true)}
+          className="flex items-center gap-2"
+          size={isMobile ? "sm" : "default"}
+        >
+          <Upload className="h-4 w-4" />
+          <span>{isMobile ? "Upload" : "Upload New"}</span>
+        </Button>
+      </div>
+
+      {isLoading ? (
+        <div className="h-48 flex items-center justify-center">
+          <motion.div 
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
           >
-            <Plus className="mr-2 h-4 w-4" />
-            Add New Image
-          </Button>
+            <Loader className="h-6 w-6 text-primary" />
+          </motion.div>
+          <span className="ml-2">Loading portfolio...</span>
         </div>
-        
-        {/* Gallery Grid */}
-        {isLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div 
-                key={i} 
-                className="aspect-square rounded-md bg-gray-100 animate-pulse"
+      ) : images.length === 0 ? (
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="bg-gray-50 rounded-lg p-8 text-center"
+        >
+          <div className="bg-white w-16 h-16 mx-auto rounded-full flex items-center justify-center shadow-sm mb-4">
+            <Image className="h-8 w-8 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-medium mb-2">Your portfolio is empty</h3>
+          <p className="text-gray-500 mb-4">Upload your best work to showcase your skills</p>
+          <Button onClick={() => setUploadModalOpen(true)}>
+            Upload Your First Image
+          </Button>
+        </motion.div>
+      ) : (
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4"
+        >
+          {images.map((image, index) => (
+            <motion.div
+              key={image.id}
+              variants={itemVariants}
+              className="relative group rounded-md overflow-hidden bg-gray-100 aspect-square"
+            >
+              <img
+                src={image.url}
+                alt={image.title}
+                className="w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
+                onClick={() => handlePreviewImage(image.url)}
               />
-            ))}
-          </div>
-        ) : images.length === 0 ? (
-          <div 
-            className={`
-              border-2 border-dashed rounded-lg p-8 text-center
-              ${isDragging ? 'border-purple-300 bg-purple-50' : 'border-gray-200 bg-gray-50'}
-              transition-colors
-            `}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-          >
-            <div className="flex flex-col items-center justify-center py-4">
-              <div className="bg-purple-100 p-3 rounded-full mb-3">
-                <ImageIcon className="h-10 w-10 text-purple-500" />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
+                <h4 className="text-white font-medium truncate">{image.title}</h4>
+                {image.description && (
+                  <p className="text-white/80 text-sm line-clamp-2">{image.description}</p>
+                )}
               </div>
-              <h3 className="text-lg font-medium mb-2">You haven't uploaded anything yet</h3>
-              <p className="text-gray-500 mb-6 max-w-md">
-                Upload photos of your best work to attract clients and showcase your talent.
-              </p>
-              <Button 
-                onClick={() => setUploadDialogOpen(true)}
-                className="bg-purple-600 hover:bg-purple-700 text-white"
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteClick(image.id, image.url);
+                }}
+                aria-label="Delete image"
               >
-                <UploadCloud className="mr-2 h-4 w-4" />
-                Upload Your First Image
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <AnimatePresence>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {images.map((image) => (
-                <motion.div
-                  key={image.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.2 }}
-                  className="group relative aspect-square rounded-md overflow-hidden border border-gray-200"
-                >
-                  <img 
-                    src={image.url} 
-                    alt={image.title}
-                    className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
-                  />
-                  
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <div className="flex space-x-2">
-                      <Button
-                        onClick={() => {
-                          setSelectedImage(image);
-                          setPreviewImageOpen(true);
-                        }}
-                        size="sm"
-                        variant="secondary"
-                        className="rounded-full p-2 h-8 w-8"
-                      >
-                        <ZoomIn className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          setSelectedImage(image);
-                          setDeleteDialogOpen(true);
-                        }}
-                        size="sm"
-                        variant="destructive"
-                        className="rounded-full p-2 h-8 w-8"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
-                    <h4 className="text-white text-sm font-medium truncate">{image.title}</h4>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </AnimatePresence>
-        )}
-        
-        {/* Upload Dialog */}
-        <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Upload Portfolio Image</DialogTitle>
-              <DialogDescription>
-                Add a new image to showcase your work
-              </DialogDescription>
-            </DialogHeader>
-            
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="file">Image</Label>
-                <div 
-                  className={`
-                    border-2 border-dashed rounded-lg p-4 text-center cursor-pointer
-                    ${isDragging ? 'border-purple-300 bg-purple-50' : 'border-gray-200 hover:bg-gray-50'}
-                    transition-colors
-                  `}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <input
-                    ref={fileInputRef}
-                    id="file"
-                    type="file"
-                    accept="image/jpeg,image/jpg,image/png,image/webp"
-                    className="hidden"
-                    onChange={handleFileChange}
-                  />
-                  
-                  {selectedFile ? (
-                    <div className="py-2">
-                      <p className="text-sm font-medium">{selectedFile.name}</p>
-                      <p className="text-xs text-gray-500">
-                        {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                      </p>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="mt-2"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedFile(null);
-                          if (fileInputRef.current) fileInputRef.current.value = '';
-                        }}
-                      >
-                        <X className="h-4 w-4 mr-1" />
-                        Remove
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="py-4">
-                      <UploadCloud className="h-10 w-10 text-gray-400 mx-auto mb-2" />
-                      <p className="text-sm text-gray-500">
-                        Drag and drop or click to browse
-                      </p>
-                      <p className="text-xs text-gray-400 mt-1">
-                        JPG, PNG, WebP • 5MB max
-                      </p>
-                    </div>
-                  )}
+                <Trash2 className="h-4 w-4" />
+              </motion.button>
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
+
+      {/* Upload Modal */}
+      <Dialog open={uploadModalOpen} onOpenChange={setUploadModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Upload Portfolio Image</DialogTitle>
+            <DialogDescription>
+              Add new work to your portfolio. Accepted formats: JPG, PNG, WebP (max 5MB)
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {!imagePreview ? (
+              <div
+                className={`border-2 border-dashed rounded-lg p-6 transition-colors ${
+                  dragActive ? "border-primary bg-primary/5" : "border-gray-300 hover:border-primary/50"
+                }`}
+                onDragEnter={handleDrag}
+                onDragOver={handleDrag}
+                onDragLeave={handleDrag}
+                onDrop={handleDrop}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  accept="image/jpeg,image/jpg,image/png,image/webp"
+                  onChange={handleFileInputChange}
+                />
+                <div className="flex flex-col items-center justify-center text-center h-32">
+                  <Upload className="h-8 w-8 text-gray-400 mb-2" />
+                  <p className="text-sm font-medium mb-1">
+                    Drag & drop your image here or click to browse
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    JPG, PNG, WebP (max 5MB)
+                  </p>
                 </div>
               </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
+            ) : (
+              <div className="relative rounded-lg overflow-hidden">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-full h-48 object-cover"
+                />
+                <button
+                  className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full"
+                  onClick={() => {
+                    setSelectedFile(null);
+                    setImagePreview(null);
+                  }}
+                  aria-label="Remove image"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <div>
+                <Label htmlFor="title">Title <span className="text-red-500">*</span></Label>
                 <Input
                   id="title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g., Summer Collection"
+                  value={imageTitle}
+                  onChange={(e) => setImageTitle(e.target.value)}
+                  placeholder="E.g., Summer Nail Design"
+                  className="mt-1"
                 />
               </div>
               
-              <div className="space-y-2">
+              <div>
                 <Label htmlFor="description">Description (optional)</Label>
                 <Textarea
                   id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Describe your work..."
+                  value={imageDescription}
+                  onChange={(e) => setImageDescription(e.target.value)}
+                  placeholder="Tell us about this design..."
+                  className="mt-1 resize-none"
                   rows={3}
                 />
               </div>
             </div>
-            
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setUploadDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={handleUpload} 
-                disabled={!selectedFile || isUploading}
-                className="bg-purple-600 hover:bg-purple-700 text-white"
-              >
-                {isUploading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Uploading ({uploadProgress}%)
-                  </>
-                ) : (
-                  'Upload'
-                )}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-        
-        {/* Delete Confirmation Dialog */}
-        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This will permanently delete the image from your portfolio.
-                This action cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction 
-                onClick={handleDeleteConfirm}
-                className="bg-red-600 hover:bg-red-700"
-              >
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-        
-        {/* Image Preview Dialog */}
-        <Dialog open={previewImageOpen} onOpenChange={setPreviewImageOpen}>
-          <DialogContent className="sm:max-w-3xl">
-            <DialogHeader>
-              <DialogTitle>{selectedImage?.title}</DialogTitle>
-              {selectedImage?.description && (
-                <DialogDescription>
-                  {selectedImage.description}
-                </DialogDescription>
+
+            {isUploading && (
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Uploading...</span>
+                  <span>{uploadProgress}%</span>
+                </div>
+                <Progress value={uploadProgress} className="h-2" />
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="sm:justify-between">
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setUploadModalOpen(false);
+                setSelectedFile(null);
+                setImagePreview(null);
+                setImageTitle("");
+                setImageDescription("");
+              }}
+              disabled={isUploading}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleUpload}
+              disabled={isUploading || !selectedFile || !imageTitle.trim()}
+              className="flex items-center gap-2"
+            >
+              {isUploading ? (
+                <>
+                  <Loader className="h-4 w-4 animate-spin" />
+                  <span>Uploading...</span>
+                </>
+              ) : (
+                <>
+                  <Upload className="h-4 w-4" />
+                  <span>Upload</span>
+                </>
               )}
-            </DialogHeader>
-            
-            <div className="overflow-hidden rounded-md">
-              {selectedImage && (
-                <img 
-                  src={selectedImage.url} 
-                  alt={selectedImage.title}
-                  className="w-full h-auto object-contain max-h-[70vh]"
-                />
-              )}
-            </div>
-            
-            <DialogFooter>
-              <Button onClick={() => setPreviewImageOpen(false)}>Close</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </CardContent>
-    </Card>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Preview Modal */}
+      <Dialog open={previewModalOpen} onOpenChange={setPreviewModalOpen}>
+        <DialogContent className="sm:max-w-3xl h-auto max-h-[90vh] p-0 overflow-hidden bg-black">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="relative w-full h-full flex items-center justify-center"
+          >
+            <img
+              src={currentImage || ''}
+              alt="Preview"
+              className="max-w-full max-h-[80vh] object-contain"
+            />
+            <button
+              className="absolute top-3 right-3 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-colors"
+              onClick={() => setPreviewModalOpen(false)}
+              aria-label="Close preview"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </motion.div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Portfolio Image</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this image? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="flex justify-end space-x-2 mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setDeleteConfirmOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteConfirm}
+              className="flex items-center gap-2"
+            >
+              <Trash2 className="h-4 w-4" />
+              <span>Delete</span>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
-}
+};
+
+export default PortfolioGallery;
