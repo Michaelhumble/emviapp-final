@@ -8,9 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
   MapPin, Phone, DollarSign, Calendar, MessageSquare, 
-  CheckCircle2, Building, Clock 
+  CheckCircle2, Building, Clock, Heart 
 } from "lucide-react";
 import { Job } from "@/types/job";
+import { useState } from "react";
 
 interface ListingCardProps {
   listing: Job;
@@ -18,6 +19,9 @@ interface ListingCardProps {
 }
 
 const ListingCard = ({ listing, index }: ListingCardProps) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
+  
   const isForSale = listing.employment_type === "For Sale";
   
   // Get perks/features based on listing type
@@ -39,6 +43,11 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
       perks.push(...listing.benefits.slice(0, 2));
     }
     
+    // Add features if available
+    if (listing.features && listing.features.length > 0) {
+      perks.push(...listing.features.slice(0, 2));
+    }
+    
     return perks;
   };
   
@@ -49,19 +58,42 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
 
   const perks = getPerks(listing);
   
+  const toggleFavorite = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsFavorited(!isFavorited);
+  };
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.1 }}
       className="h-full"
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
     >
-      <Card className="h-full flex flex-col hover:shadow-lg transition-shadow duration-300">
+      <Card 
+        className={`h-full flex flex-col transition-all duration-300 ${isHovered ? 'shadow-lg transform translate-y-[-4px]' : 'shadow'}`}
+      >
         {listing.image && (
-          <div 
-            className="h-48 bg-center bg-cover" 
-            style={{ backgroundImage: `url(${listing.image})` }}
-          />
+          <div className="relative overflow-hidden">
+            <div 
+              className={`h-48 bg-center bg-cover transition-transform duration-500 ${isHovered ? 'scale-105' : 'scale-100'}`}
+              style={{ backgroundImage: `url(${listing.image})` }}
+            />
+            <div className="absolute top-2 right-2">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className={`rounded-full ${isFavorited ? 'bg-red-100' : 'bg-white/80'} hover:bg-red-100 backdrop-blur-sm`}
+                onClick={toggleFavorite}
+              >
+                <Heart className={`h-5 w-5 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+              </Button>
+            </div>
+            
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent h-1/3" />
+          </div>
         )}
         
         <CardHeader className="pb-2">
@@ -91,10 +123,16 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
             </div>
           )}
           
-          {listing.asking_price && (
+          {listing.compensation_details && !listing.salary_range && (
+            <div className="flex items-center text-sm text-gray-600 mb-2">
+              <DollarSign className="h-4 w-4 mr-1.5" /> {listing.compensation_details}
+            </div>
+          )}
+          
+          {listing.price && (
             <div className="flex items-center text-sm text-gray-700 mb-2">
               <DollarSign className="h-4 w-4 mr-1.5" /> 
-              <span className="font-medium">{listing.asking_price}</span>
+              <span className="font-medium">{listing.price}</span>
               {listing.monthly_rent && <span className="text-gray-500 ml-2">| Rent: {listing.monthly_rent}</span>}
             </div>
           )}
@@ -163,7 +201,7 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
             </Button>
           )}
           
-          <Button size="sm">
+          <Button size="sm" className="bg-primary hover:bg-primary/90">
             View Details
           </Button>
         </CardFooter>

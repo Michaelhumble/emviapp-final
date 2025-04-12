@@ -45,19 +45,19 @@ const FinalFounderCTA = () => {
           
           <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6">
             {language === "en" 
-              ? "One platform, for everyone" 
-              : "Một nền tảng, cho tất cả mọi người"}
+              ? "This is the system we all needed" 
+              : "Đây là hệ thống mà tất cả chúng ta đều cần"}
           </h2>
           
           <p className="text-lg text-gray-700 mb-8">
             {language === "en" 
-              ? "This is the system we all needed — built by the industry, for the industry." 
-              : "Đây là hệ thống mà tất cả chúng ta đều cần — được xây dựng bởi ngành, cho ngành."}
+              ? "One platform, for everyone — built by the industry, for the industry." 
+              : "Một nền tảng, cho tất cả mọi người — được xây dựng bởi ngành, cho ngành."}
           </p>
           
           <Link to="/auth/signup">
             <Button size="lg" className="font-medium px-8 py-6 text-base">
-              {language === "en" ? "Join Us Today" : "Tham Gia Ngay Hôm Nay"}
+              {language === "en" ? "Join Our Community Today" : "Tham Gia Cộng Đồng Của Chúng Tôi Ngay Hôm Nay"}
             </Button>
           </Link>
         </motion.div>

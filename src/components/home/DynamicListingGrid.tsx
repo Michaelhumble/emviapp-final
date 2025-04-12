@@ -13,7 +13,7 @@ interface ListingItem {
   location: string;
   status: string;
   imageSrc: string;
-  category: 'salons' | 'booths' | 'artists' | 'sales' | 'spa' | 'hair';
+  category: 'salons' | 'booths' | 'artists' | 'sales' | 'spa' | 'hair' | 'restaurant' | 'tattoo' | 'boba' | 'barber' | 'cafe' | 'wax' | 'misc';
   url: string;
 }
 
@@ -22,246 +22,276 @@ const listings: ListingItem[] = [
   // Nail Industry - Vietnamese names
   { 
     id: "n1", 
-    name: "Mai's Nail Art Studio", 
+    name: "Kim's Nail & Spa", 
     location: "Westminster, CA", 
-    status: "Hiring Now", 
+    status: "Hiring 2 techs now", 
     imageSrc: "https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
     category: "salons", 
     url: "/salons/1" 
   },
   { 
     id: "n2", 
-    name: "Trang's Nail & Spa", 
+    name: "Amy Nguyen", 
     location: "Garden Grove, CA", 
-    status: "Two Booths Available", 
+    status: "Classic Gel Expert - Book now", 
     imageSrc: "https://images.unsplash.com/photo-1519014816548-bf5fe059798b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    category: "booths", 
-    url: "/booths/1" 
-  },
-  { 
-    id: "n3", 
-    name: "Thanh Nail Studio", 
-    location: "San Jose, CA", 
-    status: "Owner Retiring", 
-    imageSrc: "https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    category: "sales", 
-    url: "/salon-sales/1" 
-  },
-  { 
-    id: "n4", 
-    name: "Huong Nguyen", 
-    location: "Houston, TX", 
-    status: "Available Today", 
-    imageSrc: "https://images.unsplash.com/photo-1610992015732-2449b76025bb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
     category: "artists", 
     url: "/artists/1" 
   },
   { 
-    id: "n5", 
-    name: "Luxe Nails by Lin", 
+    id: "n3", 
+    name: "Anh Salon", 
+    location: "San Diego, CA", 
+    status: "Booth available", 
+    imageSrc: "https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "booths", 
+    url: "/booths/1" 
+  },
+  { 
+    id: "n4", 
+    name: "Modern Nails", 
     location: "Atlanta, GA", 
-    status: "Taking New Clients", 
+    status: "Salon for sale: retiring soon", 
+    imageSrc: "https://images.unsplash.com/photo-1610992015732-2449b76025bb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "sales", 
+    url: "/salon-sales/1" 
+  },
+  { 
+    id: "n5", 
+    name: "J. Lee", 
+    location: "Houston, TX", 
+    status: "Brow + Lash Specialist - New client openings", 
     imageSrc: "https://images.unsplash.com/photo-1607779097040-28d2024f27bd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
     category: "artists", 
     url: "/artists/2" 
   },
   { 
     id: "n6", 
-    name: "Kim's Diamond Nails", 
-    location: "Seattle, WA", 
-    status: "Hiring Full-Time", 
+    name: "Luxe Polish", 
+    location: "Houston, TX", 
+    status: "Hiring part-time artist", 
     imageSrc: "https://images.unsplash.com/photo-1631214528203-b6e20b68efa4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
     category: "salons", 
     url: "/salons/2" 
   },
   { 
     id: "n7", 
-    name: "Viet Nails & Spa", 
-    location: "Orlando, FL", 
-    status: "Hiring Experienced Techs", 
+    name: "Sassy Nails", 
+    location: "Boston, MA", 
+    status: "1 private booth left", 
     imageSrc: "https://images.unsplash.com/photo-1600428853876-fb5a850b444f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    category: "salons", 
-    url: "/salons/3" 
+    category: "booths", 
+    url: "/booths/2" 
   },
   { 
     id: "n8", 
-    name: "Quynh's Luxury Nails", 
-    location: "Philadelphia, PA", 
-    status: "For Sale - Great Location", 
+    name: "Vera's Beauty Bar", 
+    location: "Phoenix, AZ", 
+    status: "Selling full package deal", 
     imageSrc: "https://images.unsplash.com/photo-1632345031435-8727f6897d53?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
     category: "sales", 
     url: "/salon-sales/2" 
   },
   { 
     id: "n9", 
-    name: "Linh's Nail Bar", 
-    location: "Charlotte, NC", 
-    status: "Booths Available", 
+    name: "Nail Garden", 
+    location: "Seattle, WA", 
+    status: "Booth for rent", 
     imageSrc: "https://images.unsplash.com/photo-1617400877064-78abfcc3dc12?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    category: "booths", 
-    url: "/booths/2" 
-  },
-  { 
-    id: "n10", 
-    name: "Van's Nails & Beauty", 
-    location: "Chicago, IL", 
-    status: "4 Positions Open", 
-    imageSrc: "https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    category: "salons", 
-    url: "/salons/4" 
-  },
-  
-  // Hair Stylists
-  { 
-    id: "h1", 
-    name: "Michael Wilson", 
-    location: "Los Angeles, CA", 
-    status: "Taking New Clients", 
-    imageSrc: "https://images.unsplash.com/photo-1605497788044-5a32c7078486?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    category: "hair", 
-    url: "/artists/3" 
-  },
-  { 
-    id: "h2", 
-    name: "Curls & Waves Salon", 
-    location: "Miami, FL", 
-    status: "Hiring Stylists", 
-    imageSrc: "https://images.unsplash.com/photo-1562322140-8baeececf3df?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    category: "salons", 
-    url: "/salons/5" 
-  },
-  
-  // Spa Technicians
-  { 
-    id: "s1", 
-    name: "Serene Day Spa", 
-    location: "Denver, CO", 
-    status: "Massage Therapist Needed", 
-    imageSrc: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    category: "spa", 
-    url: "/salons/6" 
-  },
-  { 
-    id: "s2", 
-    name: "Harmony Wellness", 
-    location: "Scottsdale, AZ", 
-    status: "For Sale - Established", 
-    imageSrc: "https://images.unsplash.com/photo-1600334129128-685c5582fd35?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    category: "sales", 
-    url: "/salon-sales/3" 
-  },
-  
-  // Lash/Brow
-  { 
-    id: "l1", 
-    name: "Amanda's Lash Studio", 
-    location: "Nashville, TN", 
-    status: "Booth Rental Available", 
-    imageSrc: "https://images.unsplash.com/photo-1589710751893-f9a6770ad71b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
     category: "booths", 
     url: "/booths/3" 
   },
+  { 
+    id: "n10", 
+    name: "Trang's Studio", 
+    location: "Orlando, FL", 
+    status: "Accepting new clients", 
+    imageSrc: "https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "artists", 
+    url: "/artists/3" 
+  },
   
-  // Additional listings
+  // Additional diverse industries
   { 
-    id: "b1", 
-    name: "J. Lee - Brow Expert", 
-    location: "San Francisco, CA", 
-    status: "Available for Bookings", 
-    imageSrc: "https://images.unsplash.com/photo-1533562557082-dab3099d33a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    category: "artists", 
-    url: "/artists/5" 
+    id: "r1", 
+    name: "Pho 88", 
+    location: "San Jose, CA", 
+    status: "Restaurant for sale", 
+    imageSrc: "https://images.unsplash.com/photo-1583032015879-e5022cb87c3b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "restaurant", 
+    url: "/salon-sales/3" 
   },
   { 
-    id: "b2", 
-    name: "Diamond Salon", 
-    location: "Las Vegas, NV", 
-    status: "Owner Retiring", 
-    imageSrc: "https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    category: "sales", 
-    url: "/salon-sales/4" 
-  },
-  { 
-    id: "b3", 
-    name: "Amy Nguyen - Classic Gel", 
-    location: "Boston, MA", 
-    status: "Expert Nail Artist", 
-    imageSrc: "https://images.unsplash.com/photo-1519751138087-5bf79df62d5b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    category: "artists", 
-    url: "/artists/6" 
-  },
-  { 
-    id: "b4", 
-    name: "2 Spots", 
+    id: "r2", 
+    name: "Tea+ Boba", 
     location: "Dallas, TX", 
-    status: "Available Now", 
-    imageSrc: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    category: "booths", 
+    status: "Hiring baristas", 
+    imageSrc: "https://images.unsplash.com/photo-1525803377221-4f6ccdaa5133?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "boba", 
+    url: "/jobs/1" 
+  },
+  { 
+    id: "r3", 
+    name: "The Rice Bowl", 
+    location: "Garden Grove, CA", 
+    status: "Server wanted", 
+    imageSrc: "https://images.unsplash.com/photo-1553443175-15c04efd19ac?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "restaurant", 
+    url: "/jobs/2" 
+  },
+  { 
+    id: "r4", 
+    name: "Ink House Tattoo", 
+    location: "Denver, CO", 
+    status: "Booth for rent", 
+    imageSrc: "https://images.unsplash.com/photo-1598371839696-5c5bb00bdc28?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "tattoo", 
     url: "/booths/4" 
   },
   { 
-    id: "b5", 
-    name: "Modern Nails", 
-    location: "Atlanta, GA", 
-    status: "New Location Opening", 
-    imageSrc: "https://images.unsplash.com/photo-1604902396830-ded84a7452be?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    category: "salons", 
-    url: "/salons/7" 
+    id: "r5", 
+    name: "Fresh Cut Barbers", 
+    location: "Chicago, IL", 
+    status: "Full-time barber opening", 
+    imageSrc: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "barber", 
+    url: "/jobs/3" 
   },
   { 
-    id: "b6", 
-    name: "Jenny Vo - Pedicure Artist", 
-    location: "Portland, OR", 
-    status: "25 Years Experience", 
-    imageSrc: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    category: "artists", 
-    url: "/artists/7" 
+    id: "r6", 
+    name: "Brewed Awakenings Café", 
+    location: "Seattle, WA", 
+    status: "Barista needed", 
+    imageSrc: "https://images.unsplash.com/photo-1525610553991-2bede1a236e2?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "cafe", 
+    url: "/jobs/4" 
   },
   { 
-    id: "b7", 
-    name: "Chair Open", 
+    id: "r7", 
+    name: "Taco King", 
     location: "Houston, TX", 
-    status: "Prime Location", 
-    imageSrc: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    category: "booths", 
+    status: "Family business for sale", 
+    imageSrc: "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "restaurant", 
+    url: "/salon-sales/4" 
+  },
+  { 
+    id: "r8", 
+    name: "CleanFade Studio", 
+    location: "Brooklyn, NY", 
+    status: "Chair open now", 
+    imageSrc: "https://images.unsplash.com/photo-1622288432207-901328f66ffb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "barber", 
     url: "/booths/5" 
   },
   { 
-    id: "b8", 
-    name: "Hair by Sara", 
-    location: "New York, NY", 
-    status: "Celebrity Stylist", 
-    imageSrc: "https://images.unsplash.com/photo-1562322140-8baeececf3df?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    category: "hair", 
-    url: "/artists/8" 
+    id: "r9", 
+    name: "Bubble & Bean", 
+    location: "Westminster, CA", 
+    status: "Manager wanted", 
+    imageSrc: "https://images.unsplash.com/photo-1551030173-122aabc4489c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "cafe", 
+    url: "/jobs/5" 
   },
   { 
-    id: "b9", 
-    name: "Brow & Wax Room", 
+    id: "r10", 
+    name: "Tattoo & Glow", 
     location: "Miami, FL", 
-    status: "Chair Available", 
-    imageSrc: "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    category: "booths", 
-    url: "/booths/6" 
-  },
-  { 
-    id: "b10", 
-    name: "The Beauty Garden", 
-    location: "San Diego, CA", 
-    status: "For Sale", 
-    imageSrc: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-    category: "sales", 
+    status: "Studio for sale", 
+    imageSrc: "https://images.unsplash.com/photo-1581467655410-0c2bf55d9d6c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "tattoo", 
     url: "/salon-sales/5" 
   },
   { 
-    id: "b11", 
-    name: "Angela Styles", 
-    location: "Austin, TX", 
-    status: "Bridal Hair Specialist", 
-    imageSrc: "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    id: "r11", 
+    name: "Golden Rolls Sushi", 
+    location: "Anaheim, CA", 
+    status: "Kitchen staff hiring", 
+    imageSrc: "https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "restaurant", 
+    url: "/jobs/6" 
+  },
+  { 
+    id: "r12", 
+    name: "Style & Snip", 
+    location: "Portland, OR", 
+    status: "Hair stylist booth open", 
+    imageSrc: "https://images.unsplash.com/photo-1562322140-8baeececf3df?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
     category: "hair", 
-    url: "/artists/9" 
-  }
+    url: "/booths/6" 
+  },
+  { 
+    id: "r13", 
+    name: "Bao Bakery", 
+    location: "Westminster, CA", 
+    status: "Part-time counter staff", 
+    imageSrc: "https://images.unsplash.com/photo-1517433367423-c7e5b0f35086?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "misc", 
+    url: "/jobs/7" 
+  },
+  { 
+    id: "r14", 
+    name: "Milk + Honey Wax Studio", 
+    location: "Austin, TX", 
+    status: "Wax tech needed", 
+    imageSrc: "https://images.unsplash.com/photo-1590439471364-192aa70c0b53?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "wax", 
+    url: "/jobs/8" 
+  },
+  { 
+    id: "r15", 
+    name: "Cozy Nails & Spa", 
+    location: "Tampa, FL", 
+    status: "Salon for lease", 
+    imageSrc: "https://images.unsplash.com/photo-1604902396830-ded84a7452be?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "sales", 
+    url: "/salon-sales/6" 
+  },
+  { 
+    id: "r16", 
+    name: "Zebra Thai Kitchen", 
+    location: "Orange County, CA", 
+    status: "Front staff wanted", 
+    imageSrc: "https://images.unsplash.com/photo-1559314809-0d155014e29e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "restaurant", 
+    url: "/jobs/9" 
+  },
+  { 
+    id: "r17", 
+    name: "Modest Cuts", 
+    location: "Sacramento, CA", 
+    status: "Shop for sale", 
+    imageSrc: "https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "barber", 
+    url: "/salon-sales/7" 
+  },
+  { 
+    id: "r18", 
+    name: "Bloom Beauty Lounge", 
+    location: "San Diego, CA", 
+    status: "Selling turnkey salon", 
+    imageSrc: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "sales", 
+    url: "/salon-sales/8" 
+  },
+  { 
+    id: "r19", 
+    name: "Sip & Chat Boba", 
+    location: "Fresno, CA", 
+    status: "Cashier + prep crew hiring", 
+    imageSrc: "https://images.unsplash.com/photo-1558857563-c0c6ee0854fe?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "boba", 
+    url: "/jobs/10" 
+  },
+  { 
+    id: "r20", 
+    name: "Ramen Republic", 
+    location: "San Francisco, CA", 
+    status: "Booths available", 
+    imageSrc: "https://images.unsplash.com/photo-1557872943-16a5ac26437e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "restaurant", 
+    url: "/booths/7" 
+  },
 ];
 
 const DynamicListingGrid = () => {
@@ -305,6 +335,22 @@ const DynamicListingGrid = () => {
             return listing.category === "spa";
           case "hair":
             return listing.category === "hair";
+          case "restaurant":
+            return listing.category === "restaurant";
+          case "tattoo":
+            return listing.category === "tattoo";
+          case "boba":
+            return listing.category === "boba";
+          case "barber":
+            return listing.category === "barber";
+          case "cafe":
+            return listing.category === "cafe";
+          case "wax":
+            return listing.category === "wax";
+          case "food":
+            return listing.category === "restaurant" || 
+                  listing.category === "boba" || 
+                  listing.category === "cafe";
           default:
             return true;
         }
@@ -361,24 +407,31 @@ const DynamicListingGrid = () => {
               🏪 Salons for Sale
             </Button>
             <Button
-              variant={activeCategory === "spa" ? "default" : "outline"}
-              onClick={() => setActiveCategory("spa")}
+              variant={activeCategory === "food" ? "default" : "outline"}
+              onClick={() => setActiveCategory("food")}
               className="rounded-full"
             >
-              🧖‍♀️ Spa Technicians
+              🍜 Restaurants
             </Button>
             <Button
-              variant={activeCategory === "hair" ? "default" : "outline"}
-              onClick={() => setActiveCategory("hair")}
+              variant={activeCategory === "barber" ? "default" : "outline"}
+              onClick={() => setActiveCategory("barber")}
               className="rounded-full"
             >
-              💇‍♀️ Hair Stylists
+              💇‍♂️ Barber Shops
+            </Button>
+            <Button
+              variant={activeCategory === "tattoo" ? "default" : "outline"}
+              onClick={() => setActiveCategory("tattoo")}
+              className="rounded-full"
+            >
+              🎨 Tattoo Studios
             </Button>
           </div>
         </motion.div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredListings.slice(0, 12).map((listing, index) => (
+          {filteredListings.slice(0, 30).map((listing, index) => (
             <motion.div
               key={listing.id}
               initial={{ opacity: 0, y: 20 }}
