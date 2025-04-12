@@ -18,7 +18,7 @@ const ArtistCard = ({ artist, getArtistRating }: ArtistCardProps) => {
       <Avatar className="h-12 w-12 border border-primary/10">
         <AvatarImage src={artist.avatar_url || ""} alt={artist.full_name || "Artist"} />
         <AvatarFallback className="bg-primary/5 text-primary">
-          {artist.full_name?.substring(0, 2) || "NA"}
+          {artist.full_name?.charAt(0) || "NA"}
         </AvatarFallback>
       </Avatar>
       
