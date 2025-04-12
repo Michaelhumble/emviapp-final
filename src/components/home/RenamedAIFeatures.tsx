@@ -1,109 +1,102 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Search, TrendingUp, ShieldCheck, HelpCircle } from "lucide-react";
-
-interface AIFeature {
-  id: string;
-  title: string;
-  oldName: string;
-  icon: React.ElementType;
-  description: string;
-  iconColor: string;
-  bgColor: string;
-}
-
-const aiFeatures: AIFeature[] = [
-  {
-    id: "perfectmatch",
-    title: "PerfectMatch AI",
-    oldName: "EmviMatch",
-    icon: Search,
-    description: "Matches artists with the right clients and salons with the perfect talent.",
-    iconColor: "text-blue-500",
-    bgColor: "bg-blue-50",
-  },
-  {
-    id: "safeconnect",
-    title: "SafeConnect AI",
-    oldName: "EmviGuard",
-    icon: ShieldCheck,
-    description: "Protects your information and filters out spam so you only connect with genuine opportunities.",
-    iconColor: "text-green-500",
-    bgColor: "bg-green-50",
-  },
-  {
-    id: "growthpulse",
-    title: "GrowthPulse AI",
-    oldName: "EmviPulse",
-    icon: TrendingUp,
-    description: "Analyzes your performance and suggests personalized ways to grow your business.",
-    iconColor: "text-purple-500",
-    bgColor: "bg-purple-50",
-  },
-  {
-    id: "posthelper",
-    title: "PostHelper AI",
-    oldName: "EmviSupport",
-    icon: HelpCircle,
-    description: "Assists you in creating effective job posts and service listings that get noticed.",
-    iconColor: "text-amber-500",
-    bgColor: "bg-amber-50",
-  },
-  {
-    id: "boostrank",
-    title: "BoostRank AI",
-    oldName: "EmviRank",
-    icon: MessageCircle,
-    description: "Increases your visibility across platforms and helps you rank higher in search results.",
-    iconColor: "text-rose-500",
-    bgColor: "bg-rose-50",
-  },
-];
+import { Sparkles, Heart, Clock, Award, Rocket } from "lucide-react";
 
 const RenamedAIFeatures = () => {
+  const [language, setLanguage] = useState<"en" | "vi">("en");
+
+  // Listen for language change event
+  useEffect(() => {
+    const handleLanguageChange = (event: CustomEvent) => {
+      if (event.detail && event.detail.language) {
+        setLanguage(event.detail.language);
+      }
+    };
+    
+    window.addEventListener('languageChanged', handleLanguageChange as EventListener);
+    
+    // Get initial language preference
+    const storedLanguage = localStorage.getItem('emvi_language_preference');
+    if (storedLanguage === 'vi' || storedLanguage === 'en') {
+      setLanguage(storedLanguage as "en" | "vi");
+    }
+    
+    return () => {
+      window.removeEventListener('languageChanged', handleLanguageChange as EventListener);
+    };
+  }, []);
+
+  const features = [
+    {
+      icon: <Sparkles className="h-10 w-10 text-primary" />,
+      title: language === "en" ? "We Understand Beauty" : "Chúng Tôi Hiểu Về Ngành Nails",
+      description: language === "en" 
+        ? "Built by industry insiders who know what it's like to grow a beauty business from the ground up."
+        : "Được xây dựng bởi người trong ngành, những người biết thế nào là phát triển một doanh nghiệp làm đẹp từ con số 0."
+    },
+    {
+      icon: <Heart className="h-10 w-10 text-red-500" />,
+      title: language === "en" ? "The Heart of Service" : "Trái Tim Của Dịch Vụ",
+      description: language === "en"
+        ? "We put your needs first because we've been there—carrying the water, sweeping the floors, staying late."
+        : "Chúng tôi đặt nhu cầu của bạn lên hàng đầu vì chúng tôi đã từng ở đó—xách nước, quét sàn, làm việc đến khuya."
+    },
+    {
+      icon: <Clock className="h-10 w-10 text-amber-500" />,
+      title: language === "en" ? "Your Time Matters" : "Thời Gian Của Bạn Rất Quý",
+      description: language === "en"
+        ? "Our tools save you hours each week so you can focus on your craft, your clients, and your life."
+        : "Công cụ của chúng tôi giúp bạn tiết kiệm hàng giờ mỗi tuần để bạn có thể tập trung vào kỹ năng, khách hàng và cuộc sống của mình."
+    },
+    {
+      icon: <Award className="h-10 w-10 text-emerald-500" />,
+      title: language === "en" ? "Community Pride" : "Niềm Tự Hào Cộng Đồng",
+      description: language === "en"
+        ? "We celebrate your work and help you shine, because when you succeed, the whole community rises."
+        : "Chúng tôi tôn vinh công việc của bạn và giúp bạn tỏa sáng, bởi vì khi bạn thành công, cả cộng đồng cùng phát triển."
+    }
+  ];
+
   return (
-    <section className="py-16 bg-white relative overflow-hidden">
+    <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
           transition={{ duration: 0.7 }}
+          viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <Badge variant="outline" className="mb-4 bg-primary/10 px-4 py-1.5 text-sm font-medium rounded-full border-primary/30 text-primary">
-            AI That Works For You
-          </Badge>
-          
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 font-serif tracking-tight">
-            <span className="text-2xl">💡</span> We've built smart AI tools to handle the stress — so you can focus on your craft
-          </h2>
+          <div className="inline-flex items-center justify-center gap-2 mb-4">
+            <Rocket className="h-6 w-6 text-primary" />
+            <h2 className="text-3xl md:text-4xl font-serif font-bold">
+              {language === "en" ? "Why We're Different" : "Tại Sao Chúng Tôi Khác Biệt"}
+            </h2>
+          </div>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            {language === "en" 
+              ? "We're not just another tech platform. We're built from within the beauty industry." 
+              : "Chúng tôi không chỉ là một nền tảng công nghệ khác. Chúng tôi được xây dựng từ bên trong ngành làm đẹp."}
+          </p>
         </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {aiFeatures.map((feature, index) => (
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {features.map((feature, index) => (
             <motion.div
-              key={feature.id}
+              key={index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="h-full"
+              viewport={{ once: true }}
             >
-              <Card className="h-full backdrop-blur-sm bg-white border border-gray-100 shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden group">
-                <CardContent className="p-6 relative">
-                  <div className="flex items-start mb-4">
-                    <div className={`p-3 ${feature.bgColor} rounded-lg mr-4 group-hover:scale-110 transition-transform duration-300`}>
-                      <feature.icon className={`h-5 w-5 ${feature.iconColor}`} />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold font-serif">{feature.title}</h3>
-                      <p className="text-xs text-gray-500">formerly {feature.oldName}</p>
-                    </div>
+              <Card className="h-full hover:shadow-md transition-all border-t-4 border-t-primary">
+                <CardContent className="p-6 text-center">
+                  <div className="flex justify-center mb-4">
+                    {feature.icon}
                   </div>
+                  <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
                   <p className="text-gray-600">{feature.description}</p>
                 </CardContent>
               </Card>

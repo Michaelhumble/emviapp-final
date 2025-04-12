@@ -15,6 +15,7 @@ export interface Service {
 }
 
 export interface ArtistProfileProps {
+  // Required properties
   profile: any; // Using any to bypass TypeScript errors for now
   portfolioImages: PortfolioImage[];
   services: Service[];
