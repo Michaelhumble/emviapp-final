@@ -29,6 +29,15 @@ import ProfileRedirect from './pages/profile/ProfileRedirect';
 import Profile from './pages/Profile';
 import ArtistPublicPage from './pages/a/ArtistPublicPage';
 
+// Import profile setup pages
+import ArtistSetup from './pages/profile/artist/setup';
+import SalonOwnerSetup from './pages/profile/salon/setup';
+import FreelancerSetup from './pages/profile/freelancer/setup';
+import CustomerSetup from './pages/profile/customer/setup';
+import OtherRoleSetup from './pages/profile/other/setup';
+import BoothRenterSetup from './pages/profile/renter/setup';
+import SupplierSetup from './pages/profile/supplier/setup';
+
 const routes = [
   {
     path: '/',
@@ -141,6 +150,35 @@ const routes = [
   {
     path: '/sign-up',
     element: <SignUp />,
+  },
+  // Profile Setup Routes
+  {
+    path: '/profile/artist/setup',
+    element: <ArtistSetup />,
+  },
+  {
+    path: '/profile/salon/setup',
+    element: <SalonOwnerSetup />,
+  },
+  {
+    path: '/profile/freelancer/setup',
+    element: <FreelancerSetup />,
+  },
+  {
+    path: '/profile/customer/setup',
+    element: <CustomerSetup />,
+  },
+  {
+    path: '/profile/other/setup',
+    element: <OtherRoleSetup />,
+  },
+  {
+    path: '/profile/renter/setup',
+    element: <BoothRenterSetup />,
+  },
+  {
+    path: '/profile/supplier/setup',
+    element: <SupplierSetup />,
   },
   // Add the new public artist profile routes
   {

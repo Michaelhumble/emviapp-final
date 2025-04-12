@@ -25,7 +25,7 @@ const ProfileRedirect = () => {
       switch (userRole) {
         case 'artist':
         case 'nail technician/artist':
-          navigate('/profile/edit');
+          navigate('/profile/artist/setup');
           break;
         case 'salon':
         case 'owner':
@@ -33,6 +33,15 @@ const ProfileRedirect = () => {
           break;
         case 'freelancer':
           navigate('/profile/freelancer/setup');
+          break;
+        case 'renter':
+          navigate('/profile/renter/setup');
+          break;
+        case 'supplier':
+          navigate('/profile/supplier/setup');
+          break;
+        case 'customer':
+          navigate('/profile/customer/setup');
           break;
         case 'other':
           navigate('/profile/other/setup');

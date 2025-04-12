@@ -89,12 +89,14 @@ export interface ArtistProfileState {
   is_available?: boolean;
   // Add properties used in components
   portfolio_urls?: string[];
-  preferred_language?: string; // Added property
-  accepts_bookings?: boolean; // Added property
-  preferences?: string[]; // Added property
+  preferred_language?: string;
+  accepts_bookings?: boolean;
+  preferences?: string[];
   credits?: number;
   affiliate_code?: string;
   referral_count?: number;
+  profile_views?: number; // Added missing property
+  years_of_experience?: number; // Alternative naming
 }
 
 // Updating DaySchedule interface to include all required properties
