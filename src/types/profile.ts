@@ -13,11 +13,14 @@ export interface OpeningTime {
 }
 
 export interface UserProfile {
+  // Required properties (made optional to maintain compatibility)
   id: string;
-  userId: string;
-  firstName: string;
-  lastName: string;
+  userId?: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
+  
+  // Optional properties
   phone?: string;
   bio?: string;
   title?: string;
@@ -29,7 +32,7 @@ export interface UserProfile {
   salonName?: string;
   boothRental?: boolean;
   specialties?: string[];
-  services?: string[];
+  services?: string[] | any[];
   gallery?: string[];
   resume?: string;
   certifications?: string[];
@@ -58,4 +61,6 @@ export interface UserProfile {
   completed_profile_tasks?: string[];
   preferences?: string[];
   preferred_language?: string;
+  affiliate_code?: string;
+  google_review_link?: string;
 }

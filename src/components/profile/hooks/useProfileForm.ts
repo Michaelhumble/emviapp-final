@@ -37,7 +37,7 @@ export const useProfileForm = ({ onProfileUpdate }: UseProfileFormProps = {}) =>
         full_name: userProfile.full_name || '',
         bio: userProfile.bio || '',
         specialty: userProfile.specialty || '',
-        location: userProfile.location || '',
+        location: typeof userProfile.location === 'string' ? userProfile.location : userProfile.location?.address || '',
         instagram: userProfile.instagram || '',
         website: userProfile.website || '',
       });
@@ -97,7 +97,6 @@ export const useProfileForm = ({ onProfileUpdate }: UseProfileFormProps = {}) =>
           instagram: formData.instagram,
           website: formData.website,
           affiliate_code: referralCode,
-          preferred_language: userProfile.preferred_language as "en" | "vi" | "es" | undefined
         };
         
         onProfileUpdate(updatedProfile);

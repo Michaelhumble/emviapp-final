@@ -1,7 +1,7 @@
 
-import React from "react";
-import { Helmet } from "react-helmet";
-import { UserProfile } from "@/types/profile";
+import React from 'react';
+import { Helmet } from 'react-helmet';
+import { UserProfile } from '@/types/profile';
 
 interface ArtistProfileSEOProps {
   profile: UserProfile;
@@ -9,18 +9,26 @@ interface ArtistProfileSEOProps {
 }
 
 const ArtistProfileSEO: React.FC<ArtistProfileSEOProps> = ({ profile, portfolioImages }) => {
-  const title = `${profile.full_name || 'Artist'} - ${profile.specialty || 'Beauty Professional'} | EmviApp`;
-  const description = profile.bio ? 
-    `${profile.bio.substring(0, 160)}${profile.bio.length > 160 ? '...' : ''}` : 
-    `View ${profile.full_name || 'this artist'}'s professional portfolio and services on EmviApp. Book appointments directly.`;
-
-  // Get the first portfolio image for og:image if available
-  const imageUrl = portfolioImages && portfolioImages.length > 0 ? 
-    portfolioImages[0] : 
-    profile.avatar_url || '';
-
+  // Format the title
+  const title = `${profile.full_name || 'Artist'} | ${profile.specialty || 'Beauty Professional'} | EmviApp`;
+  
+  // Create a description from the bio or default text
+  const description = profile.bio 
+    ? `${profile.full_name}'s professional beauty portfolio. View services, gallery, and book appointments online.`
+    : `Professional beauty services by ${profile.full_name || 'a talented artist'}. Browse gallery and book appointments on EmviApp.`;
+  
+  // Get primary image for social sharing
+  const primaryImage = profile.avatar_url || 
+    (portfolioImages.length > 0 ? portfolioImages[0] : '');
+  
+  // Get location for rich results
+  const locationString = typeof profile.location === 'string' 
+    ? profile.location 
+    : profile.location?.address || '';
+  
   return (
     <Helmet>
+      {/* Basic Meta Tags */}
       <title>{title}</title>
       <meta name="description" content={description} />
       
@@ -28,20 +36,39 @@ const ArtistProfileSEO: React.FC<ArtistProfileSEOProps> = ({ profile, portfolioI
       <meta property="og:type" content="profile" />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
-      {imageUrl && <meta property="og:image" content={imageUrl} />}
+      {primaryImage && <meta property="og:image" content={primaryImage} />}
       
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
-      {imageUrl && <meta name="twitter:image" content={imageUrl} />}
+      {primaryImage && <meta name="twitter:image" content={primaryImage} />}
       
-      {/* Additional profile metadata */}
-      {profile.location && <meta name="geo.placename" content={profile.location} />}
-      {profile.specialty && <meta name="profile:profession" content={profile.specialty} />}
+      {/* Professional information */}
+      {locationString && <meta name="geo.placename" content={locationString} />}
+      {profile.specialty && (
+        <meta name="keywords" content={`${profile.specialty}, beauty professional, nail artist, ${profile.specialty.toLowerCase()} services`} />
+      )}
       
-      {/* Canonical URL */}
-      <link rel="canonical" href={`${window.location.origin}/a/${profile.instagram || profile.id}`} />
+      {/* Structured data for rich results */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Person",
+          "name": profile.full_name,
+          "description": profile.bio,
+          "image": primaryImage,
+          "url": window.location.href,
+          "jobTitle": profile.specialty,
+          "worksFor": profile.salon_name || profile.company_name,
+          ...(locationString ? {
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": locationString
+            }
+          } : {})
+        })}
+      </script>
     </Helmet>
   );
 };

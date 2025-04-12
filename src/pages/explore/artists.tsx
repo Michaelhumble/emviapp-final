@@ -47,7 +47,7 @@ const ArtistDirectory = () => {
         throw new Error(error.message);
       }
       
-      return data as UserProfile[];
+      return data as unknown as UserProfile[];
     }
   });
   
@@ -57,7 +57,9 @@ const ArtistDirectory = () => {
     const fullName = artist.full_name?.toLowerCase() || "";
     const bio = artist.bio?.toLowerCase() || "";
     const artistSpecialty = artist.specialty?.toLowerCase() || "";
-    const artistLocation = artist.location?.toLowerCase() || "";
+    const artistLocation = typeof artist.location === 'string' 
+      ? artist.location.toLowerCase() 
+      : artist.location?.address?.toLowerCase() || "";
     const query = searchQuery.toLowerCase();
     
     return (

@@ -41,7 +41,9 @@ const ArtistCard = ({ artist, getArtistRating }: ArtistCardProps) => {
           <span className="text-xs font-medium ml-0.5">{getArtistRating(artist.id)}</span>
         </div>
         <span className="text-[0.65rem] text-muted-foreground">
-          {artist.location?.split(',')[0] || 'Local'}
+          {typeof artist.location === 'string' 
+            ? artist.location?.split(',')[0] 
+            : artist.location?.address?.split(',')[0] || 'Local'}
         </span>
       </div>
     </div>
