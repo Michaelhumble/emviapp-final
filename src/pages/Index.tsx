@@ -15,7 +15,7 @@ import { useRoleSelection } from "@/hooks/useRoleSelection";
 import AIPowerhouse from "@/components/home/AIPowerhouse";
 import AIAgents from "@/components/home/AIAgents";
 import AITeam from "@/components/home/AITeam";
-import PricingSection from "@/components/home/PricingSection";
+import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 import FreelancersHighlight from "@/components/home/FreelancersHighlight";
 
 const Index = () => {
@@ -42,7 +42,7 @@ const Index = () => {
       <AITeam />
       <AIAgents />
       <FreelancersHighlight />
-      <PricingSection />
+      <TrustFirstPanel />
       <AIPowerhouse />
       <FeaturedSalons />
       <JobsHighlight />
