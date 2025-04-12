@@ -20,6 +20,17 @@ export const getLanguagePreference = (): 'en' | 'vi' => {
     : 'en';
 };
 
+// Check if language preference has been set
+export const hasLanguagePreference = (): boolean => {
+  return localStorage.getItem('emvi_language_preference') !== null;
+};
+
+// Set the preferred language (alias for setLanguagePreference for consistency)
+export const setPreferredLanguage = setLanguagePreference;
+
+// Get the preferred language (alias for getLanguagePreference for consistency)
+export const getPreferredLanguage = getLanguagePreference;
+
 // Hook into language changes
 export const addLanguageChangeListener = (
   callback: (language: 'en' | 'vi') => void

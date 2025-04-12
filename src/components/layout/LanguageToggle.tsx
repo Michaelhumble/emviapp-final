@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Languages } from 'lucide-react';
-import { setLanguagePreference, getLanguagePreference } from '@/utils/languagePreference';
+import { setLanguagePreference, getLanguagePreference, addLanguageChangeListener } from '@/utils/languagePreference';
 
 interface LanguageToggleProps {
   className?: string;
@@ -25,22 +25,6 @@ const LanguageToggle: React.FC<LanguageToggleProps> = ({ className }) => {
       setLanguage(value);
       setLanguagePreference(value as 'en' | 'vi');
     }
-  };
-
-  const addLanguageChangeListener = (
-    callback: (language: 'en' | 'vi') => void
-  ) => {
-    const handleLanguageChange = (event: CustomEvent) => {
-      if (event.detail && event.detail.language) {
-        callback(event.detail.language);
-      }
-    };
-    
-    window.addEventListener('languageChanged', handleLanguageChange as EventListener);
-    
-    return () => {
-      window.removeEventListener('languageChanged', handleLanguageChange as EventListener);
-    };
   };
 
   return (

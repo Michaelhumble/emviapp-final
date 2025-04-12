@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { getPreferredLanguage, hasLanguagePreference, setPreferredLanguage } from "@/utils/languagePreference";
+import { getLanguagePreference, hasLanguagePreference, setLanguagePreference } from "@/utils/languagePreference";
 
 // Key for storing the dialog visibility state
 const LANGUAGE_PREFERENCE_SHOWN_KEY = 'emviapp_language_preference_shown';
@@ -42,7 +42,7 @@ const LanguagePreference = () => {
     setLoading(true);
     
     // Save to localStorage immediately for a responsive experience
-    setPreferredLanguage(language);
+    setLanguagePreference(language as 'en' | 'vi');
     
     try {
       const { error } = await supabase
