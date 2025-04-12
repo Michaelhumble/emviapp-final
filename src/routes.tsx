@@ -27,6 +27,7 @@ import Settings from './pages/Settings';
 import SalonDetail from './pages/salons/SalonDetail';
 import ProfileRedirect from './pages/profile/ProfileRedirect';
 import Profile from './pages/Profile';
+import ArtistPublicPage from './pages/a/ArtistPublicPage';
 
 const routes = [
   {
@@ -107,11 +108,11 @@ const routes = [
   },
   {
     path: '/profile',
-    element: <Profile />, // Use the Profile component for /profile route
+    element: <Profile />,
   },
   {
     path: '/profile/view',
-    element: <UserProfilePage />, // Move UserProfilePage to a different route
+    element: <UserProfilePage />,
   },
   {
     path: '/profile/redirect',
@@ -140,6 +141,15 @@ const routes = [
   {
     path: '/sign-up',
     element: <SignUp />,
+  },
+  // Add the new public artist profile routes
+  {
+    path: '/a/:username',
+    element: <ArtistPublicPage />,
+  },
+  {
+    path: '/artist/:username',
+    element: <ArtistPublicPage />,
   },
   {
     path: '*',

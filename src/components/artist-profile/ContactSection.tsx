@@ -1,119 +1,115 @@
 
 import React from "react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Mail, Phone, Instagram, Globe } from "lucide-react";
-import ProAccessGate from "@/components/pro-access/ProAccessGate";
 import { UserProfile } from "@/types/profile";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Calendar, Mail, Phone, MapPin, Instagram, Globe } from "lucide-react";
 
 interface ContactSectionProps {
   profile: UserProfile;
-  isSalonOwner: boolean;
+  onBookingRequest: () => void;
 }
 
-const ContactSection: React.FC<ContactSectionProps> = ({ profile, isSalonOwner }) => {
+const ContactSection: React.FC<ContactSectionProps> = ({ profile, onBookingRequest }) => {
+  const handleEmailClick = () => {
+    if (profile.email) {
+      window.location.href = `mailto:${profile.email}`;
+    }
+  };
+
+  const handlePhoneClick = () => {
+    if (profile.phone) {
+      window.location.href = `tel:${profile.phone}`;
+    }
+  };
+
+  const handleInstagramClick = () => {
+    if (profile.instagram) {
+      window.open(`https://instagram.com/${profile.instagram.replace('@', '')}`, '_blank');
+    }
+  };
+
+  const handleWebsiteClick = () => {
+    if (profile.website) {
+      const url = profile.website.startsWith('http') ? profile.website : `https://${profile.website}`;
+      window.open(url, '_blank');
+    }
+  };
+
   return (
-    <Card className="mb-8">
-      <CardHeader>
-        <h2 className="text-xl font-serif font-semibold">Get In Touch</h2>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <h3 className="font-medium">Contact Information</h3>
+    <div className="mb-12">
+      <h2 className="text-2xl font-serif font-semibold mb-4">Contact</h2>
+      
+      <Card className="overflow-hidden">
+        <CardContent className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {profile.accepts_bookings && (
+              <Button 
+                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+                onClick={onBookingRequest}
+              >
+                <Calendar className="mr-2 h-4 w-4" />
+                Book Appointment
+              </Button>
+            )}
             
             {profile.email && (
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                {isSalonOwner ? (
-                  <ProAccessGate tooltipText="Email is available to Emvi Pro salon owners">
-                    <span>{profile.email}</span>
-                  </ProAccessGate>
-                ) : (
-                  <span>{profile.email}</span>
-                )}
-              </div>
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                onClick={handleEmailClick}
+              >
+                <Mail className="mr-2 h-4 w-4" />
+                Email
+              </Button>
             )}
             
             {profile.phone && (
-              <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-muted-foreground" />
-                {isSalonOwner ? (
-                  <ProAccessGate tooltipText="Phone number is available to Emvi Pro salon owners">
-                    <span>{profile.phone}</span>
-                  </ProAccessGate>
-                ) : (
-                  <span>{profile.phone}</span>
-                )}
-              </div>
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                onClick={handlePhoneClick}
+              >
+                <Phone className="mr-2 h-4 w-4" />
+                Call
+              </Button>
             )}
             
             {profile.instagram && (
-              <div className="flex items-center gap-2">
-                <Instagram className="h-4 w-4 text-muted-foreground" />
-                {isSalonOwner ? (
-                  <ProAccessGate tooltipText="Instagram profile is available to Emvi Pro salon owners">
-                    <a href={`https://instagram.com/${profile.instagram.replace('@', '')}`} 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       className="text-blue-600 hover:underline">
-                      @{profile.instagram.replace('@', '')}
-                    </a>
-                  </ProAccessGate>
-                ) : (
-                  <a href={`https://instagram.com/${profile.instagram.replace('@', '')}`} 
-                     target="_blank" 
-                     rel="noopener noreferrer"
-                     className="text-blue-600 hover:underline">
-                    @{profile.instagram.replace('@', '')}
-                  </a>
-                )}
-              </div>
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                onClick={handleInstagramClick}
+              >
+                <Instagram className="mr-2 h-4 w-4" />
+                Instagram
+              </Button>
             )}
             
             {profile.website && (
-              <div className="flex items-center gap-2">
-                <Globe className="h-4 w-4 text-muted-foreground" />
-                {isSalonOwner ? (
-                  <ProAccessGate tooltipText="Website is available to Emvi Pro salon owners">
-                    <a href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`} 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       className="text-blue-600 hover:underline truncate">
-                      {profile.website}
-                    </a>
-                  </ProAccessGate>
-                ) : (
-                  <a href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`} 
-                     target="_blank" 
-                     rel="noopener noreferrer"
-                     className="text-blue-600 hover:underline truncate">
-                    {profile.website}
-                  </a>
-                )}
-              </div>
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                onClick={handleWebsiteClick}
+              >
+                <Globe className="mr-2 h-4 w-4" />
+                Website
+              </Button>
             )}
           </div>
           
-          <div className="flex flex-col justify-center items-center md:items-end space-y-3">
-            {isSalonOwner ? (
-              <ProAccessGate tooltipText="Direct messaging is available to Emvi Pro salon owners" blur={false}>
-                <Button variant="outline" className="w-full md:w-auto">
-                  Send Message
-                </Button>
-              </ProAccessGate>
-            ) : (
-              <Button variant="outline" className="w-full md:w-auto">
-                Send Message
-              </Button>
-            )}
-            <p className="text-xs text-muted-foreground text-center md:text-right">
-              Usually responds within 24 hours
-            </p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+          {profile.location && (
+            <div className="mt-6 flex items-start">
+              <MapPin className="h-5 w-5 text-muted-foreground mt-0.5 mr-2" />
+              <div>
+                <h3 className="font-medium">Location</h3>
+                <p className="text-muted-foreground">{profile.location}</p>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
