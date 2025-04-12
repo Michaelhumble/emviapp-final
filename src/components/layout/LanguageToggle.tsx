@@ -3,29 +3,44 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Languages } from 'lucide-react';
+import { setLanguagePreference, getLanguagePreference } from '@/utils/languagePreference';
 
 interface LanguageToggleProps {
   className?: string;
 }
 
 const LanguageToggle: React.FC<LanguageToggleProps> = ({ className }) => {
-  const [language, setLanguage] = useState<string>('en');
+  const [language, setLanguage] = useState<string>(getLanguagePreference());
 
   useEffect(() => {
-    // Get the stored language preference from localStorage if available
-    const storedLanguage = localStorage.getItem('emvi_language_preference');
-    if (storedLanguage) {
-      setLanguage(storedLanguage);
-    }
+    const removeListener = addLanguageChangeListener((newLanguage) => {
+      setLanguage(newLanguage);
+    });
+    
+    return removeListener;
   }, []);
 
   const handleLanguageChange = (value: string) => {
-    if (value) {
+    if (value && (value === 'en' || value === 'vi')) {
       setLanguage(value);
-      localStorage.setItem('emvi_language_preference', value);
-      // Dispatch a custom event that other components can listen for
-      window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: value } }));
+      setLanguagePreference(value as 'en' | 'vi');
     }
+  };
+
+  const addLanguageChangeListener = (
+    callback: (language: 'en' | 'vi') => void
+  ) => {
+    const handleLanguageChange = (event: CustomEvent) => {
+      if (event.detail && event.detail.language) {
+        callback(event.detail.language);
+      }
+    };
+    
+    window.addEventListener('languageChanged', handleLanguageChange as EventListener);
+    
+    return () => {
+      window.removeEventListener('languageChanged', handleLanguageChange as EventListener);
+    };
   };
 
   return (

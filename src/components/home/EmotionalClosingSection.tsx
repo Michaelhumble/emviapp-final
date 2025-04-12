@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -8,6 +8,27 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 const EmotionalClosingSection = () => {
   const [language, setLanguage] = useState<"en" | "vi">("en");
+
+  // Listen for language change event
+  useEffect(() => {
+    const handleLanguageChange = (event: CustomEvent) => {
+      if (event.detail && event.detail.language) {
+        setLanguage(event.detail.language);
+      }
+    };
+    
+    window.addEventListener('languageChanged', handleLanguageChange as EventListener);
+    
+    // Get initial language preference
+    const storedLanguage = localStorage.getItem('emvi_language_preference');
+    if (storedLanguage === 'vi' || storedLanguage === 'en') {
+      setLanguage(storedLanguage as "en" | "vi");
+    }
+    
+    return () => {
+      window.removeEventListener('languageChanged', handleLanguageChange as EventListener);
+    };
+  }, []);
 
   return (
     <section className="py-20 bg-gradient-to-b from-purple-50 to-white">
@@ -20,9 +41,15 @@ const EmotionalClosingSection = () => {
           className="max-w-3xl mx-auto text-center"
         >
           <Tabs 
-            defaultValue="en" 
+            defaultValue={language} 
             value={language} 
-            onValueChange={(value) => setLanguage(value as "en" | "vi")}
+            onValueChange={(value) => {
+              setLanguage(value as "en" | "vi");
+              localStorage.setItem('emvi_language_preference', value);
+              window.dispatchEvent(new CustomEvent('languageChanged', { 
+                detail: { language: value } 
+              }));
+            }}
             className="w-full"
           >
             <TabsList className="mx-auto mb-6">

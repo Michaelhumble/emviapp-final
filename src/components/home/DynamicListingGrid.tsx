@@ -1,11 +1,10 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 // Define the listing item type
 interface ListingItem {
@@ -161,12 +160,134 @@ const listings: ListingItem[] = [
     imageSrc: "https://images.unsplash.com/photo-1589710751893-f9a6770ad71b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
     category: "booths", 
     url: "/booths/3" 
+  },
+  
+  // Additional listings
+  { 
+    id: "b1", 
+    name: "J. Lee - Brow Expert", 
+    location: "San Francisco, CA", 
+    status: "Available for Bookings", 
+    imageSrc: "https://images.unsplash.com/photo-1533562557082-dab3099d33a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "artists", 
+    url: "/artists/5" 
+  },
+  { 
+    id: "b2", 
+    name: "Diamond Salon", 
+    location: "Las Vegas, NV", 
+    status: "Owner Retiring", 
+    imageSrc: "https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "sales", 
+    url: "/salon-sales/4" 
+  },
+  { 
+    id: "b3", 
+    name: "Amy Nguyen - Classic Gel", 
+    location: "Boston, MA", 
+    status: "Expert Nail Artist", 
+    imageSrc: "https://images.unsplash.com/photo-1519751138087-5bf79df62d5b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "artists", 
+    url: "/artists/6" 
+  },
+  { 
+    id: "b4", 
+    name: "2 Spots", 
+    location: "Dallas, TX", 
+    status: "Available Now", 
+    imageSrc: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "booths", 
+    url: "/booths/4" 
+  },
+  { 
+    id: "b5", 
+    name: "Modern Nails", 
+    location: "Atlanta, GA", 
+    status: "New Location Opening", 
+    imageSrc: "https://images.unsplash.com/photo-1604902396830-ded84a7452be?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "salons", 
+    url: "/salons/7" 
+  },
+  { 
+    id: "b6", 
+    name: "Jenny Vo - Pedicure Artist", 
+    location: "Portland, OR", 
+    status: "25 Years Experience", 
+    imageSrc: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "artists", 
+    url: "/artists/7" 
+  },
+  { 
+    id: "b7", 
+    name: "Chair Open", 
+    location: "Houston, TX", 
+    status: "Prime Location", 
+    imageSrc: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "booths", 
+    url: "/booths/5" 
+  },
+  { 
+    id: "b8", 
+    name: "Hair by Sara", 
+    location: "New York, NY", 
+    status: "Celebrity Stylist", 
+    imageSrc: "https://images.unsplash.com/photo-1562322140-8baeececf3df?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "hair", 
+    url: "/artists/8" 
+  },
+  { 
+    id: "b9", 
+    name: "Brow & Wax Room", 
+    location: "Miami, FL", 
+    status: "Chair Available", 
+    imageSrc: "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "booths", 
+    url: "/booths/6" 
+  },
+  { 
+    id: "b10", 
+    name: "The Beauty Garden", 
+    location: "San Diego, CA", 
+    status: "For Sale", 
+    imageSrc: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "sales", 
+    url: "/salon-sales/5" 
+  },
+  { 
+    id: "b11", 
+    name: "Angela Styles", 
+    location: "Austin, TX", 
+    status: "Bridal Hair Specialist", 
+    imageSrc: "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    category: "hair", 
+    url: "/artists/9" 
   }
 ];
 
 const DynamicListingGrid = () => {
   const [language, setLanguage] = useState<"en" | "vi">("en");
   const [activeCategory, setActiveCategory] = useState<string>("all");
+  
+  // Listen for language change event
+  useEffect(() => {
+    const handleLanguageChange = (event: CustomEvent) => {
+      if (event.detail && event.detail.language) {
+        setLanguage(event.detail.language);
+      }
+    };
+    
+    window.addEventListener('languageChanged', handleLanguageChange as EventListener);
+    
+    // Get initial language preference
+    const storedLanguage = localStorage.getItem('emvi_language_preference');
+    if (storedLanguage === 'vi' || storedLanguage === 'en') {
+      setLanguage(storedLanguage as "en" | "vi");
+    }
+    
+    return () => {
+      window.removeEventListener('languageChanged', handleLanguageChange as EventListener);
+    };
+  }, []);
   
   const filteredListings = activeCategory === "all" 
     ? listings 
@@ -199,29 +320,9 @@ const DynamicListingGrid = () => {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <Tabs 
-            defaultValue="en" 
-            value={language} 
-            onValueChange={(value) => setLanguage(value as "en" | "vi")}
-            className="w-full"
-          >
-            <TabsList className="mx-auto mb-6">
-              <TabsTrigger value="en">English</TabsTrigger>
-              <TabsTrigger value="vi">Tiếng Việt</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="en">
-              <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6">
-                What Are You Looking For Today?
-              </h2>
-            </TabsContent>
-            
-            <TabsContent value="vi">
-              <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6">
-                Bạn đang tìm gì hôm nay?
-              </h2>
-            </TabsContent>
-          </Tabs>
+          <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6">
+            {language === "en" ? "What Are You Looking For Today?" : "Bạn đang tìm gì hôm nay?"}
+          </h2>
           
           <div className="flex flex-wrap justify-center gap-2 mb-10">
             <Button
@@ -277,7 +378,7 @@ const DynamicListingGrid = () => {
         </motion.div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredListings.map((listing, index) => (
+          {filteredListings.slice(0, 12).map((listing, index) => (
             <motion.div
               key={listing.id}
               initial={{ opacity: 0, y: 20 }}

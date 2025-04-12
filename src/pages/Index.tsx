@@ -18,10 +18,14 @@ import AITeam from "@/components/home/AITeam";
 import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 import FreelancersHighlight from "@/components/home/FreelancersHighlight";
 
-// New components
+// Enhanced homepage components
 import WeTrustEmotionalSection from "@/components/home/WeTrustEmotionalSection";
 import DynamicListingGrid from "@/components/home/DynamicListingGrid";
 import EmotionalClosingSection from "@/components/home/EmotionalClosingSection";
+import FounderMessage from "@/components/home/FounderMessage";
+import MissingPieceSection from "@/components/home/MissingPieceSection";
+import RenamedAIFeatures from "@/components/home/RenamedAIFeatures";
+import FinalFounderCTA from "@/components/home/FinalFounderCTA";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -43,14 +47,12 @@ const Index = () => {
   return (
     <Layout>
       <Hero />
+      <FounderMessage />
       <ArtistTestimonials />
-      
-      {/* New component: Emotional Trust Section */}
       <WeTrustEmotionalSection />
-      
-      {/* New component: Dynamic Listing Grid */}
+      <MissingPieceSection />
       <DynamicListingGrid />
-      
+      <RenamedAIFeatures />
       <AITeam />
       <AIAgents />
       <FreelancersHighlight />
@@ -60,10 +62,8 @@ const Index = () => {
       <JobsHighlight />
       <ArtistCallout />
       <Testimonials />
-      
-      {/* New component: Emotional Closing Section */}
       <EmotionalClosingSection />
-      
+      <FinalFounderCTA />
       <CallToAction />
       
       {user && userId && (

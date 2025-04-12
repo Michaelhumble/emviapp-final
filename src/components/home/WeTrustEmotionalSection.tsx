@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -7,8 +7,23 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 const WeTrustEmotionalSection = () => {
   const [language, setLanguage] = useState<"en" | "vi">("en");
 
+  // Get stored language preference from localStorage
+  useEffect(() => {
+    const storedLanguage = localStorage.getItem('emvi_language_preference');
+    if (storedLanguage === 'vi' || storedLanguage === 'en') {
+      setLanguage(storedLanguage);
+    }
+  }, []);
+
+  // Save language preference to localStorage when changed
+  useEffect(() => {
+    localStorage.setItem('emvi_language_preference', language);
+    // Dispatch a custom event that other components can listen for
+    window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language } }));
+  }, [language]);
+
   return (
-    <section className="py-16 md:py-24 bg-gradient-to-b from-white to-purple-50">
+    <section className="py-20 md:py-28 bg-gradient-to-b from-white to-purple-50">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <motion.div
@@ -18,23 +33,23 @@ const WeTrustEmotionalSection = () => {
             viewport={{ once: true }}
             className="text-center mb-10"
           >
-            <h2 className="text-3xl md:text-4xl font-serif font-bold mb-2 tracking-tight">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold mb-8 tracking-tight">
               We've All Tried the Tools. But This Is the System We Were Missing.
             </h2>
             
-            <div className="mt-6 mb-8">
+            <div className="mt-8 mb-10">
               <Tabs 
-                defaultValue="en" 
+                defaultValue={language} 
                 value={language} 
                 onValueChange={(value) => setLanguage(value as "en" | "vi")}
                 className="w-full"
               >
-                <TabsList className="mx-auto mb-6">
+                <TabsList className="mx-auto mb-8">
                   <TabsTrigger value="en">English</TabsTrigger>
                   <TabsTrigger value="vi">Tiếng Việt</TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="en" className="text-left space-y-6">
+                <TabsContent value="en" className="text-left space-y-6 max-w-3xl mx-auto">
                   <p className="text-lg text-gray-700 leading-relaxed">
                     Scheduling helped. POS systems worked. Booking tools got us through.<br />
                     We're grateful for every startup that tried to make our lives easier.<br />
@@ -66,7 +81,7 @@ const WeTrustEmotionalSection = () => {
                   </p>
                 </TabsContent>
                 
-                <TabsContent value="vi" className="text-left space-y-6">
+                <TabsContent value="vi" className="text-left space-y-6 max-w-3xl mx-auto">
                   <div className="text-lg leading-relaxed">
                     <p className="text-xl font-medium mb-4">
                       "Chúng ta từng dùng rất nhiều hệ thống. Nhưng EmviApp là phần còn thiếu."

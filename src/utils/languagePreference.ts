@@ -1,34 +1,38 @@
 
-// Local storage key for language preference
-const LANGUAGE_PREFERENCE_KEY = 'emviapp_language_preference';
-
 /**
- * Get the user's preferred language from localStorage
- * @returns The preferred language code ('en', 'vi') or null if not set
+ * Utility functions for managing language preferences across components
  */
-export const getPreferredLanguage = (): string | null => {
-  return localStorage.getItem(LANGUAGE_PREFERENCE_KEY);
+
+// Set the language preference
+export const setLanguagePreference = (language: 'en' | 'vi') => {
+  localStorage.setItem('emvi_language_preference', language);
+  // Dispatch a custom event that other components can listen for
+  window.dispatchEvent(new CustomEvent('languageChanged', { 
+    detail: { language } 
+  }));
 };
 
-/**
- * Check if the user has set a language preference
- * @returns True if a language preference is set, false otherwise
- */
-export const hasLanguagePreference = (): boolean => {
-  return !!getPreferredLanguage();
+// Get the current language preference
+export const getLanguagePreference = (): 'en' | 'vi' => {
+  const storedLanguage = localStorage.getItem('emvi_language_preference');
+  return (storedLanguage === 'vi' || storedLanguage === 'en') 
+    ? storedLanguage as 'en' | 'vi' 
+    : 'en';
 };
 
-/**
- * Set the user's preferred language in localStorage
- * @param language Language code to set ('en', 'vi')
- */
-export const setPreferredLanguage = (language: string): void => {
-  localStorage.setItem(LANGUAGE_PREFERENCE_KEY, language);
-};
-
-/**
- * Clear the user's language preference from localStorage
- */
-export const clearLanguagePreference = (): void => {
-  localStorage.removeItem(LANGUAGE_PREFERENCE_KEY);
+// Hook into language changes
+export const addLanguageChangeListener = (
+  callback: (language: 'en' | 'vi') => void
+) => {
+  const handleLanguageChange = (event: CustomEvent) => {
+    if (event.detail && event.detail.language) {
+      callback(event.detail.language);
+    }
+  };
+  
+  window.addEventListener('languageChanged', handleLanguageChange as EventListener);
+  
+  return () => {
+    window.removeEventListener('languageChanged', handleLanguageChange as EventListener);
+  };
 };
