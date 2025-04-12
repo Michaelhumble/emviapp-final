@@ -32,6 +32,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Animation variants
 const containerVariants = {
@@ -256,6 +257,7 @@ const PricingDialog: React.FC = () => {
 
 const TrustFirstPanel: React.FC = () => {
   const [showStickyButton, setShowStickyButton] = useState(false);
+  const { isVietnamese } = useTranslation();
   
   React.useEffect(() => {
     const handleScroll = () => {
@@ -288,7 +290,8 @@ const TrustFirstPanel: React.FC = () => {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 font-serif tracking-tight">
-              Here's What You Can Do With EmviApp
+              What You Can Do With EmviApp
+              {isVietnamese && <span className="block text-xl md:text-2xl text-gray-600 mt-2">EmviApp giúp bạn làm được gì?</span>}
             </h2>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
               The all-in-one platform for salons, artists, and beauty professionals.
@@ -305,47 +308,47 @@ const TrustFirstPanel: React.FC = () => {
             <FeatureCard
               icon={<Users className="h-6 w-6 text-primary" />}
               title="Hire Amazing Artists"
-              description="Find qualified, pre-screened nail techs and beauty professionals for your salon."
+              description={isVietnamese ? "Tìm thợ giỏi, dễ thương và chuyên nghiệp" : "Find qualified, pre-screened nail techs and beauty professionals for your salon."}
             />
             <FeatureCard
               icon={<Store className="h-6 w-6 text-primary" />}
               title="Find Your Next Salon"
-              description="Browse salon listings and connect directly with owners looking to sell."
+              description={isVietnamese ? "Tìm tiệm phù hợp nhanh chóng" : "Browse salon listings and connect directly with owners looking to sell."}
             />
             <FeatureCard
               icon={<ImageIcon className="h-6 w-6 text-primary" />}
               title="Post Your Portfolio"
-              description="Showcase your best work and attract clients who love your style."
+              description={isVietnamese ? "Đăng hình ảnh tác phẩm của bạn" : "Showcase your best work and attract clients who love your style."}
             />
             <FeatureCard
               icon={<Home className="h-6 w-6 text-primary" />}
               title="Rent or List Booths"
-              description="Find the perfect spot to grow your business or fill your empty chairs."
+              description={isVietnamese ? "Thuê ghế hoặc đăng tìm thợ dễ dàng" : "Find the perfect spot to grow your business or fill your empty chairs."}
             />
             <FeatureCard
               icon={<Calendar className="h-6 w-6 text-primary" />}
               title="Stay Booked & Grow Income"
-              description="Manage appointments and increase your revenue with smart tools."
+              description={isVietnamese ? "Tăng thu nhập, giữ khách đều đặn" : "Manage appointments and increase your revenue with smart tools."}
             />
             <FeatureCard
               icon={<TrendingUp className="h-6 w-6 text-primary" />}
               title="Track Earnings & Analytics"
-              description="See your growth with easy-to-understand metrics and insights."
+              description={isVietnamese ? "Theo dõi tiền tip, doanh thu, và hiệu suất" : "See your growth with easy-to-understand metrics and insights."}
             />
             <FeatureCard
               icon={<Zap className="h-6 w-6 text-primary" />}
-              title="Go Viral With Your Art"
-              description="Get discovered and build your following with social boosting."
+              title="Get Discovered Online"
+              description={isVietnamese ? "Cho người ta thấy tài năng của bạn" : "Get discovered and build your following with social boosting."}
             />
             <FeatureCard
               icon={<Award className="h-6 w-6 text-primary" />}
-              title="Promote Your Brand"
-              description="Stand out with professional tools designed for the beauty industry."
+              title="Go Viral With Your Work"
+              description={isVietnamese ? "Dễ lan toả trên mạng xã hội" : "Stand out with professional tools designed for the beauty industry."}
             />
             <FeatureCard
               icon={<DollarSign className="h-6 w-6 text-primary" />}
               title="Get Paid Weekly"
-              description="Find opportunities with regular pay schedules that respect your value."
+              description={isVietnamese ? "Thanh toán thường xuyên không trễ hẹn" : "Find opportunities with regular pay schedules that respect your value."}
             />
           </motion.div>
         </div>
@@ -363,6 +366,7 @@ const TrustFirstPanel: React.FC = () => {
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4 font-serif tracking-tight">
               Why Artists & Salons Trust Us
+              {isVietnamese && <span className="block text-xl md:text-2xl text-gray-600 mt-2">Vì sao thợ & tiệm chọn EmviApp</span>}
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
               We're building a community that puts your needs first.
@@ -379,27 +383,27 @@ const TrustFirstPanel: React.FC = () => {
             <TrustStatCard
               icon={<Shield className="h-5 w-5 text-primary" />}
               stat="3,000+"
-              description="Verified Salons"
+              description={isVietnamese ? "Hơn 3,000 tiệm đã xác minh trên toàn nước Mỹ" : "Verified Salons"}
             />
             <TrustStatCard
               icon={<Users className="h-5 w-5 text-primary" />}
               stat="Thousands"
-              description="Active Artists"
+              description={isVietnamese ? "Hàng ngàn thợ nails đang sử dụng mỗi ngày" : "Active Artists"}
             />
             <TrustStatCard
               icon={<Heart className="h-5 w-5 text-primary" />}
               stat="100%"
-              description="Built by Artists, Not Corporations"
+              description={isVietnamese ? "Tạo bởi người trong nghề — không phải công ty lớn" : "Built by Artists, Not Corporations"}
             />
             <TrustStatCard
               icon={<Home className="h-5 w-5 text-primary" />}
               stat="4 States"
-              description="Trusted in GA, CA, TX & FL"
+              description={isVietnamese ? "Tin dùng ở các tiểu bang lớn như GA, CA, TX" : "Trusted in GA, CA, TX & FL"}
             />
             <TrustStatCard
               icon={<Lock className="h-5 w-5 text-primary" />}
               stat="Secure"
-              description="Payments & AI Matching"
+              description={isVietnamese ? "Thanh toán an toàn. Kết nối thông minh bằng AI" : "Payments & AI Matching"}
             />
           </motion.div>
         </div>
@@ -417,6 +421,7 @@ const TrustFirstPanel: React.FC = () => {
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4 font-serif tracking-tight">
               We Keep It Simple, Transparent, and Fair
+              {isVietnamese && <span className="block text-xl md:text-2xl text-gray-600 mt-2">Chúng tôi làm mọi thứ rõ ràng & công bằng</span>}
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
               No games, no surprises—just the tools you need to succeed.
@@ -432,27 +437,27 @@ const TrustFirstPanel: React.FC = () => {
           >
             <SimplePrincipleCard
               icon={<Sparkles className="h-5 w-5" />}
-              title="First post is always free"
+              title={isVietnamese ? "Đăng đầu tiên miễn phí cho mọi người" : "First post is always free"}
             />
             <SimplePrincipleCard
               icon={<Clock className="h-5 w-5" />}
-              title="No contracts, cancel anytime"
+              title={isVietnamese ? "Không hợp đồng ràng buộc. Huỷ bất kỳ lúc nào" : "No contracts, cancel anytime"}
             />
             <SimplePrincipleCard
               icon={<DollarSign className="h-5 w-5" />}
-              title="Flat prices, no hidden fees"
+              title={isVietnamese ? "Giá rõ ràng, không phí ẩn" : "Flat prices, no hidden fees"}
             />
             <SimplePrincipleCard
               icon={<Eye className="h-5 w-5" />}
-              title="Instant visibility & social boosting"
+              title={isVietnamese ? "Hiển thị ngay lập tức" : "Instant visibility & social boosting"}
             />
             <SimplePrincipleCard
               icon={<Lock className="h-5 w-5" />}
-              title="You stay in control"
+              title={isVietnamese ? "Bạn hoàn toàn kiểm soát mọi thứ" : "You stay in control"}
             />
             <SimplePrincipleCard
               icon={<CheckCircle className="h-5 w-5" />}
-              title="Expert support when you need it"
+              title={isVietnamese ? "Hỗ trợ nhiệt tình khi bạn cần" : "Expert support when you need it"}
             />
           </motion.div>
 
