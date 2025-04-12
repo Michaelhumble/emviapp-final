@@ -1,7 +1,9 @@
+
 export interface Location {
   lat: number | null;
   lng: number | null;
   address?: string | null;
+  split?: string;
 }
 
 export interface OpeningTime {
@@ -23,7 +25,7 @@ export interface UserProfile {
   tiktok?: string;
   youtube?: string;
   website?: string;
-  location?: Location;
+  location?: Location | string;
   salonName?: string;
   boothRental?: boolean;
   specialties?: string[];
@@ -35,4 +37,25 @@ export interface UserProfile {
   hourlyRate?: number;
   openingTimes?: OpeningTime[];
   profile_views?: number;
+  
+  // Additional properties from auth context UserProfile
+  full_name?: string;
+  user_id?: string;
+  avatar_url?: string;
+  role?: string;
+  created_at?: string;
+  updated_at?: string;
+  specialty?: string;
+  username?: string;
+  boosted_until?: string;
+  salon_name?: string;
+  company_name?: string;
+  contact_link?: string;
+  years_experience?: number;
+  badges?: any[];
+  accepts_bookings?: boolean;
+  booking_url?: string;
+  completed_profile_tasks?: string[];
+  preferences?: string[];
+  preferred_language?: string;
 }
