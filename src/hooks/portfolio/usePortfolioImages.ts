@@ -88,7 +88,9 @@ export function usePortfolioImages() {
       // 1. Upload file to Supabase Storage
       const fileName = `${user.id}/${Date.now()}-${file.name}`;
       
-      // Upload without onUploadProgress option which was causing the type error
+      // Use manual progress tracking since Supabase JS client type issues with onUploadProgress
+      setUploadProgress(25);
+      
       const { data: fileData, error: uploadError } = await supabase.storage
         .from('portfolio_images')
         .upload(fileName, file, {
@@ -98,7 +100,6 @@ export function usePortfolioImages() {
       
       if (uploadError) throw uploadError;
       
-      // Manually set progress to 50% after upload completes
       setUploadProgress(50);
       
       // 2. Get public URL for the uploaded file
@@ -106,7 +107,7 @@ export function usePortfolioImages() {
         .from('portfolio_images')
         .getPublicUrl(fileData.path);
       
-      setUploadProgress(75); // 75% progress
+      setUploadProgress(75);
       
       // 3. Insert record in portfolio_items table
       const { data: portfolioItem, error: insertError } = await supabase
