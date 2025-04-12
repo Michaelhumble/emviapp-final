@@ -75,9 +75,6 @@ export interface UserProfile {
   preferred_language?: string;
   affiliate_code?: string;
   google_review_link?: string;
-  
-  // Helper method to safely get location as string
-  getLocationString?: () => string;
 }
 
 // Helper function to safely get location as a string for display
