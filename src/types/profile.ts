@@ -74,6 +74,9 @@ export interface UserProfile {
   preferences?: string[];
   preferred_language?: string;
   affiliate_code?: string;
+  referral_code?: string;
+  referral_count?: number;
+  credits?: number;
   google_review_link?: string;
 }
 

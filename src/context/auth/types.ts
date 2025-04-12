@@ -43,6 +43,7 @@ export interface UserProfile {
   completed_profile_tasks?: string[];
   services?: any[];
   google_review_link?: string;
+  years_experience?: number;
 }
 
 export interface AuthContextType {
