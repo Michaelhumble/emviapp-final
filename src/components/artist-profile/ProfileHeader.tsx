@@ -1,6 +1,6 @@
 
 import React from "react";
-import { UserProfile } from "@/types/profile";
+import { UserProfile, getLocationString } from "@/types/profile";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Share2, Calendar, MapPin, Link, Star, Eye } from "lucide-react";
@@ -19,6 +19,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   handleBooking,
   viewCount 
 }) => {
+  // Get location string
+  const locationString = getLocationString(profile.location);
+
   return (
     <div className="mb-12">
       <div className="flex flex-col md:flex-row items-start gap-6">
@@ -56,17 +59,17 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
               </Badge>
             )}
             
-            {profile.location && (
+            {locationString && (
               <div className="flex items-center text-muted-foreground text-sm">
                 <MapPin className="h-3.5 w-3.5 mr-1" />
-                <span>{profile.location}</span>
+                <span>{locationString}</span>
               </div>
             )}
             
-            {profile.years_experience && (
+            {(profile.years_experience || profile.yearsOfExperience) && (
               <div className="flex items-center text-muted-foreground text-sm">
                 <Calendar className="h-3.5 w-3.5 mr-1" />
-                <span>{profile.years_experience} years experience</span>
+                <span>{profile.years_experience || profile.yearsOfExperience} years experience</span>
               </div>
             )}
             

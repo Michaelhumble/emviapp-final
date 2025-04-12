@@ -1,6 +1,6 @@
 
 import React from "react";
-import { UserProfile } from "@/types/profile";
+import { UserProfile, getLocationString } from "@/types/profile";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -78,6 +78,9 @@ const ArtistCard: React.FC<{ artist: UserProfile }> = ({ artist }) => {
     sendOffer
   } = useArtistInteractions(artist.id);
 
+  // Get location as a string for display
+  const locationString = getLocationString(artist.location);
+
   return (
     <Card className="h-full hover:shadow-md transition-shadow overflow-hidden">
       <CardContent className="p-0">
@@ -104,10 +107,10 @@ const ArtistCard: React.FC<{ artist: UserProfile }> = ({ artist }) => {
                 <p className="text-sm text-muted-foreground">{artist.specialty}</p>
               )}
               
-              {artist.location && (
+              {locationString && (
                 <div className="flex items-center justify-center md:justify-start text-sm text-muted-foreground">
                   <MapPin className="h-4 w-4 mr-1" />
-                  <span>{artist.location}</span>
+                  <span>{locationString}</span>
                 </div>
               )}
               

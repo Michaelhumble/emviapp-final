@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import { UserProfile } from '@/types/profile';
+import { UserProfile, getLocationString } from '@/types/profile';
 
 interface ArtistProfileSEOProps {
   profile: UserProfile;
@@ -22,9 +22,7 @@ const ArtistProfileSEO: React.FC<ArtistProfileSEOProps> = ({ profile, portfolioI
     (portfolioImages.length > 0 ? portfolioImages[0] : '');
   
   // Get location for rich results
-  const locationString = typeof profile.location === 'string' 
-    ? profile.location 
-    : profile.location?.address || '';
+  const locationString = getLocationString(profile.location);
   
   return (
     <Helmet>
@@ -60,7 +58,7 @@ const ArtistProfileSEO: React.FC<ArtistProfileSEOProps> = ({ profile, portfolioI
           "image": primaryImage,
           "url": window.location.href,
           "jobTitle": profile.specialty,
-          "worksFor": profile.salon_name || profile.company_name,
+          "worksFor": profile.salon_name || profile.salonName || profile.company_name,
           ...(locationString ? {
             "address": {
               "@type": "PostalAddress",

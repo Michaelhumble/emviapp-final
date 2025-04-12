@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -5,7 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Phone, Instagram, Link as LinkIcon, Contact2 } from "lucide-react";
 import { formatUserRole } from "@/utils/userUtils";
-import { UserProfile } from "@/types/profile";
+import { UserProfile, getLocationString } from "@/types/profile";
 import ProfilePublicPreview from "./ProfilePublicPreview";
 
 interface ProfileSidebarProps {
@@ -19,13 +20,15 @@ const ProfileSidebar: React.FC<ProfileSidebarProps> = ({ userProfile }) => {
     username,
     role,
     created_at,
-    location,
     phone,
     instagram,
     website,
     bio,
     contact_link
   } = userProfile;
+  
+  // Get location as string
+  const locationString = getLocationString(userProfile.location);
   
   const formatDate = (timestamp: string | number) => {
     if (!timestamp) return 'Not available';
@@ -61,10 +64,10 @@ const ProfileSidebar: React.FC<ProfileSidebarProps> = ({ userProfile }) => {
               </div>
             )}
             
-            {location && (
+            {locationString && (
               <div className="flex items-center text-sm text-gray-600">
                 <MapPin className="h-4 w-4 mr-2" />
-                <span>{location}</span>
+                <span>{locationString}</span>
               </div>
             )}
             

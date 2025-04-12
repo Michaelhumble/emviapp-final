@@ -1,6 +1,6 @@
 
 import React from "react";
-import { UserProfile } from "@/types/profile";
+import { UserProfile, getLocationString } from "@/types/profile";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, Mail, Phone, MapPin, Instagram, Globe } from "lucide-react";
@@ -35,6 +35,9 @@ const ContactSection: React.FC<ContactSectionProps> = ({ profile, onBookingReque
       window.open(url, '_blank');
     }
   };
+
+  // Get location string
+  const locationString = getLocationString(profile.location);
 
   return (
     <div className="mb-12">
@@ -98,12 +101,12 @@ const ContactSection: React.FC<ContactSectionProps> = ({ profile, onBookingReque
             )}
           </div>
           
-          {profile.location && (
+          {locationString && (
             <div className="mt-6 flex items-start">
               <MapPin className="h-5 w-5 text-muted-foreground mt-0.5 mr-2" />
               <div>
                 <h3 className="font-medium">Location</h3>
-                <p className="text-muted-foreground">{profile.location}</p>
+                <p className="text-muted-foreground">{locationString}</p>
               </div>
             </div>
           )}

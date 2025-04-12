@@ -68,8 +68,37 @@ export const useArtistProfileData = (username: string | undefined) => {
         return;
       }
       
-      setProfile(userData);
-      setViewCount(userData.profile_views || 0);
+      // Convert database user to UserProfile type
+      const artistProfile: UserProfile = {
+        id: userData.id,
+        email: userData.email || '',
+        full_name: userData.full_name,
+        avatar_url: userData.avatar_url,
+        role: userData.role,
+        bio: userData.bio,
+        specialty: userData.specialty,
+        location: userData.location,
+        instagram: userData.instagram,
+        website: userData.website,
+        phone: userData.phone,
+        profile_views: userData.profile_views || 0,
+        boosted_until: userData.boosted_until,
+        badges: Array.isArray(userData.badges) ? userData.badges : [],
+        accepts_bookings: userData.accepts_bookings,
+        booking_url: userData.booking_url,
+        contact_link: userData.contact_link,
+        completed_profile_tasks: Array.isArray(userData.completed_profile_tasks) 
+          ? userData.completed_profile_tasks 
+          : [],
+        preferences: Array.isArray(userData.preferences) ? userData.preferences : [],
+        preferred_language: userData.preferred_language,
+        years_experience: userData.years_experience,
+        created_at: userData.created_at,
+        updated_at: userData.updated_at
+      };
+      
+      setProfile(artistProfile);
+      setViewCount(artistProfile.profile_views || 0);
       
       // Fetch portfolio images
       if (userData.id) {

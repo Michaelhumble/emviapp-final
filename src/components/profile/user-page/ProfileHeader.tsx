@@ -15,18 +15,21 @@ import {
   Phone, 
   User 
 } from "lucide-react";
-import { UserProfile } from "@/types/profile";
+import { UserProfile, getLocationString } from "@/types/profile";
 
 interface ProfileHeaderProps {
   profile: UserProfile;
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ profile }) => {
+  // Get location as string
+  const locationString = getLocationString(profile.location);
+
   const getProfileTitle = () => {
     if (profile.role === 'artist' || profile.role === 'nail technician/artist') {
       return profile.specialty || 'Beauty Artist';
     } else if (profile.role === 'salon' || profile.role === 'owner') {
-      return profile.salon_name || 'Salon Owner';
+      return profile.salon_name || profile.salonName || 'Salon Owner';
     } else if (profile.role === 'vendor' || profile.role === 'supplier' || profile.role === 'beauty supplier') {
       return profile.company_name || 'Beauty Supplier';
     } else if (profile.role === 'freelancer') {
@@ -80,10 +83,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ profile }) => {
         <Separator className="my-4" />
         
         <div className="space-y-3">
-          {profile.location && (
+          {locationString && (
             <div className="flex items-center">
               <MapPin className="h-4 w-4 mr-2 text-gray-400" />
-              <span className="text-sm">{profile.location}</span>
+              <span className="text-sm">{locationString}</span>
             </div>
           )}
           

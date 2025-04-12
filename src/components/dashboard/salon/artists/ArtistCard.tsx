@@ -2,7 +2,7 @@
 import { Award, Sparkles } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { UserProfile } from "@/types/profile";
+import { UserProfile, getLocationString } from "@/types/profile";
 
 interface ArtistCardProps {
   artist: UserProfile;
@@ -10,6 +10,9 @@ interface ArtistCardProps {
 }
 
 const ArtistCard = ({ artist, getArtistRating }: ArtistCardProps) => {
+  // Get location string
+  const locationString = getLocationString(artist.location);
+  
   return (
     <div className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/50 transition-colors">
       <Avatar className="h-12 w-12 border border-primary/10">
@@ -41,9 +44,7 @@ const ArtistCard = ({ artist, getArtistRating }: ArtistCardProps) => {
           <span className="text-xs font-medium ml-0.5">{getArtistRating(artist.id)}</span>
         </div>
         <span className="text-[0.65rem] text-muted-foreground">
-          {typeof artist.location === 'string' 
-            ? artist.location?.split(',')[0] 
-            : artist.location?.address?.split(',')[0] || 'Local'}
+          {locationString ? locationString.split(',')[0] : 'Local'}
         </span>
       </div>
     </div>

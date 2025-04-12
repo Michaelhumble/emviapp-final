@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { UserProfile } from '@/types/profile';
+import { UserProfile, getLocationString } from '@/types/profile';
 
 interface ProfileFormData {
   full_name: string;
@@ -37,7 +37,7 @@ export const useProfileForm = ({ onProfileUpdate }: UseProfileFormProps = {}) =>
         full_name: userProfile.full_name || '',
         bio: userProfile.bio || '',
         specialty: userProfile.specialty || '',
-        location: typeof userProfile.location === 'string' ? userProfile.location : userProfile.location?.address || '',
+        location: getLocationString(userProfile.location),
         instagram: userProfile.instagram || '',
         website: userProfile.website || '',
       });
