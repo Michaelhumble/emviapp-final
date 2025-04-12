@@ -1,3 +1,4 @@
+
 // Extending the existing types file to make sure it has all necessary fields
 
 export interface Booking {
