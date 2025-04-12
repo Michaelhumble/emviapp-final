@@ -61,7 +61,7 @@ const ArtistPublicPage = () => {
           return;
         }
         
-        // Convert database user to UserProfile type
+        // Convert database user to UserProfile type with proper typing
         const artistProfile: UserProfile = {
           id: userData.id,
           email: userData.email || '',

@@ -4,6 +4,9 @@ export interface Location {
   lng: number | null;
   address?: string | null;
   split?: string;
+  city?: string;
+  state?: string;
+  country?: string;
 }
 
 export interface OpeningTime {
