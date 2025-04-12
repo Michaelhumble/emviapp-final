@@ -1,74 +1,71 @@
 
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Clock, DollarSign } from "lucide-react";
-
-interface Service {
-  id: string;
-  title: string;
-  description: string | null;
-  price: number;
-  duration_minutes: number;
-  is_visible: boolean;
-}
+import { Clock } from "lucide-react";
+import { Service } from "@/pages/a/artist-profile/types";
 
 interface ServicesSectionProps {
   services: Service[];
 }
 
 const ServicesSection: React.FC<ServicesSectionProps> = ({ services }) => {
+  if (!services || services.length === 0) {
+    return null;
+  }
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+    }).format(price);
+  };
+
   const formatDuration = (minutes: number) => {
-    if (minutes < 60) return `${minutes} min`;
+    if (minutes < 60) {
+      return `${minutes} min`;
+    }
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
-    return remainingMinutes > 0 
-      ? `${hours} hr ${remainingMinutes} min` 
-      : `${hours} hr`;
+    
+    if (remainingMinutes === 0) {
+      return `${hours} hr`;
+    }
+    
+    return `${hours} hr ${remainingMinutes} min`;
   };
 
   return (
     <div className="mb-12">
       <h2 className="text-2xl font-serif font-semibold mb-4">Services</h2>
       
-      {services.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {services.map((service) => (
-            <Card key={service.id} className="h-full">
-              <CardContent className="p-5">
-                <h3 className="font-semibold text-lg">{service.title}</h3>
-                
-                {service.description && (
-                  <p className="text-gray-600 text-sm mt-1 mb-3">{service.description}</p>
-                )}
-                
-                <div className="flex items-center justify-between mt-2">
-                  <div className="space-y-1">
-                    <div className="flex items-center text-purple-700 font-medium">
-                      <DollarSign className="h-4 w-4 mr-1" />
-                      {new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                        minimumFractionDigits: 2
-                      }).format(service.price)}
-                    </div>
-                    
-                    <div className="flex items-center text-gray-500 text-sm">
-                      <Clock className="h-3.5 w-3.5 mr-1" />
-                      {formatDuration(service.duration_minutes)}
-                    </div>
-                  </div>
+      <div className="space-y-4">
+        {services.map((service) => (
+          <Card key={service.id} className="overflow-hidden">
+            <CardContent className="p-0">
+              <div className="p-4 border-b">
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className="text-lg font-medium">{service.title}</h3>
+                  <span className="text-lg font-bold">{formatPrice(service.price)}</span>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <Card className="bg-gray-50 border-dashed border p-8 text-center">
-          <CardContent className="p-0">
-            <p className="text-gray-500">This artist hasn't added any services yet.</p>
-          </CardContent>
-        </Card>
-      )}
+                
+                {service.duration_minutes > 0 && (
+                  <div className="flex items-center text-muted-foreground text-sm">
+                    <Clock className="h-3.5 w-3.5 mr-1" />
+                    <span>{formatDuration(service.duration_minutes)}</span>
+                  </div>
+                )}
+              </div>
+              
+              {service.description && (
+                <div className="p-4 bg-muted/10">
+                  <p className="text-sm text-muted-foreground">{service.description}</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 };

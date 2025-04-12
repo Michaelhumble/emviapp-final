@@ -1,11 +1,10 @@
 
-import React from "react";
-import { PortfolioImage } from "@/pages/u/artist-profile/types";
+import React, { useState } from "react";
+import { PortfolioImage } from "@/pages/a/artist-profile/types";
 import { Card } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { useState } from "react";
 
 interface PortfolioGalleryProps {
   images: PortfolioImage[];
