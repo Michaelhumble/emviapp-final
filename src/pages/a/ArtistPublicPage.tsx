@@ -191,7 +191,7 @@ const ArtistPublicPage = () => {
       <div 
         ref={fadeInAnimation.ref as React.RefObject<HTMLDivElement>}
         style={fadeInAnimation.style}
-        className={`container max-w-5xl mx-auto py-8 px-4 ${fadeInAnimation.isVisible ? fadeInAnimation.className : 'opacity-0'}`}
+        className={fadeInAnimation.isVisible ? fadeInAnimation.className : 'opacity-0'}
       >
         <ProfileHeader 
           profile={profile} 
