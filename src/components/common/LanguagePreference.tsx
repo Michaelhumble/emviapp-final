@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { getLanguagePreference, hasLanguagePreference, setLanguagePreference } from "@/utils/languagePreference";
+import { getLanguagePreference, setLanguagePreference, hasLanguagePreference } from "@/utils/languagePreference";
 
 // Key for storing the dialog visibility state
 const LANGUAGE_PREFERENCE_SHOWN_KEY = 'emviapp_language_preference_shown';

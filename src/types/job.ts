@@ -58,4 +58,8 @@ export interface Job {
     chatAvailable?: boolean;
     [key: string]: boolean | undefined;
   };
+  
+  // Properties needed by ListingCard
+  features?: string[];
+  price?: string;
 }
