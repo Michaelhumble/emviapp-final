@@ -1,0 +1,73 @@
+
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+
+const EmotionalClosingSection = () => {
+  const [language, setLanguage] = useState<"en" | "vi">("en");
+
+  return (
+    <section className="py-20 bg-gradient-to-b from-purple-50 to-white">
+      <div className="container mx-auto px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          viewport={{ once: true }}
+          className="max-w-3xl mx-auto text-center"
+        >
+          <Tabs 
+            defaultValue="en" 
+            value={language} 
+            onValueChange={(value) => setLanguage(value as "en" | "vi")}
+            className="w-full"
+          >
+            <TabsList className="mx-auto mb-6">
+              <TabsTrigger value="en">English</TabsTrigger>
+              <TabsTrigger value="vi">Tiếng Việt</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="en">
+              <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4">
+                "You're not late. You're right on time."
+              </h2>
+              <p className="text-lg text-gray-700 mb-8">
+                Whether you're brand new or 20 years deep — EmviApp was made for you.<br />
+                You focus on your craft. We'll carry the tech.
+              </p>
+            </TabsContent>
+            
+            <TabsContent value="vi">
+              <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4">
+                "Bạn không đến trễ đâu — bạn đến đúng lúc."
+              </h2>
+              <p className="text-lg text-gray-700 mb-8">
+                Dù bạn mới vào nghề hay đã làm 20 năm, EmviApp vẫn là dành cho bạn.<br />
+                Bạn chỉ cần làm nghề cho tốt. Chuyện còn lại — để chúng tôi lo.
+              </p>
+            </TabsContent>
+          </Tabs>
+          
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link to="/auth/signup">
+              <Button size="lg" className="min-w-[200px]">
+                {language === "en" ? "Get Started Free" : "Bắt Đầu Miễn Phí"}
+              </Button>
+            </Link>
+            <Link to="/artists">
+              <Button variant="outline" size="lg" className="min-w-[200px]">
+                {language === "en" ? "Just Keep Exploring" : "Tiếp Tục Khám Phá"}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+export default EmotionalClosingSection;
