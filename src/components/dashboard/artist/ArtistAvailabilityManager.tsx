@@ -79,7 +79,7 @@ const ArtistAvailabilityManager = () => {
 
       if (data && data.length > 0) {
         const existingDays = DAYS_OF_WEEK.map(day => {
-          const existingDay = data.find(d => d.day_of_week === day.value.toString());
+          const existingDay = data.find((d: any) => d.day_of_week === day.value.toString());
           if (existingDay) {
             return {
               id: existingDay.id,

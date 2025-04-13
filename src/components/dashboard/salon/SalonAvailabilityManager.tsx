@@ -81,12 +81,14 @@ const SalonAvailabilityManager = () => {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        if (data[0].location) {
-          setLocation(data[0].location);
+        const anyData = data as any[];
+        
+        if (anyData[0].location) {
+          setLocation(anyData[0].location);
         }
         
         const existingDays = DAYS_OF_WEEK.map(day => {
-          const existingDay = data.find(d => d.day_of_week === day.value.toString());
+          const existingDay = anyData.find(d => d.day_of_week === day.value.toString());
           if (existingDay) {
             return {
               id: existingDay.id,

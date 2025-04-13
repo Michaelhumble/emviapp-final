@@ -75,6 +75,7 @@ const MyBookingsPage = () => {
       if (data) {
         // Explicitly checking that data is an array before mapping
         const bookingsArray = Array.isArray(data) ? data : [];
+        // Explicitly typing the data items as any to avoid the deep instantiation issue
         const formattedBookings: Booking[] = bookingsArray.map((item: any) => ({
           id: item.id,
           provider_name: item.users?.full_name || 'Unknown Provider',
