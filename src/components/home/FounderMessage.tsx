@@ -27,42 +27,79 @@ const FounderMessage = () => {
   }, []);
 
   return (
-    <section className="py-16 bg-gradient-to-b from-white to-gray-50">
+    <section className="py-16 bg-[#F9F7F4]">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
+          transition={{ duration: 0.9 }}
           viewport={{ once: true }}
           className="max-w-3xl mx-auto"
         >
-          <div className="text-center mb-8">
-            <span className="inline-block px-4 py-1 text-sm font-medium text-primary bg-primary/10 rounded-full mb-4">
-              A Personal Note
-            </span>
-            <h3 className="text-2xl md:text-3xl font-serif font-semibold mb-2 text-gray-800">
-              From the Founder
-            </h3>
+          <div className="text-center mb-6">
+            {language === "en" ? (
+              <span className="inline-block px-4 py-1 text-sm font-medium text-primary/80 bg-primary/5 rounded-full mb-4">
+                From the Founder
+              </span>
+            ) : (
+              <span className="inline-block px-4 py-1 text-sm font-medium text-primary/80 bg-primary/5 rounded-full mb-4">
+                Từ Người Sáng Lập
+              </span>
+            )}
           </div>
           
           <div className="bg-white p-8 md:p-10 rounded-2xl shadow-sm border border-gray-100">
-            <p className="text-lg md:text-2xl italic text-gray-700 mb-8 font-serif leading-relaxed text-center">
-              "We started with just a water container, a dream, and a lot of hustle. This platform is for every artist who ever cleaned before sunrise, and every owner who paid themselves last."
-            </p>
-            
-            {language === "vi" ? (
-              <div className="mt-6 border-t border-gray-100 pt-6">
-                <p className="text-base md:text-lg text-gray-600 font-medium leading-relaxed text-center">
-                  Chúng Tôi Am Hiểu Sự Hy Sinh Của Bạn, Hãy Để A.I Thông Minh Giúp Mang Khách Đến Tận Nơi, Tìm Thợ, Quản Lý Tiệm Của Bạn Của Chính Bạn Chứ Không Phải Đối Thủ Bên Kia Đường Đối Diện Với Bạn.
+            {language === "en" ? (
+              <div className="space-y-6">
+                <p className="text-lg md:text-xl italic text-gray-700 font-serif leading-relaxed text-center">
+                  "We started with just a water container, a dream, and a lot of hustle.<br />
+                  This platform is for every artist who cleaned before sunrise,<br />
+                  and every owner who paid themselves last.
+                </p>
+                
+                <p className="text-lg md:text-xl italic text-gray-700 font-serif leading-relaxed text-center">
+                  If you've come this far without help —<br />
+                  you already did the hardest part.
+                </p>
+                
+                <p className="text-lg md:text-xl italic text-gray-700 font-serif leading-relaxed text-center">
+                  Now we're giving you a system that takes care of the rest."
                 </p>
               </div>
             ) : (
-              <div className="mt-6 border-t border-gray-100 pt-6">
-                <p className="text-sm text-gray-500 italic text-center">
-                  Every line of code we write is for your success.
+              <div className="space-y-6">
+                <p className="text-lg md:text-xl italic text-gray-700 font-serif leading-relaxed text-center">
+                  "Chúng tôi bắt đầu chỉ với một thau nước, một ước mơ, và rất nhiều cố gắng.<br />
+                  Nền tảng này là dành cho mọi người thợ từng lau dọn tiệm trước khi trời sáng,<br />
+                  và mọi chủ tiệm từng trả lương cho nhân viên trước — rồi mới đến lượt mình.
+                </p>
+                
+                <p className="text-lg md:text-xl italic text-gray-700 font-serif leading-relaxed text-center">
+                  Nếu bạn đã đi đến đây mà không ai giúp —<br />
+                  thì phần khó nhất bạn đã vượt qua rồi.
+                </p>
+                
+                <p className="text-lg md:text-xl italic text-gray-700 font-serif leading-relaxed text-center">
+                  Bây giờ, chúng tôi mang đến một hệ thống lo hết phần còn lại cho bạn."
                 </p>
               </div>
             )}
+            
+            <div className="mt-8 text-center">
+              <button
+                onClick={() => {
+                  const newLanguage = language === "en" ? "vi" : "en";
+                  setLanguage(newLanguage);
+                  localStorage.setItem('emvi_language_preference', newLanguage);
+                  window.dispatchEvent(new CustomEvent('languageChanged', { 
+                    detail: { language: newLanguage } 
+                  }));
+                }}
+                className="px-4 py-2 rounded-full bg-white shadow-sm text-gray-600 text-sm border border-gray-200 hover:bg-gray-50 transition-colors duration-200"
+              >
+                {language === "en" ? "🇻🇳 Xem Tiếng Việt" : "🇺🇸 View in English"}
+              </button>
+            </div>
           </div>
         </motion.div>
       </div>

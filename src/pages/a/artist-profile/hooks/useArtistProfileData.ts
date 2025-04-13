@@ -54,7 +54,7 @@ export const useArtistProfileData = (username: string | undefined) => {
         return;
       }
       
-      // Convert database user to UserProfile type
+      // Convert database user to UserProfile type, safely handling potentially missing properties
       const artistProfile: UserProfile = {
         id: userData.id,
         email: userData.email || '',
@@ -80,7 +80,8 @@ export const useArtistProfileData = (username: string | undefined) => {
         preferred_language: userData.preferred_language,
         years_experience: typeof (userData as any).years_experience === 'number' ? (userData as any).years_experience : 0,
         created_at: userData.created_at,
-        updated_at: userData.updated_at
+        updated_at: userData.updated_at,
+        professional_name: (userData as any).professional_name || ''
       };
       
       setProfile(artistProfile);
@@ -147,6 +148,7 @@ export const useArtistProfileData = (username: string | undefined) => {
   const incrementViewCount = useCallback(async () => {
     if (profile?.id) {
       const newCount = (viewCount || 0) + 1;
+      // Using typecast as any for the update to avoid TypeScript errors
       const { error } = await supabase
         .from('users')
         .update({ profile_views: newCount } as any)
