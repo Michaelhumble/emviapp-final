@@ -41,6 +41,12 @@ appleMobileWebAppCapable.name = 'apple-mobile-web-app-capable';
 appleMobileWebAppCapable.content = 'yes';
 document.getElementsByTagName('head')[0].appendChild(appleMobileWebAppCapable);
 
+// Set status bar style for iOS
+const appleStatusBarStyle = document.createElement('meta');
+appleStatusBarStyle.name = 'apple-mobile-web-app-status-bar-style';
+appleStatusBarStyle.content = 'default';
+document.getElementsByTagName('head')[0].appendChild(appleStatusBarStyle);
+
 // Apply body styles directly to prevent flash of unstylized content
 document.body.style.overflow = 'hidden auto';
 document.body.style.overflowX = 'hidden';

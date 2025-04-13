@@ -33,6 +33,7 @@ export const AssistantPanel = () => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { user } = useAuth();
   const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   // Initial greeting on first open
   useEffect(() => {
@@ -50,7 +51,9 @@ export const AssistantPanel = () => {
 
   // Scroll to bottom when messages change or when chat opens
   useEffect(() => {
-    scrollToBottom();
+    if (isOpen) {
+      scrollToBottom();
+    }
   }, [messages, isOpen]);
 
   // Focus input when opened
@@ -79,11 +82,17 @@ export const AssistantPanel = () => {
       };
       
       document.addEventListener('visibilitychange', handleVisibilityChange);
-      window.addEventListener('resize', handleVisibilityChange);
+      
+      // Handle iOS keyboard appearance with viewport changes
+      const handleResize = () => {
+        setTimeout(scrollToBottom, 100);
+      };
+      
+      window.addEventListener('resize', handleResize);
       
       return () => {
         document.removeEventListener('visibilitychange', handleVisibilityChange);
-        window.removeEventListener('resize', handleVisibilityChange);
+        window.removeEventListener('resize', handleResize);
       };
     }
   }, [isMobile]);
@@ -107,7 +116,15 @@ export const AssistantPanel = () => {
   }, [matches, messages]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+    
+    // Also ensure the scroll area itself is scrolled to the bottom
+    if (scrollAreaRef.current) {
+      const scrollElement = scrollAreaRef.current;
+      scrollElement.scrollTop = scrollElement.scrollHeight;
+    }
   };
 
   const handleSendMessage = async () => {
@@ -132,6 +149,7 @@ export const AssistantPanel = () => {
         }
       ]);
       setInput("");
+      scrollToBottom();
       return;
     }
     
@@ -145,6 +163,7 @@ export const AssistantPanel = () => {
     
     setMessages(prev => [...prev, userMessage]);
     setInput("");
+    scrollToBottom();
     
     // Add typing indicator 
     const typingId = `assistant-typing-${Date.now()}`;
@@ -175,6 +194,8 @@ export const AssistantPanel = () => {
           bookingMatches: matches
         }
       ]);
+      
+      scrollToBottom();
     } catch (error) {
       // Remove typing indicator and show error
       setMessages(prev => [
@@ -187,6 +208,7 @@ export const AssistantPanel = () => {
         }
       ]);
       toast.error("Sorry, I couldn't process your request right now.");
+      scrollToBottom();
     }
   };
 
@@ -225,6 +247,8 @@ export const AssistantPanel = () => {
         }
       ]);
       
+      scrollToBottom();
+      
       // Create the booking
       const success = await createBooking(selected, user?.id);
       
@@ -240,6 +264,8 @@ export const AssistantPanel = () => {
           timestamp: new Date()
         }
       ]);
+      
+      scrollToBottom();
     }
   };
 
@@ -336,9 +362,10 @@ export const AssistantPanel = () => {
           initial={{ y: 80, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          className="fixed bottom-4 right-4 z-40"
         >
           <Button 
-            className="fixed bottom-4 right-4 rounded-full h-14 w-14 shadow-lg z-40 bg-primary hover:bg-primary/90"
+            className="rounded-full h-14 w-14 shadow-lg bg-primary hover:bg-primary/90"
             size="icon"
           >
             <Sparkles className="h-6 w-6" />
@@ -362,14 +389,21 @@ export const AssistantPanel = () => {
             </Button>
           </div>
           
-          <ScrollArea className="flex-1 px-4 overflow-y-auto">
-            <div className="space-y-4 py-4">
+          <div 
+            ref={scrollAreaRef}
+            className="flex-1 px-4 overflow-y-auto"
+            style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+          >
+            <div className="space-y-4 py-4 w-full max-w-[90vw] mx-auto">
               {renderMessages()}
               <div ref={messagesEndRef} />
             </div>
-          </ScrollArea>
+          </div>
           
-          <div className="p-4 border-t mt-auto bg-background">
+          <div 
+            className="p-4 border-t mt-auto bg-background"
+            style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 8px)' }}
+          >
             <div className="flex gap-2">
               <Textarea
                 ref={inputRef}
@@ -383,7 +417,7 @@ export const AssistantPanel = () => {
               <Button 
                 onClick={handleSendMessage} 
                 size="icon" 
-                className="h-[52px] w-[52px]"
+                className="h-[52px] w-[52px] flex-shrink-0"
                 disabled={isLoading || !input.trim()}
               >
                 <Send className="h-5 w-5" />
@@ -402,16 +436,17 @@ export const AssistantPanel = () => {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ type: "spring", stiffness: 300, damping: 30, delay: 0.2 }}
+          className="fixed bottom-4 right-4 z-40"
         >
           <Button 
-            className="fixed bottom-4 right-4 rounded-full h-14 w-14 shadow-lg z-40 bg-primary hover:bg-primary/90"
+            className="rounded-full h-14 w-14 shadow-lg bg-primary hover:bg-primary/90"
             size="icon"
           >
             <Sparkles className="h-6 w-6" />
           </Button>
         </motion.div>
       </SheetTrigger>
-      <SheetContent className="w-[380px] sm:w-[440px] p-0 border-l-purple-100 flex flex-col h-[85vh] fixed bottom-0 right-0 rounded-tl-2xl rounded-bl-2xl rounded-tr-none rounded-br-none">
+      <SheetContent className="w-[380px] sm:w-[440px] p-0 border-l-purple-100 flex flex-col h-[85vh] fixed bottom-0 right-0 rounded-tl-2xl rounded-bl-2xl rounded-tr-none rounded-br-none overflow-hidden">
         <div className="h-full flex flex-col">
           <div className="border-b p-4 flex items-center justify-between">
             <div className="flex items-center">
@@ -428,12 +463,15 @@ export const AssistantPanel = () => {
             </Button>
           </div>
           
-          <ScrollArea className="flex-1 p-4 overflow-y-auto">
+          <div 
+            ref={scrollAreaRef}
+            className="flex-1 p-4 overflow-y-auto"
+          >
             <div className="space-y-4 py-4">
               {renderMessages()}
               <div ref={messagesEndRef} />
             </div>
-          </ScrollArea>
+          </div>
           
           <div className="border-t p-4 mt-auto bg-background">
             <div className="flex gap-2">
@@ -449,7 +487,7 @@ export const AssistantPanel = () => {
               <Button 
                 onClick={handleSendMessage} 
                 size="icon" 
-                className="h-[52px] w-[52px]"
+                className="h-[52px] w-[52px] flex-shrink-0"
                 disabled={isLoading || !input.trim()}
               >
                 <Send className="h-5 w-5" />

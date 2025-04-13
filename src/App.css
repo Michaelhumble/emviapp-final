@@ -95,6 +95,15 @@ body {
   animation: bounce 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
 }
 
+/* Safe area insets for mobile devices */
+.pb-safe-area {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.pt-safe-area {
+  padding-top: env(safe-area-inset-top);
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -123,5 +132,20 @@ body {
   }
   50% {
     transform: scale(1.05);
+  }
+}
+
+/* Mobile chat panel fixes */
+.mobile-chat-panel {
+  width: 100%;
+  max-width: 90vw;
+  margin: 0 auto;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+@supports (padding: max(0px)) {
+  .mobile-safe-bottom {
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
   }
 }
