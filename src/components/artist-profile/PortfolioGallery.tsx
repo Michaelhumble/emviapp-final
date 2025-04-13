@@ -35,7 +35,7 @@ const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({ images, artistName 
                 <AspectRatio ratio={1}>
                   <img 
                     src={image.url} 
-                    alt={`${artistName}'s portfolio - ${image.description || `Image ${index + 1}`}`}
+                    alt={`${artistName}'s portfolio - ${image.name || `Image ${index + 1}`}`}
                     className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
                     loading={index < 6 ? "eager" : "lazy"}
                   />
@@ -51,7 +51,7 @@ const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({ images, artistName 
               <div className="relative">
                 <img 
                   src={image.url} 
-                  alt={`${artistName}'s portfolio - ${image.description || `Image ${index + 1}`}`}
+                  alt={`${artistName}'s portfolio - ${image.name || `Image ${index + 1}`}`}
                   className="w-full rounded-md"
                 />
                 {image.description && (

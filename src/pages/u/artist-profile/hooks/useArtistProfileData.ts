@@ -100,7 +100,8 @@ export const useArtistProfileData = (username: string | undefined) => {
             portfolioData.map(item => ({
               id: item.id,
               url: item.image_url,
-              name: item.title || ''
+              name: item.title || '',
+              description: item.description || ''
             }))
           );
         }
@@ -171,3 +172,5 @@ export const useArtistProfileData = (username: string | undefined) => {
     incrementViewCount
   };
 };
+
+export type { PortfolioImage, Service };

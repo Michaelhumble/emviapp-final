@@ -7,7 +7,7 @@ import ProfileHeader from "@/components/artist-profile/ProfileHeader";
 import ServicesSection from "@/components/artist-profile/ServicesSection";
 import PortfolioGallery from "@/components/artist-profile/PortfolioGallery";
 import ContactSection from "@/components/artist-profile/ContactSection";
-import { PortfolioImage, Service } from "./hooks/useArtistProfileData";
+import { PortfolioImage, Service } from "./types";
 
 interface ArtistProfileContentProps {
   profile: UserProfile;

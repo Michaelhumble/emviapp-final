@@ -3,6 +3,7 @@ export interface PortfolioImage {
   id: string;
   url: string;
   name: string;
+  description?: string;
 }
 
 export interface Service {
