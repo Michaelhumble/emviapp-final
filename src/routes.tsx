@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Index from './pages/Index';
 import Welcome from './pages/Welcome';
@@ -30,6 +29,7 @@ import Profile from './pages/Profile';
 import ArtistPublicPage from './pages/a/ArtistPublicPage';
 import ArtistExplore from './pages/explore/artists';
 import SalonMarketplace from './pages/SalonMarketplace';
+import CommandCenter from './pages/CommandCenter';
 
 // Import profile setup pages
 import ArtistSetup from './pages/profile/artist/setup';
@@ -161,7 +161,10 @@ const routes = [
     path: '/sign-up',
     element: <SignUp />,
   },
-  // Profile Setup Routes
+  {
+    path: '/command-center',
+    element: <CommandCenter />,
+  },
   {
     path: '/profile/artist/setup',
     element: <ArtistSetup />,
@@ -210,7 +213,6 @@ const routes = [
     path: '/setup/other',
     element: <OtherRoleSetup />,
   },
-  // Add the new public artist profile routes
   {
     path: '/a/:username',
     element: <ArtistPublicPage />,
