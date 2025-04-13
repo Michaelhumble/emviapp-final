@@ -73,7 +73,7 @@ const SalonAvailabilityManager = () => {
   const fetchExistingAvailability = async () => {
     try {
       setLoading(true);
-      // Fix the TypeScript error by explicitly typing the response
+      // Fix the TypeScript error by using an explicit type
       const { data, error } = await supabase
         .from('availability')
         .select('*')
@@ -83,10 +83,10 @@ const SalonAvailabilityManager = () => {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        // Use a more explicit type assertion to avoid deep instantiation
-        const availabilityData = data as Array<{
+        // Use a more specific type that matches what actually comes from the database
+        const availabilityData = data as unknown as Array<{
           id: string;
-          user_id: string;
+          artist_id: string;
           day_of_week: string;
           start_time: string;
           end_time: string;
@@ -214,38 +214,6 @@ const SalonAvailabilityManager = () => {
     } finally {
       setSaving(false);
     }
-  };
-
-  const toggleDay = (index: number) => {
-    const newAvailability = [...availability];
-    newAvailability[index].active = !newAvailability[index].active;
-    setAvailability(newAvailability);
-  };
-
-  const updateTime = (index: number, field: 'start_time' | 'end_time', value: string) => {
-    const newAvailability = [...availability];
-    newAvailability[index][field] = value;
-    setAvailability(newAvailability);
-  };
-
-  const copyToWeekdays = () => {
-    const mondaySettings = availability.find(day => day.day_of_week === 1);
-    if (!mondaySettings) return;
-    
-    const newAvailability = [...availability];
-    [1, 2, 3, 4, 5].forEach(dayValue => {
-      const index = newAvailability.findIndex(day => day.day_of_week === dayValue);
-      if (index !== -1) {
-        newAvailability[index] = {
-          ...newAvailability[index],
-          start_time: mondaySettings.start_time,
-          end_time: mondaySettings.end_time,
-          active: mondaySettings.active
-        };
-      }
-    });
-    
-    setAvailability(newAvailability);
   };
 
   const isTimeValid = (startTime: string, endTime: string) => {
