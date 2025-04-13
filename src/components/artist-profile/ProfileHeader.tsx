@@ -22,12 +22,28 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   // Get location string
   const locationString = getLocationString(profile.location);
 
+  // Get initials for avatar fallback
+  const getInitials = () => {
+    if (!profile.full_name) return 'A';
+    return profile.full_name
+      .split(' ')
+      .map(name => name[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+  };
+
   return (
     <div className="mb-12">
       <div className="flex flex-col md:flex-row items-start gap-6">
         <Avatar className="h-24 w-24 md:h-32 md:w-32 rounded-full border-4 border-white shadow-md">
-          <AvatarImage src={profile.avatar_url || undefined} alt={profile.full_name || 'Artist'} />
-          <AvatarFallback className="text-2xl">{profile.full_name?.charAt(0) || 'A'}</AvatarFallback>
+          <AvatarImage 
+            src={profile.avatar_url || undefined} 
+            alt={profile.full_name || 'Artist'} 
+          />
+          <AvatarFallback className="text-2xl bg-purple-100 text-purple-700">
+            {getInitials()}
+          </AvatarFallback>
         </Avatar>
         
         <div className="flex-1">
