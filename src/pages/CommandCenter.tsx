@@ -61,10 +61,10 @@ const CommandCenter = () => {
   if (loading) {
     return (
       <Layout>
-        <div className="container py-10">
+        <div className="container py-6 px-4 w-full max-w-full overflow-hidden">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/3 mb-6"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="h-8 bg-gray-200 rounded w-full max-w-[250px] mb-6"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="h-40 bg-gray-100 rounded"></div>
               <div className="h-40 bg-gray-100 rounded"></div>
               <div className="h-40 bg-gray-100 rounded"></div>
@@ -83,13 +83,13 @@ const CommandCenter = () => {
   return (
     <Layout>
       <CommandCenterLayout>
-        <div className="container px-4 py-8">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8">
+        <div className="container px-4 py-6 w-full max-w-full overflow-hidden">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
             <div>
-              <h1 className="text-2xl font-bold">
+              <h1 className="text-xl md:text-2xl font-bold">
                 Welcome back, {userProfile?.full_name || 'Michael'} 👋
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 Command Center Dashboard • Private Admin View
               </p>
             </div>
@@ -99,31 +99,31 @@ const CommandCenter = () => {
           </div>
           
           <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-1 md:grid-cols-5 mb-6">
-              <TabsTrigger value="overview">User Overview</TabsTrigger>
-              <TabsTrigger value="activity">Recent Activity</TabsTrigger>
-              <TabsTrigger value="metrics">Live Metrics</TabsTrigger>
-              <TabsTrigger value="revenue">Referrals & Revenue</TabsTrigger>
-              <TabsTrigger value="tools">Founder Tools</TabsTrigger>
+            <TabsList className="w-full overflow-x-auto flex-nowrap mb-6 p-1 bg-muted/20">
+              <TabsTrigger value="overview" className="flex-1 whitespace-nowrap">User Overview</TabsTrigger>
+              <TabsTrigger value="activity" className="flex-1 whitespace-nowrap">Recent Activity</TabsTrigger>
+              <TabsTrigger value="metrics" className="flex-1 whitespace-nowrap">Live Metrics</TabsTrigger>
+              <TabsTrigger value="revenue" className="flex-1 whitespace-nowrap">Referrals</TabsTrigger>
+              <TabsTrigger value="tools" className="flex-1 whitespace-nowrap">Founder Tools</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="overview" className="space-y-6">
+            <TabsContent value="overview" className="space-y-6 w-full">
               <UserOverview />
             </TabsContent>
             
-            <TabsContent value="activity" className="space-y-6">
+            <TabsContent value="activity" className="space-y-6 w-full">
               <RecentActivity />
             </TabsContent>
             
-            <TabsContent value="metrics" className="space-y-6">
+            <TabsContent value="metrics" className="space-y-6 w-full">
               <LiveMetrics />
             </TabsContent>
             
-            <TabsContent value="revenue" className="space-y-6">
+            <TabsContent value="revenue" className="space-y-6 w-full">
               <ReferralsRevenue />
             </TabsContent>
             
-            <TabsContent value="tools" className="space-y-6">
+            <TabsContent value="tools" className="space-y-6 w-full">
               <InternalTools />
             </TabsContent>
           </Tabs>

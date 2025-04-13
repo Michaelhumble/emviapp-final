@@ -182,10 +182,10 @@ const RecentActivity = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <h2 className="text-xl font-semibold">Recent Activity</h2>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {/* Recent Users */}
         <Card className={`${loading ? 'animate-pulse' : ''}`}>
           <CardHeader className="pb-2">
@@ -205,13 +205,13 @@ const RecentActivity = () => {
               <ul className="space-y-3">
                 {recentUsers.map(user => (
                   <li key={user.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50">
-                    <div className="flex items-center">
-                      <div className="font-medium">{user.full_name}</div>
-                      <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${getRoleBadgeClasses(user.role)}`}>
+                    <div className="flex flex-wrap items-center">
+                      <div className="font-medium mr-2 text-sm">{user.full_name}</div>
+                      <span className={`px-2 py-0.5 text-xs rounded-full ${getRoleBadgeClasses(user.role)}`}>
                         {user.role}
                       </span>
                     </div>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="text-xs text-muted-foreground whitespace-nowrap ml-2">
                       {formatDate(user.created_at)}
                     </div>
                   </li>
@@ -242,16 +242,16 @@ const RecentActivity = () => {
               <ul className="space-y-3">
                 {recentItems.map(item => (
                   <li key={item.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50">
-                    <div className="flex items-center">
-                      <span className="mr-2">{getActivityIcon(item.type)}</span>
-                      <div>
-                        <div className="font-medium">{item.title}</div>
-                        <div className="text-xs text-muted-foreground">
+                    <div className="flex items-center min-w-0">
+                      <span className="mr-2 flex-shrink-0">{getActivityIcon(item.type)}</span>
+                      <div className="min-w-0">
+                        <div className="font-medium text-sm truncate">{item.title}</div>
+                        <div className="text-xs text-muted-foreground truncate">
                           by {item.actor_name}
                         </div>
                       </div>
                     </div>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="text-xs text-muted-foreground whitespace-nowrap ml-2">
                       {formatDate(item.created_at)}
                     </div>
                   </li>
@@ -268,4 +268,3 @@ const RecentActivity = () => {
 };
 
 export default RecentActivity;
-

@@ -109,12 +109,12 @@ const InternalTools = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <h2 className="text-xl font-semibold">Founder Tools</h2>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6">
         {/* Roadmap Notepad */}
-        <Card className="lg:col-span-2">
+        <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-medium flex items-center">
               <Map className="h-4 w-4 mr-2 text-blue-600" />
@@ -126,7 +126,7 @@ const InternalTools = () => {
               value={roadmapContent} 
               onChange={(e) => setRoadmapContent(e.target.value)}
               placeholder="Enter roadmap notes, upcoming features, and milestones..."
-              className="min-h-[150px] mb-3"
+              className="min-h-[150px] mb-3 w-full resize-y"
             />
             <Button 
               onClick={saveRoadmap} 
@@ -139,97 +139,99 @@ const InternalTools = () => {
           </CardContent>
         </Card>
         
-        {/* Upcoming Ideas */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium flex items-center">
-              <Lightbulb className="h-4 w-4 mr-2 text-amber-600" />
-              Upcoming Ideas
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex mb-4">
-              <Input 
-                value={newIdea} 
-                onChange={(e) => setNewIdea(e.target.value)}
-                placeholder="Add a new idea..."
-                className="mr-2"
-              />
-              <Button onClick={addIdea} size="sm" className="shrink-0">
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-            
-            <div className="space-y-2 max-h-[300px] overflow-y-auto">
-              {ideas.map(idea => (
-                <div 
-                  key={idea.id} 
-                  className="flex items-center justify-between p-2 bg-amber-50 rounded border border-amber-100"
-                >
-                  <span className="text-sm">{idea.content}</span>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => deleteIdea(idea.id)}
-                    className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          {/* Upcoming Ideas */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base font-medium flex items-center">
+                <Lightbulb className="h-4 w-4 mr-2 text-amber-600" />
+                Upcoming Ideas
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex mb-4 w-full">
+                <Input 
+                  value={newIdea} 
+                  onChange={(e) => setNewIdea(e.target.value)}
+                  placeholder="Add a new idea..."
+                  className="mr-2 flex-grow"
+                />
+                <Button onClick={addIdea} size="sm" className="shrink-0">
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
               
-              {ideas.length === 0 && (
-                <p className="text-sm text-muted-foreground italic">No ideas added yet</p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-        
-        {/* Bug Tracker */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-medium flex items-center">
-              <Bug className="h-4 w-4 mr-2 text-red-600" />
-              Bug Tracker
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex mb-4">
-              <Input 
-                value={newBug} 
-                onChange={(e) => setNewBug(e.target.value)}
-                placeholder="Add a new bug..."
-                className="mr-2"
-              />
-              <Button onClick={addBug} size="sm" className="shrink-0">
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-            
-            <div className="space-y-2 max-h-[300px] overflow-y-auto">
-              {bugs.map(bug => (
-                <div 
-                  key={bug.id} 
-                  className="flex items-center justify-between p-2 bg-red-50 rounded border border-red-100"
-                >
-                  <span className="text-sm">{bug.content}</span>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => deleteBug(bug.id)}
-                    className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+              <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                {ideas.map(idea => (
+                  <div 
+                    key={idea.id} 
+                    className="flex items-center justify-between p-2 bg-amber-50 rounded border border-amber-100"
                   >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
+                    <span className="text-sm mr-2 break-words flex-grow">{idea.content}</span>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => deleteIdea(idea.id)}
+                      className="h-6 w-6 p-0 text-red-500 hover:text-red-700 flex-shrink-0"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                
+                {ideas.length === 0 && (
+                  <p className="text-sm text-muted-foreground italic">No ideas added yet</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Bug Tracker */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base font-medium flex items-center">
+                <Bug className="h-4 w-4 mr-2 text-red-600" />
+                Bug Tracker
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex mb-4 w-full">
+                <Input 
+                  value={newBug} 
+                  onChange={(e) => setNewBug(e.target.value)}
+                  placeholder="Add a new bug..."
+                  className="mr-2 flex-grow"
+                />
+                <Button onClick={addBug} size="sm" className="shrink-0">
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
               
-              {bugs.length === 0 && (
-                <p className="text-sm text-muted-foreground italic">No bugs added yet</p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+              <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                {bugs.map(bug => (
+                  <div 
+                    key={bug.id} 
+                    className="flex items-center justify-between p-2 bg-red-50 rounded border border-red-100"
+                  >
+                    <span className="text-sm mr-2 break-words flex-grow">{bug.content}</span>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => deleteBug(bug.id)}
+                      className="h-6 w-6 p-0 text-red-500 hover:text-red-700 flex-shrink-0"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                
+                {bugs.length === 0 && (
+                  <p className="text-sm text-muted-foreground italic">No bugs added yet</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
