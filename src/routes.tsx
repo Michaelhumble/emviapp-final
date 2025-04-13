@@ -185,15 +185,15 @@ const routes = [
   },
   {
     path: '/profile/other/setup',
-    element: <OtherRoleSetup />,
+    element: <OtherProfileSetup />,
   },
   {
     path: '/profile/renter/setup',
-    element: <BoothRenterSetup />,
+    element: <RenterProfileSetup />,
   },
   {
     path: '/profile/supplier/setup',
-    element: <SupplierSetup />,
+    element: <SupplierProfileSetup />,
   },
   {
     path: '/setup/artist',
@@ -213,7 +213,7 @@ const routes = [
   },
   {
     path: '/setup/other',
-    element: <OtherRoleSetup />,
+    element: <OtherProfileSetup />,
   },
   {
     path: '/a/:username',
