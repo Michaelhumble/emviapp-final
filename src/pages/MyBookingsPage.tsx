@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import {
@@ -36,7 +37,7 @@ interface Booking {
   created_at: string;
 }
 
-// Define the database response interface to prevent type recursion issues
+// Define the database response to handle incoming data properly
 interface DatabaseBookingResponse {
   id: string;
   customer_id: string;
@@ -87,19 +88,19 @@ const MyBookingsPage = () => {
       if (error) throw error;
 
       // Transform data to our Booking interface
-      const formattedBookings: Booking[] = (data || []).map((item: any) => {
-        const booking = item as DatabaseBookingResponse;
+      const formattedBookings: Booking[] = (data || []).map((booking: any) => {
+        const typedBooking = booking as DatabaseBookingResponse;
         
         return {
-          id: booking.id,
-          provider_name: booking.users?.full_name || 'Unknown Provider',
-          provider_id: booking.provider_id,
-          service_type: booking.service_type || 'Unknown Service',
-          date: booking.date,
-          time: booking.time || '',
-          status: booking.status || 'pending',
-          notes: booking.notes || '',
-          created_at: booking.created_at
+          id: typedBooking.id,
+          provider_name: typedBooking.users?.full_name || 'Unknown Provider',
+          provider_id: typedBooking.provider_id,
+          service_type: typedBooking.service_type || 'Unknown Service',
+          date: typedBooking.date,
+          time: typedBooking.time || '',
+          status: typedBooking.status || 'pending',
+          notes: typedBooking.notes || '',
+          created_at: typedBooking.created_at
         };
       });
 
