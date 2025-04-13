@@ -8,6 +8,7 @@ import CommandCenterLayout from "@/components/command-center/CommandCenterLayout
 import UserOverview from "@/components/command-center/UserOverview";
 import LiveMetrics from "@/components/command-center/LiveMetrics";
 import ReferralsRevenue from "@/components/command-center/ReferralsRevenue";
+import RecentActivity from "@/components/command-center/RecentActivity";
 import InternalTools from "@/components/command-center/InternalTools";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
@@ -98,15 +99,20 @@ const CommandCenter = () => {
           </div>
           
           <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid grid-cols-4 mb-6">
+            <TabsList className="grid w-full grid-cols-1 md:grid-cols-5 mb-6">
               <TabsTrigger value="overview">User Overview</TabsTrigger>
+              <TabsTrigger value="activity">Recent Activity</TabsTrigger>
               <TabsTrigger value="metrics">Live Metrics</TabsTrigger>
               <TabsTrigger value="revenue">Referrals & Revenue</TabsTrigger>
-              <TabsTrigger value="tools">Internal Tools</TabsTrigger>
+              <TabsTrigger value="tools">Founder Tools</TabsTrigger>
             </TabsList>
             
             <TabsContent value="overview" className="space-y-6">
               <UserOverview />
+            </TabsContent>
+            
+            <TabsContent value="activity" className="space-y-6">
+              <RecentActivity />
             </TabsContent>
             
             <TabsContent value="metrics" className="space-y-6">
