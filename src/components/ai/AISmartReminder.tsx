@@ -9,14 +9,18 @@ interface AISmartReminderProps {
   className?: string;
 }
 
+type ReminderPriority = "low" | "medium" | "high";
+
+interface ReminderData {
+  message: string;
+  action: string;
+  path: string;
+  priority: ReminderPriority;
+}
+
 const AISmartReminder = ({ className = "" }: AISmartReminderProps) => {
   const { user, userRole } = useAuth();
-  const [reminder, setReminder] = useState<{
-    message: string;
-    action: string;
-    path: string;
-    priority: "low" | "medium" | "high";
-  } | null>(null);
+  const [reminder, setReminder] = useState<ReminderData | null>(null);
   const [show, setShow] = useState(true);
 
   useEffect(() => {
@@ -24,9 +28,9 @@ const AISmartReminder = ({ className = "" }: AISmartReminderProps) => {
     
     // Generate a random reminder based on user role
     // In a real app, these would be based on actual user data
-    const generateReminder = () => {
+    const generateReminder = (): ReminderData => {
       const randomSelector = Math.floor(Math.random() * 3);
-      let priority: "low" | "medium" | "high" = "medium";
+      let priority: ReminderPriority = "medium";
       
       switch(userRole) {
         case 'artist':
