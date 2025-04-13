@@ -23,7 +23,7 @@ if (link) {
   link.href = "/lovable-uploads/aa25a147-5384-4b72-86f0-e3cc8caba2cc.png";
 }
 
-// Set viewport meta tag with fixed height behavior and improved touch handling
+// Set viewport meta tag with improved touch handling and fixed viewport
 const meta = document.createElement('meta');
 meta.name = 'viewport';
 meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, height=device-height';
