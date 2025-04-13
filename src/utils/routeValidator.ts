@@ -31,7 +31,6 @@ export const getCurrentRouteName = (): string => {
     return route.path === currentPath;
   });
   
-  // Fixed: Removed accessing 'name' property which doesn't exist on route objects
   return matchingRoute ? matchingRoute.path : 'Unknown Route';
 };
 

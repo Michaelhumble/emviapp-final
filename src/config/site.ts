@@ -2,8 +2,8 @@
 export const SiteConfig = {
   name: "EmviApp",
   description: "Connect with nail professionals and salons",
-  url: "https://emviapp.com",
-  ogImage: "https://emviapp.com/og-image.png",
+  url: "https://emvi.app",
+  ogImage: "https://emvi.app/og-image.png",
   links: {
     twitter: "https://twitter.com/emviapp",
     instagram: "https://instagram.com/emviapp",

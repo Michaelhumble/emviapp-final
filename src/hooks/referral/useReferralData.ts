@@ -27,7 +27,7 @@ export const useReferralData = () => {
         
         // Create referral link
         if (code) {
-          setReferralLink(`https://emviapp.com/join?ref=${code}`);
+          setReferralLink(`https://emvi.app/join?ref=${code}`);
         }
         
         // Fetch referrals
