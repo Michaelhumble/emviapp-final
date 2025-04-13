@@ -42,19 +42,24 @@ const Navbar = () => {
           <EmviLogo size="small" />
         </Link>
 
-        {/* Main navigation */}
-        <MainNavigation />
+        {/* Main navigation (hidden on mobile) */}
+        <div className="hidden md:block">
+          <MainNavigation />
+        </div>
 
         {/* Auth buttons or user menu with language toggle */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 md:gap-3">
           {/* Language toggle always visible */}
           <LanguageToggle minimal={true} className="mr-1" />
           
-          {user ? (
-            <UserMenu />
-          ) : (
-            <AuthButtons />
-          )}
+          {/* Auth buttons or user menu (hidden on mobile) */}
+          <div className="hidden md:block">
+            {user ? (
+              <UserMenu />
+            ) : (
+              <AuthButtons />
+            )}
+          </div>
           
           {/* Mobile menu button */}
           <MobileMenu 

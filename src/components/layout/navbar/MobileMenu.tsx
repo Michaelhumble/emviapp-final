@@ -1,11 +1,13 @@
 
 import React, { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Home, Users, Store, Briefcase, LayoutDashboard, User, Gift, LogOut } from 'lucide-react';
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { validateRoute } from '@/utils/routeValidator';
+import { motion } from 'framer-motion';
+import LanguageToggle from '../LanguageToggle';
 
 interface MobileMenuProps {
   user: any;
@@ -15,6 +17,7 @@ interface MobileMenuProps {
 const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const closeMenu = () => setOpen(false);
   
@@ -28,88 +31,91 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
     closeMenu();
   };
 
+  const menuItems = [
+    { icon: Home, label: "Home", path: "/" },
+    { icon: Users, label: "Find Artists", path: "/artists" },
+    { icon: Store, label: "For Salon Owners", path: "/salon-owners" },
+    { icon: Briefcase, label: "Jobs", path: "/jobs" },
+  ];
+
+  const userMenuItems = user ? [
+    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+    { icon: User, label: "Profile", path: "/profile" },
+    { icon: Gift, label: "Referrals", path: "/referrals" },
+  ] : [];
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button
           variant="ghost"
-          className="md:hidden p-2"
+          className="md:hidden p-2 relative"
           aria-label="Menu"
         >
           <Menu className="h-6 w-6" />
         </Button>
       </SheetTrigger>
-      <SheetContent className="flex flex-col">
-        <SheetHeader>
-          <SheetTitle>Menu</SheetTitle>
+      <SheetContent className="flex flex-col w-[85vw] sm:max-w-sm p-0">
+        <SheetHeader className="px-4 py-4 border-b">
+          <SheetTitle className="text-xl">Menu</SheetTitle>
         </SheetHeader>
         
-        <div className="flex-1 py-6">
-          <div className="flex flex-col space-y-3">
-            <div 
-              className="px-2 py-1.5 text-md hover:bg-gray-100 rounded cursor-pointer"
-              onClick={() => handleNavigation("/", "Home")}
-            >
-              Home
-            </div>
-            <div 
-              className="px-2 py-1.5 text-md hover:bg-gray-100 rounded cursor-pointer"
-              onClick={() => handleNavigation("/artists", "Find Artists")}
-            >
-              Find Artists
-            </div>
-            <div 
-              className="px-2 py-1.5 text-md hover:bg-gray-100 rounded cursor-pointer"
-              onClick={() => handleNavigation("/salon-owners", "For Salon Owners")}
-            >
-              For Salon Owners
-            </div>
-            <div 
-              className="px-2 py-1.5 text-md hover:bg-gray-100 rounded cursor-pointer"
-              onClick={() => handleNavigation("/jobs", "Jobs")}
-            >
-              Jobs
-            </div>
-            
+        <div className="flex-1 overflow-auto">
+          <div className="flex flex-col space-y-1 p-2">
+            {menuItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <Button
+                  key={item.label}
+                  variant={isActive ? "secondary" : "ghost"}
+                  className={`justify-start px-4 py-6 h-auto text-lg ${isActive ? 'bg-primary/10 font-medium' : ''}`}
+                  onClick={() => handleNavigation(item.path, item.label)}
+                >
+                  <item.icon className="mr-3 h-5 w-5" />
+                  {item.label}
+                </Button>
+              );
+            })}
+
             {user && (
               <>
-                <div 
-                  className="px-2 py-1.5 text-md hover:bg-gray-100 rounded cursor-pointer"
-                  onClick={() => handleNavigation("/dashboard", "Dashboard")}
-                >
-                  Dashboard
+                <div className="mt-4 px-4 py-2 text-sm font-medium text-muted-foreground">
+                  Account
                 </div>
-                <div 
-                  className="px-2 py-1.5 text-md hover:bg-gray-100 rounded cursor-pointer"
-                  onClick={() => handleNavigation("/profile", "Profile")}
-                >
-                  Profile
-                </div>
-                <div 
-                  className="px-2 py-1.5 text-md hover:bg-gray-100 rounded cursor-pointer"
-                  onClick={() => {
-                    toast.info("Referrals feature coming soon!");
-                    navigate("/dashboard");
-                    closeMenu();
-                  }}
-                >
-                  Referrals
-                </div>
+                {userMenuItems.map((item) => {
+                  const isActive = location.pathname === item.path;
+                  return (
+                    <Button
+                      key={item.label}
+                      variant={isActive ? "secondary" : "ghost"}
+                      className={`justify-start px-4 py-6 h-auto text-lg ${isActive ? 'bg-primary/10 font-medium' : ''}`}
+                      onClick={() => handleNavigation(item.path, item.label)}
+                    >
+                      <item.icon className="mr-3 h-5 w-5" />
+                      {item.label}
+                    </Button>
+                  );
+                })}
               </>
             )}
           </div>
         </div>
         
-        <SheetFooter>
+        <div className="border-t p-4">
+          <div className="mb-4">
+            <LanguageToggle minimal={false} />
+          </div>
+          
           {user ? (
             <Button 
               variant="destructive" 
-              className="w-full" 
+              className="w-full flex items-center justify-center" 
               onClick={() => {
                 handleSignOut();
                 closeMenu();
               }}
             >
+              <LogOut className="mr-2 h-4 w-4" />
               Sign Out
             </Button>
           ) : (
@@ -129,7 +135,7 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
               </Button>
             </div>
           )}
-        </SheetFooter>
+        </div>
       </SheetContent>
     </Sheet>
   );
