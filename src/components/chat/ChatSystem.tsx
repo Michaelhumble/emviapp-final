@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -9,7 +10,14 @@ import { useAssistant } from "@/hooks/useAssistant";
 import { BookingMatch } from "@/services/assistantService";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { processAiResponse } from "@/utils/aiResponseProcessor";
+
+export type ActionSuggestion = {
+  id: string;
+  label: string;
+  icon?: string;
+  href: string;
+};
 
 export type MessageType = {
   id: string;
@@ -18,6 +26,7 @@ export type MessageType = {
   timestamp: Date;
   isTyping?: boolean;
   bookingMatches?: BookingMatch[];
+  actionSuggestions?: ActionSuggestion[];
 };
 
 export function ChatSystem() {
@@ -40,7 +49,13 @@ export function ChatSystem() {
         id: `assistant-${Date.now()}`,
         content: "👋 Hi there! I'm Little Sunshine, your personal assistant. How can I help you today?",
         sender: "assistant",
-        timestamp: new Date()
+        timestamp: new Date(),
+        actionSuggestions: [
+          { id: "book", label: "Book an Artist", icon: "calendar", href: "/artists" },
+          { id: "jobs", label: "Post a Job", icon: "briefcase", href: "/jobs" },
+          { id: "salon", label: "Sell My Salon", icon: "store", href: "/salon-sales" },
+          { id: "explore", label: "Explore Artists", icon: "users", href: "/artists" }
+        ]
       };
       
       setMessages([welcomeMessage]);
@@ -142,7 +157,10 @@ export function ChatSystem() {
           id: `assistant-${Date.now()}`,
           content: `Great! I've sent a booking request to ${bookingMatch.name} for ${bookingMatch.service} on ${formatDate(bookingMatch.date)} at ${formatTime(bookingMatch.time)}. They'll confirm shortly, and you can check the status in your bookings page.`,
           sender: "assistant",
-          timestamp: new Date()
+          timestamp: new Date(),
+          actionSuggestions: [
+            { id: "bookings", label: "View My Bookings", icon: "calendar", href: "/dashboard/bookings" }
+          ]
         }
       ]);
     } else {
@@ -152,7 +170,10 @@ export function ChatSystem() {
           id: `assistant-${Date.now()}`,
           content: "I'm sorry, there was an issue creating your booking. Please try again or contact support if the problem persists.",
           sender: "assistant",
-          timestamp: new Date()
+          timestamp: new Date(),
+          actionSuggestions: [
+            { id: "support", label: "Contact Support", icon: "help-circle", href: "/support" }
+          ]
         }
       ]);
     }
@@ -185,21 +206,32 @@ export function ChatSystem() {
     ]);
     
     try {
+      // Log the message for future improvements
+      console.log("Chat log - User:", trimmedInput);
+      
+      // Process the user message and generate a response
       const response = await generateResponse(trimmedInput);
+      
+      // Process the response to add action suggestions based on content
+      const { message, suggestedActions } = processAiResponse(response);
       
       setMessages(prev => [
         ...prev.filter(m => m.id !== typingId),
         {
           id: `assistant-${Date.now()}`,
-          content: response,
+          content: message,
           sender: "assistant",
           timestamp: new Date(),
-          bookingMatches: matches.length > 0 ? matches : undefined
+          bookingMatches: matches.length > 0 ? matches : undefined,
+          actionSuggestions: suggestedActions
         }
       ]);
       
-      console.log("User message:", userMessage.content);
-      console.log("AI response:", response);
+      console.log("Chat log - AI:", message);
+      
+      if (message !== response) {
+        console.log("Original response:", response);
+      }
     } catch (error) {
       console.error("Error getting response:", error);
       
@@ -209,24 +241,14 @@ export function ChatSystem() {
           id: `assistant-error-${Date.now()}`,
           content: "Sorry, I had trouble processing your request. Please try again in a moment.",
           sender: "assistant",
-          timestamp: new Date()
+          timestamp: new Date(),
+          actionSuggestions: [
+            { id: "support", label: "Contact Support", icon: "help-circle", href: "/support" }
+          ]
         }
       ]);
     }
   }, [inputValue, isLoading, generateResponse, matches]);
-
-  const logConversation = async (userMessage: string, aiResponse: string) => {
-    try {
-      console.log("Chat log:", { 
-        user_id: user?.id || null,
-        user_message: userMessage,
-        ai_response: aiResponse,
-        timestamp: new Date().toISOString()
-      });
-    } catch (error) {
-      console.error("Error logging conversation:", error);
-    }
-  };
 
   const formatDate = (dateString: string): string => {
     try {

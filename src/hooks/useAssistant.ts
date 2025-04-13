@@ -8,6 +8,7 @@ import {
   BookingMatch, 
   AssistantResponse 
 } from '@/services/assistantService';
+import { mockAssistantResponses } from '@/utils/mockAssistantResponses';
 
 export const useAssistant = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -18,8 +19,10 @@ export const useAssistant = () => {
     setIsLoading(true);
     
     try {
-      // Simulate network delay for a more natural feel
-      const minDelay = 600; // minimum delay in ms
+      // Simulate network delay for a more natural feel (300-1200ms)
+      const minDelay = 300;
+      const maxDelay = 1200;
+      const randomDelay = Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
       const startTime = Date.now();
       
       // Process the user input
@@ -32,18 +35,41 @@ export const useAssistant = () => {
       
       // Ensure a minimum delay for typing indication
       const elapsedTime = Date.now() - startTime;
-      if (elapsedTime < minDelay && response.showTypingIndicator) {
-        await new Promise(resolve => setTimeout(resolve, minDelay - elapsedTime));
+      const remainingDelay = randomDelay - elapsedTime;
+      
+      if (remainingDelay > 0) {
+        await new Promise(resolve => setTimeout(resolve, remainingDelay));
       }
       
       return response.message;
     } catch (error) {
       console.error('Error generating response:', error);
-      toast.error('Sorry, I had trouble processing your request.');
-      return "I'm sorry, I encountered an error while processing your request. Please try again.";
+      
+      // Fall back to the mock response system if the regular system fails
+      const mockResponse = getMockResponse(userInput);
+      return mockResponse;
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Get a mock response based on user input when the regular system fails
+  const getMockResponse = (userInput: string): string => {
+    const input = userInput.toLowerCase();
+    
+    // Try to find a matching mock response
+    const matchedResponse = mockAssistantResponses.find(item => 
+      item.keywords.some(keyword => input.includes(keyword))
+    );
+    
+    if (matchedResponse) {
+      // Get a random response from the matching category
+      const responseIndex = Math.floor(Math.random() * matchedResponse.responses.length);
+      return matchedResponse.responses[responseIndex];
+    }
+    
+    // Default response if no match is found
+    return "I'm here to help with bookings, finding salons, or answering any questions about EmviApp. What would you like to know?";
   };
 
   return {

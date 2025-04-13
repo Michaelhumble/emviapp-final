@@ -1,10 +1,11 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { MessageType } from "./ChatSystem";
+import { MessageType, ActionSuggestion } from "./ChatSystem";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, User, Check } from "lucide-react";
+import { Calendar, Clock, User, Check, ChevronRight } from "lucide-react";
 import { BookingMatch } from "@/services/assistantService";
+import { Link } from "react-router-dom";
 
 interface MessageBubbleProps {
   message: MessageType;
@@ -40,6 +41,22 @@ export function MessageBubble({ message, onBookingConfirm }: MessageBubbleProps)
       return `${hour12}:${minutes} ${period}`;
     } catch (e) {
       return timeString;
+    }
+  };
+
+  // Get icon component for action suggestion
+  const getIconComponent = (iconName?: string) => {
+    switch (iconName) {
+      case 'calendar':
+        return <Calendar className="h-4 w-4 mr-1.5" />;
+      case 'briefcase':
+        return <Clock className="h-4 w-4 mr-1.5" />;
+      case 'store':
+        return <User className="h-4 w-4 mr-1.5" />;
+      case 'users':
+        return <User className="h-4 w-4 mr-1.5" />;
+      default:
+        return <ChevronRight className="h-4 w-4 mr-1.5" />;
     }
   };
 
@@ -106,6 +123,28 @@ export function MessageBubble({ message, onBookingConfirm }: MessageBubbleProps)
                       </Button>
                     )}
                   </div>
+                ))}
+              </div>
+            )}
+            
+            {/* Show action suggestions if available */}
+            {message.sender === "assistant" && message.actionSuggestions && message.actionSuggestions.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {message.actionSuggestions.map((action: ActionSuggestion) => (
+                  <Link 
+                    key={action.id} 
+                    to={action.href}
+                    className="no-underline"
+                  >
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="bg-background hover:bg-background/90 border-primary/20"
+                    >
+                      {getIconComponent(action.icon)}
+                      {action.label}
+                    </Button>
+                  </Link>
                 ))}
               </div>
             )}

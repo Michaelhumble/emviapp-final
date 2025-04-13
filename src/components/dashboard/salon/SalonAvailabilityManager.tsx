@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -86,20 +85,18 @@ const SalonAvailabilityManager = () => {
     try {
       setLoading(true);
       
-      // Use a simpler approach to the query to avoid TypeScript issues
-      const response = await supabase
+      if (!user) return;
+      
+      const { data, error } = await supabase
         .from('availability')
         .select('*')
-        .eq('user_id', user!.id)
-        .order('day_of_week', { ascending: true });
-      
-      const { data, error } = response;
+        .eq('user_id', user.id)
+        .order('day_of_week');
       
       if (error) throw error;
-
-      // Explicitly type the data after we get it
+      
       const typedData = data as unknown as DatabaseAvailabilityRecord[];
-
+      
       if (typedData && typedData.length > 0) {
         if (typedData[0].location) {
           setLocation(typedData[0].location);
