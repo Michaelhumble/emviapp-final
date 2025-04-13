@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { getLanguagePreference } from "@/utils/languagePreference";
+import { getLanguagePreference, addLanguageChangeListener } from "@/utils/languagePreference";
 
 const FounderMessage = () => {
   const [language, setLanguage] = useState<"en" | "vi">(getLanguagePreference());
@@ -27,7 +27,7 @@ const FounderMessage = () => {
   }, []);
 
   return (
-    <section className="py-16 bg-[#F9F7F4]">
+    <section className="py-20 bg-gradient-to-b from-pink-50/30 to-white">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -36,51 +36,48 @@ const FounderMessage = () => {
           viewport={{ once: true }}
           className="max-w-3xl mx-auto"
         >
-          <div className="text-center mb-6">
-            {language === "en" ? (
-              <span className="inline-block px-4 py-1 text-sm font-medium text-primary/80 bg-primary/5 rounded-full mb-4">
-                From the Founder
-              </span>
-            ) : (
-              <span className="inline-block px-4 py-1 text-sm font-medium text-primary/80 bg-primary/5 rounded-full mb-4">
-                Từ Người Sáng Lập
-              </span>
-            )}
+          <div className="text-center mb-8">
+            <span className="inline-block px-4 py-1 text-sm font-medium text-primary/80 bg-primary/5 rounded-full mb-2">
+              {language === "en" ? "From the Founder" : "Từ Người Sáng Lập"}
+            </span>
           </div>
           
           <div className="bg-white p-8 md:p-10 rounded-2xl shadow-sm border border-gray-100">
             {language === "en" ? (
               <div className="space-y-6">
-                <p className="text-lg md:text-xl italic text-gray-700 font-serif leading-relaxed text-center">
-                  "We started with just a water container, a dream, and a lot of hustle.<br />
-                  This platform is for every artist who cleaned before sunrise,<br />
-                  and every owner who paid themselves last.
+                <p className="text-lg md:text-xl text-gray-700 font-serif leading-relaxed text-center">
+                  Back then, we didn't have systems.<br />
+                  We had a water bowl, a towel, and a dream.
                 </p>
                 
-                <p className="text-lg md:text-xl italic text-gray-700 font-serif leading-relaxed text-center">
-                  If you've come this far without help —<br />
-                  you already did the hardest part.
+                <p className="text-lg md:text-xl text-gray-700 font-serif leading-relaxed text-center">
+                  No online bookings. No fancy tools. Just hustle, and heart.<br />
+                  We walked to the store. We called friends for help.<br />
+                  We made it work — even when nothing was working.
                 </p>
                 
-                <p className="text-lg md:text-xl italic text-gray-700 font-serif leading-relaxed text-center">
-                  Now we're giving you a system that takes care of the rest."
+                <p className="text-lg md:text-xl text-gray-700 font-serif leading-relaxed text-center">
+                  That's why EmviApp was born.<br />
+                  To finally make things easier for the next generation —<br />
+                  because we've already done the hard part.
                 </p>
               </div>
             ) : (
               <div className="space-y-6">
-                <p className="text-lg md:text-xl italic text-gray-700 font-serif leading-relaxed text-center">
-                  "Chúng tôi bắt đầu chỉ với một thau nước, một ước mơ, và rất nhiều cố gắng.<br />
-                  Nền tảng này là dành cho mọi người thợ từng lau dọn tiệm trước khi trời sáng,<br />
-                  và mọi chủ tiệm từng trả lương cho nhân viên trước — rồi mới đến lượt mình.
+                <p className="text-lg md:text-xl text-gray-700 font-serif leading-relaxed text-center">
+                  Ngày xưa, chúng tôi không có hệ thống gì cả.<br />
+                  Chỉ có một thau nước, một cái khăn, và một giấc mơ.
                 </p>
                 
-                <p className="text-lg md:text-xl italic text-gray-700 font-serif leading-relaxed text-center">
-                  Nếu bạn đã đi đến đây mà không ai giúp —<br />
-                  thì phần khó nhất bạn đã vượt qua rồi.
+                <p className="text-lg md:text-xl text-gray-700 font-serif leading-relaxed text-center">
+                  Không có đặt lịch online. Không có phần mềm hiện đại.<br />
+                  Chúng tôi tự đi mua đồ, gọi người quen đến phụ.<br />
+                  Làm tất cả, dù chẳng có gì dễ dàng.
                 </p>
                 
-                <p className="text-lg md:text-xl italic text-gray-700 font-serif leading-relaxed text-center">
-                  Bây giờ, chúng tôi mang đến một hệ thống lo hết phần còn lại cho bạn."
+                <p className="text-lg md:text-xl text-gray-700 font-serif leading-relaxed text-center">
+                  EmviApp ra đời là để giúp thế hệ sau nhẹ gánh hơn —<br />
+                  Vì những điều khó khăn… chúng tôi đã trải qua rồi.
                 </p>
               </div>
             )}
