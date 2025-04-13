@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { BriefcaseBusiness, BarChart3, Users, Sparkles } from "lucide-react";
-import FeatureCard from "./FeatureCard";
+import FeatureCard from "@/components/artists/FeatureCard";
 import { getLanguagePreference } from "@/utils/languagePreference";
 
 const EnhancedAIFeatures = () => {
