@@ -1,4 +1,3 @@
-
 export interface Job {
   id: string;
   role?: string;
@@ -62,4 +61,6 @@ export interface Job {
   // Properties needed by ListingCard
   features?: string[];
   price?: string;
+  years_experience?: number;
+  profile_views?: number;
 }

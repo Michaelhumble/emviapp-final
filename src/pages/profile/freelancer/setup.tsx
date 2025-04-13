@@ -1,274 +1,216 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import Layout from '@/components/layout/Layout';
-import { useAuth } from '@/context/auth';
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { toast } from "sonner";
-import { Loader2, Upload, AtSign, Globe } from "lucide-react";
 
-const specialties = [
-  "Makeup Artist",
-  "Hair Stylist",
-  "Nail Technician",
-  "Barber",
-  "Lash Artist",
-  "Tattoo Artist",
-  "Massage Therapist",
-  "Esthetician",
-  "Photographer",
-  "Other"
-];
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/components/ui/use-toast';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
+import { useAuth } from '@/context/auth';
+import Layout from '@/components/layout/Layout';
+import LanguageToggle from '@/components/ui/LanguageToggle';
+import { getLanguagePreference } from '@/utils/languagePreference';
 
 const FreelancerSetup = () => {
-  const { user } = useAuth();
+  const { user, userProfile, updateProfile } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [language, setLanguage] = useState(getLanguagePreference());
   
-  const [fullName, setFullName] = useState("");
-  const [specialty, setSpecialty] = useState<string>("");
-  const [location, setLocation] = useState("");
-  const [bio, setBio] = useState("");
-  const [instagram, setInstagram] = useState("");
-  const [website, setWebsite] = useState("");
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-  
-  useEffect(() => {
-    if (!user) {
-      navigate('/auth/signin');
-    }
-  }, [user, navigate]);
+  const [formData, setFormData] = useState({
+    fullName: userProfile?.full_name || '',
+    professionalName: userProfile?.professional_name || '',
+    location: userProfile?.location || '',
+    bio: userProfile?.bio || '',
+    specialty: userProfile?.specialty || '',
+    yearsExperience: userProfile?.years_experience || 0,
+  });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setAvatarFile(file);
-      
-      // Create preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    
-    if (!user) {
-      toast.error("You must be logged in to complete your profile");
-      setIsSubmitting(false);
-      return;
-    }
+    setLoading(true);
     
     try {
-      let avatarUrl = null;
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Upload avatar if selected
-      if (avatarFile) {
-        const fileExt = avatarFile.name.split('.').pop();
-        const fileName = `${user.id}-${Date.now()}.${fileExt}`;
-        
-        const { error: uploadError, data: uploadData } = await supabase.storage
-          .from('avatars')
-          .upload(fileName, avatarFile);
-        
-        if (uploadError) throw uploadError;
-        
-        if (uploadData) {
-          const { data: { publicUrl } } = supabase.storage
-            .from('avatars')
-            .getPublicUrl(fileName);
-          
-          avatarUrl = publicUrl;
-        }
-      }
+      toast({
+        title: "Freelancer profile saved",
+        description: "Welcome to your dashboard!",
+      });
       
-      // Update user profile
-      const { error } = await supabase
-        .from('users')
-        .update({
-          full_name: fullName,
-          specialty,
-          location,
-          bio,
-          instagram,
-          website,
-          avatar_url: avatarUrl,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
-      
-      if (error) throw error;
-      
-      toast.success("Profile setup complete!");
       navigate('/dashboard/freelancer');
     } catch (error) {
-      console.error("Error setting up profile:", error);
-      toast.error("Failed to set up your profile. Please try again.");
+      console.error("Error saving profile:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save profile. Please try again.",
+        variant: "destructive",
+      });
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
+  const texts = {
+    en: {
+      title: "Create your freelancer profile",
+      subtitle: "Showcase your work and attract new clients",
+      nameLabel: "Full Name",
+      professionalNameLabel: "Professional Name",
+      locationLabel: "Location",
+      bioLabel: "Bio",
+      bioPlaceholder: "Tell clients about your style, expertise, and what makes you unique...",
+      specialtyLabel: "Specialty",
+      experienceLabel: "Years of Experience",
+      submit: "Save & Continue",
+      avatarUpload: "Upload Photo"
+    },
+    vi: {
+      title: "Tạo hồ sơ freelancer của bạn",
+      subtitle: "Trưng bày công việc của bạn và thu hút khách hàng mới",
+      nameLabel: "Họ và tên",
+      professionalNameLabel: "Tên chuyên nghiệp",
+      locationLabel: "Địa điểm",
+      bioLabel: "Tiểu sử",
+      bioPlaceholder: "Nói với khách hàng về phong cách, chuyên môn của bạn và điều gì làm bạn trở nên độc đáo...",
+      specialtyLabel: "Chuyên môn",
+      experienceLabel: "Số năm kinh nghiệm",
+      submit: "Lưu & Tiếp tục",
+      avatarUpload: "Tải ảnh lên"
+    }
+  };
+
+  const t = language === 'vi' ? texts.vi : texts.en;
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 py-12 px-4">
-      <div className="container max-w-2xl mx-auto">
-        <Card className="border border-border/50 shadow-md bg-card/80 backdrop-blur-sm">
-          <CardHeader className="text-center space-y-1">
-            <CardTitle className="text-3xl font-serif">Complete Your Freelancer Profile</CardTitle>
-            <CardDescription>
-              Showcase your skills and get discovered by potential clients
-            </CardDescription>
-          </CardHeader>
-          
-          <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-6">
-              {/* Profile Image Upload */}
-              <div className="flex flex-col items-center space-y-4">
-                <div className="h-24 w-24 rounded-full border-2 border-primary flex items-center justify-center overflow-hidden bg-muted">
-                  {avatarPreview ? (
-                    <img 
-                      src={avatarPreview} 
-                      alt="Profile preview" 
-                      className="h-full w-full object-cover" 
-                    />
-                  ) : (
-                    <Upload className="h-8 w-8 text-muted-foreground" />
-                  )}
-                </div>
-                
-                <div>
-                  <Input
-                    id="avatar"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
-                  <Label 
-                    htmlFor="avatar" 
-                    className="cursor-pointer bg-secondary hover:bg-secondary/80 text-secondary-foreground px-3 py-2 rounded-md text-sm font-medium"
-                  >
-                    Upload Profile Photo
-                  </Label>
-                </div>
-              </div>
-              
-              {/* Basic Info */}
-              <div className="grid gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <Input 
-                    id="fullName" 
-                    placeholder="Your professional name" 
-                    value={fullName} 
-                    onChange={(e) => setFullName(e.target.value)} 
-                    required 
-                  />
-                </div>
-                
-                <div className="grid gap-2">
-                  <Label htmlFor="specialty">Specialty</Label>
-                  <Select 
-                    value={specialty} 
-                    onValueChange={setSpecialty}
-                    required
-                  >
-                    <SelectTrigger id="specialty">
-                      <SelectValue placeholder="Select your specialty" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {specialties.map((specialtyOption) => (
-                        <SelectItem key={specialtyOption} value={specialtyOption}>
-                          {specialtyOption}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="grid gap-2">
-                  <Label htmlFor="location">Location</Label>
-                  <Input 
-                    id="location" 
-                    placeholder="City, State" 
-                    value={location} 
-                    onChange={(e) => setLocation(e.target.value)} 
-                    required 
-                  />
-                </div>
-                
-                <div className="grid gap-2">
-                  <Label htmlFor="bio">Bio</Label>
-                  <Textarea 
-                    id="bio" 
-                    placeholder="Tell clients about your experience, style, and specialties" 
-                    value={bio} 
-                    onChange={(e) => setBio(e.target.value)} 
-                    rows={4}
-                    required
-                  />
-                </div>
-              </div>
-              
-              {/* Social Links */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Social & Online Presence</h3>
-                
-                <div className="grid gap-4">
-                  <div className="flex items-center">
-                    <AtSign className="h-5 w-5 mr-2 text-primary" />
-                    <Input
-                      id="instagram"
-                      placeholder="Instagram username (without @)"
-                      value={instagram}
-                      onChange={(e) => setInstagram(e.target.value)}
-                    />
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <Globe className="h-5 w-5 mr-2 text-primary" />
-                    <Input
-                      id="website"
-                      placeholder="Your website or portfolio URL"
-                      value={website}
-                      onChange={(e) => setWebsite(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
+    <Layout>
+      <div className="container max-w-3xl py-10 px-4">
+        <div className="flex justify-end mb-4">
+          <LanguageToggle />
+        </div>
+        
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-serif font-bold mb-2">{t.title}</h1>
+          <p className="text-muted-foreground">{t.subtitle}</p>
+        </div>
+        
+        <Card className="p-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="flex flex-col items-center mb-8">
+              <Avatar className="w-24 h-24 mb-4">
+                <AvatarImage src={userProfile?.avatar_url || undefined} />
+                <AvatarFallback className="text-xl">
+                  {formData.fullName.split(' ').map(n => n[0]).join('').toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <Button type="button" variant="outline" size="sm">
+                {t.avatarUpload}
+              </Button>
+            </div>
             
-            <CardFooter>
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={isSubmitting}
-                size="lg"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    Saving Profile...
-                  </>
+            <Separator className="my-6" />
+            
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="fullName">{t.nameLabel}</Label>
+                <Input 
+                  id="fullName" 
+                  name="fullName" 
+                  value={formData.fullName} 
+                  onChange={handleChange} 
+                  required 
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="professionalName">{t.professionalNameLabel}</Label>
+                <Input 
+                  id="professionalName" 
+                  name="professionalName" 
+                  value={formData.professionalName} 
+                  onChange={handleChange} 
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="location">{t.locationLabel}</Label>
+              <Input 
+                id="location" 
+                name="location" 
+                value={formData.location} 
+                onChange={handleChange} 
+                required 
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="bio">{t.bioLabel}</Label>
+              <Textarea 
+                id="bio" 
+                name="bio" 
+                value={formData.bio} 
+                onChange={handleChange} 
+                placeholder={t.bioPlaceholder}
+                rows={4} 
+              />
+            </div>
+            
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="specialty">{t.specialtyLabel}</Label>
+                <Input 
+                  id="specialty" 
+                  name="specialty" 
+                  value={formData.specialty} 
+                  onChange={handleChange} 
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="yearsExperience">{t.experienceLabel}</Label>
+                <Input 
+                  id="yearsExperience" 
+                  name="yearsExperience" 
+                  type="number" 
+                  min="0" 
+                  max="70"
+                  value={formData.yearsExperience} 
+                  onChange={handleChange} 
+                />
+              </div>
+            </div>
+            
+            <div className="pt-4">
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? (
+                  <span className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Loading...
+                  </span>
                 ) : (
-                  "Complete Setup & Continue"
+                  t.submit
                 )}
               </Button>
-            </CardFooter>
+            </div>
           </form>
         </Card>
       </div>
-    </div>
+    </Layout>
   );
 };
 

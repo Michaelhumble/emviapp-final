@@ -1,271 +1,202 @@
 
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { toast } from "sonner";
-import { Loader2, Upload } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
-
-const salonTypes = [
-  "Nail Salon",
-  "Hair Salon",
-  "Barbershop",
-  "Mixed Service Salon",
-  "Spa",
-  "Tattoo Shop",
-  "Makeup Studio",
-  "Lash & Brow Bar",
-  "Other"
-];
-
-const artistNumbers = [
-  "1-3",
-  "4-6",
-  "7-10",
-  "11-15",
-  "16-20",
-  "21+"
-];
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/components/ui/use-toast';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
+import { useAuth } from '@/context/auth';
+import Layout from '@/components/layout/Layout';
+import LanguageToggle from '@/components/ui/LanguageToggle';
+import { getLanguagePreference } from '@/utils/languagePreference';
 
 const SalonOwnerSetup = () => {
-  const { user } = useAuth();
+  const { user, userProfile, updateProfile } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [language, setLanguage] = useState(getLanguagePreference());
   
-  const [salonName, setSalonName] = useState("");
-  const [salonType, setSalonType] = useState<string>("");
-  const [address, setAddress] = useState("");
-  const [artistCount, setArtistCount] = useState<string>("");
-  const [isHiring, setIsHiring] = useState(false);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  
-  if (!user) {
-    navigate('/auth/signin');
-    return null;
-  }
+  const [formData, setFormData] = useState({
+    salonName: userProfile?.salon_name || '',
+    ownerName: userProfile?.full_name || '',
+    location: userProfile?.location || '',
+    bio: userProfile?.bio || '',
+    numberOfStations: userProfile?.number_of_stations || 5,
+  });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setLogoFile(file);
-      
-      // Create preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setLogoPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    
-    if (!user) {
-      toast.error("You must be logged in to complete your profile");
-      setIsSubmitting(false);
-      return;
-    }
+    setLoading(true);
     
     try {
-      let logoUrl = null;
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Upload logo if selected
-      if (logoFile) {
-        const fileExt = logoFile.name.split('.').pop();
-        const fileName = `salon-${user.id}-${Date.now()}.${fileExt}`;
-        
-        const { error: uploadError, data: uploadData } = await supabase.storage
-          .from('avatars')
-          .upload(fileName, logoFile);
-        
-        if (uploadError) throw uploadError;
-        
-        if (uploadData) {
-          const { data: { publicUrl } } = supabase.storage
-            .from('avatars')
-            .getPublicUrl(fileName);
-          
-          logoUrl = publicUrl;
-        }
-      }
+      toast({
+        title: "Salon profile saved",
+        description: "Welcome to your dashboard!",
+      });
       
-      // Update user profile
-      const { error } = await supabase
-        .from('users')
-        .update({
-          salon_name: salonName,
-          salon_type: salonType,
-          business_address: address,
-          artist_count: artistCount,
-          is_hiring: isHiring,
-          avatar_url: logoUrl,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
-      
-      if (error) throw error;
-      
-      toast.success("Salon profile setup complete!");
-      navigate('/dashboard/owner');
+      navigate('/dashboard/salon');
     } catch (error) {
-      console.error("Error setting up profile:", error);
-      toast.error("Failed to set up your salon profile. Please try again.");
+      console.error("Error saving profile:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save profile. Please try again.",
+        variant: "destructive",
+      });
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
+  const texts = {
+    en: {
+      title: "Set up your salon profile",
+      subtitle: "Create your salon's online presence and attract new clients",
+      salonNameLabel: "Salon Name",
+      ownerNameLabel: "Owner Name",
+      locationLabel: "Location",
+      bioLabel: "About Your Salon",
+      bioPlaceholder: "Describe your salon, services offered, and what makes it special...",
+      stationsLabel: "Number of Stations",
+      submit: "Save & Continue",
+      avatarUpload: "Upload Salon Logo"
+    },
+    vi: {
+      title: "Thiết lập hồ sơ tiệm của bạn",
+      subtitle: "Tạo sự hiện diện trực tuyến cho tiệm và thu hút khách hàng mới",
+      salonNameLabel: "Tên Tiệm",
+      ownerNameLabel: "Tên Chủ Tiệm",
+      locationLabel: "Địa Điểm",
+      bioLabel: "Giới Thiệu Về Tiệm",
+      bioPlaceholder: "Mô tả tiệm của bạn, dịch vụ cung cấp và điều gì làm nó đặc biệt...",
+      stationsLabel: "Số Trạm Làm Việc",
+      submit: "Lưu & Tiếp Tục",
+      avatarUpload: "Tải Lên Logo Tiệm"
+    }
+  };
+
+  const t = language === 'vi' ? texts.vi : texts.en;
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 py-12 px-4">
-      <div className="container max-w-2xl mx-auto">
-        <Card className="border border-border/50 shadow-md bg-card/80 backdrop-blur-sm">
-          <CardHeader className="text-center space-y-1">
-            <CardTitle className="text-3xl font-serif">Complete Your Salon Profile</CardTitle>
-            <CardDescription>
-              Help professionals and customers discover your salon
-            </CardDescription>
-          </CardHeader>
-          
-          <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-6">
-              {/* Logo Upload */}
-              <div className="flex flex-col items-center space-y-4">
-                <div className="h-32 w-32 rounded-md border-2 border-primary flex items-center justify-center overflow-hidden bg-muted">
-                  {logoPreview ? (
-                    <img 
-                      src={logoPreview} 
-                      alt="Salon logo preview" 
-                      className="h-full w-full object-cover" 
-                    />
-                  ) : (
-                    <Upload className="h-10 w-10 text-muted-foreground" />
-                  )}
-                </div>
-                
-                <div>
-                  <Input
-                    id="logo"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
-                  <Label 
-                    htmlFor="logo" 
-                    className="cursor-pointer bg-secondary hover:bg-secondary/80 text-secondary-foreground px-3 py-2 rounded-md text-sm font-medium"
-                  >
-                    Upload Salon Logo or Image
-                  </Label>
-                </div>
+    <Layout>
+      <div className="container max-w-3xl py-10 px-4">
+        <div className="flex justify-end mb-4">
+          <LanguageToggle />
+        </div>
+        
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-serif font-bold mb-2">{t.title}</h1>
+          <p className="text-muted-foreground">{t.subtitle}</p>
+        </div>
+        
+        <Card className="p-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="flex flex-col items-center mb-8">
+              <Avatar className="w-24 h-24 mb-4">
+                <AvatarImage src={userProfile?.avatar_url || undefined} />
+                <AvatarFallback className="text-xl">
+                  {formData.salonName.split(' ').map(n => n[0]).join('').toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <Button type="button" variant="outline" size="sm">
+                {t.avatarUpload}
+              </Button>
+            </div>
+            
+            <Separator className="my-6" />
+            
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="salonName">{t.salonNameLabel}</Label>
+                <Input 
+                  id="salonName" 
+                  name="salonName" 
+                  value={formData.salonName} 
+                  onChange={handleChange} 
+                  required 
+                />
               </div>
               
-              {/* Basic Info */}
-              <div className="grid gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="salonName">Salon Name</Label>
-                  <Input 
-                    id="salonName" 
-                    placeholder="Your salon name" 
-                    value={salonName} 
-                    onChange={(e) => setSalonName(e.target.value)} 
-                    required 
-                  />
-                </div>
-                
-                <div className="grid gap-2">
-                  <Label htmlFor="salonType">Type of Salon</Label>
-                  <Select 
-                    value={salonType} 
-                    onValueChange={setSalonType}
-                    required
-                  >
-                    <SelectTrigger id="salonType">
-                      <SelectValue placeholder="Select salon type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {salonTypes.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="grid gap-2">
-                  <Label htmlFor="address">Business Address</Label>
-                  <Input 
-                    id="address" 
-                    placeholder="Full street address" 
-                    value={address} 
-                    onChange={(e) => setAddress(e.target.value)} 
-                    required 
-                  />
-                </div>
-                
-                <div className="grid gap-2">
-                  <Label htmlFor="artistCount">How many artists work at your salon?</Label>
-                  <Select 
-                    value={artistCount} 
-                    onValueChange={setArtistCount}
-                    required
-                  >
-                    <SelectTrigger id="artistCount">
-                      <SelectValue placeholder="Number of artists" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {artistNumbers.map((number) => (
-                        <SelectItem key={number} value={number}>
-                          {number}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="isHiring" className="cursor-pointer">
-                    Are you currently hiring?
-                  </Label>
-                  <Switch
-                    id="isHiring"
-                    checked={isHiring}
-                    onCheckedChange={setIsHiring}
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="ownerName">{t.ownerNameLabel}</Label>
+                <Input 
+                  id="ownerName" 
+                  name="ownerName" 
+                  value={formData.ownerName} 
+                  onChange={handleChange} 
+                  required 
+                />
               </div>
-            </CardContent>
+            </div>
             
-            <CardFooter>
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={isSubmitting}
-                size="lg"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    Saving Profile...
-                  </>
+            <div className="space-y-2">
+              <Label htmlFor="location">{t.locationLabel}</Label>
+              <Input 
+                id="location" 
+                name="location" 
+                value={formData.location} 
+                onChange={handleChange} 
+                required 
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="bio">{t.bioLabel}</Label>
+              <Textarea 
+                id="bio" 
+                name="bio" 
+                value={formData.bio} 
+                onChange={handleChange} 
+                placeholder={t.bioPlaceholder}
+                rows={4} 
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="numberOfStations">{t.stationsLabel}</Label>
+              <Input 
+                id="numberOfStations" 
+                name="numberOfStations" 
+                type="number" 
+                min="1" 
+                max="100"
+                value={formData.numberOfStations} 
+                onChange={handleChange} 
+              />
+            </div>
+            
+            <div className="pt-4">
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? (
+                  <span className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Loading...
+                  </span>
                 ) : (
-                  "Complete Setup & Continue"
+                  t.submit
                 )}
               </Button>
-            </CardFooter>
+            </div>
           </form>
         </Card>
       </div>
-    </div>
+    </Layout>
   );
 };
 

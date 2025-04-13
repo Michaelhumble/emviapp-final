@@ -8,10 +8,26 @@ import MainNavigation from "./navbar/MainNavigation";
 import { UserMenu } from "./navbar/UserMenu";
 import AuthButtons from "./navbar/AuthButtons";
 import MobileMenu from "./navbar/MobileMenu";
+import LanguageToggle from "@/components/ui/LanguageToggle";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Determine if we're on an explore page
+  const isExplorePage = 
+    location.pathname.includes('/artists') || 
+    location.pathname.includes('/salons') || 
+    location.pathname.includes('/jobs') || 
+    location.pathname.includes('/salon-marketplace') || 
+    location.pathname.includes('/freelancers') ||
+    location.pathname.includes('/explore');
+  
+  // Determine if we're on a profile setup page
+  const isProfileSetupPage = 
+    location.pathname.includes('/profile/') && 
+    location.pathname.includes('/setup');
 
   const handleSignOut = async () => {
     await signOut();
@@ -31,6 +47,11 @@ const Navbar = () => {
 
         {/* Auth buttons or user menu */}
         <div className="flex items-center gap-2">
+          {/* Language toggle for explore pages */}
+          {(isExplorePage || isProfileSetupPage) && (
+            <LanguageToggle minimal={true} className="mr-2" />
+          )}
+          
           {user ? (
             <UserMenu />
           ) : (

@@ -6,6 +6,7 @@ import { MapPin, DollarSign, Clock, Grid, ExternalLink, Info, Home, Building, Lo
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
 import AuthGuard from "@/components/auth/AuthGuard";
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 export interface SalonCardProps {
   salon: Job;
@@ -14,8 +15,39 @@ export interface SalonCardProps {
   isExpired?: boolean;
 }
 
+// Name replacement mapping to avoid legal issues
+const nameReplacements: Record<string, string> = {
+  "Pho 88": "Lotus Noodle House",
+  "San Jose": "San Benito",
+  "Kim's Nail & Spa": "Daisy & Co. Nail Studio",
+  "Amy Nguyen": "Amber L.",
+  "Trang's Studio": "Glowroom by Tara",
+  "Anh Salon": "Honey & Clay Beauty Bar",
+  "Happy Nails": "Serene Nail Boutique",
+  "Lucky Nails": "Lush & Lovely Nails",
+  "Perfect Nails": "Pristine Nail Artistry",
+  "Luxury Nails": "Luminous Nail Bar",
+  "Star Nails": "Stellar Beauty Lounge",
+  "VIP Nails": "Velvet Touch Nail Spa"
+};
+
+// Replace potentially problematic business names
+const sanitizeBusinessName = (name: string): string => {
+  let sanitized = name;
+  
+  Object.entries(nameReplacements).forEach(([original, replacement]) => {
+    sanitized = sanitized.replace(new RegExp(original, 'gi'), replacement);
+  });
+  
+  return sanitized;
+};
+
 const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCardProps) => {
   const { isSignedIn } = useAuth();
+  
+  // Sanitize business name and location
+  const sanitizedCompany = sanitizeBusinessName(salon.company || "");
+  const sanitizedLocation = sanitizeBusinessName(salon.location || "");
   
   // Function to format currency 
   const formatCurrency = (value?: string) => {
@@ -36,21 +68,18 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
     >
       <CardContent className="flex flex-col h-full p-4">
         <div className="mb-4">
-          {salon.image ? (
-            <div
-              className="h-40 w-full bg-cover bg-center rounded-md"
-              style={{ backgroundImage: `url(${salon.image})` }}
-            />
-          ) : (
-            <div className={`h-40 w-full ${isVietnameseSalon ? 'bg-gradient-to-r from-red-50 to-yellow-50' : 'bg-gradient-to-r from-pink-100 to-blue-100'} rounded-md flex items-center justify-center`}>
-              <span className="text-gray-500 font-medium">{salon.company || "Salon for Sale"}</span>
-            </div>
-          )}
+          <ImageWithFallback
+            src={salon.image}
+            alt={sanitizedCompany || "Salon for Sale"}
+            className="h-40 w-full object-cover rounded-md"
+            fallbackClassName="h-40 w-full rounded-md"
+            businessName={sanitizedCompany}
+          />
         </div>
         
         <div className="flex-grow">
           <div className="flex justify-between items-start">
-            <h3 className="font-medium text-lg">{salon.company || "Salon for Sale"}</h3>
+            <h3 className="font-medium text-lg font-serif">{sanitizedCompany || "Salon for Sale"}</h3>
             <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-200">
               For Sale
             </Badge>
@@ -59,7 +88,7 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
           <div className="mt-2 space-y-2 text-sm">
             <div className="flex items-center text-gray-600">
               <MapPin className="h-4 w-4 mr-2 text-gray-400" />
-              <span>{salon.location || "Location not specified"}</span>
+              <span>{sanitizedLocation || "Location not specified"}</span>
             </div>
             
             {salon.asking_price && (
@@ -134,7 +163,7 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
                 onClick={() => onViewDetails(salon)}
               >
                 <ExternalLink className="h-4 w-4 mr-2" />
-                View Details
+                <span className="font-medium">View Details</span>
               </Button>
             </AuthGuard>
           )}

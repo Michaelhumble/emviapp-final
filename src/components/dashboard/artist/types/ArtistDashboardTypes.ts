@@ -95,8 +95,8 @@ export interface ArtistProfileState {
   credits?: number;
   affiliate_code?: string;
   referral_count?: number;
-  profile_views?: number; // Added missing property
-  years_of_experience?: number; // Alternative naming
+  profile_views?: number;
+  years_of_experience?: number;
 }
 
 // Updating DaySchedule interface to include all required properties

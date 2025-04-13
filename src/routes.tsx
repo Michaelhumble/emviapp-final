@@ -28,6 +28,8 @@ import SalonDetail from './pages/salons/SalonDetail';
 import ProfileRedirect from './pages/profile/ProfileRedirect';
 import Profile from './pages/Profile';
 import ArtistPublicPage from './pages/a/ArtistPublicPage';
+import ArtistExplore from './pages/explore/artists';
+import SalonMarketplace from './pages/SalonMarketplace';
 
 // Import profile setup pages
 import ArtistSetup from './pages/profile/artist/setup';
@@ -52,6 +54,10 @@ const routes = [
     element: <Artists />,
   },
   {
+    path: '/explore/artists',
+    element: <ArtistExplore />,
+  },
+  {
     path: '/jobs',
     element: <JobsPage />,
   },
@@ -66,6 +72,10 @@ const routes = [
   {
     path: '/sell-salon',
     element: <SellSalon />,
+  },
+  {
+    path: '/salon-marketplace',
+    element: <SalonMarketplace />,
   },
   {
     path: '/salon-owners',
@@ -179,6 +189,26 @@ const routes = [
   {
     path: '/profile/supplier/setup',
     element: <SupplierSetup />,
+  },
+  {
+    path: '/setup/artist',
+    element: <ArtistSetup />,
+  },
+  {
+    path: '/setup/salon',
+    element: <SalonOwnerSetup />,
+  },
+  {
+    path: '/setup/freelancer',
+    element: <FreelancerSetup />,
+  },
+  {
+    path: '/setup/customer',
+    element: <CustomerSetup />,
+  },
+  {
+    path: '/setup/other',
+    element: <OtherRoleSetup />,
   },
   // Add the new public artist profile routes
   {
