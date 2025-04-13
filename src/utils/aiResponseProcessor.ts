@@ -1,80 +1,93 @@
 
 import { ActionSuggestion } from "@/components/chat/ChatSystem";
 
-type ProcessedResponse = {
-  message: string;
-  suggestedActions: ActionSuggestion[];
-};
-
-/**
- * Process the AI response to extract context and add appropriate action suggestions
- */
-export function processAiResponse(response: string): ProcessedResponse {
-  // Default suggestions that are generally helpful
-  const defaultSuggestions: ActionSuggestion[] = [
-    { id: "book", label: "Book an Artist", icon: "calendar", href: "/artists" },
-    { id: "explore", label: "Explore Artists", icon: "users", href: "/artists" }
-  ];
+// Process AI response to extract action suggestions based on content
+export const processAiResponse = (
+  response: string
+): { message: string; suggestedActions: ActionSuggestion[] } => {
+  const suggestedActions: ActionSuggestion[] = [];
   
-  // Initialize suggestions with empty array
-  let suggestedActions: ActionSuggestion[] = [];
-  
-  // Check for specific keywords to add contextual action suggestions
-  const lowerResponse = response.toLowerCase();
-  
-  // Job-related suggestions
-  if (lowerResponse.includes("job") || 
-      lowerResponse.includes("hiring") || 
-      lowerResponse.includes("position") ||
-      lowerResponse.includes("opportunity") ||
-      lowerResponse.includes("employment")) {
-    suggestedActions.push(
-      { id: "post-job", label: "Post a Job", icon: "briefcase", href: "/jobs" },
-      { id: "find-jobs", label: "Find Jobs", icon: "briefcase", href: "/jobs" }
-    );
+  // Check for action indicators in the response
+  if (response.includes('Post a Job') || response.includes('job posting')) {
+    suggestedActions.push({
+      id: 'post-job',
+      label: 'Post a Job',
+      icon: 'briefcase',
+      href: '/jobs'
+    });
   }
   
-  // Salon-related suggestions
-  if (lowerResponse.includes("salon") || 
-      lowerResponse.includes("shop") || 
-      lowerResponse.includes("store") ||
-      lowerResponse.includes("business")) {
-    suggestedActions.push(
-      { id: "sell-salon", label: "Sell My Salon", icon: "store", href: "/salon-sales" },
-      { id: "find-salon", label: "Find Salons", icon: "store", href: "/salons" }
-    );
+  if (response.includes('Book an Artist') || response.includes('booking')) {
+    suggestedActions.push({
+      id: 'book-artist',
+      label: 'Book an Artist',
+      icon: 'calendar',
+      href: '/artists'
+    });
   }
   
-  // Booking-related suggestions
-  if (lowerResponse.includes("book") || 
-      lowerResponse.includes("appointment") || 
-      lowerResponse.includes("schedule") ||
-      lowerResponse.includes("reservation")) {
-    suggestedActions.push(
-      { id: "book-now", label: "Book Now", icon: "calendar", href: "/artists" }
-    );
+  if (response.includes('Sell My Salon') || response.includes('list your salon')) {
+    suggestedActions.push({
+      id: 'sell-salon',
+      label: 'Sell My Salon',
+      icon: 'store',
+      href: '/salon-sales'
+    });
   }
   
-  // Artist-related suggestions
-  if (lowerResponse.includes("artist") || 
-      lowerResponse.includes("stylist") || 
-      lowerResponse.includes("professional") ||
-      lowerResponse.includes("specialist")) {
-    suggestedActions.push(
-      { id: "find-artists", label: "Find Artists", icon: "users", href: "/artists" }
-    );
+  if (response.includes('Explore Artists') || response.includes('find stylists')) {
+    suggestedActions.push({
+      id: 'explore-artists',
+      label: 'Explore Artists',
+      icon: 'users',
+      href: '/artists'
+    });
   }
   
-  // If we have no specific suggestions, use the defaults
-  if (suggestedActions.length === 0) {
-    suggestedActions = defaultSuggestions;
+  if (response.includes('pricing page') || response.includes('pricing plans')) {
+    suggestedActions.push({
+      id: 'pricing',
+      label: 'View Pricing',
+      icon: 'credit-card',
+      href: '/pricing'
+    });
   }
   
-  // Limit to 3 suggestions to avoid cluttering the interface
-  suggestedActions = suggestedActions.slice(0, 3);
+  // If we couldn't extract any specific actions but the response is substantial,
+  // provide some default actions based on the context
+  if (suggestedActions.length === 0 && response.length > 50) {
+    // Get default actions
+    const defaultActions = getDefaultActions();
+    
+    // Add up to 2 default actions
+    suggestedActions.push(...defaultActions.slice(0, 2));
+  }
   
   return {
     message: response,
     suggestedActions
   };
-}
+};
+
+export const getDefaultActions = (): ActionSuggestion[] => {
+  return [
+    {
+      id: 'explore',
+      label: 'Explore Artists',
+      icon: 'users',
+      href: '/artists'
+    },
+    {
+      id: 'jobs',
+      label: 'Browse Jobs',
+      icon: 'briefcase',
+      href: '/jobs'
+    },
+    {
+      id: 'sell-salon',
+      label: 'Sell My Salon',
+      icon: 'store',
+      href: '/salon-sales'
+    }
+  ];
+};
