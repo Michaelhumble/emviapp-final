@@ -6,16 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { toast } from "sonner";
 import EmviLogo from "@/components/branding/EmviLogo";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { signInWithEmail } from "@/services/auth";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { signIn, user } = useAuth();
+  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   // Redirect if already logged in
@@ -26,12 +29,21 @@ const SignIn = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
 
     try {
-      await signIn(email, password);
-      navigate("/dashboard");
-    } catch (error) {
+      const result = await signInWithEmail(email, password);
+      
+      if (result.success) {
+        navigate("/dashboard");
+      } else if (result.error === "not_invited") {
+        navigate("/early-access");
+      } else {
+        setError("Invalid login credentials. Please try again.");
+      }
+    } catch (error: any) {
       console.error("Sign in error:", error);
+      setError(error.message || "Failed to sign in. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -51,8 +63,16 @@ const SignIn = () => {
               Enter your email and password to access your account
             </CardDescription>
           </CardHeader>
+          
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -93,6 +113,17 @@ const SignIn = () => {
                   "Sign In"
                 )}
               </Button>
+              
+              <div className="flex w-full justify-between text-sm text-muted-foreground">
+                <Link to="/auth/forgot-password" className="text-primary hover:underline">
+                  Forgot Password?
+                </Link>
+                <span className="px-1">•</span>
+                <Link to="/early-access" className="text-primary hover:underline">
+                  Request Access
+                </Link>
+              </div>
+              
               <div className="text-sm text-center text-gray-500">
                 Don't have an account?{" "}
                 <Link to="/auth/signup" className="text-primary hover:underline">

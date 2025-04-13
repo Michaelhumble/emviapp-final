@@ -1,3 +1,4 @@
+
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { AuthProvider } from '@/context/auth';
@@ -11,6 +12,15 @@ import AppModifier from './App-Modifier';
 import routes from './routes';
 import '@/App.css';
 import { supabase } from '@/integrations/supabase/client';
+import AuthGuard from './components/auth/AuthGuard';
+
+// Function to determine if a route should be protected
+const isProtectedRoute = (path: string): boolean => {
+  return path.startsWith('/dashboard') || 
+         path.startsWith('/profile') || 
+         path.startsWith('/settings') ||
+         path === '/command-center';
+};
 
 function App() {
   const location = useLocation();
@@ -39,9 +49,6 @@ function App() {
             console.error('Error processing referral:', error);
           }
         }
-        
-        // Optionally, clear the ref parameter from URL to keep it clean
-        // This would require more complex history manipulation
       }
     };
     
@@ -61,7 +68,13 @@ function App() {
                     <Route
                       key={route.path}
                       path={route.path}
-                      element={route.element}
+                      element={
+                        isProtectedRoute(route.path) ? (
+                          <AuthGuard>{route.element}</AuthGuard>
+                        ) : (
+                          route.element
+                        )
+                      }
                     />
                   ))}
                 </Routes>

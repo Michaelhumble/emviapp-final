@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Index from './pages/Index';
 import Welcome from './pages/Welcome';
@@ -39,6 +40,7 @@ import CustomerSetup from './pages/profile/customer/setup';
 import OtherRoleSetup from './pages/profile/other/setup';
 import BoothRenterSetup from './pages/profile/renter/setup';
 import SupplierSetup from './pages/profile/supplier/setup';
+import EarlyAccess from './pages/EarlyAccess';
 
 const routes = [
   {
@@ -220,6 +222,10 @@ const routes = [
   {
     path: '/artist/:username',
     element: <ArtistPublicPage />,
+  },
+  {
+    path: '/early-access',
+    element: <EarlyAccess />,
   },
   {
     path: '*',

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle, Info } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { toast } from "sonner";
 import { 
@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/select";
 import { UserRole } from "@/context/auth/types";
 import EmviLogo from "@/components/branding/EmviLogo";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { signUpWithEmail } from "@/services/auth";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -25,7 +27,8 @@ const SignUp = () => {
   const [fullName, setFullName] = useState("");
   const [role, setRole] = useState<UserRole>("customer");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { signUp, user } = useAuth();
+  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   // Redirect if already logged in
@@ -36,9 +39,10 @@ const SignUp = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
 
     try {
-      const result = await signUp(email, password, {
+      const result = await signUpWithEmail(email, password, {
         full_name: fullName,
         role: role,
         // Initialize other profile fields
@@ -46,15 +50,15 @@ const SignUp = () => {
         completed_profile_tasks: ['account_created'],
       });
       
-      if (result.error) {
-        throw result.error;
+      if (result.success) {
+        toast.success("Account created successfully!");
+        navigate("/early-access");
+      } else {
+        setError(result.error?.message || "Failed to create account. Please try again.");
       }
-      
-      toast.success("Account created successfully!");
-      navigate("/dashboard");
     } catch (error: any) {
       console.error("Sign up error:", error);
-      toast.error(error.message || "Failed to create account. Please try again.");
+      setError(error.message || "Failed to create account. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -74,8 +78,24 @@ const SignUp = () => {
               Enter your information to create an EmviApp account
             </CardDescription>
           </CardHeader>
+          
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertTitle>Invite-Only Beta</AlertTitle>
+                <AlertDescription>
+                  EmviApp is currently in invite-only beta. After signing up, you will be placed on the waitlist until approved.
+                </AlertDescription>
+              </Alert>
+              
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>
                 <Input
