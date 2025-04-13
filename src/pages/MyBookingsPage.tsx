@@ -88,7 +88,9 @@ const MyBookingsPage = () => {
 
       // Transform data to our Booking interface with type safety
       if (data) {
-        const formattedBookings: Booking[] = data.map((item: BookingResponse) => ({
+        // Explicitly checking that data is an array before mapping
+        const bookingsArray = Array.isArray(data) ? data : [];
+        const formattedBookings: Booking[] = bookingsArray.map((item: BookingResponse) => ({
           id: item.id,
           provider_name: item.users?.full_name || 'Unknown Provider',
           provider_id: item.recipient_id, // Using recipient_id instead of provider_id
