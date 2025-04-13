@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -72,6 +73,7 @@ const SalonAvailabilityManager = () => {
   const fetchExistingAvailability = async () => {
     try {
       setLoading(true);
+      // Fix the TypeScript error by explicitly typing the response
       const { data, error } = await supabase
         .from('availability')
         .select('*')
@@ -81,14 +83,23 @@ const SalonAvailabilityManager = () => {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        const anyData = data as any[];
+        // Use a more explicit type assertion to avoid deep instantiation
+        const availabilityData = data as Array<{
+          id: string;
+          user_id: string;
+          day_of_week: string;
+          start_time: string;
+          end_time: string;
+          location: string | null;
+          is_available: boolean;
+        }>;
         
-        if (anyData[0].location) {
-          setLocation(anyData[0].location);
+        if (availabilityData[0].location) {
+          setLocation(availabilityData[0].location);
         }
         
         const existingDays = DAYS_OF_WEEK.map(day => {
-          const existingDay = anyData.find(d => d.day_of_week === day.value.toString());
+          const existingDay = availabilityData.find(d => d.day_of_week === day.value.toString());
           if (existingDay) {
             return {
               id: existingDay.id,
@@ -203,6 +214,38 @@ const SalonAvailabilityManager = () => {
     } finally {
       setSaving(false);
     }
+  };
+
+  const toggleDay = (index: number) => {
+    const newAvailability = [...availability];
+    newAvailability[index].active = !newAvailability[index].active;
+    setAvailability(newAvailability);
+  };
+
+  const updateTime = (index: number, field: 'start_time' | 'end_time', value: string) => {
+    const newAvailability = [...availability];
+    newAvailability[index][field] = value;
+    setAvailability(newAvailability);
+  };
+
+  const copyToWeekdays = () => {
+    const mondaySettings = availability.find(day => day.day_of_week === 1);
+    if (!mondaySettings) return;
+    
+    const newAvailability = [...availability];
+    [1, 2, 3, 4, 5].forEach(dayValue => {
+      const index = newAvailability.findIndex(day => day.day_of_week === dayValue);
+      if (index !== -1) {
+        newAvailability[index] = {
+          ...newAvailability[index],
+          start_time: mondaySettings.start_time,
+          end_time: mondaySettings.end_time,
+          active: mondaySettings.active
+        };
+      }
+    });
+    
+    setAvailability(newAvailability);
   };
 
   const isTimeValid = (startTime: string, endTime: string) => {
