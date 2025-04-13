@@ -89,17 +89,17 @@ const SalonAvailabilityManager = () => {
       
       if (!user) return;
       
-      // Use explicit type casting to avoid TypeScript's deep type instantiation issue
-      const { data, error } = await supabase
+      // Avoid TypeScript deep instantiation by using any type temporarily
+      const response = await supabase
         .from('availability')
         .select('*')
         .eq('user_id', user.id)
         .order('day_of_week');
+
+      if (response.error) throw response.error;
       
-      if (error) throw error;
-      
-      // Explicitly cast the data to avoid complex typing issues
-      const typedData = data as DatabaseAvailabilityRecord[];
+      // Then safely cast the result to our expected type
+      const typedData = response.data as unknown as DatabaseAvailabilityRecord[];
       
       if (typedData && typedData.length > 0) {
         if (typedData[0].location) {
