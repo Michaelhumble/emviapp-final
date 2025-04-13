@@ -1,140 +1,81 @@
 
-import { useState, useEffect } from 'react';
-import { Booking } from '@/components/dashboard/artist/hooks/useArtistBookings';
-
-export interface DateRange {
-  from?: Date;
-  to?: Date;
-}
-
-export type BookingStatus = 'all' | 'pending' | 'accepted' | 'completed' | 'declined' | 'cancelled';
-export type DateFilter = 'all' | 'today' | 'this-week' | 'this-month' | 'custom';
-export type ClientType = 'all' | 'new' | 'returning';
-export type ServiceTypeFilter = 'all' | string;
+import { useState } from "react";
+import { DateRange } from "react-day-picker";
+import { isSameDay, isAfter, isBefore, addDays } from "date-fns";
 
 export interface BookingFilters {
-  status: BookingStatus;
-  dateFilter: DateFilter;
+  status: string;
+  dateFilter: string;
   dateRange: DateRange;
-  clientType: ClientType;
-  serviceType: ServiceTypeFilter;
+  clientType: string;
+  serviceType: string;
   search: string;
   serviceTypes: string[];
 }
 
-export const useBookingFilters = (initialFilters?: Partial<BookingFilters>) => {
-  const [filters, setFilters] = useState<BookingFilters>({
-    status: 'all',
-    dateFilter: 'all',
-    dateRange: { from: undefined, to: undefined },
-    clientType: 'all',
-    serviceType: 'all',
-    search: '',
-    serviceTypes: [],
-    ...initialFilters,
+export const useBookingFilters = (initialBookings: any[] = []) => {
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: undefined,
+    to: undefined,
   });
-  
-  const updateFilter = <K extends keyof BookingFilters>(
-    key: K, 
-    value: BookingFilters[K]
-  ) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-  };
-  
-  const resetFilters = () => {
-    setFilters({
-      status: 'all',
-      dateFilter: 'all',
-      dateRange: { from: undefined, to: undefined },
-      clientType: 'all',
-      serviceType: 'all',
-      search: '',
-      serviceTypes: filters.serviceTypes,
-    });
-  };
-  
-  return {
-    filters,
-    updateFilter,
-    resetFilters,
-    setFilters,
-  };
-};
+  const [searchTerm, setSearchTerm] = useState("");
 
-export const useFilteredBookings = (
-  bookings: Booking[],
-  filters: BookingFilters
-): Booking[] => {
-  const [filteredBookings, setFilteredBookings] = useState<Booking[]>(bookings);
-  
-  useEffect(() => {
-    let result = [...bookings];
-    
-    // Filter by status
-    if (filters.status !== 'all') {
-      result = result.filter(booking => booking.status === filters.status);
+  const resetFilters = () => {
+    setStatusFilter("all");
+    setDateRange({ from: undefined, to: undefined });
+    setSearchTerm("");
+  };
+
+  const filteredBookings = initialBookings.filter((booking) => {
+    // Status filter
+    if (statusFilter !== "all" && booking.status !== statusFilter) {
+      return false;
     }
-    
-    // Filter by date
-    if (filters.dateFilter !== 'all') {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+
+    // Date range filter
+    if (dateRange.from && booking.date) {
+      const bookingDate = new Date(booking.date);
       
-      if (filters.dateFilter === 'today') {
-        result = result.filter(booking => {
-          const bookingDate = new Date(booking.date_requested || booking.created_at);
-          bookingDate.setHours(0, 0, 0, 0);
-          return bookingDate.getTime() === today.getTime();
-        });
-      } else if (filters.dateFilter === 'this-week') {
-        const weekStart = new Date(today);
-        weekStart.setDate(today.getDate() - today.getDay());
-        
-        result = result.filter(booking => {
-          const bookingDate = new Date(booking.date_requested || booking.created_at);
-          return bookingDate >= weekStart;
-        });
-      } else if (filters.dateFilter === 'this-month') {
-        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-        
-        result = result.filter(booking => {
-          const bookingDate = new Date(booking.date_requested || booking.created_at);
-          return bookingDate >= monthStart;
-        });
-      } else if (filters.dateFilter === 'custom' && (filters.dateRange.from || filters.dateRange.to)) {
-        result = result.filter(booking => {
-          const bookingDate = new Date(booking.date_requested || booking.created_at);
-          
-          if (filters.dateRange.from && !filters.dateRange.to) {
-            return bookingDate >= filters.dateRange.from;
-          } else if (!filters.dateRange.from && filters.dateRange.to) {
-            return bookingDate <= filters.dateRange.to;
-          } else if (filters.dateRange.from && filters.dateRange.to) {
-            return bookingDate >= filters.dateRange.from && bookingDate <= filters.dateRange.to;
-          }
-          
-          return true;
-        });
+      if (dateRange.to) {
+        // If both from and to dates are set, check if booking date is in range
+        if (
+          !isAfter(bookingDate, addDays(dateRange.from, -1)) ||
+          !isBefore(bookingDate, addDays(dateRange.to, 1))
+        ) {
+          return false;
+        }
+      } else {
+        // If only from date is set, check if booking date is after from date
+        if (!isSameDay(bookingDate, dateRange.from)) {
+          return false;
+        }
       }
     }
-    
-    // Filter by service type
-    if (filters.serviceType !== 'all') {
-      result = result.filter(booking => booking.service_name === filters.serviceType);
+
+    // Search filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      const clientNameMatch = booking.clientName?.toLowerCase().includes(searchLower);
+      const serviceNameMatch = booking.serviceName?.toLowerCase().includes(searchLower);
+      const notesMatch = booking.notes?.toLowerCase().includes(searchLower);
+      
+      if (!clientNameMatch && !serviceNameMatch && !notesMatch) {
+        return false;
+      }
     }
-    
-    // Filter by search term
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase();
-      result = result.filter(booking => 
-        booking.client_name?.toLowerCase().includes(searchLower) ||
-        booking.service_name?.toLowerCase().includes(searchLower) ||
-        booking.note?.toLowerCase().includes(searchLower)
-      );
-    }
-    
-    setFilteredBookings(result);
-  }, [bookings, filters]);
-  
-  return filteredBookings;
+
+    return true;
+  });
+
+  return {
+    statusFilter,
+    setStatusFilter,
+    dateRange,
+    setDateRange,
+    searchTerm,
+    setSearchTerm,
+    filteredBookings,
+    resetFilters,
+  };
 };

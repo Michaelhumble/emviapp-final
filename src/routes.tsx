@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Index from './pages/Index';
 import Welcome from './pages/Welcome';
@@ -33,6 +32,8 @@ import ArtistPublicPage from './pages/a/ArtistPublicPage';
 import ArtistExplore from './pages/explore/artists';
 import SalonMarketplace from './pages/SalonMarketplace';
 import CommandCenter from './pages/CommandCenter';
+import BookingPage from './pages/BookingPage';
+import MyBookingsPage from './pages/MyBookingsPage';
 
 // Import profile setup pages
 import ArtistSetup from './pages/profile/artist/setup';
@@ -258,6 +259,14 @@ const routes = [
   {
     path: '/cookies',
     element: <Cookies />,
+  },
+  {
+    path: '/booking',
+    element: <BookingPage />,
+  },
+  {
+    path: '/my-bookings',
+    element: <MyBookingsPage />,
   },
   {
     path: '*',
