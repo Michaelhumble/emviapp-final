@@ -37,8 +37,8 @@ interface Booking {
   created_at: string;
 }
 
-// Define a separate interface for database response
-interface DatabaseResponse {
+// Define a separate type for the database response
+type DatabaseResponse = {
   id: string;
   customer_id: string;
   date: string | null;
@@ -51,7 +51,7 @@ interface DatabaseResponse {
   users: {
     full_name: string;
   } | null;
-}
+};
 
 const MyBookingsPage = () => {
   const { user } = useAuth();
@@ -88,7 +88,7 @@ const MyBookingsPage = () => {
       if (error) throw error;
 
       // Transform data to our Booking interface
-      const formattedBookings: Booking[] = (data || []).map((item: any) => ({
+      const formattedBookings: Booking[] = (data as DatabaseResponse[] || []).map((item) => ({
         id: item.id,
         provider_name: item.users?.full_name || 'Unknown Provider',
         provider_id: item.provider_id,
