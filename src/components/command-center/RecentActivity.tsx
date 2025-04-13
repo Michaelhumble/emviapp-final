@@ -35,10 +35,10 @@ const RecentActivity = () => {
           .order('created_at', { ascending: false })
           .limit(5);
         
-        // Get recent jobs
+        // Get recent jobs - updated to use salon_id instead of user_id
         const { data: jobs, error: jobsError } = await supabase
           .from('jobs')
-          .select('id, title, created_at, user_id')
+          .select('id, title, created_at, salon_id')
           .order('created_at', { ascending: false })
           .limit(3);
         
@@ -66,21 +66,21 @@ const RecentActivity = () => {
         // Process jobs, booths, and salon sales into a combined timeline
         const combinedItems: RecentItem[] = [];
         
-        // Add jobs to the timeline
+        // Add jobs to the timeline - updated to use salon_id
         if (!jobsError && jobs) {
           for (const job of jobs) {
-            // Get the user name who posted the job
-            const { data: userData } = await supabase
-              .from('users')
-              .select('full_name')
-              .eq('id', job.user_id)
+            // Get the salon name who posted the job
+            const { data: salonData } = await supabase
+              .from('salons')
+              .select('salon_name')
+              .eq('id', job.salon_id)
               .single();
             
             combinedItems.push({
               id: job.id,
               title: job.title,
               type: 'job',
-              actor_name: userData?.full_name || 'Unknown User',
+              actor_name: salonData?.salon_name || 'Unknown Salon',
               created_at: job.created_at
             });
           }
@@ -268,3 +268,4 @@ const RecentActivity = () => {
 };
 
 export default RecentActivity;
+
