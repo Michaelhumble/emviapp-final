@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import {
@@ -37,8 +36,8 @@ interface Booking {
   created_at: string;
 }
 
-// Define a separate type for database response to avoid recursive type issues
-type DatabaseBookingResponse = {
+// Define the database response interface to prevent type recursion issues
+interface DatabaseBookingResponse {
   id: string;
   customer_id: string;
   date: string | null;
@@ -87,10 +86,9 @@ const MyBookingsPage = () => {
 
       if (error) throw error;
 
-      // Transform data to our Booking interface with explicit type casting
-      const formattedBookings: Booking[] = (data || []).map((item) => {
-        // Cast the raw data to our expected response type
-        const booking = item as unknown as DatabaseBookingResponse;
+      // Transform data to our Booking interface
+      const formattedBookings: Booking[] = (data || []).map((item: any) => {
+        const booking = item as DatabaseBookingResponse;
         
         return {
           id: booking.id,
