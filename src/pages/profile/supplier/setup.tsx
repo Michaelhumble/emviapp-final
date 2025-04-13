@@ -14,7 +14,7 @@ import LanguageToggle from '@/components/ui/LanguageToggle';
 import { getLanguagePreference } from '@/utils/languagePreference';
 
 const SupplierSetup = () => {
-  const { user, userProfile } = useAuth();
+  const { user, userProfile, updateProfile } = useAuth();
   const navigate = useNavigate();
   const [language, setLanguage] = useState(getLanguagePreference());
   
@@ -43,15 +43,13 @@ const SupplierSetup = () => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       toast({
-        title: "Supplier profile saved",
-        description: "Welcome to your dashboard!",
+        description: "Supplier profile saved. Welcome to your dashboard!",
       });
       
       navigate('/dashboard/supplier');
     } catch (error) {
       console.error("Error saving profile:", error);
       toast({
-        title: "Error",
         description: "Failed to save profile. Please try again.",
         variant: "destructive",
       });

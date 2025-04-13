@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
@@ -15,7 +14,7 @@ import LanguageToggle from '@/components/ui/LanguageToggle';
 import { getLanguagePreference } from '@/utils/languagePreference';
 
 const ArtistSetup = () => {
-  const { user, userProfile } = useAuth();
+  const { user, userProfile, updateProfile } = useAuth();
   const navigate = useNavigate();
   const [language, setLanguage] = useState(getLanguagePreference());
   
@@ -44,15 +43,13 @@ const ArtistSetup = () => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       toast({
-        title: "Profile saved",
-        description: "Welcome to your dashboard!",
+        description: "Profile saved. Welcome to your dashboard!",
       });
       
       navigate('/dashboard/artist');
     } catch (error) {
       console.error("Error saving profile:", error);
       toast({
-        title: "Error",
         description: "Failed to save profile. Please try again.",
         variant: "destructive",
       });

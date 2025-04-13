@@ -62,5 +62,5 @@ export interface AuthContextType {
   signOut: () => Promise<void>;
   refreshUserProfile: () => Promise<boolean>;
   updateUserRole: (role: UserRole) => Promise<void>;
-  updateProfile?: (data: Partial<UserProfile>) => Promise<void>;
+  updateProfile: (data: Partial<UserProfile>) => Promise<void>;
 }
