@@ -1,50 +1,59 @@
 
 /**
- * Gets the user's language preference from localStorage
- * Defaults to English if no preference is found
+ * Language preference utility
+ * Provides functions to manage language preferences throughout the application
  */
-export const getLanguagePreference = (): "en" | "vi" => {
-  const storedLanguage = localStorage.getItem('emvi_language_preference');
-  return (storedLanguage === 'vi' ? 'vi' : 'en');
+
+type Language = 'en' | 'vi';
+
+// Define listeners array for language change events
+const listeners: Array<(lang: Language) => void> = [];
+
+/**
+ * Get the current language preference from localStorage or default to English
+ */
+export const getLanguagePreference = (): Language => {
+  const savedPreference = localStorage.getItem('emvi_language');
+  return (savedPreference as Language) || 'en';
 };
 
 /**
- * Sets the user's language preference in localStorage
- * and dispatches a languageChanged event
+ * Set language preference and notify all listeners
  */
-export const setLanguagePreference = (language: "en" | "vi"): void => {
-  localStorage.setItem('emvi_language_preference', language);
-  window.dispatchEvent(new CustomEvent('languageChanged', { 
-    detail: { language } 
-  }));
+export const setLanguagePreference = (language: Language): void => {
+  localStorage.setItem('emvi_language', language);
+  
+  // Notify all listeners about the language change
+  listeners.forEach(listener => listener(language));
 };
 
 /**
- * Checks if the user has set a language preference
- * @returns boolean - Whether the user has set a language preference
+ * Register a language change listener
+ * Returns a function to remove the listener
  */
-export const hasLanguagePreference = (): boolean => {
-  const storedLanguage = localStorage.getItem('emvi_language_preference');
-  return storedLanguage === 'vi' || storedLanguage === 'en';
-};
-
-/**
- * Adds a listener for language change events
- * @param callback - Function to call when the language changes
- * @returns function to remove the listener
- */
-export const addLanguageChangeListener = (callback: (language: "en" | "vi") => void): (() => void) => {
-  const handler = (event: Event) => {
-    const customEvent = event as CustomEvent;
-    if (customEvent.detail && customEvent.detail.language) {
-      callback(customEvent.detail.language);
+export const addLanguageChangeListener = (callback: (lang: Language) => void): (() => void) => {
+  listeners.push(callback);
+  
+  // Return a function to remove this listener
+  return () => {
+    const index = listeners.indexOf(callback);
+    if (index > -1) {
+      listeners.splice(index, 1);
     }
   };
-  
-  window.addEventListener('languageChanged', handler);
-  
-  // Return a function to remove the listener
-  return () => {
-    window.removeEventListener('languageChanged', handler);
-  };
+};
+
+/**
+ * Get a translation for a key
+ * @param translations Object with language keys and values
+ * @param key The translation key to look up
+ * @param fallback Optional fallback if translation is not found
+ */
+export const getTranslation = (
+  translations: Record<string, Record<string, string>>, 
+  key: string,
+  fallback?: string
+): string => {
+  const lang = getLanguagePreference();
+  return translations[lang]?.[key] || translations['en']?.[key] || fallback || key;
 };

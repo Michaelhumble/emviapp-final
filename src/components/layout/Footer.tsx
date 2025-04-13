@@ -60,10 +60,10 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Support</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="text-gray-400 hover:text-white">FAQ</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white">Contact Us</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white">Privacy Policy</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white">Terms of Service</a></li>
+              <li><Link to="/contact" className="text-gray-400 hover:text-white">Contact Us</Link></li>
+              <li><Link to="/terms" className="text-gray-400 hover:text-white">Terms of Service</Link></li>
+              <li><Link to="/privacy" className="text-gray-400 hover:text-white">Privacy Policy</Link></li>
+              <li><Link to="/cookies" className="text-gray-400 hover:text-white">Cookies Policy</Link></li>
             </ul>
           </div>
           

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Index from './pages/Index';
 import Welcome from './pages/Welcome';
@@ -41,6 +40,12 @@ import OtherProfileSetup from './pages/profile/other/OtherProfileSetup';
 import RenterProfileSetup from './pages/profile/renter/RenterProfileSetup';
 import SupplierProfileSetup from './pages/profile/supplier/SupplierProfileSetup';
 import EarlyAccess from './pages/EarlyAccess';
+
+// Import legal and contact pages
+import Contact from './pages/Contact';
+import Terms from './pages/legal/Terms';
+import Privacy from './pages/legal/Privacy';
+import Cookies from './pages/legal/Cookies';
 
 const routes = [
   {
@@ -226,6 +231,22 @@ const routes = [
   {
     path: '/early-access',
     element: <EarlyAccess />,
+  },
+  {
+    path: '/contact',
+    element: <Contact />,
+  },
+  {
+    path: '/terms',
+    element: <Terms />,
+  },
+  {
+    path: '/privacy',
+    element: <Privacy />,
+  },
+  {
+    path: '/cookies',
+    element: <Cookies />,
   },
   {
     path: '*',
