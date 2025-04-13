@@ -37,8 +37,8 @@ interface Booking {
   created_at: string;
 }
 
-// Define the database response to handle incoming data properly
-interface DatabaseBookingResponse {
+// Define a separate interface for database response
+interface DatabaseResponse {
   id: string;
   customer_id: string;
   date: string | null;
@@ -88,21 +88,17 @@ const MyBookingsPage = () => {
       if (error) throw error;
 
       // Transform data to our Booking interface
-      const formattedBookings: Booking[] = (data || []).map((booking: any) => {
-        const typedBooking = booking as DatabaseBookingResponse;
-        
-        return {
-          id: typedBooking.id,
-          provider_name: typedBooking.users?.full_name || 'Unknown Provider',
-          provider_id: typedBooking.provider_id,
-          service_type: typedBooking.service_type || 'Unknown Service',
-          date: typedBooking.date,
-          time: typedBooking.time || '',
-          status: typedBooking.status || 'pending',
-          notes: typedBooking.notes || '',
-          created_at: typedBooking.created_at
-        };
-      });
+      const formattedBookings: Booking[] = (data || []).map((item: any) => ({
+        id: item.id,
+        provider_name: item.users?.full_name || 'Unknown Provider',
+        provider_id: item.provider_id,
+        service_type: item.service_type || 'Unknown Service',
+        date: item.date,
+        time: item.time || '',
+        status: item.status || 'pending',
+        notes: item.notes || '',
+        created_at: item.created_at
+      }));
 
       setBookings(formattedBookings);
     } catch (error: any) {
