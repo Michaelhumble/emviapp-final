@@ -40,7 +40,7 @@ const WeTrustEmotionalSection = () => {
             {language === "en" ? (
               "Let's Make Salon Life Easier — Together"
             ) : (
-              "Cùng Nhau Khiến Cuộc Sống Làm Tiệm Nhẹ Nhàng Hơn"
+              "Hãy Cùng Nhau Trải Nghiệm Emviapp"
             )}
           </h2>
           
