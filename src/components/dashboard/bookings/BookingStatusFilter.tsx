@@ -1,40 +1,40 @@
 
-import React from "react";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { BookingStatus } from "@/components/dashboard/salon/bookings/types";
+import { Button } from '@/components/ui/button';
+import { BookingStatus } from '@/hooks/useBookingFilters';
+
+type StatusOption = {
+  value: BookingStatus;
+  label: string;
+};
+
+const statusOptions: StatusOption[] = [
+  { value: 'all', label: 'All' },
+  { value: 'pending', label: 'Pending' },
+  { value: 'accepted', label: 'Accepted' },
+  { value: 'completed', label: 'Completed' },
+  { value: 'cancelled', label: 'Cancelled' },
+  { value: 'declined', label: 'Declined' },
+];
 
 interface BookingStatusFilterProps {
   value: BookingStatus;
-  onChange: (value: string) => void;
+  onChange: (value: BookingStatus) => void;
 }
 
-const BookingStatusFilter: React.FC<BookingStatusFilterProps> = ({ value, onChange }) => {
+const BookingStatusFilter = ({ value, onChange }: BookingStatusFilterProps) => {
   return (
-    <div className="flex items-center space-x-2">
-      <Label className="text-sm font-medium whitespace-nowrap">Status:</Label>
-      <Select 
-        value={value} 
-        onValueChange={onChange}
-      >
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="All statuses" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All bookings</SelectItem>
-          <SelectItem value="pending">Pending</SelectItem>
-          <SelectItem value="accepted">Accepted</SelectItem>
-          <SelectItem value="completed">Completed</SelectItem>
-          <SelectItem value="cancelled">Cancelled</SelectItem>
-          <SelectItem value="declined">Declined</SelectItem>
-        </SelectContent>
-      </Select>
+    <div className="flex flex-wrap gap-2">
+      {statusOptions.map((option) => (
+        <Button
+          key={option.value}
+          variant={value === option.value ? 'default' : 'outline'}
+          size="sm"
+          className={value === option.value ? 'bg-primary' : ''}
+          onClick={() => onChange(option.value)}
+        >
+          {option.label}
+        </Button>
+      ))}
     </div>
   );
 };

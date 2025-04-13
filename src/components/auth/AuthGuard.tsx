@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
-import { checkIfUserIsInvited } from "@/services/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -25,7 +24,6 @@ const AuthGuard = ({
   blurContent = false
 }: AuthGuardProps) => {
   const { user, loading, isSignedIn } = useAuth();
-  const [isInvited, setIsInvited] = useState<boolean | null>(null);
   const [isVerified, setIsVerified] = useState<boolean | null>(null);
   const [checking, setChecking] = useState(true);
   const [sendingVerification, setSendingVerification] = useState(false);
@@ -33,10 +31,6 @@ const AuthGuard = ({
   useEffect(() => {
     async function checkAuthStatus() {
       if (user) {
-        // Check if user is invited
-        const invited = await checkIfUserIsInvited(user.id);
-        setIsInvited(invited);
-        
         // Check if email is verified
         const { data, error } = await supabase.auth.getUser();
         if (!error && data?.user) {
@@ -98,12 +92,7 @@ const AuthGuard = ({
     return <Navigate to="/auth/signin" replace />;
   }
 
-  // User is logged in but not invited
-  if (isInvited === false) {
-    return <Navigate to="/early-access" replace />;
-  }
-
-  // User is logged in and invited but email is not verified
+  // User is logged in but email is not verified
   if (requiresVerification && isVerified === false) {
     return (
       <div className="max-w-3xl mx-auto p-6 mt-8">
@@ -129,7 +118,7 @@ const AuthGuard = ({
     );
   }
 
-  // User is logged in, invited, and verified (if required)
+  // User is logged in and verified (if required)
   return <>{children}</>;
 };
 

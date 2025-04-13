@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, AlertCircle, Info, CheckCircle } from "lucide-react";
+import { Loader2, AlertCircle, CheckCircle } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { toast } from "sonner";
 import { 
@@ -100,14 +100,6 @@ const SignUp = () => {
           ) : (
             <form onSubmit={handleSubmit}>
               <CardContent className="space-y-4">
-                <Alert>
-                  <Info className="h-4 w-4" />
-                  <AlertTitle>Invite-Only Beta</AlertTitle>
-                  <AlertDescription>
-                    EmviApp is currently in invite-only beta. After signing up, you will be placed on the waitlist until approved.
-                  </AlertDescription>
-                </Alert>
-                
                 {error && (
                   <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />

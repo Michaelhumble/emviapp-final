@@ -40,8 +40,6 @@ const SignIn = () => {
       
       if (result.success) {
         navigate("/dashboard");
-      } else if (result.error === "not_invited") {
-        navigate("/early-access");
       } else if (result.error?.message?.includes("Email not confirmed")) {
         setShowVerificationAlert(true);
       } else {
@@ -168,10 +166,6 @@ const SignIn = () => {
               <div className="flex w-full justify-between text-sm text-muted-foreground">
                 <Link to="/forgot-password" className="text-primary hover:underline">
                   Forgot Password?
-                </Link>
-                <span className="px-1">•</span>
-                <Link to="/early-access" className="text-primary hover:underline">
-                  Request Access
                 </Link>
               </div>
               

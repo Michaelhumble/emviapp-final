@@ -1,85 +1,59 @@
 
-import { useState } from "react";
-import { DateRange } from "react-day-picker";
-import { isSameDay, isAfter, isBefore, addDays } from "date-fns";
+import { useState } from 'react';
 
 export type BookingStatus = 'all' | 'pending' | 'accepted' | 'completed' | 'cancelled' | 'declined';
 export type ClientType = 'all' | 'new' | 'returning';
-export type DateFilter = 'all' | 'today' | 'tomorrow' | 'thisWeek' | 'custom';
+export type ServiceType = 'all' | string;
+export type DateFilter = 'all' | 'today' | 'tomorrow' | 'this-week' | 'next-week' | 'this-month' | 'custom';
+
+export interface DateRange {
+  from: Date | undefined;
+  to?: Date | undefined;
+}
 
 export interface BookingFilters {
   status: BookingStatus;
-  dateFilter: DateFilter;
-  dateRange: DateRange;
   clientType: ClientType;
-  serviceType: string;
+  serviceType: ServiceType;
   search: string;
-  serviceTypes: string[];
+  dateFilter: DateFilter;
+  dateRange: DateRange | null;
 }
 
-export const useBookingFilters = (initialBookings: any[] = []) => {
-  const [statusFilter, setStatusFilter] = useState<BookingStatus>("all");
-  const [dateRange, setDateRange] = useState<DateRange>({
-    from: undefined,
-    to: undefined,
+export const useBookingFilters = () => {
+  const [filters, setFilters] = useState<BookingFilters>({
+    status: 'all',
+    clientType: 'all',
+    serviceType: 'all',
+    search: '',
+    dateFilter: 'all',
+    dateRange: null,
   });
-  const [searchTerm, setSearchTerm] = useState("");
 
-  const resetFilters = () => {
-    setStatusFilter("all");
-    setDateRange({ from: undefined, to: undefined });
-    setSearchTerm("");
+  const updateFilter = <K extends keyof BookingFilters>(
+    filterName: K,
+    value: BookingFilters[K]
+  ) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterName]: value
+    }));
   };
 
-  const filteredBookings = initialBookings.filter((booking) => {
-    // Status filter
-    if (statusFilter !== "all" && booking.status !== statusFilter) {
-      return false;
-    }
-
-    // Date range filter
-    if (dateRange.from && booking.date) {
-      const bookingDate = new Date(booking.date);
-      
-      if (dateRange.to) {
-        // If both from and to dates are set, check if booking date is in range
-        if (
-          !isAfter(bookingDate, addDays(dateRange.from, -1)) ||
-          !isBefore(bookingDate, addDays(dateRange.to, 1))
-        ) {
-          return false;
-        }
-      } else {
-        // If only from date is set, check if booking date is after from date
-        if (!isSameDay(bookingDate, dateRange.from)) {
-          return false;
-        }
-      }
-    }
-
-    // Search filter
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
-      const clientNameMatch = booking.clientName?.toLowerCase().includes(searchLower);
-      const serviceNameMatch = booking.serviceName?.toLowerCase().includes(searchLower);
-      const notesMatch = booking.notes?.toLowerCase().includes(searchLower);
-      
-      if (!clientNameMatch && !serviceNameMatch && !notesMatch) {
-        return false;
-      }
-    }
-
-    return true;
-  });
+  const resetFilters = () => {
+    setFilters({
+      status: 'all',
+      clientType: 'all',
+      serviceType: 'all',
+      search: '',
+      dateFilter: 'all',
+      dateRange: null,
+    });
+  };
 
   return {
-    statusFilter,
-    setStatusFilter,
-    dateRange,
-    setDateRange,
-    searchTerm,
-    setSearchTerm,
-    filteredBookings,
+    filters,
+    updateFilter,
     resetFilters,
   };
 };

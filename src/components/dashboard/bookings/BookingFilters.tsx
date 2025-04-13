@@ -1,180 +1,103 @@
 
-import { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DateRange } from "react-day-picker";
-import { Label } from "@/components/ui/label";
-import { Search, Calendar } from "lucide-react";
-import { BookingFilters } from "@/hooks/useBookingFilters";
-import BookingStatusFilter from "./BookingStatusFilter";
-import BookingDateFilter from "./BookingDateFilter";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Search, X } from 'lucide-react';
+import { BookingStatus, DateFilter, DateRange, useBookingFilters } from '@/hooks/useBookingFilters';
+import BookingStatusFilter from './BookingStatusFilter';
+import BookingDateFilter from './BookingDateFilter';
 
 interface BookingFiltersProps {
-  serviceTypes?: string[];
-  onFilterChange: (filters: BookingFilters) => void;
+  onFiltersChange?: (filters: any) => void;
 }
 
-const BookingFilterPanel = ({ serviceTypes = [], onFilterChange }: BookingFiltersProps) => {
-  const [filters, setFilters] = useState<BookingFilters>({
-    status: 'all',
-    dateFilter: 'all',
-    dateRange: { from: undefined, to: undefined },
-    clientType: 'all',
-    serviceType: 'all',
-    search: '',
-    serviceTypes: serviceTypes || []
-  });
-  
-  useEffect(() => {
-    onFilterChange(filters);
-  }, [filters, onFilterChange]);
-  
-  const handleDateRangeChange = (range: DateRange | undefined) => {
-    setFilters({
-      ...filters,
-      dateRange: range || { from: undefined, to: undefined },
-      dateFilter: range ? 'custom' : 'all'
-    });
+const BookingFilters = ({ onFiltersChange }: BookingFiltersProps) => {
+  const { filters, updateFilter, resetFilters } = useBookingFilters();
+
+  const handleStatusChange = (status: BookingStatus) => {
+    updateFilter('status', status);
+    if (onFiltersChange) onFiltersChange({ ...filters, status });
   };
-  
-  const handleStatusChange = (status: string) => {
-    setFilters({
-      ...filters,
-      status
-    });
-  };
-  
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilters({
-      ...filters,
-      search: e.target.value
-    });
+    const search = e.target.value;
+    updateFilter('search', search);
+    if (onFiltersChange) onFiltersChange({ ...filters, search });
   };
-  
-  const handleServiceTypeChange = (serviceType: string) => {
-    setFilters({
-      ...filters,
-      serviceType
-    });
+
+  const handleDateFilterChange = (dateFilter: DateFilter) => {
+    updateFilter('dateFilter', dateFilter);
+    if (onFiltersChange) onFiltersChange({ ...filters, dateFilter });
   };
-  
-  const handleDateFilterChange = (dateFilter: string) => {
-    let newDateRange = { from: undefined, to: undefined };
-    const today = new Date();
-    
-    if (dateFilter === 'today') {
-      newDateRange = { from: today, to: today };
-    } else if (dateFilter === 'tomorrow') {
-      const tomorrow = new Date();
-      tomorrow.setDate(today.getDate() + 1);
-      newDateRange = { from: tomorrow, to: tomorrow };
-    } else if (dateFilter === 'thisWeek') {
-      const startOfWeek = new Date();
-      startOfWeek.setDate(today.getDate() - today.getDay());
-      const endOfWeek = new Date();
-      endOfWeek.setDate(startOfWeek.getDate() + 6);
-      newDateRange = { from: startOfWeek, to: endOfWeek };
-    }
-    
-    setFilters({
-      ...filters,
-      dateFilter,
-      dateRange: newDateRange
-    });
+
+  const handleDateRangeChange = (dateRange: DateRange | null) => {
+    updateFilter('dateRange', dateRange);
+    if (onFiltersChange) onFiltersChange({ ...filters, dateRange });
   };
-  
-  const handleReset = () => {
-    setFilters({
+
+  const handleResetFilters = () => {
+    resetFilters();
+    if (onFiltersChange) onFiltersChange({
       status: 'all',
-      dateFilter: 'all',
-      dateRange: { from: undefined, to: undefined },
       clientType: 'all',
       serviceType: 'all',
       search: '',
-      serviceTypes
+      dateFilter: 'all',
+      dateRange: null,
     });
   };
 
+  const hasActiveFilters = 
+    filters.status !== 'all' ||
+    filters.clientType !== 'all' ||
+    filters.serviceType !== 'all' ||
+    filters.search !== '' ||
+    filters.dateFilter !== 'all';
+
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-grow">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Search clients or services..."
-            className="pl-9"
-            value={filters.search}
-            onChange={handleSearchChange}
-          />
-        </div>
-        
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleReset}
-          className="whitespace-nowrap"
-        >
-          Reset Filters
-        </Button>
+    <div className="space-y-4 bg-white p-4 rounded-lg border">
+      <h3 className="font-medium text-lg">Booking Filters</h3>
+      
+      <div className="relative">
+        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search client, service..."
+          className="pl-8"
+          value={filters.search}
+          onChange={handleSearchChange}
+        />
       </div>
       
-      <div className="flex flex-wrap gap-4">
+      <div>
+        <h4 className="font-medium mb-2">Status</h4>
         <BookingStatusFilter
-          value={filters.status as any}
+          value={filters.status}
           onChange={handleStatusChange}
         />
-        
-        <div className="flex items-center space-x-2">
-          <Label className="text-sm font-medium whitespace-nowrap">Date:</Label>
-          <Select
-            value={filters.dateFilter}
-            onValueChange={handleDateFilterChange}
-          >
-            <SelectTrigger className="w-[130px]">
-              <SelectValue placeholder="All dates" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All dates</SelectItem>
-              <SelectItem value="today">Today</SelectItem>
-              <SelectItem value="tomorrow">Tomorrow</SelectItem>
-              <SelectItem value="thisWeek">This week</SelectItem>
-              <SelectItem value="custom">Custom range</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        {filters.dateFilter === 'custom' && (
-          <BookingDateFilter
-            dateRange={filters.dateRange}
-            onChange={handleDateRangeChange}
-          />
-        )}
-        
-        {serviceTypes.length > 0 && (
-          <div className="flex items-center space-x-2">
-            <Label className="text-sm font-medium whitespace-nowrap">Service:</Label>
-            <Select
-              value={filters.serviceType}
-              onValueChange={handleServiceTypeChange}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="All services" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All services</SelectItem>
-                {serviceTypes.map((service) => (
-                  <SelectItem key={service} value={service}>
-                    {service}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        )}
       </div>
+      
+      <div>
+        <h4 className="font-medium mb-2">Date</h4>
+        <BookingDateFilter
+          dateFilter={filters.dateFilter}
+          dateRange={filters.dateRange}
+          onDateFilterChange={handleDateFilterChange}
+          onDateRangeChange={handleDateRangeChange}
+        />
+      </div>
+      
+      {hasActiveFilters && (
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="text-muted-foreground" 
+          onClick={handleResetFilters}
+        >
+          <X className="h-4 w-4 mr-1" />
+          Reset Filters
+        </Button>
+      )}
     </div>
   );
 };
 
-export default BookingFilterPanel;
+export default BookingFilters;

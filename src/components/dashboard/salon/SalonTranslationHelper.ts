@@ -8,3 +8,8 @@ export type TranslatableText = Translation;
 export const createTranslation = (english: string, vietnamese: string): Translation => {
   return { english, vietnamese };
 };
+
+// Helper function to convert strings to Translation objects
+export const toTranslatableText = (text: string): Translation => {
+  return { english: text, vietnamese: text };
+};
