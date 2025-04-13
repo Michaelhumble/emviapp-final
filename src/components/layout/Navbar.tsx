@@ -8,7 +8,7 @@ import MainNavigation from "./navbar/MainNavigation";
 import { UserMenu } from "./navbar/UserMenu";
 import AuthButtons from "./navbar/AuthButtons";
 import MobileMenu from "./navbar/MobileMenu";
-import LanguageToggle from "@/components/ui/LanguageToggle";
+import LanguageToggle from "@/components/layout/LanguageToggle";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
@@ -45,12 +45,10 @@ const Navbar = () => {
         {/* Main navigation */}
         <MainNavigation />
 
-        {/* Auth buttons or user menu */}
-        <div className="flex items-center gap-2">
-          {/* Language toggle for explore pages */}
-          {(isExplorePage || isProfileSetupPage) && (
-            <LanguageToggle minimal={true} className="mr-2" />
-          )}
+        {/* Auth buttons or user menu with language toggle */}
+        <div className="flex items-center gap-3">
+          {/* Language toggle always visible */}
+          <LanguageToggle minimal={true} className="mr-1" />
           
           {user ? (
             <UserMenu />
