@@ -101,14 +101,14 @@ const SalonAvailabilityManager = () => {
               start_time: existingDay.start_time,
               end_time: existingDay.end_time,
               active: true
-            };
+            } as AvailabilityDay;
           } else {
             return {
               day_of_week: day.value,
               start_time: '09:00',
               end_time: '17:00',
               active: false
-            };
+            } as AvailabilityDay;
           }
         });
         setAvailability(existingDays);
@@ -180,13 +180,15 @@ const SalonAvailabilityManager = () => {
       if (deleteError) throw deleteError;
       
       // Insert new records
-      const availabilityRecords: AvailabilityRecord[] = activeDays.map(day => ({
+      const availabilityRecords = activeDays.map(day => ({
         user_id: user.id,
+        artist_id: user.id, // Add artist_id to match database schema
         role: 'salon',
         day_of_week: day.day_of_week.toString(), // Convert to string for DB
         start_time: day.start_time,
         end_time: day.end_time,
-        location: location || userProfile?.location || null
+        location: location || userProfile?.location || null,
+        is_available: true
       }));
       
       const { error: insertError } = await supabase

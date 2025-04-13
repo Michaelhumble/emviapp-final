@@ -151,7 +151,7 @@ export const useMockAssistant = () => {
       if (intent.dayOfWeek !== null) {
         let query = supabase
           .from('availability')
-          .select('user_id')
+          .select('artist_id')
           .eq('day_of_week', intent.dayOfWeek.toString());
           
         if (intent.time) {
@@ -164,7 +164,7 @@ export const useMockAssistant = () => {
         
         if (error) throw error;
         if (availableUsers && availableUsers.length > 0) {
-          availableUserIds = availableUsers.map(user => user.user_id);
+          availableUserIds = availableUsers.map(user => user.artist_id);
         }
       }
       
