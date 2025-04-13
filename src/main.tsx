@@ -23,7 +23,7 @@ if (link) {
   link.href = "/lovable-uploads/aa25a147-5384-4b72-86f0-e3cc8caba2cc.png";
 }
 
-// Set viewport meta tag for proper mobile rendering
+// Set viewport meta tag for proper mobile rendering with fixed-position elements
 const meta = document.createElement('meta');
 meta.name = 'viewport';
 meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
@@ -35,7 +35,7 @@ themeColorMeta.name = 'theme-color';
 themeColorMeta.content = '#ffffff';
 document.getElementsByTagName('head')[0].appendChild(themeColorMeta);
 
-// Apple mobile web app capable
+// Apple mobile web app capable - helps with fixed positioning
 const appleMobileWebAppCapable = document.createElement('meta');
 appleMobileWebAppCapable.name = 'apple-mobile-web-app-capable';
 appleMobileWebAppCapable.content = 'yes';
