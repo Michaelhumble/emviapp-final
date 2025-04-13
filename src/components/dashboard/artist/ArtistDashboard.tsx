@@ -8,6 +8,7 @@ import { useAuth } from '@/context/auth';
 import BookingNotificationsSection from '../notifications/BookingNotificationsSection';
 import ArtistPortfolioGallery from './portfolio/ArtistPortfolioGallery';
 import ArtistServiceManager from './services/ArtistServiceManager';
+import ArtistBookingCalendar from './calendar/ArtistBookingCalendar';
 
 const ArtistDashboard = () => {
   const { user } = useAuth();
@@ -37,6 +38,7 @@ const ArtistDashboard = () => {
       <BookingNotificationsSection />
       <ArtistPortfolioGallery />
       <ArtistServiceManager />
+      <ArtistBookingCalendar />
       <ArtistDashboardContent />
     </div>
   );
