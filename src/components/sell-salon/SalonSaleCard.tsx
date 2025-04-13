@@ -41,7 +41,6 @@ export const SalonSaleCard = ({
 
   const isActive = salon.status === 'active';
   
-  // Safely get thumbnail image URL
   const getThumbnailUrl = () => {
     if (salon.photos && Array.isArray(salon.photos) && salon.photos.length > 0) {
       return salon.photos[0].photo_url;
