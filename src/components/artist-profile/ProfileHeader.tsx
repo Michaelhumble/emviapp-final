@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Eye } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 interface ProfileHeaderProps {
   profile: any; // Using any to bypass TypeScript errors for now
@@ -36,15 +37,18 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   return (
     <div className="mb-12">
       <div className="flex flex-col md:flex-row items-start gap-6">
-        <Avatar className="h-24 w-24 md:h-32 md:w-32 rounded-full border-4 border-white shadow-md">
-          <AvatarImage 
-            src={profile.avatar_url || undefined} 
-            alt={profile.full_name || 'Artist'} 
-          />
-          <AvatarFallback className="text-2xl bg-purple-100 text-purple-700">
-            {getInitials()}
-          </AvatarFallback>
-        </Avatar>
+        <div className="relative flex-shrink-0 overflow-hidden">
+          <Avatar className="h-24 w-24 md:h-32 md:w-32 rounded-full border-4 border-white shadow-md">
+            <AvatarImage 
+              src={profile.avatar_url || undefined} 
+              alt={profile.full_name || 'Artist'} 
+              className="object-cover"
+            />
+            <AvatarFallback className="text-2xl bg-purple-100 text-purple-700">
+              {getInitials()}
+            </AvatarFallback>
+          </Avatar>
+        </div>
         
         <div className="flex-1">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">

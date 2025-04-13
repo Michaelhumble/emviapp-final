@@ -58,7 +58,11 @@ const ArtistDashboardHeader = ({ profile }: ArtistDashboardHeaderProps) => {
           {/* Avatar - positioned to overflow on mobile, side by side on desktop */}
           <div className="absolute -top-12 left-6 md:relative md:top-0 md:left-0 md:float-left md:mr-6 md:-mt-20">
             <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
-              <AvatarImage src={profile?.avatar_url || ''} alt={profile?.full_name || 'Artist'} />
+              <AvatarImage 
+                src={profile?.avatar_url || ''} 
+                alt={profile?.full_name || 'Artist'} 
+                className="object-cover"
+              />
               <AvatarFallback className="text-2xl bg-purple-100 text-purple-700">{getInitials()}</AvatarFallback>
             </Avatar>
           </div>
