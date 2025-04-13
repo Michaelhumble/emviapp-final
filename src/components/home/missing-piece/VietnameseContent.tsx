@@ -13,6 +13,7 @@ const VietnameseContent = ({ itemVariants }: VietnameseContentProps) => {
       <motion.div 
         className="text-center mb-10" 
         variants={itemVariants}
+        initial="visible" // Ensure component is visible immediately
       >
         <h3 className="text-2xl md:text-3xl font-bold text-indigo-700 mb-6">
           <span className="bg-indigo-50 px-4 py-1 rounded-lg">Kinh Doanh Của Bạn, Được Nâng Cấp</span>
@@ -26,6 +27,7 @@ const VietnameseContent = ({ itemVariants }: VietnameseContentProps) => {
       <motion.div 
         className="bg-gradient-to-r from-indigo-50 to-purple-50 p-8 rounded-2xl mb-10 border border-indigo-100/50 shadow-inner"
         variants={itemVariants}
+        initial="visible" // Ensure component is visible immediately
       >
         <div className="flex flex-col md:flex-row items-center justify-center gap-6">
           <div className="flex-shrink-0 bg-white rounded-2xl p-4 shadow-md">
@@ -41,6 +43,7 @@ const VietnameseContent = ({ itemVariants }: VietnameseContentProps) => {
       <motion.div 
         className="text-center" 
         variants={itemVariants}
+        initial="visible" // Ensure component is visible immediately
       >
         <p className="text-xl text-gray-800 font-medium mb-8">
           Nếu bạn không dùng thử EmviApp...<br />

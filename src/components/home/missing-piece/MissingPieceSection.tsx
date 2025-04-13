@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { getLanguagePreference } from "@/utils/languagePreference";
 import DecorativeBackground from "../sections/DecorativeBackground";
 import SectionTitle from "./SectionTitle";
@@ -9,11 +9,17 @@ import LanguageToggleButton from "./LanguageToggleButton";
 
 const MissingPieceSection = () => {
   const [language, setLanguage] = useState<"en" | "vi">(getLanguagePreference());
+  const [isChangingLanguage, setIsChangingLanguage] = useState(false);
 
   useEffect(() => {
     const handleLanguageChange = (event: CustomEvent) => {
       if (event.detail && event.detail.language) {
-        setLanguage(event.detail.language);
+        setIsChangingLanguage(true);
+        // Small delay to ensure smooth transition
+        setTimeout(() => {
+          setLanguage(event.detail.language);
+          setIsChangingLanguage(false);
+        }, 50);
       }
     };
     
@@ -30,15 +36,25 @@ const MissingPieceSection = () => {
     };
   }, []);
 
+  const handleSetLanguage = (newLanguage: "en" | "vi") => {
+    if (newLanguage === language) return;
+    
+    setIsChangingLanguage(true);
+    setTimeout(() => {
+      setLanguage(newLanguage);
+      setIsChangingLanguage(false);
+    }, 50);
+  };
+
   const variants = {
     hidden: { opacity: 0, y: 30 },
     visible: { 
       opacity: 1, 
       y: 0,
       transition: { 
-        duration: 0.7,
-        staggerChildren: 0.2,
-        delayChildren: 0.3
+        duration: 0.5, // Reduced from 0.7 for faster animations
+        staggerChildren: 0.15, // Reduced from 0.2 for faster animations
+        delayChildren: 0.1 // Reduced from 0.3 for faster animations
       }
     }
   };
@@ -48,7 +64,7 @@ const MissingPieceSection = () => {
     visible: { 
       opacity: 1, 
       y: 0,
-      transition: { duration: 0.5 }
+      transition: { duration: 0.3 } // Reduced from 0.5 for faster animations
     }
   };
 
@@ -59,29 +75,32 @@ const MissingPieceSection = () => {
       </div>
       
       <div className="container mx-auto px-4 relative z-10">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={variants}
-          className="max-w-5xl mx-auto"
-        >
-          <SectionTitle 
-            language={language} 
-            itemVariants={itemVariants} 
-          />
-          
-          <ContentCard 
-            language={language} 
-            itemVariants={itemVariants} 
-          />
-          
-          <LanguageToggleButton 
-            language={language}
-            setLanguage={setLanguage}
-            itemVariants={itemVariants}
-          />
-        </motion.div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={language} // Force re-render when language changes
+            initial="hidden"
+            animate={isChangingLanguage ? "hidden" : "visible"}
+            exit="hidden"
+            variants={variants}
+            className="max-w-5xl mx-auto"
+          >
+            <SectionTitle 
+              language={language} 
+              itemVariants={itemVariants} 
+            />
+            
+            <ContentCard 
+              language={language} 
+              itemVariants={itemVariants} 
+            />
+            
+            <LanguageToggleButton 
+              language={language}
+              setLanguage={handleSetLanguage}
+              itemVariants={itemVariants}
+            />
+          </motion.div>
+        </AnimatePresence>
       </div>
     </section>
   );

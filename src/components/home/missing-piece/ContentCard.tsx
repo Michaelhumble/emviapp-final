@@ -15,6 +15,9 @@ const ContentCard = ({ language, itemVariants }: ContentCardProps) => {
     <motion.div 
       className="bg-white backdrop-blur-sm rounded-3xl shadow-2xl p-10 mb-12 border border-indigo-100/50 relative overflow-hidden"
       variants={itemVariants}
+      // Make sure the component maintains consistency during language switches
+      initial="visible" 
+      layoutId="content-card"
     >
       {/* Background decoration */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-100/30 to-purple-100/30 rounded-full blur-3xl -z-10 transform translate-x-1/3 -translate-y-1/3"></div>

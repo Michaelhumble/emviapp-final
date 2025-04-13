@@ -23,6 +23,7 @@ const LanguageToggleButton = ({ language, setLanguage, itemVariants }: LanguageT
     <motion.div 
       className="flex justify-center"
       variants={itemVariants}
+      initial="visible" // Force initial state to avoid disappearing during animation
     >
       <motion.button
         onClick={toggleLanguage}
