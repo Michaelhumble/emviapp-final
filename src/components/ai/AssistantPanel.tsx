@@ -52,7 +52,9 @@ export const AssistantPanel = () => {
   // Scroll to bottom when messages change or when chat opens
   useEffect(() => {
     if (isOpen) {
-      scrollToBottom();
+      setTimeout(() => {
+        scrollToBottom();
+      }, 50); // Small delay to ensure DOM is updated
     }
   }, [messages, isOpen]);
 
@@ -75,6 +77,19 @@ export const AssistantPanel = () => {
   // Ensure scroll to bottom when keyboard appears on mobile
   useEffect(() => {
     if (isMobile) {
+      // For iOS, we need to listen to focus events on the input field
+      const handleFocus = () => {
+        setTimeout(scrollToBottom, 100);
+      };
+      
+      if (inputRef.current) {
+        inputRef.current.addEventListener('focus', handleFocus);
+        return () => {
+          inputRef.current?.removeEventListener('focus', handleFocus);
+        };
+      }
+      
+      // Handle visibility change (when user switches apps or tabs)
       const handleVisibilityChange = () => {
         if (!document.hidden) {
           setTimeout(scrollToBottom, 300);
@@ -95,7 +110,7 @@ export const AssistantPanel = () => {
         window.removeEventListener('resize', handleResize);
       };
     }
-  }, [isMobile]);
+  }, [isMobile, isOpen]);
 
   // Watch for booking matches
   useEffect(() => {
@@ -163,7 +178,6 @@ export const AssistantPanel = () => {
     
     setMessages(prev => [...prev, userMessage]);
     setInput("");
-    scrollToBottom();
     
     // Add typing indicator 
     const typingId = `assistant-typing-${Date.now()}`;
@@ -177,6 +191,11 @@ export const AssistantPanel = () => {
         isTyping: true
       }
     ]);
+    
+    // Force scroll to bottom after adding the typing indicator
+    setTimeout(() => {
+      scrollToBottom();
+    }, 50);
     
     try {
       // Get response from assistant
@@ -195,7 +214,10 @@ export const AssistantPanel = () => {
         }
       ]);
       
-      scrollToBottom();
+      // Force scroll to bottom after adding the response
+      setTimeout(() => {
+        scrollToBottom();
+      }, 50);
     } catch (error) {
       // Remove typing indicator and show error
       setMessages(prev => [
@@ -208,7 +230,11 @@ export const AssistantPanel = () => {
         }
       ]);
       toast.error("Sorry, I couldn't process your request right now.");
-      scrollToBottom();
+      
+      // Force scroll to bottom after adding the error message
+      setTimeout(() => {
+        scrollToBottom();
+      }, 50);
     }
   };
 
@@ -372,7 +398,7 @@ export const AssistantPanel = () => {
           </Button>
         </motion.div>
       </DrawerTrigger>
-      <DrawerContent className="fixed inset-x-0 bottom-0 max-h-[85vh] rounded-t-xl focus:outline-none pb-safe-area">
+      <DrawerContent className="fixed inset-x-0 bottom-0 max-h-[85vh] rounded-t-xl focus:outline-none pb-safe-area mobile-chat-panel">
         <div className="h-full flex flex-col max-h-[85vh]">
           <div className="flex items-center justify-between p-4 border-b">
             <div className="flex items-center">
@@ -401,8 +427,8 @@ export const AssistantPanel = () => {
           </div>
           
           <div 
-            className="p-4 border-t mt-auto bg-background"
-            style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 8px)' }}
+            className="p-4 border-t mt-auto bg-background mobile-safe-bottom"
+            style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}
           >
             <div className="flex gap-2">
               <Textarea
