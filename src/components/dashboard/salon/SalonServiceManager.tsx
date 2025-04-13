@@ -49,26 +49,30 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSalon } from "@/context/salon";
 import { Badge } from "@/components/ui/badge";
 
-// Updated to match the Supabase services table schema
-type ServiceItem = {
+// Define the service interface to match what comes from Supabase
+interface SupabaseService {
   id: string;
-  title: string;           // service name
+  title: string;
   price: number;
-  duration_minutes: number; // duration in minutes
+  duration_minutes: number;
   description?: string;
-  category: string;
-  user_id: string;         // salon id
-  created_at: string;
-  updated_at?: string;
   image_url?: string;
   is_visible?: boolean;
+  user_id: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+// Extended service item to include category
+type ServiceItem = SupabaseService & {
+  category: string;
 };
 
 // Form state interface
 interface ServiceFormState {
-  title: string;           
+  title: string;
   price: string;
-  duration: string;         // we'll convert this to duration_minutes when saving
+  duration: string;
   category: string;
 }
 
@@ -115,10 +119,10 @@ const SalonServiceManager = () => {
       
       if (error) throw error;
       
-      // Make sure the data has a category field (even if it's empty)
-      const servicesWithCategory = (data || []).map(service => ({
+      // Convert the raw data to our ServiceItem type with a category
+      const servicesWithCategory: ServiceItem[] = (data || []).map((service: SupabaseService) => ({
         ...service,
-        category: service.category || 'Other' // Default to 'Other' if category is missing
+        category: 'Other' // Set a default category since it's not in the database
       }));
       
       setServices(servicesWithCategory);
@@ -156,7 +160,7 @@ const SalonServiceManager = () => {
       title: service.title,
       price: service.price.toString(),
       duration: durationStr,
-      category: service.category || 'Other', // Ensure we have a category
+      category: service.category,
     });
     setIsEditing(true);
     setCurrentService(service);
@@ -199,30 +203,30 @@ const SalonServiceManager = () => {
     try {
       const durationMinutes = parseDurationToMinutes(serviceForm.duration);
       
-      const newService = {
+      // Create the service object for Supabase - without category since it's not in the database
+      const newServiceData = {
         user_id: currentSalon.id,
         title: serviceForm.title,
         price: parseFloat(serviceForm.price),
         duration_minutes: durationMinutes,
-        category: serviceForm.category,
         is_visible: true
       };
       
       const { data, error } = await supabase
         .from('services')
-        .insert(newService)
+        .insert(newServiceData)
         .select();
       
       if (error) throw error;
       
       if (data && data.length > 0) {
-        // Ensure the returned data has the category field
-        const serviceWithCategory = {
-          ...data[0],
-          category: data[0].category || serviceForm.category
+        // Create a ServiceItem with the category from our form
+        const newServiceWithCategory: ServiceItem = {
+          ...data[0] as SupabaseService,
+          category: serviceForm.category
         };
         
-        setServices(prev => [...prev, serviceWithCategory]);
+        setServices(prev => [...prev, newServiceWithCategory]);
       }
       
       setIsServiceModalOpen(false);
@@ -239,25 +243,30 @@ const SalonServiceManager = () => {
     try {
       const durationMinutes = parseDurationToMinutes(serviceForm.duration);
       
-      const updatedService = {
+      // Prepare update data - without category
+      const updatedServiceData = {
         title: serviceForm.title,
         price: parseFloat(serviceForm.price),
         duration_minutes: durationMinutes,
-        category: serviceForm.category,
       };
       
       const { error } = await supabase
         .from('services')
-        .update(updatedService)
+        .update(updatedServiceData)
         .eq('id', currentService.id)
         .eq('user_id', currentSalon.id);
       
       if (error) throw error;
       
+      // Update local state with category
       setServices(prev => 
         prev.map(service => 
           service.id === currentService.id 
-            ? { ...service, ...updatedService } 
+            ? { 
+                ...service, 
+                ...updatedServiceData,
+                category: serviceForm.category // Keep the category in our local state
+              } 
             : service
         )
       );
