@@ -1,4 +1,3 @@
-
 import React from "react";
 import { UserProfile, getLocationString } from "@/types/profile";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,6 +19,7 @@ import {
 } from "@/components/ui/tooltip";
 import AuthAction from "@/components/common/AuthAction";
 import OfferModal from "@/components/artists/OfferModal";
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 interface ArtistGridProps {
   artists: UserProfile[];
@@ -78,7 +78,6 @@ const ArtistCard: React.FC<{ artist: UserProfile }> = ({ artist }) => {
     sendOffer
   } = useArtistInteractions(artist.id);
 
-  // Get location as a string for display
   const locationString = getLocationString(artist.location);
 
   return (
@@ -91,7 +90,14 @@ const ArtistCard: React.FC<{ artist: UserProfile }> = ({ artist }) => {
           <div className="flex flex-col md:flex-row items-center md:items-start gap-4">
             <Avatar className="h-16 w-16">
               <AvatarImage src={artist.avatar_url || ""} alt={artist.full_name || ""} />
-              <AvatarFallback>{getInitials(artist.full_name)}</AvatarFallback>
+              <AvatarFallback>
+                <ImageWithFallback 
+                  src={artist.avatar_url || ""} 
+                  alt={artist.full_name || "Artist"} 
+                  className="h-full w-full object-cover"
+                  fallbackImage="https://emvi.app/images/fallback-profile.jpg"
+                />
+              </AvatarFallback>
             </Avatar>
             <div className="text-center md:text-left space-y-2 flex-1">
               <div className="flex flex-col md:flex-row md:items-center gap-2">
@@ -121,7 +127,6 @@ const ArtistCard: React.FC<{ artist: UserProfile }> = ({ artist }) => {
           </div>
         </Link>
         
-        {/* Artist interaction buttons */}
         <div className="flex items-center justify-between px-4 py-3 bg-muted/10 border-t">
           <TooltipProvider>
             <div className="flex items-center space-x-2">
@@ -169,7 +174,6 @@ const ArtistCard: React.FC<{ artist: UserProfile }> = ({ artist }) => {
             </div>
           </TooltipProvider>
           
-          {/* Offer button - only for salon owners */}
           {isSalonOwner && (
             <TooltipProvider>
               <Tooltip>
@@ -196,7 +200,6 @@ const ArtistCard: React.FC<{ artist: UserProfile }> = ({ artist }) => {
           )}
         </div>
         
-        {/* Offer Modal */}
         <OfferModal
           artistName={artist.full_name || "this artist"}
           onSendOffer={sendOffer}

@@ -72,7 +72,7 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
             src={salon.image}
             alt={sanitizedCompany || "Salon for Sale"}
             className="h-40 w-full object-cover rounded-md"
-            fallbackClassName="h-40 w-full rounded-md"
+            fallbackImage="https://emvi.app/images/fallback-profile.jpg"
             businessName={sanitizedCompany}
           />
         </div>
