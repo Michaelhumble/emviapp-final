@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
@@ -21,6 +22,7 @@ import SalonCreditPromotion from "@/components/dashboard/salon/SalonCreditPromot
 import TopLocalArtists from "@/components/dashboard/salon/TopLocalArtists";
 import NextStepsSmart from "@/components/dashboard/salon/NextStepsSmart";
 import SalonTeamManagement from "@/components/dashboard/salon/SalonTeamManagement";
+import SalonTeamManager from "@/components/dashboard/salon/team/SalonTeamManager";
 import SalonServiceManager from "@/components/dashboard/salon/SalonServiceManager";
 import SalonBoostCreditPanel from "@/components/dashboard/salon/SalonBoostCreditPanel";
 import SalonProfileCompletionMeter from "@/components/dashboard/salon/SalonProfileCompletionMeter";
@@ -109,11 +111,14 @@ const OwnerDashboard = () => {
                     
                     <SalonBoostCreditPanel />
                     
+                    {/* Add new Team Manager section after dashboard actions */}
+                    <SalonDashboardActionButtons />
+                    
+                    <SalonTeamManager />
+                    
                     <NextStepsSmart />
                     
                     <SalonAnalyticsCards />
-                    
-                    <SalonDashboardActionButtons />
                     
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                       <div className="lg:col-span-1">
@@ -153,7 +158,7 @@ const OwnerDashboard = () => {
                   </TabsContent>
                   
                   <TabsContent value="team" className="space-y-8">
-                    <SalonTeamManagement />
+                    <SalonTeamManager />
                     
                     <SalonReferralCard />
                   </TabsContent>
