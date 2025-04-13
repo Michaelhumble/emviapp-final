@@ -7,9 +7,10 @@ import { setLanguagePreference, getLanguagePreference, addLanguageChangeListener
 
 interface LanguageToggleProps {
   className?: string;
+  minimal?: boolean;
 }
 
-const LanguageToggle: React.FC<LanguageToggleProps> = ({ className }) => {
+const LanguageToggle: React.FC<LanguageToggleProps> = ({ className, minimal = false }) => {
   const [language, setLanguage] = useState<string>(getLanguagePreference());
 
   useEffect(() => {
@@ -26,6 +27,24 @@ const LanguageToggle: React.FC<LanguageToggleProps> = ({ className }) => {
       setLanguagePreference(value as 'en' | 'vi');
     }
   };
+
+  if (minimal) {
+    return (
+      <div className={`flex items-center ${className}`}>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => handleLanguageChange(language === 'en' ? 'vi' : 'en')}
+          className="flex items-center gap-1.5 hover:bg-gray-100/80 rounded-full px-3 py-1 h-auto"
+        >
+          <Languages className="h-3.5 w-3.5" />
+          <span className="text-xs font-medium">
+            {language === "en" ? "EN / VI" : "VI / EN"}
+          </span>
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className={`flex items-center ${className}`}>

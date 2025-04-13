@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/context/auth';
@@ -41,16 +41,13 @@ const OtherRoleSetup = () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      toast({
-        description: "Profile saved. Welcome to your dashboard!",
-      });
+      toast("Profile saved. Welcome to your dashboard!");
       
       navigate('/dashboard/other');
     } catch (error) {
       console.error("Error saving profile:", error);
-      toast({
-        description: "Failed to save profile. Please try again.",
-        variant: "destructive",
+      toast("Failed to save profile. Please try again.", {
+        style: { backgroundColor: 'rgb(220, 38, 38)', color: 'white' }
       });
     } finally {
       setLoading(false);
