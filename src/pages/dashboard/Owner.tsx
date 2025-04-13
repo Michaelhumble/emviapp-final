@@ -31,6 +31,7 @@ import SalonClientManagement from "@/components/dashboard/salon/SalonClientManag
 import SalonAnalytics from "@/components/dashboard/salon/SalonAnalytics";
 import SalonMessagingCenter from "@/components/dashboard/salon/SalonMessagingCenter";
 import SalonBookingManager from "@/components/dashboard/salon/bookings/SalonBookingManager";
+import SalonBookingFeed from "@/components/dashboard/salon/bookings/SalonBookingFeed";
 import confetti from "canvas-confetti";
 import BookingAnalyticsCard from "@/components/dashboard/salon/analytics/BookingAnalyticsCard";
 import CreditUsageHistory from "@/components/dashboard/salon/credits/CreditUsageHistory";
@@ -111,8 +112,9 @@ const OwnerDashboard = () => {
                     
                     <SalonBoostCreditPanel />
                     
-                    {/* Add new Team Manager section after dashboard actions */}
                     <SalonDashboardActionButtons />
+                    
+                    <SalonBookingFeed />
                     
                     <SalonTeamManager />
                     
@@ -138,6 +140,8 @@ const OwnerDashboard = () => {
                   </TabsContent>
 
                   <TabsContent value="bookings" className="space-y-8">
+                    <SalonBookingFeed />
+                    
                     <SalonBookingManager />
                     
                     <BookingAnalyticsCard />
