@@ -1,37 +1,43 @@
 
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { cn } from "@/lib/utils";
 
 const MainNavigation = () => {
   const location = useLocation();
   
   const isActive = (path: string) => {
-    return location.pathname.startsWith(path);
+    return location.pathname === path || location.pathname.startsWith(`${path}/`);
   };
   
-  const navItems = [
-    { path: '/jobs', label: 'Jobs' },
-    { path: '/salons', label: 'Salons' },
-    { path: '/sell-salon', label: 'Salon Sales' },
-    { path: '/artists', label: 'Artists' },
-  ];
-  
+  const linkClasses = "px-3 py-2 transition-colors hover:text-primary";
+  const activeLinkClasses = "text-primary font-medium";
+
   return (
-    <nav className="hidden md:flex items-center space-x-1">
-      {navItems.map(item => (
-        <Link
-          key={item.path}
-          to={item.path}
-          className={cn(
-            "px-3 py-2 text-sm rounded-md transition-colors hover:text-primary hover:bg-muted",
-            isActive(item.path) 
-              ? "text-primary font-medium" 
-              : "text-muted-foreground"
-          )}
-        >
-          {item.label}
-        </Link>
-      ))}
+    <nav className="flex items-center space-x-1">
+      <Link 
+        to="/artists" 
+        className={`${linkClasses} ${isActive('/artists') ? activeLinkClasses : ''}`}
+      >
+        Artists
+      </Link>
+      <Link 
+        to="/salons" 
+        className={`${linkClasses} ${isActive('/salons') ? activeLinkClasses : ''}`}
+      >
+        Salons
+      </Link>
+      <Link 
+        to="/jobs" 
+        className={`${linkClasses} ${isActive('/jobs') ? activeLinkClasses : ''}`}
+      >
+        Jobs
+      </Link>
+      <Link 
+        to="/booths" 
+        className={`${linkClasses} ${isActive('/booths') ? activeLinkClasses : ''}`}
+      >
+        Booths
+      </Link>
     </nav>
   );
 };

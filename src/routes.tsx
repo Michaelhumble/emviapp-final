@@ -35,6 +35,8 @@ import SalonMarketplace from './pages/SalonMarketplace';
 import CommandCenter from './pages/CommandCenter';
 import BookingPage from './pages/BookingPage';
 import MyBookingsPage from './pages/MyBookingsPage';
+import BoothDetail from './pages/booths/BoothDetail';
+import BoothsIndex from './pages/booths/BoothsIndex';
 
 // Import profile setup pages
 import ArtistSetup from './pages/profile/artist/setup';
@@ -272,6 +274,14 @@ const routes = [
   {
     path: '/my-bookings',
     element: <MyBookingsPage />,
+  },
+  {
+    path: '/booths',
+    element: <BoothsIndex />,
+  },
+  {
+    path: '/booths/:id',
+    element: <BoothDetail />,
   },
   {
     path: '*',
