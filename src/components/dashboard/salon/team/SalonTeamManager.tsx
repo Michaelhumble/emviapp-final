@@ -97,7 +97,16 @@ const SalonTeamManager = () => {
       
       if (error) throw error;
       
-      setStaffMembers(data || []);
+      // Transform the data to ensure status is properly typed
+      const typedStaffMembers: StaffMember[] = (data || []).map(member => ({
+        ...member,
+        // Ensure status is either 'active' or 'inactive'
+        status: member.status === 'active' ? 'active' : 'inactive',
+        // Convert commission_rate to number if it exists
+        commission_rate: member.commission_rate ? Number(member.commission_rate) : undefined
+      }));
+      
+      setStaffMembers(typedStaffMembers);
     } catch (err) {
       console.error('Error fetching staff members:', err);
       setError('Failed to load staff members. Please try again.');
@@ -139,7 +148,17 @@ const SalonTeamManager = () => {
       
       if (error) throw error;
       
-      setStaffMembers(prev => [...prev, data[0]]);
+      if (data && data.length > 0) {
+        // Ensure the new member has the correct type
+        const newStaffMember: StaffMember = {
+          ...data[0],
+          status: data[0].status === 'active' ? 'active' : 'inactive',
+          commission_rate: data[0].commission_rate ? Number(data[0].commission_rate) : undefined
+        };
+        
+        setStaffMembers(prev => [...prev, newStaffMember]);
+      }
+      
       setIsAddMemberOpen(false);
       setNewMember({
         full_name: '',
@@ -200,7 +219,7 @@ const SalonTeamManager = () => {
       
       setStaffMembers(prev => 
         prev.map(m => 
-          m.id === member.id ? { ...m, status: newStatus as 'active' | 'inactive' } : m
+          m.id === member.id ? { ...m, status: newStatus } : m
         )
       );
       
