@@ -86,11 +86,15 @@ const SalonAvailabilityManager = () => {
   const fetchExistingAvailability = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      // Use type assertion with an explicit any to avoid deep type instantiation
+      const response = await supabase
         .from('availability')
         .select('*')
         .eq('user_id', user!.id)
         .order('day_of_week', { ascending: true });
+        
+      // Now manually extract data and error to avoid TypeScript inference issues
+      const { data, error } = response as { data: any; error: any };
 
       if (error) throw error;
 
