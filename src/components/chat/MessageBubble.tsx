@@ -2,18 +2,45 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { MessageType } from "./ChatSystem";
+import { Button } from "@/components/ui/button";
+import { Calendar, Clock, User, Check } from "lucide-react";
+import { BookingMatch } from "@/services/assistantService";
 
 interface MessageBubbleProps {
   message: MessageType;
+  onBookingConfirm?: (match: BookingMatch) => void;
 }
 
-export function MessageBubble({ message }: MessageBubbleProps) {
+export function MessageBubble({ message, onBookingConfirm }: MessageBubbleProps) {
   // Format timestamp to display time
   const formatTime = (date: Date): string => {
     return date.toLocaleTimeString(undefined, {
       hour: '2-digit',
       minute: '2-digit',
     });
+  };
+
+  // Format date for display
+  const formatDate = (dateString: string): string => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    } catch (e) {
+      return dateString;
+    }
+  };
+
+  // Format time for display
+  const formatTimeString = (timeString: string): string => {
+    try {
+      const [hours, minutes] = timeString.split(':');
+      const hour = parseInt(hours);
+      const period = hour >= 12 ? 'PM' : 'AM';
+      const hour12 = hour % 12 || 12;
+      return `${hour12}:${minutes} ${period}`;
+    } catch (e) {
+      return timeString;
+    }
   };
 
   return (
@@ -41,7 +68,48 @@ export function MessageBubble({ message }: MessageBubbleProps) {
             <div className="typing-dot"></div>
           </div>
         ) : (
-          <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+          <>
+            <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+            
+            {/* Show booking options if available */}
+            {message.bookingMatches && message.bookingMatches.length > 0 && (
+              <div className="mt-3 space-y-2">
+                {message.bookingMatches.map((match, index) => (
+                  <div key={`booking-${index}`} className="bg-background rounded-lg p-3 shadow-sm">
+                    <div className="flex items-start gap-3">
+                      {match.avatar ? (
+                        <img src={match.avatar} alt={match.name} className="h-10 w-10 rounded-full object-cover" />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          <User className="h-5 w-5 text-primary" />
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <p className="font-medium text-foreground">{match.name}</p>
+                        <p className="text-sm text-muted-foreground">{match.service}</p>
+                        <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                          <Calendar className="h-3 w-3" /> 
+                          {formatDate(match.date)}
+                          <Clock className="h-3 w-3 ml-2" /> 
+                          {formatTimeString(match.time)}
+                        </div>
+                      </div>
+                    </div>
+                    {onBookingConfirm && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full mt-2 bg-primary/5 hover:bg-primary/10"
+                        onClick={() => onBookingConfirm(match)}
+                      >
+                        <Check className="h-4 w-4 mr-1" /> Book with {match.name}
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
       <div 

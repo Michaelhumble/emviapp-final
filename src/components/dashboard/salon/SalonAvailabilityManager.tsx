@@ -86,28 +86,31 @@ const SalonAvailabilityManager = () => {
   const fetchExistingAvailability = async () => {
     try {
       setLoading(true);
-      // Use type assertion with an explicit any to avoid deep type instantiation
-      const response = await supabase
+      
+      // Use any type first to avoid TypeScript deep instantiation error
+      const query = supabase
         .from('availability')
         .select('*')
         .eq('user_id', user!.id)
         .order('day_of_week', { ascending: true });
         
-      // Now manually extract data and error to avoid TypeScript inference issues
-      const { data, error } = response as { data: any; error: any };
+      // Explicitly use Promise<any> to avoid TypeScript inference issues
+      const result: Promise<any> = query;
+      const response = await result;
+      
+      // Type-cast after the query to fix the instantiation depth issue
+      const data = response.data as DatabaseAvailabilityRecord[] | null;
+      const error = response.error;
 
       if (error) throw error;
 
       if (data && data.length > 0) {
-        // Explicitly cast the data to our defined type
-        const availabilityData = data as DatabaseAvailabilityRecord[];
-        
-        if (availabilityData[0].location) {
-          setLocation(availabilityData[0].location);
+        if (data[0].location) {
+          setLocation(data[0].location);
         }
         
         const existingDays = DAYS_OF_WEEK.map(day => {
-          const existingDay = availabilityData.find(d => d.day_of_week === day.value.toString());
+          const existingDay = data.find(d => d.day_of_week === day.value.toString());
           if (existingDay) {
             return {
               id: existingDay.id,

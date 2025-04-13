@@ -10,10 +10,11 @@ interface ChatInputProps {
   onSend: () => void;
   onFocus?: () => void;
   onBlur?: () => void;
+  isLoading?: boolean;
 }
 
 export const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
-  ({ value, onChange, onSend, onFocus, onBlur }, ref) => {
+  ({ value, onChange, onSend, onFocus, onBlur, isLoading }, ref) => {
     const [isFocused, setIsFocused] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
     
@@ -74,18 +75,23 @@ export const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
                 fontSize: '16px', // Prevent iOS zoom
                 lineHeight: 1.5,
               }}
+              disabled={isLoading}
             />
           </div>
           <Button 
             onClick={onSend} 
             size="icon" 
-            disabled={!value.trim()}
+            disabled={!value.trim() || isLoading}
             className={cn(
               "h-10 w-10 shrink-0",
-              !value.trim() && "opacity-50 cursor-not-allowed"
+              (!value.trim() || isLoading) && "opacity-50 cursor-not-allowed"
             )}
           >
-            <Send size={18} />
+            {isLoading ? (
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            ) : (
+              <Send size={18} />
+            )}
           </Button>
         </div>
       </div>

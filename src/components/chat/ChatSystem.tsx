@@ -6,7 +6,10 @@ import { MessageBubble } from "./MessageBubble";
 import { ChatHeader } from "./ChatHeader";
 import { ChatInput } from "./ChatInput";
 import { ChatToggleButton } from "./ChatToggleButton";
-import { Sparkles } from "lucide-react";
+import { useAssistant } from "@/hooks/useAssistant";
+import { BookingMatch } from "@/services/assistantService";
+import { useAuth } from "@/context/auth";
+import { toast } from "sonner";
 
 export type MessageType = {
   id: string;
@@ -14,6 +17,7 @@ export type MessageType = {
   sender: "user" | "assistant";
   timestamp: Date;
   isTyping?: boolean;
+  bookingMatches?: BookingMatch[];
 };
 
 export function ChatSystem() {
@@ -21,7 +25,8 @@ export function ChatSystem() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [inputValue, setInputValue] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
+  const { user } = useAuth();
+  const { isLoading, generateResponse, matches, createBooking } = useAssistant();
   
   // Refs for DOM elements and tracking
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -113,10 +118,67 @@ export function ChatSystem() {
     }
   }, [isOpen, isMobile]);
 
+  // Handle booking confirmation
+  const handleBookingConfirmation = async (bookingMatch: BookingMatch) => {
+    if (!user) {
+      toast.error("You need to be logged in to book an appointment");
+      return;
+    }
+    
+    // Add user confirmation message
+    const userMessage: MessageType = {
+      id: `user-confirmation-${Date.now()}`,
+      content: `I'd like to book with ${bookingMatch.name} for ${bookingMatch.service}`,
+      sender: "user",
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
+    
+    // Add typing indicator
+    const typingId = `typing-${Date.now()}`;
+    setMessages(prev => [
+      ...prev,
+      {
+        id: typingId,
+        content: "",
+        sender: "assistant",
+        timestamp: new Date(),
+        isTyping: true
+      }
+    ]);
+    
+    // Create booking and get result
+    const success = await createBooking(bookingMatch, user.id);
+    
+    // Remove typing indicator and add response
+    if (success) {
+      setMessages(prev => [
+        ...prev.filter(m => m.id !== typingId),
+        {
+          id: `assistant-${Date.now()}`,
+          content: `Great! I've sent a booking request to ${bookingMatch.name} for ${bookingMatch.service} on ${formatDate(bookingMatch.date)} at ${formatTime(bookingMatch.time)}. They'll confirm shortly, and you can check the status in your bookings page.`,
+          sender: "assistant",
+          timestamp: new Date()
+        }
+      ]);
+    } else {
+      setMessages(prev => [
+        ...prev.filter(m => m.id !== typingId),
+        {
+          id: `assistant-${Date.now()}`,
+          content: "I'm sorry, there was an issue creating your booking. Please try again or contact support if the problem persists.",
+          sender: "assistant",
+          timestamp: new Date()
+        }
+      ]);
+    }
+  };
+
   // Handle sending a message
-  const handleSendMessage = useCallback(() => {
+  const handleSendMessage = useCallback(async () => {
     const trimmedInput = inputValue.trim();
-    if (!trimmedInput) return;
+    if (!trimmedInput || isLoading) return;
     
     // Add user message
     const userMessage: MessageType = {
@@ -130,21 +192,88 @@ export function ChatSystem() {
     setInputValue("");
     
     // Show typing indicator
-    setIsTyping(true);
+    const typingId = `typing-${Date.now()}`;
+    setMessages(prev => [
+      ...prev,
+      {
+        id: typingId,
+        content: "",
+        sender: "assistant",
+        timestamp: new Date(),
+        isTyping: true
+      }
+    ]);
     
-    // Simulate AI response (replace with actual API call later)
-    setTimeout(() => {
-      const assistantMessage: MessageType = {
-        id: `assistant-${Date.now()}`,
-        content: getSimulatedResponse(trimmedInput),
-        sender: "assistant", 
-        timestamp: new Date()
-      };
+    try {
+      // Get AI response
+      const response = await generateResponse(trimmedInput);
       
-      setMessages(prev => [...prev, assistantMessage]);
-      setIsTyping(false);
-    }, 1500);
-  }, [inputValue]);
+      // Remove typing indicator and add response with any booking matches
+      setMessages(prev => [
+        ...prev.filter(m => m.id !== typingId),
+        {
+          id: `assistant-${Date.now()}`,
+          content: response,
+          sender: "assistant",
+          timestamp: new Date(),
+          bookingMatches: matches.length > 0 ? matches : undefined
+        }
+      ]);
+      
+      // Log conversation for admin review
+      logConversation(userMessage.content, response);
+      
+    } catch (error) {
+      console.error("Error getting response:", error);
+      
+      // Remove typing indicator and add error message
+      setMessages(prev => [
+        ...prev.filter(m => m.id !== typingId),
+        {
+          id: `assistant-error-${Date.now()}`,
+          content: "Sorry, I had trouble processing your request. Please try again in a moment.",
+          sender: "assistant",
+          timestamp: new Date()
+        }
+      ]);
+    }
+  }, [inputValue, isLoading, generateResponse, matches]);
+
+  // Helper function to log conversations
+  const logConversation = async (userMessage: string, aiResponse: string) => {
+    try {
+      await supabase.from('chat_logs').insert({
+        user_id: user?.id || null,
+        user_message: userMessage,
+        ai_response: aiResponse,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Error logging conversation:", error);
+    }
+  };
+
+  // Helper functions to format date and time
+  const formatDate = (dateString: string): string => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    } catch (e) {
+      return dateString;
+    }
+  };
+
+  const formatTime = (timeString: string): string => {
+    try {
+      const [hours, minutes] = timeString.split(':');
+      const hour = parseInt(hours);
+      const period = hour >= 12 ? 'PM' : 'AM';
+      const hour12 = hour % 12 || 12;
+      return `${hour12}:${minutes} ${period}`;
+    } catch (e) {
+      return timeString;
+    }
+  };
 
   return (
     <>
@@ -187,22 +316,10 @@ export function ChatSystem() {
                 {messages.map((message) => (
                   <MessageBubble 
                     key={message.id}
-                    message={message} 
+                    message={message}
+                    onBookingConfirm={handleBookingConfirmation}
                   />
                 ))}
-                
-                {/* Typing indicator */}
-                {isTyping && (
-                  <MessageBubble 
-                    message={{
-                      id: "typing",
-                      content: "",
-                      sender: "assistant",
-                      timestamp: new Date(),
-                      isTyping: true
-                    }}
-                  />
-                )}
                 
                 {/* Invisible element for scrolling */}
                 <div ref={messagesEndRef} style={{ height: 1 }} />
@@ -218,6 +335,7 @@ export function ChatSystem() {
                 onSend={handleSendMessage}
                 onFocus={handleInputFocus}
                 onBlur={handleInputBlur}
+                isLoading={isLoading}
               />
             </div>
           </motion.div>
@@ -225,18 +343,4 @@ export function ChatSystem() {
       </AnimatePresence>
     </>
   );
-}
-
-// Helper function to generate sample responses (replace with real API later)
-function getSimulatedResponse(input: string): string {
-  const responses = [
-    "I'd be happy to help with that!",
-    "Let me look into that for you.",
-    "That's a great question. Here's what I think...",
-    "I'm here to assist with anything you need.",
-    "Could you provide a bit more information about that?",
-    "I understand what you're asking. Let me explain...",
-  ];
-  
-  return responses[Math.floor(Math.random() * responses.length)];
 }
