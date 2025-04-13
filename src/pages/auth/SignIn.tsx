@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { Button } from "@/components/ui/button";
@@ -10,75 +10,28 @@ import { Loader2 } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { toast } from "sonner";
 import EmviLogo from "@/components/branding/EmviLogo";
-import { supabase } from "@/integrations/supabase/client";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isCheckingInvite, setIsCheckingInvite] = useState(false);
   const { signIn, user } = useAuth();
   const navigate = useNavigate();
 
   // Redirect if already logged in
-  if (user && !isCheckingInvite) {
+  if (user) {
     return <Navigate to="/dashboard" replace />;
   }
-
-  const checkInvitedStatus = async (userId: string) => {
-    setIsCheckingInvite(true);
-    try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('invited')
-        .eq('id', userId)
-        .single();
-
-      if (error) throw error;
-      
-      // If user is not invited, redirect to access denied
-      if (!data.invited) {
-        navigate("/access-denied");
-        return false;
-      }
-      
-      return true;
-    } catch (error) {
-      console.error("Error checking invite status:", error);
-      toast.error("Error verifying access permissions");
-      return false;
-    } finally {
-      setIsCheckingInvite(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      const result = await signIn(email, password);
-      
-      if (!result.success) {
-        throw new Error(result.error?.message || "Failed to sign in");
-      }
-      
-      // Get the current user after login
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error("No user found after login");
-      }
-      
-      // Check if the user is invited
-      const isInvited = await checkInvitedStatus(user.id);
-      
-      if (isInvited) {
-        navigate("/dashboard");
-      }
-    } catch (error: any) {
+      await signIn(email, password);
+      navigate("/dashboard");
+    } catch (error) {
       console.error("Sign in error:", error);
-      toast.error(error.message || "Failed to sign in");
     } finally {
       setIsSubmitting(false);
     }
@@ -109,7 +62,7 @@ const SignIn = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  disabled={isSubmitting || isCheckingInvite}
+                  disabled={isSubmitting}
                 />
               </div>
               <div className="space-y-2">
@@ -121,7 +74,7 @@ const SignIn = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  disabled={isSubmitting || isCheckingInvite}
+                  disabled={isSubmitting}
                 />
               </div>
             </CardContent>
@@ -129,12 +82,12 @@ const SignIn = () => {
               <Button 
                 type="submit" 
                 className="w-full" 
-                disabled={isSubmitting || isCheckingInvite}
+                disabled={isSubmitting}
               >
-                {isSubmitting || isCheckingInvite ? (
+                {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {isCheckingInvite ? "Verifying Access..." : "Signing In..."}
+                    Signing In...
                   </>
                 ) : (
                   "Sign In"
@@ -142,8 +95,8 @@ const SignIn = () => {
               </Button>
               <div className="text-sm text-center text-gray-500">
                 Don't have an account?{" "}
-                <Link to="/early-access" className="text-primary hover:underline">
-                  Request Access
+                <Link to="/auth/signup" className="text-primary hover:underline">
+                  Sign up
                 </Link>
               </div>
             </CardFooter>

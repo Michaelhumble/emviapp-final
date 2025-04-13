@@ -1,88 +1,229 @@
+import React from 'react';
+import Index from './pages/Index';
+import Welcome from './pages/Welcome';
+import NotFound from './pages/NotFound';
+import Artists from './pages/Artists';
+import JobsPage from './pages/jobs';
+import SalonsPage from './pages/salons/SalonsFinal';
+import SellSalon from './pages/salons/SellSalon';
+import Customers from './pages/Customers';
+import Suppliers from './pages/Suppliers';
+import Freelancers from './pages/Freelancers';
+import Dashboard from './pages/dashboard';
+import ArtistDashboard from './pages/dashboard/Artist';
+import CustomerDashboard from './pages/dashboard/Customer';
+import SalonDashboard from './pages/dashboard/Salon';
+import OwnerDashboard from './pages/dashboard/Owner';
+import FreelancerDashboard from './pages/dashboard/Freelancer';
+import SupplierDashboard from './pages/dashboard/Supplier';
+import OtherDashboard from './pages/dashboard/Other';
+import ProfileEditor from './pages/profile/ProfileEditor';
+import SignIn from './pages/auth/SignIn';
+import SignUp from './pages/auth/SignUp';
+import UserProfilePage from './pages/profile/UserProfilePage';
+import SalonOwners from './pages/SalonOwners';
+import Settings from './pages/Settings';
+import SalonDetail from './pages/salons/SalonDetail';
+import ProfileRedirect from './pages/profile/ProfileRedirect';
+import Profile from './pages/Profile';
+import ArtistPublicPage from './pages/a/ArtistPublicPage';
+import ArtistExplore from './pages/explore/artists';
+import SalonMarketplace from './pages/SalonMarketplace';
+import CommandCenter from './pages/CommandCenter';
 
-import { lazy, Suspense } from 'react';
-import { Navigate } from 'react-router-dom';
-import Loading from '@/components/common/Loading';
-import InviteGuard from '@/components/auth/InviteGuard';
+// Import profile setup pages
+import ArtistSetup from './pages/profile/artist/setup';
+import SalonOwnerSetup from './pages/profile/salon/setup';
+import FreelancerSetup from './pages/profile/freelancer/setup';
+import CustomerSetup from './pages/profile/customer/setup';
+import OtherRoleSetup from './pages/profile/other/setup';
+import BoothRenterSetup from './pages/profile/renter/setup';
+import SupplierSetup from './pages/profile/supplier/setup';
 
-// Lazy load pages
-const HomePage = lazy(() => import('@/pages/Home'));
-const NotFoundPage = lazy(() => import('@/pages/NotFound'));
-const SignIn = lazy(() => import('@/pages/auth/SignIn'));
-const SignUp = lazy(() => import('@/pages/auth/SignUp'));
-const EarlyAccess = lazy(() => import('@/pages/auth/EarlyAccess'));
-const AccessDenied = lazy(() => import('@/pages/auth/AccessDenied'));
-const CommandCenter = lazy(() => import('@/pages/CommandCenter'));
-
-// Main routes
 const routes = [
-  // Public routes (no auth required)
   {
     path: '/',
-    element: (
-      <Suspense fallback={<Loading />}>
-        <HomePage />
-      </Suspense>
-    ),
+    element: <Index />,
   },
-  
-  // Auth routes
+  {
+    path: '/welcome',
+    element: <Welcome />,
+  },
+  {
+    path: '/artists',
+    element: <Artists />,
+  },
+  {
+    path: '/explore/artists',
+    element: <ArtistExplore />,
+  },
+  {
+    path: '/jobs',
+    element: <JobsPage />,
+  },
+  {
+    path: '/salons',
+    element: <SalonsPage />,
+  },
+  {
+    path: '/salons/:id',
+    element: <SalonDetail />,
+  },
+  {
+    path: '/sell-salon',
+    element: <SellSalon />,
+  },
+  {
+    path: '/salon-marketplace',
+    element: <SalonMarketplace />,
+  },
+  {
+    path: '/salon-owners',
+    element: <SalonOwners />,
+  },
+  {
+    path: '/customers',
+    element: <Customers />,
+  },
+  {
+    path: '/suppliers',
+    element: <Suppliers />,
+  },
+  {
+    path: '/freelancers',
+    element: <Freelancers />,
+  },
+  {
+    path: '/dashboard',
+    element: <Dashboard />,
+  },
+  {
+    path: '/dashboard/artist',
+    element: <ArtistDashboard />,
+  },
+  {
+    path: '/dashboard/customer',
+    element: <CustomerDashboard />,
+  },
+  {
+    path: '/dashboard/salon',
+    element: <SalonDashboard />,
+  },
+  {
+    path: '/dashboard/owner',
+    element: <OwnerDashboard />,
+  },
+  {
+    path: '/dashboard/freelancer',
+    element: <FreelancerDashboard />,
+  },
+  {
+    path: '/dashboard/supplier',
+    element: <SupplierDashboard />,
+  },
+  {
+    path: '/dashboard/other',
+    element: <OtherDashboard />,
+  },
+  {
+    path: '/profile',
+    element: <Profile />,
+  },
+  {
+    path: '/profile/view',
+    element: <UserProfilePage />,
+  },
+  {
+    path: '/profile/redirect',
+    element: <ProfileRedirect />,
+  },
+  {
+    path: '/profile/edit',
+    element: <ProfileEditor />,
+  },
+  {
+    path: '/settings',
+    element: <Settings />,
+  },
   {
     path: '/auth/signin',
-    element: (
-      <Suspense fallback={<Loading />}>
-        <SignIn />
-      </Suspense>
-    ),
+    element: <SignIn />,
   },
   {
     path: '/auth/signup',
-    element: (
-      <Suspense fallback={<Loading />}>
-        <SignUp />
-      </Suspense>
-    ),
+    element: <SignUp />,
   },
-  
-  // Add early access request page
   {
-    path: '/early-access',
-    element: (
-      <Suspense fallback={<Loading />}>
-        <EarlyAccess />
-      </Suspense>
-    ),
+    path: '/sign-in',
+    element: <SignIn />,
   },
-  
-  // Access denied page
   {
-    path: '/access-denied',
-    element: (
-      <Suspense fallback={<Loading />}>
-        <AccessDenied />
-      </Suspense>
-    ),
+    path: '/sign-up',
+    element: <SignUp />,
   },
-  
-  // Protected routes (auth required)
   {
     path: '/command-center',
-    element: (
-      <Suspense fallback={<Loading />}>
-        <InviteGuard>
-          <CommandCenter />
-        </InviteGuard>
-      </Suspense>
-    ),
+    element: <CommandCenter />,
   },
-  
-  // Catch-all route for 404 Not Found
+  {
+    path: '/profile/artist/setup',
+    element: <ArtistSetup />,
+  },
+  {
+    path: '/profile/salon/setup',
+    element: <SalonOwnerSetup />,
+  },
+  {
+    path: '/profile/freelancer/setup',
+    element: <FreelancerSetup />,
+  },
+  {
+    path: '/profile/customer/setup',
+    element: <CustomerSetup />,
+  },
+  {
+    path: '/profile/other/setup',
+    element: <OtherRoleSetup />,
+  },
+  {
+    path: '/profile/renter/setup',
+    element: <BoothRenterSetup />,
+  },
+  {
+    path: '/profile/supplier/setup',
+    element: <SupplierSetup />,
+  },
+  {
+    path: '/setup/artist',
+    element: <ArtistSetup />,
+  },
+  {
+    path: '/setup/salon',
+    element: <SalonOwnerSetup />,
+  },
+  {
+    path: '/setup/freelancer',
+    element: <FreelancerSetup />,
+  },
+  {
+    path: '/setup/customer',
+    element: <CustomerSetup />,
+  },
+  {
+    path: '/setup/other',
+    element: <OtherRoleSetup />,
+  },
+  {
+    path: '/a/:username',
+    element: <ArtistPublicPage />,
+  },
+  {
+    path: '/artist/:username',
+    element: <ArtistPublicPage />,
+  },
   {
     path: '*',
-    element: (
-      <Suspense fallback={<Loading />}>
-        <NotFoundPage />
-      </Suspense>
-    ),
+    element: <NotFound />,
   },
 ];
 

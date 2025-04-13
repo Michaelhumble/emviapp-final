@@ -1123,7 +1123,6 @@ export type Database = {
           full_name: string
           id: string
           instagram: string | null
-          invited: boolean | null
           location: string | null
           phone: string | null
           portfolio_urls: string[] | null
@@ -1152,7 +1151,6 @@ export type Database = {
           full_name: string
           id?: string
           instagram?: string | null
-          invited?: boolean | null
           location?: string | null
           phone?: string | null
           portfolio_urls?: string[] | null
@@ -1181,7 +1179,6 @@ export type Database = {
           full_name?: string
           id?: string
           instagram?: string | null
-          invited?: boolean | null
           location?: string | null
           phone?: string | null
           portfolio_urls?: string[] | null
@@ -1193,39 +1190,6 @@ export type Database = {
           specialty?: string | null
           updated_at?: string | null
           website?: string | null
-        }
-        Relationships: []
-      }
-      waitlist_requests: {
-        Row: {
-          created_at: string
-          email: string
-          full_name: string
-          id: string
-          reason: string | null
-          status: string | null
-          updated_at: string
-          user_type: string
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          full_name: string
-          id?: string
-          reason?: string | null
-          status?: string | null
-          updated_at?: string
-          user_type: string
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          full_name?: string
-          id?: string
-          reason?: string | null
-          status?: string | null
-          updated_at?: string
-          user_type?: string
         }
         Relationships: []
       }
@@ -1336,10 +1300,6 @@ export type Database = {
       }
       is_post_expired: {
         Args: { expires_at: string }
-        Returns: boolean
-      }
-      is_user_invited: {
-        Args: { user_id: string }
         Returns: boolean
       }
       process_referral: {
