@@ -7,6 +7,7 @@ import ArtistProfileContent from "./artist-profile/ArtistProfileContent";
 import ArtistProfileLoading from "./artist-profile/ArtistProfileLoading";
 import ArtistProfileError from "./artist-profile/ArtistProfileError";
 import ArtistProfileSEO from "@/components/seo/ArtistProfileSEO";
+import { motion } from "framer-motion";
 
 const ArtistPublicProfile: React.FC = () => {
   const { username } = useParams<{ username: string }>();
@@ -52,13 +53,19 @@ const ArtistPublicProfile: React.FC = () => {
       {/* Add SEO component */}
       <ArtistProfileSEO profile={profile} portfolioImages={portfolioImageUrls} />
       
-      <ArtistProfileContent
-        profile={profile}
-        services={services}
-        portfolioImages={portfolioImages}
-        viewCount={viewCount}
-        isSalonOwner={isSalonOwner}
-      />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <ArtistProfileContent
+          profile={profile}
+          services={services}
+          portfolioImages={portfolioImages}
+          viewCount={viewCount}
+          isSalonOwner={isSalonOwner}
+        />
+      </motion.div>
     </Layout>
   );
 };
