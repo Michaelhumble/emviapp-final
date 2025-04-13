@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { getLanguagePreference } from "@/utils/languagePreference";
+import { Bot } from "lucide-react";
 
 const WeTrustEmotionalSection = () => {
   const [language, setLanguage] = useState<"en" | "vi">(getLanguagePreference());
@@ -47,23 +48,23 @@ const WeTrustEmotionalSection = () => {
           {language === "en" ? (
             <div className="space-y-8">
               <div className="prose prose-lg max-w-none">
-                <p className="text-xl leading-relaxed font-serif text-gray-800">
-                  We help bring customers straight to your salon.<br />
-                  We help you find experienced technicians, send them irresistible offers, and manage your shop smoothly and efficiently — all in one place.
-                </p>
-                
-                <p className="text-xl font-medium text-primary mt-8 flex flex-col items-center">
-                  <span className="inline-flex items-center">
-                    <span className="mr-2 text-2xl">💡</span> Let EmviApp's smart A.I. handle the heavy lifting —
-                  </span>
-                  <span>so you can focus on doing what you love and growing what's yours.</span>
-                </p>
-                
-                <p className="text-xl font-semibold text-gray-800 mt-8">
-                  If you don't use EmviApp...<br />
-                  <span className="text-primary">Let's just say your competitors might beat you to it. <span className="text-2xl">😌</span></span><br />
-                  <span className="text-gray-700">Try it now and feel the difference — instantly.</span>
-                </p>
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="bg-primary/5 rounded-xl p-6 border border-primary/10 shadow-sm"
+                >
+                  <div className="flex items-center justify-center mb-4">
+                    <div className="bg-primary/10 p-3 rounded-full">
+                      <Bot className="h-6 w-6 text-primary" />
+                    </div>
+                  </div>
+                  <p className="text-xl font-medium text-center">
+                    ✨ This part of the page is now managed by EmviApp's Smart Assistant.
+                    <br />
+                    You relax. We'll handle it from here.
+                  </p>
+                </motion.div>
               </div>
             </div>
           ) : (
