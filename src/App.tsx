@@ -11,9 +11,10 @@ import { Toaster } from 'sonner';
 import AppModifier from './App-Modifier';
 import routes from './routes';
 import '@/App.css';
+import './components/chat/chat.css';
 import { supabase } from '@/integrations/supabase/client';
 import AuthGuard from './components/auth/AuthGuard';
-import AssistantPanel from './components/ai/AssistantPanel';
+import { ChatSystem } from './components/chat/ChatSystem';
 
 // Function to determine if a route should be protected
 const isProtectedRoute = (path: string): boolean => {
@@ -80,7 +81,7 @@ function App() {
                   ))}
                 </Routes>
                 <Toaster position="top-right" />
-                <AssistantPanel />
+                <ChatSystem />
               </GoogleMapsProvider>
             </NotificationProvider>
           </SubscriptionProvider>

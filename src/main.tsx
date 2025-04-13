@@ -23,11 +23,16 @@ if (link) {
   link.href = "/lovable-uploads/aa25a147-5384-4b72-86f0-e3cc8caba2cc.png";
 }
 
-// Set viewport meta tag with improved touch handling and fixed viewport
-const meta = document.createElement('meta');
-meta.name = 'viewport';
-meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, height=device-height';
-document.getElementsByTagName('head')[0].appendChild(meta);
+// Improved viewport meta tag with better mobile optimizations
+const existingViewport = document.querySelector('meta[name="viewport"]');
+if (existingViewport) {
+  existingViewport.remove();
+}
+
+const viewport = document.createElement('meta');
+viewport.name = 'viewport';
+viewport.content = 'width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no';
+document.head.appendChild(viewport);
 
 // Add meta theme-color for mobile browsers
 const themeColorMeta = document.createElement('meta');
