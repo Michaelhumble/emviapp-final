@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, AlertCircle, Info } from "lucide-react";
+import { Loader2, AlertCircle, Info, CheckCircle } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { toast } from "sonner";
 import { 
@@ -28,6 +28,7 @@ const SignUp = () => {
   const [role, setRole] = useState<UserRole>("customer");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [signupSuccess, setSignupSuccess] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -51,8 +52,7 @@ const SignUp = () => {
       });
       
       if (result.success) {
-        toast.success("Account created successfully!");
-        navigate("/early-access");
+        setSignupSuccess(true);
       } else {
         setError(result.error?.message || "Failed to create account. Please try again.");
       }
@@ -79,108 +79,128 @@ const SignUp = () => {
             </CardDescription>
           </CardHeader>
           
-          <form onSubmit={handleSubmit}>
+          {signupSuccess ? (
             <CardContent className="space-y-4">
-              <Alert>
-                <Info className="h-4 w-4" />
-                <AlertTitle>Invite-Only Beta</AlertTitle>
-                <AlertDescription>
-                  EmviApp is currently in invite-only beta. After signing up, you will be placed on the waitlist until approved.
+              <Alert className="bg-green-50 border-green-200">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <AlertTitle className="text-green-800">Account created successfully!</AlertTitle>
+                <AlertDescription className="text-green-700">
+                  <p className="mt-2">✅ Please check your email to verify your account.</p>
+                  <p className="mt-2">Once verified, you'll be able to sign in and access your dashboard.</p>
                 </AlertDescription>
               </Alert>
-              
-              {error && (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
-              
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
-                <Input
-                  id="fullName"
-                  placeholder="Your name"
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  disabled={isSubmitting}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="your@email.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={isSubmitting}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={isSubmitting}
-                  minLength={6}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="role">I am a...</Label>
-                <Select 
-                  value={role}
-                  onValueChange={(value) => setRole(value as UserRole)}
-                  disabled={isSubmitting}
-                >
-                  <SelectTrigger id="role">
-                    <SelectValue placeholder="Select your role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="artist">Nail Artist</SelectItem>
-                    <SelectItem value="nail technician/artist">Nail Technician</SelectItem>
-                    <SelectItem value="salon">Salon</SelectItem>
-                    <SelectItem value="owner">Salon Owner</SelectItem>
-                    <SelectItem value="customer">Customer</SelectItem>
-                    <SelectItem value="freelancer">Freelancer</SelectItem>
-                    <SelectItem value="beauty supplier">Beauty Supplier</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-            <CardFooter className="flex flex-col space-y-4">
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating Account...
-                  </>
-                ) : (
-                  "Sign Up"
-                )}
-              </Button>
-              <div className="text-sm text-center text-gray-500">
-                Already have an account?{" "}
-                <Link to="/auth/signin" className="text-primary hover:underline">
-                  Sign in
+              <div className="flex flex-col space-y-4 mt-4">
+                <Link to="/auth/signin">
+                  <Button variant="outline" className="w-full">
+                    Go to Sign In
+                  </Button>
                 </Link>
               </div>
-            </CardFooter>
-          </form>
+            </CardContent>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <CardContent className="space-y-4">
+                <Alert>
+                  <Info className="h-4 w-4" />
+                  <AlertTitle>Invite-Only Beta</AlertTitle>
+                  <AlertDescription>
+                    EmviApp is currently in invite-only beta. After signing up, you will be placed on the waitlist until approved.
+                  </AlertDescription>
+                </Alert>
+                
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+                
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">Full Name</Label>
+                  <Input
+                    id="fullName"
+                    placeholder="Your name"
+                    required
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="your@email.com"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={isSubmitting}
+                    minLength={6}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="role">I am a...</Label>
+                  <Select 
+                    value={role}
+                    onValueChange={(value) => setRole(value as UserRole)}
+                    disabled={isSubmitting}
+                  >
+                    <SelectTrigger id="role">
+                      <SelectValue placeholder="Select your role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="artist">Nail Artist</SelectItem>
+                      <SelectItem value="nail technician/artist">Nail Technician</SelectItem>
+                      <SelectItem value="salon">Salon</SelectItem>
+                      <SelectItem value="owner">Salon Owner</SelectItem>
+                      <SelectItem value="customer">Customer</SelectItem>
+                      <SelectItem value="freelancer">Freelancer</SelectItem>
+                      <SelectItem value="beauty supplier">Beauty Supplier</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+              <CardFooter className="flex flex-col space-y-4">
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Creating Account...
+                    </>
+                  ) : (
+                    "Sign Up"
+                  )}
+                </Button>
+                <div className="text-sm text-center text-gray-500">
+                  Already have an account?{" "}
+                  <Link to="/auth/signin" className="text-primary hover:underline">
+                    Sign in
+                  </Link>
+                </div>
+              </CardFooter>
+            </form>
+          )}
         </Card>
       </div>
     </Layout>

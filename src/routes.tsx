@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Index from './pages/Index';
 import Welcome from './pages/Welcome';
@@ -20,6 +21,8 @@ import OtherDashboard from './pages/dashboard/Other';
 import ProfileEditor from './pages/profile/ProfileEditor';
 import SignIn from './pages/auth/SignIn';
 import SignUp from './pages/auth/SignUp';
+import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPassword from './pages/auth/ResetPassword';
 import UserProfilePage from './pages/profile/UserProfilePage';
 import SalonOwners from './pages/SalonOwners';
 import Settings from './pages/Settings';
@@ -167,6 +170,14 @@ const routes = [
   {
     path: '/sign-up',
     element: <SignUp />,
+  },
+  {
+    path: '/forgot-password',
+    element: <ForgotPassword />,
+  },
+  {
+    path: '/reset-password',
+    element: <ResetPassword />,
   },
   {
     path: '/command-center',
