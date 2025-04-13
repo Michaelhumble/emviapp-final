@@ -37,6 +37,21 @@ interface Booking {
   created_at: string;
 }
 
+// Define the shape of raw data coming from Supabase
+interface RawBookingData {
+  id: string;
+  provider_id: string;
+  service_type: string;
+  date: string | null;
+  time: string;
+  status: string;
+  notes: string;
+  created_at: string;
+  users?: {
+    full_name: string;
+  } | null;
+}
+
 const MyBookingsPage = () => {
   const { user } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -72,7 +87,7 @@ const MyBookingsPage = () => {
       if (error) throw error;
 
       // Transform data carefully to avoid type recursion issues
-      const formattedBookings: Booking[] = (data || []).map((booking: any) => ({
+      const formattedBookings: Booking[] = (data || []).map((booking: RawBookingData) => ({
         id: booking.id,
         provider_name: booking.users?.full_name || 'Unknown Provider',
         provider_id: booking.provider_id,
