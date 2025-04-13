@@ -97,7 +97,7 @@ const SalonTeamManager = () => {
       
       if (error) throw error;
       
-      // Transform the data to ensure status is properly typed
+      // Transform the data to ensure status is properly typed and commission_rate is processed
       const typedStaffMembers: StaffMember[] = (data || []).map(member => ({
         ...member,
         // Ensure status is either 'active' or 'inactive'

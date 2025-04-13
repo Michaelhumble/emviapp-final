@@ -903,6 +903,7 @@ export type Database = {
       salon_staff: {
         Row: {
           avatar_url: string | null
+          commission_rate: number | null
           created_at: string
           email: string
           full_name: string
@@ -915,6 +916,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          commission_rate?: number | null
           created_at?: string
           email: string
           full_name: string
@@ -927,6 +929,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          commission_rate?: number | null
           created_at?: string
           email?: string
           full_name?: string
