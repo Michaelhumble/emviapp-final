@@ -3,11 +3,11 @@ import { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
-import ArtistDashboardHeader from '@/components/dashboard/artist/ArtistDashboardHeader';
 import RoleDashboardLayout from '@/components/dashboard/RoleDashboardLayout';
 import ServiceList from '@/components/dashboard/artist/services/ServiceList';
 import ArtistPortfolioGallery from '@/components/artist/portfolio/ArtistPortfolioGallery';
 import ArtistServicesManager from '@/components/artist/services/ArtistServicesManager';
+import ArtistBookingCalendar from '@/components/dashboard/artist/calendar/ArtistBookingCalendar';
 import { useAuth } from '@/context/auth';
 
 const ArtistDashboard = () => {
@@ -39,10 +39,6 @@ const ArtistDashboard = () => {
     }
   };
   
-  // Sample handlers
-  const handleEditService = (service: any) => console.log('Edit:', service);
-  const handleDeleteService = (id: string) => console.log('Delete:', id);
-  
   return (
     <RoleDashboardLayout>
       <Helmet>
@@ -56,15 +52,15 @@ const ArtistDashboard = () => {
         animate="visible"
       >
         <motion.div variants={itemVariants}>
-          <ArtistDashboardHeader profile={userProfile} />
-        </motion.div>
-        
-        <motion.div variants={itemVariants}>
           <ArtistPortfolioGallery />
         </motion.div>
         
         <motion.div variants={itemVariants}>
           <ArtistServicesManager />
+        </motion.div>
+        
+        <motion.div variants={itemVariants}>
+          <ArtistBookingCalendar />
         </motion.div>
       </motion.div>
     </RoleDashboardLayout>

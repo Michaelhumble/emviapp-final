@@ -36,6 +36,76 @@ export type Database = {
         }
         Relationships: []
       }
+      appointments: {
+        Row: {
+          artist_id: string
+          created_at: string
+          customer_email: string | null
+          customer_id: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          end_time: string
+          id: string
+          notes: string | null
+          service_id: string | null
+          start_time: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          artist_id: string
+          created_at?: string
+          customer_email?: string | null
+          customer_id?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          end_time: string
+          id?: string
+          notes?: string | null
+          service_id?: string | null
+          start_time: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          artist_id?: string
+          created_at?: string
+          customer_email?: string | null
+          customer_id?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          end_time?: string
+          id?: string
+          notes?: string | null
+          service_id?: string | null
+          start_time?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       artist_services: {
         Row: {
           created_at: string
@@ -65,6 +135,76 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      availability: {
+        Row: {
+          artist_id: string
+          day_of_week: string
+          end_time: string
+          id: string
+          is_available: boolean | null
+          start_time: string
+        }
+        Insert: {
+          artist_id: string
+          day_of_week: string
+          end_time: string
+          id?: string
+          is_available?: boolean | null
+          start_time: string
+        }
+        Update: {
+          artist_id?: string
+          day_of_week?: string
+          end_time?: string
+          id?: string
+          is_available?: boolean | null
+          start_time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "availability_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blocked_times: {
+        Row: {
+          artist_id: string
+          created_at: string
+          end_time: string
+          id: string
+          reason: string | null
+          start_time: string
+        }
+        Insert: {
+          artist_id: string
+          created_at?: string
+          end_time: string
+          id?: string
+          reason?: string | null
+          start_time: string
+        }
+        Update: {
+          artist_id?: string
+          created_at?: string
+          end_time?: string
+          id?: string
+          reason?: string | null
+          start_time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blocked_times_artist_id_fkey"
+            columns: ["artist_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       bookings: {
         Row: {
