@@ -1,26 +1,4 @@
 
-export interface ReferralData {
-  referralCode: string | null;
-  referralLink: string;
-  referrals: Referral[];
-  id?: string;
-  referredName?: string;
-  referredEmail?: string;
-  status?: string;
-  milestoneReached?: boolean;
-  createdAt?: string;
-}
-
-export interface Referral {
-  id: string;
-  referredId: string;
-  referredName?: string;
-  status: "pending" | "completed";
-  createdAt: string;
-  completedAt?: string;
-  reward?: number;
-}
-
 export interface ReferralStats {
   completedReferrals: number;
   pendingReferrals: number;
@@ -30,17 +8,23 @@ export interface ReferralStats {
 }
 
 export interface ReferralProgress {
-  level: number;
-  currentMilestone: number;
+  percentage: number;
   nextMilestone: number;
   nextMilestoneIn: number;
-  percentage: number;
-  rewards: ReferralReward[];
+  level: number;
 }
 
-export interface ReferralReward {
-  level: number;
-  milestone: number;
-  reward: string;
-  achieved: boolean;
+export interface Referral {
+  id: string;
+  referredId: string;
+  referredName: string;
+  status: 'pending' | 'completed';
+  createdAt: string;
+  completedAt?: string;
+}
+
+export interface ReferralData {
+  referralCode: string | null;
+  referralLink: string;
+  referrals: Referral[];
 }

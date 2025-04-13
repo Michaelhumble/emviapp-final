@@ -8,17 +8,12 @@ import ServiceList from '@/components/dashboard/artist/services/ServiceList';
 import ArtistPortfolioGallery from '@/components/artist/portfolio/ArtistPortfolioGallery';
 import ArtistServicesManager from '@/components/artist/services/ArtistServicesManager';
 import ArtistBookingCalendar from '@/components/dashboard/artist/calendar/ArtistBookingCalendar';
+import ArtistAnalytics from '@/components/dashboard/artist/ArtistAnalytics';
+import ArtistReferrals from '@/components/dashboard/artist/components/ArtistReferrals';
 import { useAuth } from '@/context/auth';
 
 const ArtistDashboard = () => {
   const { userProfile, loading } = useAuth();
-  
-  // Mock data - to be replaced with actual data
-  const services = [
-    { id: '1', name: 'Basic Manicure', price: 35, duration: 45 },
-    { id: '2', name: 'Gel Polish', price: 45, duration: 60 },
-    { id: '3', name: 'Full Set Acrylic', price: 70, duration: 90 },
-  ];
   
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -61,6 +56,14 @@ const ArtistDashboard = () => {
         
         <motion.div variants={itemVariants}>
           <ArtistBookingCalendar />
+        </motion.div>
+        
+        <motion.div variants={itemVariants}>
+          <ArtistAnalytics />
+        </motion.div>
+        
+        <motion.div variants={itemVariants}>
+          <ArtistReferrals />
         </motion.div>
       </motion.div>
     </RoleDashboardLayout>

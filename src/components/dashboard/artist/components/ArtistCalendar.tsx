@@ -1,141 +1,129 @@
 
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar } from "@/components/ui/calendar";
-import { useAuth } from "@/context/auth";
-import { format, isSameDay } from "date-fns";
-import { CalendarClock, CheckCircle, Clock, XCircle } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-
-interface Booking {
-  id: string;
-  date: Date;
-  client: string;
-  service: string;
-  status: "confirmed" | "pending" | "cancelled";
-  time: string;
-}
+import { useArtistCalendar } from "@/hooks/useArtistCalendar";
+import { CalendarDays, Clock, UserPlus } from "lucide-react";
+import { format, parseISO } from "date-fns";
 
 const ArtistCalendar = () => {
-  const { userProfile } = useAuth();
-  const [date, setDate] = useState<Date>(new Date());
-  const preferredLanguage = userProfile?.preferred_language || "English";
-  const isVietnamese = preferredLanguage === 'vi' || preferredLanguage === 'Vietnamese';
+  const { appointments, blockedTimes } = useArtistCalendar();
   
-  // Dummy data - would be fetched from database in a real app
-  const bookings: Booking[] = [
-    {
-      id: "1",
-      date: new Date(),
-      client: "Jane Smith",
-      service: "Full Set",
-      status: "confirmed",
-      time: "10:00 AM"
-    },
-    {
-      id: "2",
-      date: new Date(),
-      client: "Alice Johnson",
-      service: "Gel Manicure",
-      status: "pending",
-      time: "2:30 PM"
-    },
-    {
-      id: "3",
-      date: new Date(new Date().setDate(new Date().getDate() + 2)),
-      client: "Sarah Williams",
-      service: "Nail Art",
-      status: "confirmed",
-      time: "11:15 AM"
-    }
-  ];
+  // Get today's bookings and scheduled times
+  const today = new Date();
+  const todayDateString = format(today, 'yyyy-MM-dd');
   
-  // Get bookings for selected date
-  const selectedDateBookings = bookings.filter(booking => 
-    isSameDay(booking.date, date)
+  const todayAppointments = appointments.filter(appointment => 
+    format(parseISO(appointment.start_time), 'yyyy-MM-dd') === todayDateString
+  ).sort((a, b) => 
+    new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
   );
   
-  // Generate days with bookings for calendar highlight
-  const daysWithBookings = bookings.map(booking => booking.date);
+  const todayBlocked = blockedTimes.filter(blocked => 
+    format(parseISO(blocked.start_time), 'yyyy-MM-dd') === todayDateString
+  ).sort((a, b) => 
+    new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+  );
   
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "confirmed": return "bg-green-100 text-green-800 border-green-200";
-      case "pending": return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "cancelled": return "bg-red-100 text-red-800 border-red-200";
-      default: return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
+  const hasBookingsToday = todayAppointments.length > 0;
+  const hasBlockedToday = todayBlocked.length > 0;
   
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "confirmed": return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case "pending": return <Clock className="h-4 w-4 text-yellow-600" />;
-      case "cancelled": return <XCircle className="h-4 w-4 text-red-600" />;
-      default: return null;
-    }
-  };
+  // Get upcoming bookings (future dates, limit to 5)
+  const upcomingAppointments = appointments.filter(appointment => 
+    format(parseISO(appointment.start_time), 'yyyy-MM-dd') > todayDateString
+  ).sort((a, b) => 
+    new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+  ).slice(0, 5);
   
   return (
     <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center">
-          <CalendarClock className="mr-2 h-5 w-5 text-primary" />
-          {isVietnamese ? "Lịch Hẹn" : "Schedule"}
-        </CardTitle>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-xl">Upcoming Schedule</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={(newDate) => newDate && setDate(newDate)}
-              className="rounded-md border"
-              modifiers={{
-                booked: daysWithBookings
-              }}
-              modifiersStyles={{
-                booked: { backgroundColor: '#f0f9ff', fontWeight: 'bold', borderRadius: '0' }
-              }}
-            />
-          </div>
-          <div>
-            <h3 className="font-medium mb-3">
-              {isVietnamese ? "Hẹn cho " : "Appointments for "}
-              {format(date, 'MMMM d, yyyy')}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Today's Schedule */}
+          <div className="space-y-4">
+            <h3 className="font-medium flex items-center">
+              <CalendarDays className="h-4 w-4 mr-2 text-blue-500" />
+              Today's Appointments
             </h3>
-            
-            {selectedDateBookings.length > 0 ? (
-              <div className="space-y-3">
-                {selectedDateBookings.map((booking) => (
-                  <div 
-                    key={booking.id} 
-                    className="p-3 border rounded-md flex justify-between items-center"
-                  >
-                    <div>
-                      <div className="font-medium">{booking.client}</div>
-                      <div className="text-sm text-gray-500">{booking.service}</div>
-                      <div className="text-sm font-medium flex items-center mt-1">
-                        <Clock className="h-3 w-3 mr-1 text-gray-400" /> 
-                        {booking.time}
+            {hasBookingsToday ? (
+              <div className="space-y-2">
+                {todayAppointments.map((appointment) => (
+                  <div key={appointment.id} className="p-3 bg-blue-50 border border-blue-100 rounded-md">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="font-medium">
+                          {format(parseISO(appointment.start_time), 'h:mm a')} - {format(parseISO(appointment.end_time), 'h:mm a')}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {appointment.customer_name || "Unnamed Client"}
+                        </div>
+                      </div>
+                      <div className="text-xs text-blue-700 px-2 py-1 bg-blue-100 rounded-full">
+                        {appointment.status}
                       </div>
                     </div>
-                    <Badge 
-                      variant="outline" 
-                      className={`flex items-center ${getStatusColor(booking.status)}`}
-                    >
-                      {getStatusIcon(booking.status)}
-                      <span className="ml-1 capitalize">{booking.status}</span>
-                    </Badge>
+                  </div>
+                ))}
+                {hasBlockedToday && todayBlocked.map((blocked) => (
+                  <div key={blocked.id} className="p-3 bg-gray-50 border border-gray-200 rounded-md">
+                    <div className="flex items-start gap-2">
+                      <Clock className="h-4 w-4 text-gray-500 mt-0.5" />
+                      <div>
+                        <div className="font-medium">
+                          {format(parseISO(blocked.start_time), 'h:mm a')} - {format(parseISO(blocked.end_time), 'h:mm a')}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {blocked.reason || "Blocked Time"}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-500">
-                {isVietnamese 
-                  ? "Không có cuộc hẹn nào cho ngày này" 
-                  : "No appointments for this day"}
+              <div className="p-8 text-center rounded-md border border-dashed flex flex-col items-center">
+                <CalendarDays className="h-10 w-10 text-gray-300 mb-3" />
+                <p className="text-gray-500 mb-1">No appointments scheduled for today</p>
+                <p className="text-sm text-gray-400">Enjoy your free time!</p>
+              </div>
+            )}
+          </div>
+          
+          {/* Upcoming Schedule */}
+          <div className="space-y-4">
+            <h3 className="font-medium flex items-center">
+              <UserPlus className="h-4 w-4 mr-2 text-purple-500" />
+              Upcoming Appointments
+            </h3>
+            {upcomingAppointments.length > 0 ? (
+              <div className="space-y-2">
+                {upcomingAppointments.map((appointment) => (
+                  <div key={appointment.id} className="p-3 bg-purple-50 border border-purple-100 rounded-md">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="font-medium">
+                          {format(parseISO(appointment.start_time), 'EEE, MMM d')}
+                        </div>
+                        <div className="text-sm">
+                          {format(parseISO(appointment.start_time), 'h:mm a')} - {format(parseISO(appointment.end_time), 'h:mm a')}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {appointment.customer_name || "Unnamed Client"}
+                        </div>
+                      </div>
+                      <div className="text-xs text-purple-700 px-2 py-1 bg-purple-100 rounded-full">
+                        {appointment.status}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-8 text-center rounded-md border border-dashed flex flex-col items-center">
+                <CalendarDays className="h-10 w-10 text-gray-300 mb-3" />
+                <p className="text-gray-500 mb-1">No upcoming appointments</p>
+                <p className="text-sm text-gray-400">When you book new clients, they'll appear here</p>
               </div>
             )}
           </div>
