@@ -18,7 +18,6 @@ import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 import FreelancersHighlight from "@/components/home/FreelancersHighlight";
 
 // Enhanced homepage components
-import WeTrustEmotionalSection from "@/components/home/WeTrustEmotionalSection";
 import DynamicListingGrid from "@/components/home/DynamicListingGrid";
 import EmotionalClosingSection from "@/components/home/EmotionalClosingSection";
 import FounderMessage from "@/components/home/FounderMessage";
@@ -48,7 +47,6 @@ const Index = () => {
       <Hero />
       <FounderMessage />
       <ArtistTestimonials />
-      <WeTrustEmotionalSection />
       <MissingPieceSection />
       <DynamicListingGrid />
       <EnhancedAIFeatures />
