@@ -22,6 +22,7 @@ import WeTrustEmotionalSection from "@/components/home/WeTrustEmotionalSection";
 import DynamicListingGrid from "@/components/home/DynamicListingGrid";
 import EmotionalClosingSection from "@/components/home/EmotionalClosingSection";
 import FounderMessage from "@/components/home/FounderMessage";
+import MissingPieceSection from "@/components/home/MissingPieceSection";
 import EnhancedAIFeatures from "@/components/home/EnhancedAIFeatures";
 import FinalFounderCTA from "@/components/home/FinalFounderCTA";
 
@@ -48,6 +49,7 @@ const Index = () => {
       <FounderMessage />
       <ArtistTestimonials />
       <WeTrustEmotionalSection />
+      <MissingPieceSection />
       <DynamicListingGrid />
       <EnhancedAIFeatures />
       <FreelancersHighlight />
