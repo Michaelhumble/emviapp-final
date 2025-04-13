@@ -36,6 +36,14 @@ const WeTrustEmotionalSection = () => {
           viewport={{ once: true }}
           className="max-w-3xl mx-auto text-center"
         >
+          <h2 className="text-3xl md:text-4xl font-serif font-semibold mb-6">
+            {language === "en" ? (
+              "Let's Make Salon Life Easier — Together"
+            ) : (
+              "Cùng Nhau Khiến Cuộc Sống Làm Tiệm Nhẹ Nhàng Hơn"
+            )}
+          </h2>
+          
           {language === "en" ? (
             <div className="space-y-8">
               <div className="prose prose-lg max-w-none">
