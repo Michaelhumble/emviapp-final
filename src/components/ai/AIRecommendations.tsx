@@ -18,8 +18,8 @@ const AIRecommendations = () => {
         return "For Your Next Appointment";
       case 'freelancer':
         return "Gig Opportunities";
-      case 'vendor':
       case 'supplier':
+      case 'vendor':
       case 'beauty supplier':
         return "Business Leads";
       default:

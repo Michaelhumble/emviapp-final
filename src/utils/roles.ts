@@ -4,7 +4,7 @@ import { UserRole } from "@/context/auth/types";
 /**
  * Normalize different role naming conventions to a standard UserRole type
  */
-export const normalizeRole = (role: UserRole | string | null): UserRole | null => {
+export const normalizeRole = (role: UserRole | string | null): UserRole => {
   if (!role) return null;
   
   // Convert to lowercase for case-insensitive comparison
@@ -38,8 +38,10 @@ export const normalizeRole = (role: UserRole | string | null): UserRole | null =
       
     case 'supplier':
     case 'vendor':
-    case 'beauty supplier':
       return 'supplier';
+    
+    case 'beauty supplier':
+      return 'beauty supplier';
       
     case 'nail technician/artist':
       return 'nail technician/artist';

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,7 +16,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [userRole, setUserRole] = useState<UserRole | null>('customer');
+  const [userRole, setUserRole] = useState<UserRole>('customer');
   const [loading, setLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -32,17 +33,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
 
       if (error) {
-        return { success: false, error: error.message };
+        return { success: false, error: new Error(error.message) };
       }
       
-      return { success: true, data };
+      return { success: true };
     } catch (error) {
       console.error('Error signing in:', error);
-      return { success: false, error: 'An unexpected error occurred' };
+      const errorObj = error instanceof Error ? error : new Error('An unexpected error occurred');
+      return { success: false, error: errorObj };
     }
   };
 
-  const signUp = async (email: string, password: string, userData = {}) => {
+  const signUp = async (email: string, password: string, userData: Partial<UserProfile> = {}) => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -55,13 +57,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
 
       if (error) {
-        return { success: false, error: error.message, user: null };
+        return { success: false, error: new Error(error.message) };
       }
       
-      return { success: true, user: data.user };
+      return { success: true };
     } catch (error) {
       console.error('Error signing up:', error);
-      return { success: false, error: 'An unexpected error occurred', user: null };
+      const errorObj = error instanceof Error ? error : new Error('An unexpected error occurred');
+      return { success: false, error: errorObj };
     }
   };
 
@@ -73,7 +76,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (profile) {
         setUserProfile(profile);
         if (profile.role) {
-          const normalizedRole = normalizeRole(profile.role as UserRole);
+          const normalizedRole = normalizeRole(profile.role);
           setUserRole(normalizedRole);
         }
       } else {
@@ -82,7 +85,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (newProfile) {
           setUserProfile(newProfile);
           if (newProfile.role) {
-            const normalizedRole = normalizeRole(newProfile.role as UserRole);
+            const normalizedRole = normalizeRole(newProfile.role);
             setUserRole(normalizedRole);
           }
           setIsNewUser(true);
@@ -102,11 +105,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const updatedProfile = await updateUserProfile({ 
         id: user.id,
-        role: role as string 
+        role: role
       });
       
       if (updatedProfile && updatedProfile.role) {
-        const normalizedRole = normalizeRole(updatedProfile.role as UserRole);
+        const normalizedRole = normalizeRole(updatedProfile.role);
         setUserRole(normalizedRole);
       }
     } catch (error) {
@@ -176,7 +179,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         updateUserRole,
         updateProfile: async (data: Partial<UserProfile>) => {
           try {
-            return { success: true };
+            if (!user || !userProfile) {
+              return { success: false, error: new Error('User not authenticated') };
+            }
+            
+            const updatedProfile = await updateUserProfile({
+              id: userProfile.id,
+              ...data
+            });
+            
+            if (updatedProfile) {
+              setUserProfile(updatedProfile);
+              if (updatedProfile.role && updatedProfile.role !== userRole) {
+                const normalizedRole = normalizeRole(updatedProfile.role);
+                setUserRole(normalizedRole);
+              }
+              return { success: true };
+            }
+            
+            return { success: false, error: new Error('Failed to update profile') };
           } catch (error) {
             return { 
               success: false, 

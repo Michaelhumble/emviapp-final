@@ -9,7 +9,9 @@ export type UserRole =
   | "freelancer" 
   | "salon" 
   | "nail technician/artist" 
-  | "renter" 
+  | "renter"
+  | "vendor"
+  | "beauty supplier" 
   | "other"
   | null;
 
@@ -42,12 +44,22 @@ export interface UserProfile {
   subscription_expires?: string;
   badges?: any[] | null;
   completed_profile_tasks?: string[] | null;
-  credit_balance?: number;
+  
+  // Adding missing properties
+  credits?: number;
   total_credits_earned?: number;
   is_premium?: boolean;
   profile_views?: number;
   years_experience?: number;
   professional_name?: string;
+  boosted_until?: string;
+  referral_code?: string;
+  referral_count?: number;
+  affiliate_code?: string;
+  account_type?: string;
+  salon_name?: string;
+  company_name?: string;
+  preferences?: string[];
 }
 
 export interface AuthContextType {
@@ -77,4 +89,5 @@ export interface AuthContextType {
     success: boolean;
     error?: Error;
   }>;
+  refreshUserProfile: () => Promise<boolean>;
 }

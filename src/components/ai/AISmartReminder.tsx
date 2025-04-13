@@ -111,7 +111,9 @@ const AISmartReminder = ({ className = "" }: AISmartReminderProps) => {
             };
           }
           
+        case 'supplier':
         case 'vendor':
+        case 'beauty supplier':
           if (randomSelector === 0) {
             return {
               message: "Your product promotion expires in 2 days.",

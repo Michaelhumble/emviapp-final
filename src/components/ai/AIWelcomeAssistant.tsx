@@ -95,7 +95,9 @@ const AIWelcomeAssistant = ({ className = "" }: AIWelcomeAssistantProps) => {
         }
         break;
         
+      case 'supplier':
       case 'vendor':
+      case 'beauty supplier':
         setWelcomeMessage(`Hi ${firstName}, `);
         
         if (randomNum === 0) {

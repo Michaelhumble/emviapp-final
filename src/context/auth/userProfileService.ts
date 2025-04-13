@@ -35,7 +35,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       specialty: data.specialty || '',
       location: data.location || '',
       avatar_url: data.avatar_url || '',
-      role: (data.role as string) || 'customer',
+      role: (data.role as UserRole) || 'customer',
       created_at: data.created_at || '',
       updated_at: data.updated_at || '',
       
@@ -67,7 +67,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
     };
     
     // Also update the cache for faster subsequent access
-    cacheProfile(userId, profile, profile.role as UserRole || null);
+    cacheProfile(userId, profile, profile.role || null);
     
     return profile;
   } catch (error) {
@@ -93,7 +93,7 @@ export const createUserProfile = async (user: any): Promise<UserProfile | null> 
     // Extract basic information from user object
     const email = user.email || '';
     const fullName = user.user_metadata?.full_name || '';
-    const role = (user.user_metadata?.role as string) || 'customer';
+    const role = (user.user_metadata?.role as UserRole) || 'customer';
     
     // Default profile data
     const profileData = {

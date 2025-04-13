@@ -85,7 +85,7 @@ const BookingConfirmationModal = ({
               <>
                 <div className="flex items-start">
                   <span className="font-medium w-24">{translations.serviceLabel}</span>
-                  <span>{selectedService.title}</span>
+                  <span>{selectedService.name || selectedService.title}</span>
                 </div>
                 
                 <div className="flex items-start">
