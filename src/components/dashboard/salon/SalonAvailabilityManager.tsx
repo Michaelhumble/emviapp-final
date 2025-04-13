@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,7 @@ const formatTimeDisplay = (hour: number, minute: number) => {
 
 const TIME_OPTIONS = generateTimeOptions();
 
+// Define a simple interface for the raw database records to avoid complex typing issues
 interface DatabaseAvailabilityRecord {
   id: string;
   artist_id: string;
@@ -87,6 +89,7 @@ const SalonAvailabilityManager = () => {
       
       if (!user) return;
       
+      // Simplify the query to avoid deep type issues
       const { data, error } = await supabase
         .from('availability')
         .select('*')
@@ -95,7 +98,8 @@ const SalonAvailabilityManager = () => {
       
       if (error) throw error;
       
-      const typedData = data as unknown as DatabaseAvailabilityRecord[];
+      // Explicitly cast the data to our simpler interface type
+      const typedData = data as DatabaseAvailabilityRecord[];
       
       if (typedData && typedData.length > 0) {
         if (typedData[0].location) {
