@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import {
@@ -37,8 +36,7 @@ interface Booking {
   created_at: string;
 }
 
-// Define the database response shape more explicitly
-interface DatabaseBookingResponse {
+interface BookingResponse {
   id: string;
   customer_id: string;
   date: string | null;
@@ -89,7 +87,7 @@ const MyBookingsPage = () => {
 
       // Transform data to our Booking interface with type safety
       if (data) {
-        const formattedBookings: Booking[] = data.map((item: any) => ({
+        const formattedBookings: Booking[] = data.map((item: BookingResponse) => ({
           id: item.id,
           provider_name: item.users?.full_name || 'Unknown Provider',
           provider_id: item.provider_id,
