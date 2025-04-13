@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -42,8 +41,6 @@ const InternalTools = () => {
   const [waitlistRequests, setWaitlistRequests] = useState<WaitlistRequest[]>([]);
   const [loadingWaitlist, setLoadingWaitlist] = useState(true);
 
-  // Load data from localStorage for now
-  // In a real implementation, this would be from the database
   useEffect(() => {
     const loadLocalData = () => {
       try {
@@ -84,7 +81,6 @@ const InternalTools = () => {
     }
   };
 
-  // Save data to localStorage for now
   const saveRoadmap = () => {
     setSaving(true);
     try {
@@ -144,7 +140,6 @@ const InternalTools = () => {
 
   const approveWaitlistRequest = async (id: string, email: string) => {
     try {
-      // Update request status
       const { error: updateError } = await supabase
         .from("waitlist_requests")
         .update({ status: "approved" })
@@ -152,7 +147,6 @@ const InternalTools = () => {
 
       if (updateError) throw updateError;
 
-      // Check if user already exists
       const { data: existingUser, error: userCheckError } = await supabase
         .from("users")
         .select("id, email")
@@ -163,7 +157,6 @@ const InternalTools = () => {
         throw userCheckError;
       }
 
-      // If user exists, update their invited status
       if (existingUser) {
         const { error: userUpdateError } = await supabase
           .from("users")
@@ -173,7 +166,6 @@ const InternalTools = () => {
         if (userUpdateError) throw userUpdateError;
       }
 
-      // Refresh waitlist data
       fetchWaitlistRequests();
       toast.success(`Request from ${email} has been approved`);
     } catch (error) {
@@ -199,6 +191,16 @@ const InternalTools = () => {
     }
   };
 
+  const renderBadgeForStatus = (status: string) => {
+    if (status === "approved") {
+      return <Badge variant="outline" className="bg-green-100 text-green-800">approved</Badge>;
+    } else if (status === "rejected") {
+      return <Badge variant="destructive">rejected</Badge>;
+    } else {
+      return <Badge variant="outline">pending</Badge>;
+    }
+  };
+
   return (
     <div className="space-y-4 sm:space-y-6">
       <h2 className="text-xl font-semibold">Founder Tools</h2>
@@ -210,7 +212,6 @@ const InternalTools = () => {
         </TabsList>
         
         <TabsContent value="ideas" className="space-y-6">
-          {/* Roadmap Notepad */}
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-medium flex items-center">
@@ -237,7 +238,6 @@ const InternalTools = () => {
           </Card>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-            {/* Upcoming Ideas */}
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-base font-medium flex items-center">
@@ -283,7 +283,6 @@ const InternalTools = () => {
               </CardContent>
             </Card>
             
-            {/* Bug Tracker */}
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-base font-medium flex items-center">
@@ -367,17 +366,7 @@ const InternalTools = () => {
                               <TableCell>{request.email}</TableCell>
                               <TableCell>{request.user_type}</TableCell>
                               <TableCell>
-                                <Badge
-                                  variant={
-                                    request.status === "approved"
-                                      ? "success"
-                                      : request.status === "rejected"
-                                      ? "destructive"
-                                      : "outline"
-                                  }
-                                >
-                                  {request.status}
-                                </Badge>
+                                {renderBadgeForStatus(request.status)}
                               </TableCell>
                               <TableCell>
                                 {new Date(request.created_at).toLocaleDateString()}

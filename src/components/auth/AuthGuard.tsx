@@ -6,10 +6,18 @@ import { checkIfUserIsInvited } from "@/services/auth";
 
 interface AuthGuardProps {
   children: React.ReactNode;
+  fallback?: React.ReactNode;
+  requiresAuth?: boolean;
+  blurContent?: boolean;
 }
 
-const AuthGuard = ({ children }: AuthGuardProps) => {
-  const { user, loading } = useAuth();
+const AuthGuard = ({ 
+  children, 
+  fallback, 
+  requiresAuth = true,
+  blurContent = false
+}: AuthGuardProps) => {
+  const { user, loading, isSignedIn } = useAuth();
   const [isInvited, setIsInvited] = useState<boolean | null>(null);
   const [checking, setChecking] = useState(true);
 
@@ -26,6 +34,20 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
       checkInvitation();
     }
   }, [user, loading]);
+
+  // If not requiring auth and just using as a conditional wrapper
+  if (!requiresAuth) {
+    // If user is signed in, show the children
+    if (isSignedIn) {
+      return <>{children}</>;
+    }
+    // If fallback is provided, show that instead
+    if (fallback) {
+      return <>{fallback}</>;
+    }
+    // Default behavior is to show nothing
+    return null;
+  }
 
   // While loading auth state or checking invitation, show nothing
   if (loading || checking) {
