@@ -13,7 +13,6 @@ import { useNavigate } from "react-router-dom";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 import { useRoleSelection } from "@/hooks/useRoleSelection";
 import AIPowerhouse from "@/components/home/AIPowerhouse";
-import AIAgents from "@/components/home/AIAgents";
 import AITeam from "@/components/home/AITeam";
 import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 import FreelancersHighlight from "@/components/home/FreelancersHighlight";
@@ -24,7 +23,7 @@ import DynamicListingGrid from "@/components/home/DynamicListingGrid";
 import EmotionalClosingSection from "@/components/home/EmotionalClosingSection";
 import FounderMessage from "@/components/home/FounderMessage";
 import MissingPieceSection from "@/components/home/MissingPieceSection";
-import RenamedAIFeatures from "@/components/home/RenamedAIFeatures";
+import EnhancedAIFeatures from "@/components/home/EnhancedAIFeatures";
 import FinalFounderCTA from "@/components/home/FinalFounderCTA";
 
 const Index = () => {
@@ -52,12 +51,9 @@ const Index = () => {
       <WeTrustEmotionalSection />
       <MissingPieceSection />
       <DynamicListingGrid />
-      <RenamedAIFeatures />
-      <AITeam />
-      <AIAgents />
+      <EnhancedAIFeatures />
       <FreelancersHighlight />
       <TrustFirstPanel />
-      <AIPowerhouse />
       <FeaturedSalons />
       <JobsHighlight />
       <ArtistCallout />
