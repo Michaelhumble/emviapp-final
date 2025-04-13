@@ -8,7 +8,7 @@ import MainNavigation from "./navbar/MainNavigation";
 import { UserMenu } from "./navbar/UserMenu";
 import AuthButtons from "./navbar/AuthButtons";
 import MobileMenu from "./navbar/MobileMenu";
-import LanguageToggle from "@/components/ui/LanguageToggle";
+import LanguageToggle from "@/components/layout/LanguageToggle";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();

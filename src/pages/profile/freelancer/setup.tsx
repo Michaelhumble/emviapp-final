@@ -1,213 +1,352 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { toast } from '@/components/ui/use-toast';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/context/auth';
-import Layout from '@/components/layout/Layout';
-import LanguageToggle from '@/components/ui/LanguageToggle';
-import { getLanguagePreference } from '@/utils/languagePreference';
+import { useProfile } from '@/context/profile';
+import { useProfileCompletion } from '@/context/profile/ProfileCompletionProvider';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Progress } from '@/components/ui/progress';
+import { toast } from 'sonner';
+import { CheckCircle2, AlertCircle } from 'lucide-react';
+import BasicInfoForm from '@/components/profile/setup/BasicInfoForm';
+import PortfolioSetup from '@/components/profile/setup/PortfolioSetup';
+import ServicesSetup from '@/components/profile/setup/ServicesSetup';
+import BookingSetup from '@/components/profile/setup/BookingSetup';
+import SocialMediaSetup from '@/components/profile/setup/SocialMediaSetup';
+import { UserProfile } from '@/context/auth/types';
 
-const FreelancerSetup = () => {
-  const { user, userProfile, updateProfile } = useAuth();
+const FreelancerProfileSetup = () => {
+  const { userProfile, updateProfile } = useAuth();
+  const { refreshProfile } = useProfile();
+  const { calculateProfileCompletion, getIncompleteFields } = useProfileCompletion();
   const navigate = useNavigate();
-  const [language, setLanguage] = useState(getLanguagePreference());
   
-  const [formData, setFormData] = useState({
-    fullName: userProfile?.full_name || '',
-    professionalName: userProfile?.professional_name || '',
-    location: userProfile?.location || '',
-    bio: userProfile?.bio || '',
-    specialty: userProfile?.specialty || '',
-    yearsExperience: userProfile?.years_experience || 0,
-  });
-
-  const [loading, setLoading] = useState(false);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  const [activeTab, setActiveTab] = useState('basic-info');
+  const [completionPercentage, setCompletionPercentage] = useState(0);
+  const [incompleteFields, setIncompleteFields] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  useEffect(() => {
+    if (userProfile) {
+      const percentage = calculateProfileCompletion(userProfile);
+      setCompletionPercentage(percentage);
+      setIncompleteFields(getIncompleteFields(userProfile));
+    }
+  }, [userProfile, calculateProfileCompletion, getIncompleteFields]);
+  
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
   };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    
+  
+  const handleBasicInfoSubmit = async (data: Partial<UserProfile>) => {
+    setIsSubmitting(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast({
-        description: "Freelancer profile saved. Welcome to your dashboard!",
+      const result = await updateProfile({
+        ...data,
+        role: 'freelancer',
       });
       
-      navigate('/dashboard/freelancer');
+      if (result.success) {
+        await refreshProfile();
+        toast.success('Basic information updated successfully');
+        setActiveTab('portfolio');
+      } else {
+        toast.error('Failed to update profile');
+      }
     } catch (error) {
-      console.error("Error saving profile:", error);
-      toast({
-        description: "Failed to save profile. Please try again.",
-        variant: "destructive",
-      });
+      toast.error('An error occurred while updating your profile');
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
-
-  const texts = {
-    en: {
-      title: "Create your freelancer profile",
-      subtitle: "Showcase your work and attract new clients",
-      nameLabel: "Full Name",
-      professionalNameLabel: "Professional Name",
-      locationLabel: "Location",
-      bioLabel: "Bio",
-      bioPlaceholder: "Tell clients about your style, expertise, and what makes you unique...",
-      specialtyLabel: "Specialty",
-      experienceLabel: "Years of Experience",
-      submit: "Save & Continue",
-      avatarUpload: "Upload Photo"
-    },
-    vi: {
-      title: "Tạo hồ sơ freelancer của bạn",
-      subtitle: "Trưng bày công việc của bạn và thu hút khách hàng mới",
-      nameLabel: "Họ và tên",
-      professionalNameLabel: "Tên chuyên nghiệp",
-      locationLabel: "Địa điểm",
-      bioLabel: "Tiểu sử",
-      bioPlaceholder: "Nói với khách hàng về phong cách, chuyên môn của bạn và điều gì làm bạn trở nên độc đáo...",
-      specialtyLabel: "Chuyên môn",
-      experienceLabel: "Số năm kinh nghiệm",
-      submit: "Lưu & Tiếp tục",
-      avatarUpload: "Tải ảnh lên"
+  
+  const handlePortfolioSubmit = async (portfolioUrls: string[]) => {
+    setIsSubmitting(true);
+    try {
+      const result = await updateProfile({
+        portfolio_urls: portfolioUrls,
+      });
+      
+      if (result.success) {
+        await refreshProfile();
+        toast.success('Portfolio updated successfully');
+        setActiveTab('services');
+      } else {
+        toast.error('Failed to update portfolio');
+      }
+    } catch (error) {
+      toast.error('An error occurred while updating your portfolio');
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
-  const t = language === 'vi' ? texts.vi : texts.en;
-
+  
+  const handleServicesSubmit = async (services: any[]) => {
+    setIsSubmitting(true);
+    try {
+      // Services are typically stored in a separate table, but we'll update the profile
+      // to mark that services have been set up
+      const result = await updateProfile({
+        completed_profile_tasks: [
+          ...(userProfile?.completed_profile_tasks || []),
+          'services_setup',
+        ],
+      });
+      
+      if (result.success) {
+        await refreshProfile();
+        toast.success('Services updated successfully');
+        setActiveTab('booking');
+      } else {
+        toast.error('Failed to update services');
+      }
+    } catch (error) {
+      toast.error('An error occurred while updating your services');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  const handleBookingSubmit = async (bookingData: {
+    accepts_bookings: boolean;
+    booking_url?: string;
+  }) => {
+    setIsSubmitting(true);
+    try {
+      const result = await updateProfile({
+        accepts_bookings: bookingData.accepts_bookings,
+        booking_url: bookingData.booking_url,
+        completed_profile_tasks: [
+          ...(userProfile?.completed_profile_tasks || []),
+          'booking_setup',
+        ],
+      });
+      
+      if (result.success) {
+        await refreshProfile();
+        toast.success('Booking preferences updated successfully');
+        setActiveTab('social');
+      } else {
+        toast.error('Failed to update booking preferences');
+      }
+    } catch (error) {
+      toast.error('An error occurred while updating your booking preferences');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  const handleSocialMediaSubmit = async (socialData: {
+    instagram?: string;
+    website?: string;
+  }) => {
+    setIsSubmitting(true);
+    try {
+      const result = await updateProfile({
+        instagram: socialData.instagram,
+        website: socialData.website,
+        completed_profile_tasks: [
+          ...(userProfile?.completed_profile_tasks || []),
+          'social_media_setup',
+        ],
+      });
+      
+      if (result.success) {
+        await refreshProfile();
+        toast.success('Social media information updated successfully');
+        
+        // Check if profile is complete enough to navigate to dashboard
+        const updatedPercentage = calculateProfileCompletion({
+          ...userProfile,
+          ...socialData,
+          completed_profile_tasks: [
+            ...(userProfile?.completed_profile_tasks || []),
+            'social_media_setup',
+          ],
+        } as UserProfile);
+        
+        if (updatedPercentage >= 80) {
+          toast.success('Profile setup complete! Redirecting to your dashboard...');
+          setTimeout(() => {
+            navigate('/dashboard');
+          }, 2000);
+        }
+      } else {
+        toast.error('Failed to update social media information');
+      }
+    } catch (error) {
+      toast.error('An error occurred while updating your social media information');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  const handleFinish = () => {
+    navigate('/dashboard');
+  };
+  
   return (
-    <Layout>
-      <div className="container max-w-3xl py-10 px-4">
-        <div className="flex justify-end mb-4">
-          <LanguageToggle />
-        </div>
-        
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-serif font-bold mb-2">{t.title}</h1>
-          <p className="text-muted-foreground">{t.subtitle}</p>
-        </div>
-        
-        <Card className="p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="flex flex-col items-center mb-8">
-              <Avatar className="w-24 h-24 mb-4">
-                <AvatarImage src={userProfile?.avatar_url || undefined} />
-                <AvatarFallback className="text-xl">
-                  {formData.fullName.split(' ').map(n => n[0]).join('').toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <Button type="button" variant="outline" size="sm">
-                {t.avatarUpload}
-              </Button>
-            </div>
-            
-            <Separator className="my-6" />
-            
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="fullName">{t.nameLabel}</Label>
-                <Input 
-                  id="fullName" 
-                  name="fullName" 
-                  value={formData.fullName} 
-                  onChange={handleChange} 
-                  required 
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="professionalName">{t.professionalNameLabel}</Label>
-                <Input 
-                  id="professionalName" 
-                  name="professionalName" 
-                  value={formData.professionalName} 
-                  onChange={handleChange} 
-                />
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="location">{t.locationLabel}</Label>
-              <Input 
-                id="location" 
-                name="location" 
-                value={formData.location} 
-                onChange={handleChange} 
-                required 
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="bio">{t.bioLabel}</Label>
-              <Textarea 
-                id="bio" 
-                name="bio" 
-                value={formData.bio} 
-                onChange={handleChange} 
-                placeholder={t.bioPlaceholder}
-                rows={4} 
-              />
-            </div>
-            
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="specialty">{t.specialtyLabel}</Label>
-                <Input 
-                  id="specialty" 
-                  name="specialty" 
-                  value={formData.specialty} 
-                  onChange={handleChange} 
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="yearsExperience">{t.experienceLabel}</Label>
-                <Input 
-                  id="yearsExperience" 
-                  name="yearsExperience" 
-                  type="number" 
-                  min="0" 
-                  max="70"
-                  value={formData.yearsExperience} 
-                  onChange={handleChange} 
-                />
-              </div>
-            </div>
-            
-            <div className="pt-4">
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? (
-                  <span className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Loading...
-                  </span>
-                ) : (
-                  t.submit
-                )}
-              </Button>
-            </div>
-          </form>
-        </Card>
+    <div className="container max-w-4xl mx-auto px-4 py-12">
+      <div className="mb-8 text-center">
+        <h1 className="text-3xl font-bold mb-2">Complete Your Freelancer Profile</h1>
+        <p className="text-lg text-gray-600">
+          Let's set up your professional profile to showcase your work and attract clients.
+        </p>
       </div>
-    </Layout>
+      
+      <Card className="mb-8">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-lg font-medium">Profile Completion</h3>
+            <span className="text-sm font-medium">{completionPercentage}%</span>
+          </div>
+          <Progress value={completionPercentage} className="h-2" />
+          
+          {incompleteFields.length > 0 && (
+            <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-md">
+              <div className="flex items-start">
+                <AlertCircle className="h-5 w-5 text-amber-500 mr-2 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-amber-800">
+                    Complete these fields to improve your profile:
+                  </p>
+                  <ul className="mt-1 text-xs text-amber-700 list-disc list-inside">
+                    {incompleteFields.map((field) => (
+                      <li key={field}>{field.replace(/_/g, ' ')}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+      
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+        <TabsList className="grid grid-cols-5 mb-8">
+          <TabsTrigger value="basic-info" className="text-xs md:text-sm">
+            Basic Info
+          </TabsTrigger>
+          <TabsTrigger value="portfolio" className="text-xs md:text-sm">
+            Portfolio
+          </TabsTrigger>
+          <TabsTrigger value="services" className="text-xs md:text-sm">
+            Services
+          </TabsTrigger>
+          <TabsTrigger value="booking" className="text-xs md:text-sm">
+            Booking
+          </TabsTrigger>
+          <TabsTrigger value="social" className="text-xs md:text-sm">
+            Social
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="basic-info">
+          <Card>
+            <CardContent className="pt-6">
+              <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
+              <p className="text-gray-600 mb-6">
+                Let's start with your professional details and contact information.
+              </p>
+              
+              <BasicInfoForm 
+                userProfile={userProfile}
+                onSubmit={handleBasicInfoSubmit}
+                isSubmitting={isSubmitting}
+                showRoleField={false}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="portfolio">
+          <Card>
+            <CardContent className="pt-6">
+              <h2 className="text-xl font-semibold mb-4">Portfolio & Skills</h2>
+              <p className="text-gray-600 mb-6">
+                Show off your best work and highlight your specialties.
+              </p>
+              
+              <PortfolioSetup
+                userProfile={userProfile}
+                onSubmit={handlePortfolioSubmit}
+                isSubmitting={isSubmitting}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="services">
+          <Card>
+            <CardContent className="pt-6">
+              <h2 className="text-xl font-semibold mb-4">Services</h2>
+              <p className="text-gray-600 mb-6">
+                Add the services you offer, along with pricing and descriptions.
+              </p>
+              
+              <ServicesSetup
+                userProfile={userProfile}
+                onSubmit={handleServicesSubmit}
+                isSubmitting={isSubmitting}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="booking">
+          <Card>
+            <CardContent className="pt-6">
+              <h2 className="text-xl font-semibold mb-4">Booking Preferences</h2>
+              <p className="text-gray-600 mb-6">
+                Set up how clients can book appointments with you.
+              </p>
+              
+              <BookingSetup
+                userProfile={userProfile}
+                onSubmit={handleBookingSubmit}
+                isSubmitting={isSubmitting}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="social">
+          <Card>
+            <CardContent className="pt-6">
+              <h2 className="text-xl font-semibold mb-4">Social Media & Contact</h2>
+              <p className="text-gray-600 mb-6">
+                Add your social media profiles and additional contact information.
+              </p>
+              
+              <SocialMediaSetup
+                userProfile={userProfile}
+                onSubmit={handleSocialMediaSubmit}
+                isSubmitting={isSubmitting}
+              />
+              
+              <div className="mt-8 pt-6 border-t border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center text-green-600">
+                    <CheckCircle2 className="h-5 w-5 mr-2" />
+                    <span className="text-sm font-medium">
+                      {completionPercentage >= 80 
+                        ? "Your profile is ready to go!" 
+                        : `Profile ${completionPercentage}% complete`}
+                    </span>
+                  </div>
+                  
+                  <Button onClick={handleFinish}>
+                    {completionPercentage >= 80 ? "Go to Dashboard" : "Finish Later"}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 
-export default FreelancerSetup;
+export default FreelancerProfileSetup;

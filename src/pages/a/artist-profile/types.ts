@@ -43,3 +43,25 @@ export interface ArtistProfileData {
   isAuthenticated: boolean;
   isLoaded: boolean;
 }
+
+export interface Service {
+  id: string;
+  name: string;
+  description?: string;
+  price: number;
+  price_type?: string;
+  duration?: number;
+  image_url?: string;
+  category?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface PortfolioImage {
+  id: string;
+  url: string;
+  created_at?: string;
+  updated_at?: string;
+  description?: string;
+  tags?: string[];
+}

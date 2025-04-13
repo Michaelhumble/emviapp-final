@@ -47,13 +47,14 @@ const LanguageToggle = ({ className = "", minimal = false }: LanguageToggleProps
   return (
     <div className={`flex items-center ${className}`}>
       <Button 
-        variant="outline" 
+        variant="ghost" 
         size="sm" 
         onClick={toggleLanguage}
-        className="flex items-center gap-2 hover:border-primary/50 hover:bg-primary/5 transition-colors"
+        className="flex items-center gap-2 hover:bg-primary/5 transition-colors"
       >
-        <Globe className="h-4 w-4" />
-        {language === "en" ? "English / Tiếng Việt" : "Tiếng Việt / English"}
+        <span className="text-sm">
+          {language === "en" ? "English | Tiếng Việt" : "Tiếng Việt | English"}
+        </span>
       </Button>
     </div>
   );

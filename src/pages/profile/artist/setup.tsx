@@ -1,201 +1,346 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card } from '@/components/ui/card';
+import { useAuth } from '@/context/auth';
+import { useProfileCompletion } from '@/context/profile/ProfileCompletionProvider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { toast } from '@/components/ui/use-toast';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
-import { useAuth } from '@/context/auth';
-import Layout from '@/components/layout/Layout';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from 'sonner';
+import { Plus, CheckCircle, AlertTriangle } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MultiSelect } from '@/components/ui/multi-select';
+import { useTranslation } from '@/hooks/useTranslation';
 import LanguageToggle from '@/components/ui/LanguageToggle';
-import { getLanguagePreference } from '@/utils/languagePreference';
 
-const ArtistSetup = () => {
-  const { user, userProfile, updateProfile } = useAuth();
+const profileFormSchema = z.object({
+  full_name: z.string().min(2, {
+    message: "Full name must be at least 2 characters.",
+  }),
+  professional_name: z.string().optional(),
+  bio: z.string().optional(),
+  specialty: z.string().optional(),
+  location: z.string().optional(),
+  years_experience: z.string().optional(),
+  instagram: z.string().optional(),
+  website: z.string().optional(),
+  booking_url: z.string().optional(),
+  contact_link: z.string().optional(),
+  skills: z.array(z.string()).optional(),
+  accepts_bookings: z.boolean().default(false).optional(),
+});
+
+const ArtistProfileSetup = () => {
   const navigate = useNavigate();
-  const [language, setLanguage] = useState(getLanguagePreference());
-  
-  const [formData, setFormData] = useState({
-    fullName: userProfile?.full_name || '',
-    location: userProfile?.location || '',
-    bio: userProfile?.bio || '',
-    specialty: userProfile?.specialty || '',
-    yearsExperience: userProfile?.years_experience || 0,
-  });
+  const { userProfile, updateProfile } = useAuth();
+  const { markTaskAsComplete } = useProfileCompletion();
+  const { toast } = useToast();
+  const { t } = useTranslation();
 
-  const [loading, setLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [completedTasks, setCompletedTasks] = useState<string[]>([]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  useEffect(() => {
+    if (userProfile?.completed_profile_tasks) {
+      setCompletedTasks(userProfile.completed_profile_tasks);
+    }
+  }, [userProfile?.completed_profile_tasks]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    
+  const profileForm = useForm<z.infer<typeof profileFormSchema>>({
+    resolver: zodResolver(profileFormSchema),
+    defaultValues: {
+      full_name: userProfile?.full_name || "",
+      professional_name: userProfile?.professional_name || "",
+      bio: userProfile?.bio || "",
+      specialty: userProfile?.specialty || "",
+      location: userProfile?.location || "",
+      years_experience: userProfile?.years_experience?.toString() || "",
+      instagram: userProfile?.instagram || "",
+      website: userProfile?.website || "",
+      booking_url: userProfile?.booking_url || "",
+      contact_link: userProfile?.contact_link || "",
+      skills: userProfile?.skills || [],
+      accepts_bookings: userProfile?.accepts_bookings || false,
+    },
+    mode: "onChange",
+  })
+
+  const onSubmit = async (values: z.infer<typeof profileFormSchema>) => {
+    setIsSaving(true);
     try {
-      // This is just a placeholder - in the real implementation, 
-      // we would save to Supabase and handle profile image upload
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast({
-        description: "Profile saved. Welcome to your dashboard!",
+      const response = await updateProfile({
+        ...values,
+        years_experience: values.years_experience ? parseInt(values.years_experience) : 0,
       });
-      
-      navigate('/dashboard/artist');
+
+      if (response.success) {
+        toast({
+          title: "Profile Updated",
+          description: "Your profile has been updated successfully.",
+        });
+
+        // Mark the profile setup task as complete
+        if (!completedTasks.includes('profileSetup')) {
+          markTaskAsComplete('profileSetup');
+        }
+
+        navigate('/profile');
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: response.error?.message || "Failed to update profile.",
+        });
+      }
     } catch (error) {
-      console.error("Error saving profile:", error);
       toast({
-        description: "Failed to save profile. Please try again.",
         variant: "destructive",
+        title: "Error",
+        description: "An unexpected error occurred.",
       });
     } finally {
-      setLoading(false);
+      setIsSaving(false);
     }
   };
 
-  const texts = {
-    en: {
-      title: "Let's make your artist profile shine",
-      subtitle: "Tell potential clients about your skills and experience",
-      nameLabel: "Full Name",
-      locationLabel: "Location",
-      bioLabel: "Bio",
-      bioPlaceholder: "Share your story, style, and what makes you unique...",
-      specialtyLabel: "Specialty",
-      experienceLabel: "Years of Experience",
-      submit: "Save & Continue",
-      avatarUpload: "Upload Photo"
-    },
-    vi: {
-      title: "Hãy làm cho hồ sơ nghệ sĩ của bạn tỏa sáng",
-      subtitle: "Kể cho khách hàng tiềm năng về kỹ năng và kinh nghiệm của bạn",
-      nameLabel: "Họ và tên",
-      locationLabel: "Địa điểm",
-      bioLabel: "Tiểu sử",
-      bioPlaceholder: "Chia sẻ câu chuyện, phong cách của bạn và điều gì làm bạn trở nên độc đáo...",
-      specialtyLabel: "Chuyên môn",
-      experienceLabel: "Số năm kinh nghiệm",
-      submit: "Lưu & Tiếp tục",
-      avatarUpload: "Tải ảnh lên"
-    }
-  };
-
-  const t = language === 'vi' ? texts.vi : texts.en;
+  const skillsOptions = [
+    { label: 'Hair Styling', value: 'hair_styling' },
+    { label: 'Makeup Artistry', value: 'makeup_artistry' },
+    { label: 'Nail Art', value: 'nail_art' },
+    { label: 'Barbering', value: 'barbering' },
+    { label: 'Esthetics', value: 'esthetics' },
+    { label: 'Cosmetology', value: 'cosmetology' },
+    { label: 'Eyelash Extensions', value: 'eyelash_extensions' },
+    { label: 'Microblading', value: 'microblading' },
+    { label: 'Tattooing', value: 'tattooing' },
+    { label: 'Piercing', value: 'piercing' },
+    { label: 'Massage Therapy', value: 'massage_therapy' },
+    { label: 'Waxing', value: 'waxing' },
+    { label: 'Threading', value: 'threading' },
+    { label: 'Henna Art', value: 'henna_art' },
+    { label: 'Spray Tanning', value: 'spray_tanning' },
+    { label: 'Permanent Makeup', value: 'permanent_makeup' },
+    { label: 'Special Effects Makeup', value: 'special_effects_makeup' },
+    { label: 'Bridal Services', value: 'bridal_services' },
+  ];
 
   return (
-    <Layout>
-      <div className="container max-w-3xl py-10 px-4">
-        <div className="flex justify-end mb-4">
-          <LanguageToggle />
+    <div className="container max-w-4xl mx-auto px-4 py-12">
+      <div className="mb-8 flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">Complete Your Artist Profile</h1>
+          <p className="text-lg text-gray-600">
+            Let's set up your professional profile to showcase your work and attract clients.
+          </p>
         </div>
-        
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-serif font-bold mb-2">{t.title}</h1>
-          <p className="text-muted-foreground">{t.subtitle}</p>
-        </div>
-        
-        <Card className="p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="flex flex-col items-center mb-8">
-              <Avatar className="w-24 h-24 mb-4">
-                <AvatarImage src={userProfile?.avatar_url || undefined} />
-                <AvatarFallback className="text-xl">
-                  {formData.fullName.split(' ').map(n => n[0]).join('').toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <Button type="button" variant="outline" size="sm">
-                {t.avatarUpload}
-              </Button>
-            </div>
-            
-            <Separator className="my-6" />
-            
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="fullName">{t.nameLabel}</Label>
-                <Input 
-                  id="fullName" 
-                  name="fullName" 
-                  value={formData.fullName} 
-                  onChange={handleChange} 
-                  required 
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="location">{t.locationLabel}</Label>
-                <Input 
-                  id="location" 
-                  name="location" 
-                  value={formData.location} 
-                  onChange={handleChange} 
-                  required 
-                />
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="bio">{t.bioLabel}</Label>
-              <Textarea 
-                id="bio" 
-                name="bio" 
-                value={formData.bio} 
-                onChange={handleChange} 
-                placeholder={t.bioPlaceholder}
-                rows={4} 
+        <LanguageToggle />
+      </div>
+
+      <Form {...profileForm}>
+        <form onSubmit={profileForm.handleSubmit(onSubmit)} className="space-y-8">
+          <div className="steps-container">
+            <div className="step-item">
+              <h2>Basic Information</h2>
+              <p>
+                Let's start with your professional details and contact information.
+              </p>
+
+              <FormField
+                control={profileForm.control}
+                name="full_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your full name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={profileForm.control}
+                name="professional_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Professional Name (Optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your professional name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={profileForm.control}
+                name="bio"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Bio</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Tell us a little bit about yourself"
+                        className="resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={profileForm.control}
+                name="specialty"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Specialty</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your specialty" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={profileForm.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Location</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your location" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={profileForm.control}
+                name="years_experience"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Years of Experience</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Enter your years of experience"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
-            
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="specialty">{t.specialtyLabel}</Label>
-                <Input 
-                  id="specialty" 
-                  name="specialty" 
-                  value={formData.specialty} 
-                  onChange={handleChange} 
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="yearsExperience">{t.experienceLabel}</Label>
-                <Input 
-                  id="yearsExperience" 
-                  name="yearsExperience" 
-                  type="number" 
-                  min="0" 
-                  max="70"
-                  value={formData.yearsExperience} 
-                  onChange={handleChange} 
-                />
-              </div>
-            </div>
-            
-            <div className="pt-4">
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? (
-                  <span className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Loading...
-                  </span>
-                ) : (
-                  t.submit
+
+            <div className="step-item">
+              <h2>Portfolio & Skills</h2>
+              <p>
+                Show off your best work and highlight your specialties.
+              </p>
+
+              <FormField
+                control={profileForm.control}
+                name="skills"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Skills</FormLabel>
+                    <FormControl>
+                      <MultiSelect
+                        options={skillsOptions}
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="Select your skills"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </Button>
+              />
+
+              <FormField
+                control={profileForm.control}
+                name="instagram"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Instagram</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your Instagram URL" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={profileForm.control}
+                name="website"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Website</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your Website URL" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={profileForm.control}
+                name="booking_url"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Booking URL</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your Booking URL" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={profileForm.control}
+                name="contact_link"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Contact Link</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your Contact Link" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
-          </form>
-        </Card>
-      </div>
-    </Layout>
+          </div>
+
+          <Button type="submit" disabled={!profileForm.formState.isValid || isSaving}>
+            {isSaving ? "Saving..." : "Save Profile"}
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 };
 
-export default ArtistSetup;
+export default ArtistProfileSetup;

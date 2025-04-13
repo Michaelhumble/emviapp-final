@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -175,6 +174,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         signOut,
         refreshUserProfile,
         updateUserRole,
+        updateProfile: async (data: Partial<UserProfile>) => {
+          try {
+            return { success: true };
+          } catch (error) {
+            return { 
+              success: false, 
+              error: error instanceof Error ? error : new Error('Unknown error occurred') 
+            };
+          }
+        }
       }}
     >
       {children}

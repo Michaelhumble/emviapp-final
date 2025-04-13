@@ -1,66 +1,80 @@
 
-import { User } from '@supabase/supabase-js';
+import { User } from "@supabase/supabase-js";
 
-export type UserRole = 'customer' | 'artist' | 'salon' | 'owner' | 'freelancer' | 'supplier' | 'vendor' | 'beauty supplier' | 'nail technician/artist' | 'renter' | 'other';
+export type UserRole = 
+  | "artist" 
+  | "owner" 
+  | "customer" 
+  | "supplier" 
+  | "freelancer" 
+  | "salon" 
+  | "nail technician/artist" 
+  | "renter" 
+  | "other"
+  | null;
 
 export interface UserProfile {
   id: string;
-  user_id: string;
   full_name: string;
   email: string;
-  phone?: string;
+  avatar_url?: string;
   bio?: string;
+  role?: UserRole;
+  custom_role?: string;
   specialty?: string;
   location?: string;
-  avatar_url?: string;
-  role?: string;
+  phone?: string;
+  website?: string;
+  instagram?: string;
   created_at?: string;
   updated_at?: string;
-  
-  // Social media fields
-  instagram?: string;
-  website?: string;
-  
-  // Additional fields
-  salon_name?: string;
-  company_name?: string;
-  preferred_language?: string;
-  profile_views?: number;
-  account_type?: string;
-  referral_code?: string;
-  affiliate_code?: string;
-  referral_count?: number;
+  username?: string;
   booking_url?: string;
-  boosted_until?: string | null;
-  skills?: string[];
-  portfolio_urls?: string[];
-  credits?: number;
-  custom_role?: string;
   contact_link?: string;
-  badges?: any[];
+  salon_id?: string;
+  is_salon_owner?: boolean;
+  job_title?: string;
   accepts_bookings?: boolean;
-  preferences?: string[];
-  completed_profile_tasks?: string[];
-  services?: any[];
-  google_review_link?: string;
+  portfolio_urls?: string[] | null;
+  skills?: string[] | null;
+  preferred_language?: string;
+  subscription_tier?: string;
+  subscription_expires?: string;
+  badges?: any[] | null;
+  completed_profile_tasks?: string[] | null;
+  credit_balance?: number;
+  total_credits_earned?: number;
+  is_premium?: boolean;
+  profile_views?: number;
   years_experience?: number;
-  number_of_stations?: number;
   professional_name?: string;
 }
 
 export interface AuthContextType {
-  user: User | null;
-  userProfile: UserProfile | null;
-  userRole: UserRole | null;
   loading: boolean;
   isSignedIn: boolean;
   isError: boolean;
+  user: User | null;
+  userProfile: UserProfile | null;
+  userRole: UserRole;
   isNewUser: boolean;
   clearIsNewUser: () => void;
-  signIn: (email: string, password: string) => Promise<any>;
-  signUp: (email: string, password: string, userData?: any) => Promise<any>;
+  signIn: (email: string, password: string) => Promise<{
+    success: boolean;
+    error?: Error;
+  }>;
   signOut: () => Promise<void>;
-  refreshUserProfile: () => Promise<boolean>;
+  signUp: (
+    email: string,
+    password: string,
+    userData?: Partial<UserProfile>
+  ) => Promise<{
+    success: boolean;
+    error?: Error;
+  }>;
   updateUserRole: (role: UserRole) => Promise<void>;
-  updateProfile: (data: Partial<UserProfile>) => Promise<void>;
+  updateProfile: (data: Partial<UserProfile>) => Promise<{
+    success: boolean;
+    error?: Error;
+  }>;
 }

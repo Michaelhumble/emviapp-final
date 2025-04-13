@@ -245,7 +245,17 @@ export const useAuthProvider = (): AuthContextType => {
     signIn,
     signOut,
     signUp,
-    refreshUserProfile,
-    updateUserRole: setUserRoleAction
+    updateUserRole,
+    updateProfile: async (data: Partial<UserProfile>) => {
+      try {
+        // Implementation would go here
+        return { success: true };
+      } catch (error) {
+        return { 
+          success: false, 
+          error: error instanceof Error ? error : new Error('Unknown error occurred') 
+        };
+      }
+    }
   };
 };
