@@ -94,5 +94,14 @@ export const mockAssistantResponses: MockResponse[] = [
       "Anytime! Don't hesitate to reach out if you have more questions.",
       "It's my pleasure! I'm here to make your EmviApp experience better. Anything else I can assist with?"
     ]
+  },
+  {
+    keywords: ['what is emviapp', 'about emviapp', 'emviapp purpose'],
+    responses: [
+      "EmviApp is a complete platform for the beauty industry that connects clients, artists, and salon owners in one seamless ecosystem. We make booking, managing, and growing beauty businesses simple! ✨",
+      "EmviApp is the all-in-one solution for the beauty industry! We help salon owners grow their business, artists showcase their work, and clients find and book perfect services.",
+      "Think of EmviApp as the hub where beauty professionals and clients connect. We provide tools for booking, business management, portfolio showcasing, and more!",
+      "EmviApp is revolutionizing the beauty industry by bringing everything together in one place - booking, business management, artist discovery, and client connections."
+    ]
   }
 ];

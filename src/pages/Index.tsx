@@ -16,6 +16,7 @@ import AIPowerhouse from "@/components/home/AIPowerhouse";
 import AITeam from "@/components/home/AITeam";
 import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 import FreelancersHighlight from "@/components/home/FreelancersHighlight";
+import { ChatSystem } from "@/components/chat/ChatSystem";
 
 // Enhanced homepage components
 import DynamicListingGrid from "@/components/home/DynamicListingGrid";
@@ -59,6 +60,7 @@ const Index = () => {
       <EmotionalClosingSection />
       <FinalFounderCTA />
       <CallToAction />
+      <ChatSystem />
       
       {user && userId && (
         <RoleSelectionModal 

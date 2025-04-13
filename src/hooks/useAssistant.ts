@@ -25,6 +25,9 @@ export const useAssistant = () => {
       const randomDelay = Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
       const startTime = Date.now();
       
+      // Log the user message for future improvements
+      console.log('Chat log - User:', userInput);
+      
       // Process the user input
       const response = await processUserInput(userInput, user?.id);
       
@@ -41,12 +44,16 @@ export const useAssistant = () => {
         await new Promise(resolve => setTimeout(resolve, remainingDelay));
       }
       
+      // Log the AI response
+      console.log('Chat log - AI:', response.message);
+      
       return response.message;
     } catch (error) {
       console.error('Error generating response:', error);
       
       // Fall back to the mock response system if the regular system fails
       const mockResponse = getMockResponse(userInput);
+      console.log('Chat log - AI (fallback):', mockResponse);
       return mockResponse;
     } finally {
       setIsLoading(false);

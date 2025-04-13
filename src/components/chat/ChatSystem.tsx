@@ -11,6 +11,7 @@ import { BookingMatch } from "@/services/assistantService";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import { processAiResponse } from "@/utils/aiResponseProcessor";
+import { getDefaultActions } from "@/utils/chatUtils";
 
 export type ActionSuggestion = {
   id: string;
@@ -50,12 +51,7 @@ export function ChatSystem() {
         content: "👋 Hi there! I'm Little Sunshine, your personal assistant. How can I help you today?",
         sender: "assistant",
         timestamp: new Date(),
-        actionSuggestions: [
-          { id: "book", label: "Book an Artist", icon: "calendar", href: "/artists" },
-          { id: "jobs", label: "Post a Job", icon: "briefcase", href: "/jobs" },
-          { id: "salon", label: "Sell My Salon", icon: "store", href: "/salon-sales" },
-          { id: "explore", label: "Explore Artists", icon: "users", href: "/artists" }
-        ]
+        actionSuggestions: getDefaultActions()
       };
       
       setMessages([welcomeMessage]);
