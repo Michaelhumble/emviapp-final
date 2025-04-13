@@ -36,6 +36,19 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         if (metadataRole) {
           const normalizedRole = normalizeRole(metadataRole);
           localStorage.setItem('emviapp_user_role', normalizedRole || '');
+          
+          // Before navigating, check if user is a manager
+          const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('manager_for_salon_id')
+            .eq('id', user.id)
+            .single();
+            
+          if (!userError && userData && userData.manager_for_salon_id) {
+            navigate('/dashboard/manager');
+            return;
+          }
+          
           navigateToRoleDashboard(navigate, normalizedRole);
           return;
         }
@@ -43,6 +56,18 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
       
       // 2. Then try the context if available
       if (userRole) {
+        // Before navigating, check if user is a manager
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('manager_for_salon_id')
+          .eq('id', user.id)
+          .single();
+          
+        if (!userError && userData && userData.manager_for_salon_id) {
+          navigate('/dashboard/manager');
+          return;
+        }
+        
         navigateToRoleDashboard(navigate, userRole);
         return;
       }
@@ -61,6 +86,18 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
           // Silent error - continue anyway
         }
         
+        // Before navigating, check if user is a manager
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('manager_for_salon_id')
+          .eq('id', user.id)
+          .single();
+          
+        if (!userError && userData && userData.manager_for_salon_id) {
+          navigate('/dashboard/manager');
+          return;
+        }
+        
         navigateToRoleDashboard(navigate, normalizedRole);
         return;
       }
@@ -68,7 +105,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
       // 4. If all else fails, fetch it directly from the database
       const { data: profile, error } = await supabase
         .from('users')
-        .select('role')
+        .select('role, manager_for_salon_id')
         .eq('id', user.id)
         .maybeSingle();
         
@@ -81,6 +118,12 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         if (isNewUser) {
           clearIsNewUser();
         }
+        return;
+      }
+      
+      // Check if user is a manager
+      if (profile.manager_for_salon_id) {
+        navigate('/dashboard/manager');
         return;
       }
       

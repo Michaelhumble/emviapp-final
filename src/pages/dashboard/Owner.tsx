@@ -22,6 +22,7 @@ import TopLocalArtists from "@/components/dashboard/salon/TopLocalArtists";
 import NextStepsSmart from "@/components/dashboard/salon/NextStepsSmart";
 import SalonTeamManagement from "@/components/dashboard/salon/SalonTeamManagement";
 import SalonTeamManager from "@/components/dashboard/salon/team/SalonTeamManager";
+import SalonManagersSection from "@/components/dashboard/salon/team/SalonManagersSection";
 import SalonServiceManager from "@/components/dashboard/salon/SalonServiceManager";
 import SalonBoostCreditPanel from "@/components/dashboard/salon/SalonBoostCreditPanel";
 import SalonProfileCompletionMeter from "@/components/dashboard/salon/SalonProfileCompletionMeter";
@@ -167,8 +168,8 @@ const OwnerDashboard = () => {
                   </TabsContent>
                   
                   <TabsContent value="team" className="space-y-8">
+                    <SalonManagersSection />
                     <SalonTeamManager />
-                    
                     <SalonReferralPanel />
                   </TabsContent>
                   
