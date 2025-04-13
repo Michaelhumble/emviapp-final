@@ -3,7 +3,7 @@ export interface AvailabilityRecord {
   id?: string;
   user_id: string;
   role?: string;
-  day_of_week: number;
+  day_of_week: string; // Changed from number to string to match database
   start_time: string;
   end_time: string;
   location?: string | null;
@@ -11,7 +11,7 @@ export interface AvailabilityRecord {
 }
 
 export interface AvailabilityDay {
-  day_of_week: number;
+  day_of_week: number; // Keep as number for UI logic
   start_time: string;
   end_time: string;
   active: boolean;

@@ -87,8 +87,9 @@ const MyBookingsPage = () => {
 
       if (error) throw error;
 
-      // Transform data to our Booking interface
-      const formattedBookings: Booking[] = (data as DatabaseBookingResponse[] || []).map((item) => ({
+      // Transform data to our Booking interface (with safer casting)
+      const responseData = data as any[];
+      const formattedBookings: Booking[] = (responseData || []).map((item) => ({
         id: item.id,
         provider_name: item.users?.full_name || 'Unknown Provider',
         provider_id: item.provider_id,

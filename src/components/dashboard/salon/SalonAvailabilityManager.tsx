@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -92,7 +93,7 @@ const SalonAvailabilityManager = () => {
         
         // Map the data to our format
         const existingDays = DAYS_OF_WEEK.map(day => {
-          const existingDay = data.find(d => Number(d.day_of_week) === day.value);
+          const existingDay = data.find(d => d.day_of_week === day.value.toString());
           if (existingDay) {
             return {
               id: existingDay.id,
@@ -182,7 +183,7 @@ const SalonAvailabilityManager = () => {
       const availabilityRecords: AvailabilityRecord[] = activeDays.map(day => ({
         user_id: user.id,
         role: 'salon',
-        day_of_week: day.day_of_week,
+        day_of_week: day.day_of_week.toString(), // Convert to string for DB
         start_time: day.start_time,
         end_time: day.end_time,
         location: location || userProfile?.location || null
