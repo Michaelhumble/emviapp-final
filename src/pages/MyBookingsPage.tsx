@@ -24,7 +24,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Loader2, Calendar, Clock, MessageSquare, X, Check } from 'lucide-react';
 import { format } from 'date-fns';
 
-// Define a proper interface for our booking type
+// Define a clear interface for our booking type
 interface Booking {
   id: string;
   provider_name: string;
@@ -38,15 +38,16 @@ interface Booking {
 }
 
 // Define the shape of raw data coming from Supabase
-interface RawBookingData {
+interface DatabaseBooking {
   id: string;
-  provider_id: string;
-  service_type: string;
+  customer_id: string;
   date: string | null;
   time: string;
   status: string;
   notes: string;
   created_at: string;
+  service_type: string;
+  provider_id: string;
   users?: {
     full_name: string;
   } | null;
@@ -86,8 +87,8 @@ const MyBookingsPage = () => {
 
       if (error) throw error;
 
-      // Transform data carefully to avoid type recursion issues
-      const formattedBookings: Booking[] = (data || []).map((booking: RawBookingData) => ({
+      // Transform data to our Booking interface
+      const formattedBookings: Booking[] = (data || []).map((booking: any) => ({
         id: booking.id,
         provider_name: booking.users?.full_name || 'Unknown Provider',
         provider_id: booking.provider_id,
