@@ -3,18 +3,22 @@ import { useState } from "react";
 import { DateRange } from "react-day-picker";
 import { isSameDay, isAfter, isBefore, addDays } from "date-fns";
 
+export type BookingStatus = 'all' | 'pending' | 'accepted' | 'completed' | 'cancelled' | 'declined';
+export type ClientType = 'all' | 'new' | 'returning';
+export type DateFilter = 'all' | 'today' | 'tomorrow' | 'thisWeek' | 'custom';
+
 export interface BookingFilters {
-  status: string;
-  dateFilter: string;
+  status: BookingStatus;
+  dateFilter: DateFilter;
   dateRange: DateRange;
-  clientType: string;
+  clientType: ClientType;
   serviceType: string;
   search: string;
   serviceTypes: string[];
 }
 
 export const useBookingFilters = (initialBookings: any[] = []) => {
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<BookingStatus>("all");
   const [dateRange, setDateRange] = useState<DateRange>({
     from: undefined,
     to: undefined,

@@ -12,13 +12,16 @@ import { format } from "date-fns";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { AlertCircle, Calendar, CheckCircle, Clock, Loader2, X } from "lucide-react";
 import { useBookingNotifications } from "@/hooks/useBookingNotifications";
+import { useNavigate } from "react-router-dom";
+
+interface Provider {
+  id: string;
+  full_name: string;
+}
 
 interface Booking {
   id: string;
-  provider: {
-    id: string;
-    full_name: string;
-  };
+  provider: Provider;
   service_type: string;
   date_requested: string;
   time_requested: string;
@@ -29,6 +32,7 @@ interface Booking {
 
 const MyBookingsPage = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("upcoming");
@@ -58,7 +62,7 @@ const MyBookingsPage = () => {
       if (error) throw error;
       
       if (data) {
-        setBookings(data as Booking[]);
+        setBookings(data as unknown as Booking[]);
       }
     } catch (error) {
       console.error("Error fetching bookings:", error);
@@ -72,23 +76,27 @@ const MyBookingsPage = () => {
     fetchBookings();
     
     // Set up a real-time subscription for booking updates
-    const bookingsSubscription = supabase
-      .channel('booking-changes')
-      .on('postgres_changes', 
-        { 
-          event: '*', 
-          schema: 'public', 
-          table: 'bookings',
-          filter: `customer_id=eq.${user?.id}`
-        }, 
-        () => {
-          fetchBookings();
-        })
-      .subscribe();
-      
-    return () => {
-      supabase.removeChannel(bookingsSubscription);
-    };
+    if (user?.id) {
+      const bookingsSubscription = supabase
+        .channel('booking-changes')
+        .on('postgres_changes', 
+          { 
+            event: '*', 
+            schema: 'public', 
+            table: 'bookings',
+            filter: `customer_id=eq.${user.id}`
+          }, 
+          () => {
+            fetchBookings();
+          })
+        .subscribe();
+          
+      return () => {
+        supabase.removeChannel(bookingsSubscription);
+      };
+    }
+    
+    return () => {};
   }, [user]);
   
   const getStatusBadge = (status: string) => {

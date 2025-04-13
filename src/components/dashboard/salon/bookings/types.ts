@@ -3,7 +3,7 @@ export type BookingStatus = 'all' | 'pending' | 'accepted' | 'completed' | 'canc
 
 export interface DateRange {
   from: Date | undefined;
-  to: Date | undefined;
+  to?: Date | undefined; // Make 'to' optional to match react-day-picker's DateRange
 }
 
 export interface Booking {
