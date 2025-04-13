@@ -31,9 +31,9 @@ export function ChatToggleButton({ isOpen, onClick }: ChatToggleButtonProps) {
         >
           <Button
             onClick={onClick}
-            className="h-14 w-14 rounded-full shadow-lg bg-primary text-primary-foreground hover:bg-primary/90"
+            className={`${isMobile ? 'h-14 w-14' : 'h-12 w-12'} rounded-full shadow-lg bg-primary text-primary-foreground hover:bg-primary/90`}
           >
-            <Sparkles size={24} />
+            <Sparkles size={isMobile ? 24 : 20} />
           </Button>
         </motion.div>
       )}

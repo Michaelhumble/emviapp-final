@@ -23,6 +23,24 @@
   animation-delay: 0.4s;
 }
 
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .chat-window {
+    height: 75vh !important;
+    max-height: 75vh !important;
+    width: 100% !important;
+    border-radius: 1rem 1rem 0 0 !important;
+  }
+  
+  .chat-input {
+    padding: 12px !important;
+  }
+  
+  .chat-messages {
+    padding: 16px 12px !important;
+  }
+}
+
 /* Safe area insets for mobile */
 @supports (padding: max(0px)) {
   .safe-area-bottom {

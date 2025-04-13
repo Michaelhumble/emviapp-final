@@ -56,7 +56,7 @@ export const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
 
     return (
       <div className={cn(
-        "p-3 border-t bg-background transition-shadow",
+        "transition-shadow",
         isFocused && "shadow-[0_-2px_10px_rgba(0,0,0,0.05)]"
       )}>
         <div className="flex gap-2 items-end">

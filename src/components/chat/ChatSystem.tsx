@@ -156,15 +156,20 @@ export function ChatSystem() {
         {isOpen && (
           <motion.div
             ref={chatContainerRef}
-            className={`fixed z-50 flex flex-col overflow-hidden rounded-t-xl shadow-xl
+            className={`fixed z-50 flex flex-col bg-background overflow-hidden shadow-xl chat-window
               ${isMobile ? 
-                "bottom-0 left-0 right-0 max-h-[80vh]" : 
+                "bottom-0 left-0 right-0 h-[75vh] rounded-t-xl" : 
                 "bottom-4 right-4 w-[380px] h-[520px] rounded-xl"
               }`}
             initial={isMobile ? { y: "100%" } : { opacity: 0, scale: 0.95 }}
             animate={isMobile ? { y: 0 } : { opacity: 1, scale: 1 }}
             exit={isMobile ? { y: "100%" } : { opacity: 0, scale: 0.95 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            style={{ 
+              willChange: 'transform',
+              transformStyle: 'preserve-3d',
+              backfaceVisibility: 'hidden'
+            }}
           >
             {/* Chat header */}
             <ChatHeader onClose={() => setIsOpen(false)} />
@@ -172,7 +177,7 @@ export function ChatSystem() {
             {/* Messages container */}
             <div 
               ref={messagesContainerRef}
-              className="flex-1 overflow-y-auto p-4 bg-background"
+              className="flex-1 overflow-y-auto p-4 chat-messages"
               style={{ 
                 overscrollBehavior: "contain",
                 WebkitOverflowScrolling: "touch"
@@ -205,14 +210,16 @@ export function ChatSystem() {
             </div>
             
             {/* Input area */}
-            <ChatInput 
-              ref={inputRef}
-              value={inputValue}
-              onChange={setInputValue}
-              onSend={handleSendMessage}
-              onFocus={handleInputFocus}
-              onBlur={handleInputBlur}
-            />
+            <div className={`p-3 border-t bg-background chat-input ${isMobile ? 'safe-area-bottom' : ''}`}>
+              <ChatInput 
+                ref={inputRef}
+                value={inputValue}
+                onChange={setInputValue}
+                onSend={handleSendMessage}
+                onFocus={handleInputFocus}
+                onBlur={handleInputBlur}
+              />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
