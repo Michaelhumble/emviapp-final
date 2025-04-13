@@ -1,46 +1,48 @@
 
+import { useMemo } from 'react';
 import { ReferralStats, ReferralProgress } from '@/components/referral/types';
 
-export const useReferralProgress = (stats: ReferralStats): ReferralProgress => {
-  // Define milestones
-  const milestones = [3, 5, 10, 25, 50, 100];
-  
-  // Find next milestone
-  let nextMilestone = milestones[0];
-  let level = 0;
-  
-  for (let i = 0; i < milestones.length; i++) {
-    if (stats.completedReferrals < milestones[i]) {
-      nextMilestone = milestones[i];
-      level = i;
-      break;
+export const useReferralProgress = (referralStats: ReferralStats | undefined) => {
+  return useMemo(() => {
+    if (!referralStats) {
+      return {
+        percentage: 0,
+        nextMilestone: 5,
+        nextMilestoneIn: 5,
+        level: 0
+      };
     }
-    
-    // If we've reached the last milestone
-    if (i === milestones.length - 1) {
-      nextMilestone = milestones[i] + 50; // Add a new milestone
-      level = i + 1;
+
+    const { completedReferrals } = referralStats;
+    let nextMilestone = 5;
+    let level = 0;
+
+    // Define milestones
+    if (completedReferrals < 5) {
+      nextMilestone = 5;
+      level = 0;
+    } else if (completedReferrals < 10) {
+      nextMilestone = 10;
+      level = 1;
+    } else if (completedReferrals < 25) {
+      nextMilestone = 25;
+      level = 2;
+    } else if (completedReferrals < 50) {
+      nextMilestone = 50;
+      level = 3;
+    } else {
+      nextMilestone = 100;
+      level = 4;
     }
-  }
-  
-  // Calculate how many more referrals needed
-  const nextMilestoneIn = Math.max(0, nextMilestone - stats.completedReferrals);
-  
-  // Calculate percentage toward next milestone
-  let percentage = 0;
-  if (level === 0) {
-    percentage = (stats.completedReferrals / nextMilestone) * 100;
-  } else {
-    const prevMilestone = milestones[level - 1];
-    const range = nextMilestone - prevMilestone;
-    const progress = stats.completedReferrals - prevMilestone;
-    percentage = (progress / range) * 100;
-  }
-  
-  return {
-    percentage: Math.min(100, Math.round(percentage)),
-    nextMilestone,
-    nextMilestoneIn,
-    level
-  };
+
+    const nextMilestoneIn = nextMilestone - completedReferrals;
+    const percentage = (completedReferrals / nextMilestone) * 100;
+
+    return {
+      percentage,
+      nextMilestone,
+      nextMilestoneIn,
+      level
+    };
+  }, [referralStats]);
 };

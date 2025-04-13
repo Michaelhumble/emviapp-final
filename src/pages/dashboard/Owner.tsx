@@ -39,6 +39,7 @@ import MonthlyReportDownload from "@/components/dashboard/salon/reports/MonthlyR
 import { SalonProvider } from "@/context/salon";
 import SalonSwitcher from "@/components/dashboard/salon/SalonSwitcher";
 import AISmartReminder from "@/components/ai/AISmartReminder";
+import SalonReferralPanel from "@/components/dashboard/salon/referral/SalonReferralPanel";
 
 const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -134,7 +135,7 @@ const OwnerDashboard = () => {
                       </div>
                       
                       <div className="lg:col-span-1">
-                        <SalonReferralCard />
+                        <SalonReferralPanel />
                       </div>
                     </div>
                   </TabsContent>
@@ -166,7 +167,7 @@ const OwnerDashboard = () => {
                   <TabsContent value="team" className="space-y-8">
                     <SalonTeamManager />
                     
-                    <SalonReferralCard />
+                    <SalonReferralPanel />
                   </TabsContent>
                   
                   <TabsContent value="services" className="space-y-8">
