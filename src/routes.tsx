@@ -14,6 +14,7 @@ import ArtistDashboard from './pages/dashboard/Artist';
 import CustomerDashboard from './pages/dashboard/Customer';
 import SalonDashboard from './pages/dashboard/Salon';
 import OwnerDashboard from './pages/dashboard/Owner';
+import ManagerDashboard from './pages/dashboard/Manager';
 import FreelancerDashboard from './pages/dashboard/Freelancer';
 import SupplierDashboard from './pages/dashboard/Supplier';
 import OtherDashboard from './pages/dashboard/Other';
@@ -123,6 +124,10 @@ const routes = [
   {
     path: '/dashboard/owner',
     element: <OwnerDashboard />,
+  },
+  {
+    path: '/dashboard/manager',
+    element: <ManagerDashboard />,
   },
   {
     path: '/dashboard/freelancer',

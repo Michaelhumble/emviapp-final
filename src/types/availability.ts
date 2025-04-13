@@ -20,3 +20,21 @@ export interface AvailabilityDay {
   active: boolean;
   location?: string | null;
 }
+
+// Simple interface for booking response
+export interface BookingResponse {
+  id: string;
+  customer_id: string;
+  provider_id: string;
+  service_id?: string;
+  service_name?: string;
+  date: string;
+  time: string;
+  duration?: number;
+  status: string;
+  notes?: string;
+  created_at: string;
+  updated_at?: string;
+  customer_name?: string;
+  provider_name?: string;
+}
