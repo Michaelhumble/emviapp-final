@@ -175,7 +175,7 @@ const MissingPieceSection = () => {
                   </h3>
                   <p className="text-xl text-gray-700 leading-relaxed max-w-3xl mx-auto">
                     <span className="font-semibold text-indigo-600">Chúng tôi giúp bạn mang khách hàng đến tận tiệm.</span>{" "}
-                    Nền tảng của chúng tôi kết nối bạn với những thợ giỏi, đưa ra những ưu đãi tốt nhất, và giúp quản lý tiệm một cách hiệu quả — tất cả trong một giải pháp hoàn hảo.
+                    Giúp bạn tìm những thợ giỏi, có kinh nghiệm, và đưa ra những ưu đãi tốt nhất — để bạn quản lý tiệm dễ dàng và đạt hiệu quả cao.
                   </p>
                 </motion.div>
 
@@ -188,8 +188,8 @@ const MissingPieceSection = () => {
                       <Sparkles size={48} className="text-indigo-600" />
                     </div>
                     <p className="text-xl text-gray-700 text-center md:text-left">
-                      <span className="font-semibold">Trí tuệ nhân tạo thông minh của EmviApp xử lý các công việc phức tạp —</span><br />
-                      để bạn có thể tập trung vào đam mê và phát triển doanh nghiệp của mình.
+                      <span className="font-semibold">Hãy để A.I thông minh của EmviApp lo mọi thứ cho bạn —</span><br />
+                      bạn chỉ cần tập trung làm điều mình yêu thích và phát triển sự nghiệp của mình.
                     </p>
                   </div>
                 </motion.div>
@@ -199,8 +199,8 @@ const MissingPieceSection = () => {
                   variants={itemVariants}
                 >
                   <p className="text-xl text-gray-800 font-medium mb-8">
-                    Nếu không sử dụng EmviApp, bạn có thể bỏ lỡ những cơ hội<br />
-                    mà đối thủ của bạn đang nắm bắt. <span className="text-2xl">😌</span>
+                    Nếu bạn không dùng thử EmviApp...<br />
+                    Chắc chắn bạn đang bỏ lỡ một công nghệ có thể giải quyết rất nhiều việc cùng một lúc. <span className="text-2xl">😌</span>
                   </p>
                   
                   <motion.button
@@ -208,7 +208,7 @@ const MissingPieceSection = () => {
                     whileTap={{ scale: 0.98 }}
                     className="group inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-full text-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300"
                   >
-                    Hãy cùng nhau trải nghiệm ngay bây giờ
+                    Hãy cùng nhau trải nghiệm những điều thú vị mà EmviApp mang đến cho bạn — ngay bây giờ
                     <motion.div
                       animate={{ x: [0, 5, 0] }}
                       transition={{ repeat: Infinity, duration: 1.5 }}
