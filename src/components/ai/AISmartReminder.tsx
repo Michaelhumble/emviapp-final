@@ -161,26 +161,26 @@ const AISmartReminder = ({ className = "" }: AISmartReminderProps) => {
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
+        initial={{ opacity: 0, y: -5 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, height: 0 }}
-        transition={{ duration: 0.4 }}
-        className={`bg-primary/5 border border-primary/10 rounded-lg p-3 relative ${className}`}
+        transition={{ duration: 0.3 }}
+        className={`bg-primary/5 border-l-4 border-l-primary/40 rounded-lg p-2.5 relative ${className}`}
       >
         <button 
           onClick={() => setShow(false)} 
-          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+          className="absolute top-1.5 right-1.5 text-gray-400 hover:text-gray-600"
           aria-label="Dismiss"
         >
-          <X className="h-4 w-4" />
+          <X className="h-3 w-3" />
         </button>
-        <div className="flex items-center gap-3">
-          <div className="bg-primary/10 p-1.5 rounded-full">
-            <Bell className="h-4 w-4 text-primary" />
+        <div className="flex items-center gap-2.5">
+          <div className="bg-primary/10 p-1 rounded-full">
+            <Bell className="h-3 w-3 text-primary" />
           </div>
           <div>
-            <p className="text-sm text-gray-700">{reminder.message}</p>
-            <Button variant="link" className="h-6 p-0 text-primary text-xs" asChild>
+            <p className="text-xs text-gray-700">{reminder.message}</p>
+            <Button variant="link" className="h-5 p-0 text-primary text-xs" asChild>
               <a href={reminder.path}>{reminder.action}</a>
             </Button>
           </div>

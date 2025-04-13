@@ -1,10 +1,10 @@
-
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
 import SalonDashboardBanner from "@/components/dashboard/salon/SalonDashboardBanner";
+import SmartReminderBanner from "@/components/dashboard/salon/SmartReminderBanner";
 import SalonQuickStats from "@/components/dashboard/salon/SalonQuickStats";
 import SalonDashboardActionButtons from "@/components/dashboard/salon/SalonDashboardActionButtons";
 import SalonReferralCard from "@/components/dashboard/salon/SalonReferralCard";
@@ -30,12 +30,12 @@ import SalonAnalytics from "@/components/dashboard/salon/SalonAnalytics";
 import SalonMessagingCenter from "@/components/dashboard/salon/SalonMessagingCenter";
 import SalonBookingManager from "@/components/dashboard/salon/bookings/SalonBookingManager";
 import confetti from "canvas-confetti";
-import BookingRemindersBanner from "@/components/dashboard/salon/bookings/components/BookingRemindersBanner";
 import BookingAnalyticsCard from "@/components/dashboard/salon/analytics/BookingAnalyticsCard";
 import CreditUsageHistory from "@/components/dashboard/salon/credits/CreditUsageHistory";
 import MonthlyReportDownload from "@/components/dashboard/salon/reports/MonthlyReportDownload";
 import { SalonProvider } from "@/context/salon";
 import SalonSwitcher from "@/components/dashboard/salon/SalonSwitcher";
+import AISmartReminder from "@/components/ai/AISmartReminder";
 
 const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -83,14 +83,13 @@ const OwnerDashboard = () => {
             transition={{ duration: 0.5 }}
           >
             <RoleDashboardLayout>
-              <div className="space-y-8">
+              <div className="space-y-6">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <SalonDashboardBanner userName={userProfile?.salon_name || userProfile?.full_name} />
                   <SalonSwitcher />
                 </div>
                 
-                {/* New: Booking Reminders Banner */}
-                <BookingRemindersBanner />
+                <SmartReminderBanner />
                 
                 <Tabs value={activeTab} onValueChange={handleTabChange}>
                   <TabsList className="grid grid-cols-7 mb-8">

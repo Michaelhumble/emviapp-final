@@ -1,11 +1,8 @@
-
 import React, { useEffect, useState } from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Bell, Calendar, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useBookings } from "../hooks/useBookings";
-import { format } from "date-fns";
-import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
 interface BookingRemindersBannerProps {
@@ -52,7 +49,6 @@ const BookingRemindersBanner: React.FC<BookingRemindersBannerProps> = ({ classNa
 
   const handleViewBookings = () => {
     navigate("/dashboard/salon?tab=bookings");
-    toast.info("Navigated to bookings tab");
   };
 
   // Don't show banner if no reminders needed
@@ -61,42 +57,40 @@ const BookingRemindersBanner: React.FC<BookingRemindersBannerProps> = ({ classNa
   }
 
   return (
-    <div className={className}>
+    <div className={`flex flex-col sm:flex-row gap-2 ${className}`}>
       {todaysBookings > 0 && (
-        <Alert className="mb-4 border-blue-200 bg-blue-50">
-          <Calendar className="h-5 w-5 text-blue-600" />
-          <AlertTitle className="ml-2 text-blue-800">
-            Bookings Today
-          </AlertTitle>
-          <AlertDescription className="ml-2 text-blue-700">
-            You have {todaysBookings} booking{todaysBookings > 1 ? 's' : ''} scheduled for today.
-            <Button 
-              variant="link" 
-              className="p-0 h-auto ml-2 text-blue-700 font-semibold"
-              onClick={handleViewBookings}
-            >
-              View bookings
-            </Button>
-          </AlertDescription>
+        <Alert className="py-2 px-3 border-blue-200 bg-blue-50 flex-1">
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4 text-blue-600 flex-shrink-0" />
+            <AlertDescription className="text-xs text-blue-700 m-0 flex-grow">
+              <span className="font-semibold">{todaysBookings}</span> booking{todaysBookings > 1 ? 's' : ''} today
+              <Button 
+                variant="link" 
+                className="p-0 h-auto ml-1 text-xs text-blue-700 font-medium"
+                onClick={handleViewBookings}
+              >
+                View
+              </Button>
+            </AlertDescription>
+          </div>
         </Alert>
       )}
 
       {overdueBookings > 0 && (
-        <Alert className="mb-4 border-amber-200 bg-amber-50">
-          <AlertCircle className="h-5 w-5 text-amber-600" />
-          <AlertTitle className="ml-2 text-amber-800">
-            Overdue Bookings
-          </AlertTitle>
-          <AlertDescription className="ml-2 text-amber-700">
-            You have {overdueBookings} booking{overdueBookings > 1 ? 's' : ''} that are overdue and need attention.
-            <Button 
-              variant="link" 
-              className="p-0 h-auto ml-2 text-amber-700 font-semibold"
-              onClick={handleViewBookings}
-            >
-              Manage now
-            </Button>
-          </AlertDescription>
+        <Alert className="py-2 px-3 border-amber-200 bg-amber-50 flex-1">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="h-4 w-4 text-amber-600 flex-shrink-0" />
+            <AlertDescription className="text-xs text-amber-700 m-0 flex-grow">
+              <span className="font-semibold">{overdueBookings}</span> overdue booking{overdueBookings > 1 ? 's' : ''}
+              <Button 
+                variant="link" 
+                className="p-0 h-auto ml-1 text-xs text-amber-700 font-medium"
+                onClick={handleViewBookings}
+              >
+                Manage
+              </Button>
+            </AlertDescription>
+          </div>
         </Alert>
       )}
     </div>
