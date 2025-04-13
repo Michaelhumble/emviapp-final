@@ -27,11 +27,15 @@ export function ChatToggleButton({ isOpen, onClick }: ChatToggleButtonProps) {
             stiffness: 350,
             damping: 25,
           }}
-          className="fixed bottom-4 right-4 z-40"
+          className="fixed bottom-4 right-4 z-[1000]"
+          style={{
+            ...(isMobile && { bottom: '80px' }) // Adjust position for mobile to stay above nav bar
+          }}
         >
           <Button
             onClick={onClick}
             className={`${isMobile ? 'h-14 w-14' : 'h-12 w-12'} rounded-full shadow-lg bg-primary text-primary-foreground hover:bg-primary/90`}
+            aria-label="Chat with Little Sunshine AI"
           >
             <Sparkles size={isMobile ? 24 : 20} />
           </Button>
