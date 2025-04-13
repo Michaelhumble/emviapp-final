@@ -37,8 +37,8 @@ interface Booking {
   created_at: string;
 }
 
-// Define the shape of raw data coming from Supabase
-interface DatabaseBooking {
+// Define a separate type for database response to avoid recursive type issues
+type DatabaseBookingResponse = {
   id: string;
   customer_id: string;
   date: string | null;
@@ -48,7 +48,7 @@ interface DatabaseBooking {
   created_at: string;
   service_type: string;
   provider_id: string;
-  users?: {
+  users: {
     full_name: string;
   } | null;
 }
@@ -87,18 +87,23 @@ const MyBookingsPage = () => {
 
       if (error) throw error;
 
-      // Transform data to our Booking interface
-      const formattedBookings: Booking[] = (data || []).map((booking: any) => ({
-        id: booking.id,
-        provider_name: booking.users?.full_name || 'Unknown Provider',
-        provider_id: booking.provider_id,
-        service_type: booking.service_type || 'Unknown Service',
-        date: booking.date,
-        time: booking.time || '',
-        status: booking.status || 'pending',
-        notes: booking.notes || '',
-        created_at: booking.created_at
-      }));
+      // Transform data to our Booking interface with explicit type casting
+      const formattedBookings: Booking[] = (data || []).map((item) => {
+        // Cast the raw data to our expected response type
+        const booking = item as unknown as DatabaseBookingResponse;
+        
+        return {
+          id: booking.id,
+          provider_name: booking.users?.full_name || 'Unknown Provider',
+          provider_id: booking.provider_id,
+          service_type: booking.service_type || 'Unknown Service',
+          date: booking.date,
+          time: booking.time || '',
+          status: booking.status || 'pending',
+          notes: booking.notes || '',
+          created_at: booking.created_at
+        };
+      });
 
       setBookings(formattedBookings);
     } catch (error: any) {
