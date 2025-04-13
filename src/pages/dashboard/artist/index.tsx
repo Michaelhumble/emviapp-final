@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import ArtistDashboardHeader from '@/components/dashboard/artist/ArtistDashboardHeader';
-import ArtistDashboardLayout from '@/components/dashboard/artist/ArtistDashboardLayout';
+import RoleDashboardLayout from '@/components/dashboard/RoleDashboardLayout';
 import ServiceList from '@/components/dashboard/artist/services/ServiceList';
 import ArtistPortfolioGallery from '@/components/artist/portfolio/ArtistPortfolioGallery';
 import { useAuth } from '@/context/auth';
@@ -43,7 +43,7 @@ const ArtistDashboard = () => {
   const handleDeleteService = (id: string) => console.log('Delete:', id);
   
   return (
-    <ArtistDashboardLayout>
+    <RoleDashboardLayout>
       <Helmet>
         <title>Artist Dashboard | EmviApp</title>
       </Helmet>
@@ -73,7 +73,7 @@ const ArtistDashboard = () => {
           <ArtistPortfolioGallery />
         </motion.div>
       </motion.div>
-    </ArtistDashboardLayout>
+    </RoleDashboardLayout>
   );
 };
 
