@@ -7,6 +7,7 @@ import ArtistDashboardHeader from '@/components/dashboard/artist/ArtistDashboard
 import RoleDashboardLayout from '@/components/dashboard/RoleDashboardLayout';
 import ServiceList from '@/components/dashboard/artist/services/ServiceList';
 import ArtistPortfolioGallery from '@/components/artist/portfolio/ArtistPortfolioGallery';
+import ArtistServicesManager from '@/components/artist/services/ArtistServicesManager';
 import { useAuth } from '@/context/auth';
 
 const ArtistDashboard = () => {
@@ -59,18 +60,11 @@ const ArtistDashboard = () => {
         </motion.div>
         
         <motion.div variants={itemVariants}>
-          <Card className="p-6">
-            <h2 className="text-xl font-serif mb-4">My Services</h2>
-            <ServiceList 
-              services={services} 
-              onEditService={handleEditService} 
-              onDeleteService={handleDeleteService} 
-            />
-          </Card>
+          <ArtistPortfolioGallery />
         </motion.div>
         
         <motion.div variants={itemVariants}>
-          <ArtistPortfolioGallery />
+          <ArtistServicesManager />
         </motion.div>
       </motion.div>
     </RoleDashboardLayout>
