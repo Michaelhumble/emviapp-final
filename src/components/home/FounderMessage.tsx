@@ -94,7 +94,7 @@ const FounderMessage = () => {
                 }}
                 className="px-4 py-2 rounded-full bg-white shadow-sm text-gray-600 text-sm border border-gray-200 hover:bg-gray-50 transition-colors duration-200"
               >
-                {language === "en" ? "🇻🇳 Xem Tiếng Việt" : "🇺🇸 View in English"}
+                {language === "en" ? "Xem Tiếng Việt" : "View in English"}
               </button>
             </div>
           </div>
