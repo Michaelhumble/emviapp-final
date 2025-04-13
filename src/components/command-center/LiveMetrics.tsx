@@ -60,11 +60,12 @@ const LiveMetrics = () => {
           .eq('role', 'artist')
           .limit(10);
         
-        // Get salon with most bookings (mock data - replace with real query)
-        const { data: salons, error: salonsError } = await supabase
+        // Get salon owners (role = 'owner' or 'salon')
+        // Fixed: Query users with role = 'owner' or 'salon' and handle errors properly
+        const { data: salonOwners, error: salonsError } = await supabase
           .from('users')
-          .select('id, full_name, salon_name')
-          .eq('role', 'salon')
+          .select('id, full_name')
+          .in('role', ['owner', 'salon'])
           .limit(10);
 
         if (todayError || weekError || artistsError || salonsError) {
@@ -89,12 +90,13 @@ const LiveMetrics = () => {
         }
 
         // Simulate a most active salon (in reality, you'd have this data in your database)
+        // Fixed: Access properties from salonOwners safely
         let mostActiveSalon = null;
-        if (salons && salons.length > 0) {
-          const randomIndex = Math.floor(Math.random() * salons.length);
+        if (salonOwners && salonOwners.length > 0) {
+          const randomIndex = Math.floor(Math.random() * salonOwners.length);
           mostActiveSalon = {
-            id: salons[randomIndex].id,
-            name: salons[randomIndex].salon_name || salons[randomIndex].full_name,
+            id: salonOwners[randomIndex].id,
+            name: salonOwners[randomIndex].full_name, // Just use full_name as the salon name
             activity: Math.floor(Math.random() * 50) + 10 // Random activity count between 10-60
           };
         }
