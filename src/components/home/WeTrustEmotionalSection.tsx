@@ -81,11 +81,6 @@ const WeTrustEmotionalSection = () => {
                   </span>
                   <span>bạn chỉ cần tập trung vào điều mình yêu thích.</span>
                 </p>
-                
-                <p className="text-xl font-semibold text-gray-800 mt-8">
-                  Nếu bạn không dùng thử EmviApp...<br />
-                  <span className="text-primary">đối thủ của bạn sẽ dùng đấy. <span className="text-2xl">😌</span></span>
-                </p>
               </div>
             </div>
           )}
