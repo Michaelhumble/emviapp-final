@@ -1,111 +1,176 @@
-import { useState, useEffect } from 'react';
-import { UserProfile } from '@/types/profile';
-import { supabase } from '@/integrations/supabase';
 
-export interface PortfolioImage {
-  id: string;
-  url: string;
-  name: string;
-  description?: string;
-}
+import { useState, useEffect, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { UserProfile } from "@/types/profile";
+import { PortfolioImage, Service } from "../types";
 
-export interface Service {
-  id: string;
-  name: string;
-  title: string;
-  description: string;
-  price: number;
-  price_type: string;
-  duration: string;
-  duration_minutes: number;
-  image_url?: string;
-  category?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-interface UseArtistProfileDataResult {
-  profile: UserProfile | null;
-  portfolioImages: PortfolioImage[];
-  services: Service[];
-  loading: boolean;
-  error: Error | null;
-}
-
-const useArtistProfileData = (userId: string): UseArtistProfileDataResult => {
+export const useArtistProfileData = (username: string | undefined) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [portfolioImages, setPortfolioImages] = useState<PortfolioImage[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [viewCount, setViewCount] = useState<number | null>(null);
+  const [isSalonOwner, setIsSalonOwner] = useState(false);
 
-  useEffect(() => {
-    const fetchArtistProfile = async () => {
+  const fetchData = useCallback(async () => {
+    if (!username) {
+      setError("Username is required");
+      setLoading(false);
+      return;
+    }
+
+    try {
       setLoading(true);
-      setError(null);
-
-      try {
-        // Fetch profile
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
+      
+      // First try to find by username (instagram handle)
+      let { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('instagram', username)
+        .single();
+      
+      // If not found by username, try with ID
+      if (userError || !userData) {
+        const { data: idData, error: idError } = await supabase
+          .from('users')
           .select('*')
-          .eq('id', userId)
+          .eq('id', username)
           .single();
-
-        if (profileError) {
-          throw new Error(`Error fetching profile: ${profileError.message}`);
+          
+        if (idError) {
+          setError("Artist not found");
+          setLoading(false);
+          return;
         }
-
-        if (!profileData) {
-          throw new Error('Profile not found');
-        }
-
-        setProfile(profileData as UserProfile);
-
-        // Fetch portfolio images
-        const { data: portfolioData, error: portfolioError } = await supabase
-          .from('portfolio_images')
+        
+        userData = idData;
+      }
+      
+      // Check if this is an artist profile
+      if (userData.role !== 'artist' && userData.role !== 'nail technician/artist' && userData.role !== 'freelancer') {
+        setError("This user is not an artist");
+        setLoading(false);
+        return;
+      }
+      
+      // Convert database user to UserProfile type, safely handling potentially missing properties
+      const artistProfile: UserProfile = {
+        id: userData.id,
+        email: userData.email || '',
+        full_name: userData.full_name,
+        avatar_url: userData.avatar_url,
+        role: userData.role,
+        bio: userData.bio,
+        specialty: userData.specialty,
+        location: userData.location,
+        instagram: userData.instagram,
+        website: userData.website,
+        phone: userData.phone,
+        profile_views: typeof (userData as any).profile_views === 'number' ? (userData as any).profile_views : 0,
+        boosted_until: userData.boosted_until,
+        badges: Array.isArray(userData.badges) ? userData.badges : [],
+        accepts_bookings: userData.accepts_bookings,
+        booking_url: userData.booking_url,
+        contact_link: userData.contact_link,
+        completed_profile_tasks: Array.isArray(userData.completed_profile_tasks) 
+          ? userData.completed_profile_tasks 
+          : [],
+        preferences: Array.isArray(userData.preferences) ? userData.preferences : [],
+        preferred_language: userData.preferred_language,
+        years_experience: typeof (userData as any).years_experience === 'number' ? (userData as any).years_experience : 0,
+        created_at: userData.created_at,
+        updated_at: userData.updated_at,
+        professional_name: (userData as any).professional_name || ''
+      };
+      
+      setProfile(artistProfile);
+      setViewCount(artistProfile.profile_views || 0);
+      
+      // Fetch portfolio images
+      if (userData.id) {
+        const { data: portfolioData } = await supabase
+          .from('portfolio_items')
           .select('*')
-          .eq('user_id', userId);
-
-        if (portfolioError) {
-          throw new Error(`Error fetching portfolio images: ${portfolioError.message}`);
-        }
-
-        setPortfolioImages(
+          .eq('user_id', userData.id)
+          .order('created_at', { ascending: false });
+          
+        if (portfolioData) {
+          setPortfolioImages(
             portfolioData.map(item => ({
               id: item.id,
               url: item.image_url,
               name: item.title || '',
               description: item.description || ''
             }))
-        );
-
+          );
+        }
+        
         // Fetch services
-        const { data: servicesData, error: servicesError } = await supabase
+        const { data: servicesData } = await supabase
           .from('services')
           .select('*')
-          .eq('user_id', userId);
-
-        if (servicesError) {
-          throw new Error(`Error fetching services: ${servicesError.message}`);
+          .eq('user_id', userData.id)
+          .eq('is_visible', true)
+          .order('price', { ascending: true });
+          
+        if (servicesData) {
+          // Map the services data to match the Service interface
+          const mappedServices = servicesData.map((service: any) => ({
+            id: service.id,
+            name: service.title || '', // Map title to name for compatibility
+            title: service.title || '',
+            description: service.description,
+            price: service.price,
+            price_type: service.price_type,
+            duration: service.duration,
+            duration_minutes: service.duration_minutes,
+            image_url: service.image_url,
+            category: service.category,
+            created_at: service.created_at,
+            updated_at: service.updated_at
+          }));
+          
+          setServices(mappedServices);
         }
-
-        setServices(servicesData as Service[]);
-
-      } catch (err: any) {
-        setError(err instanceof Error ? err : new Error('An unexpected error occurred'));
-        console.error(err);
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (err) {
+      console.error("Error fetching artist profile:", err);
+      setError("Failed to load artist profile");
+    } finally {
+      setLoading(false);
+    }
+  }, [username]);
 
-    fetchArtistProfile();
-  }, [userId]);
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
-  return { profile, portfolioImages, services, loading, error };
+  const incrementViewCount = useCallback(async () => {
+    if (profile?.id) {
+      const newCount = (viewCount || 0) + 1;
+      // Using typecast as any for the update to avoid TypeScript errors
+      const { error } = await supabase
+        .from('users')
+        .update({ profile_views: newCount } as any)
+        .eq('id', profile.id);
+        
+      if (!error) {
+        setViewCount(newCount);
+      }
+    }
+  }, [profile, viewCount]);
+
+  return {
+    profile,
+    portfolioImages,
+    services,
+    loading,
+    error,
+    viewCount,
+    isSalonOwner,
+    incrementViewCount
+  };
 };
 
 export default useArtistProfileData;
-export type { PortfolioImage, Service };
