@@ -30,7 +30,7 @@ interface Booking {
 }
 
 const MyBookingsPage = () => {
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentTab, setCurrentTab] = useState("upcoming");
@@ -188,7 +188,8 @@ const MyBookingsPage = () => {
   };
   
   const getOtherParty = (booking: Booking) => {
-    const isSender = booking.sender_details?.full_name === user?.full_name;
+    // Use userProfile?.full_name instead of user?.full_name
+    const isSender = booking.sender_details?.full_name === userProfile?.full_name;
     return isSender ? booking.recipient_details : booking.sender_details;
   };
   
