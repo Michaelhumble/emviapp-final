@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { getLanguagePreference } from "@/utils/languagePreference";
+import { Sparkles, ArrowRight } from "lucide-react";
+import DecorativeBackground from "./sections/DecorativeBackground";
 
 const MissingPieceSection = () => {
   const [language, setLanguage] = useState<"en" | "vi">(getLanguagePreference());
@@ -26,81 +28,205 @@ const MissingPieceSection = () => {
     };
   }, []);
 
+  const variants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        duration: 0.7,
+        staggerChildren: 0.2,
+        delayChildren: 0.3
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.5 }
+    }
+  };
+
   return (
-    <section className="py-20 bg-gradient-to-b from-white to-gray-50">
-      <div className="container mx-auto px-4">
+    <section className="py-28 relative overflow-hidden bg-gradient-to-b from-white via-indigo-50/30 to-purple-50/30">
+      <div className="absolute inset-0 opacity-60">
+        <DecorativeBackground />
+      </div>
+      
+      <div className="container mx-auto px-4 relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          viewport={{ once: true }}
-          className="max-w-4xl mx-auto"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={variants}
+          className="max-w-5xl mx-auto"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600">
-            {language === "en" ? (
-              "Let's Experience EmviApp Together"
-            ) : (
-              "Hãy Cùng Nhau Trải Nghiệm Emviapp"
-            )}
-          </h2>
+          {/* Title with animated underline and sparkle effect */}
+          <motion.div 
+            className="text-center mb-14"
+            variants={itemVariants}
+          >
+            <div className="inline-block relative">
+              <h2 className="text-4xl md:text-5xl font-bold text-center mb-3 font-playfair bg-clip-text text-transparent bg-gradient-to-r from-purple-700 to-indigo-600">
+                {language === "en" ? (
+                  "Let's Experience EmviApp Together"
+                ) : (
+                  "Hãy Cùng Nhau Trải Nghiệm Emviapp"
+                )}
+              </h2>
+              <motion.div 
+                className="absolute -bottom-2 left-1/2 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full"
+                initial={{ width: "0%", x: "-50%" }}
+                whileInView={{ width: "60%", x: "-50%" }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+                viewport={{ once: true }}
+              />
+              <motion.div 
+                className="absolute -top-7 -right-10 text-yellow-400"
+                animate={{ 
+                  rotate: [0, 20, 0, -20, 0],
+                  scale: [1, 1.2, 1, 1.2, 1],
+                }}
+                transition={{ 
+                  repeat: Infinity,
+                  duration: 3
+                }}
+              >
+                <Sparkles size={32} className="text-yellow-400 drop-shadow-md" />
+              </motion.div>
+            </div>
+          </motion.div>
           
-          <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-100">
+          {/* Main content card with premium styling */}
+          <motion.div 
+            className="bg-white backdrop-blur-sm rounded-3xl shadow-2xl p-10 mb-12 border border-indigo-100/50 relative overflow-hidden"
+            variants={itemVariants}
+          >
+            {/* Background decoration */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-100/30 to-purple-100/30 rounded-full blur-3xl -z-10 transform translate-x-1/3 -translate-y-1/3"></div>
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-pink-100/30 to-yellow-100/30 rounded-full blur-3xl -z-10 transform -translate-x-1/3 translate-y-1/3"></div>
+            
+            {/* Content based on language */}
             {language === "en" ? (
               <>
-                <p className="text-lg md:text-xl text-gray-700 mb-6 text-center">
-                  <strong className="text-indigo-600">We help bring customers straight to your salon.</strong><br />
-                  We help you find experienced technicians, send them irresistible offers, and manage your shop smoothly and efficiently — all in one place.
-                </p>
-                <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-xl mb-6">
-                  <p className="text-lg md:text-xl text-gray-700 mb-2 text-center">
-                    <span className="inline-flex items-center justify-center w-10 h-10 bg-indigo-100 rounded-full text-indigo-600 font-bold mb-2">
-                      💡
-                    </span>
+                <motion.div 
+                  className="text-center mb-10" 
+                  variants={itemVariants}
+                >
+                  <h3 className="text-2xl md:text-3xl font-bold text-indigo-700 mb-6">
+                    <span className="bg-indigo-50 px-4 py-1 rounded-lg">Your Business, Supercharged</span>
+                  </h3>
+                  <p className="text-xl text-gray-700 leading-relaxed max-w-3xl mx-auto">
+                    <span className="font-semibold text-indigo-600">We help bring customers straight to your salon.</span>{" "}
+                    Our platform connects you with skilled technicians, delivers irresistible offers, and streamlines shop management — all in one elegant solution.
                   </p>
-                  <p className="text-lg md:text-xl text-gray-700 text-center">
-                    Let EmviApp's smart A.I. handle the heavy lifting —<br />
-                    so you can focus on doing what you love and growing what's yours.
+                </motion.div>
+
+                <motion.div 
+                  className="bg-gradient-to-r from-indigo-50 to-purple-50 p-8 rounded-2xl mb-10 border border-indigo-100/50 shadow-inner"
+                  variants={itemVariants}
+                >
+                  <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+                    <div className="flex-shrink-0 bg-white rounded-2xl p-4 shadow-md">
+                      <Sparkles size={48} className="text-indigo-600" />
+                    </div>
+                    <p className="text-xl text-gray-700 text-center md:text-left">
+                      <span className="font-semibold">EmviApp's intelligent AI handles the complex work —</span><br />
+                      so you can focus on your passion and growing your business.
+                    </p>
+                  </div>
+                </motion.div>
+
+                <motion.div 
+                  className="text-center" 
+                  variants={itemVariants}
+                >
+                  <p className="text-xl text-gray-800 font-medium mb-8">
+                    Without EmviApp, you might be missing out on opportunities<br />
+                    that your competitors are already embracing. <span className="text-2xl">😌</span>
                   </p>
-                </div>
-                <p className="text-lg md:text-xl text-gray-800 text-center font-medium">
-                  If you don't use EmviApp...<br />
-                  Let's just say your competitors might beat you to it. <span className="text-xl">😌</span><br />
-                  <span className="bg-indigo-600 text-white px-4 py-1 rounded-full inline-block mt-4 hover:bg-indigo-700 transition-colors">
-                    Try it now and feel the difference — instantly.
-                  </span>
-                </p>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="group inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-full text-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    Try it now and experience the difference
+                    <motion.div
+                      animate={{ x: [0, 5, 0] }}
+                      transition={{ repeat: Infinity, duration: 1.5 }}
+                    >
+                      <ArrowRight size={20} className="text-white" />
+                    </motion.div>
+                  </motion.button>
+                </motion.div>
               </>
             ) : (
               <>
-                <p className="text-lg md:text-xl text-gray-700 mb-6 text-center">
-                  <strong className="text-indigo-600">Chúng tôi giúp bạn mang khách hàng đến tận tiệm.</strong><br />
-                  Giúp bạn tìm những thợ giỏi, có kinh nghiệm, và đưa ra những ưu đãi tốt nhất — để bạn quản lý tiệm dễ dàng và đạt hiệu quả cao.
-                </p>
-                <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-xl mb-6">
-                  <p className="text-lg md:text-xl text-gray-700 mb-2 text-center">
-                    <span className="inline-flex items-center justify-center w-10 h-10 bg-indigo-100 rounded-full text-indigo-600 font-bold mb-2">
-                      💡
-                    </span>
+                <motion.div 
+                  className="text-center mb-10" 
+                  variants={itemVariants}
+                >
+                  <h3 className="text-2xl md:text-3xl font-bold text-indigo-700 mb-6">
+                    <span className="bg-indigo-50 px-4 py-1 rounded-lg">Kinh Doanh Của Bạn, Được Nâng Cấp</span>
+                  </h3>
+                  <p className="text-xl text-gray-700 leading-relaxed max-w-3xl mx-auto">
+                    <span className="font-semibold text-indigo-600">Chúng tôi giúp bạn mang khách hàng đến tận tiệm.</span>{" "}
+                    Nền tảng của chúng tôi kết nối bạn với những thợ giỏi, đưa ra những ưu đãi tốt nhất, và giúp quản lý tiệm một cách hiệu quả — tất cả trong một giải pháp hoàn hảo.
                   </p>
-                  <p className="text-lg md:text-xl text-gray-700 text-center">
-                    Hãy để A.I thông minh của EmviApp lo mọi thứ cho bạn —<br />
-                    bạn chỉ cần tập trung làm điều mình yêu thích và phát triển sự nghiệp của mình.
+                </motion.div>
+
+                <motion.div 
+                  className="bg-gradient-to-r from-indigo-50 to-purple-50 p-8 rounded-2xl mb-10 border border-indigo-100/50 shadow-inner"
+                  variants={itemVariants}
+                >
+                  <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+                    <div className="flex-shrink-0 bg-white rounded-2xl p-4 shadow-md">
+                      <Sparkles size={48} className="text-indigo-600" />
+                    </div>
+                    <p className="text-xl text-gray-700 text-center md:text-left">
+                      <span className="font-semibold">Trí tuệ nhân tạo thông minh của EmviApp xử lý các công việc phức tạp —</span><br />
+                      để bạn có thể tập trung vào đam mê và phát triển doanh nghiệp của mình.
+                    </p>
+                  </div>
+                </motion.div>
+
+                <motion.div 
+                  className="text-center" 
+                  variants={itemVariants}
+                >
+                  <p className="text-xl text-gray-800 font-medium mb-8">
+                    Nếu không sử dụng EmviApp, bạn có thể bỏ lỡ những cơ hội<br />
+                    mà đối thủ của bạn đang nắm bắt. <span className="text-2xl">😌</span>
                   </p>
-                </div>
-                <p className="text-lg md:text-xl text-gray-800 text-center font-medium">
-                  Nếu bạn không dùng thử EmviApp...<br />
-                  Chắc chắn bạn đang bỏ lỡ một công nghệ có thể giải quyết rất nhiều việc cùng một lúc. <span className="text-xl">😌</span><br />
-                  <span className="bg-indigo-600 text-white px-4 py-1 rounded-full inline-block mt-4 hover:bg-indigo-700 transition-colors">
-                    Hãy cùng nhau trải nghiệm những điều thú vị — ngay bây giờ.
-                  </span>
-                </p>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="group inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-full text-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    Hãy cùng nhau trải nghiệm ngay bây giờ
+                    <motion.div
+                      animate={{ x: [0, 5, 0] }}
+                      transition={{ repeat: Infinity, duration: 1.5 }}
+                    >
+                      <ArrowRight size={20} className="text-white" />
+                    </motion.div>
+                  </motion.button>
+                </motion.div>
               </>
             )}
-          </div>
+          </motion.div>
           
-          {/* Language Toggle */}
-          <div className="mt-6 flex justify-center">
-            <button
+          {/* Enhanced language toggle with animation */}
+          <motion.div 
+            className="flex justify-center"
+            variants={itemVariants}
+          >
+            <motion.button
               onClick={() => {
                 const newLanguage = language === "en" ? "vi" : "en";
                 setLanguage(newLanguage);
@@ -109,12 +235,14 @@ const MissingPieceSection = () => {
                   detail: { language: newLanguage } 
                 }));
               }}
-              className="px-4 py-2 rounded-full bg-white shadow-md text-gray-700 text-sm border border-gray-200 hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-2.5 rounded-full bg-white shadow-lg text-gray-700 text-sm font-medium border border-indigo-100 hover:bg-indigo-50 transition-colors duration-200 flex items-center space-x-3"
             >
-              <span>{language === "en" ? "🇺🇸" : "🇻🇳"}</span>
-              <span>{language === "en" ? "EN / VI" : "VI / EN"}</span>
-            </button>
-          </div>
+              <span className="text-xl">{language === "en" ? "🇺🇸" : "🇻🇳"}</span>
+              <span className="text-indigo-700">{language === "en" ? "Switch to Vietnamese" : "Chuyển sang tiếng Anh"}</span>
+            </motion.button>
+          </motion.div>
         </motion.div>
       </div>
     </section>
