@@ -45,6 +45,19 @@ const formatTimeDisplay = (hour: number, minute: number) => {
 
 const TIME_OPTIONS = generateTimeOptions();
 
+// Define the explicit type for the database availability record
+interface DatabaseAvailabilityRecord {
+  id: string;
+  artist_id: string;
+  day_of_week: string;
+  start_time: string;
+  end_time: string;
+  is_available: boolean | null;
+  location?: string | null;
+  user_id?: string;
+  role?: string;
+}
+
 const SalonAvailabilityManager = () => {
   const { user, userProfile } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -73,7 +86,6 @@ const SalonAvailabilityManager = () => {
   const fetchExistingAvailability = async () => {
     try {
       setLoading(true);
-      // Fix the TypeScript error by using an explicit type
       const { data, error } = await supabase
         .from('availability')
         .select('*')
@@ -83,16 +95,8 @@ const SalonAvailabilityManager = () => {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        // Use a more specific type that matches what actually comes from the database
-        const availabilityData = data as unknown as Array<{
-          id: string;
-          artist_id: string;
-          day_of_week: string;
-          start_time: string;
-          end_time: string;
-          location: string | null;
-          is_available: boolean;
-        }>;
+        // Explicitly cast the data to our defined type
+        const availabilityData = data as DatabaseAvailabilityRecord[];
         
         if (availabilityData[0].location) {
           setLocation(availabilityData[0].location);
