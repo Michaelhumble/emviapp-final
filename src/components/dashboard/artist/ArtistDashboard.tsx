@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import BookingNotificationsSection from '../notifications/BookingNotificationsSection';
+import ArtistPortfolioGallery from './portfolio/ArtistPortfolioGallery';
 
 const ArtistDashboard = () => {
   const { user } = useAuth();
@@ -33,6 +34,7 @@ const ArtistDashboard = () => {
   return (
     <div className="container mx-auto max-w-7xl px-4 py-6">
       <BookingNotificationsSection />
+      <ArtistPortfolioGallery />
       <ArtistDashboardContent />
     </div>
   );
