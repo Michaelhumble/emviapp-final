@@ -45,27 +45,50 @@ const WeTrustEmotionalSection = () => {
             )}
           </h2>
           
-          <div className="space-y-8">
-            <div className="prose prose-lg max-w-none">
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-                className="bg-primary/5 rounded-xl p-6 border border-primary/10 shadow-sm"
-              >
-                <div className="flex items-center justify-center mb-4">
-                  <div className="bg-primary/10 p-3 rounded-full">
-                    <Bot className="h-6 w-6 text-primary" />
+          {language === "en" ? (
+            <div className="space-y-8">
+              <div className="prose prose-lg max-w-none">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="bg-primary/5 rounded-xl p-6 border border-primary/10 shadow-sm"
+                >
+                  <div className="flex items-center justify-center mb-4">
+                    <div className="bg-primary/10 p-3 rounded-full">
+                      <Bot className="h-6 w-6 text-primary" />
+                    </div>
                   </div>
-                </div>
-                <p className="text-xl font-medium text-center">
-                  ✨ This part of the page is now managed by EmviApp's Smart Assistant.
-                  <br />
-                  You relax. We'll handle it from here.
-                </p>
-              </motion.div>
+                  <p className="text-xl font-medium text-center">
+                    ✨ This part of the page is now managed by EmviApp's Smart Assistant.
+                    <br />
+                    You relax. We'll handle it from here.
+                  </p>
+                </motion.div>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="space-y-8">
+              <div className="prose prose-lg max-w-none">
+                <p className="text-xl leading-relaxed font-serif text-gray-800">
+                  Chúng tôi giúp bạn mang khách hàng đến tận tiệm.<br />
+                  Giúp bạn tìm những thợ giỏi, có kinh nghiệm, và đưa ra những ưu đãi tốt nhất — để bạn quản lý tiệm dễ dàng và đạt hiệu quả cao.
+                </p>
+                
+                <p className="text-xl font-medium text-primary mt-8 flex flex-col items-center">
+                  <span className="inline-flex items-center">
+                    <span className="mr-2 text-2xl">💡</span> Hãy để A.I thông minh của EmviApp lo mọi thứ cho bạn —
+                  </span>
+                  <span>bạn chỉ cần tập trung vào điều mình yêu thích.</span>
+                </p>
+                
+                <p className="text-xl font-semibold text-gray-800 mt-8">
+                  Nếu bạn không dùng thử EmviApp...<br />
+                  <span className="text-primary">đối thủ của bạn sẽ dùng đấy. <span className="text-2xl">😌</span></span>
+                </p>
+              </div>
+            </div>
+          )}
           
           <div className="mt-12 flex justify-center">
             <button
