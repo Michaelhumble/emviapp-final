@@ -49,16 +49,28 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSalon } from "@/context/salon";
 import { Badge } from "@/components/ui/badge";
 
+// Updated to match the Supabase services table schema
 type ServiceItem = {
   id: string;
-  name: string;
+  title: string;           // was 'name' in our type
   price: number;
-  duration: string;
+  duration_minutes: number; // was 'duration' string
+  description?: string;
   category: string;
-  salon_id: string;
+  user_id: string;         // was 'salon_id'
   created_at: string;
   updated_at?: string;
+  image_url?: string;
+  is_visible?: boolean;
 };
+
+// Form state interface
+interface ServiceFormState {
+  title: string;            // updated from 'name'
+  price: string;
+  duration: string;         // we'll convert this to duration_minutes when saving
+  category: string;
+}
 
 const SERVICE_CATEGORIES = [
   "Nails",
@@ -81,8 +93,8 @@ const SalonServiceManager = () => {
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentService, setCurrentService] = useState<ServiceItem | null>(null);
-  const [serviceForm, setServiceForm] = useState({
-    name: '',
+  const [serviceForm, setServiceForm] = useState<ServiceFormState>({
+    title: '',
     price: '',
     duration: '',
     category: 'Nails',
@@ -98,8 +110,8 @@ const SalonServiceManager = () => {
       const { data, error } = await supabase
         .from('services')
         .select('*')
-        .eq('salon_id', currentSalon.id)
-        .order('name', { ascending: true });
+        .eq('user_id', currentSalon.id)
+        .order('title', { ascending: true });
       
       if (error) throw error;
       
@@ -120,7 +132,7 @@ const SalonServiceManager = () => {
   
   const openAddModal = () => {
     setServiceForm({
-      name: '',
+      title: '',
       price: '',
       duration: '',
       category: 'Nails',
@@ -131,15 +143,40 @@ const SalonServiceManager = () => {
   };
   
   const openEditModal = (service: ServiceItem) => {
+    // Convert duration_minutes back to human-readable form
+    const durationStr = parseDurationMinutesToString(service.duration_minutes);
+    
     setServiceForm({
-      name: service.name,
+      title: service.title,
       price: service.price.toString(),
-      duration: service.duration,
+      duration: durationStr,
       category: service.category,
     });
     setIsEditing(true);
     setCurrentService(service);
     setIsServiceModalOpen(true);
+  };
+  
+  // Helper to convert duration string to minutes
+  const parseDurationToMinutes = (duration: string): number => {
+    // Handle "X min" or "X hour(s)" format
+    if (duration.includes('min')) {
+      return parseInt(duration.replace(/\D/g, ''), 10);
+    } else if (duration.includes('hour')) {
+      const hours = parseInt(duration.replace(/\D/g, ''), 10);
+      return hours * 60;
+    }
+    // Default - assume raw minutes
+    return parseInt(duration, 10) || 30; // Default to 30 minutes if parsing fails
+  };
+  
+  // Helper to convert minutes to human-readable duration
+  const parseDurationMinutesToString = (minutes: number): string => {
+    if (minutes >= 60 && minutes % 60 === 0) {
+      const hours = minutes / 60;
+      return `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
+    }
+    return `${minutes} min`;
   };
   
   const handleAddService = async () => {
@@ -148,18 +185,21 @@ const SalonServiceManager = () => {
       return;
     }
     
-    if (!serviceForm.name || !serviceForm.price || !serviceForm.duration) {
+    if (!serviceForm.title || !serviceForm.price || !serviceForm.duration) {
       toast.error("Please fill in all required fields");
       return;
     }
     
     try {
+      const durationMinutes = parseDurationToMinutes(serviceForm.duration);
+      
       const newService = {
-        salon_id: currentSalon.id,
-        name: serviceForm.name,
+        user_id: currentSalon.id,
+        title: serviceForm.title,
         price: parseFloat(serviceForm.price),
-        duration: serviceForm.duration,
+        duration_minutes: durationMinutes,
         category: serviceForm.category,
+        is_visible: true
       };
       
       const { data, error } = await supabase
@@ -174,7 +214,7 @@ const SalonServiceManager = () => {
       }
       
       setIsServiceModalOpen(false);
-      toast.success(`${serviceForm.name} service added successfully`);
+      toast.success(`${serviceForm.title} service added successfully`);
     } catch (err) {
       console.error('Error adding service:', err);
       toast.error('Failed to add service. Please try again.');
@@ -185,10 +225,12 @@ const SalonServiceManager = () => {
     if (!currentService || !currentSalon?.id) return;
     
     try {
+      const durationMinutes = parseDurationToMinutes(serviceForm.duration);
+      
       const updatedService = {
-        name: serviceForm.name,
+        title: serviceForm.title,
         price: parseFloat(serviceForm.price),
-        duration: serviceForm.duration,
+        duration_minutes: durationMinutes,
         category: serviceForm.category,
       };
       
@@ -196,7 +238,7 @@ const SalonServiceManager = () => {
         .from('services')
         .update(updatedService)
         .eq('id', currentService.id)
-        .eq('salon_id', currentSalon.id);
+        .eq('user_id', currentSalon.id);
       
       if (error) throw error;
       
@@ -217,7 +259,7 @@ const SalonServiceManager = () => {
   };
   
   const handleDeleteService = async (service: ServiceItem) => {
-    if (!confirm(`Are you sure you want to delete "${service.name}"?`)) {
+    if (!confirm(`Are you sure you want to delete "${service.title}"?`)) {
       return;
     }
     
@@ -226,12 +268,12 @@ const SalonServiceManager = () => {
         .from('services')
         .delete()
         .eq('id', service.id)
-        .eq('salon_id', currentSalon?.id);
+        .eq('user_id', currentSalon?.id);
       
       if (error) throw error;
       
       setServices(prev => prev.filter(s => s.id !== service.id));
-      toast.success(`${service.name} has been deleted`);
+      toast.success(`${service.title} has been deleted`);
     } catch (err) {
       console.error('Error deleting service:', err);
       toast.error('Failed to delete service. Please try again.');
@@ -240,6 +282,10 @@ const SalonServiceManager = () => {
   
   const formatPrice = (price: number) => {
     return `$${price.toFixed(2)}`;
+  };
+  
+  const formatDuration = (minutes: number) => {
+    return parseDurationMinutesToString(minutes);
   };
   
   const getCategoryColor = (category: string): string => {
@@ -317,13 +363,13 @@ const SalonServiceManager = () => {
                 <TableBody>
                   {services.map(service => (
                     <TableRow key={service.id}>
-                      <TableCell className="font-medium">{service.name}</TableCell>
+                      <TableCell className="font-medium">{service.title}</TableCell>
                       <TableCell>
                         <Badge variant="outline" className={getCategoryColor(service.category)}>
                           {service.category}
                         </Badge>
                       </TableCell>
-                      <TableCell>{service.duration}</TableCell>
+                      <TableCell>{formatDuration(service.duration_minutes)}</TableCell>
                       <TableCell>{formatPrice(service.price)}</TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
@@ -361,13 +407,13 @@ const SalonServiceManager = () => {
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h4 className="font-semibold text-base">{service.name}</h4>
+                        <h4 className="font-semibold text-base">{service.title}</h4>
                         <Badge variant="outline" className={`${getCategoryColor(service.category)} mt-1`}>
                           {service.category}
                         </Badge>
                         <div className="flex items-center mt-2 text-sm text-muted-foreground">
                           <Clock className="h-3.5 w-3.5 mr-1" />
-                          <span>{service.duration}</span>
+                          <span>{formatDuration(service.duration_minutes)}</span>
                         </div>
                         <div className="flex items-center mt-1 text-sm font-medium">
                           <DollarSign className="h-3.5 w-3.5 mr-1" />
@@ -421,8 +467,8 @@ const SalonServiceManager = () => {
               <Input
                 id="serviceName"
                 placeholder="e.g., Gel Manicure"
-                value={serviceForm.name}
-                onChange={(e) => setServiceForm({...serviceForm, name: e.target.value})}
+                value={serviceForm.title}
+                onChange={(e) => setServiceForm({...serviceForm, title: e.target.value})}
               />
             </div>
             <div className="space-y-2">
@@ -463,6 +509,7 @@ const SalonServiceManager = () => {
                 value={serviceForm.duration}
                 onChange={(e) => setServiceForm({...serviceForm, duration: e.target.value})}
               />
+              <p className="text-sm text-muted-foreground">Examples: "30 min", "1 hour", "45 min"</p>
             </div>
           </div>
           <DialogFooter>
