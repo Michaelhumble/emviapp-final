@@ -73,13 +73,13 @@ const MyBookingsPage = () => {
 
       // Transform data to our Booking interface with type safety
       if (data) {
-        // Explicitly checking that data is an array before mapping
-        const bookingsArray = Array.isArray(data) ? data : [];
-        // Explicitly typing the data items as any to avoid the deep instantiation issue
-        const formattedBookings: Booking[] = bookingsArray.map((item: any) => ({
+        // Use explicit type assertion for data to avoid deep type instantiation
+        const bookingsData = data as any[];
+        
+        const formattedBookings: Booking[] = bookingsData.map((item) => ({
           id: item.id,
           provider_name: item.users?.full_name || 'Unknown Provider',
-          provider_id: item.recipient_id, // Using recipient_id instead of provider_id
+          provider_id: item.recipient_id, 
           service_type: item.service_type || 'Unknown Service',
           date: item.date,
           time: item.time || '',
@@ -239,30 +239,6 @@ const MyBookingsPage = () => {
       </div>
     </Layout>
   );
-};
-
-// Define getStatusBadge function that was referenced in the JSX
-const getStatusBadge = (status: string) => {
-  switch (status) {
-    case 'pending':
-      return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">Pending</Badge>;
-    case 'confirmed':
-      return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Confirmed</Badge>;
-    case 'completed':
-      return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Completed</Badge>;
-    case 'cancelled':
-      return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">Cancelled</Badge>;
-    case 'declined':
-      return <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">Declined</Badge>;
-    default:
-      return <Badge variant="outline">{status}</Badge>;
-  }
-};
-
-// Define cancelBooking function that was referenced in the JSX
-const cancelBooking = async (bookingId: string) => {
-  // Implementation would go here
-  console.log(`Canceling booking ${bookingId}`);
 };
 
 export default MyBookingsPage;

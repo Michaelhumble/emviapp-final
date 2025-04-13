@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -78,8 +79,11 @@ const ArtistAvailabilityManager = () => {
       if (error) throw error;
 
       if (data && data.length > 0) {
+        // Use explicit type assertion to avoid deep instantiation
         const existingDays = DAYS_OF_WEEK.map(day => {
-          const existingDay = data.find((d: any) => d.day_of_week === day.value.toString());
+          // Find the existing day in the data
+          const existingDay = (data as any[]).find(d => d.day_of_week === day.value.toString());
+          
           if (existingDay) {
             return {
               id: existingDay.id,
@@ -87,7 +91,7 @@ const ArtistAvailabilityManager = () => {
               start_time: existingDay.start_time,
               end_time: existingDay.end_time,
               active: true,
-              location: existingDay.location
+              location: existingDay.location || userProfile?.location || null
             } as AvailabilityDay;
           } else {
             return {
