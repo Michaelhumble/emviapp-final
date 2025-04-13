@@ -46,11 +46,11 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       salon_name: (data as any).salon_name || '',
       company_name: (data as any).company_name || '',
       preferred_language: data.preferred_language || 'en',
-      profile_views: (data as any).profile_views !== undefined ? Number((data as any).profile_views) : 0,
+      profile_views: typeof (data as any).profile_views === 'number' ? (data as any).profile_views : 0,
       account_type: (data as any).account_type || 'free',
       referral_code: data.referral_code || '',
       affiliate_code: data.referral_code || '', // Map referral_code to affiliate_code for compatibility
-      referral_count: (data as any).referral_count !== undefined ? Number((data as any).referral_count) : 0,
+      referral_count: typeof (data as any).referral_count === 'number' ? (data as any).referral_count : 0,
       booking_url: data.booking_url || '',
       boosted_until: data.boosted_until || null,
       skills: Array.isArray((data as any).skills) ? (data as any).skills : [],
@@ -62,8 +62,8 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       accepts_bookings: Boolean(data.accepts_bookings),
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],
-      years_experience: typeof data.years_experience === 'number' ? data.years_experience : 0,
-      professional_name: data.professional_name || ''
+      years_experience: typeof (data as any).years_experience === 'number' ? (data as any).years_experience : 0,
+      professional_name: (data as any).professional_name || ''
     };
     
     // Also update the cache for faster subsequent access
