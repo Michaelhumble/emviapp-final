@@ -21,7 +21,7 @@ import FreelancersHighlight from "@/components/home/FreelancersHighlight";
 import DynamicListingGrid from "@/components/home/DynamicListingGrid";
 import EmotionalClosingSection from "@/components/home/EmotionalClosingSection";
 import FounderMessage from "@/components/home/FounderMessage";
-import MissingPieceSection from "@/components/home/MissingPieceSection";
+import MissingPieceSection from "@/components/home/missing-piece";
 import EnhancedAIFeatures from "@/components/home/EnhancedAIFeatures";
 import FinalFounderCTA from "@/components/home/FinalFounderCTA";
 
