@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -45,7 +44,6 @@ const formatTimeDisplay = (hour: number, minute: number) => {
 
 const TIME_OPTIONS = generateTimeOptions();
 
-// Define the explicit type for the database availability record
 interface DatabaseAvailabilityRecord {
   id: string;
   artist_id: string;
@@ -87,30 +85,23 @@ const SalonAvailabilityManager = () => {
     try {
       setLoading(true);
       
-      // Use any type first to avoid TypeScript deep instantiation error
-      const query = supabase
+      const { data, error } = await supabase
         .from('availability')
         .select('*')
         .eq('user_id', user!.id)
         .order('day_of_week', { ascending: true });
-        
-      // Explicitly use Promise<any> to avoid TypeScript inference issues
-      const result: Promise<any> = query;
-      const response = await result;
       
-      // Type-cast after the query to fix the instantiation depth issue
-      const data = response.data as DatabaseAvailabilityRecord[] | null;
-      const error = response.error;
-
       if (error) throw error;
 
-      if (data && data.length > 0) {
-        if (data[0].location) {
-          setLocation(data[0].location);
+      const typedData = data as DatabaseAvailabilityRecord[] | null;
+
+      if (typedData && typedData.length > 0) {
+        if (typedData[0].location) {
+          setLocation(typedData[0].location);
         }
         
         const existingDays = DAYS_OF_WEEK.map(day => {
-          const existingDay = data.find(d => d.day_of_week === day.value.toString());
+          const existingDay = typedData.find(d => d.day_of_week === day.value.toString());
           if (existingDay) {
             return {
               id: existingDay.id,

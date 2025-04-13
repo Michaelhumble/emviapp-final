@@ -10,6 +10,7 @@ import { useAssistant } from "@/hooks/useAssistant";
 import { BookingMatch } from "@/services/assistantService";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client"; // Added missing import
 
 export type MessageType = {
   id: string;
