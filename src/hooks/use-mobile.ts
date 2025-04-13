@@ -7,7 +7,13 @@ import { useState, useEffect } from 'react';
  * @returns boolean indicating if viewport is mobile-sized
  */
 export function useIsMobile(breakpoint: number = 768): boolean {
-  const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < breakpoint);
+  // Initialize with a server-safe check
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < breakpoint;
+    }
+    return false;
+  });
 
   useEffect(() => {
     // Function to check if the viewport is mobile sized
@@ -18,12 +24,19 @@ export function useIsMobile(breakpoint: number = 768): boolean {
     // Initial check
     checkIsMobile();
     
-    // Add event listener for window resize
-    window.addEventListener("resize", checkIsMobile);
+    // Add event listener for window resize with debounce
+    let resizeTimer: NodeJS.Timeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(checkIsMobile, 100);
+    };
+    
+    window.addEventListener("resize", handleResize);
     
     // Cleanup
     return () => {
-      window.removeEventListener("resize", checkIsMobile);
+      clearTimeout(resizeTimer);
+      window.removeEventListener("resize", handleResize);
     };
   }, [breakpoint]);
 

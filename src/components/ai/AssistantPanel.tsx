@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -32,8 +31,9 @@ export const AssistantPanel = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { user } = useAuth();
-  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const isScrollingRef = useRef(false);
+  const pendingScrollRef = useRef(false);
 
   // Initial greeting on first open
   useEffect(() => {
@@ -49,65 +49,120 @@ export const AssistantPanel = () => {
     }
   }, [isOpen, messages.length]);
 
+  // Prevent auto-scroll during typing
+  const scrollToBottom = (force = false) => {
+    // Don't interrupt if user is actively typing and not forced
+    if (document.activeElement === inputRef.current && !force) {
+      pendingScrollRef.current = true;
+      return;
+    }
+    
+    // Prevent concurrent scrolls
+    if (isScrollingRef.current && !force) {
+      pendingScrollRef.current = true;
+      return;
+    }
+    
+    isScrollingRef.current = true;
+    pendingScrollRef.current = false;
+    
+    // Scroll the message container to bottom
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ 
+        behavior: "smooth",
+        block: "end"
+      });
+    }
+    
+    // Also ensure the scroll area itself is scrolled to the bottom
+    if (scrollAreaRef.current) {
+      const scrollElement = scrollAreaRef.current;
+      scrollElement.scrollTop = scrollElement.scrollHeight;
+    }
+    
+    // Reset scrolling flag after animation completes
+    setTimeout(() => {
+      isScrollingRef.current = false;
+      if (pendingScrollRef.current) {
+        scrollToBottom(true);
+      }
+    }, 300);
+  };
+
   // Scroll to bottom when messages change or when chat opens
   useEffect(() => {
     if (isOpen) {
+      // Small delay to ensure DOM is updated
       setTimeout(() => {
-        scrollToBottom();
-      }, 50); // Small delay to ensure DOM is updated
+        scrollToBottom(true);
+      }, 100);
     }
   }, [messages, isOpen]);
 
-  // Focus input when opened
+  // Focus input when opened - but don't do this on mobile as it can cause keyboard issues
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !isMobile) {
       setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
     }
-  }, [isOpen]);
+  }, [isOpen, isMobile]);
 
-  // Handle window resize to maintain scroll position
+  // Safe scroll behavior - don't interrupt typing
   useEffect(() => {
-    const handleResize = () => scrollToBottom();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    const handleBlur = () => {
+      // Execute any pending scrolls when input loses focus
+      if (pendingScrollRef.current) {
+        setTimeout(() => scrollToBottom(true), 100);
+      }
+    };
+    
+    inputRef.current?.addEventListener('blur', handleBlur);
+    return () => {
+      inputRef.current?.removeEventListener('blur', handleBlur);
+    };
   }, []);
 
-  // Ensure scroll to bottom when keyboard appears on mobile
+  // Enhanced mobile keyboard handling
   useEffect(() => {
-    if (isMobile) {
-      // For iOS, we need to listen to focus events on the input field
+    if (isMobile && isOpen) {
+      // Visual viewport API for modern browsers (more reliable than resize)
+      const handleVisualViewportResize = () => {
+        // Don't auto-scroll during keyboard appearance to avoid focus loss
+        if (document.activeElement === inputRef.current) {
+          return;
+        }
+        
+        // Otherwise ensure content is visible
+        setTimeout(() => {
+          if (messagesEndRef.current && !isScrollingRef.current) {
+            messagesEndRef.current.scrollIntoView({ block: "end" });
+          }
+        }, 300);
+      };
+      
+      // iOS specific focus handling
       const handleFocus = () => {
-        setTimeout(scrollToBottom, 100);
+        // Delay to let keyboard fully appear
+        setTimeout(() => {
+          // Scroll the input into view
+          inputRef.current?.scrollIntoView({ block: "center" });
+        }, 300);
       };
       
       if (inputRef.current) {
         inputRef.current.addEventListener('focus', handleFocus);
-        return () => {
-          inputRef.current?.removeEventListener('focus', handleFocus);
-        };
       }
       
-      // Handle visibility change (when user switches apps or tabs)
-      const handleVisibilityChange = () => {
-        if (!document.hidden) {
-          setTimeout(scrollToBottom, 300);
-        }
-      };
-      
-      document.addEventListener('visibilitychange', handleVisibilityChange);
-      
-      // Handle iOS keyboard appearance with viewport changes
-      const handleResize = () => {
-        setTimeout(scrollToBottom, 100);
-      };
-      
-      window.addEventListener('resize', handleResize);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', handleVisualViewportResize);
+      }
       
       return () => {
-        document.removeEventListener('visibilitychange', handleVisibilityChange);
-        window.removeEventListener('resize', handleResize);
+        inputRef.current?.removeEventListener('focus', handleFocus);
+        if (window.visualViewport) {
+          window.visualViewport.removeEventListener('resize', handleVisualViewportResize);
+        }
       };
     }
   }, [isMobile, isOpen]);
@@ -129,18 +184,6 @@ export const AssistantPanel = () => {
       }
     }
   }, [matches, messages]);
-
-  const scrollToBottom = () => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-    
-    // Also ensure the scroll area itself is scrolled to the bottom
-    if (scrollAreaRef.current) {
-      const scrollElement = scrollAreaRef.current;
-      scrollElement.scrollTop = scrollElement.scrollHeight;
-    }
-  };
 
   const handleSendMessage = async () => {
     if (!input.trim()) return;
@@ -164,7 +207,7 @@ export const AssistantPanel = () => {
         }
       ]);
       setInput("");
-      scrollToBottom();
+      scrollToBottom(true);
       return;
     }
     
@@ -194,7 +237,7 @@ export const AssistantPanel = () => {
     
     // Force scroll to bottom after adding the typing indicator
     setTimeout(() => {
-      scrollToBottom();
+      scrollToBottom(true);
     }, 50);
     
     try {
@@ -216,7 +259,7 @@ export const AssistantPanel = () => {
       
       // Force scroll to bottom after adding the response
       setTimeout(() => {
-        scrollToBottom();
+        scrollToBottom(true);
       }, 50);
     } catch (error) {
       // Remove typing indicator and show error
@@ -233,7 +276,7 @@ export const AssistantPanel = () => {
       
       // Force scroll to bottom after adding the error message
       setTimeout(() => {
-        scrollToBottom();
+        scrollToBottom(true);
       }, 50);
     }
   };
@@ -243,6 +286,10 @@ export const AssistantPanel = () => {
       e.preventDefault();
       handleSendMessage();
     }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
   };
 
   const handleBookingConfirmation = async (index: number) => {
@@ -398,8 +445,8 @@ export const AssistantPanel = () => {
           </Button>
         </motion.div>
       </DrawerTrigger>
-      <DrawerContent className="fixed inset-x-0 bottom-0 max-h-[85vh] rounded-t-xl focus:outline-none pb-safe-area mobile-chat-panel">
-        <div className="h-full flex flex-col max-h-[85vh]">
+      <DrawerContent className="fixed inset-x-0 bottom-0 max-h-[70vh] rounded-t-xl focus:outline-none mobile-chat-panel">
+        <div className="h-full flex flex-col max-h-[70vh]">
           <div className="flex items-center justify-between p-4 border-b">
             <div className="flex items-center">
               <div className="bg-primary/10 p-2 rounded-full mr-3">
@@ -418,9 +465,8 @@ export const AssistantPanel = () => {
           <div 
             ref={scrollAreaRef}
             className="flex-1 px-4 overflow-y-auto"
-            style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
           >
-            <div className="space-y-4 py-4 w-full max-w-[90vw] mx-auto">
+            <div className="space-y-4 py-4 w-full max-w-[95%] mx-auto">
               {renderMessages()}
               <div ref={messagesEndRef} />
             </div>
@@ -428,13 +474,13 @@ export const AssistantPanel = () => {
           
           <div 
             className="p-4 border-t mt-auto bg-background mobile-safe-bottom"
-            style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}
+            style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
           >
             <div className="flex gap-2">
               <Textarea
                 ref={inputRef}
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
                 placeholder="Ask Little Sunshine..."
                 className="min-h-[52px] resize-none"
@@ -504,7 +550,7 @@ export const AssistantPanel = () => {
               <Textarea
                 ref={inputRef}
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
                 placeholder="Ask Little Sunshine..."
                 className="min-h-[52px] resize-none"
