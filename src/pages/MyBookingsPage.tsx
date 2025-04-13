@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import {
@@ -73,10 +74,10 @@ const MyBookingsPage = () => {
 
       // Transform data to our Booking interface with type safety
       if (data) {
-        // Use explicit type assertion for data to avoid deep type instantiation
-        const bookingsData = data as any[];
+        // Explicitly type as any[] to avoid deep instantiation
+        const rawData: any[] = data;
         
-        const formattedBookings: Booking[] = bookingsData.map((item) => ({
+        const formattedBookings: Booking[] = rawData.map(item => ({
           id: item.id,
           provider_name: item.users?.full_name || 'Unknown Provider',
           provider_id: item.recipient_id, 

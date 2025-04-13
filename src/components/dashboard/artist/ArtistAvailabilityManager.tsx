@@ -79,10 +79,12 @@ const ArtistAvailabilityManager = () => {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        // Use explicit type assertion to avoid deep instantiation
+        // Use type assertion to any[] to avoid deep type instantiation
+        const rawData = data as any[];
+        
         const existingDays = DAYS_OF_WEEK.map(day => {
           // Find the existing day in the data
-          const existingDay = (data as any[]).find(d => d.day_of_week === day.value.toString());
+          const existingDay = rawData.find(d => d.day_of_week === day.value.toString());
           
           if (existingDay) {
             return {
