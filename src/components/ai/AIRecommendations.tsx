@@ -2,6 +2,7 @@
 import { useAuth } from "@/context/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lightbulb } from "lucide-react";
+import { UserRole } from "@/context/auth/types";
 
 const AIRecommendations = () => {
   const { userRole } = useAuth();

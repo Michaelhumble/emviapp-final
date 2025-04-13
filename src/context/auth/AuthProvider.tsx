@@ -25,7 +25,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsNewUser(false);
   };
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string): Promise<{ success: boolean; error?: Error }> => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -44,7 +44,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const signUp = async (email: string, password: string, userData: Partial<UserProfile> = {}) => {
+  const signUp = async (email: string, password: string, userData: Partial<UserProfile> = {}): Promise<{ success: boolean; error?: Error }> => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -161,6 +161,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [user]);
 
+  const updateProfile = async (data: Partial<UserProfile>): Promise<{ success: boolean; error?: Error }> => {
+    try {
+      if (!user || !userProfile) {
+        return { success: false, error: new Error('User not authenticated') };
+      }
+      
+      const updatedProfile = await updateUserProfile({
+        id: userProfile.id,
+        ...data
+      });
+      
+      if (updatedProfile) {
+        setUserProfile(updatedProfile);
+        if (updatedProfile.role && updatedProfile.role !== userRole) {
+          const normalizedRole = normalizeRole(updatedProfile.role);
+          setUserRole(normalizedRole);
+        }
+        return { success: true };
+      }
+      
+      return { success: false, error: new Error('Failed to update profile') };
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error instanceof Error ? error : new Error('Unknown error occurred') 
+      };
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -177,34 +206,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         signOut,
         refreshUserProfile,
         updateUserRole,
-        updateProfile: async (data: Partial<UserProfile>) => {
-          try {
-            if (!user || !userProfile) {
-              return { success: false, error: new Error('User not authenticated') };
-            }
-            
-            const updatedProfile = await updateUserProfile({
-              id: userProfile.id,
-              ...data
-            });
-            
-            if (updatedProfile) {
-              setUserProfile(updatedProfile);
-              if (updatedProfile.role && updatedProfile.role !== userRole) {
-                const normalizedRole = normalizeRole(updatedProfile.role);
-                setUserRole(normalizedRole);
-              }
-              return { success: true };
-            }
-            
-            return { success: false, error: new Error('Failed to update profile') };
-          } catch (error) {
-            return { 
-              success: false, 
-              error: error instanceof Error ? error : new Error('Unknown error occurred') 
-            };
-          }
-        }
+        updateProfile
       }}
     >
       {children}

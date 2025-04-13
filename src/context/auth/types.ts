@@ -17,6 +17,7 @@ export type UserRole =
 
 export interface UserProfile {
   id: string;
+  user_id?: string;
   full_name: string;
   email: string;
   avatar_url?: string;
@@ -45,7 +46,7 @@ export interface UserProfile {
   badges?: any[] | null;
   completed_profile_tasks?: string[] | null;
   
-  // Adding missing properties
+  // Additional properties
   credits?: number;
   total_credits_earned?: number;
   is_premium?: boolean;
@@ -60,6 +61,7 @@ export interface UserProfile {
   salon_name?: string;
   company_name?: string;
   preferences?: string[];
+  profile_completion?: number;
 }
 
 export interface AuthContextType {

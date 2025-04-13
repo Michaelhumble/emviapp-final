@@ -27,7 +27,6 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
     // Use type assertion and optional chaining to safely access properties
     const profile: UserProfile = {
       id: data.id,
-      user_id: data.id, // Add user_id matching id
       full_name: data.full_name || '',
       email: data.email || '',
       phone: data.phone || '',
@@ -63,7 +62,8 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       accepts_bookings: Boolean(data.accepts_bookings),
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],
-      services: Array.isArray((data as any).services) ? (data as any).services : []
+      years_experience: typeof data.years_experience === 'number' ? data.years_experience : 0,
+      professional_name: data.professional_name || ''
     };
     
     // Also update the cache for faster subsequent access

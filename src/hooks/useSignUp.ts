@@ -45,7 +45,7 @@ export const useSignUp = (): UseSignUpReturn => {
 
       // Handle errors
       if (!result.success) {
-        const errorMessage = result.error || 'Failed to create account';
+        const errorMessage = result.error ? result.error.message : 'Failed to create account';
         setError(errorMessage);
         return { success: false, error: errorMessage };
       }
@@ -57,9 +57,9 @@ export const useSignUp = (): UseSignUpReturn => {
         return { success: true };
       }
 
-      return result;
+      return { success: true };
     } catch (err) {
-      const errorMessage = (err as Error).message || 'An unexpected error occurred';
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
       setError(errorMessage);
       return { success: false, error: errorMessage };
     } finally {

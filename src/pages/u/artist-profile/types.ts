@@ -62,7 +62,7 @@ export interface Service {
 export interface PortfolioImage {
   id: string;
   url: string;
-  name?: string;
+  name: string;
   created_at?: string;
   updated_at?: string;
   description?: string;

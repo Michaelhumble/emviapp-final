@@ -37,7 +37,6 @@ export const normalizeRole = (role: UserRole | string | null): UserRole => {
       return 'freelancer';
       
     case 'supplier':
-    case 'vendor':
       return 'supplier';
     
     case 'beauty supplier':
@@ -50,6 +49,9 @@ export const normalizeRole = (role: UserRole | string | null): UserRole => {
     case 'booth renter':
     case 'chair renter':
       return 'renter';
+      
+    case 'vendor':
+      return 'vendor';
       
     default:
       // If it's already a valid UserRole, return it

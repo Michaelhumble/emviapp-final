@@ -2,21 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile } from "@/types/profile";
-
-export interface PortfolioImage {
-  id: string;
-  url: string;
-  name?: string;
-}
-
-export interface Service {
-  id: string;
-  title: string;
-  description: string | null;
-  price: number;
-  duration_minutes: number;
-  is_visible: boolean;
-}
+import { PortfolioImage, Service } from "../types";
 
 export const useArtistProfileData = (username: string | undefined) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -113,7 +99,7 @@ export const useArtistProfileData = (username: string | undefined) => {
             portfolioData.map(item => ({
               id: item.id,
               url: item.image_url,
-              name: item.title
+              name: item.title || ''
             }))
           );
         }
@@ -127,7 +113,23 @@ export const useArtistProfileData = (username: string | undefined) => {
           .order('price', { ascending: true });
           
         if (servicesData) {
-          setServices(servicesData);
+          // Map the services data to match the Service interface
+          const mappedServices = servicesData.map((service: any) => ({
+            id: service.id,
+            name: service.title || '', // Map title to name for compatibility
+            title: service.title || '',
+            description: service.description,
+            price: service.price,
+            price_type: service.price_type,
+            duration: service.duration,
+            duration_minutes: service.duration_minutes,
+            image_url: service.image_url,
+            category: service.category,
+            created_at: service.created_at,
+            updated_at: service.updated_at
+          }));
+          
+          setServices(mappedServices);
         }
       }
     } catch (err) {

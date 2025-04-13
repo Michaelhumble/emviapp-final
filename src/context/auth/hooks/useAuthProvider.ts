@@ -1,3 +1,4 @@
+
 // Make sure the file uses proper TypeScript with proper data access
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,7 +11,7 @@ export const useAuthProvider = (): AuthContextType => {
   const [session, setSession] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const [userRole, setUserRole] = useState<UserRole>(null);
   const [loading, setLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -99,24 +100,26 @@ export const useAuthProvider = (): AuthContextType => {
   }, []);
   
   // Sign in with email/password
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string): Promise<{ success: boolean; error?: Error }> => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
       
-      if (error) throw error;
+      if (error) {
+        return { success: false, error: new Error(error.message) };
+      }
       
-      return data;
+      return { success: true };
     } catch (error: any) {
       toast.error(error.message || 'Error signing in');
-      throw error;
+      return { success: false, error: new Error(error.message || 'Error signing in') };
     }
   };
   
   // Sign up with email/password
-  const signUp = async (email: string, password: string, userData?: Partial<UserProfile>) => {
+  const signUp = async (email: string, password: string, userData?: Partial<UserProfile>): Promise<{ success: boolean; error?: Error }> => {
     try {
       // Register new user with Supabase Auth
       const { data, error } = await supabase.auth.signUp({
@@ -127,7 +130,9 @@ export const useAuthProvider = (): AuthContextType => {
         }
       });
       
-      if (error) throw error;
+      if (error) {
+        return { success: false, error: new Error(error.message) };
+      }
       
       // Create user profile record
       if (data?.user) {
@@ -140,13 +145,13 @@ export const useAuthProvider = (): AuthContextType => {
         });
         
         setIsNewUser(true);
-        return { user: data.user, error: null };
+        return { success: true };
       }
       
-      return { user: data?.user || null, error: null };
+      return { success: true };
     } catch (error: any) {
       toast.error(error.message || 'Error signing up');
-      return { user: null, error: error };
+      return { success: false, error: new Error(error.message || 'Error signing up') };
     }
   };
   
@@ -162,10 +167,10 @@ export const useAuthProvider = (): AuthContextType => {
   };
   
   // Update user profile
-  const updateProfile = async (data: Partial<UserProfile>) => {
+  const updateProfile = async (data: Partial<UserProfile>): Promise<{ success: boolean; error?: Error }> => {
     if (!user?.id) {
       toast.error('You must be logged in to update your profile');
-      return null;
+      return { success: false, error: new Error('You must be logged in to update your profile') };
     }
     
     try {
@@ -182,10 +187,10 @@ export const useAuthProvider = (): AuthContextType => {
         }
       }
       
-      return updatedProfile;
+      return { success: true };
     } catch (error: any) {
       toast.error(error.message || 'Error updating profile');
-      throw error;
+      return { success: false, error: new Error(error.message || 'Error updating profile') };
     }
   };
   
@@ -212,13 +217,13 @@ export const useAuthProvider = (): AuthContextType => {
   };
   
   // Set user role
-  const setUserRoleAction = async (role: UserRole) => {
+  const updateUserRole = async (role: UserRole) => {
     if (!userProfile?.id) return;
     
     try {
       const updatedProfile = await updateUserProfile({
         id: userProfile.id,
-        role: role as string // Convert enum to string for DB
+        role
       });
       
       if (updatedProfile) {
@@ -246,16 +251,7 @@ export const useAuthProvider = (): AuthContextType => {
     signOut,
     signUp,
     updateUserRole,
-    updateProfile: async (data: Partial<UserProfile>) => {
-      try {
-        // Implementation would go here
-        return { success: true };
-      } catch (error) {
-        return { 
-          success: false, 
-          error: error instanceof Error ? error : new Error('Unknown error occurred') 
-        };
-      }
-    }
+    updateProfile,
+    refreshUserProfile
   };
 };

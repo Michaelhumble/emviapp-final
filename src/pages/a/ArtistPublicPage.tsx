@@ -115,7 +115,7 @@ const ArtistPublicPage = () => {
               portfolioData.map(item => ({
                 id: item.id,
                 url: item.image_url,
-                name: item.title
+                name: item.title || '' // Ensure name is always provided
               }))
             );
           }
@@ -128,7 +128,23 @@ const ArtistPublicPage = () => {
             .order('price', { ascending: true });
             
           if (servicesData) {
-            setServices(servicesData);
+            // Map the services data to match the Service interface
+            const mappedServices = servicesData.map((service: any) => ({
+              id: service.id,
+              name: service.title || '', // Map title to name for compatibility
+              title: service.title || '',
+              description: service.description,
+              price: service.price,
+              price_type: service.price_type,
+              duration: service.duration,
+              duration_minutes: service.duration_minutes,
+              image_url: service.image_url,
+              category: service.category,
+              created_at: service.created_at,
+              updated_at: service.updated_at
+            }));
+            
+            setServices(mappedServices);
           }
         }
       } catch (err) {
