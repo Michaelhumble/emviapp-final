@@ -1,224 +1,191 @@
 
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React from 'react';
+import { useParams, Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
-import ImageWithFallback from '@/components/ui/ImageWithFallback';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Loader2, MapPin, DollarSign, Calendar, ArrowRight, Phone, Mail } from 'lucide-react';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
+import { MapPin, DollarSign, Calendar, CheckCircle, Info, Phone, Mail, User, ArrowLeft } from 'lucide-react';
+import { BoothRental } from '@/types/booth';
 
-// Type definition for a booth rental
-interface BoothRental {
-  id: string;
-  title: string;
-  description: string;
-  location: string;
-  price: number;
-  priceUnit: 'day' | 'week' | 'month';
-  imageUrl: string;
-  available: boolean;
-  availableFrom: string;
-  features: string[];
-  contactName: string;
-  contactEmail: string;
-  contactPhone: string;
-  salonName: string;
-}
-
-// Placeholder booth data based on ID
-const getBoothData = (id: string): BoothRental => {
-  // In a real app, this would fetch from a database
-  return {
-    id,
-    title: `Premium Salon Booth #${id}`,
-    description: `This spacious booth rental is perfect for beauty professionals looking for a prime location. Booth #${id} features excellent lighting, ample storage, and a modern design. Located in a high-traffic area with established clientele.`,
-    location: 'Downtown Fashion District, Los Angeles, CA',
-    price: 250 + (parseInt(id) * 25),
+const BoothDetail = () => {
+  const { id } = useParams<{ id: string }>();
+  
+  // Placeholder booth data
+  const boothData: BoothRental = {
+    id: id || '1',
+    title: 'Premium Salon Booth #1',
+    description: 'This spacious booth is perfect for a nail tech, hair stylist, or esthetician. Located in a high-traffic area with great natural lighting. The booth includes a styling chair, cabinet storage, and shared access to a washing station. The salon provides free WiFi, coffee for clients, and has a modern, inviting atmosphere. We have a loyal client base and get excellent foot traffic from the adjacent shopping center.',
+    location: 'Downtown, Los Angeles, CA',
+    price: 275,
     priceUnit: 'week',
-    imageUrl: `https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800`,
+    imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800',
     available: true,
-    availableFrom: '2025-05-01',
+    availableFrom: '2023-05-01',
     features: [
-      'Professional styling chair',
-      'Premium shampoo bowl',
+      'Private workspace',
       'Storage cabinet',
       'Free WiFi',
-      'Utilities included',
       'Reception services',
-      'Parking available',
-      'Marketing support'
+      'Utilities included',
+      'Prime location',
+      'Product retail opportunity',
+      'Free parking'
     ],
     contactName: 'Sarah Johnson',
     contactEmail: 'sarah@beautysalon.com',
     contactPhone: '(213) 555-1234',
-    salonName: 'Elegance Beauty Salon'
+    salonName: 'Elegance Beauty Salon',
+    salonId: 'salon-123'
   };
-};
 
-const BoothDetail = () => {
-  const { id } = useParams<{ id: string }>();
-  const [loading, setLoading] = useState(true);
-  const [booth, setBooth] = useState<BoothRental | null>(null);
+  const formatPriceUnit = (unit: 'day' | 'week' | 'month') => {
+    switch(unit) {
+      case 'day': return 'per day';
+      case 'week': return 'per week';
+      case 'month': return 'per month';
+      default: return unit;
+    }
+  };
 
-  useEffect(() => {
-    // Simulate API loading
-    setLoading(true);
-    setTimeout(() => {
-      if (id) {
-        const boothData = getBoothData(id);
-        setBooth(boothData);
-      }
-      setLoading(false);
-    }, 800);
-  }, [id]);
-
-  if (loading) {
-    return (
-      <Layout>
-        <div className="container mx-auto py-10 px-4">
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-10 w-10 animate-spin text-primary" />
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-
-  if (!booth) {
-    return (
-      <Layout>
-        <div className="container mx-auto py-10 px-4">
-          <Card>
-            <CardContent className="py-10">
-              <div className="text-center">
-                <h2 className="text-2xl font-bold">Booth Not Found</h2>
-                <p className="mt-2 text-muted-foreground">
-                  The booth you're looking for doesn't exist or has been removed.
-                </p>
-                <Button className="mt-6" onClick={() => window.history.back()}>
-                  Go Back
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </Layout>
-    );
-  }
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  };
 
   return (
     <Layout>
       <div className="container mx-auto py-10 px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Main content - 2/3 width on desktop */}
-          <div className="md:col-span-2 space-y-6">
-            <Card>
-              <div className="aspect-video w-full overflow-hidden rounded-t-lg">
-                <ImageWithFallback
-                  src={booth.imageUrl}
-                  alt={booth.title}
-                  className="w-full h-full object-cover"
-                  fallbackImage="https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800"
-                />
-              </div>
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-2xl">{booth.title}</CardTitle>
-                    <CardDescription className="flex items-center mt-1">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      {booth.location}
-                    </CardDescription>
-                  </div>
-                  <Badge 
-                    variant={booth.available ? "success" : "destructive"}
-                    className={booth.available ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}
-                  >
-                    {booth.available ? 'Available' : 'Unavailable'}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Description</h3>
-                  <p className="text-muted-foreground">{booth.description}</p>
-                </div>
-                
-                <Separator />
-                
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Features</h3>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {booth.features.map((feature, index) => (
-                      <li key={index} className="flex items-center">
-                        <ArrowRight className="h-4 w-4 mr-2 text-primary" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                
-                <Separator />
-                
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Availability</h3>
-                  <div className="flex items-center">
-                    <Calendar className="h-5 w-5 mr-2 text-primary" />
-                    <span>Available from {new Date(booth.availableFrom).toLocaleDateString()}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+        <div className="mb-6">
+          <Link to="/booths" className="flex items-center text-muted-foreground hover:text-primary transition-colors mb-4">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to all booth rentals
+          </Link>
+          <h1 className="text-3xl font-bold">{boothData.title}</h1>
+          <div className="flex items-center mt-2">
+            <MapPin className="h-4 w-4 text-muted-foreground mr-1" />
+            <span className="text-muted-foreground">{boothData.location}</span>
+            <Badge 
+              variant={boothData.available ? "outline" : "destructive"} 
+              className={
+                boothData.available 
+                  ? "ml-4 bg-green-50 text-green-700 border-green-200" 
+                  : "ml-4"
+              }
+            >
+              {boothData.available ? 'Available' : 'Unavailable'}
+            </Badge>
           </div>
-          
-          {/* Sidebar - 1/3 width on desktop */}
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-xl">Rental Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Price:</span>
-                  <div className="flex items-center font-semibold text-lg">
-                    <DollarSign className="h-5 w-5 mr-1 text-primary" />
-                    {booth.price}/{booth.priceUnit}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-8">
+            <div className="rounded-lg overflow-hidden">
+              <ImageWithFallback
+                src={boothData.imageUrl}
+                alt={boothData.title}
+                className="w-full h-[300px] md:h-[400px] object-cover"
+              />
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">About This Booth</h2>
+              <p className="text-gray-700">{boothData.description}</p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">Features & Amenities</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {boothData.features.map((feature, index) => (
+                  <div key={index} className="flex items-center">
+                    <CheckCircle className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
+                    <span>{feature}</span>
                   </div>
-                </div>
-                <Separator />
-                <div>
-                  <Button className="w-full">Contact About This Booth</Button>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-xl">Contact Information</CardTitle>
-                <CardDescription>{booth.salonName}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center">
-                  <Phone className="h-4 w-4 mr-2 text-primary" />
-                  <span>{booth.contactPhone}</span>
-                </div>
-                <div className="flex items-center">
-                  <Mail className="h-4 w-4 mr-2 text-primary" />
-                  <span>{booth.contactEmail}</span>
-                </div>
-                <Separator />
-                <div>
-                  <Button variant="outline" className="w-full">
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">Salon Information</h2>
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-medium mb-2">{boothData.salonName}</h3>
+                  <p className="text-muted-foreground mb-4">
+                    This booth is located within {boothData.salonName}, a well-established salon in {boothData.location.split(',')[0]}.
+                  </p>
+                  <Button variant="outline" className="w-full sm:w-auto">
                     View Salon Profile
                   </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center text-2xl font-bold mb-2">
+                  <DollarSign className="h-6 w-6 text-primary" />
+                  ${boothData.price} {formatPriceUnit(boothData.priceUnit)}
+                </div>
+                
+                <div className="flex items-center mb-6">
+                  <Calendar className="h-5 w-5 text-muted-foreground mr-2" />
+                  <span>Available from {formatDate(boothData.availableFrom)}</span>
+                </div>
+
+                <Button className="w-full mb-4">Contact About This Booth</Button>
+                <Button variant="outline" className="w-full">Schedule a Viewing</Button>
+                
+                <div className="mt-6 p-4 rounded-lg bg-blue-50 border border-blue-200">
+                  <div className="flex">
+                    <Info className="h-5 w-5 text-blue-500 mr-2 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-blue-700">
+                      This booth is currently available. Contact the salon owner quickly as booth rentals are in high demand.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="text-lg font-medium mb-4">Contact Information</h3>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center">
+                    <User className="h-5 w-5 text-muted-foreground mr-3" />
+                    <div>
+                      <p className="font-medium">{boothData.contactName}</p>
+                      <p className="text-sm text-muted-foreground">Salon Owner</p>
+                    </div>
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div className="flex items-center">
+                    <Phone className="h-5 w-5 text-muted-foreground mr-3" />
+                    <div>
+                      <p className="font-medium">{boothData.contactPhone}</p>
+                      <p className="text-sm text-muted-foreground">Call or Text</p>
+                    </div>
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div className="flex items-center">
+                    <Mail className="h-5 w-5 text-muted-foreground mr-3" />
+                    <div>
+                      <p className="font-medium">{boothData.contactEmail}</p>
+                      <p className="text-sm text-muted-foreground">Email</p>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>

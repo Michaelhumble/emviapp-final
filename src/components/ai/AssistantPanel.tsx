@@ -46,10 +46,10 @@ export const AssistantPanel = () => {
     }
   }, [isOpen, messages.length]);
 
-  // Scroll to bottom when messages change
+  // Scroll to bottom when messages change or when chat opens
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    scrollToBottom();
+  }, [messages, isOpen]);
 
   // Focus input when opened
   useEffect(() => {
@@ -59,6 +59,36 @@ export const AssistantPanel = () => {
       }, 100);
     }
   }, [isOpen]);
+
+  // Handle window resize to maintain scroll position
+  useEffect(() => {
+    const handleResize = () => scrollToBottom();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Ensure scroll to bottom when keyboard appears on mobile
+  useEffect(() => {
+    if (isMobile) {
+      const handleVisibilityChange = () => {
+        if (!document.hidden) {
+          setTimeout(scrollToBottom, 300);
+        }
+      };
+      
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+      window.addEventListener('resize', handleVisibilityChange);
+      
+      return () => {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        window.removeEventListener('resize', handleVisibilityChange);
+      };
+    }
+  }, [isMobile]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   // Watch for booking matches
   useEffect(() => {
@@ -323,9 +353,9 @@ export const AssistantPanel = () => {
           <Sparkles className="h-6 w-6" />
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="h-[80vh]">
-        <div className="h-full flex flex-col p-4">
-          <div className="flex items-center justify-between mb-4">
+      <DrawerContent className="fixed bottom-0 inset-x-0 max-h-[85vh] pb-safe-area focus:outline-none">
+        <div className="h-full flex flex-col max-h-[85vh]">
+          <div className="flex items-center justify-between p-4 border-b">
             <div className="flex items-center">
               <div className="bg-primary/10 p-2 rounded-full mr-3">
                 <Sparkles className="h-5 w-5 text-primary" />
@@ -337,31 +367,33 @@ export const AssistantPanel = () => {
             </Button>
           </div>
           
-          <ScrollArea className="flex-1 pr-4">
+          <ScrollArea className="flex-1 px-4 pb-safe-area overflow-y-auto">
             <div className="space-y-4 py-4">
               {renderMessages()}
               <div ref={messagesEndRef} />
             </div>
           </ScrollArea>
           
-          <div className="mt-4 flex gap-2">
-            <Textarea
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Ask Little Sunshine..."
-              className="min-h-[52px] resize-none"
-              disabled={isLoading}
-            />
-            <Button 
-              onClick={handleSendMessage} 
-              size="icon" 
-              className="h-[52px] w-[52px]"
-              disabled={isLoading || !input.trim()}
-            >
-              <Send className="h-5 w-5" />
-            </Button>
+          <div className="p-4 border-t mt-auto bg-background">
+            <div className="flex gap-2">
+              <Textarea
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Ask Little Sunshine..."
+                className="min-h-[52px] resize-none"
+                disabled={isLoading}
+              />
+              <Button 
+                onClick={handleSendMessage} 
+                size="icon" 
+                className="h-[52px] w-[52px]"
+                disabled={isLoading || !input.trim()}
+              >
+                <Send className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
         </div>
       </DrawerContent>
@@ -378,7 +410,7 @@ export const AssistantPanel = () => {
           <Sparkles className="h-6 w-6" />
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-[380px] sm:w-[440px] p-0 border-l-purple-100">
+      <SheetContent className="w-[380px] sm:w-[440px] p-0 border-l-purple-100 flex flex-col h-[85vh] fixed bottom-0 right-0 rounded-tl-2xl rounded-bl-2xl rounded-tr-none rounded-br-none">
         <div className="h-full flex flex-col">
           <div className="border-b p-4 flex items-center justify-between">
             <div className="flex items-center">
@@ -395,31 +427,33 @@ export const AssistantPanel = () => {
             </Button>
           </div>
           
-          <ScrollArea className="flex-1 p-4">
+          <ScrollArea className="flex-1 p-4 overflow-y-auto">
             <div className="space-y-4 py-4">
               {renderMessages()}
               <div ref={messagesEndRef} />
             </div>
           </ScrollArea>
           
-          <div className="border-t p-4 flex gap-2">
-            <Textarea
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Ask Little Sunshine..."
-              className="min-h-[52px] resize-none"
-              disabled={isLoading}
-            />
-            <Button 
-              onClick={handleSendMessage} 
-              size="icon" 
-              className="h-[52px] w-[52px]"
-              disabled={isLoading || !input.trim()}
-            >
-              <Send className="h-5 w-5" />
-            </Button>
+          <div className="border-t p-4 mt-auto bg-background">
+            <div className="flex gap-2">
+              <Textarea
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Ask Little Sunshine..."
+                className="min-h-[52px] resize-none"
+                disabled={isLoading}
+              />
+              <Button 
+                onClick={handleSendMessage} 
+                size="icon" 
+                className="h-[52px] w-[52px]"
+                disabled={isLoading || !input.trim()}
+              >
+                <Send className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
         </div>
       </SheetContent>

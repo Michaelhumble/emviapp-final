@@ -1,292 +1,323 @@
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Toggle } from "@/components/ui/toggle";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/context/auth";
-import { Calendar, Clock, Check, Save } from "lucide-react";
-import { AvailabilityDay, AvailabilityRecord } from "@/types/availability";
+import React, { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/auth';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Calendar, ChevronDown, Clock, Plus } from 'lucide-react';
 
-const DAYS_OF_WEEK = [
-  { name: "Sunday", value: 0 },
-  { name: "Monday", value: 1 },
-  { name: "Tuesday", value: 2 },
-  { name: "Wednesday", value: 3 },
-  { name: "Thursday", value: 4 },
-  { name: "Friday", value: 5 },
-  { name: "Saturday", value: 6 }
+interface AvailabilityDay {
+  id: string;
+  day_of_week: string;
+  start_time: string;
+  end_time: string;
+  is_available: boolean;
+  artist_id: string;
+}
+
+interface DayOption {
+  value: string;
+  label: string;
+}
+
+const dayOptions: DayOption[] = [
+  { value: '0', label: 'Sunday' },
+  { value: '1', label: 'Monday' },
+  { value: '2', label: 'Tuesday' },
+  { value: '3', label: 'Wednesday' },
+  { value: '4', label: 'Thursday' },
+  { value: '5', label: 'Friday' },
+  { value: '6', label: 'Saturday' },
 ];
 
-const generateTimeOptions = () => {
-  const times = [];
-  for (let hour = 0; hour < 24; hour++) {
-    for (let minute = 0; minute < 60; minute += 30) {
-      const h = hour.toString().padStart(2, '0');
-      const m = minute.toString().padStart(2, '0');
-      const time = `${h}:${m}`;
-      const label = formatTimeDisplay(hour, minute);
-      times.push({ value: time, label });
-    }
-  }
-  return times;
-};
-
-const formatTimeDisplay = (hour: number, minute: number) => {
-  const period = hour >= 12 ? 'PM' : 'AM';
-  const displayHour = hour % 12 || 12;
-  return `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`;
-};
-
-const TIME_OPTIONS = generateTimeOptions();
+const timeOptions = Array.from({ length: 24 }, (_, i) => {
+  const hour = i;
+  const hourFormatted = hour % 12 === 0 ? 12 : hour % 12;
+  const ampm = hour < 12 ? 'AM' : 'PM';
+  const timeValue = `${hour.toString().padStart(2, '0')}:00`;
+  const timeLabel = `${hourFormatted}:00 ${ampm}`;
+  return { value: timeValue, label: timeLabel };
+});
 
 const ArtistAvailabilityManager = () => {
-  const { user, userProfile } = useAuth();
+  const { user } = useAuth();
+  const [availableDays, setAvailableDays] = useState<AvailabilityDay[]>([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [availability, setAvailability] = useState<AvailabilityDay[]>([]);
   
+  // Track selected values for the new availability entry
+  const [selectedDay, setSelectedDay] = useState<DayOption | null>(null);
+  const [selectedStartTime, setSelectedStartTime] = useState<string | null>(null);
+  const [selectedEndTime, setSelectedEndTime] = useState<string | null>(null);
+
   useEffect(() => {
-    if (user) {
-      initializeAvailability();
-      fetchExistingAvailability();
+    if (user?.id) {
+      fetchAvailability();
     }
   }, [user]);
 
-  const initializeAvailability = () => {
-    const defaultAvailability: AvailabilityDay[] = DAYS_OF_WEEK.map(day => ({
-      day_of_week: day.value,
-      start_time: '09:00',
-      end_time: '17:00',
-      active: false,
-      location: userProfile?.location || null
-    }));
-    setAvailability(defaultAvailability);
-  };
-
-  const fetchExistingAvailability = async () => {
+  const fetchAvailability = async () => {
+    if (!user?.id) return;
+    
     try {
       setLoading(true);
-      const { data: rawData, error } = await supabase
+      const { data, error } = await supabase
         .from('availability')
         .select('*')
-        .eq('user_id', user!.id)
-        .order('day_of_week', { ascending: true });
-
+        .eq('artist_id', user.id)
+        .order('day_of_week');
+      
       if (error) throw error;
-
-      if (rawData && rawData.length > 0) {
-        // Skip complex type inference by using any and for loop
-        const existingDays: AvailabilityDay[] = [];
-        
-        for (const day of DAYS_OF_WEEK) {
-          // Find the existing day in the data
-          const existingDay = (rawData as any[]).find(d => 
-            d.day_of_week === day.value.toString()
-          );
-          
-          if (existingDay) {
-            existingDays.push({
-              id: existingDay.id,
-              day_of_week: day.value,
-              start_time: existingDay.start_time,
-              end_time: existingDay.end_time,
-              active: true,
-              location: existingDay.location || userProfile?.location || null
-            });
-          } else {
-            existingDays.push({
-              day_of_week: day.value,
-              start_time: '09:00',
-              end_time: '17:00',
-              active: false,
-              location: userProfile?.location || null
-            });
-          }
-        }
-        
-        setAvailability(existingDays);
-      }
+      
+      // Use type assertion to fix deep type instantiation issue
+      const typedData = data as any[];
+      
+      // Map the data to the correct interface
+      const availabilityRecords: AvailabilityDay[] = typedData.map(item => ({
+        id: item.id,
+        day_of_week: item.day_of_week,
+        start_time: item.start_time,
+        end_time: item.end_time,
+        is_available: item.is_available,
+        artist_id: item.artist_id
+      }));
+      
+      setAvailableDays(availabilityRecords);
     } catch (error) {
       console.error('Error fetching availability:', error);
-      toast.error('Failed to load your availability settings');
+      toast.error('Failed to load your availability');
     } finally {
       setLoading(false);
     }
   };
 
-  const toggleDay = (index: number) => {
-    const newAvailability = [...availability];
-    newAvailability[index].active = !newAvailability[index].active;
-    setAvailability(newAvailability);
-  };
-
-  const updateTime = (index: number, field: 'start_time' | 'end_time', value: string) => {
-    const newAvailability = [...availability];
-    newAvailability[index][field] = value;
-    setAvailability(newAvailability);
-  };
-
-  const saveAvailability = async () => {
-    if (!user) return;
+  const addAvailability = async () => {
+    if (!user?.id || !selectedDay || !selectedStartTime || !selectedEndTime) {
+      toast.error('Please select day and times');
+      return;
+    }
     
-    setSaving(true);
     try {
-      const activeDays = availability.filter(day => day.active);
-      
-      if (activeDays.length === 0) {
-        toast.warning('Please select at least one available day');
-        setSaving(false);
-        return;
-      }
-
-      const { error: deleteError } = await supabase
+      const { data, error } = await supabase
         .from('availability')
-        .delete()
-        .eq('user_id', user.id);
-        
-      if (deleteError) throw deleteError;
+        .insert({
+          artist_id: user.id,
+          day_of_week: selectedDay.value,
+          start_time: selectedStartTime,
+          end_time: selectedEndTime,
+          is_available: true
+        })
+        .select()
+        .single();
       
-      const availabilityRecords: AvailabilityRecord[] = activeDays.map(day => ({
-        user_id: user.id,
-        artist_id: user.id,
-        role: userProfile?.role || 'artist',
-        day_of_week: day.day_of_week.toString(),
-        start_time: day.start_time,
-        end_time: day.end_time,
-        location: day.location || userProfile?.location || null,
-        is_available: true
-      }));
+      if (error) throw error;
       
-      const { error: insertError } = await supabase
-        .from('availability')
-        .insert(availabilityRecords);
-        
-      if (insertError) throw insertError;
+      // Add the new availability to the state
+      setAvailableDays(prev => [...prev, {
+        id: data.id,
+        day_of_week: data.day_of_week,
+        start_time: data.start_time,
+        end_time: data.end_time,
+        is_available: data.is_available,
+        artist_id: data.artist_id
+      }]);
       
-      toast.success('Availability saved successfully!');
+      // Reset selections
+      setSelectedDay(null);
+      setSelectedStartTime(null);
+      setSelectedEndTime(null);
+      
+      toast.success('Availability added');
     } catch (error) {
-      console.error('Error saving availability:', error);
-      toast.error('Failed to save availability');
-    } finally {
-      setSaving(false);
+      console.error('Error adding availability:', error);
+      toast.error('Failed to add availability');
     }
   };
 
-  const isTimeValid = (startTime: string, endTime: string) => {
-    return startTime < endTime;
+  const toggleAvailability = async (id: string, isCurrentlyAvailable: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('availability')
+        .update({ is_available: !isCurrentlyAvailable })
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      // Update local state
+      setAvailableDays(prev => 
+        prev.map(day => 
+          day.id === id 
+            ? { ...day, is_available: !day.is_available } 
+            : day
+        )
+      );
+      
+      toast.success(`Availability ${isCurrentlyAvailable ? 'paused' : 'resumed'}`);
+    } catch (error) {
+      console.error('Error toggling availability:', error);
+      toast.error('Failed to update availability');
+    }
+  };
+
+  const removeAvailability = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('availability')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      // Remove from local state
+      setAvailableDays(prev => prev.filter(day => day.id !== id));
+      
+      toast.success('Availability removed');
+    } catch (error) {
+      console.error('Error removing availability:', error);
+      toast.error('Failed to remove availability');
+    }
+  };
+
+  const getDayLabel = (dayValue: string) => {
+    const day = dayOptions.find(d => d.value === dayValue);
+    return day ? day.label : 'Unknown';
+  };
+
+  const formatTime = (time: string) => {
+    const [hours] = time.split(':');
+    const hour = parseInt(hours, 10);
+    const hourFormatted = hour % 12 === 0 ? 12 : hour % 12;
+    const ampm = hour < 12 ? 'AM' : 'PM';
+    return `${hourFormatted}:00 ${ampm}`;
   };
 
   return (
-    <Card className="w-full">
+    <Card>
       <CardHeader>
-        <CardTitle className="flex items-center text-xl">
-          <Calendar className="mr-2 h-5 w-5 text-primary" />
-          My Availability
+        <CardTitle className="text-xl flex items-center">
+          <Calendar className="mr-2 h-5 w-5" />
+          Availability
         </CardTitle>
-        <CardDescription>
-          Set your working hours to help clients book appointments during your available times
-        </CardDescription>
       </CardHeader>
       <CardContent>
         {loading ? (
-          <div className="flex justify-center py-8">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-          </div>
+          <div className="py-6 text-center">Loading your availability...</div>
         ) : (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {availability.map((day, index) => (
-                <div key={index} className={`p-4 rounded-lg border ${day.active ? 'border-primary bg-primary/5' : 'border-gray-200'}`}>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-medium">{DAYS_OF_WEEK[index].name}</h3>
-                    <Toggle 
-                      pressed={day.active} 
-                      onPressedChange={() => toggleDay(index)}
-                      aria-label={`Toggle ${DAYS_OF_WEEK[index].name}`}
-                    >
-                      {day.active ? 'Available' : 'Unavailable'}
-                    </Toggle>
-                  </div>
-                  
-                  {day.active && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-2">
-                          <Label htmlFor={`start-time-${index}`} className="flex items-center">
-                            <Clock className="mr-1 h-3 w-3" /> Start Time
-                          </Label>
-                          <Select
-                            value={day.start_time}
-                            onValueChange={(value) => updateTime(index, 'start_time', value)}
-                            disabled={!day.active}
-                          >
-                            <SelectTrigger id={`start-time-${index}`}>
-                              <SelectValue placeholder="Select start time" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {TIME_OPTIONS.map((time) => (
-                                <SelectItem key={`start-${index}-${time.value}`} value={time.value}>
-                                  {time.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label htmlFor={`end-time-${index}`} className="flex items-center">
-                            <Clock className="mr-1 h-3 w-3" /> End Time
-                          </Label>
-                          <Select
-                            value={day.end_time}
-                            onValueChange={(value) => updateTime(index, 'end_time', value)}
-                            disabled={!day.active}
-                          >
-                            <SelectTrigger id={`end-time-${index}`}>
-                              <SelectValue placeholder="Select end time" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {TIME_OPTIONS.map((time) => (
-                                <SelectItem key={`end-${index}-${time.value}`} value={time.value}>
-                                  {time.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+          <>
+            <div className="space-y-4 mb-6">
+              {availableDays.length === 0 ? (
+                <div className="py-4 text-center text-muted-foreground">
+                  No availability added yet. Add your working hours to get bookings.
+                </div>
+              ) : (
+                availableDays.map(day => (
+                  <div 
+                    key={day.id} 
+                    className={`p-3 rounded-md border flex justify-between items-center ${
+                      !day.is_available ? 'bg-muted/50' : ''
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Checkbox 
+                        checked={day.is_available}
+                        onCheckedChange={() => toggleAvailability(day.id, day.is_available)}
+                        id={`available-${day.id}`}
+                      />
+                      <div>
+                        <div className="font-medium">{getDayLabel(day.day_of_week)}</div>
+                        <div className="text-sm text-muted-foreground flex items-center">
+                          <Clock className="h-3 w-3 mr-1" />
+                          {formatTime(day.start_time)} - {formatTime(day.end_time)}
                         </div>
                       </div>
-                      
-                      {!isTimeValid(day.start_time, day.end_time) && (
-                        <p className="text-sm text-red-500">End time must be after start time</p>
-                      )}
                     </div>
-                  )}
-                </div>
-              ))}
-            </div>
-            
-            <Button
-              onClick={saveAvailability}
-              disabled={saving || availability.some(day => day.active && !isTimeValid(day.start_time, day.end_time))}
-              className="mt-4"
-            >
-              {saving ? (
-                <>
-                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="mr-2 h-4 w-4" />
-                  Save Availability
-                </>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => removeAvailability(day.id)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))
               )}
-            </Button>
-          </div>
+            </div>
+
+            <div className="pt-4 border-t space-y-3">
+              <h3 className="font-medium">Add New Availability</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between">
+                      {selectedDay ? selectedDay.label : 'Select Day'}
+                      <ChevronDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    {dayOptions.map(day => (
+                      <DropdownMenuItem 
+                        key={day.value}
+                        onClick={() => setSelectedDay(day)}
+                      >
+                        {day.label}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between">
+                      {selectedStartTime ? formatTime(selectedStartTime) : 'Start Time'}
+                      <ChevronDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    {timeOptions.map(time => (
+                      <DropdownMenuItem 
+                        key={time.value}
+                        onClick={() => setSelectedStartTime(time.value)}
+                      >
+                        {time.label}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between">
+                      {selectedEndTime ? formatTime(selectedEndTime) : 'End Time'}
+                      <ChevronDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    {timeOptions.map(time => (
+                      <DropdownMenuItem 
+                        key={time.value}
+                        onClick={() => setSelectedEndTime(time.value)}
+                      >
+                        {time.label}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                
+                <Button onClick={addAvailability} className="w-full">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Time Slot
+                </Button>
+              </div>
+            </div>
+          </>
         )}
       </CardContent>
     </Card>

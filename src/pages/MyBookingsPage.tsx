@@ -1,99 +1,101 @@
 
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/context/auth';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
-import Layout from '@/components/layout/Layout';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Calendar, Clock, MessageSquare, X, Check } from 'lucide-react';
-import { format } from 'date-fns';
-import { BookingResponse } from '@/types/availability';
+import { useAuth } from '@/context/auth';
+import Layout from '@/components/layout/Layout';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Calendar, Clock, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
+import { format, parseISO, isFuture, isPast } from 'date-fns';
+import { toast } from 'sonner';
 
-// Define interface for our data types
 interface Booking {
   id: string;
-  provider_name: string;
-  provider_id: string;
   service_type: string;
-  date: string | null;
-  time: string;
-  status: string;
-  notes: string;
-  created_at: string;
+  date_requested: string;
+  time_requested: string;
+  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+  note: string;
+  location: string;
+  recipient_details: {
+    full_name: string;
+    avatar_url: string | null;
+  };
+  sender_details: {
+    full_name: string;
+    avatar_url: string | null;
+  };
 }
 
 const MyBookingsPage = () => {
   const { user } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
-  const [cancelingId, setCancelingId] = useState<string | null>(null);
-
+  const [currentTab, setCurrentTab] = useState("upcoming");
+  
   useEffect(() => {
-    if (user) {
+    if (user?.id) {
       fetchBookings();
     }
   }, [user]);
-
+  
   const fetchBookings = async () => {
-    setLoading(true);
+    if (!user?.id) return;
+    
     try {
-      // Get bookings with provider name join
-      const { data: rawData, error } = await supabase
+      setLoading(true);
+      
+      const { data, error } = await supabase
         .from('bookings')
         .select(`
           id,
-          recipient_id,
           service_type,
-          date,
-          time,
+          date_requested,
+          time_requested,
           status,
-          notes,
-          created_at,
-          users:recipient_id(full_name)
+          note,
+          location,
+          recipient:recipient_id (
+            full_name,
+            avatar_url
+          ),
+          sender:sender_id (
+            full_name,
+            avatar_url
+          )
         `)
-        .eq('customer_id', user!.id)
-        .order('created_at', { ascending: false });
-
+        .or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`)
+        .order('date_requested', { ascending: false });
+      
       if (error) throw error;
-
-      // Transform data to our Booking interface with type safety
-      if (rawData) {
-        // Type the data as any first to avoid deep type instantiation
-        const bookings: Booking[] = [];
-        
-        for (const item of rawData as any[]) {
-          bookings.push({
-            id: item.id,
-            provider_name: item.users?.full_name || 'Unknown Provider',
-            provider_id: item.recipient_id, 
-            service_type: item.service_type || 'Unknown Service',
-            date: item.date,
-            time: item.time || '',
-            status: item.status || 'pending',
-            notes: item.notes || '',
-            created_at: item.created_at
-          });
+      
+      // Use type assertion to fix deep type instantiation issue
+      const typedData = data as any[];
+      
+      // Map the data to the correct interface
+      const processedBookings: Booking[] = typedData.map(booking => ({
+        id: booking.id,
+        service_type: booking.service_type,
+        date_requested: booking.date_requested,
+        time_requested: booking.time_requested,
+        status: booking.status,
+        note: booking.note,
+        location: booking.location || 'Not specified',
+        recipient_details: {
+          full_name: booking.recipient?.full_name || 'Unknown',
+          avatar_url: booking.recipient?.avatar_url
+        },
+        sender_details: {
+          full_name: booking.sender?.full_name || 'Unknown',
+          avatar_url: booking.sender?.avatar_url
         }
-
-        setBookings(bookings);
-      }
-    } catch (error: any) {
+      }));
+      
+      setBookings(processedBookings);
+      
+    } catch (error) {
       console.error('Error fetching bookings:', error);
       toast.error('Failed to load your bookings');
     } finally {
@@ -101,144 +103,259 @@ const MyBookingsPage = () => {
     }
   };
 
-  const cancelBooking = async (bookingId: string) => {
-    setCancelingId(bookingId);
+  const updateBookingStatus = async (id: string, status: 'confirmed' | 'cancelled' | 'completed') => {
     try {
       const { error } = await supabase
         .from('bookings')
-        .update({ status: 'cancelled' })
-        .eq('id', bookingId)
-        .eq('customer_id', user!.id);
-
+        .update({ status })
+        .eq('id', id);
+      
       if (error) throw error;
-
-      toast.success('Booking cancelled successfully');
-      // Update local state
-      setBookings(bookings.map(booking => 
-        booking.id === bookingId ? { ...booking, status: 'cancelled' } : booking
-      ));
-    } catch (error: any) {
-      console.error('Error cancelling booking:', error);
-      toast.error('Failed to cancel booking');
-    } finally {
-      setCancelingId(null);
+      
+      // Update the local state
+      setBookings(prev => 
+        prev.map(booking => 
+          booking.id === id ? { ...booking, status } : booking
+        )
+      );
+      
+      toast.success(`Booking ${status} successfully`);
+    } catch (error) {
+      console.error('Error updating booking:', error);
+      toast.error('Failed to update booking');
     }
   };
-
+  
+  const getUpcomingBookings = () => {
+    return bookings.filter(booking => {
+      try {
+        const bookingDate = parseISO(`${booking.date_requested}T${booking.time_requested}`);
+        return isFuture(bookingDate) && booking.status !== 'cancelled';
+      } catch (error) {
+        console.error('Date parsing error:', error);
+        return false;
+      }
+    });
+  };
+  
+  const getPastBookings = () => {
+    return bookings.filter(booking => {
+      try {
+        const bookingDate = parseISO(`${booking.date_requested}T${booking.time_requested}`);
+        return isPast(bookingDate) || booking.status === 'cancelled';
+      } catch (error) {
+        console.error('Date parsing error:', error);
+        return false;
+      }
+    });
+  };
+  
+  const formatBookingDate = (dateStr: string) => {
+    try {
+      return format(parseISO(dateStr), 'EEE, MMM d, yyyy');
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return dateStr;
+    }
+  };
+  
+  const formatBookingTime = (timeStr: string) => {
+    try {
+      const [hours, minutes] = timeStr.split(':');
+      const hour = parseInt(hours);
+      const period = hour >= 12 ? 'PM' : 'AM';
+      const hour12 = hour % 12 || 12;
+      return `${hour12}:${minutes} ${period}`;
+    } catch (error) {
+      console.error('Error formatting time:', error);
+      return timeStr;
+    }
+  };
+  
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'pending':
-        return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">Pending</Badge>;
+        return <Badge variant="outline" className="bg-yellow-50 text-yellow-800 border-yellow-300">Pending</Badge>;
       case 'confirmed':
-        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Confirmed</Badge>;
+        return <Badge variant="outline" className="bg-green-50 text-green-800 border-green-300">Confirmed</Badge>;
       case 'completed':
-        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Completed</Badge>;
+        return <Badge variant="outline" className="bg-blue-50 text-blue-800 border-blue-300">Completed</Badge>;
       case 'cancelled':
-        return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">Cancelled</Badge>;
-      case 'declined':
-        return <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">Declined</Badge>;
+        return <Badge variant="outline" className="bg-red-50 text-red-800 border-red-300">Cancelled</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
   };
-
+  
+  const getOtherParty = (booking: Booking) => {
+    const isSender = booking.sender_details?.full_name === user?.full_name;
+    return isSender ? booking.recipient_details : booking.sender_details;
+  };
+  
   return (
     <Layout>
       <div className="container mx-auto py-10 px-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">My Bookings</CardTitle>
-            <CardDescription>
-              View and manage your appointment requests
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+        <h1 className="text-3xl font-bold mb-6">My Bookings</h1>
+        
+        <Tabs defaultValue="upcoming" value={currentTab} onValueChange={setCurrentTab}>
+          <TabsList className="mb-6">
+            <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+            <TabsTrigger value="past">Past & Cancelled</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="upcoming">
             {loading ? (
-              <div className="flex justify-center py-8">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-              </div>
-            ) : bookings.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">You don't have any bookings yet.</p>
-                <Button className="mt-4" onClick={() => window.location.href = '/booking'}>
-                  Book an Appointment
-                </Button>
+              <div className="text-center py-10">Loading your bookings...</div>
+            ) : getUpcomingBookings().length === 0 ? (
+              <div className="text-center py-10">
+                <p className="text-lg text-muted-foreground mb-4">You don't have any upcoming bookings</p>
+                <Button>Book an Appointment</Button>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Service</TableHead>
-                      <TableHead>Provider</TableHead>
-                      <TableHead>Date & Time</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {bookings.map((booking) => (
-                      <TableRow key={booking.id}>
-                        <TableCell className="font-medium">{booking.service_type}</TableCell>
-                        <TableCell>{booking.provider_name}</TableCell>
-                        <TableCell>
-                          {booking.date ? (
-                            <div className="flex flex-col">
-                              <div className="flex items-center">
-                                <Calendar className="mr-2 h-4 w-4" />
-                                {format(new Date(booking.date), 'MMM d, yyyy')}
-                              </div>
-                              <div className="flex items-center text-muted-foreground">
-                                <Clock className="mr-2 h-4 w-4" />
-                                {booking.time}
-                              </div>
-                            </div>
-                          ) : (
-                            <span className="text-muted-foreground">Not scheduled</span>
-                          )}
-                        </TableCell>
-                        <TableCell>{getStatusBadge(booking.status)}</TableCell>
-                        <TableCell>
-                          <div className="flex space-x-2">
-                            {booking.status === 'pending' && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => cancelBooking(booking.id)}
-                                disabled={cancelingId === booking.id}
-                              >
-                                {cancelingId === booking.id ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <X className="h-4 w-4 mr-1" />
-                                )}
-                                Cancel
-                              </Button>
-                            )}
-                            {booking.status === 'confirmed' && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="bg-green-50 hover:bg-green-100 text-green-700"
-                              >
-                                <Check className="h-4 w-4 mr-1" />
-                                Confirmed
-                              </Button>
-                            )}
-                            <Button variant="outline" size="sm">
-                              <MessageSquare className="h-4 w-4 mr-1" />
-                              Notes
+              <div className="space-y-6">
+                {getUpcomingBookings().map((booking) => (
+                  <Card key={booking.id} className="overflow-hidden">
+                    <div className={`h-2 ${booking.status === 'confirmed' ? 'bg-green-500' : booking.status === 'pending' ? 'bg-yellow-500' : 'bg-blue-500'}`} />
+                    <CardHeader className="pb-2">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="text-lg font-semibold">{booking.service_type}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            with {getOtherParty(booking)?.full_name}
+                          </p>
+                        </div>
+                        {getStatusBadge(booking.status)}
+                      </div>
+                    </CardHeader>
+                    
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex items-center text-sm">
+                          <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                          {formatBookingDate(booking.date_requested)}
+                          <Clock className="h-4 w-4 ml-4 mr-2 text-muted-foreground" />
+                          {formatBookingTime(booking.time_requested)}
+                        </div>
+                        
+                        {booking.location && (
+                          <div className="flex items-center text-sm">
+                            <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
+                            {booking.location}
+                          </div>
+                        )}
+                        
+                        {booking.note && (
+                          <div className="mt-4 p-3 bg-muted/50 rounded-md text-sm">
+                            {booking.note}
+                          </div>
+                        )}
+                        
+                        {booking.status === 'pending' && (
+                          <div className="flex space-x-3 mt-4">
+                            <Button 
+                              size="sm" 
+                              onClick={() => updateBookingStatus(booking.id, 'confirmed')}
+                            >
+                              Confirm
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => updateBookingStatus(booking.id, 'cancelled')}
+                            >
+                              Cancel
                             </Button>
                           </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                        )}
+                        
+                        {booking.status === 'confirmed' && (
+                          <div className="flex space-x-3 mt-4">
+                            <Button 
+                              size="sm"
+                              onClick={() => updateBookingStatus(booking.id, 'completed')}
+                            >
+                              Mark as Completed
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => updateBookingStatus(booking.id, 'cancelled')}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </TabsContent>
+          
+          <TabsContent value="past">
+            {loading ? (
+              <div className="text-center py-10">Loading your bookings...</div>
+            ) : getPastBookings().length === 0 ? (
+              <div className="text-center py-10">
+                <p className="text-lg text-muted-foreground">You don't have any past bookings</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {getPastBookings().map((booking) => (
+                  <Card key={booking.id} className="overflow-hidden">
+                    <div className={`h-2 ${booking.status === 'completed' ? 'bg-blue-500' : 'bg-red-500'}`} />
+                    <CardHeader className="pb-2">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="text-lg font-semibold">{booking.service_type}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            with {getOtherParty(booking)?.full_name}
+                          </p>
+                        </div>
+                        {getStatusBadge(booking.status)}
+                      </div>
+                    </CardHeader>
+                    
+                    <CardContent>
+                      <div className="space-y-3">
+                        <div className="flex items-center text-sm">
+                          <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                          {formatBookingDate(booking.date_requested)}
+                          <Clock className="h-4 w-4 ml-4 mr-2 text-muted-foreground" />
+                          {formatBookingTime(booking.time_requested)}
+                        </div>
+                        
+                        {booking.location && (
+                          <div className="flex items-center text-sm">
+                            <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
+                            {booking.location}
+                          </div>
+                        )}
+                        
+                        {booking.note && (
+                          <div className="mt-4 p-3 bg-muted/50 rounded-md text-sm">
+                            {booking.note}
+                          </div>
+                        )}
+                        
+                        {booking.status === 'completed' && (
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="mt-4"
+                          >
+                            Leave a Review
+                          </Button>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
     </Layout>
   );
