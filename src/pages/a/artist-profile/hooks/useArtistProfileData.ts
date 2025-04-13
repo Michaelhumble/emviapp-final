@@ -67,7 +67,7 @@ export const useArtistProfileData = (username: string | undefined) => {
         instagram: userData.instagram,
         website: userData.website,
         phone: userData.phone,
-        profile_views: typeof userData.profile_views === 'number' ? userData.profile_views : 0,
+        profile_views: typeof (userData as any).profile_views === 'number' ? (userData as any).profile_views : 0,
         boosted_until: userData.boosted_until,
         badges: Array.isArray(userData.badges) ? userData.badges : [],
         accepts_bookings: userData.accepts_bookings,
@@ -78,7 +78,7 @@ export const useArtistProfileData = (username: string | undefined) => {
           : [],
         preferences: Array.isArray(userData.preferences) ? userData.preferences : [],
         preferred_language: userData.preferred_language,
-        years_experience: typeof userData.years_experience === 'number' ? userData.years_experience : 0,
+        years_experience: typeof (userData as any).years_experience === 'number' ? (userData as any).years_experience : 0,
         created_at: userData.created_at,
         updated_at: userData.updated_at
       };
@@ -149,7 +149,7 @@ export const useArtistProfileData = (username: string | undefined) => {
       const newCount = (viewCount || 0) + 1;
       const { error } = await supabase
         .from('users')
-        .update({ profile_views: newCount })
+        .update({ profile_views: newCount } as any)
         .eq('id', profile.id);
         
       if (!error) {

@@ -27,65 +27,77 @@ const WeTrustEmotionalSection = () => {
   }, []);
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-gradient-to-b from-white to-[#f9f7f4]">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
           viewport={{ once: true }}
-          className="max-w-3xl mx-auto"
+          className="max-w-3xl mx-auto text-center"
         >
-          <div className="text-center mb-8">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6">
-              {language === "en" ? (
-                "We're thankful for every tool that helped the industry grow"
-              ) : (
-                "Chúng tôi biết ơn mọi công cụ đã giúp ngành công nghiệp phát triển"
-              )}
-            </h2>
-            
-            <p className="text-lg text-gray-700 mb-4">
-              {language === "en" ? (
-                "But something was still missing."
-              ) : (
-                "Nhưng vẫn còn thiếu một điều gì đó."
-              )}
-            </p>
-          </div>
+          {language === "en" ? (
+            <div className="space-y-8">
+              <div className="prose prose-lg max-w-none">
+                <p className="text-xl leading-relaxed font-serif text-gray-800">
+                  We help bring customers straight to your salon door.<br />
+                  We help you find experienced nail techs.<br />
+                  We help you offer deals they can't refuse.<br />
+                  We help you manage your salon — smoothly and stress-free.
+                </p>
+                
+                <p className="text-xl font-medium text-primary mt-8 flex flex-col items-center">
+                  <span className="inline-flex items-center">
+                    <span className="mr-2 text-2xl">💡</span> Let AI do all the heavy lifting —
+                  </span>
+                  <span>so you can focus on what you love.</span>
+                </p>
+                
+                <p className="text-xl font-semibold text-gray-800 mt-8">
+                  If you don't use EmviApp…<br />
+                  <span className="text-primary">your competitors will. <span className="text-2xl">😌</span></span>
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-8">
+              <div className="prose prose-lg max-w-none">
+                <p className="text-xl leading-relaxed font-serif text-gray-800">
+                  Chúng tôi giúp bạn mang khách hàng đến tận tiệm.<br />
+                  Giúp bạn tìm những thợ giỏi, có kinh nghiệm.<br />
+                  Giúp bạn đưa ra những ưu đãi hấp dẫn để thu hút khách.<br />
+                  Giúp bạn quản lý tiệm thật suôn sẻ và đạt hiệu quả cao.
+                </p>
+                
+                <p className="text-xl font-medium text-primary mt-8 flex flex-col items-center">
+                  <span className="inline-flex items-center">
+                    <span className="mr-2 text-2xl">💡</span> Hãy để A.I lo mọi thứ giùm bạn —
+                  </span>
+                  <span>bạn chỉ cần tập trung vào điều mình yêu thích.</span>
+                </p>
+                
+                <p className="text-xl font-semibold text-gray-800 mt-8">
+                  Nếu bạn không dùng thử EmviApp…<br />
+                  <span className="text-primary">đối thủ của bạn sẽ dùng đấy. <span className="text-2xl">😌</span></span>
+                </p>
+              </div>
+            </div>
+          )}
           
-          <div className="prose prose-lg max-w-none text-gray-700">
-            <p className="mb-4">
-              {language === "en" ? (
-                "Most of those tools weren't built by people who carried water containers to do pedicures."
-              ) : (
-                "Hầu hết những công cụ đó không được tạo ra bởi những người từng xách nước để làm dịch vụ pedicure."
-              )}
-            </p>
-            
-            <p className="mb-4">
-              {language === "en" ? (
-                "They weren't built by the ones who opened the salon and cleaned the floors before clients arrived."
-              ) : (
-                "Họ không phải là những người mở tiệm sớm và lau dọn sàn nhà trước khi khách đến."
-              )}
-            </p>
-            
-            <p className="mb-6">
-              {language === "en" ? (
-                "They weren't built by owners who paid their staff first… and themselves last."
-              ) : (
-                "Họ không phải là những chủ tiệm trả lương cho nhân viên trước... và bản thân họ nhận sau cùng."
-              )}
-            </p>
-            
-            <p className="font-semibold">
-              {language === "en" ? (
-                "That's why we built EmviApp — not to replace what exists, but to complete what's been missing."
-              ) : (
-                "Đó là lý do chúng tôi xây dựng EmviApp — không phải để thay thế những gì đã có, mà để hoàn thiện những gì còn thiếu."
-              )}
-            </p>
+          <div className="mt-12 flex justify-center">
+            <button
+              onClick={() => {
+                const newLanguage = language === "en" ? "vi" : "en";
+                setLanguage(newLanguage);
+                localStorage.setItem('emvi_language_preference', newLanguage);
+                window.dispatchEvent(new CustomEvent('languageChanged', { 
+                  detail: { language: newLanguage } 
+                }));
+              }}
+              className="px-4 py-2 rounded-full bg-white shadow-sm text-gray-700 text-sm border border-gray-200 hover:bg-gray-50 transition-colors duration-200"
+            >
+              {language === "en" ? "🇻🇳 Xem Tiếng Việt" : "🇺🇸 View in English"}
+            </button>
           </div>
         </motion.div>
       </div>
