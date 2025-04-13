@@ -72,17 +72,7 @@ const Hero = () => {
         />
       </div>
 
-      {/* Mobile app-like status bar */}
-      {isMobile && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-black/70 backdrop-blur-lg h-6 flex items-center justify-between px-3 text-white text-xs">
-          <span>9:41 AM</span>
-          <div className="flex items-center gap-1">
-            <span className="block w-3 h-3 rounded-full bg-white/80"></span>
-            <span className="block w-3 h-3 rounded-full bg-white/80"></span>
-            <span className="block w-3 h-3 rounded-full bg-white/80"></span>
-          </div>
-        </div>
-      )}
+      {/* Mobile app-like status bar has been removed */}
     </section>
   );
 };

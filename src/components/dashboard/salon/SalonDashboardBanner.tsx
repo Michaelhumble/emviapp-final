@@ -9,7 +9,7 @@ interface SalonDashboardBannerProps {
 }
 
 const SalonDashboardBanner: React.FC<SalonDashboardBannerProps> = ({ 
-  userName = "Salon Owner",
+  userName = "Beauty Professional",
   businessName
 }) => {
   const displayName = businessName || userName;
@@ -25,10 +25,10 @@ const SalonDashboardBanner: React.FC<SalonDashboardBannerProps> = ({
         <EmviLogo size="small" />
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            Welcome back, {displayName}!
+            Hello, {displayName}!
           </h1>
           <p className="text-gray-600">
-            Manage your salon, track bookings, and connect with potential clients and artists.
+            Your beauty business hub is ready - manage clients, bookings, and grow your business.
           </p>
         </div>
       </div>
