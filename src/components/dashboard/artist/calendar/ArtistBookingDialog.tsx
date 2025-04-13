@@ -26,6 +26,7 @@ interface BookingDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (bookingData: any) => Promise<void>;
+  onDelete?: (id: string) => Promise<void>; // Add onDelete as optional property
   booking?: any;
   isEditing?: boolean;
 }
@@ -41,6 +42,7 @@ const ArtistBookingDialog: React.FC<BookingDialogProps> = ({
   isOpen,
   onClose,
   onSave,
+  onDelete,
   booking,
   isEditing = false
 }) => {
@@ -140,6 +142,18 @@ const ArtistBookingDialog: React.FC<BookingDialogProps> = ({
       onClose();
     } catch (error: any) {
       toast.error(`Error saving booking: ${error.message}`);
+    }
+  };
+  
+  // Handle deletion
+  const handleDelete = async () => {
+    if (booking?.id && onDelete) {
+      try {
+        await onDelete(booking.id);
+        onClose();
+      } catch (error: any) {
+        toast.error(`Error deleting booking: ${error.message}`);
+      }
     }
   };
   
@@ -306,13 +320,20 @@ const ArtistBookingDialog: React.FC<BookingDialogProps> = ({
             </div>
           </div>
           
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit">
-              {isEditing ? "Update Booking" : "Add Booking"}
-            </Button>
+          <DialogFooter className="flex justify-between">
+            {isEditing && onDelete && (
+              <Button type="button" variant="destructive" onClick={handleDelete}>
+                Delete Booking
+              </Button>
+            )}
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" onClick={onClose}>
+                Cancel
+              </Button>
+              <Button type="submit">
+                {isEditing ? "Update Booking" : "Add Booking"}
+              </Button>
+            </div>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -21,6 +21,7 @@ export interface Referral {
   status: 'pending' | 'completed';
   createdAt: string;
   completedAt?: string;
+  reward?: number; // Added this property to match the usage in referrals/index.tsx
 }
 
 export interface ReferralData {

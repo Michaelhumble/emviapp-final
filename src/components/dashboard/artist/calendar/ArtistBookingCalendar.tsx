@@ -143,11 +143,11 @@ const ArtistBookingCalendar = () => {
         onSave={async (bookingData) => {
           await saveAppointment(bookingData);
         }}
-        booking={selectedBooking}
-        isEditing={!!selectedBooking}
         onDelete={async (id) => {
           await deleteAppointment(id);
         }}
+        booking={selectedBooking}
+        isEditing={!!selectedBooking}
       />
 
       {/* Block Time Dialog */}
