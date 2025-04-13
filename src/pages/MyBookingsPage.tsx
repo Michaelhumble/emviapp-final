@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import {
@@ -45,7 +46,7 @@ interface BookingResponse {
   notes: string;
   created_at: string;
   service_type: string;
-  provider_id: string;
+  recipient_id: string; // Changed from provider_id to match database column
   users: {
     full_name: string;
   } | null;
@@ -71,14 +72,14 @@ const MyBookingsPage = () => {
         .from('bookings')
         .select(`
           id,
-          provider_id,
+          recipient_id,
           service_type,
           date,
           time,
           status,
           notes,
           created_at,
-          users:provider_id(full_name)
+          users:recipient_id(full_name)
         `)
         .eq('customer_id', user!.id)
         .order('created_at', { ascending: false });
@@ -90,7 +91,7 @@ const MyBookingsPage = () => {
         const formattedBookings: Booking[] = data.map((item: BookingResponse) => ({
           id: item.id,
           provider_name: item.users?.full_name || 'Unknown Provider',
-          provider_id: item.provider_id,
+          provider_id: item.recipient_id, // Using recipient_id instead of provider_id
           service_type: item.service_type || 'Unknown Service',
           date: item.date,
           time: item.time || '',

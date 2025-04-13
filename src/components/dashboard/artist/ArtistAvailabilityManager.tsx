@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -101,7 +102,7 @@ const ArtistAvailabilityManager = () => {
               start_time: '09:00',
               end_time: '17:00',
               active: false,
-              location: null
+              location: userProfile?.location || null
             } as AvailabilityDay;
           }
         });

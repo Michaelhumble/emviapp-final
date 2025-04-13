@@ -1,10 +1,10 @@
 
 export interface AvailabilityRecord {
   id?: string;
-  user_id?: string;  // Make optional for new records
-  artist_id: string; // Make this required to match database expectations
+  user_id?: string;
+  artist_id: string; // Required field
   role?: string;
-  day_of_week: string; // Keep as string to match database
+  day_of_week: string;
   start_time: string;
   end_time: string;
   location?: string | null;
@@ -13,10 +13,10 @@ export interface AvailabilityRecord {
 }
 
 export interface AvailabilityDay {
-  day_of_week: number; // Keep as number for UI logic
+  id?: string;
+  day_of_week: number;
   start_time: string;
   end_time: string;
   active: boolean;
-  id?: string;
-  location?: string | null; // Add location to match database record
+  location?: string | null;
 }
