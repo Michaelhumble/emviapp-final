@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import BookingNotificationsSection from '../notifications/BookingNotificationsSection';
 import ArtistPortfolioGallery from './portfolio/ArtistPortfolioGallery';
+import ArtistServiceManager from './services/ArtistServiceManager';
 
 const ArtistDashboard = () => {
   const { user } = useAuth();
@@ -35,6 +36,7 @@ const ArtistDashboard = () => {
     <div className="container mx-auto max-w-7xl px-4 py-6">
       <BookingNotificationsSection />
       <ArtistPortfolioGallery />
+      <ArtistServiceManager />
       <ArtistDashboardContent />
     </div>
   );
