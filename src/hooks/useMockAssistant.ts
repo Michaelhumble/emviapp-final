@@ -24,6 +24,7 @@ interface ExtractedBookingIntent {
   time: string | null;
   location: string | null;
   artistName: string | null;
+  dayOfWeek: number | null;
 }
 
 export const useMockAssistant = () => {
@@ -66,22 +67,56 @@ export const useMockAssistant = () => {
     
     // Extract day/date
     let date = null;
+    let dayOfWeek = null;
+    
     if (lowerInput.includes('today')) {
       date = new Date().toISOString().split('T')[0];
+      dayOfWeek = new Date().getDay();
     } else if (lowerInput.includes('tomorrow')) {
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
       date = tomorrow.toISOString().split('T')[0];
+      dayOfWeek = tomorrow.getDay();
+    } else if (lowerInput.includes('monday')) {
+      dayOfWeek = 1;
+      // Find next Monday
+      const nextDate = findNextDayOfWeek(1);
+      date = nextDate.toISOString().split('T')[0];
+    } else if (lowerInput.includes('tuesday')) {
+      dayOfWeek = 2;
+      const nextDate = findNextDayOfWeek(2);
+      date = nextDate.toISOString().split('T')[0];
+    } else if (lowerInput.includes('wednesday')) {
+      dayOfWeek = 3;
+      const nextDate = findNextDayOfWeek(3);
+      date = nextDate.toISOString().split('T')[0];
+    } else if (lowerInput.includes('thursday')) {
+      dayOfWeek = 4;
+      const nextDate = findNextDayOfWeek(4);
+      date = nextDate.toISOString().split('T')[0];
     } else if (lowerInput.includes('friday')) {
-      // Find next Friday
+      dayOfWeek = 5;
+      const nextDate = findNextDayOfWeek(5);
+      date = nextDate.toISOString().split('T')[0];
+    } else if (lowerInput.includes('saturday')) {
+      dayOfWeek = 6;
+      const nextDate = findNextDayOfWeek(6);
+      date = nextDate.toISOString().split('T')[0];
+    } else if (lowerInput.includes('sunday')) {
+      dayOfWeek = 0;
+      const nextDate = findNextDayOfWeek(0);
+      date = nextDate.toISOString().split('T')[0];
+    }
+    
+    // Helper function to find the next occurrence of a specific day of the week
+    function findNextDayOfWeek(targetDay: number): Date {
       const today = new Date();
       const dayOfWeek = today.getDay();
-      const daysToAdd = (5 - dayOfWeek + 7) % 7;
-      const nextFriday = new Date();
-      nextFriday.setDate(today.getDate() + daysToAdd);
-      date = nextFriday.toISOString().split('T')[0];
+      const daysToAdd = (targetDay - dayOfWeek + 7) % 7;
+      const nextDate = new Date();
+      nextDate.setDate(today.getDate() + (daysToAdd === 0 ? 7 : daysToAdd)); // If today, get next week
+      return nextDate;
     }
-    // Add more day patterns as needed
     
     // Extract time
     const timePattern = /(\d{1,2})(:\d{2})?\s*(am|pm)/i;
@@ -115,14 +150,39 @@ export const useMockAssistant = () => {
       date,
       time,
       location,
-      artistName
+      artistName,
+      dayOfWeek
     };
   };
 
   // Find available providers based on booking intent
   const findAvailableProviders = async (intent: ExtractedBookingIntent): Promise<BookingMatch[]> => {
     try {
-      // Query Supabase for providers that match the intent
+      // First check for availability if we have day/time information
+      let availableUserIds: string[] = [];
+      
+      if (intent.dayOfWeek !== null) {
+        let query = supabase
+          .from('availability')
+          .select('user_id')
+          .eq('day_of_week', intent.dayOfWeek);
+          
+        // Add time filtering if we have a specific time
+        if (intent.time) {
+          query = query
+            .lte('start_time', intent.time)
+            .gte('end_time', intent.time);
+        }
+        
+        const { data: availableUsers, error } = await query;
+        
+        if (error) throw error;
+        if (availableUsers && availableUsers.length > 0) {
+          availableUserIds = availableUsers.map(user => user.user_id);
+        }
+      }
+      
+      // Start building the main query for providers
       let query = supabase
         .from('users')
         .select(`
@@ -144,6 +204,11 @@ export const useMockAssistant = () => {
       
       if (intent.artistName) {
         query = query.ilike('full_name', `%${intent.artistName}%`);
+      }
+      
+      // Filter by available users if we have day/time info
+      if (availableUserIds.length > 0) {
+        query = query.in('id', availableUserIds);
       }
       
       // Limit to 3 results
@@ -325,6 +390,7 @@ export const useMockAssistant = () => {
     isLoading,
     generateResponse,
     matches,
-    createBooking
+    createBooking,
+    extractBookingIntent
   };
 };

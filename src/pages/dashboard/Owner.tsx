@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
@@ -40,6 +39,7 @@ import { SalonProvider } from "@/context/salon";
 import SalonSwitcher from "@/components/dashboard/salon/SalonSwitcher";
 import AISmartReminder from "@/components/ai/AISmartReminder";
 import SalonReferralPanel from "@/components/dashboard/salon/referral/SalonReferralPanel";
+import SalonAvailabilityManager from "@/components/dashboard/salon/SalonAvailabilityManager";
 
 const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -108,8 +108,10 @@ const OwnerDashboard = () => {
                   
                   <TabsContent value="overview" className="space-y-8">
                     <SalonProfileCompletionMeter />
-                  
+                    
                     <SalonQuickStats />
+                    
+                    <SalonAvailabilityManager />
                     
                     <SalonBoostCreditPanel />
                     

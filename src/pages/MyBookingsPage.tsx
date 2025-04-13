@@ -37,8 +37,8 @@ interface Booking {
   created_at: string;
 }
 
-// Define a separate type for the database response
-type DatabaseResponse = {
+// Define the database response directly to avoid deep nesting
+type DatabaseBookingResponse = {
   id: string;
   customer_id: string;
   date: string | null;
@@ -88,7 +88,7 @@ const MyBookingsPage = () => {
       if (error) throw error;
 
       // Transform data to our Booking interface
-      const formattedBookings: Booking[] = (data as DatabaseResponse[] || []).map((item) => ({
+      const formattedBookings: Booking[] = (data as DatabaseBookingResponse[] || []).map((item) => ({
         id: item.id,
         provider_name: item.users?.full_name || 'Unknown Provider',
         provider_id: item.provider_id,
