@@ -13,7 +13,7 @@ export interface Service {
   description: string; // Changed from optional to required
   price: number;
   price_type: string; // Changed from optional to required
-  duration?: string;
+  duration: string; // Changed from optional to required
   duration_minutes: number;
   image_url?: string;
   category?: string;
