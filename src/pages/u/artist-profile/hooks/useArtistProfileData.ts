@@ -100,7 +100,7 @@ export const useArtistProfileData = (username: string | undefined) => {
             portfolioData.map(item => ({
               id: item.id,
               url: item.image_url,
-              name: item.title || '',
+              name: item.title || 'Portfolio Item', // Ensure name is always provided as a string
               description: item.description || ''
             }))
           );
@@ -120,7 +120,7 @@ export const useArtistProfileData = (username: string | undefined) => {
             id: service.id,
             name: service.title || '', // Map title to name for compatibility
             title: service.title || '',
-            description: service.description,
+            description: service.description || 'No description provided', // Ensure description is always a string
             price: service.price,
             price_type: service.price_type,
             duration: service.duration,

@@ -11,7 +11,7 @@ import ServicesSection from "@/components/artist-profile/ServicesSection";
 import PortfolioGallery from "@/components/artist-profile/PortfolioGallery";
 import ContactSection from "@/components/artist-profile/ContactSection";
 import { UserProfile } from "@/types/profile";
-import { PortfolioImage, Service } from "./types";
+import { PortfolioImage, Service } from "./types"; // Using local types instead of "/a/artist-profile/types"
 
 interface ArtistProfileContentProps {
   profile: UserProfile;

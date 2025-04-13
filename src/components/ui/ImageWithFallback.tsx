@@ -4,6 +4,7 @@ import { User } from 'lucide-react';
 
 interface ImageWithFallbackProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   fallbackClassName?: string;
+  businessName?: string; // Added businessName as an optional prop
 }
 
 const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
@@ -11,6 +12,7 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   alt, 
   className, 
   fallbackClassName = "flex items-center justify-center bg-muted",
+  businessName, // Include it in the props
   ...props
 }) => {
   const [error, setError] = useState(false);
