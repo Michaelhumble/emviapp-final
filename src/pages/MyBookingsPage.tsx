@@ -37,7 +37,7 @@ interface Booking {
   created_at: string;
 }
 
-// Define the database response shape
+// Define the database response shape more explicitly
 interface DatabaseBookingResponse {
   id: string;
   customer_id: string;
@@ -87,21 +87,22 @@ const MyBookingsPage = () => {
 
       if (error) throw error;
 
-      // Transform data to our Booking interface (with safer casting)
-      const responseData = data as any[];
-      const formattedBookings: Booking[] = (responseData || []).map((item) => ({
-        id: item.id,
-        provider_name: item.users?.full_name || 'Unknown Provider',
-        provider_id: item.provider_id,
-        service_type: item.service_type || 'Unknown Service',
-        date: item.date,
-        time: item.time || '',
-        status: item.status || 'pending',
-        notes: item.notes || '',
-        created_at: item.created_at
-      }));
+      // Transform data to our Booking interface with type safety
+      if (data) {
+        const formattedBookings: Booking[] = data.map((item: any) => ({
+          id: item.id,
+          provider_name: item.users?.full_name || 'Unknown Provider',
+          provider_id: item.provider_id,
+          service_type: item.service_type || 'Unknown Service',
+          date: item.date,
+          time: item.time || '',
+          status: item.status || 'pending',
+          notes: item.notes || '',
+          created_at: item.created_at
+        }));
 
-      setBookings(formattedBookings);
+        setBookings(formattedBookings);
+      }
     } catch (error: any) {
       console.error('Error fetching bookings:', error);
       toast.error('Failed to load your bookings');

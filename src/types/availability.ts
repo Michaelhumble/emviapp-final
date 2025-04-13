@@ -18,4 +18,5 @@ export interface AvailabilityDay {
   end_time: string;
   active: boolean;
   id?: string;
+  location?: string | null; // Add location to match database record
 }

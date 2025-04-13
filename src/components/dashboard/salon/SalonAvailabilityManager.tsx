@@ -64,11 +64,12 @@ const SalonAvailabilityManager = () => {
 
   // Initialize default availability (all days, 9 AM to 5 PM, inactive)
   const initializeAvailability = () => {
-    const defaultAvailability = DAYS_OF_WEEK.map(day => ({
+    const defaultAvailability: AvailabilityDay[] = DAYS_OF_WEEK.map(day => ({
       day_of_week: day.value,
       start_time: '09:00',
       end_time: '17:00',
-      active: false
+      active: false,
+      location: userProfile?.location || null
     }));
     setAvailability(defaultAvailability);
   };
@@ -100,14 +101,16 @@ const SalonAvailabilityManager = () => {
               day_of_week: day.value,
               start_time: existingDay.start_time,
               end_time: existingDay.end_time,
-              active: true
+              active: true,
+              location: existingDay.location
             } as AvailabilityDay;
           } else {
             return {
               day_of_week: day.value,
               start_time: '09:00',
               end_time: '17:00',
-              active: false
+              active: false,
+              location: null
             } as AvailabilityDay;
           }
         });
@@ -180,7 +183,7 @@ const SalonAvailabilityManager = () => {
       if (deleteError) throw deleteError;
       
       // Insert new records
-      const availabilityRecords = activeDays.map(day => ({
+      const availabilityRecords: AvailabilityRecord[] = activeDays.map(day => ({
         user_id: user.id,
         artist_id: user.id, // Add artist_id to match database schema
         role: 'salon',
