@@ -122,7 +122,7 @@ export const useArtistProfileData = (username: string | undefined) => {
             title: service.title || '',
             description: service.description || 'No description provided', // Ensure description is always a string
             price: service.price,
-            price_type: service.price_type,
+            price_type: service.price_type || 'fixed', // Ensure price_type is always provided
             duration: service.duration,
             duration_minutes: service.duration_minutes,
             image_url: service.image_url,
