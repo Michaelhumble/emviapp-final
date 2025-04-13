@@ -185,7 +185,7 @@ const SalonAvailabilityManager = () => {
       // Insert new records
       const availabilityRecords: AvailabilityRecord[] = activeDays.map(day => ({
         user_id: user.id,
-        artist_id: user.id, // Add artist_id to match database schema
+        artist_id: user.id, // Required field for database schema
         role: 'salon',
         day_of_week: day.day_of_week.toString(), // Convert to string for DB
         start_time: day.start_time,

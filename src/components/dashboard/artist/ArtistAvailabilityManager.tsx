@@ -65,7 +65,8 @@ const ArtistAvailabilityManager = () => {
       day_of_week: day.value,
       start_time: '09:00',
       end_time: '17:00',
-      active: false
+      active: false,
+      location: userProfile?.location || null
     }));
     setAvailability(defaultAvailability);
   };
@@ -100,7 +101,8 @@ const ArtistAvailabilityManager = () => {
               day_of_week: day.value,
               start_time: '09:00',
               end_time: '17:00',
-              active: false
+              active: false,
+              location: null
             } as AvailabilityDay;
           }
         });
@@ -154,12 +156,12 @@ const ArtistAvailabilityManager = () => {
       // Insert new records
       const availabilityRecords: AvailabilityRecord[] = activeDays.map(day => ({
         user_id: user.id,
-        artist_id: user.id, // Add artist_id to match the database schema
+        artist_id: user.id, // Required field for database schema
         role: userProfile?.role || 'artist',
         day_of_week: day.day_of_week.toString(), // Convert to string for DB
         start_time: day.start_time,
         end_time: day.end_time,
-        location: userProfile?.location || null,
+        location: day.location || userProfile?.location || null,
         is_available: true
       }));
       

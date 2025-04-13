@@ -2,7 +2,7 @@
 export interface AvailabilityRecord {
   id?: string;
   user_id?: string;  // Make optional for new records
-  artist_id?: string; // Add this to support the database schema
+  artist_id: string; // Make this required to match database expectations
   role?: string;
   day_of_week: string; // Keep as string to match database
   start_time: string;
