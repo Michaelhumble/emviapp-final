@@ -52,12 +52,12 @@ import { Badge } from "@/components/ui/badge";
 // Updated to match the Supabase services table schema
 type ServiceItem = {
   id: string;
-  title: string;           // was 'name' in our type
+  title: string;           // service name
   price: number;
-  duration_minutes: number; // was 'duration' string
+  duration_minutes: number; // duration in minutes
   description?: string;
   category: string;
-  user_id: string;         // was 'salon_id'
+  user_id: string;         // salon id
   created_at: string;
   updated_at?: string;
   image_url?: string;
@@ -66,7 +66,7 @@ type ServiceItem = {
 
 // Form state interface
 interface ServiceFormState {
-  title: string;            // updated from 'name'
+  title: string;           
   price: string;
   duration: string;         // we'll convert this to duration_minutes when saving
   category: string;
@@ -115,7 +115,13 @@ const SalonServiceManager = () => {
       
       if (error) throw error;
       
-      setServices(data || []);
+      // Make sure the data has a category field (even if it's empty)
+      const servicesWithCategory = (data || []).map(service => ({
+        ...service,
+        category: service.category || 'Other' // Default to 'Other' if category is missing
+      }));
+      
+      setServices(servicesWithCategory);
     } catch (err) {
       console.error('Error fetching services:', err);
       setError('Failed to load salon services. Please try again.');
@@ -150,7 +156,7 @@ const SalonServiceManager = () => {
       title: service.title,
       price: service.price.toString(),
       duration: durationStr,
-      category: service.category,
+      category: service.category || 'Other', // Ensure we have a category
     });
     setIsEditing(true);
     setCurrentService(service);
@@ -210,7 +216,13 @@ const SalonServiceManager = () => {
       if (error) throw error;
       
       if (data && data.length > 0) {
-        setServices(prev => [...prev, data[0]]);
+        // Ensure the returned data has the category field
+        const serviceWithCategory = {
+          ...data[0],
+          category: data[0].category || serviceForm.category
+        };
+        
+        setServices(prev => [...prev, serviceWithCategory]);
       }
       
       setIsServiceModalOpen(false);
