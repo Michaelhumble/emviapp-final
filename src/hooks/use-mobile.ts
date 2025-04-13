@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
  * @returns boolean indicating if viewport is mobile-sized
  */
 export function useIsMobile(breakpoint: number = 768): boolean {
-  // Initialize with a server-safe check that preserves value during input focus
+  // Initialize with a server-safe check that doesn't cause reflows
   const [isMobile, setIsMobile] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       return window.innerWidth < breakpoint;
@@ -16,28 +16,28 @@ export function useIsMobile(breakpoint: number = 768): boolean {
   });
 
   useEffect(() => {
-    // Function to check if the viewport is mobile sized
+    // Only check on mount and window resize, not during typing
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < breakpoint);
     };
     
-    // Only run initial check once
+    // Check once on mount
     checkIsMobile();
     
-    // Use a more efficient debounce for resize
+    // Use a passive event listener with debounce for better performance
     let resizeTimer: NodeJS.Timeout;
     const handleResize = () => {
-      // Don't check while an input might be focused
+      // Skip resize check if input is focused to avoid input loss
       if (document.activeElement?.tagName !== 'TEXTAREA' && 
           document.activeElement?.tagName !== 'INPUT') {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(checkIsMobile, 150); // Slower debounce to avoid interrupting typing
+        resizeTimer = setTimeout(checkIsMobile, 200);
       }
     };
     
+    // Passive listener improves scrolling performance
     window.addEventListener("resize", handleResize, { passive: true });
     
-    // Cleanup
     return () => {
       clearTimeout(resizeTimer);
       window.removeEventListener("resize", handleResize);

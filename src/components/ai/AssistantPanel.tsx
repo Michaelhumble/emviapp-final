@@ -36,6 +36,12 @@ export const AssistantPanel = () => {
   const isScrollingRef = useRef(false);
   const pendingScrollRef = useRef(false);
   const isTypingRef = useRef(false);
+  const inputValueRef = useRef("");
+
+  // Track input value separately to prevent loss during rerenders
+  useEffect(() => {
+    inputValueRef.current = input;
+  }, [input]);
 
   // Initial greeting on first open
   useEffect(() => {
@@ -51,15 +57,9 @@ export const AssistantPanel = () => {
     }
   }, [isOpen, messages.length]);
 
-  // Improved scroll to bottom function with better focus management
+  // Improved scroll to bottom with better state management
   const scrollToBottom = useCallback((force = false) => {
-    // Don't interrupt if user is actively typing and not forced
-    if (!force && isTypingRef.current) {
-      pendingScrollRef.current = true;
-      return;
-    }
-    
-    // Prevent concurrent scrolls
+    // Skip if already scrolling and not forced
     if (isScrollingRef.current && !force) {
       pendingScrollRef.current = true;
       return;
@@ -68,55 +68,57 @@ export const AssistantPanel = () => {
     isScrollingRef.current = true;
     pendingScrollRef.current = false;
     
-    // Scroll the message container to bottom
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ 
-        behavior: "smooth",
-        block: "end"
-      });
-    }
-    
-    // Also ensure the scroll area itself is scrolled to the bottom
-    if (scrollAreaRef.current) {
-      const scrollElement = scrollAreaRef.current;
-      scrollElement.scrollTop = scrollElement.scrollHeight;
-    }
-    
-    // Reset scrolling flag after animation completes
-    setTimeout(() => {
-      isScrollingRef.current = false;
-      if (pendingScrollRef.current) {
-        scrollToBottom(true);
+    // Use requestAnimationFrame for smoother scrolling
+    requestAnimationFrame(() => {
+      if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "end"
+        });
       }
-    }, 300);
+      
+      // Set a timeout to allow the animation to complete
+      setTimeout(() => {
+        isScrollingRef.current = false;
+        if (pendingScrollRef.current) {
+          scrollToBottom(true);
+        }
+      }, 300);
+    });
   }, []);
 
-  // Fixed scroll behavior on message change
+  // Better scroll behavior for new messages
   useEffect(() => {
     if (isOpen && messages.length > 0) {
-      // Small delay to ensure DOM is updated
+      // Short delay to ensure DOM updates are complete
       const timeoutId = setTimeout(() => {
-        scrollToBottom(true);
-      }, 100);
+        // Only scroll if not currently typing to prevent focus issues
+        if (!isTypingRef.current) {
+          scrollToBottom();
+        } else {
+          // Mark as pending and scroll later when typing ends
+          pendingScrollRef.current = true;
+        }
+      }, 50);
       
       return () => clearTimeout(timeoutId);
     }
   }, [messages, isOpen, scrollToBottom]);
 
-  // Focus input when opened - without affecting mobile
+  // Maintain input focus on open
   useEffect(() => {
     if (isOpen && !isMobile) {
-      const timeoutId = setTimeout(() => {
-        if (!inputRef.current?.contains(document.activeElement)) {
-          inputRef.current?.focus();
+      const focusTimeout = setTimeout(() => {
+        if (inputRef.current && !isTypingRef.current) {
+          inputRef.current.focus();
         }
-      }, 300); // Longer delay for animations to complete
+      }, 300);
       
-      return () => clearTimeout(timeoutId);
+      return () => clearTimeout(focusTimeout);
     }
   }, [isOpen, isMobile]);
 
-  // Track typing state for better scroll management
+  // Track typing state for better focus management
   useEffect(() => {
     const handleFocus = () => {
       isTypingRef.current = true;
@@ -124,16 +126,16 @@ export const AssistantPanel = () => {
     
     const handleBlur = () => {
       isTypingRef.current = false;
-      // Execute any pending scrolls when input loses focus
       if (pendingScrollRef.current) {
-        setTimeout(() => scrollToBottom(true), 100);
+        // Execute pending scroll operations after typing is complete
+        requestAnimationFrame(() => scrollToBottom(true));
       }
     };
     
     const inputElement = inputRef.current;
     if (inputElement) {
-      inputElement.addEventListener('focus', handleFocus);
-      inputElement.addEventListener('blur', handleBlur);
+      inputElement.addEventListener('focus', handleFocus, { passive: true });
+      inputElement.addEventListener('blur', handleBlur, { passive: true });
     }
     
     return () => {
@@ -144,65 +146,44 @@ export const AssistantPanel = () => {
     };
   }, [scrollToBottom]);
 
-  // Enhanced mobile keyboard handling
+  // Improved mobile keyboard handling
   useEffect(() => {
     if (isMobile && isOpen) {
-      // Use safer method to check visual viewport without resetting input
-      const safeRepositionForKeyboard = () => {
-        // Only reposition if not actively typing in the input field
+      const handleVisualViewportResize = () => {
+        // Only adjust if not actively typing to prevent input issues
         if (document.activeElement !== inputRef.current) {
-          // Check if chat container is visible and scrolled properly
-          if (messagesEndRef.current && !isScrollingRef.current) {
-            // Soft scroll that doesn't interrupt typing
-            window.requestAnimationFrame(() => {
-              messagesEndRef.current?.scrollIntoView({ 
+          // Use requestAnimationFrame for smoother transition
+          requestAnimationFrame(() => {
+            if (messagesEndRef.current && !isTypingRef.current) {
+              messagesEndRef.current.scrollIntoView({
                 block: "end",
-                behavior: "auto" // Use auto for less disruption
+                behavior: "auto" // Use auto to prevent smooth scroll conflicts
               });
-            });
-          }
-        }
-      };
-      
-      // iOS specific focus handling - adjusted to be less aggressive
-      const handleFocus = () => {
-        // Only handle if we're the active element to avoid fighting with the OS
-        if (document.activeElement === inputRef.current) {
-          // Use requestAnimationFrame for smoother behavior
-          window.requestAnimationFrame(() => {
-            // Scroll input into view without disrupting keyboard
-            inputRef.current?.scrollIntoView({ 
-              block: "center",
-              behavior: "auto"
-            });
+            }
           });
         }
       };
       
-      if (inputRef.current) {
-        inputRef.current.addEventListener('focus', handleFocus, { passive: true });
-      }
-      
+      // Use visualViewport API when available for better keyboard detection
       if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', safeRepositionForKeyboard, { passive: true });
+        window.visualViewport.addEventListener('resize', handleVisualViewportResize, { passive: true });
+        window.visualViewport.addEventListener('scroll', handleVisualViewportResize, { passive: true });
       }
       
       return () => {
-        inputRef.current?.removeEventListener('focus', handleFocus);
         if (window.visualViewport) {
-          window.visualViewport.removeEventListener('resize', safeRepositionForKeyboard);
+          window.visualViewport.removeEventListener('resize', handleVisualViewportResize);
+          window.visualViewport.removeEventListener('scroll', handleVisualViewportResize);
         }
       };
     }
   }, [isMobile, isOpen]);
 
-  // Watch for booking matches
+  // Update when booking matches change
   useEffect(() => {
     if (matches && matches.length > 0) {
-      // Add booking options to chat
       const lastMessage = messages[messages.length - 1];
       if (lastMessage && lastMessage.isBookingOptions) {
-        // Update the last message if it was already booking options
         setMessages(prev => [
           ...prev.slice(0, -1),
           {
@@ -215,13 +196,13 @@ export const AssistantPanel = () => {
   }, [matches, messages]);
 
   const handleSendMessage = async () => {
-    if (!input.trim()) return;
+    // Get input directly from ref to avoid any state synchronization issues
+    const messageToSend = inputValueRef.current.trim();
+    if (!messageToSend) return;
     
-    // Store the input value before clearing it to avoid issues
-    const messageToSend = input.trim();
-    
-    // Immediately clear the input field to prevent focus issues
+    // Clear input first to prevent focus issues
     setInput("");
+    inputValueRef.current = "";
     
     // Check if user is logged in for booking requests
     if (!user && messageToSend.toLowerCase().includes("book")) {
@@ -242,7 +223,6 @@ export const AssistantPanel = () => {
         }
       ]);
       
-      // Scroll to bottom after messages are added
       setTimeout(() => scrollToBottom(true), 50);
       return;
     }
@@ -257,7 +237,7 @@ export const AssistantPanel = () => {
     
     setMessages(prev => [...prev, userMessage]);
     
-    // Add typing indicator 
+    // Add typing indicator
     const typingId = `assistant-typing-${Date.now()}`;
     setMessages(prev => [
       ...prev,
@@ -270,10 +250,7 @@ export const AssistantPanel = () => {
       }
     ]);
     
-    // Force scroll to bottom after adding the typing indicator
-    setTimeout(() => {
-      scrollToBottom(true);
-    }, 50);
+    setTimeout(() => scrollToBottom(true), 50);
     
     try {
       // Get response from assistant
@@ -292,17 +269,16 @@ export const AssistantPanel = () => {
         }
       ]);
       
-      // Focus back on input after response if appropriate
+      // Focus back on input after response (desktop only)
       if (!isMobile) {
         setTimeout(() => {
-          inputRef.current?.focus();
+          if (inputRef.current) {
+            inputRef.current.focus();
+          }
         }, 100);
       }
       
-      // Force scroll to bottom after adding the response
-      setTimeout(() => {
-        scrollToBottom(true);
-      }, 50);
+      setTimeout(() => scrollToBottom(true), 50);
     } catch (error) {
       // Remove typing indicator and show error
       setMessages(prev => [
@@ -314,12 +290,9 @@ export const AssistantPanel = () => {
           timestamp: new Date()
         }
       ]);
-      toast.error("Sorry, I couldn't process your request right now.");
       
-      // Force scroll to bottom after adding the error message
-      setTimeout(() => {
-        scrollToBottom(true);
-      }, 50);
+      toast.error("Sorry, I couldn't process your request right now.");
+      setTimeout(() => scrollToBottom(true), 50);
     }
   };
 
@@ -331,14 +304,15 @@ export const AssistantPanel = () => {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    // Update both state and ref to ensure consistency
     setInput(e.target.value);
+    inputValueRef.current = e.target.value;
   };
 
   const handleBookingConfirmation = async (index: number) => {
     if (index >= 0 && index < matches.length) {
       const selected = matches[index];
       
-      // Show booking confirmation message
       setMessages(prev => [
         ...prev,
         {
@@ -349,7 +323,6 @@ export const AssistantPanel = () => {
         }
       ]);
       
-      // Show typing indicator
       const typingId = `assistant-typing-${Date.now()}`;
       setMessages(prev => [
         ...prev,
@@ -364,10 +337,8 @@ export const AssistantPanel = () => {
       
       scrollToBottom(true);
       
-      // Create the booking
       const success = await createBooking(selected, user?.id);
       
-      // Update the message
       setMessages(prev => [
         ...prev.filter(m => m.id !== typingId),
         {
@@ -492,8 +463,8 @@ export const AssistantPanel = () => {
           </Button>
         </motion.div>
       </DrawerTrigger>
-      <DrawerContent className="fixed inset-x-0 bottom-0 max-h-[70vh] rounded-t-xl focus:outline-none mobile-chat-panel">
-        <div className="h-full flex flex-col max-h-[70vh]">
+      <DrawerContent className="fixed inset-x-0 bottom-0 max-h-[70dvh] rounded-t-xl focus:outline-none mobile-chat-panel">
+        <div className="h-full flex flex-col max-h-[70dvh]">
           <div className="flex items-center justify-between p-4 border-b">
             <div className="flex items-center">
               <div className="bg-primary/10 p-2 rounded-full mr-3">
@@ -515,7 +486,7 @@ export const AssistantPanel = () => {
           >
             <div className="space-y-4 py-4 w-full max-w-[95%] mx-auto">
               {renderMessages()}
-              <div ref={messagesEndRef} />
+              <div ref={messagesEndRef} style={{ height: '1px', width: '100%' }} />
             </div>
           </div>
           
@@ -588,7 +559,7 @@ export const AssistantPanel = () => {
           >
             <div className="space-y-4 py-4">
               {renderMessages()}
-              <div ref={messagesEndRef} />
+              <div ref={messagesEndRef} style={{ height: '1px', width: '100%' }} />
             </div>
           </div>
           

@@ -23,10 +23,10 @@ if (link) {
   link.href = "/lovable-uploads/aa25a147-5384-4b72-86f0-e3cc8caba2cc.png";
 }
 
-// Set viewport meta tag for proper mobile rendering with fixed-position elements
+// Set viewport meta tag with fixed height behavior and improved touch handling
 const meta = document.createElement('meta');
 meta.name = 'viewport';
-meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, height=device-height';
 document.getElementsByTagName('head')[0].appendChild(meta);
 
 // Add meta theme-color for mobile browsers
