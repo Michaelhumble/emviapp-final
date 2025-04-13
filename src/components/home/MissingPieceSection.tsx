@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search } from "lucide-react";
 
 const MissingPieceSection = () => {
   const [language, setLanguage] = useState<"en" | "vi">("en");
@@ -28,28 +27,50 @@ const MissingPieceSection = () => {
   }, []);
 
   return (
-    <section className="py-12 bg-gradient-to-b from-purple-50 to-white">
+    <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
           viewport={{ once: true }}
-          className="text-center mb-10"
+          className="max-w-4xl mx-auto"
         >
-          <div className="flex items-center justify-center mb-6">
-            <Search className="w-6 h-6 text-primary mr-2" />
-            <h2 className="text-2xl md:text-3xl font-serif font-bold">
-              {language === "en" 
-                ? "Find What You've Been Looking For — Right Now" 
-                : "Tìm Thấy Những Gì Bạn Đang Tìm Kiếm — Ngay Bây Giờ"}
-            </h2>
-          </div>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            {language === "en"
-              ? "Connect with the people, places, and opportunities that will take your beauty career to the next level."
-              : "Kết nối với những người, địa điểm và cơ hội sẽ đưa sự nghiệp làm đẹp của bạn lên một tầm cao mới."}
-          </p>
+          {language === "en" ? (
+            <>
+              <p className="text-lg md:text-xl text-gray-600 mb-6 text-center">
+                We help bring customers to your door.<br />
+                We help you find the right nail technicians, offer them what they can't refuse, and keep your salon running like a dream.
+              </p>
+              <p className="text-lg md:text-xl text-gray-600 mb-6 text-center">
+                <span className="inline-flex items-center text-primary font-medium">
+                  <span className="mr-2">💡</span> No more juggling. No more tech headaches.
+                </span><br />
+                Let our smart AI handle the heavy lifting — you just focus on doing what you love.
+              </p>
+              <p className="text-lg md:text-xl text-gray-700 mb-6 text-center font-medium">
+                Because if you don't use EmviApp...<br />
+                Your competition across the street will. <span className="text-xl">😌</span>
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-lg md:text-xl text-gray-600 mb-6 text-center">
+                Chúng tôi giúp bạn mang khách hàng đến tận tiệm.<br />
+                Giúp bạn tìm thợ giỏi, đưa ra ưu đãi không ai từ chối được, và quản lý tiệm thật mượt mà.
+              </p>
+              <p className="text-lg md:text-xl text-gray-600 mb-6 text-center">
+                <span className="inline-flex items-center text-primary font-medium">
+                  <span className="mr-2">💡</span> Không còn đau đầu với công nghệ.
+                </span><br />
+                Hãy để A.I lo mọi thứ — bạn chỉ cần tập trung làm điều mình yêu thích.
+              </p>
+              <p className="text-lg md:text-xl text-gray-700 mb-6 text-center font-medium">
+                Vì nếu bạn không dùng EmviApp...<br />
+                Tiệm đối diện chắc chắn sẽ dùng. <span className="text-xl">😌</span>
+              </p>
+            </>
+          )}
         </motion.div>
       </div>
     </section>

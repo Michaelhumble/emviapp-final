@@ -1,8 +1,7 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile } from "@/types/profile";
-import { PortfolioImage, Service } from "../types";
+import { Service, PortfolioImage } from "../types";
 
 export const useArtistProfileData = (username: string | undefined) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -169,3 +168,5 @@ export const useArtistProfileData = (username: string | undefined) => {
     incrementViewCount
   };
 };
+
+export type { Service, PortfolioImage };

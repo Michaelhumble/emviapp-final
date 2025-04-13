@@ -45,7 +45,11 @@ export const useSignUp = (): UseSignUpReturn => {
 
       // Handle errors
       if (!result.success) {
-        const errorMessage = result.error ? result.error.message : 'Failed to create account';
+        // Convert Error object to string if necessary
+        const errorMessage = result.error ? 
+          (typeof result.error === 'string' ? result.error : result.error.message || 'Failed to create account') 
+          : 'Failed to create account';
+        
         setError(errorMessage);
         return { success: false, error: errorMessage };
       }

@@ -30,6 +30,11 @@ export interface ArtistProfileProps {
   profile_views?: number;
   years_experience?: number;
   professional_name?: string;
+  // Add these properties to match usage in the codebase
+  title?: string;
+  duration_minutes?: number;
+  profile_completion?: number;
+  name?: string;
 }
 
 export interface ArtistProfileData {
