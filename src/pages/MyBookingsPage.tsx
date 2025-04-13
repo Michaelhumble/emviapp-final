@@ -24,7 +24,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Loader2, Calendar, Clock, MessageSquare, X, Check } from 'lucide-react';
 import { format } from 'date-fns';
 
-// Define a clear interface for our booking type
+// Define interfaces for our data types
 interface Booking {
   id: string;
   provider_name: string;
@@ -37,8 +37,8 @@ interface Booking {
   created_at: string;
 }
 
-// Define the database response directly to avoid deep nesting
-type DatabaseBookingResponse = {
+// Define the database response shape
+interface DatabaseBookingResponse {
   id: string;
   customer_id: string;
   date: string | null;
@@ -51,7 +51,7 @@ type DatabaseBookingResponse = {
   users: {
     full_name: string;
   } | null;
-};
+}
 
 const MyBookingsPage = () => {
   const { user } = useAuth();

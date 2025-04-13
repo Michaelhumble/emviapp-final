@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
 import { Calendar, Clock, Building, MapPin, Save } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { AvailabilityDay, AvailabilityRecord } from "@/types/availability";
 
 // Days of the week
 const DAYS_OF_WEEK = [
@@ -46,14 +46,6 @@ const formatTimeDisplay = (hour: number, minute: number) => {
 };
 
 const TIME_OPTIONS = generateTimeOptions();
-
-interface AvailabilityDay {
-  day_of_week: number;
-  start_time: string;
-  end_time: string;
-  active: boolean;
-  id?: string;
-}
 
 const SalonAvailabilityManager = () => {
   const { user, userProfile } = useAuth();
@@ -100,10 +92,13 @@ const SalonAvailabilityManager = () => {
         
         // Map the data to our format
         const existingDays = DAYS_OF_WEEK.map(day => {
-          const existingDay = data.find(d => d.day_of_week === day.value);
+          const existingDay = data.find(d => Number(d.day_of_week) === day.value);
           if (existingDay) {
             return {
-              ...existingDay,
+              id: existingDay.id,
+              day_of_week: day.value,
+              start_time: existingDay.start_time,
+              end_time: existingDay.end_time,
               active: true
             };
           } else {
@@ -184,7 +179,7 @@ const SalonAvailabilityManager = () => {
       if (deleteError) throw deleteError;
       
       // Insert new records
-      const availabilityRecords = activeDays.map(day => ({
+      const availabilityRecords: AvailabilityRecord[] = activeDays.map(day => ({
         user_id: user.id,
         role: 'salon',
         day_of_week: day.day_of_week,
