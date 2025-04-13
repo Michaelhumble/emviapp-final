@@ -89,8 +89,8 @@ const SalonAvailabilityManager = () => {
       
       if (!user) return;
       
-      // Use a simplified query to avoid TypeScript's deep type instantiation issue
-      const { data: rawData, error } = await supabase
+      // Use explicit type casting to avoid TypeScript's deep type instantiation issue
+      const { data, error } = await supabase
         .from('availability')
         .select('*')
         .eq('user_id', user.id)
@@ -99,15 +99,15 @@ const SalonAvailabilityManager = () => {
       if (error) throw error;
       
       // Explicitly cast the data to avoid complex typing issues
-      const data = rawData as DatabaseAvailabilityRecord[];
+      const typedData = data as DatabaseAvailabilityRecord[];
       
-      if (data && data.length > 0) {
-        if (data[0].location) {
-          setLocation(data[0].location);
+      if (typedData && typedData.length > 0) {
+        if (typedData[0].location) {
+          setLocation(typedData[0].location);
         }
         
         const existingDays = DAYS_OF_WEEK.map(day => {
-          const existingDay = data.find(d => d.day_of_week === day.value.toString());
+          const existingDay = typedData.find(d => d.day_of_week === day.value.toString());
           if (existingDay) {
             return {
               id: existingDay.id,
