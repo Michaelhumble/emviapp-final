@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { getLanguagePreference } from "@/utils/languagePreference";
-import { Shield, Users, Heart, Home, Lock } from "lucide-react";
 
 const WeTrustEmotionalSection = () => {
   const [language, setLanguage] = useState<"en" | "vi">(getLanguagePreference());
@@ -69,53 +68,24 @@ const WeTrustEmotionalSection = () => {
             </div>
           ) : (
             <div className="space-y-8">
-              <div className="mt-6 text-center">
-                <h3 className="text-2xl font-serif font-semibold mb-4 flex items-center justify-center">
-                  <span className="text-orange-500 mr-2">🧡</span> Why Artists & Salons Trust Us
-                </h3>
-                <p className="text-lg mb-6">We're building a community that puts your needs first.</p>
+              <div className="prose prose-lg max-w-none">
+                <p className="text-xl leading-relaxed font-serif text-gray-800">
+                  Chúng tôi giúp bạn mang khách hàng đến tận tiệm.<br />
+                  Giúp bạn tìm những thợ giỏi, có kinh nghiệm, và đưa ra những ưu đãi tốt nhất — để bạn quản lý tiệm dễ dàng và đạt hiệu quả cao.
+                </p>
                 
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                  <div className="flex flex-col items-center text-center p-3">
-                    <div className="p-2 rounded-full bg-primary/5 mb-2">
-                      <Shield className="h-5 w-5 text-primary" />
-                    </div>
-                    <p className="font-semibold text-xl mb-1">3,000+</p>
-                    <p className="text-gray-600 text-sm">Verified Salons</p>
-                  </div>
-                  
-                  <div className="flex flex-col items-center text-center p-3">
-                    <div className="p-2 rounded-full bg-primary/5 mb-2">
-                      <Users className="h-5 w-5 text-primary" />
-                    </div>
-                    <p className="font-semibold text-xl mb-1">Thousands</p>
-                    <p className="text-gray-600 text-sm">Active Artists</p>
-                  </div>
-                  
-                  <div className="flex flex-col items-center text-center p-3">
-                    <div className="p-2 rounded-full bg-primary/5 mb-2">
-                      <Heart className="h-5 w-5 text-primary" />
-                    </div>
-                    <p className="font-semibold text-xl mb-1">100%</p>
-                    <p className="text-gray-600 text-sm">Built by Artists, Not Corporations</p>
-                  </div>
-                  
-                  <div className="flex flex-col items-center text-center p-3">
-                    <div className="p-2 rounded-full bg-primary/5 mb-2">
-                      <Home className="h-5 w-5 text-primary" />
-                    </div>
-                    <p className="font-semibold text-xl mb-1">4 States</p>
-                    <p className="text-gray-600 text-sm">Trusted in GA, CA, TX & FL</p>
-                  </div>
-                  
-                  <div className="flex flex-col items-center text-center p-3">
-                    <div className="p-2 rounded-full bg-primary/5 mb-2">
-                      <Lock className="h-5 w-5 text-primary" />
-                    </div>
-                    <p className="font-semibold text-xl mb-1">Secure</p>
-                    <p className="text-gray-600 text-sm">Payments & AI Matching</p>
-                  </div>
-                </div>
+                <p className="text-xl font-medium text-primary mt-8 flex flex-col items-center">
+                  <span className="inline-flex items-center">
+                    <span className="mr-2 text-2xl">💡</span> Hãy để A.I thông minh của EmviApp lo mọi thứ cho bạn —
+                  </span>
+                  <span>bạn chỉ cần tập trung làm điều mình yêu thích và phát triển sự nghiệp của mình.</span>
+                </p>
+                
+                <p className="text-xl font-semibold text-gray-800 mt-8">
+                  Nếu bạn không dùng thử EmviApp...<br />
+                  <span className="text-primary">Chắc chắn bạn đang bỏ lỡ một công nghệ có thể giải quyết rất nhiều việc cùng một lúc. <span className="text-2xl">😌</span></span><br />
+                  <span className="text-gray-700">Hãy cùng nhau trải nghiệm những điều thú vị mà EmviApp mang đến cho bạn — ngay bây giờ.</span>
+                </p>
               </div>
             </div>
           )}
