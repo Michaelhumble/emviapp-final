@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
-import { Globe, Languages, Check } from 'lucide-react';
+import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from '@/components/ui/drawer';
+import { Globe, Languages, Check, X } from 'lucide-react';
 import { setLanguagePreference, getLanguagePreference, addLanguageChangeListener } from '@/utils/languagePreference';
 import { motion } from 'framer-motion';
 
@@ -39,7 +39,7 @@ const LanguageToggle: React.FC<LanguageToggleProps> = ({ className, minimal = fa
         <Button 
           variant="ghost" 
           size="sm" 
-          className="flex items-center gap-1.5 hover:bg-gray-100/80 rounded-full px-3 py-1.5 h-auto"
+          className="flex items-center gap-1.5 hover:bg-gray-100/80 rounded-full px-3 py-1.5 h-auto min-h-[44px] min-w-[44px]"
           aria-label="Language Selection"
         >
           <Globe className="h-4 w-4" />
@@ -48,9 +48,17 @@ const LanguageToggle: React.FC<LanguageToggleProps> = ({ className, minimal = fa
           </span>
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="px-4 pb-6 pt-2">
-        <div className="mt-2 flex flex-col space-y-3">
-          <h3 className="text-lg font-medium mb-2 text-center">Choose Language</h3>
+      <DrawerContent className="px-4 pb-6 pt-4">
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="text-lg font-medium text-center flex-1">Choose Language</h3>
+          <DrawerClose asChild>
+            <Button variant="ghost" size="sm" className="rounded-full w-8 h-8 p-0">
+              <X className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </Button>
+          </DrawerClose>
+        </div>
+        <div className="flex flex-col space-y-3">
           <Button
             variant={language === 'en' ? 'default' : 'outline'}
             className="w-full h-14 justify-start text-lg font-medium"
@@ -84,10 +92,10 @@ const LanguageToggle: React.FC<LanguageToggleProps> = ({ className, minimal = fa
     <div className={`flex items-center ${className}`}>
       <div className="hidden md:block">
         <ToggleGroup type="single" value={language} onValueChange={handleLanguageChange} className="flex flex-wrap">
-          <ToggleGroupItem value="vi" className="text-xs px-2 py-1">
+          <ToggleGroupItem value="vi" className="text-xs px-3 py-1.5 min-h-[40px]">
             Tiếng Việt
           </ToggleGroupItem>
-          <ToggleGroupItem value="en" className="text-xs px-2 py-1">
+          <ToggleGroupItem value="en" className="text-xs px-3 py-1.5 min-h-[40px]">
             English
           </ToggleGroupItem>
         </ToggleGroup>

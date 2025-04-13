@@ -51,7 +51,7 @@ export const SalonSaleCard = ({
 
   return (
     <Card 
-      className={`overflow-hidden transition-shadow hover:shadow-md ${
+      className={`overflow-hidden transition-shadow hover:shadow-md h-full flex flex-col ${
         salon.is_urgent ? "border-amber-400" : ""
       } ${
         salon.is_featured ? "border-2 border-amber-300 bg-amber-50" : ""
@@ -79,9 +79,10 @@ export const SalonSaleCard = ({
           src={getThumbnailUrl()}
           alt={salon.salon_name}
           className="w-full h-full object-cover"
+          loading="lazy"
         />
       </div>
-      <CardContent className="p-4">
+      <CardContent className="p-4 flex-1 flex flex-col">
         <h3 className="text-xl font-semibold mb-2 truncate">
           {salon.salon_name}
         </h3>
@@ -95,7 +96,7 @@ export const SalonSaleCard = ({
           {getBusinessTypeIcon(salon.business_type)}
           <span className="text-sm ml-1">{salon.business_type || 'Salon'}</span>
         </div>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mt-auto">
           <div className="flex items-center text-primary font-semibold">
             <DollarSign className="h-4 w-4 shrink-0" />
             {formatCurrency(salon.asking_price)}
@@ -104,6 +105,7 @@ export const SalonSaleCard = ({
             variant="outline" 
             size="sm"
             onClick={() => onViewDetails(salon)}
+            className="min-h-[38px] min-w-[100px]"
           >
             View Details
           </Button>

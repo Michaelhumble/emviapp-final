@@ -13,9 +13,8 @@ interface ContentCardProps {
 const ContentCard = ({ language, itemVariants }: ContentCardProps) => {
   return (
     <motion.div 
-      className="bg-white backdrop-blur-sm rounded-3xl shadow-2xl p-4 sm:p-6 md:p-10 mb-12 border border-indigo-100/50 relative overflow-hidden"
+      className="bg-white backdrop-blur-sm rounded-3xl shadow-2xl p-4 sm:p-6 md:p-10 mb-6 sm:mb-12 border border-indigo-100/50 relative overflow-hidden"
       variants={itemVariants}
-      // Make sure the component maintains consistency during language switches
       initial="visible" 
       layoutId="content-card"
       layout
@@ -31,6 +30,7 @@ const ContentCard = ({ language, itemVariants }: ContentCardProps) => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
+          className="w-full"
         >
           {language === "en" ? (
             <EnglishContent itemVariants={itemVariants} />

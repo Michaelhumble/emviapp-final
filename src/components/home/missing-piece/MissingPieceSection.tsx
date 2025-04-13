@@ -19,7 +19,7 @@ const MissingPieceSection = () => {
         setTimeout(() => {
           setLanguage(event.detail.language);
           setIsChangingLanguage(false);
-        }, 50);
+        }, 100);
       }
     };
     
@@ -43,33 +43,33 @@ const MissingPieceSection = () => {
     setTimeout(() => {
       setLanguage(newLanguage);
       setIsChangingLanguage(false);
-    }, 50);
+    }, 100);
   };
 
   const variants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 20 },
     visible: { 
       opacity: 1, 
       y: 0,
       transition: { 
-        duration: 0.5, // Reduced from 0.7 for faster animations
-        staggerChildren: 0.15, // Reduced from 0.2 for faster animations
-        delayChildren: 0.1 // Reduced from 0.3 for faster animations
+        duration: 0.4,
+        staggerChildren: 0.12,
+        delayChildren: 0.1
       }
     }
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 15 },
     visible: { 
       opacity: 1, 
       y: 0,
-      transition: { duration: 0.3 } // Reduced from 0.5 for faster animations
+      transition: { duration: 0.25 }
     }
   };
 
   return (
-    <section className="py-28 relative overflow-hidden bg-gradient-to-b from-white via-indigo-50/30 to-purple-50/30">
+    <section className="py-16 sm:py-20 md:py-28 relative overflow-hidden bg-gradient-to-b from-white via-indigo-50/30 to-purple-50/30">
       <div className="absolute inset-0 opacity-60">
         <DecorativeBackground />
       </div>

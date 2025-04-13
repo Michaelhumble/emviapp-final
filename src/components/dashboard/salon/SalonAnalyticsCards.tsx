@@ -1,8 +1,11 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/context/auth";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { TrendingUp, Users, Eye, MousePointerClick } from "lucide-react";
+import { motion } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AnalyticsStat {
   title: string;
@@ -14,6 +17,7 @@ interface AnalyticsStat {
 
 const SalonAnalyticsCards = () => {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [stats, setStats] = useState<AnalyticsStat[]>([
     { 
       title: "Applicants This Week", 
@@ -105,28 +109,36 @@ const SalonAnalyticsCards = () => {
   }, [user]);
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
       {stats.map((stat, index) => (
-        <Card key={index} className="border hover:shadow-sm transition-shadow">
-          <CardContent className="p-4">
-            <div className="flex flex-col items-center">
-              <div className="bg-gray-50 p-2 rounded-full mb-2">
-                {stat.icon}
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: index * 0.1 }}
+          className="w-full"
+        >
+          <Card className="border hover:shadow-sm transition-shadow h-full">
+            <CardContent className={`p-3 ${isMobile ? 'text-center' : 'p-4'}`}>
+              <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-center`}>
+                <div className={`bg-gray-50 p-2 rounded-full ${isMobile ? 'mb-2' : 'mr-3'}`}>
+                  {stat.icon}
+                </div>
+                <div className={`${isMobile ? 'text-center' : 'text-left'}`}>
+                  {stat.loading ? (
+                    <div className="h-6 w-12 bg-gray-200 animate-pulse rounded mx-auto mb-1"></div>
+                  ) : (
+                    <p className="text-xl font-bold">{stat.value}</p>
+                  )}
+                  <p className="text-xs text-gray-500 mb-1">{stat.title}</p>
+                  {stat.change && (
+                    <p className="text-xs text-emerald-600">{stat.change}</p>
+                  )}
+                </div>
               </div>
-              <div className="text-center">
-                {stat.loading ? (
-                  <div className="h-6 w-12 bg-gray-200 animate-pulse rounded mx-auto mb-1"></div>
-                ) : (
-                  <p className="text-xl font-bold">{stat.value}</p>
-                )}
-                <p className="text-xs text-gray-500 mb-1">{stat.title}</p>
-                {stat.change && (
-                  <p className="text-xs text-emerald-600">{stat.change}</p>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </motion.div>
       ))}
     </div>
   );

@@ -6,6 +6,7 @@ import { Plus, Image } from 'lucide-react';
 import ArtistPortfolioGrid from './components/ArtistPortfolioGrid';
 import ArtistPortfolioUploader from './components/ArtistPortfolioUploader';
 import { useArtistData } from './context/ArtistDataContext';
+import { motion } from 'framer-motion';
 
 const ArtistPortfolio = () => {
   const [showUploader, setShowUploader] = useState(false);
@@ -30,7 +31,12 @@ const ArtistPortfolio = () => {
             {hasImages ? (
               <ArtistPortfolioGrid images={portfolioImages} isLoading={loadingPortfolio} />
             ) : (
-              <div className="flex flex-col items-center justify-center py-8 text-center">
+              <motion.div 
+                className="flex flex-col items-center justify-center py-8 text-center px-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
                 <div className="bg-purple-50 p-4 rounded-full mb-4">
                   <Image className="h-8 w-8 text-purple-400" />
                 </div>
@@ -40,21 +46,27 @@ const ArtistPortfolio = () => {
                 </p>
                 
                 {/* Vietnamese booking text addition */}
-                <p className="text-gray-500 text-sm italic mb-4">
-                  <span className="block">Bạn có thể nhận lịch hẹn từ khách — tính năng này sắp ra mắt!</span>
-                  <span className="block">You'll be able to take bookings from clients — feature coming soon!</span>
-                </p>
+                <div className="text-gray-500 text-sm italic mb-4 max-w-md bg-purple-50/50 p-3 rounded-lg">
+                  <p className="mb-1">Bạn có thể nhận lịch hẹn từ khách — tính năng này sắp ra mắt!</p>
+                  <p>You'll be able to take bookings from clients — feature coming soon!</p>
+                </div>
                 
-                <Button onClick={() => setShowUploader(true)}>
+                <Button 
+                  onClick={() => setShowUploader(true)} 
+                  className="min-h-[44px] min-w-[200px]"
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Upload Portfolio Images
                 </Button>
-              </div>
+              </motion.div>
             )}
             
             {hasImages && (
               <div className="mt-4 flex justify-center">
-                <Button onClick={() => setShowUploader(true)}>
+                <Button 
+                  onClick={() => setShowUploader(true)}
+                  className="min-h-[44px]"
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Add More Images
                 </Button>

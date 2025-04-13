@@ -13,6 +13,21 @@ const Hero = () => {
   const isMobile = useIsMobile();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isChanging, setIsChanging] = useState(false);
+  const [viewportHeight, setViewportHeight] = useState<number>(window.innerHeight);
+  
+  // Update viewport height when it changes
+  useEffect(() => {
+    const handleResize = () => {
+      setViewportHeight(window.innerHeight);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    // Initial calculation
+    handleResize();
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   
   // Change background image every 5 seconds
   useEffect(() => {
@@ -41,18 +56,14 @@ const Hero = () => {
     <section 
       className="relative overflow-hidden"
       style={{
-        width: '100vw',
-        height: '100vh',
+        width: '100%',
+        height: `${viewportHeight}px`,
+        maxWidth: '100vw',
+        maxHeight: `${viewportHeight}px`,
+        position: 'relative',
         margin: 0,
         padding: 0,
-        border: 'none',
-        maxWidth: '100vw',
-        maxHeight: '100vh',
-        position: 'relative',
-        left: 0,
-        top: 0,
-        right: 0,
-        bottom: 0
+        border: 'none'
       }}
     >
       {/* Background image carousel */}
@@ -71,8 +82,6 @@ const Hero = () => {
           isMobile={isMobile}
         />
       </div>
-
-      {/* Mobile app-like status bar has been removed */}
     </section>
   );
 };

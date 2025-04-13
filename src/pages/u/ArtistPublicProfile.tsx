@@ -8,9 +8,12 @@ import ArtistProfileLoading from "./artist-profile/ArtistProfileLoading";
 import ArtistProfileError from "./artist-profile/ArtistProfileError";
 import ArtistProfileSEO from "@/components/seo/ArtistProfileSEO";
 import { motion } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const ArtistPublicProfile: React.FC = () => {
   const { username } = useParams<{ username: string }>();
+  const isMobile = useIsMobile();
+  
   const {
     profile,
     services,
@@ -26,6 +29,11 @@ const ArtistPublicProfile: React.FC = () => {
   useEffect(() => {
     if (profile && !loading) {
       incrementViewCount();
+    }
+    
+    // Set page title if profile is loaded
+    if (profile) {
+      document.title = `${profile.full_name} | EmviApp Profile`;
     }
   }, [profile, loading, incrementViewCount]);
   
@@ -54,9 +62,10 @@ const ArtistPublicProfile: React.FC = () => {
       <ArtistProfileSEO profile={profile} portfolioImages={portfolioImageUrls} />
       
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: isMobile ? 10 : 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: isMobile ? 0.3 : 0.5 }}
+        className="w-full overflow-x-hidden"
       >
         <ArtistProfileContent
           profile={profile}

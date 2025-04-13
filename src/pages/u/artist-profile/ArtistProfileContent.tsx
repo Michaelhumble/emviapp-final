@@ -5,13 +5,14 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { Copy, Calendar } from "lucide-react";
+import { Copy, Calendar, Share2 } from "lucide-react";
 import ProfileHeader from "@/components/artist-profile/ProfileHeader";
 import ServicesSection from "@/components/artist-profile/ServicesSection";
 import PortfolioGallery from "@/components/artist-profile/PortfolioGallery";
 import ContactSection from "@/components/artist-profile/ContactSection";
 import { UserProfile } from "@/types/profile";
 import { PortfolioImage, Service } from "./types"; // Using local types instead of a/artist-profile/types
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ArtistProfileContentProps {
   profile: UserProfile;
@@ -29,6 +30,7 @@ const ArtistProfileContent: React.FC<ArtistProfileContentProps> = ({
   isSalonOwner
 }) => {
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleBooking = () => {
     setShowBookingModal(true);
@@ -47,14 +49,40 @@ const ArtistProfileContent: React.FC<ArtistProfileContentProps> = ({
     );
   };
 
+  const handleShare = async () => {
+    const shareData = {
+      title: `${profile.full_name} on EmviApp`,
+      text: `Check out ${profile.full_name}'s profile on EmviApp`,
+      url: window.location.href,
+    };
+    
+    if (navigator.share && isMobile) {
+      try {
+        await navigator.share(shareData);
+        toast.success("Thanks for sharing!");
+      } catch (err) {
+        console.log("Error sharing:", err);
+        handleCopyLink();
+      }
+    } else {
+      handleCopyLink();
+    }
+  };
+
   return (
-    <div className="container max-w-5xl mx-auto py-8 px-4">
-      <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-3xl font-serif font-semibold">{profile.full_name}'s Profile</h1>
+    <div className="container max-w-5xl mx-auto py-6 sm:py-8 px-4">
+      <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h1 className="text-2xl sm:text-3xl font-serif font-semibold">{profile.full_name}</h1>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleCopyLink}>
-            <Copy className="h-4 w-4 mr-2" /> Copy Link
-          </Button>
+          {isMobile ? (
+            <Button variant="outline" size="sm" onClick={handleShare} className="min-h-[40px]">
+              <Share2 className="h-4 w-4 mr-2" /> Share
+            </Button>
+          ) : (
+            <Button variant="outline" size="sm" onClick={handleCopyLink} className="min-h-[40px]">
+              <Copy className="h-4 w-4 mr-2" /> Copy Link
+            </Button>
+          )}
         </div>
       </div>
 
@@ -66,11 +94,11 @@ const ArtistProfileContent: React.FC<ArtistProfileContentProps> = ({
           viewCount={viewCount}
         />
         
-        <Separator className="my-8" />
+        <Separator className="my-6 sm:my-8" />
         
         {portfolioImages.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-serif font-semibold mb-4">Portfolio</h2>
+          <div className="mb-8 sm:mb-12">
+            <h2 className="text-xl sm:text-2xl font-serif font-semibold mb-4">Portfolio</h2>
             <PortfolioGallery images={portfolioImages} artistName={profile.full_name} />
           </div>
         )}
@@ -79,7 +107,7 @@ const ArtistProfileContent: React.FC<ArtistProfileContentProps> = ({
           <ServicesSection services={services} />
         )}
         
-        <Separator className="my-8" />
+        <Separator className="my-6 sm:my-8" />
         
         <ContactSection 
           profile={profile} 
@@ -97,7 +125,7 @@ const ArtistProfileContent: React.FC<ArtistProfileContentProps> = ({
               <div className="flex justify-end">
                 <Button 
                   onClick={() => setShowBookingModal(false)}
-                  className="px-4 py-2 bg-primary text-white rounded-md"
+                  className="px-4 py-2 bg-primary text-white rounded-md min-h-[44px]"
                 >
                   Close
                 </Button>
