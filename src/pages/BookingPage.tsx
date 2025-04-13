@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
@@ -67,8 +66,8 @@ const BookingPage = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('services')
-        .select('id, name')
-        .order('name');
+        .select('id, title')
+        .order('title');
       
       if (error) throw error;
       return data || [];
@@ -170,8 +169,8 @@ const BookingPage = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {services?.map((service) => (
-                      <SelectItem key={service.id} value={service.name}>
-                        {service.name}
+                      <SelectItem key={service.id} value={service.title}>
+                        {service.title}
                       </SelectItem>
                     ))}
                     <SelectItem value="manicure">Manicure</SelectItem>

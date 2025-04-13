@@ -18,6 +18,7 @@ export interface BookingFilters {
   search: string;
   dateFilter: DateFilter;
   dateRange: DateRange | null;
+  serviceTypes?: string[]; // Added serviceTypes as an optional property
 }
 
 export const useBookingFilters = () => {
@@ -28,6 +29,7 @@ export const useBookingFilters = () => {
     search: '',
     dateFilter: 'all',
     dateRange: null,
+    serviceTypes: [] // Initialize with empty array
   });
 
   const updateFilter = <K extends keyof BookingFilters>(
@@ -48,6 +50,7 @@ export const useBookingFilters = () => {
       search: '',
       dateFilter: 'all',
       dateRange: null,
+      serviceTypes: []
     });
   };
 

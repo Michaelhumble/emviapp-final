@@ -70,10 +70,17 @@ const MyBookingsPage = () => {
 
       if (error) throw error;
 
-      // Transform data to include provider_name
-      const formattedBookings = data.map((booking: any) => ({
-        ...booking,
-        provider_name: booking.users?.full_name || 'Unknown Provider'
+      // Safely handle response and type cast to our Booking interface
+      const formattedBookings: Booking[] = (data || []).map((booking: any) => ({
+        id: booking.id,
+        provider_name: booking.users?.full_name || 'Unknown Provider',
+        provider_id: booking.provider_id,
+        service_type: booking.service_type || 'Unknown Service',
+        date: booking.date,
+        time: booking.time || '',
+        status: booking.status || 'pending',
+        notes: booking.notes || '',
+        created_at: booking.created_at
       }));
 
       setBookings(formattedBookings);

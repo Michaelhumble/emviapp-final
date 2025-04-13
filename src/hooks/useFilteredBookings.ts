@@ -41,14 +41,14 @@ export const useFilteredBookings = (
           if (!isSameDay(bookingDate, tomorrow)) return false;
         }
         
-        if (filters.dateFilter === 'thisWeek') {
+        if (filters.dateFilter === 'this-week') { // Fixed to match the correct enum value
           const weekLater = addWeeks(today, 1);
           if (!isAfter(bookingDate, addDays(today, -1)) || !isBefore(bookingDate, weekLater)) {
             return false;
           }
         }
         
-        if (filters.dateFilter === 'custom' && filters.dateRange.from) {
+        if (filters.dateFilter === 'custom' && filters.dateRange?.from) {
           const fromDate = startOfDay(filters.dateRange.from);
           
           if (filters.dateRange.to) {

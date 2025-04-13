@@ -8,9 +8,10 @@ import BookingDateFilter from './BookingDateFilter';
 
 interface BookingFiltersProps {
   onFiltersChange?: (filters: any) => void;
+  serviceTypes?: string[]; // Add serviceTypes as an optional prop
 }
 
-const BookingFilters = ({ onFiltersChange }: BookingFiltersProps) => {
+const BookingFilters = ({ onFiltersChange, serviceTypes = [] }: BookingFiltersProps) => {
   const { filters, updateFilter, resetFilters } = useBookingFilters();
 
   const handleStatusChange = (status: BookingStatus) => {
@@ -43,6 +44,7 @@ const BookingFilters = ({ onFiltersChange }: BookingFiltersProps) => {
       search: '',
       dateFilter: 'all',
       dateRange: null,
+      serviceTypes: [],
     });
   };
 
