@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
@@ -5,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from '@/components/ui/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/context/auth';
@@ -14,9 +15,8 @@ import LanguageToggle from '@/components/ui/LanguageToggle';
 import { getLanguagePreference } from '@/utils/languagePreference';
 
 const ArtistSetup = () => {
-  const { user, userProfile, updateProfile } = useAuth();
+  const { user, userProfile } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [language, setLanguage] = useState(getLanguagePreference());
   
   const [formData, setFormData] = useState({

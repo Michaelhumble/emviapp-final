@@ -22,4 +22,6 @@ export interface ArtistProfileProps {
   services: Service[];
   viewCount: number | null;
   isSalonOwner: boolean;
+  profile_views?: number;
+  years_experience?: number;
 }

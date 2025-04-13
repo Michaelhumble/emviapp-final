@@ -50,6 +50,8 @@ export interface UserProfile {
   salon_name?: string;
   company_name?: string;
   boothRental?: boolean;
+  number_of_stations?: number;
+  professional_name?: string;
   
   // Professional information
   specialties?: string[];

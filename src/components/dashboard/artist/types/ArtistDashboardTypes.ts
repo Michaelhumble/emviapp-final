@@ -1,5 +1,5 @@
 
-// Extending the existing types file to make sure it has all necessary fields
+// Adding missing properties to the existing types
 
 export interface Booking {
   id: string;
@@ -97,6 +97,7 @@ export interface ArtistProfileState {
   referral_count?: number;
   profile_views?: number;
   years_of_experience?: number;
+  number_of_stations?: number;
 }
 
 // Updating DaySchedule interface to include all required properties

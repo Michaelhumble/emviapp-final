@@ -44,6 +44,8 @@ export interface UserProfile {
   services?: any[];
   google_review_link?: string;
   years_experience?: number;
+  number_of_stations?: number;
+  professional_name?: string;
 }
 
 export interface AuthContextType {
@@ -60,4 +62,5 @@ export interface AuthContextType {
   signOut: () => Promise<void>;
   refreshUserProfile: () => Promise<boolean>;
   updateUserRole: (role: UserRole) => Promise<void>;
+  updateProfile?: (data: Partial<UserProfile>) => Promise<void>;
 }
