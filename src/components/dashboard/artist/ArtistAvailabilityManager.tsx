@@ -70,7 +70,7 @@ const ArtistAvailabilityManager = () => {
   const fetchExistingAvailability = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data: rawData, error } = await supabase
         .from('availability')
         .select('*')
         .eq('user_id', user!.id)
@@ -78,33 +78,36 @@ const ArtistAvailabilityManager = () => {
 
       if (error) throw error;
 
-      if (data && data.length > 0) {
-        // Use type assertion to any[] to avoid deep type instantiation
-        const rawData = data as any[];
+      if (rawData && rawData.length > 0) {
+        // Skip complex type inference by using any and for loop
+        const existingDays: AvailabilityDay[] = [];
         
-        const existingDays = DAYS_OF_WEEK.map(day => {
+        for (const day of DAYS_OF_WEEK) {
           // Find the existing day in the data
-          const existingDay = rawData.find(d => d.day_of_week === day.value.toString());
+          const existingDay = (rawData as any[]).find(d => 
+            d.day_of_week === day.value.toString()
+          );
           
           if (existingDay) {
-            return {
+            existingDays.push({
               id: existingDay.id,
               day_of_week: day.value,
               start_time: existingDay.start_time,
               end_time: existingDay.end_time,
               active: true,
               location: existingDay.location || userProfile?.location || null
-            } as AvailabilityDay;
+            });
           } else {
-            return {
+            existingDays.push({
               day_of_week: day.value,
               start_time: '09:00',
               end_time: '17:00',
               active: false,
               location: userProfile?.location || null
-            } as AvailabilityDay;
+            });
           }
-        });
+        }
+        
         setAvailability(existingDays);
       }
     } catch (error) {

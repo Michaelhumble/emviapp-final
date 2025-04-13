@@ -54,7 +54,7 @@ const MyBookingsPage = () => {
     setLoading(true);
     try {
       // Get bookings with provider name join
-      const { data, error } = await supabase
+      const { data: rawData, error } = await supabase
         .from('bookings')
         .select(`
           id,
@@ -73,23 +73,25 @@ const MyBookingsPage = () => {
       if (error) throw error;
 
       // Transform data to our Booking interface with type safety
-      if (data) {
-        // Explicitly type as any[] to avoid deep instantiation
-        const rawData: any[] = data;
+      if (rawData) {
+        // Type the data as any first to avoid deep type instantiation
+        const bookings: Booking[] = [];
         
-        const formattedBookings: Booking[] = rawData.map(item => ({
-          id: item.id,
-          provider_name: item.users?.full_name || 'Unknown Provider',
-          provider_id: item.recipient_id, 
-          service_type: item.service_type || 'Unknown Service',
-          date: item.date,
-          time: item.time || '',
-          status: item.status || 'pending',
-          notes: item.notes || '',
-          created_at: item.created_at
-        }));
+        for (const item of rawData as any[]) {
+          bookings.push({
+            id: item.id,
+            provider_name: item.users?.full_name || 'Unknown Provider',
+            provider_id: item.recipient_id, 
+            service_type: item.service_type || 'Unknown Service',
+            date: item.date,
+            time: item.time || '',
+            status: item.status || 'pending',
+            notes: item.notes || '',
+            created_at: item.created_at
+          });
+        }
 
-        setBookings(formattedBookings);
+        setBookings(bookings);
       }
     } catch (error: any) {
       console.error('Error fetching bookings:', error);
