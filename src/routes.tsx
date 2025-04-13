@@ -37,9 +37,9 @@ import ArtistSetup from './pages/profile/artist/setup';
 import SalonOwnerSetup from './pages/profile/salon/setup';
 import FreelancerSetup from './pages/profile/freelancer/setup';
 import CustomerSetup from './pages/profile/customer/setup';
-import OtherRoleSetup from './pages/profile/other/setup';
-import BoothRenterSetup from './pages/profile/renter/setup';
-import SupplierSetup from './pages/profile/supplier/setup';
+import OtherProfileSetup from './pages/profile/other/OtherProfileSetup';
+import RenterProfileSetup from './pages/profile/renter/RenterProfileSetup';
+import SupplierProfileSetup from './pages/profile/supplier/SupplierProfileSetup';
 import EarlyAccess from './pages/EarlyAccess';
 
 const routes = [
