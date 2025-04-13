@@ -16,28 +16,28 @@ const BookingReminderStatus = ({ reminderSent, reminderSentAt }: BookingReminder
 
   if (!reminderSent) {
     return (
-      <Badge variant="outline" className="text-gray-500 border-gray-300">
+      <Badge variant="outline" className="text-gray-500 border-gray-300 text-xs px-1.5 py-0">
         {t({
-          english: "No reminder sent",
-          vietnamese: "Chưa gửi nhắc nhở"
+          english: "No reminder",
+          vietnamese: "Chưa gửi"
         })}
       </Badge>
     );
   }
 
   const formattedDate = reminderSentAt 
-    ? format(parseISO(reminderSentAt), "MMM dd, yyyy HH:mm")
+    ? format(parseISO(reminderSentAt), "MMM dd, HH:mm")
     : "";
 
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Badge className="bg-green-100 text-green-800 hover:bg-green-200 border-0 flex items-center gap-1">
-            <Bell className="h-3 w-3" />
+          <Badge className="bg-green-100 text-green-800 hover:bg-green-200 border-0 flex items-center gap-1 text-xs px-1.5 py-0">
+            <Bell className="h-2.5 w-2.5" />
             {t({
-              english: "Reminder sent",
-              vietnamese: "Đã gửi nhắc nhở"
+              english: "Reminded",
+              vietnamese: "Đã gửi"
             })}
           </Badge>
         </TooltipTrigger>

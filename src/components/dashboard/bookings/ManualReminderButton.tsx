@@ -41,9 +41,12 @@ const ManualReminderButton = ({ booking, onSuccess }: ManualReminderButtonProps)
         .eq("id", booking.id);
       
       toast.success(t({
-        english: "Reminder sent successfully",
-        vietnamese: "Đã gửi nhắc nhở thành công"
-      }));
+        english: "Reminder sent",
+        vietnamese: "Đã gửi nhắc nhở"
+      }), {
+        duration: 3000,
+        position: "bottom-right"
+      });
       
       if (onSuccess) {
         onSuccess();
@@ -51,8 +54,8 @@ const ManualReminderButton = ({ booking, onSuccess }: ManualReminderButtonProps)
     } catch (error) {
       console.error("Error sending manual reminder:", error);
       toast.error(t({
-        english: "Failed to send reminder",
-        vietnamese: "Không thể gửi nhắc nhở"
+        english: "Failed to send",
+        vietnamese: "Không thể gửi"
       }));
     } finally {
       setSending(false);
@@ -63,18 +66,18 @@ const ManualReminderButton = ({ booking, onSuccess }: ManualReminderButtonProps)
     <Button
       size="sm"
       variant="outline"
-      className="flex items-center gap-1"
+      className="flex items-center gap-1 h-6 px-2 text-xs"
       onClick={sendManualReminder}
       disabled={sending}
     >
       {sending ? (
-        <div className="h-3 w-3 border-2 border-t-transparent border-current rounded-full animate-spin"></div>
+        <div className="h-2.5 w-2.5 border-2 border-t-transparent border-current rounded-full animate-spin"></div>
       ) : (
-        <Bell className="h-3 w-3" />
+        <Bell className="h-2.5 w-2.5" />
       )}
       {t({
-        english: "Send Reminder",
-        vietnamese: "Gửi nhắc nhở"
+        english: "Send",
+        vietnamese: "Gửi"
       })}
     </Button>
   );

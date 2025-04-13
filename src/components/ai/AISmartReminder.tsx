@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, X } from "lucide-react";
+import { Bell, X, Clock, Calendar, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface AISmartReminderProps {
@@ -15,6 +15,7 @@ const AISmartReminder = ({ className = "" }: AISmartReminderProps) => {
     message: string;
     action: string;
     path: string;
+    priority: "low" | "medium" | "high";
   } | null>(null);
   const [show, setShow] = useState(true);
 
@@ -25,121 +26,68 @@ const AISmartReminder = ({ className = "" }: AISmartReminderProps) => {
     // In a real app, these would be based on actual user data
     const generateReminder = () => {
       const randomSelector = Math.floor(Math.random() * 3);
+      let priority: "low" | "medium" | "high" = "medium";
       
       switch(userRole) {
         case 'artist':
           if (randomSelector === 0) {
+            priority = "high";
             return {
               message: "Your job application for 'Senior Nail Artist' expires in 2 days.",
               action: "Complete Application",
-              path: "/jobs"
+              path: "/jobs",
+              priority
             };
           } else if (randomSelector === 1) {
             return {
               message: "You have 3 unread messages from potential employers.",
               action: "View Messages",
-              path: "/messages"
+              path: "/messages",
+              priority
             };
           } else {
+            priority = "low";
             return {
               message: "Your portfolio is missing contact information.",
               action: "Update Profile",
-              path: "/profile/artist/setup"
+              path: "/profile/artist/setup",
+              priority
             };
           }
           
         case 'salon':
+        case 'owner':
           if (randomSelector === 0) {
+            priority = "high";
             return {
-              message: "Your job posting expires in 3 days. Renew now for continued visibility.",
+              message: "Your job posting expires in 3 days. Renew now.",
               action: "Renew Post",
-              path: "/post-job"
+              path: "/post-job",
+              priority
             };
           } else if (randomSelector === 1) {
             return {
-              message: "You have 5 unreviewed applications for your recent job post.",
+              message: "5 unreviewed applications for your recent job post.",
               action: "Review Now",
-              path: "/dashboard/owner"
+              path: "/dashboard/owner",
+              priority
             };
           } else {
+            priority = "low";
             return {
               message: "Complete your salon profile to appear in featured listings.",
               action: "Complete Profile",
-              path: "/profile/salon/setup"
+              path: "/profile/salon/setup",
+              priority
             };
           }
           
-        case 'customer':
-          if (randomSelector === 0) {
-            return {
-              message: "Your appointment with Glam Nails is tomorrow at 2PM.",
-              action: "View Details",
-              path: "/dashboard/customer"
-            };
-          } else if (randomSelector === 1) {
-            return {
-              message: "A special offer you bookmarked expires in 24 hours.",
-              action: "See Offer",
-              path: "/checkout"
-            };
-          } else {
-            return {
-              message: "Complete your beauty preferences to get personalized recommendations.",
-              action: "Set Preferences",
-              path: "/profile/customer/setup"
-            };
-          }
-        
-        case 'freelancer':
-          if (randomSelector === 0) {
-            return {
-              message: "Your application for the wedding photoshoot gig expires tomorrow.",
-              action: "Complete Now",
-              path: "/jobs"
-            };
-          } else if (randomSelector === 1) {
-            return {
-              message: "Your portfolio has only 2 of 5 recommended samples.",
-              action: "Add Samples",
-              path: "/profile/freelancer/setup"
-            };
-          } else {
-            return {
-              message: "3 potential clients viewed your profile this week.",
-              action: "Optimize Profile",
-              path: "/profile/freelancer/setup"
-            };
-          }
-          
-        case 'supplier':
-        case 'vendor':
-        case 'beauty supplier':
-          if (randomSelector === 0) {
-            return {
-              message: "Your product promotion expires in 2 days.",
-              action: "Renew Promotion",
-              path: "/product-promotions"
-            };
-          } else if (randomSelector === 1) {
-            return {
-              message: "5 salons inquired about your bulk discount program.",
-              action: "View Inquiries",
-              path: "/messages"
-            };
-          } else {
-            return {
-              message: "Complete your product catalog to improve search visibility.",
-              action: "Update Catalog",
-              path: "/profile/supplier/setup"
-            };
-          }
-          
-        case 'other':
         default:
           return {
-            message: "Select your role to get personalized reminders and recommendations.",
+            message: "Select your role to get personalized reminders.",
             action: "Choose Role",
-            path: "/dashboard/other"
+            path: "/dashboard/other",
+            priority: "medium"
           };
       }
     };
@@ -157,6 +105,26 @@ const AISmartReminder = ({ className = "" }: AISmartReminderProps) => {
   }, [user, userRole]);
 
   if (!user || !reminder || !show) return null;
+  
+  // Get color based on priority
+  const getPriorityColor = () => {
+    switch(reminder.priority) {
+      case "high": return "border-rose-300 bg-rose-50/40";
+      case "medium": return "border-amber-300 bg-amber-50/40";
+      case "low": return "border-primary/40 bg-primary/5";
+      default: return "border-primary/40 bg-primary/5";
+    }
+  };
+  
+  // Get icon based on priority
+  const getPriorityIcon = () => {
+    switch(reminder.priority) {
+      case "high": return <Clock className="h-3 w-3 text-rose-500" />;
+      case "medium": return <Info className="h-3 w-3 text-amber-500" />;
+      case "low": return <Bell className="h-3 w-3 text-primary" />;
+      default: return <Bell className="h-3 w-3 text-primary" />;
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -165,22 +133,22 @@ const AISmartReminder = ({ className = "" }: AISmartReminderProps) => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, height: 0 }}
         transition={{ duration: 0.3 }}
-        className={`bg-primary/5 border-l-4 border-l-primary/40 rounded-lg p-2.5 relative ${className}`}
+        className={`border-l-2 rounded-lg p-1.5 relative ${getPriorityColor()} ${className}`}
       >
         <button 
           onClick={() => setShow(false)} 
-          className="absolute top-1.5 right-1.5 text-gray-400 hover:text-gray-600"
+          className="absolute top-1 right-1 text-gray-400 hover:text-gray-600"
           aria-label="Dismiss"
         >
-          <X className="h-3 w-3" />
+          <X className="h-2.5 w-2.5" />
         </button>
-        <div className="flex items-center gap-2.5">
-          <div className="bg-primary/10 p-1 rounded-full">
-            <Bell className="h-3 w-3 text-primary" />
+        <div className="flex items-center gap-1.5">
+          <div className="bg-white/60 p-1 rounded-full">
+            {getPriorityIcon()}
           </div>
           <div>
-            <p className="text-xs text-gray-700">{reminder.message}</p>
-            <Button variant="link" className="h-5 p-0 text-primary text-xs" asChild>
+            <p className="text-[10px] text-gray-700 pr-4">{reminder.message}</p>
+            <Button variant="link" className="h-4 p-0 text-xs font-medium" asChild>
               <a href={reminder.path}>{reminder.action}</a>
             </Button>
           </div>
