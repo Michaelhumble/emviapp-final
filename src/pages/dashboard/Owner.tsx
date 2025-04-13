@@ -116,6 +116,8 @@ const OwnerDashboard = () => {
                     
                     <SalonTeamManager />
                     
+                    <SalonServiceManager />
+                    
                     <NextStepsSmart />
                     
                     <SalonAnalyticsCards />
