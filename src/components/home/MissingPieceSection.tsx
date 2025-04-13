@@ -239,7 +239,6 @@ const MissingPieceSection = () => {
               whileTap={{ scale: 0.95 }}
               className="px-6 py-2.5 rounded-full bg-white shadow-lg text-gray-700 text-sm font-medium border border-indigo-100 hover:bg-indigo-50 transition-colors duration-200 flex items-center space-x-3"
             >
-              <span className="text-xl">{language === "en" ? "🇺🇸" : "🇻🇳"}</span>
               <span className="text-indigo-700">{language === "en" ? "Switch to Vietnamese" : "Chuyển sang tiếng Anh"}</span>
             </motion.button>
           </motion.div>
