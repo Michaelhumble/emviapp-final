@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,6 @@ import { useAuth } from "@/context/auth";
 import { Calendar, Clock, Check, Save } from "lucide-react";
 import { AvailabilityDay, AvailabilityRecord } from "@/types/availability";
 
-// Days of the week
 const DAYS_OF_WEEK = [
   { name: "Sunday", value: 0 },
   { name: "Monday", value: 1 },
@@ -22,7 +20,6 @@ const DAYS_OF_WEEK = [
   { name: "Saturday", value: 6 }
 ];
 
-// Generate time options in 30-minute increments
 const generateTimeOptions = () => {
   const times = [];
   for (let hour = 0; hour < 24; hour++) {
@@ -37,7 +34,6 @@ const generateTimeOptions = () => {
   return times;
 };
 
-// Format time for display (e.g., "9:00 AM")
 const formatTimeDisplay = (hour: number, minute: number) => {
   const period = hour >= 12 ? 'PM' : 'AM';
   const displayHour = hour % 12 || 12;
@@ -59,7 +55,6 @@ const ArtistAvailabilityManager = () => {
     }
   }, [user]);
 
-  // Initialize default availability (all days, 9 AM to 5 PM, inactive)
   const initializeAvailability = () => {
     const defaultAvailability: AvailabilityDay[] = DAYS_OF_WEEK.map(day => ({
       day_of_week: day.value,
@@ -71,7 +66,6 @@ const ArtistAvailabilityManager = () => {
     setAvailability(defaultAvailability);
   };
 
-  // Fetch existing availability from Supabase
   const fetchExistingAvailability = async () => {
     try {
       setLoading(true);
@@ -84,7 +78,6 @@ const ArtistAvailabilityManager = () => {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        // Map the data to our format
         const existingDays = DAYS_OF_WEEK.map(day => {
           const existingDay = data.find(d => d.day_of_week === day.value.toString());
           if (existingDay) {
@@ -116,27 +109,23 @@ const ArtistAvailabilityManager = () => {
     }
   };
 
-  // Toggle day selection
   const toggleDay = (index: number) => {
     const newAvailability = [...availability];
     newAvailability[index].active = !newAvailability[index].active;
     setAvailability(newAvailability);
   };
 
-  // Update time value
   const updateTime = (index: number, field: 'start_time' | 'end_time', value: string) => {
     const newAvailability = [...availability];
     newAvailability[index][field] = value;
     setAvailability(newAvailability);
   };
 
-  // Save availability to Supabase
   const saveAvailability = async () => {
     if (!user) return;
     
     setSaving(true);
     try {
-      // Get only active days
       const activeDays = availability.filter(day => day.active);
       
       if (activeDays.length === 0) {
@@ -145,7 +134,6 @@ const ArtistAvailabilityManager = () => {
         return;
       }
 
-      // Delete existing records first
       const { error: deleteError } = await supabase
         .from('availability')
         .delete()
@@ -153,12 +141,11 @@ const ArtistAvailabilityManager = () => {
         
       if (deleteError) throw deleteError;
       
-      // Insert new records
       const availabilityRecords: AvailabilityRecord[] = activeDays.map(day => ({
         user_id: user.id,
-        artist_id: user.id, // Required field for database schema
+        artist_id: user.id,
         role: userProfile?.role || 'artist',
-        day_of_week: day.day_of_week.toString(), // Convert to string for DB
+        day_of_week: day.day_of_week.toString(),
         start_time: day.start_time,
         end_time: day.end_time,
         location: day.location || userProfile?.location || null,
@@ -180,7 +167,6 @@ const ArtistAvailabilityManager = () => {
     }
   };
 
-  // Check if times are valid (end time should be after start time)
   const isTimeValid = (startTime: string, endTime: string) => {
     return startTime < endTime;
   };

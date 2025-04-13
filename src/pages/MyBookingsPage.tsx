@@ -22,8 +22,9 @@ import Layout from '@/components/layout/Layout';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2, Calendar, Clock, MessageSquare, X, Check } from 'lucide-react';
 import { format } from 'date-fns';
+import { BookingResponse } from '@/types/availability';
 
-// Define interfaces for our data types
+// Define interface for our data types
 interface Booking {
   id: string;
   provider_name: string;
@@ -34,21 +35,6 @@ interface Booking {
   status: string;
   notes: string;
   created_at: string;
-}
-
-interface BookingResponse {
-  id: string;
-  customer_id: string;
-  date: string | null;
-  time: string;
-  status: string;
-  notes: string;
-  created_at: string;
-  service_type: string;
-  recipient_id: string; // Changed from provider_id to match database column
-  users: {
-    full_name: string;
-  } | null;
 }
 
 const MyBookingsPage = () => {
@@ -89,7 +75,7 @@ const MyBookingsPage = () => {
       if (data) {
         // Explicitly checking that data is an array before mapping
         const bookingsArray = Array.isArray(data) ? data : [];
-        const formattedBookings: Booking[] = bookingsArray.map((item: BookingResponse) => ({
+        const formattedBookings: Booking[] = bookingsArray.map((item: any) => ({
           id: item.id,
           provider_name: item.users?.full_name || 'Unknown Provider',
           provider_id: item.recipient_id, // Using recipient_id instead of provider_id

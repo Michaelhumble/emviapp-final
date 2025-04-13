@@ -37,4 +37,9 @@ export interface BookingResponse {
   updated_at?: string;
   customer_name?: string;
   provider_name?: string;
+  service_type?: string; // Add service_type for MyBookingsPage
+  recipient_id?: string; // Add recipient_id for compatibility
+  users?: {
+    full_name: string;
+  } | null;
 }
