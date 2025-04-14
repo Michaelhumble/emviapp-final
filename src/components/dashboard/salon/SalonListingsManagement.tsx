@@ -28,6 +28,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 const SalonListingsManagement = () => {
   const [listings, setListings] = useState<SalonSale[]>([]);
@@ -64,9 +65,7 @@ const SalonListingsManagement = () => {
         return;
       }
       
-      // Process the data to ensure photos are in the correct format
       const processedData = data?.map(item => {
-        // Normalize photos to make sure they're always an array
         const photos = Array.isArray(item.photos) 
           ? item.photos 
           : (item.photos ? [] : []);
@@ -77,13 +76,10 @@ const SalonListingsManagement = () => {
         };
       }) || [];
       
-      // Now set listings with the processed data
       setListings(processedData as SalonSale[]);
       
-      // Check if any listings are featured
       setHasFeaturedListing(processedData.some(listing => listing.is_featured));
       
-      // Check if user has credits
       const userCredits = await checkCredits(user.id);
       setHasCredits(userCredits >= 10);
     } catch (error) {
@@ -162,7 +158,6 @@ const SalonListingsManagement = () => {
     
     setIsDeleting(true);
     try {
-      // First delete associated photos
       const { error: photosError } = await supabase
         .from('salon_sale_photos')
         .delete()
@@ -172,7 +167,6 @@ const SalonListingsManagement = () => {
         console.error("Error deleting listing photos:", photosError);
       }
       
-      // Then delete the listing
       const { error } = await supabase
         .from('salon_sales')
         .delete()
@@ -202,7 +196,7 @@ const SalonListingsManagement = () => {
     if (listing.photos && listing.photos.length > 0) {
       return listing.photos[0].photo_url;
     }
-    return "https://placehold.co/600x400/e2e8f0/64748b?text=No+Image";
+    return null;
   };
   
   const getStatusBadge = (listing: SalonSale) => {
@@ -282,10 +276,11 @@ const SalonListingsManagement = () => {
             {listings.map((listing) => (
               <Card key={listing.id} className="overflow-hidden">
                 <div className="aspect-video bg-gray-200 relative">
-                  <img
+                  <ImageWithFallback
                     src={getListingThumbnail(listing)}
                     alt={listing.salon_name}
                     className="w-full h-full object-cover"
+                    fallbackImage="https://emvi.app/images/fallback-profile.jpg"
                   />
                   <div className="absolute top-2 right-2">
                     {getStatusBadge(listing)}

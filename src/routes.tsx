@@ -14,12 +14,15 @@ import ArtistDashboard from './pages/dashboard/Artist';
 import CustomerDashboard from './pages/dashboard/Customer';
 import SalonDashboard from './pages/dashboard/Salon';
 import OwnerDashboard from './pages/dashboard/Owner';
+import ManagerDashboard from './pages/dashboard/Manager';
 import FreelancerDashboard from './pages/dashboard/Freelancer';
 import SupplierDashboard from './pages/dashboard/Supplier';
 import OtherDashboard from './pages/dashboard/Other';
 import ProfileEditor from './pages/profile/ProfileEditor';
 import SignIn from './pages/auth/SignIn';
 import SignUp from './pages/auth/SignUp';
+import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPassword from './pages/auth/ResetPassword';
 import UserProfilePage from './pages/profile/UserProfilePage';
 import SalonOwners from './pages/SalonOwners';
 import Settings from './pages/Settings';
@@ -30,6 +33,10 @@ import ArtistPublicPage from './pages/a/ArtistPublicPage';
 import ArtistExplore from './pages/explore/artists';
 import SalonMarketplace from './pages/SalonMarketplace';
 import CommandCenter from './pages/CommandCenter';
+import BookingPage from './pages/BookingPage';
+import MyBookingsPage from './pages/MyBookingsPage';
+import BoothDetail from './pages/booths/BoothDetail';
+import BoothsIndex from './pages/booths/BoothsIndex';
 
 // Import profile setup pages
 import ArtistSetup from './pages/profile/artist/setup';
@@ -121,6 +128,10 @@ const routes = [
     element: <OwnerDashboard />,
   },
   {
+    path: '/dashboard/manager',
+    element: <ManagerDashboard />,
+  },
+  {
     path: '/dashboard/freelancer',
     element: <FreelancerDashboard />,
   },
@@ -167,6 +178,14 @@ const routes = [
   {
     path: '/sign-up',
     element: <SignUp />,
+  },
+  {
+    path: '/forgot-password',
+    element: <ForgotPassword />,
+  },
+  {
+    path: '/reset-password',
+    element: <ResetPassword />,
   },
   {
     path: '/command-center',
@@ -247,6 +266,22 @@ const routes = [
   {
     path: '/cookies',
     element: <Cookies />,
+  },
+  {
+    path: '/booking',
+    element: <BookingPage />,
+  },
+  {
+    path: '/my-bookings',
+    element: <MyBookingsPage />,
+  },
+  {
+    path: '/booths',
+    element: <BoothsIndex />,
+  },
+  {
+    path: '/booths/:id',
+    element: <BoothDetail />,
   },
   {
     path: '*',

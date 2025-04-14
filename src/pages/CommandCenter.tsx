@@ -12,12 +12,16 @@ import RecentActivity from "@/components/command-center/RecentActivity";
 import InternalTools from "@/components/command-center/InternalTools";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Shield, AlertTriangle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const CommandCenter = () => {
   const { userProfile } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [accessDenied, setAccessDenied] = useState(false);
 
   useEffect(() => {
     document.title = "EmviApp Command Center | Founder Dashboard";
@@ -43,13 +47,13 @@ const CommandCenter = () => {
         if (data?.role === 'admin') {
           setIsAdmin(true);
         } else {
+          setAccessDenied(true);
           toast.error("Access denied: Admin privileges required");
-          navigate("/dashboard");
         }
       } catch (error) {
         console.error("Error checking admin status:", error);
         toast.error("Something went wrong. Please try again.");
-        navigate("/dashboard");
+        setAccessDenied(true);
       } finally {
         setLoading(false);
       }
@@ -76,8 +80,31 @@ const CommandCenter = () => {
     );
   }
 
+  if (accessDenied) {
+    return (
+      <Layout>
+        <div className="container py-12 px-4">
+          <Alert className="bg-red-50 border-red-200 mb-6 max-w-3xl mx-auto">
+            <AlertTriangle className="h-5 w-5 text-red-600" />
+            <AlertTitle className="text-red-800 text-lg">Access Denied</AlertTitle>
+            <AlertDescription className="text-red-700">
+              <p className="mb-4">You don't have permission to access the Command Center. This area is restricted to admin users only.</p>
+              <Button 
+                variant="outline" 
+                className="border-red-300 text-red-700 hover:bg-red-100"
+                onClick={() => navigate("/")}
+              >
+                Return to Home
+              </Button>
+            </AlertDescription>
+          </Alert>
+        </div>
+      </Layout>
+    );
+  }
+
   if (!isAdmin) {
-    return null; // Navigate has already been triggered
+    return null; // Safety check - shouldn't reach here
   }
 
   return (
@@ -87,7 +114,7 @@ const CommandCenter = () => {
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
             <div>
               <h1 className="text-xl md:text-2xl font-bold">
-                Welcome back, {userProfile?.full_name || 'Michael'} 👋
+                Welcome back, {userProfile?.full_name || 'Admin'} 👋
               </h1>
               <p className="text-sm text-muted-foreground">
                 Command Center Dashboard • Private Admin View

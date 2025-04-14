@@ -1,4 +1,3 @@
-
 import { Job } from "@/types/job";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,7 +14,6 @@ export interface SalonCardProps {
   isExpired?: boolean;
 }
 
-// Name replacement mapping to avoid legal issues
 const nameReplacements: Record<string, string> = {
   "Pho 88": "Lotus Noodle House",
   "San Jose": "San Benito",
@@ -31,7 +29,6 @@ const nameReplacements: Record<string, string> = {
   "VIP Nails": "Velvet Touch Nail Spa"
 };
 
-// Replace potentially problematic business names
 const sanitizeBusinessName = (name: string): string => {
   let sanitized = name;
   
@@ -45,18 +42,15 @@ const sanitizeBusinessName = (name: string): string => {
 const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCardProps) => {
   const { isSignedIn } = useAuth();
   
-  // Sanitize business name and location
   const sanitizedCompany = sanitizeBusinessName(salon.company || "");
   const sanitizedLocation = sanitizeBusinessName(salon.location || "");
   
-  // Function to format currency 
   const formatCurrency = (value?: string) => {
     if (!value) return "N/A";
     const numericValue = parseFloat(value.replace(/[^0-9.-]+/g, ""));
     return numericValue ? `$${numericValue.toLocaleString()}` : value;
   };
 
-  // Determine if this is a Vietnamese salon
   const isVietnameseSalon = salon.vietnamese_description || (salon.id && salon.id.startsWith('vn-salon'));
 
   return (
@@ -72,7 +66,7 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
             src={salon.image}
             alt={sanitizedCompany || "Salon for Sale"}
             className="h-40 w-full object-cover rounded-md"
-            fallbackClassName="h-40 w-full rounded-md"
+            fallbackImage="https://emvi.app/images/fallback-profile.jpg"
             businessName={sanitizedCompany}
           />
         </div>

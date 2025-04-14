@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
 
 @tailwind base;
@@ -171,8 +170,13 @@
   }
   
   /* Safe area bottom padding for iOS */
-  .safe-area-bottom {
+  .pb-safe-area {
     padding-bottom: env(safe-area-inset-bottom, 16px);
+  }
+  
+  /* Safe area top padding for iOS */
+  .pt-safe-area {
+    padding-top: env(safe-area-inset-top, 16px);
   }
 }
 

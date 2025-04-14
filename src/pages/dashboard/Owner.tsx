@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
@@ -23,6 +22,7 @@ import TopLocalArtists from "@/components/dashboard/salon/TopLocalArtists";
 import NextStepsSmart from "@/components/dashboard/salon/NextStepsSmart";
 import SalonTeamManagement from "@/components/dashboard/salon/SalonTeamManagement";
 import SalonTeamManager from "@/components/dashboard/salon/team/SalonTeamManager";
+import SalonManagersSection from "@/components/dashboard/salon/team/SalonManagersSection";
 import SalonServiceManager from "@/components/dashboard/salon/SalonServiceManager";
 import SalonBoostCreditPanel from "@/components/dashboard/salon/SalonBoostCreditPanel";
 import SalonProfileCompletionMeter from "@/components/dashboard/salon/SalonProfileCompletionMeter";
@@ -40,6 +40,7 @@ import { SalonProvider } from "@/context/salon";
 import SalonSwitcher from "@/components/dashboard/salon/SalonSwitcher";
 import AISmartReminder from "@/components/ai/AISmartReminder";
 import SalonReferralPanel from "@/components/dashboard/salon/referral/SalonReferralPanel";
+import SalonAvailabilityManager from "@/components/dashboard/salon/SalonAvailabilityManager";
 
 const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -108,8 +109,10 @@ const OwnerDashboard = () => {
                   
                   <TabsContent value="overview" className="space-y-8">
                     <SalonProfileCompletionMeter />
-                  
+                    
                     <SalonQuickStats />
+                    
+                    <SalonAvailabilityManager />
                     
                     <SalonBoostCreditPanel />
                     
@@ -165,8 +168,8 @@ const OwnerDashboard = () => {
                   </TabsContent>
                   
                   <TabsContent value="team" className="space-y-8">
+                    <SalonManagersSection />
                     <SalonTeamManager />
-                    
                     <SalonReferralPanel />
                   </TabsContent>
                   

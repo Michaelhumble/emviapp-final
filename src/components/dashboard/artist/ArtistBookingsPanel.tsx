@@ -30,7 +30,7 @@ const ArtistBookingsPanel = () => {
     clientType: 'all',
     serviceType: 'all',
     search: '',
-    serviceTypes: []
+    serviceTypes: [] // This is now valid since we added it to the type
   });
   
   // Convert serviceTypes to the expected format for BookingFilters
@@ -60,8 +60,8 @@ const ArtistBookingsPanel = () => {
         {/* Booking Filters */}
         <div className="mb-4">
           <BookingFilters 
-            serviceTypes={formattedServiceTypes}
-            onFilterChange={setFilters}
+            serviceTypes={formattedServiceTypes} // Now this prop is expected by the component
+            onFiltersChange={setFilters}
           />
         </div>
         

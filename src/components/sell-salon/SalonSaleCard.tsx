@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { SalonSale } from "@/types/salonSale";
 import { formatCurrency } from "@/utils/salonSales";
 import { FeatureListingButton } from "@/components/sell-salon/FeatureListingButton";
 import { useAuth } from "@/context/auth";
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 interface SalonSaleCardProps {
   salon: SalonSale;
@@ -41,12 +41,11 @@ export const SalonSaleCard = ({
 
   const isActive = salon.status === 'active';
   
-  // Safely get thumbnail image URL
   const getThumbnailUrl = () => {
     if (salon.photos && Array.isArray(salon.photos) && salon.photos.length > 0) {
       return salon.photos[0].photo_url;
     }
-    return "https://placehold.co/600x400/e2e8f0/64748b?text=Salon+Image";
+    return null;
   };
 
   return (
@@ -75,10 +74,11 @@ export const SalonSaleCard = ({
             <Star className="h-3 w-3 mr-1 fill-amber-900" /> Featured
           </div>
         )}
-        <img
+        <ImageWithFallback
           src={getThumbnailUrl()}
           alt={salon.salon_name}
           className="w-full h-full object-cover"
+          fallbackImage="https://emvi.app/images/fallback-profile.jpg"
           loading="lazy"
         />
       </div>
