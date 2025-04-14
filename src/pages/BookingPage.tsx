@@ -27,7 +27,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
 
-// Time slots for booking
 const TIME_SLOTS = [
   '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
   '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM',
@@ -45,7 +44,6 @@ const BookingPage = () => {
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // Fetch providers (artists and salons) for selection
   const { data: providers, isLoading: loadingProviders } = useQuery({
     queryKey: ['providers'],
     queryFn: async () => {
@@ -60,7 +58,6 @@ const BookingPage = () => {
     }
   });
 
-  // Fetch services for selection
   const { data: services, isLoading: loadingServices } = useQuery({
     queryKey: ['services'],
     queryFn: async () => {
@@ -91,10 +88,8 @@ const BookingPage = () => {
     setSubmitting(true);
 
     try {
-      // Format the date for database storage
       const formattedDate = bookingDate ? format(bookingDate, 'yyyy-MM-dd') : null;
 
-      // Create booking in Supabase
       const { data, error } = await supabase
         .from('bookings')
         .insert({

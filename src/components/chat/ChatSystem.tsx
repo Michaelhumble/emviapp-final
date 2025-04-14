@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -29,9 +28,13 @@ export type MessageType = {
   actionSuggestions?: ActionSuggestion[];
 };
 
-export function ChatSystem() {
+interface ChatSystemProps {
+  onClose?: () => void;
+}
+
+export function ChatSystem({ onClose }: ChatSystemProps) {
   const isMobile = useIsMobile();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [inputValue, setInputValue] = useState("");
   const { user } = useAuth();
@@ -47,14 +50,13 @@ export function ChatSystem() {
     if (isOpen && messages.length === 0) {
       const welcomeMessage: MessageType = {
         id: `assistant-${Date.now()}`,
-        content: "👋 Hi there! I'm Little Sunshine, your personal assistant. How can I help you today?",
+        content: "👋 Hi! I'm Little Sunshine ☀️ Need help finding a salon, time slot, or artist? Just ask!",
         sender: "assistant",
         timestamp: new Date(),
         actionSuggestions: [
           { id: "book", label: "Book an Artist", icon: "calendar", href: "/artists" },
-          { id: "jobs", label: "Post a Job", icon: "briefcase", href: "/jobs" },
-          { id: "salon", label: "Sell My Salon", icon: "store", href: "/salon-sales" },
-          { id: "explore", label: "Explore Artists", icon: "users", href: "/artists" }
+          { id: "explore", label: "Explore Services", icon: "search", href: "/services" },
+          { id: "availability", label: "Check Availability", icon: "clock", href: "/availability" }
         ]
       };
       
@@ -120,6 +122,13 @@ export function ChatSystem() {
       }, 100);
     }
   }, [isOpen, isMobile]);
+
+  const handleCloseChat = () => {
+    setIsOpen(false);
+    if (onClose) {
+      onClose();
+    }
+  };
 
   const handleBookingConfirmation = async (bookingMatch: BookingMatch) => {
     if (!user) {
@@ -206,13 +215,10 @@ export function ChatSystem() {
     ]);
     
     try {
-      // Log the message for future improvements
       console.log("Chat log - User:", trimmedInput);
       
-      // Process the user message and generate a response
       const response = await generateResponse(trimmedInput);
       
-      // Process the response to add action suggestions based on content
       const { message, suggestedActions } = processAiResponse(response);
       
       setMessages(prev => [
@@ -273,7 +279,7 @@ export function ChatSystem() {
 
   return (
     <>
-      <ChatToggleButton isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
+      <ChatToggleButton isOpen={isOpen} onClick={() => isOpen ? handleCloseChat() : setIsOpen(true)} />
       
       <AnimatePresence>
         {isOpen && (
@@ -294,7 +300,7 @@ export function ChatSystem() {
               backfaceVisibility: 'hidden'
             }}
           >
-            <ChatHeader onClose={() => setIsOpen(false)} />
+            <ChatHeader onClose={handleCloseChat} />
             
             <div 
               ref={messagesContainerRef}
@@ -326,6 +332,7 @@ export function ChatSystem() {
                 onFocus={handleInputFocus}
                 onBlur={handleInputBlur}
                 isLoading={isLoading}
+                placeholder="Ask anything about bookings, salons, or artists..."
               />
             </div>
           </motion.div>
