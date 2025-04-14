@@ -19,19 +19,20 @@ export function NotificationList({
   maxHeight = '300px',
   variant = 'icon'
 }: NotificationListProps) {
+  if (!notifications || notifications.length === 0) {
+    return <NotificationEmptyState />;
+  }
+
   return (
     <ScrollArea className={`${variant === 'icon' ? 'h-[300px]' : 'h-[400px]'} ${variant === 'card' ? 'pr-4' : ''}`}>
       <CardContent className={variant === 'icon' ? 'p-2' : undefined}>
-        {notifications.length > 0 
-          ? notifications.map(notification => (
-              <NotificationItem 
-                key={notification.id} 
-                notification={notification} 
-                onClick={onNotificationClick} 
-              />
-            ))
-          : <NotificationEmptyState />
-        }
+        {notifications.map(notification => (
+          <NotificationItem 
+            key={notification.id} 
+            notification={notification} 
+            onClick={onNotificationClick} 
+          />
+        ))}
       </CardContent>
     </ScrollArea>
   );

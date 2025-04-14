@@ -1,5 +1,5 @@
 
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { AuthProvider } from '@/context/auth';
 import { ProfileProvider } from '@/context/profile';
