@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
@@ -34,7 +33,6 @@ import SalonAnalytics from "@/components/dashboard/salon/SalonAnalytics";
 import SalonMessagingCenter from "@/components/dashboard/salon/SalonMessagingCenter";
 import SalonBookingManager from "@/components/dashboard/salon/bookings/SalonBookingManager";
 import SalonBookingFeed from "@/components/dashboard/salon/bookings/SalonBookingFeed";
-import confetti from "canvas-confetti";
 import BookingAnalyticsCard from "@/components/dashboard/salon/analytics/BookingAnalyticsCard";
 import CreditUsageHistory from "@/components/dashboard/salon/credits/CreditUsageHistory";
 import MonthlyReportDownload from "@/components/dashboard/salon/reports/MonthlyReportDownload";
@@ -44,9 +42,8 @@ import AISmartReminder from "@/components/ai/AISmartReminder";
 import SalonReferralPanel from "@/components/dashboard/salon/referral/SalonReferralPanel";
 import SalonAvailabilityManager from "@/components/dashboard/salon/SalonAvailabilityManager";
 import { useBookingNotifications } from "@/hooks/useBookingNotifications";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "sonner";
 import UpcomingAppointments from "@/components/dashboard/common/UpcomingAppointments";
-import TeamPayrollOverview from "@/components/dashboard/salon/team/TeamPayrollOverview";
 
 const OwnerDashboardContent = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -56,28 +53,13 @@ const OwnerDashboardContent = () => {
   const [activeTab, setActiveTab] = useState("overview");
   
   // Initialize booking notifications
-  useBookingNotifications();
+  const bookingNotifications = useBookingNotifications();
   
   useEffect(() => {
     document.title = "Salon Owner Dashboard | EmviApp";
     console.log("Owner Dashboard rendered with profile:", userProfile);
     
-    const shouldShowConfetti = localStorage.getItem('salon_success');
-    
-    if (shouldShowConfetti) {
-      localStorage.removeItem('salon_success');
-      
-      setTimeout(() => {
-        setShowConfetti(true);
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
-      }, 1000);
-    }
-
-    const savedTab = localStorage.getItem('salon_dashboard_tab');
+    const savedTab = localStorage.getItem('owner_dashboard_tab');
     if (savedTab) {
       setActiveTab(savedTab);
     }
@@ -85,9 +67,9 @@ const OwnerDashboardContent = () => {
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    localStorage.setItem('salon_dashboard_tab', value);
+    localStorage.setItem('owner_dashboard_tab', value);
   };
-  
+
   return (
     <Layout>
       <div className="container px-4 mx-auto py-12">
@@ -107,18 +89,14 @@ const OwnerDashboardContent = () => {
               
               <SmartReminderBanner />
               
-              <UpcomingAppointments dashboardType="salon" />
-              
               <Tabs value={activeTab} onValueChange={handleTabChange}>
-                <TabsList className="grid grid-cols-8 mb-8">
+                <TabsList className="grid grid-cols-6 mb-8">
                   <TabsTrigger value="overview">Overview</TabsTrigger>
                   <TabsTrigger value="bookings">Bookings</TabsTrigger>
                   <TabsTrigger value="clients">Clients</TabsTrigger>
                   <TabsTrigger value="team">Team</TabsTrigger>
-                  <TabsTrigger value="payroll">Payroll</TabsTrigger>
                   <TabsTrigger value="services">Services</TabsTrigger>
-                  <TabsTrigger value="analytics">Analytics</TabsTrigger>
-                  <TabsTrigger value="messages">Messages</TabsTrigger>
+                  <TabsTrigger value="reports">Reports</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="overview" className="space-y-8">
@@ -130,31 +108,13 @@ const OwnerDashboardContent = () => {
                   
                   {currentSalon?.id && <SalonAvailabilityManager salonId={currentSalon.id} />}
                   
-                  <SalonBoostCreditPanel />
-                  
                   <SalonDashboardActionButtons />
                   
                   <SalonTeamManager />
                   
                   <SalonServiceManager />
                   
-                  <NextStepsSmart />
-                  
-                  <SalonAnalyticsCards />
-                  
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-1">
-                      <SalonCreditPromotion />
-                    </div>
-                    
-                    <div className="lg:col-span-1">
-                      <TopLocalArtists />
-                    </div>
-                    
-                    <div className="lg:col-span-1">
-                      <SalonReferralPanel />
-                    </div>
-                  </div>
+                  <SalonCreditStatus />
                 </TabsContent>
 
                 <TabsContent value="bookings" className="space-y-8">
@@ -164,15 +124,7 @@ const OwnerDashboardContent = () => {
                   
                   <BookingAnalyticsCard />
                   
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div className="lg:col-span-1">
-                      <CreditUsageHistory />
-                    </div>
-                    
-                    <div className="lg:col-span-1">
-                      <MonthlyReportDownload />
-                    </div>
-                  </div>
+                  {currentSalon?.id && <SalonAvailabilityManager salonId={currentSalon.id} />}
                   
                   <SalonBookingCalendar />
                 </TabsContent>
@@ -182,41 +134,18 @@ const OwnerDashboardContent = () => {
                 </TabsContent>
                 
                 <TabsContent value="team" className="space-y-8">
-                  <SalonTeamManagement />
                   <SalonManagersSection />
-                  <SalonReferralPanel />
-                </TabsContent>
-                
-                <TabsContent value="payroll" className="space-y-8">
-                  <TeamPayrollOverview />
+                  <SalonTeamManager />
                 </TabsContent>
                 
                 <TabsContent value="services" className="space-y-8">
                   <SalonServiceManager />
-                  
-                  <SalonCreditStatus />
                 </TabsContent>
                 
-                <TabsContent value="analytics" className="space-y-8">
+                <TabsContent value="reports" className="space-y-8">
                   <SalonAnalytics />
-                  
-                  <BookingAnalyticsCard />
-                  
-                  <CreditUsageHistory />
-                  
                   <MonthlyReportDownload />
-                  
-                  <SalonAnalyticsCards />
-                  
-                  <SalonListingsManagement />
-                  
-                  <SalonPostedJobsSection />
-                </TabsContent>
-                
-                <TabsContent value="messages" className="space-y-8">
-                  <SalonMessagingCenter />
-                  
-                  <SalonNotificationCenter />
+                  <CreditUsageHistory />
                 </TabsContent>
               </Tabs>
               

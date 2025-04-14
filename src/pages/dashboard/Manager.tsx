@@ -51,7 +51,7 @@ const ManagerDashboardContent = () => {
   const { currentSalon } = useSalon();
   const [activeTab, setActiveTab] = useState("overview");
   
-  useBookingNotifications();
+  const bookingNotifications = useBookingNotifications();
   
   useEffect(() => {
     document.title = "Salon Manager Dashboard | EmviApp";

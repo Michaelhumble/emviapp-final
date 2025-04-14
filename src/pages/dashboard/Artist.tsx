@@ -17,7 +17,7 @@ const ArtistDashboardPage = () => {
   const [activeTab, setActiveTab] = useState("overview");
   
   // Initialize booking notifications
-  useBookingNotifications();
+  const bookingNotifications = useBookingNotifications();
   
   useEffect(() => {
     document.title = "Artist Dashboard | EmviApp";
