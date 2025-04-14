@@ -8,12 +8,14 @@ interface LayoutProps {
   children: React.ReactNode;
   hideFooter?: boolean;
   hideHeader?: boolean;
+  hideNavbar?: boolean; // Added this prop to support ErrorLayout
 }
 
 const Layout: React.FC<LayoutProps> = ({ 
   children, 
   hideFooter = false, 
-  hideHeader = false 
+  hideHeader = false,
+  hideNavbar = false // Default value
 }) => {
   return (
     <div className="flex flex-col min-h-screen">
