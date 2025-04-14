@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Notification } from '@/types/notification';
 import { NotificationItem } from './NotificationItem';
@@ -24,8 +23,17 @@ export function NotificationList({
     return <NotificationEmptyState />;
   }
 
-  // Group notifications by date
-  const groupedNotifications = notifications.reduce((groups, notification) => {
+  // Filter weekly summaries for special handling
+  const weeklySummaries = notifications.filter(n => n.type === 'weekly_summary');
+  const latestWeeklySummary = weeklySummaries.length > 0 
+    ? weeklySummaries.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
+    : null;
+  
+  // Other notifications
+  const otherNotifications = notifications.filter(n => n.type !== 'weekly_summary');
+
+  // Group other notifications by date
+  const groupedNotifications = otherNotifications.reduce((groups, notification) => {
     const date = new Date(notification.createdAt);
     let groupKey = 'older';
     
@@ -46,6 +54,21 @@ export function NotificationList({
   return (
     <ScrollArea className={`${variant === 'icon' ? 'h-[300px]' : 'h-[400px]'} ${variant === 'card' ? 'pr-4' : ''}`}>
       <CardContent className={variant === 'icon' ? 'p-2' : undefined}>
+        {/* Display latest weekly summary at the top if available */}
+        {latestWeeklySummary && (
+          <div className="mb-4">
+            <h3 className="text-xs font-medium text-gray-500 mb-2 uppercase px-2">
+              Weekly Summary
+            </h3>
+            <NotificationItem 
+              key={latestWeeklySummary.id} 
+              notification={latestWeeklySummary} 
+              onClick={onNotificationClick} 
+            />
+          </div>
+        )}
+        
+        {/* Display other notifications grouped by date */}
         {Object.entries(groupedNotifications).map(([group, items]) => (
           <div key={group} className="mb-4">
             <h3 className="text-xs font-medium text-gray-500 mb-2 uppercase px-2">
