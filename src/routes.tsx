@@ -1,4 +1,3 @@
-
 import React from 'react';
 import NotFound from './pages/NotFound';
 import Artists from './pages/Artists';
@@ -34,6 +33,7 @@ import SalonMarketplace from './pages/SalonMarketplace';
 import CommandCenter from './pages/CommandCenter';
 import BookingPage from './pages/BookingPage';
 import MyBookingsPage from './pages/MyBookingsPage';
+import BookingCalendar from './pages/BookingCalendar';
 import BoothDetail from './pages/booths/BoothDetail';
 import BoothsIndex from './pages/booths/BoothsIndex';
 import Welcome from './pages/Welcome';
@@ -283,6 +283,10 @@ const routes = [
   {
     path: '/booths/:id',
     element: <BoothDetail />,
+  },
+  {
+    path: '/calendar',
+    element: <BookingCalendar />,
   },
   {
     path: '*',
