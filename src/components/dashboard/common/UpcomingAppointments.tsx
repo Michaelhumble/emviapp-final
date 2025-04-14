@@ -7,6 +7,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { CalendarDays, UserCircle, Clock, Calendar } from "lucide-react";
 import { format } from "date-fns";
 import BookingStatusBadge from "@/components/dashboard/salon/bookings/components/BookingStatusBadge";
+import { Button } from "@/components/ui/button";
+import { Check, X, CheckCircle } from "lucide-react";
+import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 interface AppointmentProps {
   dashboardType: 'artist' | 'salon';
@@ -17,6 +27,7 @@ const UpcomingAppointments = ({ dashboardType }: AppointmentProps) => {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -69,6 +80,50 @@ const UpcomingAppointments = ({ dashboardType }: AppointmentProps) => {
     fetchAppointments();
   }, [user, dashboardType]);
 
+  const updateBookingStatus = async (bookingId: string, newStatus: string) => {
+    if (!user) return;
+    
+    try {
+      setUpdatingId(bookingId);
+      
+      const { error } = await supabase
+        .from('bookings')
+        .update({ status: newStatus })
+        .eq('id', bookingId);
+        
+      if (error) throw error;
+      
+      // Update local state
+      setAppointments(prev => 
+        prev.map(appointment => 
+          appointment.id === bookingId 
+            ? { ...appointment, status: newStatus } 
+            : appointment
+        )
+      );
+      
+      // Show success toast based on status
+      switch (newStatus) {
+        case 'accepted':
+          toast.success("Booking confirmed!");
+          break;
+        case 'declined':
+          toast.error("Appointment declined.");
+          break;
+        case 'completed':
+          toast.success("Marked as completed ✅");
+          break;
+        default:
+          toast.success("Booking status updated.");
+      }
+    } catch (err: any) {
+      console.error("Error updating booking status:", err);
+      toast.error("Failed to update booking status. Please try again.");
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -97,7 +152,11 @@ const UpcomingAppointments = ({ dashboardType }: AppointmentProps) => {
             {appointments.map((appointment) => (
               <div 
                 key={appointment.id} 
-                className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                className={`p-4 border rounded-lg transition-colors ${
+                  appointment.status === 'declined' 
+                    ? 'bg-gray-50 opacity-70' 
+                    : 'hover:bg-gray-50'
+                }`}
               >
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                   <div>
@@ -126,8 +185,85 @@ const UpcomingAppointments = ({ dashboardType }: AppointmentProps) => {
                     </div>
                   </div>
                   
-                  <div>
+                  <div className="flex flex-col gap-2 items-end">
                     <BookingStatusBadge status={appointment.status} />
+                    
+                    {/* Action buttons based on status */}
+                    {appointment.status !== 'completed' && appointment.status !== 'declined' && (
+                      <div className="flex flex-row gap-2 mt-2">
+                        {appointment.status !== 'accepted' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="bg-green-50 text-green-600 border-green-200 hover:bg-green-100"
+                            onClick={() => updateBookingStatus(appointment.id, 'accepted')}
+                            disabled={updatingId === appointment.id}
+                          >
+                            <Check className="h-4 w-4 mr-1" />
+                            <span className="hidden sm:inline">Confirm</span>
+                          </Button>
+                        )}
+                        
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100"
+                          onClick={() => updateBookingStatus(appointment.id, 'completed')}
+                          disabled={updatingId === appointment.id}
+                        >
+                          <CheckCircle className="h-4 w-4 mr-1" />
+                          <span className="hidden sm:inline">Complete</span>
+                        </Button>
+                        
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="bg-red-50 text-red-600 border-red-200 hover:bg-red-100"
+                          onClick={() => updateBookingStatus(appointment.id, 'declined')}
+                          disabled={updatingId === appointment.id}
+                        >
+                          <X className="h-4 w-4 mr-1" />
+                          <span className="hidden sm:inline">Decline</span>
+                        </Button>
+                      </div>
+                    )}
+                    
+                    {/* Mobile-friendly dropdown alternative */}
+                    <div className="sm:hidden">
+                      {appointment.status !== 'completed' && appointment.status !== 'declined' && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button size="sm" variant="outline">Actions</Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {appointment.status !== 'accepted' && (
+                              <DropdownMenuItem 
+                                onClick={() => updateBookingStatus(appointment.id, 'accepted')}
+                                disabled={updatingId === appointment.id}
+                              >
+                                <Check className="h-4 w-4 mr-2 text-green-500" />
+                                Confirm
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuItem 
+                              onClick={() => updateBookingStatus(appointment.id, 'completed')}
+                              disabled={updatingId === appointment.id}
+                            >
+                              <CheckCircle className="h-4 w-4 mr-2 text-blue-500" />
+                              Complete
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                              onClick={() => updateBookingStatus(appointment.id, 'declined')}
+                              disabled={updatingId === appointment.id}
+                            >
+                              <X className="h-4 w-4 mr-2 text-red-500" />
+                              Decline
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
+                    </div>
                   </div>
                 </div>
                 

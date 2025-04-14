@@ -7,7 +7,7 @@ import ArtistDashboard from "@/components/dashboard/artist/ArtistDashboard";
 import ArtistAvailabilityManager from "@/components/dashboard/artist/ArtistAvailabilityManager";
 import DashboardGreeting from "@/components/dashboard/common/DashboardGreeting";
 import { useBookingNotifications } from "@/hooks/useBookingNotifications";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "sonner";
 
 const ArtistDashboardPage = () => {
   const { user } = useAuth();

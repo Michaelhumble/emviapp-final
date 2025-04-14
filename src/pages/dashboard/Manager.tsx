@@ -42,7 +42,7 @@ import AISmartReminder from "@/components/ai/AISmartReminder";
 import SalonReferralPanel from "@/components/dashboard/salon/referral/SalonReferralPanel";
 import SalonAvailabilityManager from "@/components/dashboard/salon/SalonAvailabilityManager";
 import { useBookingNotifications } from "@/hooks/useBookingNotifications";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "sonner";
 import UpcomingAppointments from "@/components/dashboard/common/UpcomingAppointments";
 
 const ManagerDashboardContent = () => {
