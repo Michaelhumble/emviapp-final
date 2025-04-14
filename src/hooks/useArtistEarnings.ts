@@ -104,8 +104,8 @@ export const useArtistEarnings = () => {
       }
       
       // Calculate totals
-      const currentWeekEarnings = currentWeekData.reduce((sum, booking) => sum + parseFloat(booking.commission_earned), 0);
-      const totalPendingPayment = pendingData.reduce((sum, booking) => sum + parseFloat(booking.commission_earned), 0);
+      const currentWeekEarnings = currentWeekData.reduce((sum, booking) => sum + parseFloat(String(booking.commission_earned)), 0);
+      const totalPendingPayment = pendingData.reduce((sum, booking) => sum + parseFloat(String(booking.commission_earned)), 0);
       
       setSummary({
         currentWeekEarnings,

@@ -110,8 +110,8 @@ export const useSalonPayroll = () => {
         
         const current = artistEarnings.get(artistId)!;
         current.bookingCount += 1;
-        current.totalRevenue += parseFloat(booking.service_price);
-        current.totalEarnings += parseFloat(booking.commission_earned);
+        current.totalRevenue += parseFloat(String(booking.service_price));
+        current.totalEarnings += parseFloat(String(booking.commission_earned));
       });
       
       // Convert map to array
