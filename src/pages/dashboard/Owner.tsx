@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
@@ -45,6 +44,7 @@ import SalonReferralPanel from "@/components/dashboard/salon/referral/SalonRefer
 import SalonAvailabilityManager from "@/components/dashboard/salon/SalonAvailabilityManager";
 import { useBookingNotifications } from "@/hooks/useBookingNotifications";
 import { Toaster } from "@/components/ui/toaster";
+import UpcomingAppointments from "@/components/dashboard/common/UpcomingAppointments";
 
 const OwnerDashboardContent = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -53,7 +53,6 @@ const OwnerDashboardContent = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   
-  // Initialize booking notifications
   const { subscribed } = useBookingNotifications();
   
   useEffect(() => {
@@ -96,7 +95,6 @@ const OwnerDashboardContent = () => {
         >
           <RoleDashboardLayout>
             <div className="space-y-6">
-              {/* Add personalized greeting */}
               <DashboardGreeting className="mb-6" />
               
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -105,6 +103,8 @@ const OwnerDashboardContent = () => {
               </div>
               
               <SmartReminderBanner />
+              
+              <UpcomingAppointments dashboardType="salon" />
               
               <Tabs value={activeTab} onValueChange={handleTabChange}>
                 <TabsList className="grid grid-cols-7 mb-8">
@@ -122,7 +122,6 @@ const OwnerDashboardContent = () => {
                   
                   <SalonQuickStats />
                   
-                  {/* Show upcoming bookings in overview tab */}
                   <SalonBookingFeed />
                   
                   {currentSalon?.id && <SalonAvailabilityManager salonId={currentSalon.id} />}
@@ -225,7 +224,6 @@ const OwnerDashboardContent = () => {
         />
       )}
       
-      {/* Add Toaster for notifications */}
       <Toaster />
     </Layout>
   );

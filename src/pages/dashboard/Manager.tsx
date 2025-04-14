@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
@@ -44,6 +43,7 @@ import SalonReferralPanel from "@/components/dashboard/salon/referral/SalonRefer
 import SalonAvailabilityManager from "@/components/dashboard/salon/SalonAvailabilityManager";
 import { useBookingNotifications } from "@/hooks/useBookingNotifications";
 import { Toaster } from "@/components/ui/toaster";
+import UpcomingAppointments from "@/components/dashboard/common/UpcomingAppointments";
 
 const ManagerDashboardContent = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -51,7 +51,6 @@ const ManagerDashboardContent = () => {
   const { currentSalon } = useSalon();
   const [activeTab, setActiveTab] = useState("overview");
   
-  // Initialize booking notifications
   const { subscribed } = useBookingNotifications();
   
   useEffect(() => {
@@ -79,7 +78,6 @@ const ManagerDashboardContent = () => {
         >
           <RoleDashboardLayout>
             <div className="space-y-6">
-              {/* Add personalized greeting */}
               <DashboardGreeting className="mb-6" />
               
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -104,7 +102,6 @@ const ManagerDashboardContent = () => {
                   
                   <SalonQuickStats />
                   
-                  {/* Show upcoming bookings in overview tab */}
                   <SalonBookingFeed />
                   
                   {currentSalon?.id && <SalonAvailabilityManager salonId={currentSalon.id} />}
@@ -162,7 +159,6 @@ const ManagerDashboardContent = () => {
         />
       )}
       
-      {/* Add Toaster for notifications */}
       <Toaster />
     </Layout>
   );
