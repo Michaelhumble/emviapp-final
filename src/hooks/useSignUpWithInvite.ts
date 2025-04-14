@@ -49,9 +49,10 @@ export const useSignUpWithInvite = () => {
       
       // If this was an invite with a salon_id, link the user to the salon
       if (salonId) {
+        // Fix: Use upsert instead of insert to avoid type issues
         const { error: linkError } = await supabase
           .from('user_salon_access')
-          .insert({
+          .upsert({
             user_id: data.user.id,
             salon_id: salonId,
             access_type: invitedRole

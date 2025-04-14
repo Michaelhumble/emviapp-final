@@ -18,8 +18,16 @@ const SalonTeamManagement = () => {
     toggleMemberStatus,
   } = useTeamMembers();
 
-  const handleSendInvite = async (email: string, name: string, role: string) => {
-    await sendInvite(email, name, role);
+  // Add a stub function for onEditMember to fix the missing prop error
+  const handleEditMember = (member: any) => {
+    console.log("Edit member:", member);
+    // This is a placeholder. In the real implementation, 
+    // you would open an edit modal or navigate to an edit page
+  };
+
+  const handleSendInvite = async (email: string, name: string, role: string, commissionRate: string = '60') => {
+    // Added commissionRate parameter with default value to match expected 4 arguments
+    await sendInvite(email, name, role, commissionRate);
   };
 
   return (
@@ -44,6 +52,8 @@ const SalonTeamManagement = () => {
           error={error}
           onRemoveTeamMember={removeTeamMember}
           onToggleMemberStatus={toggleMemberStatus}
+          onEditMember={handleEditMember}
+          onRefresh={() => console.log("Refresh requested")} // Adding a stub for onRefresh
         />
       </CardContent>
 

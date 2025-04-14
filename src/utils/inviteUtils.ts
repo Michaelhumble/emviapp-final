@@ -30,13 +30,15 @@ export const sendInviteEmail = async (email: string, salonId: string, salonName:
     toast.success(`Invitation will be sent to ${email}`);
     
     // Record the invite in the database for tracking
+    // We'll use salon_staff table instead of salon_invites since it doesn't exist
     const { error } = await supabase
-      .from('salon_invites')
+      .from('salon_staff')
       .insert({
         salon_id: salonId,
         email: email,
         role: role,
-        status: 'pending'
+        status: 'pending',
+        full_name: 'Invited User' // Required field in salon_staff
       });
       
     if (error) throw error;
