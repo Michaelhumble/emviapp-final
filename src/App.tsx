@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -59,7 +60,7 @@ function App() {
                 {/* Role-based Dashboards */}
                 <Route path="/dashboard/artist" element={<ProtectedLayout><ArtistDashboard /></ProtectedLayout>} />
                 <Route path="/dashboard/owner" element={<ProtectedLayout><OwnerDashboard /></ProtectedLayout>} />
-                <Route path="/dashboard/customer" element={<ProtectedLayout><CustomerDashboard /></CustomerDashboard>} />
+                <Route path="/dashboard/customer" element={<ProtectedLayout><CustomerDashboard /></ProtectedLayout>} />
                 
                 {/* Error Route */}
                 <Route path="*" element={<PublicLayout><ErrorPage /></PublicLayout>} />
