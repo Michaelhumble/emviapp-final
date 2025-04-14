@@ -16,7 +16,6 @@ import Messages from "@/pages/messages";
 
 // Global styles
 import "@/styles/globals.css";
-import "@/styles/chat.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {

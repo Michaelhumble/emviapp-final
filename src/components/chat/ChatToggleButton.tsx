@@ -35,6 +35,7 @@ export function ChatToggleButton({ isOpen, onClick }: ChatToggleButtonProps) {
           <Button
             onClick={onClick}
             className={`${isMobile ? 'h-14 w-14' : 'h-12 w-12'} rounded-full shadow-lg bg-primary text-primary-foreground hover:bg-primary/90`}
+            size="icon"
             aria-label="Chat with Little Sunshine AI"
           >
             <Sparkles size={isMobile ? 24 : 20} />
