@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
 import { Calendar, Clock, Building, MapPin, Save } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { AvailabilityDay, AvailabilityRecord } from "@/types/availability";
+
+interface AvailabilityDay {
+  id?: string;
+  day_of_week: number;
+  start_time: string;
+  end_time: string;
+  active: boolean;
+  location: string | null;
+}
 
 const DAYS_OF_WEEK = [
   { name: "Sunday", value: 0 },
@@ -45,19 +52,6 @@ const formatTimeDisplay = (hour: number, minute: number) => {
 
 const TIME_OPTIONS = generateTimeOptions();
 
-// Define a simple interface for the raw database records to avoid complex typing issues
-interface DatabaseAvailabilityRecord {
-  id: string;
-  artist_id: string;
-  day_of_week: string;
-  start_time: string;
-  end_time: string;
-  is_available: boolean | null;
-  location?: string | null;
-  user_id?: string;
-  role?: string;
-}
-
 const SalonAvailabilityManager = () => {
   const { user, userProfile } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -89,25 +83,20 @@ const SalonAvailabilityManager = () => {
       
       if (!user) return;
       
-      // Simplify the query to avoid deep type issues
       const { data, error } = await supabase
         .from('availability')
         .select('*')
-        .eq('user_id', user.id)
-        .order('day_of_week');
+        .eq('artist_id', user.id);
       
       if (error) throw error;
       
-      // Explicitly cast the data to our simpler interface type
-      const typedData = data as DatabaseAvailabilityRecord[];
-      
-      if (typedData && typedData.length > 0) {
-        if (typedData[0].location) {
-          setLocation(typedData[0].location);
+      if (data && data.length > 0) {
+        if (data[0].location) {
+          setLocation(data[0].location);
         }
         
         const existingDays = DAYS_OF_WEEK.map(day => {
-          const existingDay = typedData.find(d => d.day_of_week === day.value.toString());
+          const existingDay = data.find(d => Number(d.day_of_week) === day.value);
           if (existingDay) {
             return {
               id: existingDay.id,
@@ -185,18 +174,15 @@ const SalonAvailabilityManager = () => {
       const { error: deleteError } = await supabase
         .from('availability')
         .delete()
-        .eq('user_id', user.id);
+        .eq('artist_id', user.id);
         
       if (deleteError) throw deleteError;
       
-      const availabilityRecords: AvailabilityRecord[] = activeDays.map(day => ({
-        user_id: user.id,
+      const availabilityRecords = activeDays.map(day => ({
         artist_id: user.id,
-        role: 'salon',
         day_of_week: day.day_of_week.toString(),
         start_time: day.start_time,
         end_time: day.end_time,
-        location: location || userProfile?.location || null,
         is_available: true
       }));
       

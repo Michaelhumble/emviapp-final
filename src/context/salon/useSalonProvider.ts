@@ -15,19 +15,15 @@ export const useSalonProvider = (userId: string | undefined) => {
     setIsLoadingSalons(true);
 
     try {
-      // Use explicit type casting to avoid deep instantiation issues
       const { data, error } = await supabase
         .from('salons')
         .select('*')
-        .eq('id', userId)
-        .order('created_at', { ascending: false }) as unknown as { 
-          data: Salon[] | null; 
-          error: any; 
-        };
+        .eq('owner_id', userId)
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      // Safely handle the data with explicit type assertion
+      // Safely handle the data
       const salonData = (data || []) as Salon[];
       setSalons(salonData);
       
@@ -50,10 +46,9 @@ export const useSalonProvider = (userId: string | undefined) => {
     if (!userId) return false;
 
     try {
-      // Create new salon data with owner_id and set id to be the same as userId
-      // This is required by the Supabase schema based on the error message
+      // Create new salon data with owner_id
       const newSalonData = {
-        id: userId, // Using userId as the salon ID based on schema requirements
+        id: userId, // Using userId as the salon ID
         salon_name: salonData.salon_name || 'New Salon',
         logo_url: salonData.logo_url,
         location: salonData.location,
@@ -61,16 +56,13 @@ export const useSalonProvider = (userId: string | undefined) => {
         website: salonData.website,
         instagram: salonData.instagram,
         phone: salonData.phone,
+        owner_id: userId
       };
       
-      // Use explicit type casting to avoid deep instantiation issues
       const { data, error } = await supabase
         .from('salons')
         .insert(newSalonData)
-        .select() as unknown as { 
-          data: Salon[] | null; 
-          error: any; 
-        };
+        .select();
         
       if (error) {
         if (error.message.includes('maximum of 3 salons')) {
@@ -100,13 +92,10 @@ export const useSalonProvider = (userId: string | undefined) => {
   // Update a salon
   const updateSalon = async (salonId: string, data: Partial<Salon>): Promise<boolean> => {
     try {
-      // Use explicit type casting to avoid deep instantiation issues
       const { error } = await supabase
         .from('salons')
         .update(data)
-        .eq('id', salonId) as unknown as { 
-          error: any; 
-        };
+        .eq('id', salonId);
 
       if (error) throw error;
 
@@ -138,13 +127,10 @@ export const useSalonProvider = (userId: string | undefined) => {
     }
 
     try {
-      // Use explicit type casting to avoid deep instantiation issues
       const { error } = await supabase
         .from('salons')
         .delete()
-        .eq('id', salonId) as unknown as { 
-          error: any; 
-        };
+        .eq('id', salonId);
 
       if (error) throw error;
 
