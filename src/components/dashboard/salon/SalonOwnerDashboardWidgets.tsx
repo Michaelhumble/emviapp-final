@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { SalonQuickStats } from './SalonQuickStats';
-import { SalonAnalyticsCards } from './SalonAnalyticsCards';
-import { SalonBoostStatus } from './SalonBoostStatus';
-import { SalonCreditStatus } from './SalonCreditStatus';
+import SalonQuickStats from './SalonQuickStats';
+import SalonAnalyticsCards from './SalonAnalyticsCards';
+import SalonBoostStatus from './SalonBoostStatus';
+import SalonCreditStatus from './SalonCreditStatus';
 import { WeeklyDigestCard } from '../artist/WeeklyDigestCard';
 
 const SalonOwnerDashboardWidgets = () => {

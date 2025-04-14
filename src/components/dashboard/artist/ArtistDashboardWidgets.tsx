@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { ArtistMotivationalQuote } from './ArtistMotivationalQuote';
-import { ArtistPerformanceMetrics } from './ArtistPerformanceMetrics';
-import { ArtistBoostTracker } from './ArtistBoostTracker';
-import { ArtistMetricsSection } from './ArtistMetricsSection';
-import { ArtistDailyMotivation } from './ArtistDailyMotivation';
+import ArtistMotivationalQuote from './ArtistMotivationalQuote';
+import ArtistPerformanceMetrics from './ArtistPerformanceMetrics';
+import ArtistBoostTracker from './ArtistBoostTracker';
+import ArtistMetricsSection from './ArtistMetricsSection';
+import ArtistDailyMotivation from './ArtistDailyMotivation';
 import { WeeklyDigestCard } from './WeeklyDigestCard';
 
 const ArtistDashboardWidgets = () => {
