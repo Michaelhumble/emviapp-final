@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -41,7 +40,8 @@ const SalonBookingFeed = () => {
     const fetchBookings = async () => {
       setLoading(true);
       try {
-        const { data, error } = await supabase
+        // First fetch bookings
+        const { data: bookingsData, error: bookingsError } = await supabase
           .from('bookings')
           .select(`
             id, 
@@ -50,24 +50,60 @@ const SalonBookingFeed = () => {
             status, 
             note,
             service_id,
-            service:service_id (id, title, price, duration_minutes),
-            sender:sender_id (id, full_name),
+            sender_id,
             metadata
           `)
           .eq('recipient_id', user.id)
           .order('date_requested', { ascending: true });
         
-        if (error) throw error;
+        if (bookingsError) throw bookingsError;
         
-        const formattedBookings: BookingItem[] = (data || []).map(booking => ({
-          id: booking.id,
-          time: booking.time_requested || "No time specified",
-          customerName: booking.sender?.full_name || "Unknown Customer",
-          serviceName: booking.service?.title || "General Service",
-          technician: booking.metadata?.assigned_staff_name || null,
-          duration: booking.service?.duration_minutes || 60,
-          status: booking.status || "pending",
-          date: booking.date_requested ? new Date(booking.date_requested) : null
+        // Process each booking to get additional data
+        const formattedBookings: BookingItem[] = await Promise.all((bookingsData || []).map(async (booking) => {
+          // Get customer name
+          let customerName = "Unknown Customer";
+          if (booking.sender_id) {
+            const { data: userData, error: userError } = await supabase
+              .from('users')
+              .select('full_name')
+              .eq('id', booking.sender_id)
+              .single();
+            
+            if (!userError && userData) {
+              customerName = userData.full_name;
+            }
+          }
+          
+          // Get service details
+          let serviceName = "General Service";
+          let duration = 60;
+          if (booking.service_id) {
+            const { data: serviceData, error: serviceError } = await supabase
+              .from('services')
+              .select('title, duration_minutes')
+              .eq('id', booking.service_id)
+              .single();
+              
+            if (!serviceError && serviceData) {
+              serviceName = serviceData.title;
+              duration = serviceData.duration_minutes || 60;
+            }
+          }
+          
+          // Extract assigned staff from metadata
+          const metadata = booking.metadata as Record<string, any> || {};
+          const technician = metadata.assigned_staff_name || null;
+          
+          return {
+            id: booking.id,
+            time: booking.time_requested || "No time specified",
+            customerName,
+            serviceName,
+            technician,
+            duration,
+            status: booking.status || "pending",
+            date: booking.date_requested ? new Date(booking.date_requested) : null
+          };
         }));
         
         setBookings(formattedBookings);

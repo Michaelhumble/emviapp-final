@@ -30,7 +30,7 @@ const BookingCountsDisplay = ({ counts }: BookingCountsDisplayProps) => {
       <div className="flex items-center">
         <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
         <Badge variant="outline" className="bg-green-50 text-green-700 hover:bg-green-100 border-green-200">
-          {counts.completed} {t({ english: "Completed", vietnamese: "Đã hoàn thành" })}
+          {counts.completed || 0} {t({ english: "Completed", vietnamese: "Đã hoàn thành" })}
         </Badge>
       </div>
     </div>

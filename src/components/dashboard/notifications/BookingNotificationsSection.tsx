@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Bell, Calendar, CheckCircle2, XCircle } from "lucide-react";
@@ -47,21 +46,26 @@ const BookingNotificationsSection = () => {
         
         if (error) throw error;
         
-        const formattedNotifications: BookingNotification[] = (data || []).map(notif => ({
-          id: notif.id,
-          createdAt: notif.created_at,
-          message: notif.message,
-          isRead: notif.is_read,
-          type: (notif.metadata?.type as any) || 'info',
-          booking: notif.metadata?.booking_id ? {
-            id: notif.metadata.booking_id,
-            clientName: notif.metadata.client_name,
-            service: notif.metadata.service_name,
-            date: notif.metadata.date,
-            time: notif.metadata.time,
-            status: notif.metadata.status
-          } : undefined
-        }));
+        const formattedNotifications: BookingNotification[] = (data || []).map(notif => {
+          // Safely access metadata properties with type checking
+          const metadata = notif.metadata as Record<string, any> || {};
+          
+          return {
+            id: notif.id,
+            createdAt: notif.created_at,
+            message: notif.message,
+            isRead: notif.is_read,
+            type: (metadata.type as any) || 'info',
+            booking: metadata.booking_id ? {
+              id: metadata.booking_id,
+              clientName: metadata.client_name,
+              service: metadata.service_name,
+              date: metadata.date,
+              time: metadata.time,
+              status: metadata.status
+            } : undefined
+          };
+        });
         
         setNotifications(formattedNotifications);
       } catch (err) {
@@ -85,6 +89,7 @@ const BookingNotificationsSection = () => {
         }, 
         (payload) => {
           const newNotif = payload.new as any;
+          const metadata = newNotif.metadata as Record<string, any> || {};
           
           // Add new notification to state
           setNotifications(prev => [{
@@ -92,21 +97,21 @@ const BookingNotificationsSection = () => {
             createdAt: newNotif.created_at,
             message: newNotif.message,
             isRead: newNotif.is_read,
-            type: (newNotif.metadata?.type as any) || 'info',
-            booking: newNotif.metadata?.booking_id ? {
-              id: newNotif.metadata.booking_id,
-              clientName: newNotif.metadata.client_name,
-              service: newNotif.metadata.service_name,
-              date: newNotif.metadata.date,
-              time: newNotif.metadata.time,
-              status: newNotif.metadata.status
+            type: (metadata.type as any) || 'info',
+            booking: metadata.booking_id ? {
+              id: metadata.booking_id,
+              clientName: metadata.client_name,
+              service: metadata.service_name,
+              date: metadata.date,
+              time: metadata.time,
+              status: metadata.status
             } : undefined
           }, ...prev]);
           
           // Show toast notification
           toast(newNotif.message, {
             duration: 5000,
-            icon: getNotificationIcon(newNotif.metadata?.type || 'info'),
+            icon: getNotificationIcon(metadata.type || 'info'),
             action: {
               label: "View",
               onClick: () => {

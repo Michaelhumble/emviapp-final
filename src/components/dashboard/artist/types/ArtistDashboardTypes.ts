@@ -1,4 +1,3 @@
-
 // Adding missing properties to the existing types
 
 export interface Booking {
@@ -41,7 +40,7 @@ export interface ArtistDashboardData {
 export interface BookingCounts {
   total?: number;
   pending: number;
-  accepted?: number;
+  accepted: number;
   declined?: number;
   completed?: number;
   upcoming: number;

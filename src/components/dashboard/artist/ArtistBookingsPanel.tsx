@@ -40,6 +40,15 @@ const ArtistBookingsPanel = () => {
     serviceTypes: []
   });
   
+  // Ensure counts has all the required properties for BookingCountsDisplay
+  const displayCounts = {
+    pending: counts.pending,
+    accepted: counts.accepted || 0, // Provide default values if undefined
+    completed: counts.completed || 0,
+    total: counts.total || 0,
+    upcoming: counts.upcoming || 0
+  };
+  
   // Refresh bookings when component mounts
   useEffect(() => {
     refreshBookings();
@@ -64,7 +73,7 @@ const ArtistBookingsPanel = () => {
             {t({ english: "My Bookings", vietnamese: "Lịch Hẹn Của Tôi" })}
           </h2>
           
-          <BookingCountsDisplay counts={counts} />
+          <BookingCountsDisplay counts={displayCounts} />
         </div>
       </CardHeader>
       
