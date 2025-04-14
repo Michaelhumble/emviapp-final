@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
@@ -22,7 +21,7 @@ import SalonListingsManagement from "@/components/dashboard/salon/SalonListingsM
 import SalonCreditPromotion from "@/components/dashboard/salon/SalonCreditPromotion";
 import TopLocalArtists from "@/components/dashboard/salon/TopLocalArtists";
 import NextStepsSmart from "@/components/dashboard/salon/NextStepsSmart";
-import SalonTeamManagement from "@/components/dashboard/salon/team/SalonTeamManagement";
+import SalonTeamManagement from "@/components/dashboard/salon/SalonTeamManagement";
 import SalonTeamManager from "@/components/dashboard/salon/team/SalonTeamManager";
 import SalonManagersSection from "@/components/dashboard/salon/team/SalonManagersSection";
 import SalonServiceManager from "@/components/dashboard/salon/SalonServiceManager";
@@ -46,6 +45,7 @@ import SalonAvailabilityManager from "@/components/dashboard/salon/SalonAvailabi
 import { useBookingNotifications } from "@/hooks/useBookingNotifications";
 import { Toaster } from "@/components/ui/toaster";
 import UpcomingAppointments from "@/components/dashboard/common/UpcomingAppointments";
+import TeamPayrollOverview from "@/components/dashboard/salon/team/TeamPayrollOverview";
 
 const OwnerDashboardContent = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -108,11 +108,12 @@ const OwnerDashboardContent = () => {
               <UpcomingAppointments dashboardType="salon" />
               
               <Tabs value={activeTab} onValueChange={handleTabChange}>
-                <TabsList className="grid grid-cols-7 mb-8">
+                <TabsList className="grid grid-cols-8 mb-8">
                   <TabsTrigger value="overview">Overview</TabsTrigger>
                   <TabsTrigger value="bookings">Bookings</TabsTrigger>
                   <TabsTrigger value="clients">Clients</TabsTrigger>
                   <TabsTrigger value="team">Team</TabsTrigger>
+                  <TabsTrigger value="payroll">Payroll</TabsTrigger>
                   <TabsTrigger value="services">Services</TabsTrigger>
                   <TabsTrigger value="analytics">Analytics</TabsTrigger>
                   <TabsTrigger value="messages">Messages</TabsTrigger>
@@ -182,6 +183,10 @@ const OwnerDashboardContent = () => {
                   <SalonTeamManagement />
                   <SalonManagersSection />
                   <SalonReferralPanel />
+                </TabsContent>
+                
+                <TabsContent value="payroll" className="space-y-8">
+                  <TeamPayrollOverview />
                 </TabsContent>
                 
                 <TabsContent value="services" className="space-y-8">

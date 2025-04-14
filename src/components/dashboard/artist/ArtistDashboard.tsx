@@ -1,42 +1,27 @@
-
 import React from "react";
-import ArtistDashboardWidgets from "./ArtistDashboardWidgets";
-import ArtistDashboardHeader from "./ArtistDashboardHeader";
-import ArtistWelcomeBanner from "./ArtistWelcomeBanner";
-import ArtistPortfolioSection from "./ArtistPortfolioSection";
-import ArtistServicesSection from "./ArtistServicesSection";
-import ArtistServicesGrid from "./ArtistServicesGrid";
-import ArtistToolkitSection from "./ArtistToolkitSection";
-import ArtistProfileSetupSection from "./ArtistProfileSetupSection";
-import ArtistCreditsRedemption from "./ArtistCreditsRedemption";
-import ArtistReferralCenter from "./ArtistReferralCenter";
-import ArtistDailyMotivation from "./ArtistDailyMotivation";
-import ArtistMetricsSection from "./ArtistMetricsSection";
-import UpcomingAppointments from "../common/UpcomingAppointments";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import ArtistEarningsCard from "./earnings/ArtistEarningsCard";
 import { useArtistData } from "./context/ArtistDataContext";
-import { useAuth } from "@/context/auth";
 
 const ArtistDashboard = () => {
-  const { userProfile } = useAuth();
-  const { handleCopyReferralLink, firstName } = useArtistData();
+  const { stats, loading } = useArtistData();
   
   return (
-    <div className="space-y-6">
-      <ArtistDashboardHeader profile={userProfile} />
-      <ArtistWelcomeBanner firstName={firstName || 'Artist'} />
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       
-      {/* Add Upcoming Appointments section */}
-      <UpcomingAppointments dashboardType="artist" />
+      <Card>
+        <CardHeader>
+          <CardTitle>Dashboard Overview</CardTitle>
+          <CardDescription>Welcome to your artist dashboard</CardDescription>
+        </CardHeader>
+        <CardContent>
+          
+          <p>View and manage your bookings, services, and profile</p>
+        </CardContent>
+      </Card>
       
-      <ArtistMetricsSection />
-      <ArtistDashboardWidgets />
-      <ArtistToolkitSection onCopyReferralLink={handleCopyReferralLink || (() => {})} />
-      <ArtistProfileSetupSection />
-      <ArtistPortfolioSection />
-      <ArtistServicesSection />
-      <ArtistCreditsRedemption />
-      <ArtistReferralCenter />
-      <ArtistDailyMotivation />
+      
+      <ArtistEarningsCard />
     </div>
   );
 };
