@@ -5,7 +5,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
 import SalonDashboardBanner from "@/components/dashboard/salon/SalonDashboardBanner";
 import { useAuth } from "@/context/auth";
-import { useSalon } from "@/context/salon";
 import SmartReminderBanner from "@/components/dashboard/salon/SmartReminderBanner";
 import SalonQuickStats from "@/components/dashboard/salon/SalonQuickStats";
 import SalonDashboardActionButtons from "@/components/dashboard/salon/SalonDashboardActionButtons";

@@ -12,7 +12,7 @@ import { Loader2 } from "lucide-react";
 interface AvailabilityRecord {
   id: string;
   salon_id: string;
-  day_of_week: string; // Changed from number to string to match Supabase expectations
+  day_of_week: string; // Use string to match Supabase expectations
   start_time: string;
   end_time: string;
   is_available: boolean;
@@ -48,11 +48,11 @@ export const SalonAvailabilityManager = ({ salonId }: SalonAvailabilityManagerPr
       try {
         setLoading(true);
         
-        // Using the 'availability' table which exists in the database
+        // Query the availability table
         const { data, error } = await supabase
           .from('availability')
           .select('*')
-          .eq('artist_id', salonId);
+          .eq('salon_id', salonId);
         
         if (error) {
           throw error;
@@ -84,7 +84,7 @@ export const SalonAvailabilityManager = ({ salonId }: SalonAvailabilityManagerPr
         if (record.salon_id === salonId) {
           // Handle different ID formats correctly
           const recordToUpsert = {
-            artist_id: salonId,
+            salon_id: salonId,
             day_of_week: record.day_of_week,
             start_time: record.start_time,
             end_time: record.end_time,
