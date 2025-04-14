@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
 import SalonDashboardBanner from "@/components/dashboard/salon/SalonDashboardBanner";
 import { useAuth } from "@/context/auth";
+import DashboardGreeting from "@/components/dashboard/common/DashboardGreeting";
 import SmartReminderBanner from "@/components/dashboard/salon/SmartReminderBanner";
 import SalonQuickStats from "@/components/dashboard/salon/SalonQuickStats";
 import SalonDashboardActionButtons from "@/components/dashboard/salon/SalonDashboardActionButtons";
@@ -41,12 +42,17 @@ import SalonSwitcher from "@/components/dashboard/salon/SalonSwitcher";
 import AISmartReminder from "@/components/ai/AISmartReminder";
 import SalonReferralPanel from "@/components/dashboard/salon/referral/SalonReferralPanel";
 import SalonAvailabilityManager from "@/components/dashboard/salon/SalonAvailabilityManager";
+import { useBookingNotifications } from "@/hooks/useBookingNotifications";
+import { Toaster } from "@/components/ui/toaster";
 
 const ManagerDashboardContent = () => {
   const [showNotification, setShowNotification] = useState(true);
   const { userProfile } = useAuth();
   const { currentSalon } = useSalon();
   const [activeTab, setActiveTab] = useState("overview");
+  
+  // Initialize booking notifications
+  const { subscribed } = useBookingNotifications();
   
   useEffect(() => {
     document.title = "Salon Manager Dashboard | EmviApp";
@@ -73,6 +79,9 @@ const ManagerDashboardContent = () => {
         >
           <RoleDashboardLayout>
             <div className="space-y-6">
+              {/* Add personalized greeting */}
+              <DashboardGreeting className="mb-6" />
+              
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <SalonDashboardBanner userName={userProfile?.salon_name || userProfile?.full_name} />
                 <SalonSwitcher />
@@ -95,11 +104,12 @@ const ManagerDashboardContent = () => {
                   
                   <SalonQuickStats />
                   
+                  {/* Show upcoming bookings in overview tab */}
+                  <SalonBookingFeed />
+                  
                   {currentSalon?.id && <SalonAvailabilityManager salonId={currentSalon.id} />}
                   
                   <SalonDashboardActionButtons />
-                  
-                  <SalonBookingFeed />
                   
                   <SalonTeamManager />
                   
@@ -151,6 +161,9 @@ const ManagerDashboardContent = () => {
           onClose={() => setShowNotification(false)} 
         />
       )}
+      
+      {/* Add Toaster for notifications */}
+      <Toaster />
     </Layout>
   );
 };
