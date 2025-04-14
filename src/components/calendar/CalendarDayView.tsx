@@ -14,8 +14,8 @@ interface CalendarDayViewProps {
   bookings: Booking[];
   availability: AvailabilityRecord[];
   userRole: string;
-  onCreateAvailability: (dayOfWeek: string, startTime: string, endTime: string) => Promise<void>;
-  onUpdateAvailability: (id: string, startTime: string, endTime: string) => Promise<void>;
+  onCreateAvailability: (dayOfWeek: string, startTime: string, endTime: string) => Promise<any>;
+  onUpdateAvailability: (id: string, startTime: string, endTime: string) => Promise<any>;
   onDeleteAvailability: (id: string) => Promise<void>;
 }
 
