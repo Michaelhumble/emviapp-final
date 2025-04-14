@@ -1,6 +1,4 @@
 import React from 'react';
-import Index from './pages/Index';
-import Welcome from './pages/Welcome';
 import NotFound from './pages/NotFound';
 import Artists from './pages/Artists';
 import JobsPage from './pages/jobs';
@@ -37,6 +35,8 @@ import BookingPage from './pages/BookingPage';
 import MyBookingsPage from './pages/MyBookingsPage';
 import BoothDetail from './pages/booths/BoothDetail';
 import BoothsIndex from './pages/booths/BoothsIndex';
+import Welcome from './pages/Welcome';
+import IndexPage from './pages/Index';
 
 // Import profile setup pages
 import ArtistSetup from './pages/profile/artist/setup';
@@ -57,7 +57,7 @@ import Cookies from './pages/legal/Cookies';
 const routes = [
   {
     path: '/',
-    element: <Index />,
+    element: <IndexPage />,
   },
   {
     path: '/welcome',

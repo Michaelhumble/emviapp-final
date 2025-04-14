@@ -4,12 +4,13 @@ import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
 import SalonDashboardBanner from "@/components/dashboard/salon/SalonDashboardBanner";
+import { useAuth } from "@/context/auth";
+import { useSalon } from "@/context/salon";
 import SmartReminderBanner from "@/components/dashboard/salon/SmartReminderBanner";
 import SalonQuickStats from "@/components/dashboard/salon/SalonQuickStats";
 import SalonDashboardActionButtons from "@/components/dashboard/salon/SalonDashboardActionButtons";
 import SalonReferralCard from "@/components/dashboard/salon/SalonReferralCard";
 import SalonCreditStatus from "@/components/dashboard/salon/SalonCreditStatus";
-import { useAuth } from "@/context/auth";
 import SalonPostedJobsSection from "@/components/dashboard/salon/SalonPostedJobsSection";
 import SalonBoostStatus from "@/components/dashboard/salon/SalonBoostStatus";
 import SalonAnalyticsCards from "@/components/dashboard/salon/SalonAnalyticsCards";
@@ -45,7 +46,7 @@ import SalonAvailabilityManager from "@/components/dashboard/salon/SalonAvailabi
 const OwnerDashboardContent = () => {
   const [showNotification, setShowNotification] = useState(true);
   const { userProfile } = useAuth();
-  const { salon } = useSalon();
+  const { currentSalon } = useSalon();
   const [showConfetti, setShowConfetti] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   
@@ -112,7 +113,7 @@ const OwnerDashboardContent = () => {
                   
                   <SalonQuickStats />
                   
-                  {salon?.id && <SalonAvailabilityManager salonId={salon.id} />}
+                  {currentSalon?.id && <SalonAvailabilityManager salonId={currentSalon.id} />}
                   
                   <SalonBoostCreditPanel />
                   

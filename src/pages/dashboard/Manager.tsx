@@ -6,6 +6,7 @@ import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
 import SalonDashboardBanner from "@/components/dashboard/salon/SalonDashboardBanner";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
+import { useSalon } from "@/context/salon";
 import SalonQuickStats from "@/components/dashboard/salon/SalonQuickStats";
 import SalonTeamManager from "@/components/dashboard/salon/team/SalonTeamManager";
 import SalonServiceManager from "@/components/dashboard/salon/SalonServiceManager";
@@ -22,6 +23,7 @@ import { Salon } from "@/context/salon/types";
 
 const ManagerDashboard = () => {
   const { userProfile } = useAuth();
+  const { salon } = useSalon();
   const [activeTab, setActiveTab] = useState("overview");
   const [managedSalon, setManagedSalon] = useState<Salon | null>(null);
   const [loading, setLoading] = useState(true);
@@ -146,7 +148,7 @@ const ManagerDashboard = () => {
                 <TabsContent value="overview" className="space-y-8">
                   <SalonQuickStats />
                   <SalonBookingFeed />
-                  {managedSalon && managedSalon.id && <SalonAvailabilityManager salonId={managedSalon.id} />}
+                  {(managedSalon && managedSalon.id) && <SalonAvailabilityManager salonId={managedSalon.id} />}
                   <SalonTeamManager />
                   <BookingAnalyticsCard />
                 </TabsContent>
@@ -159,7 +161,7 @@ const ManagerDashboard = () => {
                 
                 <TabsContent value="team" className="space-y-8">
                   <SalonTeamManager />
-                  {managedSalon && managedSalon.id && <SalonAvailabilityManager salonId={managedSalon.id} />}
+                  {(managedSalon && managedSalon.id) && <SalonAvailabilityManager salonId={managedSalon.id} />}
                 </TabsContent>
                 
                 <TabsContent value="services" className="space-y-8">

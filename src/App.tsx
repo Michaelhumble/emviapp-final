@@ -7,6 +7,7 @@ import { ProfileProvider } from "@/context/profile";
 import { ProfileCompletionProvider } from "@/context/profile/ProfileCompletionProvider";
 import { SubscriptionProvider } from "@/context/subscription";
 import { NotificationProvider } from "@/context/notification";
+import { SalonProvider } from "@/context/salon";
 
 // Pages
 import Index from "@/pages/Index";
@@ -36,14 +37,16 @@ function App() {
             <ProfileCompletionProvider>
               <SubscriptionProvider>
                 <NotificationProvider>
-                  <Toaster position="top-center" richColors />
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/jobs" element={<Jobs />} />
-                    <Route path="/messages" element={<Messages />} />
-                    <Route path="/salon-sales" element={<SalonSales />} /> 
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
+                  <SalonProvider>
+                    <Toaster position="top-center" richColors />
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/jobs" element={<Jobs />} />
+                      <Route path="/messages" element={<Messages />} />
+                      <Route path="/salon-sales" element={<SalonSales />} /> 
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </SalonProvider>
                 </NotificationProvider>
               </SubscriptionProvider>
             </ProfileCompletionProvider>

@@ -8,11 +8,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
-// Define explicit types to avoid deep type inference issues
+// Define explicit types for the availability records
 interface AvailabilityRecord {
   id: string;
   salon_id: string;
-  day_of_week: number;
+  day_of_week: string; // Changed from number to string to match Supabase expectations
   start_time: string;
   end_time: string;
   is_available: boolean;
@@ -48,7 +48,7 @@ export const SalonAvailabilityManager = ({ salonId }: SalonAvailabilityManagerPr
       try {
         setLoading(true);
         
-        // Using 'availability' table which exists in the database
+        // Using the 'availability' table which exists in the database
         const { data, error } = await supabase
           .from('availability')
           .select('*')
@@ -79,20 +79,30 @@ export const SalonAvailabilityManager = ({ salonId }: SalonAvailabilityManagerPr
       setSaving(true);
       
       // Logic to save availability data to Supabase
-      // This would involve upserting the availabilityData to the availability table
       for (const record of availabilityData) {
         // Only save records with the current salon_id
         if (record.salon_id === salonId) {
-          await supabase
-            .from('availability')
-            .upsert({
-              id: record.id.startsWith('new-') ? undefined : record.id,
-              salon_id: salonId,
-              day_of_week: record.day_of_week,
-              start_time: record.start_time,
-              end_time: record.end_time,
-              is_available: record.is_available
-            });
+          // Handle different ID formats correctly
+          const recordToUpsert = {
+            artist_id: salonId,
+            day_of_week: record.day_of_week,
+            start_time: record.start_time,
+            end_time: record.end_time,
+            is_available: record.is_available
+          };
+          
+          if (!record.id.startsWith('new-')) {
+            // If it has a real ID, include it
+            await supabase
+              .from('availability')
+              .update({...recordToUpsert})
+              .eq('id', record.id);
+          } else {
+            // For new records, let Supabase generate the ID
+            await supabase
+              .from('availability')
+              .insert({...recordToUpsert});
+          }
         }
       }
       
@@ -111,7 +121,7 @@ export const SalonAvailabilityManager = ({ salonId }: SalonAvailabilityManagerPr
     setAvailabilityData(prev => {
       const newData = [...prev];
       const existingIndex = newData.findIndex(
-        item => item.day_of_week === dayIndex && item.start_time === timeSlot
+        item => item.day_of_week === dayIndex.toString() && item.start_time === timeSlot
       );
       
       if (existingIndex >= 0) {
@@ -120,7 +130,7 @@ export const SalonAvailabilityManager = ({ salonId }: SalonAvailabilityManagerPr
         newData.push({
           id: `new-${dayIndex}-${timeSlot}`,
           salon_id: salonId,
-          day_of_week: dayIndex,
+          day_of_week: dayIndex.toString(),
           start_time: timeSlot,
           end_time: calculateEndTime(timeSlot),
           is_available: isAvailable,
