@@ -26,6 +26,11 @@ import { Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
+import { UpsellSuggestions } from '@/components/booking/UpsellSuggestions';
+import { RebookingReminder } from '@/components/booking/RebookingReminder';
+import { useServiceUpsells } from '@/hooks/useServiceUpsells';
+import { BookingProvider, useBooking } from '@/context/booking/BookingProvider';
+import { useRebookingReminder } from '@/hooks/useRebookingReminder';
 
 const TIME_SLOTS = [
   '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
@@ -33,7 +38,7 @@ const TIME_SLOTS = [
   '5:00 PM', '6:00 PM', '7:00 PM'
 ];
 
-const BookingPage = () => {
+const BookingPageContent = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -71,6 +76,41 @@ const BookingPage = () => {
     }
   });
 
+  const { 
+    bookingState, 
+    setServiceId, 
+    setProviderId, 
+    setDate, 
+    setTime, 
+    setNotes,
+    addAdditionalService,
+    saveBookingDraft,
+    submitBooking,
+    isLoading: isSavingBooking
+  } = useBooking();
+
+  const {
+    shouldShowReminder,
+    artistName,
+    artistId,
+    lastBookingDate,
+    dismissReminder
+  } = useRebookingReminder();
+
+  const { upsells, loading: loadingUpsells } = useServiceUpsells(
+    serviceType, 
+    parseFloat(services?.find(s => s.id === serviceType)?.price || '0')
+  );
+
+  const handleAddUpsell = (upsell) => {
+    addAdditionalService(upsell);
+  };
+
+  const handleSkipUpsells = () => {
+    // Just hide the upsells by setting an empty array
+    // This is handled in the UpsellSuggestions component
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -85,44 +125,41 @@ const BookingPage = () => {
       return;
     }
 
-    setSubmitting(true);
+    setServiceId(serviceType);
+    setProviderId(providerId);
+    setDate(bookingDate);
+    setTime(bookingTime);
+    setNotes(notes);
 
-    try {
-      const formattedDate = bookingDate ? format(bookingDate, 'yyyy-MM-dd') : null;
+    const draftId = await saveBookingDraft();
+    
+    if (!draftId) {
+      toast.error('Failed to save booking draft');
+      return;
+    }
 
-      const { data, error } = await supabase
-        .from('bookings')
-        .insert({
-          customer_id: user.id,
-          provider_id: providerId,
-          service_type: serviceType,
-          date: formattedDate,
-          time: bookingTime,
-          notes: notes,
-          status: 'pending',
-          created_at: new Date().toISOString(),
-          sender_id: user.id,
-          recipient_id: providerId,
-          date_requested: formattedDate,
-          time_requested: bookingTime
-        })
-        .select();
+    const success = await submitBooking();
 
-      if (error) throw error;
-
+    if (success) {
       toast.success('Booking request submitted successfully!');
       navigate('/my-bookings');
-    } catch (error: any) {
-      console.error('Error creating booking:', error);
-      toast.error(`Failed to submit booking: ${error.message}`);
-    } finally {
-      setSubmitting(false);
     }
   };
 
   return (
     <Layout>
       <div className="container max-w-3xl mx-auto py-10 px-4">
+        {shouldShowReminder && (
+          <div className="mb-6">
+            <RebookingReminder
+              lastBookingDate={lastBookingDate}
+              artistName={artistName}
+              artistId={artistId}
+              onDismiss={dismissReminder}
+            />
+          </div>
+        )}
+
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl">Book an Appointment</CardTitle>
@@ -132,6 +169,15 @@ const BookingPage = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
+              {serviceType && (
+                <UpsellSuggestions
+                  upsells={upsells}
+                  onAddUpsell={handleAddUpsell}
+                  onSkip={handleSkipUpsells}
+                  isLoading={loadingUpsells}
+                />
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="provider">Select Artist or Salon</Label>
                 <Select
@@ -218,8 +264,8 @@ const BookingPage = () => {
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={submitting}>
-                {submitting ? (
+              <Button type="submit" className="w-full" disabled={submitting || isSavingBooking}>
+                {submitting || isSavingBooking ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Submitting...
@@ -233,6 +279,14 @@ const BookingPage = () => {
         </Card>
       </div>
     </Layout>
+  );
+};
+
+const BookingPage = () => {
+  return (
+    <BookingProvider>
+      <BookingPageContent />
+    </BookingProvider>
   );
 };
 

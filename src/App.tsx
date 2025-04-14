@@ -1,101 +1,75 @@
-
-import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
-import { AuthProvider } from '@/context/auth';
-import { ProfileProvider } from '@/context/profile';
-import { ProfileCompletionProvider } from '@/context/profile/ProfileCompletionProvider';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AuthProvider } from './context/auth';
+import { PublicLayout } from '@/components/layout/PublicLayout';
+import { ProtectedLayout } from '@/components/layout/ProtectedLayout';
+import LandingPage from './pages/LandingPage';
+import SignInPage from './pages/SignInPage';
+import SignUpPage from './pages/SignUpPage';
+import DashboardPage from './pages/DashboardPage';
+import ProfilePage from './pages/ProfilePage';
+import BookingPage from './pages/BookingPage';
+import ErrorPage from './pages/ErrorPage';
+import ArtistDashboard from './pages/dashboard/Artist';
+import OwnerDashboard from './pages/dashboard/Owner';
+import CustomerDashboard from './pages/dashboard/Customer';
+import PricingPage from './pages/PricingPage';
+import ContactPage from './pages/ContactPage';
+import AboutPage from './pages/AboutPage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
+import ServicesPage from './pages/ServicesPage';
+import ArtistsPage from './pages/ArtistsPage';
+import CheckoutPage from './pages/CheckoutPage';
+import SupportPage from './pages/SupportPage';
+import { BookingProvider } from '@/context/booking/BookingProvider';
 import { NotificationProvider } from '@/context/notification';
-import { SubscriptionProvider } from '@/context/subscription';
-import { GoogleMapsProvider } from '@/context/maps/GoogleMapsContext';
-import { Toaster } from 'sonner';
-import AppModifier from './App-Modifier';
-import routes from './routes';
-import '@/App.css';
-import './components/chat/chat.css';
-import { supabase } from '@/integrations/supabase/client';
-import AuthGuard from './components/auth/AuthGuard';
-import { ChatSystem } from './components/chat/ChatSystem';
-import { useBookingReminders } from './hooks/useBookingReminders';
-
-// Function to determine if a route should be protected
-const isProtectedRoute = (path: string): boolean => {
-  return path.startsWith('/dashboard') || 
-         path.startsWith('/profile') || 
-         path.startsWith('/settings') ||
-         path === '/command-center';
-};
-
-// Booking reminders component that just implements the hook
-const BookingRemindersSystem = () => {
-  useBookingReminders();
-  return null;
-};
+import { BookingNotificationProvider } from '@/components/BookingNotificationProvider';
 
 function App() {
-  const location = useLocation();
-
-  // Handle referral codes in URL
-  useEffect(() => {
-    const handleReferral = async () => {
-      const params = new URLSearchParams(window.location.search);
-      const refCode = params.get('ref');
-      
-      if (refCode) {
-        // Store referral code in localStorage for later attribution
-        localStorage.setItem('emvi_referral_code', refCode);
-        
-        // Get current user
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        // If user is signed in and has a referral code, attribute the referral
-        if (user) {
-          const { error } = await supabase.rpc('process_referral', {
-            referral_code: refCode,
-            new_user_id: user.id
-          });
-          
-          if (error) {
-            console.error('Error processing referral:', error);
-          }
-        }
-      }
-    };
-    
-    handleReferral();
-  }, [location]);
+  const queryClient = new QueryClient();
 
   return (
-    <AuthProvider>
-      <ProfileProvider>
-        <ProfileCompletionProvider>
-          <SubscriptionProvider>
-            <NotificationProvider>
-              <GoogleMapsProvider>
-                <AppModifier />
-                <Routes>
-                  {routes.map((route) => (
-                    <Route
-                      key={route.path}
-                      path={route.path}
-                      element={
-                        isProtectedRoute(route.path) ? (
-                          <AuthGuard>{route.element}</AuthGuard>
-                        ) : (
-                          route.element
-                        )
-                      }
-                    />
-                  ))}
-                </Routes>
-                <Toaster position="top-right" />
-                <ChatSystem />
-                <BookingRemindersSystem />
-              </GoogleMapsProvider>
-            </NotificationProvider>
-          </SubscriptionProvider>
-        </ProfileCompletionProvider>
-      </ProfileProvider>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <NotificationProvider>
+        <BookingProvider>
+          <Router>
+            <AuthProvider>
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<PublicLayout><LandingPage /></PublicLayout>} />
+                <Route path="/auth/signin" element={<PublicLayout><SignInPage /></PublicLayout>} />
+                <Route path="/auth/signup" element={<PublicLayout><SignUpPage /></PublicLayout>} />
+                <Route path="/pricing" element={<PublicLayout><PricingPage /></PublicLayout>} />
+                <Route path="/contact" element={<PublicLayout><ContactPage /></PublicLayout>} />
+                <Route path="/about" element={<PublicLayout><AboutPage /></PublicLayout>} />
+                <Route path="/terms" element={<PublicLayout><TermsPage /></PublicLayout>} />
+                <Route path="/privacy" element={<PublicLayout><PrivacyPage /></PublicLayout>} />
+                <Route path="/services" element={<PublicLayout><ServicesPage /></PublicLayout>} />
+                <Route path="/artists" element={<PublicLayout><ArtistsPage /></PublicLayout>} />
+                <Route path="/support" element={<PublicLayout><SupportPage /></PublicLayout>} />
+                
+                {/* Protected Routes */}
+                <Route path="/dashboard" element={<ProtectedLayout><DashboardPage /></ProtectedLayout>} />
+                <Route path="/profile" element={<ProtectedLayout><ProfilePage /></ProtectedLayout>} />
+                <Route path="/booking" element={<ProtectedLayout><BookingPage /></ProtectedLayout>} />
+                <Route path="/checkout" element={<ProtectedLayout><CheckoutPage /></ProtectedLayout>} />
+                
+                {/* Role-based Dashboards */}
+                <Route path="/dashboard/artist" element={<ProtectedLayout><ArtistDashboard /></ProtectedLayout>} />
+                <Route path="/dashboard/owner" element={<ProtectedLayout><OwnerDashboard /></ProtectedLayout>} />
+                <Route path="/dashboard/customer" element={<ProtectedLayout><CustomerDashboard /></CustomerDashboard>} />
+                
+                {/* Error Route */}
+                <Route path="*" element={<PublicLayout><ErrorPage /></PublicLayout>} />
+              </Routes>
+            </AuthProvider>
+          </Router>
+          <BookingNotificationProvider />
+        </BookingProvider>
+      </NotificationProvider>
+    </QueryClientProvider>
   );
 }
 
