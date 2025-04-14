@@ -38,11 +38,11 @@ export interface ArtistDashboardData {
 
 // Modified BookingCounts interface to include all required fields
 export interface BookingCounts {
-  total?: number;
+  total: number;
   pending: number;
   accepted: number;
   declined?: number;
-  completed?: number;
+  completed: number;
   upcoming: number;
 }
 

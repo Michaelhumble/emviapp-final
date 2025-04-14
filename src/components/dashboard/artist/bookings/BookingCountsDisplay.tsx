@@ -1,5 +1,5 @@
 
-import { BookingCounts } from "@/components/dashboard/artist/hooks/useArtistBookings";
+import { BookingCounts } from "@/components/dashboard/artist/types/ArtistDashboardTypes";
 import { Badge } from "@/components/ui/badge";
 import { CalendarCheck, Clock, CheckCircle } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
