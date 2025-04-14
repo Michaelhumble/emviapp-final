@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -89,15 +88,14 @@ const SalonAvailabilityManager = () => {
       
       if (!user) return;
       
-      // Fix the type instantiation issue by explicitly handling the query result
-      const { data, error } = await supabase
+      const response = await supabase
         .from('availability')
         .select('*')
         .eq('user_id', user.id)
-        .order('day_of_week') as { 
-          data: any[]; 
-          error: any; 
-        };
+        .order('day_of_week');
+      
+      const data = response.data as DatabaseAvailabilityRecord[] | null;
+      const error = response.error;
       
       if (error) throw error;
       
