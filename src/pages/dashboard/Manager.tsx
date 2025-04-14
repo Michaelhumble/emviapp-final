@@ -150,7 +150,7 @@ const ManagerDashboard = () => {
                 <TabsContent value="overview" className="space-y-8">
                   <SalonQuickStats />
                   <SalonBookingFeed />
-                  <SalonAvailabilityManager />
+                  {managedSalon && <SalonAvailabilityManager salonId={managedSalon.id} />}
                   <SalonTeamManager />
                   <BookingAnalyticsCard />
                 </TabsContent>
@@ -163,7 +163,7 @@ const ManagerDashboard = () => {
                 
                 <TabsContent value="team" className="space-y-8">
                   <SalonTeamManager />
-                  <SalonAvailabilityManager />
+                  {managedSalon && <SalonAvailabilityManager salonId={managedSalon.id} />}
                 </TabsContent>
                 
                 <TabsContent value="services" className="space-y-8">

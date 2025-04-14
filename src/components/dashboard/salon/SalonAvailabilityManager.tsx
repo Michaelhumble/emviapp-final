@@ -1,10 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
-import { useSupabaseClient } from '@supabase/auth-helpers-react';
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TimeGrid } from "@/components/scheduling/TimeGrid";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
@@ -24,7 +24,6 @@ interface SalonAvailabilityManagerProps {
 }
 
 export const SalonAvailabilityManager = ({ salonId }: SalonAvailabilityManagerProps) => {
-  const supabase = useSupabaseClient();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [availabilityData, setAvailabilityData] = useState<DatabaseAvailabilityRecord[]>([]);
@@ -69,7 +68,7 @@ export const SalonAvailabilityManager = ({ salonId }: SalonAvailabilityManagerPr
     };
     
     fetchAvailability();
-  }, [salonId, supabase]);
+  }, [salonId]);
   
   // Save availability changes
   const saveAvailability = async () => {
