@@ -113,7 +113,7 @@ const OwnerDashboardContent = () => {
                   
                   <SalonQuickStats />
                   
-                  <SalonAvailabilityManager />
+                  {currentSalon?.id && <SalonAvailabilityManager salonId={currentSalon.id} />}
                   
                   <SalonBoostCreditPanel />
                   

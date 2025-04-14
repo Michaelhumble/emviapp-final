@@ -1,33 +1,35 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Toggle } from "@/components/ui/toggle";
+import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
+import { useSalon } from "@/context/salon";
 import { Calendar, Clock, Building, MapPin, Save } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
-interface AvailabilityDay {
+type AvailabilityDay = {
   id?: string;
-  day_of_week: number;
+  day_of_week: string;
   start_time: string;
   end_time: string;
   active: boolean;
-  location: string | null;
-}
+  salon_id: string;
+};
 
 const DAYS_OF_WEEK = [
-  { name: "Sunday", value: 0 },
-  { name: "Monday", value: 1 },
-  { name: "Tuesday", value: 2 },
-  { name: "Wednesday", value: 3 },
-  { name: "Thursday", value: 4 },
-  { name: "Friday", value: 5 },
-  { name: "Saturday", value: 6 }
+  { name: "Sunday", value: "0" },
+  { name: "Monday", value: "1" },
+  { name: "Tuesday", value: "2" },
+  { name: "Wednesday", value: "3" },
+  { name: "Thursday", value: "4" },
+  { name: "Friday", value: "5" },
+  { name: "Saturday", value: "6" }
 ];
 
 const generateTimeOptions = () => {
@@ -52,19 +54,20 @@ const formatTimeDisplay = (hour: number, minute: number) => {
 
 const TIME_OPTIONS = generateTimeOptions();
 
-const SalonAvailabilityManager = () => {
-  const { user, userProfile } = useAuth();
+const SalonAvailabilityManager = ({ salonId }: { salonId: string }) => {
+  const { userProfile } = useAuth();
+  const { currentSalon } = useSalon();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [availability, setAvailability] = useState<AvailabilityDay[]>([]);
-  const [location, setLocation] = useState(userProfile?.location || '');
+  const [location, setLocation] = useState(currentSalon?.location || userProfile?.location || '');
   
   useEffect(() => {
-    if (user) {
+    if (salonId) {
       initializeAvailability();
       fetchExistingAvailability();
     }
-  }, [user]);
+  }, [salonId]);
 
   const initializeAvailability = () => {
     const defaultAvailability: AvailabilityDay[] = DAYS_OF_WEEK.map(day => ({
@@ -72,7 +75,7 @@ const SalonAvailabilityManager = () => {
       start_time: '09:00',
       end_time: '17:00',
       active: false,
-      location: userProfile?.location || null
+      salon_id: salonId
     }));
     setAvailability(defaultAvailability);
   };
@@ -81,22 +84,21 @@ const SalonAvailabilityManager = () => {
     try {
       setLoading(true);
       
-      if (!user) return;
-      
       const { data, error } = await supabase
         .from('availability')
         .select('*')
-        .eq('artist_id', user.id);
+        .eq('artist_id', salonId);
       
       if (error) throw error;
       
       if (data && data.length > 0) {
-        if (data[0].location) {
-          setLocation(data[0].location);
+        // If we have location data in the salon object, use it
+        if (currentSalon?.location) {
+          setLocation(currentSalon.location);
         }
         
         const existingDays = DAYS_OF_WEEK.map(day => {
-          const existingDay = data.find(d => Number(d.day_of_week) === day.value);
+          const existingDay = data.find(d => d.day_of_week === day.value);
           if (existingDay) {
             return {
               id: existingDay.id,
@@ -104,7 +106,7 @@ const SalonAvailabilityManager = () => {
               start_time: existingDay.start_time,
               end_time: existingDay.end_time,
               active: true,
-              location: existingDay.location
+              salon_id: salonId
             } as AvailabilityDay;
           } else {
             return {
@@ -112,7 +114,7 @@ const SalonAvailabilityManager = () => {
               start_time: '09:00',
               end_time: '17:00',
               active: false,
-              location: userProfile?.location || null
+              salon_id: salonId
             } as AvailabilityDay;
           }
         });
@@ -139,11 +141,11 @@ const SalonAvailabilityManager = () => {
   };
 
   const copyToWeekdays = () => {
-    const mondaySettings = availability.find(day => day.day_of_week === 1);
+    const mondaySettings = availability.find(day => day.day_of_week === "1");
     if (!mondaySettings) return;
     
     const newAvailability = [...availability];
-    [1, 2, 3, 4, 5].forEach(dayValue => {
+    ["1", "2", "3", "4", "5"].forEach(dayValue => {
       const index = newAvailability.findIndex(day => day.day_of_week === dayValue);
       if (index !== -1) {
         newAvailability[index] = {
@@ -159,7 +161,7 @@ const SalonAvailabilityManager = () => {
   };
 
   const saveAvailability = async () => {
-    if (!user) return;
+    if (!salonId) return;
     
     setSaving(true);
     try {
@@ -171,16 +173,18 @@ const SalonAvailabilityManager = () => {
         return;
       }
 
+      // Delete existing availability records
       const { error: deleteError } = await supabase
         .from('availability')
         .delete()
-        .eq('artist_id', user.id);
+        .eq('artist_id', salonId);
         
       if (deleteError) throw deleteError;
       
+      // Create availability records for active days
       const availabilityRecords = activeDays.map(day => ({
-        artist_id: user.id,
-        day_of_week: day.day_of_week.toString(),
+        artist_id: salonId,
+        day_of_week: day.day_of_week,
         start_time: day.start_time,
         end_time: day.end_time,
         is_available: true
@@ -192,11 +196,12 @@ const SalonAvailabilityManager = () => {
         
       if (insertError) throw insertError;
       
-      if (location !== userProfile?.location) {
+      // Update salon location if changed
+      if (currentSalon && location !== currentSalon.location) {
         const { error: updateError } = await supabase
-          .from('users')
+          .from('salons')
           .update({ location })
-          .eq('id', user.id);
+          .eq('id', salonId);
           
         if (updateError) throw updateError;
       }
@@ -258,13 +263,11 @@ const SalonAvailabilityManager = () => {
                       <div key={index} className={`p-4 rounded-lg border ${day.active ? 'border-primary bg-primary/5' : 'border-gray-200'}`}>
                         <div className="flex items-center justify-between mb-4">
                           <h3 className="font-medium">{DAYS_OF_WEEK[index].name}</h3>
-                          <Toggle 
-                            pressed={day.active} 
-                            onPressedChange={() => toggleDay(index)}
+                          <Switch 
+                            checked={day.active} 
+                            onCheckedChange={() => toggleDay(index)}
                             aria-label={`Toggle ${DAYS_OF_WEEK[index].name}`}
-                          >
-                            {day.active ? 'Open' : 'Closed'}
-                          </Toggle>
+                          />
                         </div>
                         
                         {day.active && (
@@ -333,12 +336,10 @@ const SalonAvailabilityManager = () => {
                           <h3 className="font-medium mb-4">Monday Settings</h3>
                           <div className="flex items-center justify-between mb-4">
                             <span>Open/Closed</span>
-                            <Toggle 
-                              pressed={availability[1].active} 
-                              onPressedChange={() => toggleDay(1)}
-                            >
-                              {availability[1].active ? 'Open' : 'Closed'}
-                            </Toggle>
+                            <Switch 
+                              checked={availability[1].active} 
+                              onCheckedChange={() => toggleDay(1)}
+                            />
                           </div>
                           
                           {availability[1].active && (
