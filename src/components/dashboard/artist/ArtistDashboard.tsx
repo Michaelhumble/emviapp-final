@@ -13,19 +13,24 @@ import ArtistReferralCenter from "./ArtistReferralCenter";
 import ArtistDailyMotivation from "./ArtistDailyMotivation";
 import ArtistMetricsSection from "./ArtistMetricsSection";
 import UpcomingAppointments from "../common/UpcomingAppointments";
+import { useArtistData } from "./context/ArtistDataContext";
+import { useAuth } from "@/context/auth";
 
 const ArtistDashboard = () => {
+  const { userProfile } = useAuth();
+  const { handleCopyReferralLink, firstName } = useArtistData();
+  
   return (
     <div className="space-y-6">
-      <ArtistDashboardHeader />
-      <ArtistWelcomeBanner />
+      <ArtistDashboardHeader profile={userProfile} />
+      <ArtistWelcomeBanner firstName={firstName || 'Artist'} />
       
       {/* Add Upcoming Appointments section */}
       <UpcomingAppointments dashboardType="artist" />
       
       <ArtistMetricsSection />
       <ArtistDashboardWidgets />
-      <ArtistToolkitSection />
+      <ArtistToolkitSection onCopyReferralLink={handleCopyReferralLink || (() => {})} />
       <ArtistProfileSetupSection />
       <ArtistPortfolioSection />
       <ArtistServicesSection />
