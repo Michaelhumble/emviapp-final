@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
@@ -9,8 +10,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -24,7 +23,6 @@ import { toast } from 'sonner';
 import Layout from '@/components/layout/Layout';
 import { Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { format } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
 import { UpsellSuggestions } from '@/components/booking/UpsellSuggestions';
 import { RebookingReminder } from '@/components/booking/RebookingReminder';
@@ -42,11 +40,11 @@ const BookingPageContent = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [providerId, setProviderId] = useState('');
+  const [selectedProviderId, setSelectedProviderId] = useState('');
   const [serviceType, setServiceType] = useState('');
   const [bookingDate, setBookingDate] = useState<Date | undefined>();
   const [bookingTime, setBookingTime] = useState('');
-  const [notes, setNotes] = useState('');
+  const [bookingNotes, setBookingNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const { data: providers, isLoading: loadingProviders } = useQuery({
@@ -68,7 +66,7 @@ const BookingPageContent = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('services')
-        .select('id, title')
+        .select('id, title, price')
         .order('title');
       
       if (error) throw error;
@@ -97,12 +95,16 @@ const BookingPageContent = () => {
     dismissReminder
   } = useRebookingReminder();
 
+  // Get the current service price for the upsell calculation
+  const currentService = services?.find(s => s.id === serviceType);
+  const currentServicePrice = currentService ? parseFloat(String(currentService.price)) : 0;
+
   const { upsells, loading: loadingUpsells } = useServiceUpsells(
     serviceType, 
-    parseFloat(services?.find(s => s.id === serviceType)?.price || '0')
+    currentServicePrice
   );
 
-  const handleAddUpsell = (upsell) => {
+  const handleAddUpsell = (upsell: any) => {
     addAdditionalService(upsell);
   };
 
@@ -120,16 +122,16 @@ const BookingPageContent = () => {
       return;
     }
 
-    if (!providerId || !serviceType || !bookingDate || !bookingTime) {
+    if (!selectedProviderId || !serviceType || !bookingDate || !bookingTime) {
       toast.error('Please fill out all required fields');
       return;
     }
 
     setServiceId(serviceType);
-    setProviderId(providerId);
+    setProviderId(selectedProviderId);
     setDate(bookingDate);
     setTime(bookingTime);
-    setNotes(notes);
+    setNotes(bookingNotes);
 
     const draftId = await saveBookingDraft();
     
@@ -179,10 +181,10 @@ const BookingPageContent = () => {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="provider">Select Artist or Salon</Label>
+                <label htmlFor="provider">Select Artist or Salon</label>
                 <Select
-                  value={providerId}
-                  onValueChange={setProviderId}
+                  value={selectedProviderId}
+                  onValueChange={setSelectedProviderId}
                   disabled={loadingProviders}
                 >
                   <SelectTrigger id="provider">
@@ -199,7 +201,7 @@ const BookingPageContent = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="service">Service Type</Label>
+                <label htmlFor="service">Service Type</label>
                 <Select
                   value={serviceType}
                   onValueChange={setServiceType}
@@ -210,23 +212,16 @@ const BookingPageContent = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {services?.map((service) => (
-                      <SelectItem key={service.id} value={service.title}>
+                      <SelectItem key={service.id} value={service.id}>
                         {service.title}
                       </SelectItem>
                     ))}
-                    <SelectItem value="manicure">Manicure</SelectItem>
-                    <SelectItem value="pedicure">Pedicure</SelectItem>
-                    <SelectItem value="gel-nails">Gel Nails</SelectItem>
-                    <SelectItem value="nail-art">Nail Art</SelectItem>
-                    <SelectItem value="acrylic-nails">Acrylic Nails</SelectItem>
-                    <SelectItem value="nail-repair">Nail Repair</SelectItem>
-                    <SelectItem value="custom">Custom Service</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <Label>Select Date</Label>
+                <label>Select Date</label>
                 <Calendar
                   mode="single"
                   selected={bookingDate}
@@ -237,7 +232,7 @@ const BookingPageContent = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="time">Select Time</Label>
+                <label htmlFor="time">Select Time</label>
                 <Select value={bookingTime} onValueChange={setBookingTime}>
                   <SelectTrigger id="time">
                     <SelectValue placeholder="Select time" />
@@ -253,11 +248,11 @@ const BookingPageContent = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="notes">Additional Notes</Label>
+                <label htmlFor="notes">Additional Notes</label>
                 <Textarea
                   id="notes"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
+                  value={bookingNotes}
+                  onChange={(e) => setBookingNotes(e.target.value)}
                   placeholder="Any special requests or information"
                   className="resize-none"
                   rows={4}

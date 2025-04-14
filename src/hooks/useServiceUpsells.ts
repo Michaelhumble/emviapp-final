@@ -31,13 +31,18 @@ export const useServiceUpsells = (serviceId: string | null, bookingValue: number
       setError(null);
 
       try {
-        // Use the Supabase function to get related services
+        // Use a normal select instead of the RPC function
         const { data, error } = await supabase
-          .rpc('get_service_upsells', { p_service_id: serviceId });
+          .from('services')
+          .select('id, title, price, description, duration_minutes, image_url')
+          .eq('related_to', serviceId)
+          .eq('is_visible', true)
+          .order('price', { ascending: true })
+          .limit(3);
         
         if (error) throw error;
         
-        setUpsells(data || []);
+        setUpsells(data as UpsellService[] || []);
       } catch (err: any) {
         console.error('Error fetching upsell services:', err);
         setError('Failed to load service recommendations');

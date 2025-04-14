@@ -13,33 +13,43 @@ export const useAbandonedBookingReminder = () => {
     
     const checkForAbandonedBookings = async () => {
       try {
+        // First check if last_activity column exists
+        const { data: columnsData } = await supabase
+          .from('bookings')
+          .select('*')
+          .limit(1);
+        
+        // If last_activity doesn't exist, we'll use created_at instead
+        const timeField = columnsData && 'last_activity' in columnsData[0] 
+          ? 'last_activity' 
+          : 'created_at';
+        
         const { data, error } = await supabase
           .from('bookings')
           .select(`
             id,
             service_id,
-            last_activity,
+            created_at,
             services(title)
           `)
           .eq('sender_id', user.id)
           .eq('status', 'draft')
-          .order('last_activity', { ascending: false })
-          .limit(1)
-          .single();
+          .order('created_at', { ascending: false })
+          .limit(1);
         
-        if (error || !data) return;
+        if (error || !data || data.length === 0) return;
         
-        // Check if the booking was abandoned (last activity > 5 minutes ago)
-        const lastActivity = new Date(data.last_activity);
+        // Check if the booking was abandoned (created_at > 5 minutes ago)
+        const lastActivity = new Date(data[0].created_at);
         const fiveMinutesAgo = new Date();
         fiveMinutesAgo.setMinutes(fiveMinutesAgo.getMinutes() - 5);
         
         if (lastActivity < fiveMinutesAgo) {
-          setAbandonedBooking(data.id);
+          setAbandonedBooking(data[0].id);
           
           // Set service name if available
-          if (data.services?.title) {
-            setServiceName(data.services.title);
+          if (data[0].services?.title) {
+            setServiceName(data[0].services.title);
           }
         }
       } catch (err) {

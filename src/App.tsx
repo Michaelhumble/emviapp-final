@@ -3,8 +3,8 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/auth';
-import { PublicLayout } from '@/components/layout/PublicLayout';
-import { ProtectedLayout } from '@/components/layout/ProtectedLayout';
+import { PublicLayout } from './components/layout/PublicLayout';
+import { ProtectedLayout } from './components/layout/ProtectedLayout';
 import LandingPage from './pages/LandingPage';
 import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
@@ -24,9 +24,9 @@ import ServicesPage from './pages/ServicesPage';
 import ArtistsPage from './pages/ArtistsPage';
 import CheckoutPage from './pages/CheckoutPage';
 import SupportPage from './pages/SupportPage';
-import { BookingProvider } from '@/context/booking/BookingProvider';
-import { NotificationProvider } from '@/context/notification';
-import { BookingNotificationProvider } from '@/components/BookingNotificationProvider';
+import { BookingProvider } from './context/booking/BookingProvider';
+import { NotificationProvider } from './context/notification';
+import { BookingNotificationProvider } from './components/BookingNotificationProvider';
 
 function App() {
   const queryClient = new QueryClient();

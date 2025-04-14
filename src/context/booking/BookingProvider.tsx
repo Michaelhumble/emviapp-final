@@ -166,7 +166,6 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
         time_requested: bookingState.time,
         note: bookingState.notes,
         status: 'draft',
-        last_activity: new Date().toISOString(),
         metadata: {
           additional_services: bookingState.additionalServices.map(s => s.id),
           total_value: bookingState.totalValue
@@ -236,18 +235,31 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
         return false;
       }
       
+      // Parse metadata to get additional service IDs
+      let serviceIds: string[] = [];
+      let totalValue = 0;
+      
+      if (data.metadata) {
+        // Handle different metadata formats safely
+        const metadata = typeof data.metadata === 'string' 
+          ? JSON.parse(data.metadata) 
+          : data.metadata;
+          
+        serviceIds = metadata.additional_services || [];
+        totalValue = metadata.total_value || 0;
+      }
+      
       // Fetch additional services
-      const additionalServiceIds = data.metadata?.additional_services || [];
       let additionalServices: UpsellService[] = [];
       
-      if (additionalServiceIds.length > 0) {
+      if (serviceIds.length > 0) {
         const { data: servicesData, error: servicesError } = await supabase
           .from('services')
           .select('id, title, price, description, duration_minutes, image_url')
-          .in('id', additionalServiceIds);
+          .in('id', serviceIds);
         
         if (!servicesError && servicesData) {
-          additionalServices = servicesData;
+          additionalServices = servicesData as UpsellService[];
         }
       }
       
@@ -260,7 +272,7 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
         additionalServices,
         notes: data.note || '',
         status: data.status as any,
-        totalValue: data.metadata?.total_value || 0
+        totalValue: totalValue
       });
       
       return true;
@@ -289,8 +301,7 @@ export const BookingProvider = ({ children }: { children: ReactNode }) => {
     
     try {
       const bookingData = {
-        status: 'pending',
-        last_activity: new Date().toISOString()
+        status: 'pending'
       };
       
       let response;

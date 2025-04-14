@@ -2,10 +2,10 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { formatDistanceToNow } from 'date-fns';
+import { format } from 'date-fns';
+import { Clock, X, User } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 interface RebookingReminderProps {
   lastBookingDate: Date;
@@ -20,50 +20,61 @@ export const RebookingReminder = ({
   artistId,
   onDismiss
 }: RebookingReminderProps) => {
-  const timeAgo = formatDistanceToNow(lastBookingDate, { addSuffix: true });
+  const navigate = useNavigate();
+  
+  const handleRebook = () => {
+    // Navigate to booking page with pre-selected artist
+    navigate(`/booking?artist=${artistId}`);
+  };
+  
+  const formatDate = (date: Date) => {
+    return format(date, 'MMMM d, yyyy');
+  };
   
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.3 }}
-      >
-        <Card className="border-purple-100 bg-purple-50/30">
-          <CardContent className="pt-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-purple-800 flex items-center">
-                <Calendar className="h-4 w-4 mr-2 text-purple-600" />
-                Booking Reminder
+    <motion.div
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+    >
+      <Card className="border-blue-100 bg-blue-50/50">
+        <CardContent className="pt-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center">
+              <Clock className="h-5 w-5 text-blue-700 mr-2" />
+              <h3 className="text-sm font-medium text-blue-800">
+                Time for a booking?
               </h3>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={onDismiss}
-                className="h-8 w-8 p-0"
-              >
-                <span className="sr-only">Dismiss</span>
-                <X className="h-4 w-4" />
-              </Button>
             </div>
-            
-            <p className="text-sm text-gray-600 mb-3">
-              Your last booking with {artistName} was {timeAgo}. Would you like to schedule another appointment?
-            </p>
-            
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={onDismiss}
+              className="h-8 w-8 p-0"
+            >
+              <span className="sr-only">Dismiss</span>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          <p className="text-sm text-gray-600 mb-3">
+            Your last appointment was on <span className="font-medium">{formatDate(lastBookingDate)}</span> with <span className="font-medium">{artistName}</span>. 
+            Would you like to book another appointment?
+          </p>
+          
+          <div className="flex justify-end">
             <Button 
               size="sm" 
-              className="w-full bg-purple-600 hover:bg-purple-700"
-              asChild
+              className="bg-blue-600 hover:bg-blue-700"
+              onClick={handleRebook}
             >
-              <Link to={`/booking?artist=${artistId}`}>
-                Book with {artistName} again
-              </Link>
+              <User className="h-4 w-4 mr-1" />
+              Book with {artistName}
             </Button>
-          </CardContent>
-        </Card>
-      </motion.div>
-    </AnimatePresence>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
