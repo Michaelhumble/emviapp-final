@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
@@ -34,7 +33,6 @@ const ManagerDashboard = () => {
       if (!userProfile?.id) return;
       
       try {
-        // First get the manager_for_salon_id from the user profile
         const { data: userData, error: userError } = await supabase
           .from('users')
           .select('manager_for_salon_id')
@@ -48,7 +46,6 @@ const ManagerDashboard = () => {
           return;
         }
         
-        // Then fetch the salon details
         const { data: salonData, error: salonError } = await supabase
           .from('salons')
           .select('*')
@@ -78,7 +75,6 @@ const ManagerDashboard = () => {
     localStorage.setItem('manager_dashboard_tab', value);
   };
   
-  // If not managing any salon, show a message
   if (!loading && !managedSalon) {
     return (
       <Layout>
@@ -150,7 +146,7 @@ const ManagerDashboard = () => {
                 <TabsContent value="overview" className="space-y-8">
                   <SalonQuickStats />
                   <SalonBookingFeed />
-                  {managedSalon && <SalonAvailabilityManager salonId={managedSalon.id} />}
+                  {managedSalon && managedSalon.id && <SalonAvailabilityManager salonId={managedSalon.id} />}
                   <SalonTeamManager />
                   <BookingAnalyticsCard />
                 </TabsContent>
@@ -163,7 +159,7 @@ const ManagerDashboard = () => {
                 
                 <TabsContent value="team" className="space-y-8">
                   <SalonTeamManager />
-                  {managedSalon && <SalonAvailabilityManager salonId={managedSalon.id} />}
+                  {managedSalon && managedSalon.id && <SalonAvailabilityManager salonId={managedSalon.id} />}
                 </TabsContent>
                 
                 <TabsContent value="services" className="space-y-8">
@@ -176,7 +172,6 @@ const ManagerDashboard = () => {
                 </TabsContent>
               </Tabs>
               
-              {/* Manager-specific note */}
               <Card className="border-blue-200 bg-blue-50/50">
                 <CardContent className="pt-6">
                   <div className="flex gap-2 items-start">

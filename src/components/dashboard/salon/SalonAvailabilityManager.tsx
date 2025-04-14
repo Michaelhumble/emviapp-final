@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
 // Define explicit types to avoid deep type inference issues
-interface DatabaseAvailabilityRecord {
+interface AvailabilityRecord {
   id: string;
   salon_id: string;
   day_of_week: number;
@@ -26,7 +26,7 @@ interface SalonAvailabilityManagerProps {
 export const SalonAvailabilityManager = ({ salonId }: SalonAvailabilityManagerProps) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [availabilityData, setAvailabilityData] = useState<DatabaseAvailabilityRecord[]>([]);
+  const [availabilityData, setAvailabilityData] = useState<AvailabilityRecord[]>([]);
   const [activeTab, setActiveTab] = useState("weekday");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   
@@ -48,17 +48,18 @@ export const SalonAvailabilityManager = ({ salonId }: SalonAvailabilityManagerPr
       try {
         setLoading(true);
         
+        // Using 'availability' table which exists in the database
         const { data, error } = await supabase
-          .from('salon_availability')
+          .from('availability')
           .select('*')
-          .eq('salon_id', salonId);
+          .eq('artist_id', salonId);
         
         if (error) {
           throw error;
         }
         
-        // Type assertion to satisfy TypeScript
-        setAvailabilityData(data as DatabaseAvailabilityRecord[]);
+        // Type assertion to handle the type conversion safely
+        setAvailabilityData((data || []) as unknown as AvailabilityRecord[]);
       } catch (error) {
         console.error('Error fetching availability:', error);
         toast.error('Failed to load availability settings');
@@ -78,7 +79,22 @@ export const SalonAvailabilityManager = ({ salonId }: SalonAvailabilityManagerPr
       setSaving(true);
       
       // Logic to save availability data to Supabase
-      // This would involve upserting the availabilityData to the salon_availability table
+      // This would involve upserting the availabilityData to the availability table
+      for (const record of availabilityData) {
+        // Only save records with the current salon_id
+        if (record.salon_id === salonId) {
+          await supabase
+            .from('availability')
+            .upsert({
+              id: record.id.startsWith('new-') ? undefined : record.id,
+              salon_id: salonId,
+              day_of_week: record.day_of_week,
+              start_time: record.start_time,
+              end_time: record.end_time,
+              is_available: record.is_available
+            });
+        }
+      }
       
       toast.success('Availability settings saved successfully');
     } catch (error) {

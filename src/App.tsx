@@ -13,6 +13,7 @@ import Index from "@/pages/Index";
 import Jobs from "@/pages/Jobs";
 import NotFound from "@/pages/NotFound";
 import Messages from "@/pages/messages";
+import SalonSales from "@/pages/salons/SellSalon";
 
 // Global styles
 import "@/styles/globals.css";
@@ -40,7 +41,7 @@ function App() {
                     <Route path="/" element={<Index />} />
                     <Route path="/jobs" element={<Jobs />} />
                     <Route path="/messages" element={<Messages />} />
-                    <Route path="/salon-sales" element={<NotFound />} /> {/* Temporary route for salon sales */}
+                    <Route path="/salon-sales" element={<SalonSales />} /> 
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </NotificationProvider>

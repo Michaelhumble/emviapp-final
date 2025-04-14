@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
@@ -46,7 +45,7 @@ import SalonAvailabilityManager from "@/components/dashboard/salon/SalonAvailabi
 const OwnerDashboardContent = () => {
   const [showNotification, setShowNotification] = useState(true);
   const { userProfile } = useAuth();
-  const { activeSalon } = useSalon();
+  const { salon } = useSalon();
   const [showConfetti, setShowConfetti] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   
@@ -113,7 +112,7 @@ const OwnerDashboardContent = () => {
                   
                   <SalonQuickStats />
                   
-                  {activeSalon && <SalonAvailabilityManager salonId={activeSalon.id} />}
+                  {salon?.id && <SalonAvailabilityManager salonId={salon.id} />}
                   
                   <SalonBoostCreditPanel />
                   
