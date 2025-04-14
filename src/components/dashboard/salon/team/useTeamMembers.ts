@@ -23,7 +23,7 @@ export const useTeamMembers = () => {
       // Query salon_staff table using the salon_id instead of user.id
       const { data, error } = await supabase
         .from('salon_staff')
-        .select('id, full_name, email, avatar_url, role, specialty, status')
+        .select('id, full_name, email, avatar_url, role, specialty, status, commission_rate')
         .eq('salon_id', currentSalon.id);
         
       if (error) throw error;
@@ -40,7 +40,8 @@ export const useTeamMembers = () => {
           // Ensure status is only 'active' or 'inactive'
           status: (item.status === 'active' || item.status === 'inactive') 
             ? item.status 
-            : 'inactive' // Default value if status is invalid
+            : 'inactive', // Default value if status is invalid
+          commission_rate: item.commission_rate ? Number(item.commission_rate) : undefined
         }));
         
         setTeamMembers(typedMembers);
@@ -55,7 +56,7 @@ export const useTeamMembers = () => {
     }
   };
 
-  const sendInvite = async (email: string, name: string, role: string) => {
+  const sendInvite = async (email: string, name: string, role: string, commissionRate: string) => {
     if (!currentSalon?.id) {
       toast.error("No salon selected");
       return;
@@ -80,7 +81,8 @@ export const useTeamMembers = () => {
           full_name: name,
           email: email,
           role: role,
-          status: 'active'
+          status: 'active',
+          commission_rate: commissionRate ? parseFloat(commissionRate) : 60 // Default to 60% if not specified
         })
         .select()
         .single();
@@ -89,7 +91,18 @@ export const useTeamMembers = () => {
       
       // Add to local state for immediate feedback
       if (data) {
-        setTeamMembers(prev => [...prev, data as TeamMember]);
+        const newMember: TeamMember = {
+          id: data.id,
+          full_name: data.full_name,
+          email: data.email,
+          avatar_url: data.avatar_url,
+          role: data.role,
+          specialty: data.specialty,
+          status: data.status === 'active' ? 'active' : 'inactive',
+          commission_rate: data.commission_rate ? Number(data.commission_rate) : undefined
+        };
+        
+        setTeamMembers(prev => [...prev, newMember]);
       }
       
       toast.success(`Invitation sent to ${email}`);
@@ -123,13 +136,16 @@ export const useTeamMembers = () => {
     }
   };
   
-  const toggleMemberStatus = async (memberId: string, currentStatus: 'active' | 'inactive' | undefined) => {
-    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+  const toggleMemberStatus = async (memberId: string, newStatus?: 'active' | 'inactive') => {
+    const member = teamMembers.find(m => m.id === memberId);
+    if (!member) return;
+    
+    const status = newStatus || (member.status === 'active' ? 'inactive' : 'active');
     
     try {
       const { error } = await supabase
         .from('salon_staff')
-        .update({ status: newStatus })
+        .update({ status })
         .eq('id', memberId);
       
       if (error) throw error;
@@ -138,15 +154,45 @@ export const useTeamMembers = () => {
       setTeamMembers(prev => 
         prev.map(member => 
           member.id === memberId 
-            ? { ...member, status: newStatus } 
+            ? { ...member, status } 
             : member
         )
       );
       
-      toast.success(`Team member status updated to ${newStatus}`);
+      toast.success(`Team member status updated to ${status}`);
     } catch (err) {
       console.error("Error updating member status:", err);
       toast.error("Failed to update status. Please try again.");
+    }
+  };
+  
+  const updateTeamMember = async (member: TeamMember) => {
+    try {
+      const { error } = await supabase
+        .from('salon_staff')
+        .update({
+          full_name: member.full_name,
+          email: member.email,
+          role: member.role,
+          specialty: member.specialty,
+          commission_rate: member.commission_rate
+        })
+        .eq('id', member.id);
+      
+      if (error) throw error;
+      
+      // Update local state
+      setTeamMembers(prev => 
+        prev.map(m => 
+          m.id === member.id ? member : m
+        )
+      );
+      
+      toast.success("Team member updated successfully");
+    } catch (err) {
+      console.error("Error updating team member:", err);
+      toast.error("Failed to update team member. Please try again.");
+      throw err;
     }
   };
 
@@ -163,6 +209,7 @@ export const useTeamMembers = () => {
     sendInvite,
     removeTeamMember,
     toggleMemberStatus,
+    updateTeamMember,
     refreshTeamMembers: fetchTeamMembers,
   };
 };
