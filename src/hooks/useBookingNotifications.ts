@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import { useNotificationContext } from '@/context/notification';
@@ -7,6 +7,7 @@ import { useNotificationContext } from '@/context/notification';
 export const useBookingNotifications = () => {
   const { user } = useAuth();
   const { sendNotification } = useNotificationContext();
+  const [subscribed, setSubscribed] = useState(false);
   
   useEffect(() => {
     if (!user) return;
@@ -50,11 +51,16 @@ export const useBookingNotifications = () => {
           });
         }
       })
-      .subscribe();
+      .subscribe((status) => {
+        console.log('Subscription status:', status);
+        setSubscribed(status === 'SUBSCRIBED');
+      });
     
     // Cleanup subscription on unmount
     return () => {
       supabase.removeChannel(channel);
     };
   }, [user, sendNotification]);
+  
+  return { subscribed };
 };

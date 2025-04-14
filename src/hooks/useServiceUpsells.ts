@@ -32,7 +32,7 @@ export const useServiceUpsells = (serviceId: string | null, bookingValue: number
 
       try {
         // Query related services directly instead of using RPC
-        const { data, error } = await supabase
+        const { data, error: queryError } = await supabase
           .from('services')
           .select('id, title, price, description, duration_minutes, image_url')
           .eq('related_to', serviceId)
@@ -40,7 +40,7 @@ export const useServiceUpsells = (serviceId: string | null, bookingValue: number
           .order('price', { ascending: true })
           .limit(3);
         
-        if (error) throw error;
+        if (queryError) throw queryError;
         
         // Only set the data if it's an array
         if (Array.isArray(data)) {

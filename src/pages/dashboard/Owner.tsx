@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
@@ -54,7 +55,8 @@ const OwnerDashboardContent = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   
-  const { subscribed } = useBookingNotifications();
+  // Initialize booking notifications
+  useBookingNotifications();
   
   useEffect(() => {
     document.title = "Salon Owner Dashboard | EmviApp";

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
@@ -22,7 +21,7 @@ import SalonListingsManagement from "@/components/dashboard/salon/SalonListingsM
 import SalonCreditPromotion from "@/components/dashboard/salon/SalonCreditPromotion";
 import TopLocalArtists from "@/components/dashboard/salon/TopLocalArtists";
 import NextStepsSmart from "@/components/dashboard/salon/NextStepsSmart";
-import SalonTeamManagement from "@/components/dashboard/salon/team/SalonTeamManagement";
+import SalonTeamManagement from "@/components/dashboard/salon/SalonTeamManagement";
 import SalonTeamManager from "@/components/dashboard/salon/team/SalonTeamManager";
 import SalonManagersSection from "@/components/dashboard/salon/team/SalonManagersSection";
 import SalonServiceManager from "@/components/dashboard/salon/SalonServiceManager";
@@ -52,7 +51,7 @@ const ManagerDashboardContent = () => {
   const { currentSalon } = useSalon();
   const [activeTab, setActiveTab] = useState("overview");
   
-  const { subscribed } = useBookingNotifications();
+  useBookingNotifications();
   
   useEffect(() => {
     document.title = "Salon Manager Dashboard | EmviApp";
