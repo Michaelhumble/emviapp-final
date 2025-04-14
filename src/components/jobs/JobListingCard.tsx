@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Job } from "@/types/job";
@@ -8,7 +9,6 @@ import { JobSpecialties } from "./card-sections/JobSpecialties";
 import { JobTipInfo } from "./card-sections/JobTipInfo";
 import { JobExpirationInfo } from "./card-sections/JobExpirationInfo";
 import { JobCardActions } from "./card-sections/JobCardActions";
-import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 interface JobListingCardProps {
   job: Job;

@@ -1,59 +1,90 @@
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Toaster } from "sonner";
-import { AuthProvider } from "@/context/auth";
-import { ProfileProvider } from "@/context/profile";
-import { ProfileCompletionProvider } from "@/context/profile/ProfileCompletionProvider";
-import { SubscriptionProvider } from "@/context/subscription";
-import { NotificationProvider } from "@/context/notification";
-import { SalonProvider } from "@/context/salon";
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import { AuthProvider } from '@/context/auth';
+import { ProfileProvider } from '@/context/profile';
+import { ProfileCompletionProvider } from '@/context/profile/ProfileCompletionProvider';
+import { NotificationProvider } from '@/context/notification';
+import { SubscriptionProvider } from '@/context/subscription';
+import { GoogleMapsProvider } from '@/context/maps/GoogleMapsContext';
+import { Toaster } from 'sonner';
+import AppModifier from './App-Modifier';
+import routes from './routes';
+import '@/App.css';
+import { supabase } from '@/integrations/supabase/client';
+import AuthGuard from './components/auth/AuthGuard';
 
-// Pages
-import Index from "@/pages/Index";
-import Jobs from "@/pages/Jobs";
-import NotFound from "@/pages/NotFound";
-import Messages from "@/pages/messages";
-import SalonSales from "@/pages/salons/SellSalon";
-
-// Global styles
-import "@/styles/globals.css";
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      retry: 1,
-    },
-  },
-});
+// Function to determine if a route should be protected
+const isProtectedRoute = (path: string): boolean => {
+  return path.startsWith('/dashboard') || 
+         path.startsWith('/profile') || 
+         path.startsWith('/settings') ||
+         path === '/command-center';
+};
 
 function App() {
+  const location = useLocation();
+
+  // Handle referral codes in URL
+  useEffect(() => {
+    const handleReferral = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const refCode = params.get('ref');
+      
+      if (refCode) {
+        // Store referral code in localStorage for later attribution
+        localStorage.setItem('emvi_referral_code', refCode);
+        
+        // Get current user
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        // If user is signed in and has a referral code, attribute the referral
+        if (user) {
+          const { error } = await supabase.rpc('process_referral', {
+            referral_code: refCode,
+            new_user_id: user.id
+          });
+          
+          if (error) {
+            console.error('Error processing referral:', error);
+          }
+        }
+      }
+    };
+    
+    handleReferral();
+  }, [location]);
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <Router>
-        <AuthProvider>
-          <ProfileProvider>
-            <ProfileCompletionProvider>
-              <SubscriptionProvider>
-                <NotificationProvider>
-                  <SalonProvider>
-                    <Toaster position="top-center" richColors />
-                    <Routes>
-                      <Route path="/" element={<Index />} />
-                      <Route path="/jobs" element={<Jobs />} />
-                      <Route path="/messages" element={<Messages />} />
-                      <Route path="/salon-sales" element={<SalonSales />} /> 
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </SalonProvider>
-                </NotificationProvider>
-              </SubscriptionProvider>
-            </ProfileCompletionProvider>
-          </ProfileProvider>
-        </AuthProvider>
-      </Router>
-    </QueryClientProvider>
+    <AuthProvider>
+      <ProfileProvider>
+        <ProfileCompletionProvider>
+          <SubscriptionProvider>
+            <NotificationProvider>
+              <GoogleMapsProvider>
+                <AppModifier />
+                <Routes>
+                  {routes.map((route) => (
+                    <Route
+                      key={route.path}
+                      path={route.path}
+                      element={
+                        isProtectedRoute(route.path) ? (
+                          <AuthGuard>{route.element}</AuthGuard>
+                        ) : (
+                          route.element
+                        )
+                      }
+                    />
+                  ))}
+                </Routes>
+                <Toaster position="top-right" />
+              </GoogleMapsProvider>
+            </NotificationProvider>
+          </SubscriptionProvider>
+        </ProfileCompletionProvider>
+      </ProfileProvider>
+    </AuthProvider>
   );
 }
 

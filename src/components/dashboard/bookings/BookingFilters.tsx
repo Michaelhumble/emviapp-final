@@ -1,103 +1,177 @@
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Search, X } from 'lucide-react';
-import { BookingStatus, DateFilter, DateRange, useBookingFilters } from '@/hooks/useBookingFilters';
-import BookingStatusFilter from './BookingStatusFilter';
-import BookingDateFilter from './BookingDateFilter';
+import { useEffect } from "react";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Search, X } from "lucide-react";
+import { BookingFilters as BookingFiltersType, DateRange } from "@/hooks/useBookingFilters";
+import { useBookingFilters } from "@/hooks/useBookingFilters";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface BookingFiltersProps {
-  onFiltersChange?: (filters: any) => void;
-  serviceTypes?: string[]; // Add serviceTypes as an optional prop
+  serviceTypes: string[];
+  onFilterChange: (filters: BookingFiltersType) => void;
 }
 
-const BookingFilters = ({ onFiltersChange, serviceTypes = [] }: BookingFiltersProps) => {
-  const { filters, updateFilter, resetFilters } = useBookingFilters();
-
-  const handleStatusChange = (status: BookingStatus) => {
-    updateFilter('status', status);
-    if (onFiltersChange) onFiltersChange({ ...filters, status });
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const search = e.target.value;
-    updateFilter('search', search);
-    if (onFiltersChange) onFiltersChange({ ...filters, search });
-  };
-
-  const handleDateFilterChange = (dateFilter: DateFilter) => {
-    updateFilter('dateFilter', dateFilter);
-    if (onFiltersChange) onFiltersChange({ ...filters, dateFilter });
-  };
-
-  const handleDateRangeChange = (dateRange: DateRange | null) => {
-    updateFilter('dateRange', dateRange);
-    if (onFiltersChange) onFiltersChange({ ...filters, dateRange });
-  };
-
-  const handleResetFilters = () => {
-    resetFilters();
-    if (onFiltersChange) onFiltersChange({
-      status: 'all',
-      clientType: 'all',
-      serviceType: 'all',
-      search: '',
-      dateFilter: 'all',
-      dateRange: null,
-      serviceTypes: [],
-    });
-  };
-
-  const hasActiveFilters = 
-    filters.status !== 'all' ||
-    filters.clientType !== 'all' ||
-    filters.serviceType !== 'all' ||
-    filters.search !== '' ||
-    filters.dateFilter !== 'all';
-
+const BookingFilters = ({ serviceTypes, onFilterChange }: BookingFiltersProps) => {
+  const { filters, updateFilter, resetFilters } = useBookingFilters({
+    serviceTypes: serviceTypes,
+  });
+  
+  // Update parent component when filters change
+  useEffect(() => {
+    onFilterChange(filters);
+  }, [filters, onFilterChange]);
+  
   return (
-    <div className="space-y-4 bg-white p-4 rounded-lg border">
-      <h3 className="font-medium text-lg">Booking Filters</h3>
-      
-      <div className="relative">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search client, service..."
-          className="pl-8"
-          value={filters.search}
-          onChange={handleSearchChange}
-        />
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+        {/* Status Filter */}
+        <div>
+          <Select
+            value={filters.status}
+            onValueChange={(value) => updateFilter('status', value as BookingFiltersType['status'])}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="All Statuses" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Statuses</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="accepted">Accepted</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="declined">Declined</SelectItem>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        {/* Date Filter */}
+        <div>
+          <Select
+            value={filters.dateFilter}
+            onValueChange={(value) => updateFilter('dateFilter', value as BookingFiltersType['dateFilter'])}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="All Dates" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Dates</SelectItem>
+              <SelectItem value="today">Today</SelectItem>
+              <SelectItem value="this-week">This Week</SelectItem>
+              <SelectItem value="this-month">This Month</SelectItem>
+              <SelectItem value="custom">Custom Range</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        
+        {/* Custom Date Range */}
+        {filters.dateFilter === 'custom' && (
+          <div className="col-span-1 sm:col-span-2">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !filters.dateRange.from && !filters.dateRange.to && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {filters.dateRange.from ? (
+                    filters.dateRange.to ? (
+                      <>
+                        {format(filters.dateRange.from, "LLL dd, y")} -{" "}
+                        {format(filters.dateRange.to, "LLL dd, y")}
+                      </>
+                    ) : (
+                      format(filters.dateRange.from, "LLL dd, y")
+                    )
+                  ) : (
+                    "Select date range"
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="range"
+                  selected={filters.dateRange.from ? {
+                    from: filters.dateRange.from,
+                    to: filters.dateRange.to
+                  } : undefined}
+                  onSelect={(range) => updateFilter('dateRange', {
+                    from: range?.from,
+                    to: range?.to
+                  })}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        )}
+        
+        {/* Service Type Filter */}
+        {serviceTypes.length > 0 && (
+          <div>
+            <Select
+              value={filters.serviceType}
+              onValueChange={(value) => updateFilter('serviceType', value)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="All Services" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Services</SelectItem>
+                {serviceTypes.map((service) => (
+                  <SelectItem key={service} value={service}>
+                    {service}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+        
+        {/* Search */}
+        <div className="relative sm:col-span-2">
+          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input
+            placeholder="Search client name or service..."
+            className="pl-8 pr-8"
+            value={filters.search}
+            onChange={(e) => updateFilter('search', e.target.value)}
+          />
+          {filters.search && (
+            <button
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              onClick={() => updateFilter('search', '')}
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+        
+        {/* Reset Button */}
+        <div className="sm:col-span-2 flex justify-end">
+          <Button variant="outline" size="sm" onClick={resetFilters}>
+            Reset Filters
+          </Button>
+        </div>
       </div>
-      
-      <div>
-        <h4 className="font-medium mb-2">Status</h4>
-        <BookingStatusFilter
-          value={filters.status}
-          onChange={handleStatusChange}
-        />
-      </div>
-      
-      <div>
-        <h4 className="font-medium mb-2">Date</h4>
-        <BookingDateFilter
-          dateFilter={filters.dateFilter}
-          dateRange={filters.dateRange}
-          onDateFilterChange={handleDateFilterChange}
-          onDateRangeChange={handleDateRangeChange}
-        />
-      </div>
-      
-      {hasActiveFilters && (
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="text-muted-foreground" 
-          onClick={handleResetFilters}
-        >
-          <X className="h-4 w-4 mr-1" />
-          Reset Filters
-        </Button>
-      )}
     </div>
   );
 };

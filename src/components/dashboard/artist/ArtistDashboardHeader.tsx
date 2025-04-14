@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { UserProfile as AuthUserProfile } from "@/context/auth/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -5,7 +6,6 @@ import { Scissors, MapPin, Instagram, Globe, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 interface ArtistDashboardHeaderProps {
   profile: AuthUserProfile | null;
@@ -35,11 +35,13 @@ const ArtistDashboardHeader = ({ profile }: ArtistDashboardHeaderProps) => {
       <Card className="overflow-hidden shadow-md border-0">
         {/* Cover Photo */}
         <div className="h-48 md:h-64 w-full relative">
-          <ImageWithFallback 
-            src={coverImage}
-            alt="Profile cover"
-            className="absolute inset-0 w-full h-full object-cover"
-            fallbackImage="https://emvi.app/images/fallback-profile.jpg"
+          <div 
+            className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-500" 
+            style={{
+              backgroundImage: `url(${coverImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
           
@@ -61,14 +63,7 @@ const ArtistDashboardHeader = ({ profile }: ArtistDashboardHeaderProps) => {
                 alt={profile?.full_name || 'Artist'} 
                 className="object-cover"
               />
-              <AvatarFallback className="text-2xl bg-purple-100 text-purple-700">
-                <ImageWithFallback
-                  src={profile?.avatar_url || ''}
-                  alt={profile?.full_name || 'Artist'}
-                  className="h-full w-full object-cover"
-                  fallbackImage="https://emvi.app/images/fallback-profile.jpg"
-                />
-              </AvatarFallback>
+              <AvatarFallback className="text-2xl bg-purple-100 text-purple-700">{getInitials()}</AvatarFallback>
             </Avatar>
           </div>
           

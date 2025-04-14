@@ -2,7 +2,6 @@
 import { Job } from "@/types/job";
 import { Badge } from "@/components/ui/badge";
 import { Verified } from "lucide-react";
-import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 interface JobCardHeaderProps {
   job: Job;
@@ -16,14 +15,10 @@ export const JobCardHeader = ({ job }: JobCardHeaderProps) => {
     <div className="mb-3">
       {/* If there's a job image or salon image, display it */}
       {job.image && (
-        <div className="h-40 rounded-md mb-4 overflow-hidden">
-          <ImageWithFallback
-            src={job.image}
-            alt={job.title || "Job listing"}
-            className="h-full w-full object-cover"
-            fallbackImage="https://emvi.app/images/fallback-profile.jpg"
-          />
-        </div>
+        <div 
+          className="h-40 bg-center bg-cover rounded-md mb-4" 
+          style={{ backgroundImage: `url(${job.image})` }}
+        />
       )}
       
       <div className="flex justify-between items-start gap-2">

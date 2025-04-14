@@ -1,7 +1,7 @@
+
 import { ArrowRight, Building, Calendar, MapPin, Star, TrendingUp, Users } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 interface SalonCardProps {
   salon: {
@@ -32,11 +32,10 @@ export const SalonCard = ({ salon, viewDetails }: SalonCardProps) => {
     <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg">
       <div className="relative">
         <div className="aspect-video bg-gray-200">
-          <ImageWithFallback 
-            src="/placeholder.svg"
+          <img 
+            src="/placeholder.svg" 
             alt={salon.name} 
             className="w-full h-full object-cover"
-            fallbackImage="https://emvi.app/images/fallback-profile.jpg"
           />
         </div>
         {salon.featured && (

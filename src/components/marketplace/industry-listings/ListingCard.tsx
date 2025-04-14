@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { 
   Card, CardContent, CardHeader, CardTitle, CardDescription,
@@ -11,7 +12,6 @@ import {
 } from "lucide-react";
 import { Job } from "@/types/job";
 import { useState } from "react";
-import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 interface ListingCardProps {
   listing: Job;
@@ -24,6 +24,7 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
   
   const isForSale = listing.employment_type === "For Sale";
   
+  // Get perks/features based on listing type
   const getPerks = (listing: Job) => {
     const perks = [];
     
@@ -32,14 +33,17 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
     if (listing.has_housing) perks.push("Housing Available");
     if (listing.no_supply_deduction) perks.push("No Supply Deduction");
     
+    // Add salon features if available
     if (listing.salon_features && listing.salon_features.length > 0) {
       perks.push(...listing.salon_features.slice(0, 2));
     }
     
+    // Add benefits if available
     if (listing.benefits && listing.benefits.length > 0) {
       perks.push(...listing.benefits.slice(0, 2));
     }
     
+    // Add features if available
     if (listing.features && listing.features.length > 0) {
       perks.push(...listing.features.slice(0, 2));
     }
@@ -73,15 +77,10 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
       >
         {listing.image && (
           <div className="relative overflow-hidden">
-            <div className="h-48">
-              <ImageWithFallback 
-                src={listing.image} 
-                alt={listing.title || "Listing"} 
-                className="h-full w-full object-cover transition-transform duration-500"
-                style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }}
-                fallbackImage="https://emvi.app/images/fallback-profile.jpg"
-              />
-            </div>
+            <div 
+              className={`h-48 bg-center bg-cover transition-transform duration-500 ${isHovered ? 'scale-105' : 'scale-100'}`}
+              style={{ backgroundImage: `url(${listing.image})` }}
+            />
             <div className="absolute top-2 right-2">
               <Button 
                 variant="ghost" 

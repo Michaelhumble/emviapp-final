@@ -18,13 +18,6 @@ export const getLanguagePreference = (): Language => {
 };
 
 /**
- * Check if a language preference has been set
- */
-export const hasLanguagePreference = (): boolean => {
-  return localStorage.getItem('emvi_language') !== null;
-};
-
-/**
  * Set language preference and notify all listeners
  */
 export const setLanguagePreference = (language: Language): void => {

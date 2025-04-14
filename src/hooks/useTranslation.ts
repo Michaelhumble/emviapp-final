@@ -1,29 +1,76 @@
 
-import { getLanguagePreference } from "@/utils/languagePreference";
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/context/auth';
+import { supabase } from '@/integrations/supabase/client';
 
-type Language = 'en' | 'vi';
+interface TranslationStrings {
+  [key: string]: {
+    english: string;
+    vietnamese: string;
+  };
+}
 
-export type Translation = {
+export interface TranslatableText {
   english: string;
   vietnamese: string;
-} | string; // Allow string as a valid type for backward compatibility
+}
 
 export const useTranslation = () => {
-  const lang = getLanguagePreference();
+  const { userProfile } = useAuth();
+  const [strings, setStrings] = useState<TranslationStrings>({});
+  const preferredLanguage = userProfile?.preferred_language || 'English';
+  const isVietnamese = preferredLanguage === 'vi' || preferredLanguage === 'Vietnamese';
   
-  const t = (translation: Translation): string => {
-    if (typeof translation === 'string') {
-      return translation; // If a string is passed directly, just return it
-    }
+  // Fetch translation strings from the database
+  useEffect(() => {
+    const fetchTranslations = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('translation_strings')
+          .select('key, english, vietnamese');
+        
+        if (error) throw error;
+        
+        // Convert array to key-value object
+        const translationMap: TranslationStrings = {};
+        (data || []).forEach((item: any) => {
+          translationMap[item.key] = {
+            english: item.english,
+            vietnamese: item.vietnamese
+          };
+        });
+        
+        setStrings(translationMap);
+      } catch (error) {
+        console.error('Error fetching translations:', error);
+      }
+    };
     
-    if (lang === 'vi') {
-      return translation.vietnamese;
+    fetchTranslations();
+  }, []);
+  
+  // Translate function for strings
+  const translate = (key: string, fallback?: string): string => {
+    if (strings[key]) {
+      return isVietnamese ? strings[key].vietnamese : strings[key].english;
     }
-    return translation.english;
+    return fallback || key;
   };
   
-  // Helper to detect if the current language is Vietnamese
-  const isVietnamese = lang === 'vi';
+  // Translate function for objects with english/vietnamese properties
+  const t = (text: TranslatableText | string): string => {
+    if (typeof text === 'string') {
+      // For string input, just return the string (no translation)
+      return text;
+    }
+    // For TranslatableText objects, return the appropriate language
+    return isVietnamese ? text.vietnamese : text.english;
+  };
   
-  return { t, lang, isVietnamese };
+  return {
+    translate,
+    t,
+    isVietnamese,
+    preferredLanguage
+  };
 };

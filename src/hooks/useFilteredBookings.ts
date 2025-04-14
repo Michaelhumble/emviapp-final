@@ -1,93 +1,170 @@
 
-import { useMemo } from "react";
-import { BookingFilters } from "./useBookingFilters";
-import { isSameDay, isAfter, isBefore, addDays, startOfDay, endOfDay, addWeeks } from "date-fns";
+import { useState, useEffect } from 'react';
+import { 
+  startOfDay, 
+  endOfDay, 
+  startOfWeek, 
+  endOfWeek, 
+  startOfMonth, 
+  endOfMonth, 
+  isWithinInterval, 
+  parseISO 
+} from 'date-fns';
+import { BookingFilters } from './useBookingFilters';
+import { Booking } from '@/components/dashboard/artist/types/ArtistDashboardTypes';
 
 /**
- * Filters an array of bookings based on the provided filters
+ * Filter bookings by status criteria
+ */
+const filterByStatus = (bookings: Booking[], status: string): Booking[] => {
+  if (status === 'all') return bookings;
+  return bookings.filter(booking => booking.status === status);
+};
+
+/**
+ * Get date range based on date filter type
+ */
+const getDateRange = (dateFilter: string, dateRangeFrom?: Date, dateRangeTo?: Date): { start: Date, end: Date } => {
+  const now = new Date();
+  
+  switch (dateFilter) {
+    case 'today':
+      return {
+        start: startOfDay(now),
+        end: endOfDay(now)
+      };
+    case 'this_week':
+      return {
+        start: startOfWeek(now, { weekStartsOn: 1 }),
+        end: endOfWeek(now, { weekStartsOn: 1 })
+      };
+    case 'this_month':
+      return {
+        start: startOfMonth(now),
+        end: endOfMonth(now)
+      };
+    case 'custom':
+      if (dateRangeFrom && dateRangeTo) {
+        return {
+          start: startOfDay(dateRangeFrom),
+          end: endOfDay(dateRangeTo)
+        };
+      }
+      // Fall through to default if incomplete custom range
+    default:
+      return {
+        start: new Date(0), // Minimum date
+        end: new Date(8640000000000000) // Maximum date
+      };
+  }
+};
+
+/**
+ * Filter bookings by date criteria
+ */
+const filterByDate = (bookings: Booking[], dateFilter: string, dateRangeFrom?: Date, dateRangeTo?: Date): Booking[] => {
+  if (dateFilter === 'all') return bookings;
+  
+  const { start, end } = getDateRange(dateFilter, dateRangeFrom, dateRangeTo);
+  
+  return bookings.filter(booking => {
+    try {
+      const bookingDate = parseISO(booking.date_requested);
+      return isWithinInterval(bookingDate, { start, end });
+    } catch (e) {
+      console.error('Error parsing booking date:', e);
+      return true; // Keep bookings with invalid dates
+    }
+  });
+};
+
+/**
+ * Calculate customer booking counts to determine if new or returning
+ */
+const calculateCustomerBookingCounts = (bookings: Booking[]): Record<string, number> => {
+  return bookings.reduce((counts, booking) => {
+    counts[booking.sender_id] = (counts[booking.sender_id] || 0) + 1;
+    return counts;
+  }, {} as Record<string, number>);
+};
+
+/**
+ * Filter bookings by client type (new or returning)
+ */
+const filterByClientType = (bookings: Booking[], clientType: string, customerBookingCounts: Record<string, number>): Booking[] => {
+  if (clientType === 'all') return bookings;
+  
+  if (clientType === 'new') {
+    return bookings.filter(booking => customerBookingCounts[booking.sender_id] === 1);
+  } else if (clientType === 'returning') {
+    return bookings.filter(booking => customerBookingCounts[booking.sender_id] > 1);
+  }
+  
+  return bookings;
+};
+
+/**
+ * Filter bookings by service type
+ */
+const filterByServiceType = (bookings: Booking[], serviceType: string): Booking[] => {
+  if (serviceType === 'all') return bookings;
+  return bookings.filter(booking => booking.service_id === serviceType);
+};
+
+/**
+ * Filter bookings by search term across multiple fields
+ */
+const filterBySearchTerm = (bookings: Booking[], searchTerm: string): Booking[] => {
+  if (!searchTerm.trim()) return bookings;
+  
+  const term = searchTerm.toLowerCase().trim();
+  
+  return bookings.filter(booking => {
+    // Search by customer name
+    const customerNameMatch = booking.customer_name?.toLowerCase().includes(term);
+    // Search by service name
+    const serviceNameMatch = booking.service_name?.toLowerCase().includes(term);
+    // Search by note
+    const noteMatch = booking.note?.toLowerCase().includes(term);
+    // Search by artist name if available
+    const artistNameMatch = booking.artist_name?.toLowerCase().includes(term);
+    
+    return customerNameMatch || serviceNameMatch || noteMatch || artistNameMatch;
+  });
+};
+
+/**
+ * Hook that filters bookings based on the provided filters
  */
 export const useFilteredBookings = (
-  bookings: any[], 
+  bookings: Booking[],
   filters: BookingFilters
 ) => {
-  return useMemo(() => {
-    return bookings.filter(booking => {
-      // Filter by status
-      if (filters.status !== 'all' && booking.status !== filters.status) {
-        return false;
-      }
-
-      // Filter by service type
-      if (filters.serviceType !== 'all' && booking.serviceName !== filters.serviceType) {
-        return false;
-      }
-
-      // Filter by date
-      if (filters.dateFilter !== 'all') {
-        const bookingDate = booking.date instanceof Date 
-          ? booking.date 
-          : booking.date ? new Date(booking.date) : null;
-        
-        if (!bookingDate) return false;
-
-        const today = startOfDay(new Date());
-        
-        if (filters.dateFilter === 'today' && !isSameDay(bookingDate, today)) {
-          return false;
-        }
-        
-        if (filters.dateFilter === 'tomorrow') {
-          const tomorrow = addDays(today, 1);
-          if (!isSameDay(bookingDate, tomorrow)) return false;
-        }
-        
-        if (filters.dateFilter === 'this-week') { // Fixed to match the correct enum value
-          const weekLater = addWeeks(today, 1);
-          if (!isAfter(bookingDate, addDays(today, -1)) || !isBefore(bookingDate, weekLater)) {
-            return false;
-          }
-        }
-        
-        if (filters.dateFilter === 'custom' && filters.dateRange?.from) {
-          const fromDate = startOfDay(filters.dateRange.from);
-          
-          if (filters.dateRange.to) {
-            const toDate = endOfDay(filters.dateRange.to);
-            if (!isAfter(bookingDate, addDays(fromDate, -1)) || !isBefore(bookingDate, addDays(toDate, 1))) {
-              return false;
-            }
-          } else {
-            if (!isSameDay(bookingDate, fromDate)) {
-              return false;
-            }
-          }
-        }
-      }
-
-      // Filter by search term
-      if (filters.search) {
-        const searchLower = filters.search.toLowerCase();
-        
-        // Search in client name
-        const clientNameMatch = 
-          booking.clientName?.toLowerCase().includes(searchLower) ||
-          booking.clientPhone?.toLowerCase().includes(searchLower) ||
-          booking.clientEmail?.toLowerCase().includes(searchLower);
-        
-        // Search in service name
-        const serviceMatch = booking.serviceName?.toLowerCase().includes(searchLower);
-        
-        // Search in notes
-        const notesMatch = booking.notes?.toLowerCase().includes(searchLower);
-        
-        // Return false if no matches
-        if (!clientNameMatch && !serviceMatch && !notesMatch) {
-          return false;
-        }
-      }
-
-      // If all filters pass, include this booking
-      return true;
-    });
+  const [filteredBookings, setFilteredBookings] = useState<Booking[]>(bookings);
+  
+  useEffect(() => {
+    // Start with all bookings
+    let result = [...bookings];
+    
+    // Apply each filter sequentially
+    result = filterByStatus(result, filters.status);
+    
+    result = filterByDate(
+      result, 
+      filters.dateFilter, 
+      filters.dateRange.from, 
+      filters.dateRange.to
+    );
+    
+    // Calculate customer booking counts once
+    const customerBookingCounts = calculateCustomerBookingCounts(bookings);
+    
+    result = filterByClientType(result, filters.clientType, customerBookingCounts);
+    result = filterByServiceType(result, filters.serviceType);
+    result = filterBySearchTerm(result, filters.search);
+    
+    setFilteredBookings(result);
   }, [bookings, filters]);
+  
+  return filteredBookings;
 };

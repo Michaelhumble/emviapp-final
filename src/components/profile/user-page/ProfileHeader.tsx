@@ -1,18 +1,28 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AtSign, Calendar, Globe, Instagram, Mail, MapPin, Phone, User } from "lucide-react";
+import { 
+  AtSign, 
+  Calendar, 
+  Globe, 
+  Instagram, 
+  Mail, 
+  MapPin, 
+  Phone, 
+  User 
+} from "lucide-react";
 import { UserProfile, getLocationString } from "@/types/profile";
-import ImageWithFallback from "@/components/ui/ImageWithFallback";
 
 interface ProfileHeaderProps {
   profile: UserProfile;
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ profile }) => {
+  // Get location as string
   const locationString = getLocationString(profile.location);
 
   const getProfileTitle = () => {
@@ -53,11 +63,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ profile }) => {
         <div className="flex flex-col items-center">
           <div className="w-32 h-32 rounded-full overflow-hidden mb-4 bg-gray-100">
             {profile.avatar_url ? (
-              <ImageWithFallback 
+              <img 
                 src={profile.avatar_url} 
                 alt={profile.full_name} 
                 className="w-full h-full object-cover"
-                fallbackImage="https://emvi.app/images/fallback-profile.jpg"
               />
             ) : (
               <User className="w-full h-full p-8 text-gray-300" />

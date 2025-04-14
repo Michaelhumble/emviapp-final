@@ -1,47 +1,63 @@
 
-import { toast } from "sonner";
+import { toast } from 'sonner';
+import { useFormatters } from './useFormatters';
+import { useUserNameResolver } from './useUserNameResolver';
 
-interface Booking {
+interface BookingData {
   id: string;
   sender_id: string;
   recipient_id: string;
   status: string;
-  date_requested?: string;
-  time_requested?: string;
+  date_requested: string;
+  time_requested: string;
   service_id?: string;
 }
 
+/**
+ * Hook to handle customer-specific booking notifications
+ */
 export const useCustomerNotifications = () => {
-  const handleNewBookingCreated = async (booking: Booking) => {
-    toast.success("Booking request sent successfully! You'll be notified when it's confirmed.");
+  const { formatBookingDate, t } = useFormatters();
+  const { getUserName, getServiceDetails } = useUserNameResolver();
+
+  /**
+   * Handle new booking creation notifications for customers
+   */
+  const handleNewBookingCreated = async (booking: BookingData) => {
+    const artistName = await getUserName(booking.recipient_id);
+    const serviceTitle = booking.service_id 
+      ? await getServiceDetails(booking.service_id) 
+      : t({
+          english: 'a service',
+          vietnamese: 'một dịch vụ'
+        });
+    const dateTime = formatBookingDate(booking.date_requested, booking.time_requested);
+    
+    toast.success(t({
+      english: `Successfully requested booking with ${artistName} for ${serviceTitle} on ${dateTime}`,
+      vietnamese: `Đã yêu cầu đặt lịch thành công với ${artistName} cho ${serviceTitle} vào ${dateTime}`
+    }));
   };
 
-  const handleBookingStatusChange = async (booking: Booking, previousStatus?: string) => {
+  /**
+   * Handle booking status change notifications for customers
+   */
+  const handleBookingStatusChange = async (booking: BookingData, previousStatus?: string) => {
     if (!previousStatus || previousStatus === booking.status) return;
-
-    switch (booking.status) {
-      case "confirmed":
-        toast.success("Your booking has been confirmed!", {
-          description: "Check your bookings page for details",
-          action: {
-            label: "View",
-            onClick: () => window.location.href = "/my-bookings"
-          }
-        });
-        break;
-      case "cancelled":
-        toast.error("Your booking has been cancelled", {
-          description: "The service provider has cancelled your booking"
-        });
-        break;
-      case "completed":
-        toast.success("Your booking has been marked as completed", {
-          description: "Thanks for using our service!",
-        });
-        break;
-      default:
-        toast.info(`Your booking status has been updated to ${booking.status}`);
-        break;
+    
+    const artistName = await getUserName(booking.recipient_id);
+    const dateTime = formatBookingDate(booking.date_requested, booking.time_requested);
+    
+    if (booking.status === 'accepted') {
+      toast.success(t({
+        english: `${artistName} has accepted your booking for ${dateTime}!`,
+        vietnamese: `${artistName} đã chấp nhận lịch hẹn của bạn vào ${dateTime}!`
+      }));
+    } else if (booking.status === 'declined') {
+      toast.error(t({
+        english: `${artistName} has declined your booking for ${dateTime}`,
+        vietnamese: `${artistName} đã từ chối lịch hẹn của bạn vào ${dateTime}`
+      }));
     }
   };
 
