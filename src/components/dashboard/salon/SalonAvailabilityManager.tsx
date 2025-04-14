@@ -89,25 +89,25 @@ const SalonAvailabilityManager = () => {
       
       if (!user) return;
       
-      // Avoid TypeScript deep instantiation by using any type temporarily
-      const response = await supabase
+      // Fix the type instantiation issue by explicitly handling the query result
+      const { data, error } = await supabase
         .from('availability')
         .select('*')
         .eq('user_id', user.id)
-        .order('day_of_week');
-
-      if (response.error) throw response.error;
+        .order('day_of_week') as { 
+          data: any[]; 
+          error: any; 
+        };
       
-      // Then safely cast the result to our expected type
-      const typedData = response.data as unknown as DatabaseAvailabilityRecord[];
+      if (error) throw error;
       
-      if (typedData && typedData.length > 0) {
-        if (typedData[0].location) {
-          setLocation(typedData[0].location);
+      if (data && data.length > 0) {
+        if (data[0].location) {
+          setLocation(data[0].location);
         }
         
         const existingDays = DAYS_OF_WEEK.map(day => {
-          const existingDay = typedData.find(d => d.day_of_week === day.value.toString());
+          const existingDay = data.find(d => d.day_of_week === day.value.toString());
           if (existingDay) {
             return {
               id: existingDay.id,
