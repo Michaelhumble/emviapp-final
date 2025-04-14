@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/popover";
 import { NotificationList } from "@/components/notifications/NotificationList";
 import { NotificationHeader } from "@/components/notifications/NotificationHeader";
+import { NotificationDrawer } from "@/components/notifications/NotificationDrawer";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
@@ -25,6 +26,7 @@ const Navbar = () => {
   const location = useLocation();
   const { notifications, unreadCount, fetchNotifications, markAsRead, markAllAsRead } = useNotificationContext();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notificationDrawerOpen, setNotificationDrawerOpen] = useState(false);
   
   // Determine if we're on an explore page
   const isExplorePage = 
@@ -58,6 +60,16 @@ const Navbar = () => {
     setNotificationsOpen(false);
   };
 
+  // For smaller screens, use drawer
+  const handleNotificationBellClick = () => {
+    if (window.innerWidth < 768) {
+      setNotificationDrawerOpen(true);
+    } else {
+      setNotificationsOpen(!notificationsOpen);
+    }
+    fetchNotifications();
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
       <div className="container flex items-center justify-between mx-auto h-16 px-4">
@@ -77,31 +89,50 @@ const Navbar = () => {
           
           {/* Notifications icon (only for logged in users) */}
           {user && (
-            <Popover open={notificationsOpen} onOpenChange={(open) => {
-              setNotificationsOpen(open);
-              if (open) fetchNotifications();
-            }}>
-              <PopoverTrigger asChild>
-                <div>
-                  <NotificationIcon 
-                    unreadCount={unreadCount}
-                    onClick={() => fetchNotifications()}
-                  />
-                </div>
-              </PopoverTrigger>
-              <PopoverContent className="w-80 p-0" align="end">
-                <NotificationHeader 
+            <>
+              {/* Desktop dropdown */}
+              <div className="hidden md:block">
+                <Popover open={notificationsOpen} onOpenChange={(open) => {
+                  setNotificationsOpen(open);
+                  if (open) fetchNotifications();
+                }}>
+                  <PopoverTrigger asChild>
+                    <div>
+                      <NotificationIcon 
+                        unreadCount={unreadCount}
+                        onClick={handleNotificationBellClick}
+                      />
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80 p-0" align="end">
+                    <NotificationHeader 
+                      unreadCount={unreadCount}
+                      onMarkAllAsRead={markAllAsRead}
+                      variant="icon"
+                    />
+                    <NotificationList 
+                      notifications={notifications}
+                      onNotificationClick={handleNotificationClick}
+                      variant="icon"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              
+              {/* Mobile touchpoint */}
+              <div className="md:hidden">
+                <NotificationIcon 
                   unreadCount={unreadCount}
-                  onMarkAllAsRead={markAllAsRead}
-                  variant="icon"
+                  onClick={handleNotificationBellClick}
                 />
-                <NotificationList 
-                  notifications={notifications}
-                  onNotificationClick={handleNotificationClick}
-                  variant="icon"
-                />
-              </PopoverContent>
-            </Popover>
+              </div>
+              
+              {/* Mobile notification drawer */}
+              <NotificationDrawer 
+                open={notificationDrawerOpen} 
+                onOpenChange={setNotificationDrawerOpen} 
+              />
+            </>
           )}
           
           {/* Auth buttons or user menu (hidden on mobile) */}

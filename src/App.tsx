@@ -15,6 +15,7 @@ import './components/chat/chat.css';
 import { supabase } from '@/integrations/supabase/client';
 import AuthGuard from './components/auth/AuthGuard';
 import { ChatSystem } from './components/chat/ChatSystem';
+import { useBookingReminders } from './hooks/useBookingReminders';
 
 // Function to determine if a route should be protected
 const isProtectedRoute = (path: string): boolean => {
@@ -22,6 +23,12 @@ const isProtectedRoute = (path: string): boolean => {
          path.startsWith('/profile') || 
          path.startsWith('/settings') ||
          path === '/command-center';
+};
+
+// Booking reminders component that just implements the hook
+const BookingRemindersSystem = () => {
+  useBookingReminders();
+  return null;
 };
 
 function App() {
@@ -82,6 +89,7 @@ function App() {
                 </Routes>
                 <Toaster position="top-right" />
                 <ChatSystem />
+                <BookingRemindersSystem />
               </GoogleMapsProvider>
             </NotificationProvider>
           </SubscriptionProvider>

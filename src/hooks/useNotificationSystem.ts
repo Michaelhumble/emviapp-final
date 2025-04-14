@@ -6,14 +6,14 @@ import { toast } from 'sonner';
 import { useNotificationContext } from '@/context/notification';
 
 export interface NotificationPayload {
-  type: 'booking_created' | 'booking_updated' | 'booking_cancelled' | 'message_received' | 'credits_low' | 'weekly_summary';
+  type: 'booking_created' | 'booking_updated' | 'booking_cancelled' | 'booking_reminder' | 'booking_pending' | 'message_received' | 'credits_low' | 'weekly_summary' | 'profile_incomplete';
   message: string;
   details?: Record<string, any>;
   link?: string;
 }
 
 export const useNotificationSystem = () => {
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const { fetchNotifications } = useNotificationContext();
   const [initialized, setInitialized] = useState(false);
 
@@ -80,13 +80,84 @@ export const useNotificationSystem = () => {
         })
       .subscribe();
 
+    // Check for low credits
+    const checkLowCredits = async () => {
+      try {
+        if (userProfile && 'credits' in userProfile && userProfile.credits !== null) {
+          const credits = userProfile.credits as number;
+          
+          // Low credits threshold
+          if (credits < 3) {
+            // Only notify once per day
+            const lastLowCreditAlert = localStorage.getItem('last_low_credit_alert');
+            const shouldAlert = !lastLowCreditAlert || 
+              (new Date().getTime() - new Date(lastLowCreditAlert).getTime() > 24 * 60 * 60 * 1000);
+              
+            if (shouldAlert) {
+              sendNotification({
+                type: 'credits_low',
+                message: '⚠️ Your Emvi credits are running low. Consider earning more to unlock premium features.',
+                link: '/dashboard'
+              });
+              
+              localStorage.setItem('last_low_credit_alert', new Date().toISOString());
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Error checking credits:', err);
+      }
+    };
+    
+    // Check for incomplete profile
+    const checkIncompleteProfile = async () => {
+      try {
+        // Simple check based on empty fields that are important
+        if (
+          userProfile && 
+          (!userProfile.full_name || 
+           !userProfile.location || 
+           !userProfile.avatar_url || 
+           (userProfile.role === 'artist' && !userProfile.specialty))
+        ) {
+          // Only notify once per week
+          const lastProfileAlert = localStorage.getItem('last_profile_alert');
+          const shouldAlert = !lastProfileAlert || 
+            (new Date().getTime() - new Date(lastProfileAlert).getTime() > 7 * 24 * 60 * 60 * 1000);
+            
+          if (shouldAlert) {
+            sendNotification({
+              type: 'profile_incomplete',
+              message: '✏️ Your profile is incomplete. Complete it to get more visibility and bookings.',
+              link: '/profile/edit'
+            });
+            
+            localStorage.setItem('last_profile_alert', new Date().toISOString());
+          }
+        }
+      } catch (err) {
+        console.error('Error checking profile:', err);
+      }
+    };
+    
+    // Run checks
+    checkLowCredits();
+    checkIncompleteProfile();
+    
+    // Check weekly
+    const weeklyChecks = setInterval(() => {
+      checkLowCredits();
+      checkIncompleteProfile();
+    }, 7 * 24 * 60 * 60 * 1000);
+
     setInitialized(true);
 
     // Cleanup subscription
     return () => {
       supabase.removeChannel(channel);
+      clearInterval(weeklyChecks);
     };
-  }, [user, initialized, fetchNotifications]);
+  }, [user, initialized, fetchNotifications, sendNotification, userProfile]);
 
   // Function to send booking reminder
   const sendBookingReminder = useCallback(async (userId: string, bookingId: string, bookingTime: string, customerName: string, serviceName: string) => {
