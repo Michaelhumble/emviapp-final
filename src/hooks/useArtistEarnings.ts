@@ -91,7 +91,14 @@ export const useArtistEarnings = () => {
         
         if (weekError) throw weekError;
         
-        const weekEarnings = weekData.reduce((sum, booking) => sum + parseFloat(booking.commission_earned), 0);
+        const weekEarnings = weekData.reduce((sum, booking) => {
+          // Ensure proper conversion to number
+          const earned = booking.commission_earned !== null 
+            ? parseFloat(String(booking.commission_earned)) 
+            : 0;
+          return sum + earned;
+        }, 0);
+        
         const isPaid = weekData.length > 0 && weekData.every(booking => booking.paid);
         
         recentWeeks.push({
@@ -103,9 +110,20 @@ export const useArtistEarnings = () => {
         });
       }
       
-      // Calculate totals
-      const currentWeekEarnings = currentWeekData.reduce((sum, booking) => sum + parseFloat(String(booking.commission_earned)), 0);
-      const totalPendingPayment = pendingData.reduce((sum, booking) => sum + parseFloat(String(booking.commission_earned)), 0);
+      // Calculate totals with safe parsing
+      const currentWeekEarnings = currentWeekData.reduce((sum, booking) => {
+        const earned = booking.commission_earned !== null 
+          ? parseFloat(String(booking.commission_earned)) 
+          : 0;
+        return sum + earned;
+      }, 0);
+      
+      const totalPendingPayment = pendingData.reduce((sum, booking) => {
+        const earned = booking.commission_earned !== null 
+          ? parseFloat(String(booking.commission_earned)) 
+          : 0;
+        return sum + earned;
+      }, 0);
       
       setSummary({
         currentWeekEarnings,
