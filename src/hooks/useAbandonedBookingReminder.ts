@@ -13,17 +13,7 @@ export const useAbandonedBookingReminder = () => {
     
     const checkForAbandonedBookings = async () => {
       try {
-        // First check if last_activity column exists
-        const { data: columnsData } = await supabase
-          .from('bookings')
-          .select('*')
-          .limit(1);
-        
-        // If last_activity doesn't exist, we'll use created_at instead
-        const timeField = columnsData && 'last_activity' in columnsData[0] 
-          ? 'last_activity' 
-          : 'created_at';
-        
+        // Check if there are any abandoned draft bookings
         const { data, error } = await supabase
           .from('bookings')
           .select(`
@@ -37,9 +27,11 @@ export const useAbandonedBookingReminder = () => {
           .order('created_at', { ascending: false })
           .limit(1);
         
-        if (error || !data || data.length === 0) return;
+        if (error) throw error;
         
-        // Check if the booking was abandoned (created_at > 5 minutes ago)
+        if (!data || data.length === 0) return;
+        
+        // Check if the booking was abandoned (created more than 5 minutes ago)
         const lastActivity = new Date(data[0].created_at);
         const fiveMinutesAgo = new Date();
         fiveMinutesAgo.setMinutes(fiveMinutesAgo.getMinutes() - 5);
@@ -48,13 +40,12 @@ export const useAbandonedBookingReminder = () => {
           setAbandonedBooking(data[0].id);
           
           // Set service name if available
-          if (data[0].services?.title) {
+          if (data[0].services && data[0].services.title) {
             setServiceName(data[0].services.title);
           }
         }
       } catch (err) {
-        // No abandoned bookings, or error occurred
-        console.log('No abandoned bookings found');
+        console.log('Error checking for abandoned bookings:', err);
       }
     };
     

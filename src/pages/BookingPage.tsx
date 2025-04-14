@@ -77,10 +77,10 @@ const BookingPageContent = () => {
   const { 
     bookingState, 
     setServiceId, 
-    setProviderId, 
+    setProviderId: setBookingProviderId, 
     setDate, 
     setTime, 
-    setNotes,
+    setNotes: setBookingStateNotes,
     addAdditionalService,
     saveBookingDraft,
     submitBooking,
@@ -97,7 +97,7 @@ const BookingPageContent = () => {
 
   // Get the current service price for the upsell calculation
   const currentService = services?.find(s => s.id === serviceType);
-  const currentServicePrice = currentService ? parseFloat(String(currentService.price)) : 0;
+  const currentServicePrice = currentService?.price ? parseFloat(String(currentService.price)) : 0;
 
   const { upsells, loading: loadingUpsells } = useServiceUpsells(
     serviceType, 
@@ -128,10 +128,10 @@ const BookingPageContent = () => {
     }
 
     setServiceId(serviceType);
-    setProviderId(selectedProviderId);
+    setBookingProviderId(selectedProviderId);
     setDate(bookingDate);
     setTime(bookingTime);
-    setNotes(bookingNotes);
+    setBookingStateNotes(bookingNotes);
 
     const draftId = await saveBookingDraft();
     

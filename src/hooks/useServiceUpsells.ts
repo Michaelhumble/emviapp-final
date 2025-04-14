@@ -31,7 +31,7 @@ export const useServiceUpsells = (serviceId: string | null, bookingValue: number
       setError(null);
 
       try {
-        // Use a normal select instead of the RPC function
+        // Query related services directly instead of using RPC
         const { data, error } = await supabase
           .from('services')
           .select('id, title, price, description, duration_minutes, image_url')
@@ -42,7 +42,12 @@ export const useServiceUpsells = (serviceId: string | null, bookingValue: number
         
         if (error) throw error;
         
-        setUpsells(data as UpsellService[] || []);
+        // Only set the data if it's an array
+        if (Array.isArray(data)) {
+          setUpsells(data as UpsellService[]);
+        } else {
+          setUpsells([]);
+        }
       } catch (err: any) {
         console.error('Error fetching upsell services:', err);
         setError('Failed to load service recommendations');

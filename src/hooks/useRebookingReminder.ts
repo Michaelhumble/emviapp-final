@@ -55,15 +55,14 @@ export const useRebookingReminder = () => {
           setShouldShowReminder(true);
         }
       } catch (err) {
-        // No relevant bookings, or error occurred
-        console.log('No relevant bookings found for rebooking reminder');
+        console.log('No relevant bookings found for rebooking reminder:', err);
       }
     };
     
     // Check on first load
     checkForRebookingOpportunity();
     
-    // Check daily (convert to milliseconds)
+    // Check daily
     const interval = setInterval(checkForRebookingOpportunity, 24 * 60 * 60 * 1000);
     
     return () => clearInterval(interval);

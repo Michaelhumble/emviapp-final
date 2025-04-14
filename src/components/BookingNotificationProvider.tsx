@@ -3,12 +3,13 @@ import { useBookingNotifications } from '@/hooks/useBookingNotifications';
 import { useAbandonedBookingReminder } from '@/hooks/useAbandonedBookingReminder';
 import { useRebookingReminder } from '@/hooks/useRebookingReminder';
 import { AbandonedBookingReminder } from '@/components/booking/AbandonedBookingReminder';
+import { RebookingReminder } from '@/components/booking/RebookingReminder';
 import { useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 export const BookingNotificationProvider = () => {
   // Set up booking notification listeners
-  useBookingNotifications();
+  useBookingNotifications?.();
   
   // Set up abandoned booking reminder
   const { 
@@ -51,6 +52,15 @@ export const BookingNotificationProvider = () => {
           bookingId={abandonedBooking}
           serviceName={serviceName}
           onDismiss={dismissAbandonedBooking}
+        />
+      )}
+      
+      {shouldShowReminder && (
+        <RebookingReminder 
+          lastBookingDate={lastBookingDate}
+          artistName={artistName}
+          artistId={artistId}
+          onDismiss={dismissReminder}
         />
       )}
     </>
