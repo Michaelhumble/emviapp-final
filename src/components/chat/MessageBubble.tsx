@@ -3,9 +3,11 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { MessageType, ActionSuggestion } from "./ChatSystem";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, User, Check, ChevronRight } from "lucide-react";
+import { Calendar, Clock, User, Check, ChevronRight, Star, MapPin, DollarSign, Tag } from "lucide-react";
 import { BookingMatch } from "@/services/assistantService";
 import { Link } from "react-router-dom";
+import { ActionTile } from "@/utils/aiResponseProcessor";
+import { Badge } from "@/components/ui/badge";
 
 interface MessageBubbleProps {
   message: MessageType;
@@ -60,6 +62,184 @@ export function MessageBubble({ message, onBookingConfirm }: MessageBubbleProps)
     }
   };
 
+  // Render action tiles based on their type
+  const renderActionTile = (tile: ActionTile) => {
+    switch (tile.type) {
+      case 'artist':
+        return (
+          <div key={tile.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm mb-2">
+            <div className="flex items-start p-3">
+              <div className="flex-shrink-0 mr-3">
+                {tile.image ? (
+                  <img 
+                    src={tile.image} 
+                    alt={tile.title} 
+                    className="h-12 w-12 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <User className="h-6 w-6 text-primary" />
+                  </div>
+                )}
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium text-gray-900">{tile.title}</h4>
+                  {tile.rating && (
+                    <div className="flex items-center">
+                      <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
+                      <span className="text-xs ml-1">{tile.rating}</span>
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs text-gray-600">{tile.subtitle}</p>
+                {tile.location && (
+                  <div className="flex items-center mt-1 text-xs text-gray-500">
+                    <MapPin className="h-3 w-3 mr-0.5" />
+                    <span>{tile.location}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            <Link to={tile.href} className="block">
+              <Button 
+                variant="ghost" 
+                className="w-full border-t border-gray-100 rounded-none py-2 h-8 text-sm hover:bg-primary/5"
+              >
+                {tile.actionLabel}
+              </Button>
+            </Link>
+          </div>
+        );
+      
+      case 'booth':
+        return (
+          <div key={tile.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm mb-2">
+            <div className="p-3">
+              <div className="flex items-center justify-between">
+                <h4 className="font-medium text-gray-900">{tile.title}</h4>
+              </div>
+              <p className="text-xs text-gray-600">{tile.subtitle}</p>
+              {tile.location && (
+                <div className="flex items-center mt-1 text-xs text-gray-500">
+                  <MapPin className="h-3 w-3 mr-0.5" />
+                  <span>{tile.location}</span>
+                </div>
+              )}
+              <div className="flex items-center justify-between mt-2">
+                {tile.price && (
+                  <div className="flex items-center text-sm font-medium">
+                    <DollarSign className="h-3.5 w-3.5 text-green-600" />
+                    <span>{tile.price}</span>
+                  </div>
+                )}
+                <div className="flex">
+                  {tile.features && tile.features.map((feature, idx) => (
+                    <Badge key={idx} variant="outline" className="text-xs mr-1 bg-gray-50">
+                      {feature}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <Link to={tile.href} className="block">
+              <Button 
+                variant="ghost" 
+                className="w-full border-t border-gray-100 rounded-none py-2 h-8 text-sm hover:bg-primary/5"
+              >
+                {tile.actionLabel}
+              </Button>
+            </Link>
+          </div>
+        );
+      
+      case 'salon':
+        return (
+          <div key={tile.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm mb-2">
+            <div className="p-3">
+              <div className="flex items-center justify-between">
+                <h4 className="font-medium text-gray-900">{tile.title}</h4>
+              </div>
+              <p className="text-xs text-gray-600">{tile.subtitle}</p>
+              {tile.location && (
+                <div className="flex items-center mt-1 text-xs text-gray-500">
+                  <MapPin className="h-3 w-3 mr-0.5" />
+                  <span>{tile.location}</span>
+                </div>
+              )}
+              <div className="flex items-center justify-between mt-2">
+                {tile.price && (
+                  <div className="flex items-center text-sm font-medium">
+                    <DollarSign className="h-3.5 w-3.5 text-green-600" />
+                    <span>{tile.price}</span>
+                  </div>
+                )}
+                <div className="flex flex-wrap">
+                  {tile.features && tile.features.map((feature, idx) => (
+                    <Badge key={idx} variant="outline" className="text-xs mr-1 mt-1 bg-gray-50">
+                      {feature}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <Link to={tile.href} className="block">
+              <Button 
+                variant="ghost" 
+                className="w-full border-t border-gray-100 rounded-none py-2 h-8 text-sm hover:bg-primary/5"
+              >
+                {tile.actionLabel}
+              </Button>
+            </Link>
+          </div>
+        );
+      
+      case 'job':
+        return (
+          <div key={tile.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm mb-2">
+            <div className="p-3">
+              <div className="flex items-center justify-between">
+                <h4 className="font-medium text-gray-900">{tile.title}</h4>
+              </div>
+              <p className="text-xs text-gray-600">{tile.subtitle}</p>
+              {tile.location && (
+                <div className="flex items-center mt-1 text-xs text-gray-500">
+                  <MapPin className="h-3 w-3 mr-0.5" />
+                  <span>{tile.location}</span>
+                </div>
+              )}
+              <div className="flex items-center justify-between mt-2">
+                {tile.price && (
+                  <div className="flex items-center text-sm font-medium">
+                    <DollarSign className="h-3.5 w-3.5 text-green-600" />
+                    <span>{tile.price}</span>
+                  </div>
+                )}
+                <div className="flex flex-wrap">
+                  {tile.features && tile.features.map((feature, idx) => (
+                    <Badge key={idx} variant="outline" className="text-xs mr-1 mt-1 bg-gray-50">
+                      {feature}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <Link to={tile.href} className="block">
+              <Button 
+                variant="ghost" 
+                className="w-full border-t border-gray-100 rounded-none py-2 h-8 text-sm hover:bg-primary/5"
+              >
+                {tile.actionLabel}
+              </Button>
+            </Link>
+          </div>
+        );
+      
+      default:
+        return null;
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -87,6 +267,13 @@ export function MessageBubble({ message, onBookingConfirm }: MessageBubbleProps)
         ) : (
           <>
             <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+            
+            {/* Show action tiles if available */}
+            {message.actionTiles && message.actionTiles.length > 0 && (
+              <div className="mt-3 space-y-0.5">
+                {message.actionTiles.map(tile => renderActionTile(tile))}
+              </div>
+            )}
             
             {/* Show booking options if available */}
             {message.bookingMatches && message.bookingMatches.length > 0 && (

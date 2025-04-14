@@ -1,86 +1,102 @@
 
+/* Chat Animations and Styling */
 .chat-window {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  background-color: rgba(255, 255, 255, 0.95);
-  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
+/* Typing indicator animation */
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #9b87f5;
+  margin: 0 2px;
+  display: inline-block;
+  opacity: 0.8;
+  animation: typingAnimation 1.4s infinite ease-in-out both;
+}
+
+.typing-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typingAnimation {
+  0%, 80%, 100% { 
+    transform: scale(0.7);
+    opacity: 0.4;
+  }
+  40% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Chat message animations */
+.chat-messages {
+  scroll-behavior: smooth;
+}
+
+/* Make sure buttons in the chat are tappable on mobile */
+.chat-input button,
+.chat-messages button {
+  touch-action: manipulation;
+}
+
+/* Safe area for mobile */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-area-bottom {
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* Animation for action buttons */
+.chat-messages .action-button {
+  transition: transform 0.2s ease-out;
+}
+
+.chat-messages .action-button:hover {
+  transform: translateY(-2px);
+}
+
+/* Ensure the chat toggle button is easily tappable on mobile */
+.chat-toggle-button {
+  touch-action: manipulation;
+}
+
+/* Improved scrollbar for desktop */
 .chat-messages::-webkit-scrollbar {
   width: 6px;
 }
 
 .chat-messages::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 10px;
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.1);
-  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
 }
 
-.chat-input {
-  box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.05);
+.chat-messages::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.12);
 }
 
-.typing-indicator-dot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.3);
-  animation: typing 1.5s infinite ease-in-out;
+/* Ensure action tiles have consistent styling */
+.action-tile {
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
 }
 
-.typing-indicator-dot:nth-child(1) {
-  animation-delay: 0s;
-}
-
-.typing-indicator-dot:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.typing-indicator-dot:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes typing {
-  0%, 60%, 100% {
-    transform: translateY(0);
-    opacity: 0.6;
-  }
-  30% {
-    transform: translateY(-4px);
-    opacity: 1;
-  }
-}
-
-.mobile-safe-bottom {
-  padding-bottom: env(safe-area-inset-bottom, 16px);
-}
-
-.message-action-button {
-  transition: all 0.2s ease;
-}
-
-.message-action-button:hover {
+.action-tile:hover {
   transform: translateY(-2px);
-}
-
-.chat-messages .user-bubble {
-  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
-  color: white;
-  border-radius: 16px 16px 0 16px;
-}
-
-.chat-messages .ai-bubble {
-  background: linear-gradient(135deg, #f5f5f5 0%, #eaeaea 100%);
-  border-radius: 16px 16px 16px 0;
-}
-
-@media (max-width: 640px) {
-  .mobile-chat-panel {
-    max-height: 80vh !important;
-  }
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }

@@ -12,6 +12,7 @@ import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import { processAiResponse } from "@/utils/aiResponseProcessor";
 import { getDefaultActions } from "@/utils/chatUtils";
+import { ActionTile } from "@/utils/aiResponseProcessor";
 
 export type ActionSuggestion = {
   id: string;
@@ -28,6 +29,7 @@ export type MessageType = {
   isTyping?: boolean;
   bookingMatches?: BookingMatch[];
   actionSuggestions?: ActionSuggestion[];
+  actionTiles?: ActionTile[];
 };
 
 export function ChatSystem() {
@@ -209,7 +211,7 @@ export function ChatSystem() {
       const response = await generateResponse(trimmedInput);
       
       // Process the response to add action suggestions based on content
-      const { message, suggestedActions } = processAiResponse(response);
+      const { message, suggestedActions, actionTiles } = processAiResponse(response);
       
       setMessages(prev => [
         ...prev.filter(m => m.id !== typingId),
@@ -219,7 +221,8 @@ export function ChatSystem() {
           sender: "assistant",
           timestamp: new Date(),
           bookingMatches: matches.length > 0 ? matches : undefined,
-          actionSuggestions: suggestedActions
+          actionSuggestions: suggestedActions,
+          actionTiles: actionTiles
         }
       ]);
       

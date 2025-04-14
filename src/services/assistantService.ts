@@ -38,8 +38,31 @@ export const processUserInput = async (
     bookingMatches = generateMockBookingMatches();
   }
   
-  // Simple keyword-based response generation
-  let message = generateResponse(userInput);
+  // Detect user intent and generate appropriate contextual responses
+  let message = "";
+  
+  const input = userInput.toLowerCase();
+  
+  // Hiring/jobs intent
+  if (input.includes('hire') || input.includes('job') || input.includes('looking for work')) {
+    message = "I can help you post a job or find employment! Would you like to post a job listing or browse available positions in your area? Here are some options:";
+  }
+  // Booking intent
+  else if (input.includes('book') || input.includes('appointment')) {
+    message = "I'd be happy to help you book an appointment! Here are some talented artists available for booking. Would any of these stylists work for you?";
+  }
+  // Salon selling intent
+  else if (input.includes('sell') && input.includes('salon')) {
+    message = "Looking to sell your salon? I can help you list it on our marketplace where interested buyers are actively searching. Here are some similar salon listings that have done well:";
+  }
+  // Booth rental intent
+  else if (input.includes('booth') || (input.includes('rent') && input.includes('space'))) {
+    message = "I found some great booth rental options that might be perfect for you! Here are some available booths near you:";
+  }
+  // General greeting or other query
+  else {
+    message = generateBaseResponse(userInput);
+  }
   
   return {
     message,
@@ -85,7 +108,7 @@ const generateMockBookingMatches = (): BookingMatch[] => {
 };
 
 // Simple response generation function
-const generateResponse = (userInput: string): string => {
+const generateBaseResponse = (userInput: string): string => {
   const input = userInput.toLowerCase();
   
   if (input.includes('book') || input.includes('appointment')) {
@@ -93,7 +116,7 @@ const generateResponse = (userInput: string): string => {
   }
   
   if (input.includes('job') || input.includes('hire')) {
-    return "Looking to post a job or hire talent? You can create a listing right here: [Post a Job]. Your job will be visible to all qualified beauty professionals in your area! 💼";
+    return "Looking to post a job or hire talent? You can create a listing right here on EmviApp. Your job will be visible to all qualified beauty professionals in your area! 💼";
   }
   
   if (input.includes('salon') || input.includes('business')) {

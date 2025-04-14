@@ -12,6 +12,7 @@ import { NotificationProvider } from "@/context/notification";
 import Index from "@/pages/Index";
 import Jobs from "@/pages/Jobs";
 import NotFound from "@/pages/NotFound";
+import Messages from "@/pages/messages";
 
 // Global styles
 import "@/styles/globals.css";
@@ -39,6 +40,8 @@ function App() {
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/jobs" element={<Jobs />} />
+                    <Route path="/messages" element={<Messages />} />
+                    <Route path="/salon-sales" element={<NotFound />} /> {/* Temporary route for salon sales */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </NotificationProvider>
