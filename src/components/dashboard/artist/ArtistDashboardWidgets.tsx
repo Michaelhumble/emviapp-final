@@ -49,9 +49,15 @@ interface DashboardStats {
   repeat_client_percentage: number;
 }
 
+// Monthly earnings data type
+interface MonthlyEarning {
+  month: string;
+  amount: number;
+}
+
 // Types for earnings data
 interface EarningsData {
-  monthly_earnings: Array<{month: string, amount: number}>;
+  monthly_earnings: MonthlyEarning[];
   total_earnings: number;
   pending_payouts: number;
 }
@@ -141,10 +147,10 @@ const ArtistDashboardWidgets = () => {
     enabled: !!user?.id
   });
 
-  // Fetch earnings data with explicit return type
-  const { data: earningsData, isLoading: isLoadingEarnings } = useQuery<EarningsData | null>({
+  // Fetch earnings data with explicit type annotation to avoid deep type instantiation
+  const { data: earningsData, isLoading: isLoadingEarnings } = useQuery({
     queryKey: ['earnings-data', user?.id],
-    queryFn: async () => {
+    queryFn: async (): Promise<EarningsData | null> => {
       if (!user?.id) return null;
       
       try {
@@ -321,7 +327,9 @@ const ArtistDashboardWidgets = () => {
           <StatCard
             title="This Month"
             value={
-              earningsData?.monthly_earnings?.[earningsData.monthly_earnings.length - 1]?.amount || 0
+              earningsData?.monthly_earnings && earningsData.monthly_earnings.length > 0
+                ? earningsData.monthly_earnings[earningsData.monthly_earnings.length - 1].amount
+                : 0
             }
             description="Current month earnings"
             loading={isLoadingEarnings}
@@ -347,20 +355,27 @@ const ArtistDashboardWidgets = () => {
                 <div className="flex items-end justify-between h-full pt-6">
                   {(earningsData?.monthly_earnings || Array(6).fill({ month: '', amount: 0 }))
                     .slice(0, 6)
-                    .map((month, i) => (
-                      <div key={i} className="flex flex-col items-center">
-                        <div 
-                          className="w-12 bg-primary rounded-t-md" 
-                          style={{ 
-                            height: `${Math.max(
-                              ((month.amount || 0) / (Math.max(...(earningsData?.monthly_earnings || []).map(m => m.amount || 0)) || 1)) * 200, 
-                              20
-                            )}px` 
-                          }}
-                        ></div>
-                        <span className="text-xs mt-2">{month.month || `Month ${i+1}`}</span>
-                      </div>
-                    ))
+                    .map((month, i) => {
+                      // Calculate the maximum amount safely
+                      const maxAmount = Math.max(
+                        ...(earningsData?.monthly_earnings || [])
+                          .map(m => m.amount || 0)
+                      ) || 1;
+                      
+                      // Calculate height safely
+                      const heightPercentage = ((month.amount || 0) / maxAmount) * 200;
+                      const safeHeight = Math.max(heightPercentage, 20);
+                      
+                      return (
+                        <div key={i} className="flex flex-col items-center">
+                          <div 
+                            className="w-12 bg-primary rounded-t-md" 
+                            style={{ height: `${safeHeight}px` }}
+                          ></div>
+                          <span className="text-xs mt-2">{month.month || `Month ${i+1}`}</span>
+                        </div>
+                      );
+                    })
                   }
                 </div>
               </div>
