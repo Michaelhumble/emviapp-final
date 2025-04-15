@@ -2,6 +2,7 @@
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { useSafeQuery } from "@/hooks/useSafeQuery";
 
 // Simple, flat interfaces to avoid deep type instantiation
 export interface DashboardStats {
@@ -47,7 +48,7 @@ export const useArtistDashboardData = (activeTab: string) => {
   const { user } = useAuth();
 
   // Artist stats query
-  const statsQuery = useQuery<DashboardStats, Error>({
+  const statsQuery = useSafeQuery<DashboardStats>({
     queryKey: ['artist-stats', user?.id],
     queryFn: async (): Promise<DashboardStats> => {
       if (!user?.id) throw new Error("User not authenticated");
@@ -64,11 +65,20 @@ export const useArtistDashboardData = (activeTab: string) => {
       
       return mockStats;
     },
-    enabled: !!user?.id
+    enabled: !!user?.id,
+    fallbackData: {
+      booking_count: 0,
+      completed_services: 0,
+      total_earnings: 0,
+      average_rating: 0,
+      referral_count: 0,
+      repeat_client_percentage: 0
+    },
+    context: "artist-stats"
   });
 
   // Recent bookings query
-  const bookingsQuery = useQuery<BookingWithDetails[], Error>({
+  const bookingsQuery = useSafeQuery<BookingWithDetails[]>({
     queryKey: ['recent-bookings', user?.id],
     queryFn: async (): Promise<BookingWithDetails[]> => {
       if (!user?.id) throw new Error("User not authenticated");
@@ -84,7 +94,7 @@ export const useArtistDashboardData = (activeTab: string) => {
         if (error) throw error;
         
         // Convert to our flat BookingWithDetails type
-        const typedData: BookingWithDetails[] = data ? data.map(item => ({
+        return data?.map((item: any): BookingWithDetails => ({
           id: item.id,
           sender_id: item.sender_id,
           recipient_id: item.recipient_id,
@@ -96,19 +106,19 @@ export const useArtistDashboardData = (activeTab: string) => {
           created_at: item.created_at,
           price: 0, // Default value
           note: item.note
-        })) : [];
-        
-        return typedData;
+        })) || [];
       } catch (err) {
         console.error("Error fetching bookings:", err);
-        return []; // Return empty array on error
+        throw err;
       }
     },
-    enabled: !!user?.id
+    enabled: !!user?.id,
+    fallbackData: [],
+    context: "recent-bookings"
   });
 
   // Earnings data query
-  const earningsQuery = useQuery<EarningsData, Error>({
+  const earningsQuery = useSafeQuery<EarningsData>({
     queryKey: ['earnings-data', user?.id],
     queryFn: async (): Promise<EarningsData> => {
       if (!user?.id) throw new Error("User not authenticated");
@@ -129,16 +139,22 @@ export const useArtistDashboardData = (activeTab: string) => {
       
       return mockEarnings;
     },
-    enabled: !!user?.id && activeTab === "earnings"
+    enabled: !!user?.id && activeTab === "earnings",
+    fallbackData: {
+      monthly_earnings: [],
+      total_earnings: 0,
+      pending_payouts: 0
+    },
+    context: "earnings-data"
   });
 
   // Return a simple, flat object with query results
   return {
-    stats: statsQuery.data || null,
+    stats: statsQuery.data,
     isLoadingStats: statsQuery.isLoading,
     recentBookings: bookingsQuery.data || [],
     isLoadingBookings: bookingsQuery.isLoading,
-    earningsData: earningsQuery.data || null,
+    earningsData: earningsQuery.data,
     isLoadingEarnings: earningsQuery.isLoading
   };
 };
