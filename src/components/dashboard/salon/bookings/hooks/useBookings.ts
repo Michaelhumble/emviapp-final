@@ -5,19 +5,20 @@ import { useAuth } from "@/context/auth";
 import { Booking } from "../types";
 import { toast } from "sonner";
 import { startOfDay, endOfDay, addDays } from "date-fns";
+import { useSafeAsync } from "@/hooks/useSafeHook";
 
 export const useBookings = () => {
   const { user } = useAuth();
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [staffMembers, setStaffMembers] = useState<Array<{id: string, name: string}>>([]);
 
-  const fetchBookings = useCallback(async () => {
-    if (!user?.id) return;
-    
-    try {
-      setLoading(true);
+  const { 
+    data: bookings, 
+    isLoading: loading, 
+    error, 
+    execute: refreshBookings 
+  } = useSafeAsync<Booking[]>(
+    async () => {
+      if (!user?.id) throw new Error("User not authenticated");
       
       const { data, error } = await supabase
         .from("bookings")
@@ -57,15 +58,18 @@ export const useBookings = () => {
         return b.date.getTime() - a.date.getTime();
       });
       
-      setBookings(formattedBookings);
-      setLoading(false);
-    } catch (err: any) {
-      console.error("Error fetching bookings:", err);
-      setError("Failed to load bookings. Please try again.");
-      setLoading(false);
+      return formattedBookings;
+    },
+    [user?.id],
+    {
+      fallbackData: [],
+      onError: (err) => {
+        console.error("Error fetching bookings:", err);
+      }
     }
-  }, [user?.id]);
+  );
 
+  // Fetch staff members with safe error handling
   const fetchStaffMembers = useCallback(async () => {
     if (!user?.id) return;
     
@@ -87,11 +91,13 @@ export const useBookings = () => {
       })));
     } catch (err: any) {
       console.error("Error fetching staff members:", err);
+      // Continue with empty staff members rather than breaking the UI
+      setStaffMembers([]);
     }
   }, [user?.id]);
 
   const updateBookingStatus = async (bookingId: string, newStatus: string) => {
-    if (!user?.id) return;
+    if (!user?.id) return false;
     
     try {
       const { error } = await supabase
@@ -104,13 +110,8 @@ export const useBookings = () => {
         throw error;
       }
       
-      setBookings(prevBookings => 
-        prevBookings.map(booking => 
-          booking.id === bookingId 
-            ? { ...booking, status: newStatus } 
-            : booking
-        )
-      );
+      // Update local state
+      refreshBookings();
       
       toast.success(`Booking ${newStatus === "completed" ? "marked as completed" : "status updated"}`);
       return true;
@@ -122,7 +123,7 @@ export const useBookings = () => {
   };
 
   const assignStaffToBooking = async (bookingId: string, staffId: string) => {
-    if (!user?.id) return;
+    if (!user?.id) return false;
     
     try {
       // Need to explicitly type the update to include the metadata field
@@ -146,20 +147,8 @@ export const useBookings = () => {
         throw error;
       }
       
-      // Find the staff name for display
-      const staffMember = staffMembers.find(s => s.id === staffId);
-      
-      setBookings(prevBookings => 
-        prevBookings.map(booking => 
-          booking.id === bookingId 
-            ? { 
-                ...booking, 
-                assignedStaffId: staffId,
-                assignedStaffName: staffMember?.name || null
-              } 
-            : booking
-        )
-      );
+      // Refresh bookings to get updated data
+      refreshBookings();
       
       toast.success("Staff assigned successfully");
       return true;
@@ -175,7 +164,7 @@ export const useBookings = () => {
     time?: string,
     notes?: string
   }) => {
-    if (!user?.id) return;
+    if (!user?.id) return false;
     
     try {
       const updateData: any = {};
@@ -193,18 +182,8 @@ export const useBookings = () => {
         throw error;
       }
       
-      setBookings(prevBookings => 
-        prevBookings.map(booking => 
-          booking.id === bookingId 
-            ? { 
-                ...booking, 
-                date: updates.date || booking.date,
-                time: updates.time || booking.time,
-                notes: updates.notes !== undefined ? updates.notes : booking.notes
-              } 
-            : booking
-        )
-      );
+      // Refresh bookings to get updated data
+      refreshBookings();
       
       toast.success("Booking updated successfully");
       return true;
@@ -217,17 +196,16 @@ export const useBookings = () => {
   
   useEffect(() => {
     if (user?.id) {
-      fetchBookings();
       fetchStaffMembers();
     }
-  }, [user?.id, fetchBookings, fetchStaffMembers]);
+  }, [user?.id, fetchStaffMembers]);
 
   return {
-    bookings,
+    bookings: bookings || [],
     loading,
-    error,
+    error: error?.message || null,
     staffMembers,
-    refresh: fetchBookings,
+    refresh: refreshBookings,
     updateBookingStatus,
     assignStaffToBooking,
     updateBookingDetails

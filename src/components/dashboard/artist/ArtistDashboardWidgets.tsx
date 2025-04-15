@@ -8,16 +8,18 @@ import RecentActivity from "./components/RecentActivity";
 import PerformanceMetrics from "./components/PerformanceMetrics";
 import EarningsSection from "./components/EarningsSection";
 import { DashboardStats, EarningsData, BookingWithDetails } from "./types/ArtistDashboardTypes";
-import { useTypedQuery } from "@/hooks/useTypedQuery";
+import { useSafeQuery } from "@/hooks/useSafeQuery";
+import FallbackBoundary from "@/components/error-handling/FallbackBoundary";
+import SimpleLoadingFallback from "@/components/error-handling/SimpleLoadingFallback";
 
 const ArtistDashboardWidgets = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   
-  const { data: stats, isLoading: isLoadingStats } = useTypedQuery<DashboardStats | null>({
+  const { data: stats, isLoading: isLoadingStats } = useSafeQuery<DashboardStats>({
     queryKey: ['artist-stats', user?.id],
     queryFn: async () => {
-      if (!user?.id) return null;
+      if (!user?.id) throw new Error("User not authenticated");
       
       try {
         const mockStats: DashboardStats = {
@@ -32,16 +34,25 @@ const ArtistDashboardWidgets = () => {
         return mockStats;
       } catch (error) {
         console.error("Error fetching artist stats:", error);
-        return null;
+        throw error;
       }
     },
-    enabled: !!user?.id
+    enabled: !!user?.id,
+    fallbackData: {
+      booking_count: 0,
+      completed_services: 0,
+      total_earnings: 0,
+      average_rating: 0,
+      referral_count: 0,
+      repeat_client_percentage: 0
+    },
+    context: "artist-dashboard-stats"
   });
 
-  const { data: recentBookings, isLoading: isLoadingBookings } = useTypedQuery<BookingWithDetails[]>({
+  const { data: recentBookings, isLoading: isLoadingBookings } = useSafeQuery<BookingWithDetails[]>({
     queryKey: ['recent-bookings', user?.id],
     queryFn: async () => {
-      if (!user?.id) return [];
+      if (!user?.id) throw new Error("User not authenticated");
       
       try {
         const { data, error } = await supabase
@@ -61,16 +72,18 @@ const ArtistDashboardWidgets = () => {
         })) as BookingWithDetails[];
       } catch (error) {
         console.error("Error fetching recent bookings:", error);
-        return [];
+        throw error;
       }
     },
-    enabled: !!user?.id
+    enabled: !!user?.id,
+    fallbackData: [],
+    context: "artist-dashboard-bookings"
   });
   
-  const { data: earningsData, isLoading: isLoadingEarnings } = useTypedQuery<EarningsData | null>({
+  const { data: earningsData, isLoading: isLoadingEarnings } = useSafeQuery<EarningsData>({
     queryKey: ['earnings-data', user?.id],
     queryFn: async () => {
-      if (!user?.id) return null;
+      if (!user?.id) throw new Error("User not authenticated");
       
       try {
         const mockEarningsData: EarningsData = {
@@ -89,71 +102,93 @@ const ArtistDashboardWidgets = () => {
         return mockEarningsData;
       } catch (error) {
         console.error("Error fetching earnings data:", error);
-        return null;
+        throw error;
       }
     },
-    enabled: !!user?.id && activeTab === "earnings"
+    enabled: !!user?.id && activeTab === "earnings",
+    fallbackData: {
+      monthly_earnings: [],
+      total_earnings: 0,
+      pending_payouts: 0
+    },
+    context: "artist-dashboard-earnings"
   });
 
   return (
-    <Tabs defaultValue="overview" className="space-y-4" onValueChange={setActiveTab}>
-      <TabsList>
-        <TabsTrigger value="overview">Overview</TabsTrigger>
-        <TabsTrigger value="earnings">Earnings</TabsTrigger>
-        <TabsTrigger value="calendar">Calendar</TabsTrigger>
-      </TabsList>
-      
-      <TabsContent value="overview" className="space-y-4">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <StatCard
-            title="Bookings"
-            value={stats?.booking_count || 0}
-            description="Total bookings"
-            loading={isLoadingStats}
-          />
-          <StatCard
-            title="Services"
-            value={stats?.completed_services || 0}
-            description="Completed services"
-            loading={isLoadingStats}
-          />
-          <StatCard
-            title="Earnings"
-            value={stats?.total_earnings || 0}
-            description="Total earnings"
-            loading={isLoadingStats}
-            prefix="$"
-          />
-          <StatCard
-            title="Referrals"
-            value={stats?.referral_count || 0}
-            description="Client referrals"
-            loading={isLoadingStats}
-          />
-        </div>
+    <FallbackBoundary>
+      <Tabs defaultValue="overview" className="space-y-4" onValueChange={setActiveTab}>
+        <TabsList>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="earnings">Earnings</TabsTrigger>
+          <TabsTrigger value="calendar">Calendar</TabsTrigger>
+        </TabsList>
         
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-          <RecentActivity 
-            bookings={recentBookings || []}
-            isLoading={isLoadingBookings}
-          />
-          <PerformanceMetrics stats={stats} />
-        </div>
-      </TabsContent>
-      
-      <TabsContent value="earnings" className="space-y-4">
-        <EarningsSection 
-          earningsData={earningsData}
-          isLoading={isLoadingEarnings}
-        />
-      </TabsContent>
-      
-      <TabsContent value="calendar" className="space-y-4">
-        <div className="text-center py-12 text-muted-foreground">
-          Calendar view will be available soon
-        </div>
-      </TabsContent>
-    </Tabs>
+        <TabsContent value="overview" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <FallbackBoundary>
+              <StatCard
+                title="Bookings"
+                value={stats?.booking_count || 0}
+                description="Total bookings"
+                loading={isLoadingStats}
+              />
+            </FallbackBoundary>
+            <FallbackBoundary>
+              <StatCard
+                title="Services"
+                value={stats?.completed_services || 0}
+                description="Completed services"
+                loading={isLoadingStats}
+              />
+            </FallbackBoundary>
+            <FallbackBoundary>
+              <StatCard
+                title="Earnings"
+                value={stats?.total_earnings || 0}
+                description="Total earnings"
+                loading={isLoadingStats}
+                prefix="$"
+              />
+            </FallbackBoundary>
+            <FallbackBoundary>
+              <StatCard
+                title="Referrals"
+                value={stats?.referral_count || 0}
+                description="Client referrals"
+                loading={isLoadingStats}
+              />
+            </FallbackBoundary>
+          </div>
+          
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+            <FallbackBoundary>
+              <RecentActivity 
+                bookings={recentBookings || []}
+                isLoading={isLoadingBookings}
+              />
+            </FallbackBoundary>
+            <FallbackBoundary>
+              <PerformanceMetrics stats={stats} />
+            </FallbackBoundary>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="earnings" className="space-y-4">
+          <FallbackBoundary>
+            <EarningsSection 
+              earningsData={earningsData}
+              isLoading={isLoadingEarnings}
+            />
+          </FallbackBoundary>
+        </TabsContent>
+        
+        <TabsContent value="calendar" className="space-y-4">
+          <div className="text-center py-12 text-muted-foreground">
+            Calendar view will be available soon
+          </div>
+        </TabsContent>
+      </Tabs>
+    </FallbackBoundary>
   );
 };
 

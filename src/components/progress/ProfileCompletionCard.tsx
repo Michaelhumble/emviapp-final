@@ -8,6 +8,7 @@ import { useAuth } from '@/context/auth';
 import { useTranslation } from '@/hooks/useTranslation';
 import { toTranslatableText } from './TranslationHelper';
 import { UserProfile } from '@/context/auth/types';
+import FallbackBoundary from '@/components/error-handling/FallbackBoundary';
 
 export interface ProfileCompletionCardProps {
   percentage?: number;
@@ -78,51 +79,78 @@ const ProfileCompletionCard = ({ percentage = 0, userProfile = null, loading = f
   const completedCount = tasks.filter(task => task.completed).length;
   const completionPercentage = Math.round((completedCount / tasks.length) * 100);
   
-  return (
-    <Card className="border-purple-100 shadow-sm">
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg text-purple-700">
-            {t(toTranslatableText('Profile Completion'))}
-          </CardTitle>
-          <span className="text-sm font-medium">
-            {completionPercentage}%
-          </span>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <Progress value={completionPercentage} className="h-2 mb-6" />
-        
-        <div className="space-y-2">
-          {tasks.map((task) => (
-            <div key={task.id} className="flex items-center justify-between">
-              <div className="flex items-center">
-                {task.completed ? (
-                  <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                ) : (
-                  <Circle className="h-5 w-5 text-gray-300 mr-2" />
-                )}
-                <span className={`text-sm ${task.completed ? 'text-gray-700' : 'text-gray-500'}`}>
-                  {task.label}
-                </span>
+  if (loading) {
+    return (
+      <Card className="border-purple-100 shadow-sm">
+        <CardHeader className="pb-2 animate-pulse">
+          <div className="h-6 bg-gray-200 rounded w-1/2 mb-2"></div>
+          <div className="h-2 bg-gray-200 rounded w-full"></div>
+        </CardHeader>
+        <CardContent>
+          <div className="h-2 bg-gray-200 rounded w-full mb-6"></div>
+          <div className="space-y-4">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="h-5 w-5 bg-gray-200 rounded-full mr-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-32"></div>
+                </div>
+                <div className="h-7 bg-gray-200 rounded w-20"></div>
               </div>
-              {!task.completed && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-xs text-purple-600 hover:text-purple-700 hover:bg-purple-50 h-7 px-2"
-                  asChild
-                >
-                  <a href={`/profile/edit?task=${task.id}`}>
-                    {t(toTranslatableText('Complete'))}
-                  </a>
-                </Button>
-              )}
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+  
+  return (
+    <FallbackBoundary>
+      <Card className="border-purple-100 shadow-sm">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg text-purple-700">
+              {t(toTranslatableText('Profile Completion'))}
+            </CardTitle>
+            <span className="text-sm font-medium">
+              {completionPercentage}%
+            </span>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Progress value={completionPercentage} className="h-2 mb-6" />
+          
+          <div className="space-y-2">
+            {tasks.map((task) => (
+              <div key={task.id} className="flex items-center justify-between">
+                <div className="flex items-center">
+                  {task.completed ? (
+                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
+                  ) : (
+                    <Circle className="h-5 w-5 text-gray-300 mr-2" />
+                  )}
+                  <span className={`text-sm ${task.completed ? 'text-gray-700' : 'text-gray-500'}`}>
+                    {task.label}
+                  </span>
+                </div>
+                {!task.completed && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs text-purple-600 hover:text-purple-700 hover:bg-purple-50 h-7 px-2"
+                    asChild
+                  >
+                    <a href={`/profile/edit?task=${task.id}`}>
+                      {t(toTranslatableText('Complete'))}
+                    </a>
+                  </Button>
+                )}
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </FallbackBoundary>
   );
 };
 
