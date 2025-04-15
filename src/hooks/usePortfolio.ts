@@ -54,6 +54,10 @@ export const usePortfolio = () => {
     
     setIsUploading(true);
     try {
+      // Get highest order
+      const maxOrder = portfolioItems.reduce((max, item) => 
+        Math.max(max, item.order || 0), 0);
+
       // Upload image to storage
       const fileExt = image.name.split('.').pop();
       const fileName = `${user.id}/${Date.now()}.${fileExt}`;
@@ -77,7 +81,8 @@ export const usePortfolio = () => {
           user_id: user.id,
           title,
           description,
-          image_url: publicUrl
+          image_url: publicUrl,
+          order: maxOrder + 1 // Add the order field
         });
       
       if (dbError) throw dbError;

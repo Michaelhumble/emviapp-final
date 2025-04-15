@@ -38,7 +38,7 @@ export function usePortfolioImages() {
         .from('portfolio_items')
         .select('*')
         .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+        .order('order', { ascending: true });
       
       if (error) throw error;
       
@@ -85,6 +85,14 @@ export function usePortfolioImages() {
     setUploadProgress(0);
     
     try {
+      // Get highest order for this user
+      const maxOrder = images.length > 0 
+        ? Math.max(...images.map(img => {
+            const imgData = images.find(i => i.id === img.id);
+            return imgData ? parseInt(imgData.id.split('-')[0] || '0') : 0;
+          }))
+        : 0;
+
       // 1. Upload file to Supabase Storage
       const fileName = `${user.id}/${Date.now()}-${file.name}`;
       
@@ -116,7 +124,8 @@ export function usePortfolioImages() {
           user_id: user.id,
           title: title || 'Untitled',
           description: description || null,
-          image_url: publicUrl
+          image_url: publicUrl,
+          order: maxOrder + 1
         })
         .select()
         .single();

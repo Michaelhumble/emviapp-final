@@ -5,6 +5,14 @@ import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 import { PortfolioItem } from '@/types/portfolio';
 
+// Export a PortfolioImage type for components to use
+export interface PortfolioImage {
+  id: string;
+  name: string;
+  url: string;
+  created_at: string;
+}
+
 export function useArtistPortfolio() {
   const { user } = useAuth();
   const [items, setItems] = useState<PortfolioItem[]>([]);
@@ -178,7 +186,26 @@ export function useArtistPortfolio() {
     }
   };
 
+  // Create mapping functions to maintain compatibility with components expecting different property names
+  const images = items.map(item => ({
+    id: item.id,
+    name: item.title,
+    url: item.image_url,
+    created_at: item.created_at
+  }));
+
+  const uploadImage = (file: File, title?: string, description?: string) => {
+    return uploadItem(file, title || 'Untitled', description);
+  };
+
+  const deleteImage = (id: string) => {
+    const item = items.find(item => item.id === id);
+    if (!item) return Promise.resolve(false);
+    return deleteItem(id, item.image_url);
+  };
+
   return {
+    // Original properties
     items,
     isLoading,
     isUploading,
@@ -186,6 +213,11 @@ export function useArtistPortfolio() {
     fetchPortfolioItems,
     uploadItem,
     deleteItem,
-    reorderItems
+    reorderItems,
+    
+    // Compatibility properties
+    images,
+    uploadImage,
+    deleteImage
   };
 }
