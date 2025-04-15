@@ -60,7 +60,7 @@ const ServiceFormDialog = ({
                   min="1" 
                   step="0.01"
                   placeholder="45.00"
-                  value={service.price || ''}
+                  value={service.price === 0 ? '' : service.price}
                   onChange={(e) => {
                     // Ensure we handle the empty string case properly
                     const inputValue = e.target.value;

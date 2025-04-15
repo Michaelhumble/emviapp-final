@@ -42,10 +42,11 @@ const ArtistDashboard = () => {
             isLoadingBookings={isLoadingBookings}
             stats={stats}
           />
-          <div className="grid grid-cols-1 gap-6">
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <ReferralWidget />
             <ArtistPortfolioManager />
           </div>
-          <ReferralWidget />
         </TabsContent>
         
         <TabsContent value="calendar" className="space-y-6 mt-6">

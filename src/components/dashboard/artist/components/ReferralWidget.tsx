@@ -5,11 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Copy, CheckCircle2, Facebook, Twitter, Gift, Sparkles, Share2 } from 'lucide-react';
 import { useArtistData } from '../context/ArtistDataContext';
 import { toast } from 'sonner';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const ReferralWidget = () => {
   const { userCredits, artistProfile } = useArtistData();
   const [copied, setCopied] = useState(false);
+  const [isHoveringCredits, setIsHoveringCredits] = useState(false);
 
   // Generate referral link based on user's profile or ID
   const referralLink = artistProfile?.affiliate_code 
@@ -33,7 +34,7 @@ const ReferralWidget = () => {
   };
 
   return (
-    <Card className="overflow-hidden border-0 shadow-md bg-gradient-to-r from-purple-50 to-pink-50">
+    <Card className="overflow-hidden border-0 shadow-md bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50">
       <motion.div 
         className="absolute -right-12 -top-12 w-40 h-40 bg-gradient-to-br from-pink-200/40 to-purple-200/40 rounded-full"
         animate={{ 
@@ -45,6 +46,21 @@ const ReferralWidget = () => {
           duration: 5, 
           repeat: Infinity,
           ease: "easeInOut" 
+        }}
+      />
+      
+      <motion.div 
+        className="absolute -left-12 -bottom-12 w-32 h-32 bg-gradient-to-tr from-indigo-200/30 to-blue-200/30 rounded-full"
+        animate={{ 
+          scale: [1, 1.08, 1],
+          opacity: [0.4, 0.6, 0.4],
+          rotate: [0, -3, 0]
+        }}
+        transition={{ 
+          duration: 4.5, 
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 0.5
         }}
       />
       
@@ -66,12 +82,25 @@ const ReferralWidget = () => {
       
       <CardContent className="relative">
         <p className="text-sm text-gray-600 mb-4">
-          Share your unique link and earn <motion.span 
-            className="font-bold text-pink-600"
+          Share your unique link and earn 
+          <motion.span 
+            className="font-bold text-pink-600 mx-1 relative inline-block"
+            onMouseEnter={() => setIsHoveringCredits(true)}
+            onMouseLeave={() => setIsHoveringCredits(false)}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >
             15 credits
+            <AnimatePresence>
+              {isHoveringCredits && (
+                <motion.span
+                  className="absolute inset-0 bg-pink-100 rounded-md -z-10"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1.2 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                />
+              )}
+            </AnimatePresence>
             <motion.span 
               className="inline-block ml-0.5"
               initial={{ opacity: 0.8, y: 0 }}
@@ -80,8 +109,8 @@ const ReferralWidget = () => {
             >
               <Sparkles className="h-4 w-4 inline text-amber-500" />
             </motion.span>
-          </motion.span> for 
-          every friend who joins EmviApp!
+          </motion.span> 
+          for every friend who joins EmviApp!
         </p>
         
         <motion.div 
@@ -98,7 +127,7 @@ const ReferralWidget = () => {
             <Button 
               size="sm" 
               variant="outline"
-              className={copied ? "text-green-600 border-green-200 bg-green-50" : "text-purple-600 border-purple-200"}
+              className={`transition-all duration-300 ${copied ? "text-green-600 border-green-200 bg-green-50" : "text-purple-600 border-purple-200 hover:bg-purple-50"}`}
               onClick={handleCopy}
             >
               {copied ? (
@@ -129,34 +158,40 @@ const ReferralWidget = () => {
             <motion.button 
               whileHover={{ scale: 1.1 }} 
               whileTap={{ scale: 0.9 }}
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-[#1DA1F2]/10 text-[#1DA1F2]"
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-[#1DA1F2]/10 text-[#1DA1F2] hover:bg-[#1DA1F2]/20 transition-colors"
               onClick={shareOnTwitter}
+              aria-label="Share on Twitter"
             >
               <Twitter className="h-4 w-4" />
             </motion.button>
             <motion.button 
               whileHover={{ scale: 1.1 }} 
               whileTap={{ scale: 0.9 }}
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-[#4267B2]/10 text-[#4267B2]"
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-[#4267B2]/10 text-[#4267B2] hover:bg-[#4267B2]/20 transition-colors"
               onClick={shareOnFacebook}
+              aria-label="Share on Facebook"
             >
               <Facebook className="h-4 w-4" />
             </motion.button>
             <motion.button 
               whileHover={{ scale: 1.1 }} 
               whileTap={{ scale: 0.9 }}
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-600"
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
               onClick={() => {
                 if (navigator.share) {
                   navigator.share({
                     title: 'Join me on EmviApp',
                     text: 'Check out EmviApp - the platform for nail artists and beauty professionals!',
                     url: referralLink,
-                  })
+                  }).catch(err => {
+                    console.error('Error sharing:', err);
+                    handleCopy();
+                  });
                 } else {
                   handleCopy();
                 }
               }}
+              aria-label="Share"
             >
               <Share2 className="h-4 w-4" />
             </motion.button>
