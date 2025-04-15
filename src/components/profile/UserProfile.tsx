@@ -1,5 +1,8 @@
 
 import { useAuth } from "@/context/auth";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { toast } from "sonner";
+import { AlertCircle } from "lucide-react";
 import UserProfileBanner from "./UserProfileBanner";
 import ProfileSidebar from "./ProfileSidebar";
 import ProfileTabs from "./ProfileTabs";
@@ -7,9 +10,7 @@ import ProfileLoadingManager from "./ProfileLoadingManager";
 import ProfileAISupport from "./ProfileAISupport";
 import { getRoleTheme } from "./utils/themeHelpers";
 import { UserProfile as UserProfileType } from "@/types/profile";
-import { useEffect, useState, useCallback, useMemo } from "react";
-import { toast } from "sonner";
-import { AlertCircle } from "lucide-react";
+import PremiumArtistProfile from "@/components/artist-profile/PremiumArtistProfile";
 
 // Reduced cache timeout to prevent stale data issues
 const CACHE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
@@ -24,6 +25,9 @@ const UserProfile = () => {
   const [localProfile, setLocalProfile] = useState<UserProfileType | null>(null);
   const [loadTimeout, setLoadTimeout] = useState(false);
   const [loadAttempts, setLoadAttempts] = useState(0);
+  
+  // Determine if we should show the premium artist profile
+  const isArtistRole = userRole === 'artist' || userRole === 'nail technician/artist';
   
   // Set a loading timeout to prevent infinite loading
   useEffect(() => {
@@ -115,22 +119,27 @@ const UserProfile = () => {
           duration={2000}
         />
         
-        <UserProfileBanner />
-        
-        <div className="container mx-auto px-4 pb-16">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <ProfileSidebar userProfile={localProfile} />
-            <ProfileTabs userProfile={localProfile} />
-          </div>
-          
-          <div className={`mt-10 text-center text-sm ${theme.textColor}`}>
-            <p>The more you complete, the more EmviApp works for you.</p>
-          </div>
-          
-          <div className="mt-6">
-            <ProfileAISupport />
-          </div>
-        </div>
+        {isArtistRole ? (
+          <PremiumArtistProfile userProfile={localProfile} />
+        ) : (
+          <>
+            <UserProfileBanner />
+            <div className="container mx-auto px-4 pb-16">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <ProfileSidebar userProfile={localProfile} />
+                <ProfileTabs userProfile={localProfile} />
+              </div>
+              
+              <div className={`mt-10 text-center text-sm ${theme.textColor}`}>
+                <p>The more you complete, the more EmviApp works for you.</p>
+              </div>
+              
+              <div className="mt-6">
+                <ProfileAISupport />
+              </div>
+            </div>
+          </>
+        )}
       </div>
     );
   }
@@ -182,26 +191,31 @@ const UserProfile = () => {
     />;
   }
 
-  // Normal display when everything is loaded
+  // Normal display when everything is loaded - select the appropriate profile view based on user role
   console.log("Rendering normal profile view with data");
   return (
     <div className="min-h-screen bg-[#FDFDFD]">
-      <UserProfileBanner />
-      
-      <div className="container mx-auto px-4 pb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <ProfileSidebar userProfile={userProfile as UserProfileType} />
-          <ProfileTabs userProfile={userProfile as UserProfileType} />
-        </div>
-        
-        <div className={`mt-10 text-center text-sm ${theme.textColor}`}>
-          <p>The more you complete, the more EmviApp works for you.</p>
-        </div>
-        
-        <div className="mt-6">
-          <ProfileAISupport />
-        </div>
-      </div>
+      {isArtistRole ? (
+        <PremiumArtistProfile userProfile={userProfile as UserProfileType} />
+      ) : (
+        <>
+          <UserProfileBanner />
+          <div className="container mx-auto px-4 pb-16">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <ProfileSidebar userProfile={userProfile as UserProfileType} />
+              <ProfileTabs userProfile={userProfile as UserProfileType} />
+            </div>
+            
+            <div className={`mt-10 text-center text-sm ${theme.textColor}`}>
+              <p>The more you complete, the more EmviApp works for you.</p>
+            </div>
+            
+            <div className="mt-6">
+              <ProfileAISupport />
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
