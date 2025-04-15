@@ -35,6 +35,7 @@ const ArtistCalendar = () => {
       <CardHeader className="pb-3">
         <CardTitle className="text-xl">Upcoming Schedule</CardTitle>
       </CardHeader>
+      
       <CardContent>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="space-y-4">
@@ -45,17 +46,24 @@ const ArtistCalendar = () => {
             {hasBookingsToday ? (
               <div className="space-y-2">
                 {todayAppointments.map((appointment) => (
-                  <div key={appointment.id} className="p-3 bg-blue-50 border border-blue-100 rounded-md">
+                  <div 
+                    key={appointment.id} 
+                    className="p-3 bg-white shadow-sm hover:shadow-md transition-shadow border border-gray-100 rounded-lg"
+                  >
                     <div className="flex justify-between items-start gap-2">
                       <div className="min-w-0 flex-1">
-                        <div className="font-medium truncate">
+                        <div className="text-sm font-medium text-gray-900 break-words whitespace-normal">
                           {format(parseISO(appointment.start_time), 'h:mm a')} - {format(parseISO(appointment.end_time), 'h:mm a')}
                         </div>
-                        <div className="text-sm text-gray-600 break-words whitespace-normal">
+                        <div className="text-sm text-gray-600 break-words whitespace-normal mt-0.5">
                           {appointment.customer_name || "Unnamed Client"}
                         </div>
                       </div>
-                      <div className="text-xs text-blue-700 px-2 py-1 bg-blue-100 rounded-full whitespace-nowrap">
+                      <div className={`text-xs px-2 py-1 rounded-full whitespace-nowrap 
+                        ${appointment.status === 'confirmed' 
+                          ? 'bg-green-50 text-green-700 border border-green-200' 
+                          : 'bg-amber-50 text-amber-700 border border-amber-200'
+                        }`}>
                         {appointment.status}
                       </div>
                     </div>
@@ -94,20 +102,27 @@ const ArtistCalendar = () => {
             {upcomingAppointments.length > 0 ? (
               <div className="space-y-2">
                 {upcomingAppointments.map((appointment) => (
-                  <div key={appointment.id} className="p-3 bg-purple-50 border border-purple-100 rounded-md">
+                  <div 
+                    key={appointment.id} 
+                    className="p-3 bg-white shadow-sm hover:shadow-md transition-shadow border border-purple-100 rounded-lg"
+                  >
                     <div className="flex justify-between items-start gap-2">
                       <div className="min-w-0 flex-1">
-                        <div className="font-medium truncate">
-                          {format(parseISO(appointment.start_time), 'EEE, MMM d')}
-                        </div>
-                        <div className="text-sm truncate">
-                          {format(parseISO(appointment.start_time), 'h:mm a')} - {format(parseISO(appointment.end_time), 'h:mm a')}
+                        <div className="text-sm font-medium text-gray-900 break-words whitespace-normal">
+                          {format(parseISO(appointment.start_time), "EEE, MMM d")}
                         </div>
                         <div className="text-sm text-gray-600 break-words whitespace-normal">
+                          {format(parseISO(appointment.start_time), "h:mm a")} - {format(parseISO(appointment.end_time), "h:mm a")}
+                        </div>
+                        <div className="text-sm text-gray-600 break-words whitespace-normal mt-0.5">
                           {appointment.customer_name || "Unnamed Client"}
                         </div>
                       </div>
-                      <div className="text-xs text-purple-700 px-2 py-1 bg-purple-100 rounded-full whitespace-nowrap">
+                      <div className={`text-xs px-2 py-1 rounded-full whitespace-nowrap 
+                        ${appointment.status === 'confirmed' 
+                          ? 'bg-purple-50 text-purple-700 border border-purple-200' 
+                          : 'bg-amber-50 text-amber-700 border border-amber-200'
+                        }`}>
                         {appointment.status}
                       </div>
                     </div>

@@ -63,7 +63,7 @@ const ServiceFormDialog = ({
                   value={service.price || ''} 
                   onChange={(e) => {
                     const inputValue = e.target.value;
-                    const parsedValue = inputValue === '' ? 0 : parseFloat(inputValue);
+                    const parsedValue = inputValue === '' ? null : parseFloat(inputValue);
                     onServiceChange('price', parsedValue);
                   }}
                   required
