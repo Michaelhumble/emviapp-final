@@ -42,10 +42,23 @@ export const useServiceUpsells = (serviceId: string | null, bookingValue: number
         
         if (queryError) throw queryError;
         
-        // Only set the data if it's an array - fix for type instantiation issue
+        // Type safety handling to avoid deep instantiation
         if (Array.isArray(data)) {
-          // Force cast to UpsellService[] to avoid deep type instantiation
-          setUpsells(data as UpsellService[]);
+          // Use type assertion with known shape instead of deep instantiation
+          const typedData: UpsellService[] = [];
+          data.forEach(item => {
+            if (item && typeof item === 'object') {
+              typedData.push({
+                id: String(item.id || ''),
+                title: String(item.title || ''),
+                price: Number(item.price || 0),
+                description: item.description !== undefined ? String(item.description) : null,
+                duration_minutes: Number(item.duration_minutes || 0),
+                image_url: item.image_url !== undefined ? String(item.image_url) : null
+              });
+            }
+          });
+          setUpsells(typedData);
         } else {
           setUpsells([]);
         }

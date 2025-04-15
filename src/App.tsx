@@ -17,10 +17,10 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <NotificationProvider>
-        <BookingProvider>
-          <Router>
-            <AuthProvider>
+      <AuthProvider>
+        <NotificationProvider>
+          <BookingProvider>
+            <Router>
               <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<Layout><div>Landing Page</div></Layout>} />
@@ -49,11 +49,11 @@ function App() {
                 {/* Error Route */}
                 <Route path="*" element={<Layout><div>Error Page</div></Layout>} />
               </Routes>
-            </AuthProvider>
-          </Router>
-          <BookingNotificationProvider />
-        </BookingProvider>
-      </NotificationProvider>
+              <BookingNotificationProvider />
+            </Router>
+          </BookingProvider>
+        </NotificationProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
