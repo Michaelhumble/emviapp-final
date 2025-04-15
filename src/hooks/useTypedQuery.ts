@@ -17,13 +17,18 @@ export function useTypedQuery<TData = unknown, TError = Error>(
   refetch: () => Promise<UseQueryResult<TData, TError>>;
   isFetching: boolean;
 } {
-  // Use type assertion to avoid deep instantiation
-  const result = useQuery(options) as UseQueryResult<TData, TError>;
+  // Completely separate the types to prevent deep instantiation
+  const result = useQuery({
+    ...options,
+    queryKey: options.queryKey,
+    queryFn: options.queryFn,
+    enabled: options.enabled,
+  });
   
   return {
-    data: result.data,
+    data: result.data as TData | undefined,
     isLoading: result.isLoading,
-    error: result.error,
+    error: result.error as TError | null,
     refetch: result.refetch,
     isFetching: result.isFetching
   };
