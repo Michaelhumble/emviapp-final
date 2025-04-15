@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useAuth } from "@/context/auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,7 +14,7 @@ const ArtistDashboardWidgets = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   
-  // Use our custom hook that handles type instantiation properly
+  // Use our custom hook with a more explicit type definition
   const { data: stats, isLoading: isLoadingStats } = useTypedQuery<DashboardStats | null>({
     queryKey: ['artist-stats', user?.id],
     queryFn: async () => {
