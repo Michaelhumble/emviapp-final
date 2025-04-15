@@ -2,9 +2,8 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { BarChart, Heart, MessageCircle, Palette, Users } from "lucide-react";
+import { BarChart, Heart, MessageCircle, Users } from "lucide-react";
 import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
 import ArtistBookingsPanel from "../../artist/ArtistBookingsPanel";
 import ArtistPortfolio from "./ArtistPortfolio";
@@ -14,13 +13,12 @@ import ArtistMessageCenter from "./ArtistMessageCenter";
 
 const ArtistDashboardContent = () => {
   const { userProfile } = useAuth();
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
   
   // Load last active tab from localStorage if available
   useEffect(() => {
     const savedTab = localStorage.getItem('artist_dashboard_tab');
-    if (savedTab && ['overview', 'bookings', 'portfolio', 'messages', 'referrals', 'analytics'].includes(savedTab)) {
+    if (savedTab && ['overview', 'bookings', 'portfolio', 'messages', 'referrals'].includes(savedTab)) {
       setActiveTab(savedTab);
     }
   }, []);
@@ -54,7 +52,7 @@ const ArtistDashboardContent = () => {
         className="space-y-4"
       >
         <div className="bg-white rounded-lg p-1 border overflow-x-auto">
-          <TabsList className="grid grid-cols-3 md:grid-cols-5 gap-2">
+          <TabsList className="grid grid-cols-3 md:grid-cols-3 gap-2">
             <TabsTrigger value="overview" className="data-[state=active]:bg-slate-100">
               <BarChart className="h-4 w-4 mr-2" />
               <span className="whitespace-nowrap">Overview</span>
@@ -64,16 +62,8 @@ const ArtistDashboardContent = () => {
               <span className="whitespace-nowrap">Bookings</span>
             </TabsTrigger>
             <TabsTrigger value="portfolio" className="data-[state=active]:bg-slate-100">
-              <Palette className="h-4 w-4 mr-2" />
-              <span className="whitespace-nowrap">Portfolio</span>
-            </TabsTrigger>
-            <TabsTrigger value="messages" className="data-[state=active]:bg-slate-100">
-              <MessageCircle className="h-4 w-4 mr-2" />
-              <span className="whitespace-nowrap">Messages</span>
-            </TabsTrigger>
-            <TabsTrigger value="referrals" className="data-[state=active]:bg-slate-100">
               <Users className="h-4 w-4 mr-2" />
-              <span className="whitespace-nowrap">Referrals</span>
+              <span className="whitespace-nowrap">Portfolio</span>
             </TabsTrigger>
           </TabsList>
         </div>
