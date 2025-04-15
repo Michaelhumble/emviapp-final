@@ -1,5 +1,5 @@
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
@@ -19,6 +19,12 @@ export function useArtistPortfolio() {
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (user) {
+      fetchPortfolioItems();
+    }
+  }, [user]);
 
   const fetchPortfolioItems = async () => {
     if (!user) return;
@@ -70,7 +76,9 @@ export function useArtistPortfolio() {
 
     try {
       // Get the highest order number
-      const maxOrder = items.reduce((max, item) => Math.max(max, item.order), 0);
+      const maxOrder = items.length > 0 
+        ? Math.max(...items.map(item => item.order)) 
+        : 0;
 
       // Upload file to Supabase Storage
       const fileName = `${user.id}/${Date.now()}-${file.name}`;
@@ -130,13 +138,13 @@ export function useArtistPortfolio() {
     // Update local state immediately for smooth UI
     setItems(newItems);
 
-    // Update all affected items in the database
-    const updates = newItems.map((item, index) => ({
-      id: item.id,
-      order: index + 1
-    }));
-
+    // Update all affected items in the database with their new order
     try {
+      const updates = newItems.map((item, index) => ({
+        id: item.id,
+        order: index + 1
+      }));
+
       for (const update of updates) {
         const { error } = await supabase
           .from('portfolio_items')

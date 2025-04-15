@@ -86,12 +86,16 @@ export function usePortfolioImages() {
     
     try {
       // Get highest order for this user
-      const maxOrder = images.length > 0 
-        ? Math.max(...images.map(img => {
-            const imgData = images.find(i => i.id === img.id);
-            return imgData ? parseInt(imgData.id.split('-')[0] || '0') : 0;
-          }))
-        : 0;
+      const { data, error: orderError } = await supabase
+        .from('portfolio_items')
+        .select('order')
+        .eq('user_id', user.id)
+        .order('order', { ascending: false })
+        .limit(1);
+        
+      if (orderError) throw orderError;
+      
+      const maxOrder = data && data.length > 0 ? data[0].order : 0;
 
       // 1. Upload file to Supabase Storage
       const fileName = `${user.id}/${Date.now()}-${file.name}`;

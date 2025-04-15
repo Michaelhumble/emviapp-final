@@ -55,8 +55,16 @@ export const usePortfolio = () => {
     setIsUploading(true);
     try {
       // Get highest order
-      const maxOrder = portfolioItems.reduce((max, item) => 
-        Math.max(max, item.order || 0), 0);
+      const { data, error: orderError } = await supabase
+        .from('portfolio_items')
+        .select('order')
+        .eq('user_id', user.id)
+        .order('order', { ascending: false })
+        .limit(1);
+        
+      if (orderError) throw orderError;
+      
+      const maxOrder = data && data.length > 0 ? data[0].order : 0;
 
       // Upload image to storage
       const fileExt = image.name.split('.').pop();
@@ -82,7 +90,7 @@ export const usePortfolio = () => {
           title,
           description,
           image_url: publicUrl,
-          order: maxOrder + 1 // Add the order field
+          order: maxOrder + 1
         });
       
       if (dbError) throw dbError;

@@ -1,45 +1,69 @@
 
-import ArtistDashboardContent from './components/ArtistDashboardContent';
-import ArtistErrorState from './components/ArtistErrorState';
-import ArtistLoadingState from './components/ArtistLoadingState';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/context/auth';
-import BookingNotificationsSection from '../notifications/BookingNotificationsSection';
-import ArtistPortfolioGallery from './portfolio/ArtistPortfolioGallery';
-import ArtistServiceManager from './services/ArtistServiceManager';
-import ArtistBookingCalendar from './calendar/ArtistBookingCalendar';
+import { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useArtistDashboardData } from './hooks/useArtistDashboardData';
+import AnalyticsWidget from './components/AnalyticsWidget';
+import WeeklyCalendar from './calendar/WeeklyCalendar';
+import ServicesManager from './services/ServicesManager';
+import ArtistPortfolioManager from './portfolio/ArtistPortfolioManager';
+import ReferralWidget from './components/ReferralWidget';
+import EarningsSection from './components/EarningsSection';
+import MainGrid from './components/MainGrid';
 
 const ArtistDashboard = () => {
-  const { user } = useAuth();
-
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['artist-dashboard', user?.id],
-    queryFn: async () => {
-      // This is a placeholder for actual API call
-      // In a real app, you would fetch artist-specific data here
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', user?.id)
-        .single();
-        
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user?.id,
-  });
-
-  if (isLoading) return <ArtistLoadingState />;
-  if (error) return <ArtistErrorState error={error as Error} />;
+  const [activeTab, setActiveTab] = useState('overview');
+  
+  const {
+    stats,
+    isLoadingStats,
+    recentBookings,
+    isLoadingBookings,
+    earningsData,
+    isLoadingEarnings
+  } = useArtistDashboardData(activeTab);
 
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-6">
-      <BookingNotificationsSection />
-      <ArtistPortfolioGallery />
-      <ArtistServiceManager />
-      <ArtistBookingCalendar />
-      <ArtistDashboardContent />
+    <div className="space-y-6">
+      <Tabs 
+        defaultValue="overview" 
+        onValueChange={setActiveTab}
+        className="space-y-6"
+      >
+        <TabsList className="grid grid-cols-2 sm:grid-cols-4 h-auto">
+          <TabsTrigger value="overview" className="py-3">Overview</TabsTrigger>
+          <TabsTrigger value="calendar" className="py-3">Calendar</TabsTrigger>
+          <TabsTrigger value="services" className="py-3">Services</TabsTrigger>
+          <TabsTrigger value="earnings" className="py-3">Earnings</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="overview" className="space-y-6 mt-6">
+          <MainGrid 
+            bookings={recentBookings}
+            isLoadingBookings={isLoadingBookings}
+            stats={stats}
+          />
+          <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
+            <ArtistPortfolioManager />
+            <ReferralWidget />
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="calendar" className="space-y-6 mt-6">
+          <WeeklyCalendar />
+        </TabsContent>
+        
+        <TabsContent value="services" className="space-y-6 mt-6">
+          <ServicesManager />
+        </TabsContent>
+        
+        <TabsContent value="earnings" className="space-y-6 mt-6">
+          <AnalyticsWidget stats={stats} isLoading={isLoadingStats} />
+          <EarningsSection 
+            earningsData={earningsData}
+            isLoading={isLoadingEarnings}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
