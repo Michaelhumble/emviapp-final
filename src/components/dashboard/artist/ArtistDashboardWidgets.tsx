@@ -40,8 +40,11 @@ const ArtistDashboardWidgets = () => {
     enabled: !!user?.id
   });
 
+  // Define type for the booking query result to avoid deep instantiation
+  type BookingsQueryResult = BookingWithDetails[];
+
   // Fetch recent bookings with explicit typing
-  const { data: recentBookings, isLoading: isLoadingBookings } = useQuery<BookingWithDetails[]>({
+  const { data: recentBookings, isLoading: isLoadingBookings } = useQuery<BookingsQueryResult>({
     queryKey: ['recent-bookings', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
@@ -72,10 +75,10 @@ const ArtistDashboardWidgets = () => {
   });
 
   // Define the type for earnings data with a type alias to avoid infinite type instantiation
-  type EarningsDataResult = EarningsData | null;
+  type EarningsQueryResult = EarningsData | null;
   
   // Fetch earnings data with explicit typing
-  const { data: earningsData, isLoading: isLoadingEarnings } = useQuery<EarningsDataResult>({
+  const { data: earningsData, isLoading: isLoadingEarnings } = useQuery<EarningsQueryResult>({
     queryKey: ['earnings-data', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
