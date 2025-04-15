@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
@@ -8,11 +8,14 @@ import { useArtistNotifications } from "./notifications/useArtistNotifications";
 
 export const useBookingNotifications = () => {
   const { user, userProfile } = useAuth();
+  const [isSubscribed, setIsSubscribed] = useState(false);
   const { handleBookingStatusChange: customerStatusChange } = useCustomerNotifications();
   const { handleBookingStatusChange: artistStatusChange } = useArtistNotifications();
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !userProfile) return;
+    
+    console.log("Setting up booking notifications for user:", user.id, "with role:", userProfile.role);
     
     // Subscribe to booking changes
     const channel = supabase.channel('booking-notifications')
@@ -23,14 +26,16 @@ export const useBookingNotifications = () => {
           schema: 'public',
           table: 'bookings',
           filter: userProfile?.role === 'artist' || userProfile?.role === 'owner' 
-            ? `provider_id=eq.${user.id}` 
-            : `customer_id=eq.${user.id}`
+            ? `recipient_id=eq.${user.id}` 
+            : `sender_id=eq.${user.id}`
         },
         (payload) => {
+          console.log("Booking update received:", payload);
           const newBooking = payload.new as any;
           const oldBooking = payload.old as any;
           
           if (newBooking.status !== oldBooking.status) {
+            console.log(`Booking status changed from ${oldBooking.status} to ${newBooking.status}`);
             // Handle status change based on user role
             if (userProfile?.role === 'artist' || userProfile?.role === 'owner') {
               artistStatusChange(newBooking, oldBooking.status);
@@ -40,20 +45,25 @@ export const useBookingNotifications = () => {
           }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log("Booking notification subscription status:", status);
+        setIsSubscribed(status === 'SUBSCRIBED');
+      });
     
     // Also subscribe to new bookings if this is an artist/owner
+    let newBookingsChannel;
     if (userProfile?.role === 'artist' || userProfile?.role === 'owner') {
-      const newBookingsChannel = supabase.channel('new-booking-notifications')
+      newBookingsChannel = supabase.channel('new-booking-notifications')
         .on(
           'postgres_changes',
           {
             event: 'INSERT',
             schema: 'public',
             table: 'bookings',
-            filter: `provider_id=eq.${user.id}`
+            filter: `recipient_id=eq.${user.id}`
           },
           (payload) => {
+            console.log("New booking received:", payload);
             toast.info("New booking request received!", {
               description: "You have a new booking request waiting for your confirmation",
               action: {
@@ -64,18 +74,19 @@ export const useBookingNotifications = () => {
             });
           }
         )
-        .subscribe();
-        
-      return () => {
-        supabase.removeChannel(channel);
-        supabase.removeChannel(newBookingsChannel);
-      };
+        .subscribe((status) => {
+          console.log("New booking notification subscription status:", status);
+        });
     }
     
     return () => {
+      console.log("Cleaning up booking notification channels");
       supabase.removeChannel(channel);
+      if (newBookingsChannel) {
+        supabase.removeChannel(newBookingsChannel);
+      }
     };
-  }, [user, userProfile]);
+  }, [user, userProfile, artistStatusChange, customerStatusChange]);
 
-  return { subscribed: !!user };
+  return { subscribed: isSubscribed };
 };

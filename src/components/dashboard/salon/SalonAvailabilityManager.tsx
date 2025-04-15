@@ -1,438 +1,204 @@
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import React, { useState, useEffect } from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Toggle } from "@/components/ui/toggle";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { Clock, Save } from "lucide-react";
 import { useAuth } from "@/context/auth";
-import { Calendar, Clock, Building, MapPin, Save } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { AvailabilityDay, AvailabilityRecord } from "@/types/availability";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
-const DAYS_OF_WEEK = [
-  { name: "Sunday", value: 0 },
-  { name: "Monday", value: 1 },
-  { name: "Tuesday", value: 2 },
-  { name: "Wednesday", value: 3 },
-  { name: "Thursday", value: 4 },
-  { name: "Friday", value: 5 },
-  { name: "Saturday", value: 6 }
-];
+// Define types explicitly to avoid excessive type instantiation
+type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
 
-const generateTimeOptions = () => {
-  const times = [];
-  for (let hour = 0; hour < 24; hour++) {
-    for (let minute = 0; minute < 60; minute += 30) {
-      const h = hour.toString().padStart(2, '0');
-      const m = minute.toString().padStart(2, '0');
-      const time = `${h}:${m}`;
-      const label = formatTimeDisplay(hour, minute);
-      times.push({ value: time, label });
-    }
-  }
-  return times;
-};
-
-const formatTimeDisplay = (hour: number, minute: number) => {
-  const period = hour >= 12 ? 'PM' : 'AM';
-  const displayHour = hour % 12 || 12;
-  return `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`;
-};
-
-const TIME_OPTIONS = generateTimeOptions();
-
-// Define a simple interface for the raw database records to avoid complex typing issues
-interface DatabaseAvailabilityRecord {
-  id: string;
-  artist_id: string;
-  day_of_week: string;
-  start_time: string;
-  end_time: string;
-  is_available: boolean | null;
-  location?: string | null;
-  user_id?: string;
-  role?: string;
+interface TimeSlot {
+  start: string;
+  end: string;
+  available: boolean;
 }
 
+interface AvailabilityState {
+  monday: TimeSlot[];
+  tuesday: TimeSlot[];
+  wednesday: TimeSlot[];
+  thursday: TimeSlot[];
+  friday: TimeSlot[];
+  saturday: TimeSlot[];
+  sunday: TimeSlot[];
+}
+
+const defaultTimeSlots = (): TimeSlot[] => [
+  { start: "09:00", end: "12:00", available: true },
+  { start: "12:00", end: "17:00", available: true },
+  { start: "17:00", end: "21:00", available: false }
+];
+
+const defaultAvailability = (): AvailabilityState => ({
+  monday: defaultTimeSlots(),
+  tuesday: defaultTimeSlots(),
+  wednesday: defaultTimeSlots(),
+  thursday: defaultTimeSlots(),
+  friday: defaultTimeSlots(),
+  saturday: defaultTimeSlots(),
+  sunday: defaultTimeSlots()
+});
+
 const SalonAvailabilityManager = () => {
-  const { user, userProfile } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [availability, setAvailability] = useState<AvailabilityDay[]>([]);
-  const [location, setLocation] = useState(userProfile?.location || '');
+  const { user } = useAuth();
+  const [availability, setAvailability] = useState<AvailabilityState>(defaultAvailability());
+  const [loading, setLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   
   useEffect(() => {
-    if (user) {
-      initializeAvailability();
-      fetchExistingAvailability();
-    }
-  }, [user]);
-
-  const initializeAvailability = () => {
-    const defaultAvailability: AvailabilityDay[] = DAYS_OF_WEEK.map(day => ({
-      day_of_week: day.value,
-      start_time: '09:00',
-      end_time: '17:00',
-      active: false,
-      location: userProfile?.location || null
-    }));
-    setAvailability(defaultAvailability);
-  };
-
-  const fetchExistingAvailability = async () => {
-    try {
+    if (!user?.id) return;
+    
+    const fetchAvailability = async () => {
       setLoading(true);
-      
-      if (!user) return;
-      
-      // Simplify the query to avoid deep type issues
-      const { data, error } = await supabase
-        .from('availability')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('day_of_week');
-      
-      if (error) throw error;
-      
-      // Explicitly cast the data to our simpler interface type
-      const typedData = data as DatabaseAvailabilityRecord[];
-      
-      if (typedData && typedData.length > 0) {
-        if (typedData[0].location) {
-          setLocation(typedData[0].location);
-        }
+      try {
+        const { data, error } = await supabase
+          .from('availability')
+          .select('*')
+          .eq('artist_id', user.id);
+          
+        if (error) throw error;
         
-        const existingDays = DAYS_OF_WEEK.map(day => {
-          const existingDay = typedData.find(d => d.day_of_week === day.value.toString());
-          if (existingDay) {
-            return {
-              id: existingDay.id,
-              day_of_week: day.value,
-              start_time: existingDay.start_time,
-              end_time: existingDay.end_time,
-              active: true,
-              location: existingDay.location
-            } as AvailabilityDay;
-          } else {
-            return {
-              day_of_week: day.value,
-              start_time: '09:00',
-              end_time: '17:00',
-              active: false,
-              location: userProfile?.location || null
-            } as AvailabilityDay;
-          }
-        });
-        setAvailability(existingDays);
+        if (data && data.length > 0) {
+          // Transform data from database format to state format
+          const newAvailability = defaultAvailability();
+          
+          data.forEach(slot => {
+            const day = slot.day_of_week.toLowerCase() as DayOfWeek;
+            if (newAvailability[day]) {
+              // Find matching time slot and update availability
+              const startHour = new Date(slot.start_time).getHours().toString().padStart(2, '0');
+              const startMinute = new Date(slot.start_time).getMinutes().toString().padStart(2, '0');
+              const startTime = `${startHour}:${startMinute}`;
+              
+              const existingSlot = newAvailability[day].find(s => s.start === startTime);
+              if (existingSlot) {
+                existingSlot.available = slot.is_available;
+              }
+            }
+          });
+          
+          setAvailability(newAvailability);
+        }
+      } catch (err) {
+        console.error("Error fetching availability:", err);
+        toast.error("Failed to load availability");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error fetching availability:', error);
-      toast.error('Failed to load your salon hours');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const toggleDay = (index: number) => {
-    const newAvailability = [...availability];
-    newAvailability[index].active = !newAvailability[index].active;
-    setAvailability(newAvailability);
-  };
-
-  const updateTime = (index: number, field: 'start_time' | 'end_time', value: string) => {
-    const newAvailability = [...availability];
-    newAvailability[index][field] = value;
-    setAvailability(newAvailability);
-  };
-
-  const copyToWeekdays = () => {
-    const mondaySettings = availability.find(day => day.day_of_week === 1);
-    if (!mondaySettings) return;
+    };
     
-    const newAvailability = [...availability];
-    [1, 2, 3, 4, 5].forEach(dayValue => {
-      const index = newAvailability.findIndex(day => day.day_of_week === dayValue);
-      if (index !== -1) {
-        newAvailability[index] = {
-          ...newAvailability[index],
-          start_time: mondaySettings.start_time,
-          end_time: mondaySettings.end_time,
-          active: mondaySettings.active
-        };
-      }
+    fetchAvailability();
+  }, [user?.id]);
+  
+  const handleAvailabilityChange = (day: DayOfWeek, index: number, available: boolean) => {
+    setAvailability(prev => {
+      const newAvailability = { ...prev };
+      newAvailability[day] = [...prev[day]];
+      newAvailability[day][index] = { ...prev[day][index], available };
+      return newAvailability;
     });
-    
-    setAvailability(newAvailability);
   };
-
+  
   const saveAvailability = async () => {
-    if (!user) return;
+    if (!user?.id) return;
     
-    setSaving(true);
+    setIsSaving(true);
     try {
-      const activeDays = availability.filter(day => day.active);
-      
-      if (activeDays.length === 0) {
-        toast.warning('Please select at least one day when your salon is open');
-        setSaving(false);
-        return;
-      }
-
-      const { error: deleteError } = await supabase
+      // Delete existing records for this artist
+      await supabase
         .from('availability')
         .delete()
-        .eq('user_id', user.id);
-        
-      if (deleteError) throw deleteError;
+        .eq('artist_id', user.id);
       
-      const availabilityRecords: AvailabilityRecord[] = activeDays.map(day => ({
-        user_id: user.id,
-        artist_id: user.id,
-        role: 'salon',
-        day_of_week: day.day_of_week.toString(),
-        start_time: day.start_time,
-        end_time: day.end_time,
-        location: location || userProfile?.location || null,
-        is_available: true
-      }));
+      // Create new records
+      const records = Object.entries(availability).flatMap(([day, slots]) => 
+        slots.map(slot => ({
+          artist_id: user.id,
+          day_of_week: day,
+          start_time: slot.start,
+          end_time: slot.end,
+          is_available: slot.available
+        }))
+      );
       
-      const { error: insertError } = await supabase
+      const { error } = await supabase
         .from('availability')
-        .insert(availabilityRecords);
+        .insert(records);
         
-      if (insertError) throw insertError;
+      if (error) throw error;
       
-      if (location !== userProfile?.location) {
-        const { error: updateError } = await supabase
-          .from('users')
-          .update({ location })
-          .eq('id', user.id);
-          
-        if (updateError) throw updateError;
-      }
-      
-      toast.success('Salon hours saved successfully!');
-    } catch (error) {
-      console.error('Error saving salon hours:', error);
-      toast.error('Failed to save salon hours');
+      toast.success("Availability saved successfully");
+    } catch (err) {
+      console.error("Error saving availability:", err);
+      toast.error("Failed to save availability");
     } finally {
-      setSaving(false);
+      setIsSaving(false);
     }
   };
-
-  const isTimeValid = (startTime: string, endTime: string) => {
-    return startTime < endTime;
-  };
-
+  
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="flex items-center text-xl">
-          <Building className="mr-2 h-5 w-5 text-primary" />
-          Salon Hours
+    <Card className="border-blue-100 mb-6">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center">
+          <Clock className="h-5 w-5 text-blue-500 mr-2" />
+          Availability Settings
         </CardTitle>
-        <CardDescription>
-          Set your salon's regular business hours to help clients book appointments
-        </CardDescription>
       </CardHeader>
-      <CardContent>
+      
+      <CardContent className="pt-0">
         {loading ? (
-          <div className="flex justify-center py-8">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          <div className="flex justify-center py-6">
+            <div className="animate-spin h-6 w-6 border-2 border-blue-500 rounded-full border-t-transparent"></div>
           </div>
         ) : (
-          <div className="space-y-6">
-            <div className="flex flex-col space-y-4">
-              <div className="flex flex-col space-y-2">
-                <Label htmlFor="location" className="flex items-center">
-                  <MapPin className="mr-1 h-4 w-4" /> Salon Location
-                </Label>
-                <Input
-                  id="location"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="Enter your salon location"
-                  className="max-w-md"
-                />
-              </div>
-              
-              <Tabs defaultValue="weekly">
-                <TabsList>
-                  <TabsTrigger value="weekly">Weekly Schedule</TabsTrigger>
-                  <TabsTrigger value="quick">Quick Setup</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="weekly" className="space-y-4 pt-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {availability.map((day, index) => (
-                      <div key={index} className={`p-4 rounded-lg border ${day.active ? 'border-primary bg-primary/5' : 'border-gray-200'}`}>
-                        <div className="flex items-center justify-between mb-4">
-                          <h3 className="font-medium">{DAYS_OF_WEEK[index].name}</h3>
-                          <Toggle 
-                            pressed={day.active} 
-                            onPressedChange={() => toggleDay(index)}
-                            aria-label={`Toggle ${DAYS_OF_WEEK[index].name}`}
-                          >
-                            {day.active ? 'Open' : 'Closed'}
-                          </Toggle>
-                        </div>
-                        
-                        {day.active && (
-                          <div className="space-y-4">
-                            <div className="grid grid-cols-2 gap-3">
-                              <div className="space-y-2">
-                                <Label htmlFor={`start-time-${index}`} className="flex items-center">
-                                  <Clock className="mr-1 h-3 w-3" /> Open
-                                </Label>
-                                <Select
-                                  value={day.start_time}
-                                  onValueChange={(value) => updateTime(index, 'start_time', value)}
-                                  disabled={!day.active}
-                                >
-                                  <SelectTrigger id={`start-time-${index}`}>
-                                    <SelectValue placeholder="Select start time" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {TIME_OPTIONS.map((time) => (
-                                      <SelectItem key={`start-${index}-${time.value}`} value={time.value}>
-                                        {time.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              
-                              <div className="space-y-2">
-                                <Label htmlFor={`end-time-${index}`} className="flex items-center">
-                                  <Clock className="mr-1 h-3 w-3" /> Close
-                                </Label>
-                                <Select
-                                  value={day.end_time}
-                                  onValueChange={(value) => updateTime(index, 'end_time', value)}
-                                  disabled={!day.active}
-                                >
-                                  <SelectTrigger id={`end-time-${index}`}>
-                                    <SelectValue placeholder="Select end time" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {TIME_OPTIONS.map((time) => (
-                                      <SelectItem key={`end-${index}-${time.value}`} value={time.value}>
-                                        {time.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-                            
-                            {!isTimeValid(day.start_time, day.end_time) && (
-                              <p className="text-sm text-red-500">Closing time must be after opening time</p>
-                            )}
-                          </div>
-                        )}
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-7 gap-4">
+              {(Object.keys(availability) as DayOfWeek[]).map((day) => (
+                <div key={day} className="border rounded-md p-3 bg-white">
+                  <h3 className="text-sm font-medium capitalize mb-2">{day}</h3>
+                  
+                  <div className="space-y-2">
+                    {availability[day].map((slot, index) => (
+                      <div key={index} className="flex items-center justify-between">
+                        <span className="text-xs text-gray-600">
+                          {slot.start} - {slot.end}
+                        </span>
+                        <button
+                          onClick={() => handleAvailabilityChange(day, index, !slot.available)}
+                          className={`w-5 h-5 rounded-full ${
+                            slot.available ? 'bg-green-500' : 'bg-gray-300'
+                          }`}
+                          aria-label={`Toggle availability for ${day} from ${slot.start} to ${slot.end}`}
+                        />
                       </div>
                     ))}
                   </div>
-                </TabsContent>
-                
-                <TabsContent value="quick" className="space-y-4 pt-4">
-                  <Card>
-                    <CardContent className="pt-6">
-                      <div className="space-y-4">
-                        <div className="border rounded-lg p-4">
-                          <h3 className="font-medium mb-4">Monday Settings</h3>
-                          <div className="flex items-center justify-between mb-4">
-                            <span>Open/Closed</span>
-                            <Toggle 
-                              pressed={availability[1].active} 
-                              onPressedChange={() => toggleDay(1)}
-                            >
-                              {availability[1].active ? 'Open' : 'Closed'}
-                            </Toggle>
-                          </div>
-                          
-                          {availability[1].active && (
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <Label htmlFor="monday-start">Opening Time</Label>
-                                <Select
-                                  value={availability[1].start_time}
-                                  onValueChange={(value) => updateTime(1, 'start_time', value)}
-                                >
-                                  <SelectTrigger id="monday-start">
-                                    <SelectValue placeholder="Select time" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {TIME_OPTIONS.map((time) => (
-                                      <SelectItem key={`monday-start-${time.value}`} value={time.value}>
-                                        {time.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              
-                              <div className="space-y-2">
-                                <Label htmlFor="monday-end">Closing Time</Label>
-                                <Select
-                                  value={availability[1].end_time}
-                                  onValueChange={(value) => updateTime(1, 'end_time', value)}
-                                >
-                                  <SelectTrigger id="monday-end">
-                                    <SelectValue placeholder="Select time" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {TIME_OPTIONS.map((time) => (
-                                      <SelectItem key={`monday-end-${time.value}`} value={time.value}>
-                                        {time.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-                          )}
-                          
-                          <Button 
-                            onClick={copyToWeekdays}
-                            className="mt-4 w-full"
-                            variant="outline"
-                          >
-                            Copy Monday Settings to All Weekdays
-                          </Button>
-                        </div>
-                        
-                        <div className="flex flex-col space-y-2">
-                          <p className="text-sm text-muted-foreground">Weekend settings can be adjusted individually in the Weekly Schedule tab.</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-              </Tabs>
+                </div>
+              ))}
             </div>
             
-            <Button
-              onClick={saveAvailability}
-              disabled={saving || availability.some(day => day.active && !isTimeValid(day.start_time, day.end_time))}
-              className="mt-4"
-            >
-              {saving ? (
-                <>
-                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="mr-2 h-4 w-4" />
-                  Save Salon Hours
-                </>
-              )}
-            </Button>
+            <div className="pt-4 text-right">
+              <Button 
+                onClick={saveAvailability} 
+                disabled={isSaving}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                {isSaving ? (
+                  <>
+                    <div className="animate-spin mr-2 h-4 w-4 border-2 border-white rounded-full border-t-transparent"></div>
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4 mr-2" />
+                    Save Availability
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         )}
       </CardContent>

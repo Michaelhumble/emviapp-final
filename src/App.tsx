@@ -15,6 +15,7 @@ import './components/chat/chat.css';
 import { supabase } from '@/integrations/supabase/client';
 import AuthGuard from './components/auth/AuthGuard';
 import { ChatSystem } from './components/chat/ChatSystem';
+import { BookingNotificationProvider } from './components/BookingNotificationProvider';
 
 // Function to determine if a route should be protected
 const isProtectedRoute = (path: string): boolean => {
@@ -64,6 +65,7 @@ function App() {
           <SubscriptionProvider>
             <NotificationProvider>
               <GoogleMapsProvider>
+                <BookingNotificationProvider />
                 <AppModifier />
                 <Routes>
                   {routes.map((route) => (

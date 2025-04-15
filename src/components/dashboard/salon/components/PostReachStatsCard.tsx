@@ -1,65 +1,87 @@
 
-import { Link } from "react-router-dom";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Button } from "@/components/ui/button";
-import { TrendingUp, Megaphone, Star } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { AreaChart, Eye, Users } from "lucide-react";
 
 interface PostReachStatsCardProps {
   postViews: number;
   localReach: number;
   isPremium: boolean;
+  loading?: boolean;
 }
 
-const PostReachStatsCard = ({ postViews, localReach, isPremium }: PostReachStatsCardProps) => {
-  return (
-    <Card className="bg-white border">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <TrendingUp className="h-5 w-5 text-indigo-500" />
-          Post & Offer Reach
-        </CardTitle>
-        <CardDescription>How your salon is performing</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div>
-            <div className="flex justify-between mb-1">
-              <span className="text-sm font-medium">Post Views</span>
-              <span className="text-sm font-medium">{postViews}</span>
-            </div>
-            <Progress value={postViews > 100 ? 100 : postViews} className="h-2" />
-          </div>
-          
-          <div>
-            <div className="flex justify-between mb-1">
-              <span className="text-sm font-medium">Local Customer Reach</span>
-              <span className="text-sm font-medium">{localReach}</span>
-            </div>
-            <Progress value={localReach > 300 ? 100 : (localReach / 3)} className="h-2" />
-          </div>
-          
-          {!isPremium && (
-            <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-3 rounded-lg mt-2 border border-amber-100">
-              <div className="flex items-start gap-2">
-                <Megaphone className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium text-amber-800">
-                    Unlock Premium Visibility
-                  </p>
-                  <p className="text-xs text-amber-700 mt-1">
-                    Your salon could be shown to {localReach * 3}+ customers nearby with Premium Visibility.
-                  </p>
+const PostReachStatsCard = ({ 
+  postViews, 
+  localReach, 
+  isPremium,
+  loading = false
+}: PostReachStatsCardProps) => {
+  if (loading) {
+    return (
+      <Card className="border-gray-100">
+        <CardContent className="p-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="animate-pulse">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="bg-gray-200 h-8 w-8 rounded-full"></div>
+                  <div className="bg-gray-200 h-5 w-32 rounded"></div>
                 </div>
+                <div className="bg-gray-200 h-8 w-16 mt-1 rounded"></div>
+                <div className="bg-gray-200 h-4 w-full mt-2 rounded"></div>
               </div>
-              <Button size="sm" variant="outline" className="mt-2 bg-white border-amber-200 text-amber-800 hover:bg-amber-50 w-full" asChild>
-                <Link to="/visibility/upgrade">
-                  <Star className="h-4 w-4 mr-1 text-amber-500" /> 
-                  Upgrade Visibility — $25/mo
-                </Link>
-              </Button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+  
+  return (
+    <Card className="border-gray-100">
+      <CardContent className="p-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <div className="rounded-full bg-blue-100 p-2">
+                <Eye className="h-5 w-5 text-blue-600" />
+              </div>
+              <h3 className="text-sm font-medium text-gray-700">Post Views</h3>
             </div>
-          )}
+            <p className="text-2xl font-bold">{postViews}</p>
+            <p className="text-xs text-gray-500">
+              {isPremium 
+                ? "Premium visibility active" 
+                : "Boost for more visibility"}
+            </p>
+          </div>
+          
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <div className="rounded-full bg-indigo-100 p-2">
+                <Users className="h-5 w-5 text-indigo-600" />
+              </div>
+              <h3 className="text-sm font-medium text-gray-700">Local Reach</h3>
+            </div>
+            <p className="text-2xl font-bold">{localReach}</p>
+            <p className="text-xs text-gray-500">Local professionals reached</p>
+          </div>
+          
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <div className="rounded-full bg-purple-100 p-2">
+                <AreaChart className="h-5 w-5 text-purple-600" />
+              </div>
+              <h3 className="text-sm font-medium text-gray-700">Conversion</h3>
+            </div>
+            <p className="text-2xl font-bold">
+              {postViews > 0 
+                ? `${Math.round((localReach / postViews) * 100)}%` 
+                : "0%"}
+            </p>
+            <p className="text-xs text-gray-500">
+              Of viewers engage with posts
+            </p>
+          </div>
         </div>
       </CardContent>
     </Card>
