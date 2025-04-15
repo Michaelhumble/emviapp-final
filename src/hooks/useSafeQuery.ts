@@ -39,12 +39,14 @@ export function useSafeQuery<TData = unknown, TError = Error>(
     ...queryOptions
   } = options;
 
-  // Separate the types with explicit casting to prevent deep instantiation
+  // IMPORTANT: Break the type inference chain by NOT using generic type parameters here
+  // Instead, we'll cast types after the query is executed
   const result = useQuery({
     ...queryOptions,
     queryKey: queryOptions.queryKey,
     queryFn: async () => {
       try {
+        // Execute the query function WITHOUT type information propagation
         const data = await queryOptions.queryFn();
         
         // Handle null/undefined result
@@ -52,7 +54,8 @@ export function useSafeQuery<TData = unknown, TError = Error>(
           throw new Error("Query returned null or undefined");
         }
         
-        return data;
+        // Return data as unknown to break type inference chain
+        return data as any;
       } catch (error: any) {
         // Log the error with context
         errorLogger(error, context);
@@ -67,7 +70,7 @@ export function useSafeQuery<TData = unknown, TError = Error>(
           // Return fallback data if provided
           if (fallbackData !== undefined) {
             console.warn(`[SafeQuery:${context}] Using fallback data due to resource not found`);
-            return fallbackData;
+            return fallbackData as any;
           }
         }
         

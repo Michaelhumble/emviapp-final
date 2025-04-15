@@ -16,13 +16,14 @@ const ArtistDashboardWidgets = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   
-  // Use explicit type for stats query to prevent deep instantiation
+  // NO GENERIC TYPES - Break the type inference chain
   const statsQuery = useSafeQuery({
     queryKey: ['artist-stats', user?.id],
     queryFn: async () => {
       if (!user?.id) throw new Error("User not authenticated");
       
       try {
+        // Define mock data without explicit type annotation
         const mockStats = {
           booking_count: 12,
           completed_services: 8,
@@ -50,11 +51,11 @@ const ArtistDashboardWidgets = () => {
     context: "artist-dashboard-stats"
   });
   
-  // Extract stats from query
+  // Cast data AFTER it comes from the query - this breaks the type inference chain
   const stats = statsQuery.data || {} as DashboardStats;
   const isLoadingStats = statsQuery.isLoading;
 
-  // Avoid type inference by using a separate query function without generic type parameters
+  // COMPLETELY SEPARATE function for bookings query to further isolate type inference
   const bookingsQuery = useSafeQuery({
     queryKey: ['recent-bookings', user?.id],
     queryFn: async () => {
@@ -70,7 +71,7 @@ const ArtistDashboardWidgets = () => {
         
         if (error) throw error;
         
-        // Transform without relying on complex type inference
+        // Return simple object without complex typing
         return (data || []).map(booking => ({
           ...booking,
           service_name: "Nail Service",
@@ -87,17 +88,18 @@ const ArtistDashboardWidgets = () => {
     context: "artist-dashboard-bookings"
   });
   
-  // Cast after extraction to break the type dependency chain
-  const recentBookings = (bookingsQuery.data || []) as BookingWithDetails[];
+  // Cast to BookingWithDetails[] AFTER retrieval
+  const recentBookings = bookingsQuery.data ? [...bookingsQuery.data] as BookingWithDetails[] : [];
   const isLoadingBookings = bookingsQuery.isLoading;
   
-  // Avoid type inference by using a separate query function
+  // Separate query function for earnings
   const earningsQuery = useSafeQuery({
     queryKey: ['earnings-data', user?.id],
     queryFn: async () => {
       if (!user?.id) throw new Error("User not authenticated");
       
       try {
+        // Simple object without explicit typing
         const mockEarningsData = {
           monthly_earnings: [
             { month: 'Jan', amount: 420 },
@@ -126,8 +128,8 @@ const ArtistDashboardWidgets = () => {
     context: "artist-dashboard-earnings"
   });
   
-  // Cast after extraction to break the type dependency chain
-  const earningsData = (earningsQuery.data || {}) as EarningsData;
+  // Create a new object with proper casting to break dependency chain
+  const earningsData = earningsQuery.data ? { ...earningsQuery.data } as EarningsData : {} as EarningsData;
   const isLoadingEarnings = earningsQuery.isLoading;
 
   return (
