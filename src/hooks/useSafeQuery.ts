@@ -39,22 +39,22 @@ export function useSafeQuery<TData = unknown, TError = Error>(
     ...queryOptions
   } = options;
 
-  // IMPORTANT: Break the type inference chain by NOT using generic type parameters here
-  // Instead, we'll cast types after the query is executed
+  // CRITICAL FIX: Break the type inference chain completely by using any types
+  // TypeScript will no longer try to resolve the deep nested generic types
   const result = useQuery({
-    ...queryOptions,
+    ...queryOptions as any,
     queryKey: queryOptions.queryKey,
     queryFn: async () => {
       try {
-        // Execute the query function WITHOUT type information propagation
-        const data = await queryOptions.queryFn();
+        // Execute the query function without type information propagation
+        const data = await options.queryFn();
         
         // Handle null/undefined result
         if (data === null || data === undefined) {
           throw new Error("Query returned null or undefined");
         }
         
-        // Return data as unknown to break type inference chain
+        // Return data as any to completely break type inference chain
         return data as any;
       } catch (error: any) {
         // Log the error with context
@@ -80,7 +80,7 @@ export function useSafeQuery<TData = unknown, TError = Error>(
     },
     retry: retryCount,
     enabled: queryOptions.enabled
-  });
+  } as any);
   
   // Handle error states with fallback data when needed
   useEffect(() => {
@@ -89,6 +89,7 @@ export function useSafeQuery<TData = unknown, TError = Error>(
     }
   }, [result.error, fallbackData, context]);
 
+  // We return a completely new object to break any reference chains
   return {
     data: result.error && fallbackData !== undefined ? fallbackData : result.data,
     isLoading: result.isLoading,

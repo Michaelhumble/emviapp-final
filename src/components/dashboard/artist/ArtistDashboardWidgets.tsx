@@ -16,28 +16,21 @@ const ArtistDashboardWidgets = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   
-  // NO GENERIC TYPES - Break the type inference chain
+  // IMPORTANT: COMPLETELY AVOID TYPE PARAMETERS - Break the type inference chain
   const statsQuery = useSafeQuery({
     queryKey: ['artist-stats', user?.id],
     queryFn: async () => {
       if (!user?.id) throw new Error("User not authenticated");
       
-      try {
-        // Define mock data without explicit type annotation
-        const mockStats = {
-          booking_count: 12,
-          completed_services: 8,
-          total_earnings: 560,
-          average_rating: 4.7,
-          referral_count: 3,
-          repeat_client_percentage: 65
-        };
-        
-        return mockStats;
-      } catch (error) {
-        console.error("Error fetching artist stats:", error);
-        throw error;
-      }
+      // Use an object literal without type annotations
+      return {
+        booking_count: 12,
+        completed_services: 8,
+        total_earnings: 560,
+        average_rating: 4.7,
+        referral_count: 3,
+        repeat_client_percentage: 65
+      };
     },
     enabled: !!user?.id,
     fallbackData: {
@@ -51,73 +44,70 @@ const ArtistDashboardWidgets = () => {
     context: "artist-dashboard-stats"
   });
   
-  // Cast data AFTER it comes from the query - this breaks the type inference chain
-  const stats = statsQuery.data || {} as DashboardStats;
+  // Manually cast to the expected type AFTER the query returns
+  const stats = statsQuery.data as DashboardStats;
   const isLoadingStats = statsQuery.isLoading;
 
-  // COMPLETELY SEPARATE function for bookings query to further isolate type inference
+  // Completely separate function for bookings query with no type parameters
   const bookingsQuery = useSafeQuery({
     queryKey: ['recent-bookings', user?.id],
     queryFn: async () => {
       if (!user?.id) throw new Error("User not authenticated");
       
-      try {
-        const { data, error } = await supabase
-          .from('bookings')
-          .select('*')
-          .eq('artist_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(5);
-        
-        if (error) throw error;
-        
-        // Return simple object without complex typing
-        return (data || []).map(booking => ({
-          ...booking,
-          service_name: "Nail Service",
-          appointment_time: booking.date_requested + " " + booking.time_requested,
-          price: 45
-        }));
-      } catch (error) {
-        console.error("Error fetching recent bookings:", error);
-        throw error;
-      }
+      const { data, error } = await supabase
+        .from('bookings')
+        .select('*')
+        .eq('artist_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(5);
+      
+      if (error) throw error;
+      
+      // Create and return plain objects without complex typing
+      return data ? data.map(booking => ({
+        id: booking.id,
+        sender_id: booking.sender_id,
+        recipient_id: booking.recipient_id,
+        service_id: booking.service_id,
+        service_name: "Nail Service",
+        date_requested: booking.date_requested,
+        time_requested: booking.time_requested,
+        appointment_time: `${booking.date_requested} ${booking.time_requested}`,
+        status: booking.status,
+        created_at: booking.created_at,
+        price: 45
+      })) : [];
     },
     enabled: !!user?.id,
     fallbackData: [],
     context: "artist-dashboard-bookings"
   });
   
-  // Cast to BookingWithDetails[] AFTER retrieval
-  const recentBookings = bookingsQuery.data ? [...bookingsQuery.data] as BookingWithDetails[] : [];
+  // Create a completely new array and manually cast to break the type chain
+  const recentBookings = Array.isArray(bookingsQuery.data) 
+    ? [...bookingsQuery.data].map(booking => ({ ...booking })) as BookingWithDetails[]
+    : [] as BookingWithDetails[];
   const isLoadingBookings = bookingsQuery.isLoading;
   
-  // Separate query function for earnings
+  // Separate query function for earnings with no type parameters
   const earningsQuery = useSafeQuery({
     queryKey: ['earnings-data', user?.id],
     queryFn: async () => {
       if (!user?.id) throw new Error("User not authenticated");
       
-      try {
-        // Simple object without explicit typing
-        const mockEarningsData = {
-          monthly_earnings: [
-            { month: 'Jan', amount: 420 },
-            { month: 'Feb', amount: 380 },
-            { month: 'Mar', amount: 560 },
-            { month: 'Apr', amount: 490 },
-            { month: 'May', amount: 610 },
-            { month: 'Jun', amount: 550 }
-          ],
-          total_earnings: 3010,
-          pending_payouts: 280
-        };
-        
-        return mockEarningsData;
-      } catch (error) {
-        console.error("Error fetching earnings data:", error);
-        throw error;
-      }
+      // Return plain object literal
+      return {
+        monthly_earnings: [
+          { month: 'Jan', amount: 420 },
+          { month: 'Feb', amount: 380 },
+          { month: 'Mar', amount: 560 },
+          { month: 'Apr', amount: 490 },
+          { month: 'May', amount: 610 },
+          { month: 'Jun', amount: 550 }
+        ],
+        total_earnings: 3010,
+        pending_payouts: 280
+      };
     },
     enabled: !!user?.id && activeTab === "earnings",
     fallbackData: {
@@ -128,8 +118,18 @@ const ArtistDashboardWidgets = () => {
     context: "artist-dashboard-earnings"
   });
   
-  // Create a new object with proper casting to break dependency chain
-  const earningsData = earningsQuery.data ? { ...earningsQuery.data } as EarningsData : {} as EarningsData;
+  // Create a completely new object with manual casting to break the type chain
+  const earningsData = earningsQuery.data 
+    ? { 
+        monthly_earnings: [...(earningsQuery.data as any).monthly_earnings || []],
+        total_earnings: (earningsQuery.data as any).total_earnings || 0,
+        pending_payouts: (earningsQuery.data as any).pending_payouts || 0
+      } as EarningsData
+    : {
+        monthly_earnings: [],
+        total_earnings: 0,
+        pending_payouts: 0
+      } as EarningsData;
   const isLoadingEarnings = earningsQuery.isLoading;
 
   return (
