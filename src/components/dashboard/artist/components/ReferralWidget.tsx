@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Copy, CheckCircle2, Facebook, Twitter } from 'lucide-react';
+import { Copy, CheckCircle2, Facebook, Twitter, Gift, Sparkles } from 'lucide-react';
 import { useArtistData } from '../context/ArtistDataContext';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -33,37 +33,53 @@ const ReferralWidget = () => {
   };
 
   return (
-    <Card className="overflow-hidden">
-      <div className="absolute -right-8 -top-8 w-24 h-24 bg-gradient-to-br from-pink-200 to-purple-200 rounded-full opacity-70" />
+    <Card className="overflow-hidden bg-gradient-to-r from-purple-50 to-pink-50 border-purple-100 shadow-sm">
+      <motion.div 
+        className="absolute -right-8 -top-8 w-32 h-32 bg-gradient-to-br from-pink-200/70 to-purple-200/70 rounded-full"
+        animate={{ 
+          scale: [1, 1.05, 1],
+          opacity: [0.7, 0.9, 0.7],
+          rotate: [0, 3, 0]
+        }}
+        transition={{ 
+          duration: 5, 
+          repeat: Infinity,
+          ease: "easeInOut" 
+        }}
+      />
       
       <CardHeader className="pb-2 relative">
         <CardTitle className="text-xl font-serif flex items-center">
-          <span role="img" aria-label="gift" className="mr-2">🎁</span>
+          <Gift className="h-5 w-5 text-pink-500 mr-2" />
           Invite & Earn Credits
         </CardTitle>
       </CardHeader>
       
       <CardContent className="relative">
         <p className="text-sm text-gray-600 mb-4">
-          Share your unique link and earn <span className="font-medium text-pink-600">15 credits</span> for 
-          every friend who joins EmviApp! <span role="img" aria-label="sparkles">✨</span>
+          Share your unique link and earn <motion.span 
+            className="font-bold text-pink-600"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >15 credits</motion.span> for 
+          every friend who joins EmviApp! <Sparkles className="h-4 w-4 inline text-amber-500" />
         </p>
         
-        <div className="relative mb-4 group">
-          <motion.div
-            className="absolute -inset-1 bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg blur opacity-40 group-hover:opacity-75 transition duration-300"
-            animate={{ scale: [1, 1.02, 1] }}
-            transition={{ duration: 3, repeat: Infinity }}
-          />
+        <motion.div 
+          className="relative mb-4"
+          whileHover={{ scale: 1.01 }}
+          transition={{ type: "spring", stiffness: 400 }}
+        >
+          <div className="absolute -inset-1 bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg blur opacity-40 group-hover:opacity-75 transition duration-300" />
           
-          <div className="relative flex items-center bg-white border border-purple-100 rounded-lg p-3">
+          <div className="relative flex items-center bg-white/80 backdrop-blur-sm border border-purple-100 rounded-lg p-3">
             <div className="flex-1 truncate text-sm text-purple-800 font-mono">
               {referralLink}
             </div>
             <Button 
               size="sm" 
               variant="outline"
-              className={copied ? "text-green-600 border-green-200" : "text-purple-600"}
+              className={copied ? "text-green-600 border-green-200 bg-green-50" : "text-purple-600 border-purple-200"}
               onClick={handleCopy}
             >
               {copied ? (
@@ -79,17 +95,22 @@ const ReferralWidget = () => {
               )}
             </Button>
           </div>
-        </div>
+        </motion.div>
         
         <div className="flex justify-between items-center text-sm">
-          <div className="text-gray-500">
-            <span role="img" aria-label="credits">💎</span> Your Credits: {userCredits || 0}
-          </div>
+          <motion.div 
+            className="text-gray-600 bg-white/80 px-3 py-1.5 rounded-full border border-purple-100 shadow-sm"
+            whileHover={{ y: -2 }}
+            transition={{ type: "spring", stiffness: 400 }}
+          >
+            <Sparkles className="h-3.5 w-3.5 inline mr-1 text-amber-500" /> 
+            Your Credits: <span className="font-semibold text-purple-700">{userCredits || 0}</span>
+          </motion.div>
           <div className="flex gap-2">
             <Button 
               variant="ghost" 
               size="sm"
-              className="text-[#1DA1F2]"
+              className="text-[#1DA1F2] hover:bg-[#1DA1F2]/10"
               onClick={shareOnTwitter}
             >
               <Twitter className="h-4 w-4" />
@@ -97,7 +118,7 @@ const ReferralWidget = () => {
             <Button 
               variant="ghost" 
               size="sm"
-              className="text-[#4267B2]"
+              className="text-[#4267B2] hover:bg-[#4267B2]/10"
               onClick={shareOnFacebook}
             >
               <Facebook className="h-4 w-4" />

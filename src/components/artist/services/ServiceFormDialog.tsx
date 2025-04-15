@@ -57,10 +57,11 @@ const ServiceFormDialog = ({
                 <Input 
                   id="price" 
                   type="number" 
-                  min="0" 
+                  min="1" 
                   step="0.01"
-                  value={service.price} 
-                  onChange={(e) => onServiceChange('price', parseFloat(e.target.value))}
+                  placeholder="45.00"
+                  value={service.price || ''}
+                  onChange={(e) => onServiceChange('price', parseFloat(e.target.value) || 0)}
                   required
                 />
               </div>
@@ -70,7 +71,7 @@ const ServiceFormDialog = ({
                 <Input 
                   id="duration" 
                   type="number" 
-                  min="0" 
+                  min="5" 
                   step="5"
                   value={service.duration || ''} 
                   onChange={(e) => {

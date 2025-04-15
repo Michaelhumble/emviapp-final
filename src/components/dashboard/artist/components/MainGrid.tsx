@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from '@/components/ui/card';
 import { BookingWithDetails, DashboardStats } from '../types/ArtistDashboardTypes';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -45,9 +46,6 @@ const MainGrid = ({ bookings, isLoadingBookings, stats }: MainGridProps) => {
         precision={1}
         loading={!stats}
       />
-      
-      {/* Add ReferralWidget to the grid */}
-      <ReferralWidget />
     </div>
   );
 };
