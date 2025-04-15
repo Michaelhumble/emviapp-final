@@ -5,7 +5,9 @@ import FallbackBoundary from "@/components/error-handling/FallbackBoundary";
 import StatsGrid from "./components/StatsGrid";
 import MainGrid from "./components/MainGrid";
 import EarningsSection from "./components/EarningsSection";
+import ArtistCalendar from "./components/ArtistCalendar";
 import { useArtistDashboardData } from "./hooks/useArtistDashboardData";
+import { BarChart3, CalendarDays, DollarSign } from "lucide-react";
 
 const ArtistDashboardWidgets = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -23,9 +25,18 @@ const ArtistDashboardWidgets = () => {
     <FallbackBoundary>
       <Tabs defaultValue="overview" className="space-y-4" onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="earnings">Earnings</TabsTrigger>
-          <TabsTrigger value="calendar">Calendar</TabsTrigger>
+          <TabsTrigger value="overview" className="flex items-center">
+            <BarChart3 className="h-4 w-4 mr-2" />
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="earnings" className="flex items-center">
+            <DollarSign className="h-4 w-4 mr-2" />
+            Earnings
+          </TabsTrigger>
+          <TabsTrigger value="calendar" className="flex items-center">
+            <CalendarDays className="h-4 w-4 mr-2" />
+            Calendar
+          </TabsTrigger>
         </TabsList>
         
         <TabsContent value="overview" className="space-y-4">
@@ -47,9 +58,9 @@ const ArtistDashboardWidgets = () => {
         </TabsContent>
         
         <TabsContent value="calendar" className="space-y-4">
-          <div className="text-center py-12 text-muted-foreground">
-            Calendar view will be available soon
-          </div>
+          <FallbackBoundary>
+            <ArtistCalendar />
+          </FallbackBoundary>
         </TabsContent>
       </Tabs>
     </FallbackBoundary>

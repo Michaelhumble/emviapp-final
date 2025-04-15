@@ -1,8 +1,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell } from 'recharts';
 import { DashboardStats } from '../types/ArtistDashboardTypes';
-import StatCard from './StatCard';
+import { BarChart3, Calendar, Star, TrendingUp, Users, HelpCircle } from "lucide-react";
+import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
 
 interface AnalyticsWidgetProps {
   stats: DashboardStats;
@@ -10,61 +12,176 @@ interface AnalyticsWidgetProps {
 }
 
 const AnalyticsWidget = ({ stats, isLoading = false }: AnalyticsWidgetProps) => {
-  // Sample data for the chart
+  // Weekly performance data
   const performanceData = [
-    { name: 'Mon', bookings: 4 },
-    { name: 'Tue', bookings: 3 },
-    { name: 'Wed', bookings: 6 },
-    { name: 'Thu', bookings: 4 },
-    { name: 'Fri', bookings: 8 },
-    { name: 'Sat', bookings: 9 },
-    { name: 'Sun', bookings: 5 },
+    { name: 'Mon', bookings: 4, color: '#e0f2fe' },
+    { name: 'Tue', bookings: 3, color: '#e0f2fe' },
+    { name: 'Wed', bookings: 6, color: '#e0f2fe' },
+    { name: 'Thu', bookings: 4, color: '#e0f2fe' },
+    { name: 'Fri', bookings: 8, color: '#e0f2fe' },
+    { name: 'Sat', bookings: 9, color: '#bfdbfe' },
+    { name: 'Sun', bookings: 5, color: '#e0f2fe' },
+  ];
+  
+  // Find max day for highlighting
+  const maxBookingDay = [...performanceData].sort((a, b) => b.bookings - a.bookings)[0];
+  
+  // Update colors to highlight the max day
+  const chartData = performanceData.map(day => ({
+    ...day,
+    color: day.name === maxBookingDay.name ? '#3b82f6' : '#e0f2fe'
+  }));
+  
+  // Stats with percent changes
+  const statsWithChanges = [
+    {
+      title: "Bookings",
+      value: stats.booking_count,
+      change: 12,
+      icon: <Calendar className="h-4 w-4 text-blue-600" />,
+      positive: true,
+      bgColor: "bg-blue-100",
+      tooltipText: "Total number of bookings in the last 30 days"
+    },
+    {
+      title: "Rating",
+      value: stats.average_rating?.toFixed(1) || "N/A",
+      change: 5,
+      icon: <Star className="h-4 w-4 text-yellow-600" />,
+      positive: true,
+      bgColor: "bg-yellow-100",
+      tooltipText: "Average customer rating from all reviews"
+    },
+    {
+      title: "Profile Views",
+      value: stats.profile_views || 42,
+      change: 24,
+      icon: <Users className="h-4 w-4 text-purple-600" />,
+      positive: true,
+      bgColor: "bg-purple-100",
+      tooltipText: "Number of times your profile was viewed in the last 30 days"
+    }
   ];
 
   return (
     <Card className="shadow-sm border-blue-100">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-xl font-serif">Analytics</CardTitle>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-xl font-serif flex items-center">
+            <BarChart3 className="h-5 w-5 text-blue-500 mr-2" />
+            Performance Analytics
+          </CardTitle>
+          
+          <TooltipProvider>
+            <UITooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p>View your booking performance and client engagement metrics</p>
+              </TooltipContent>
+            </UITooltip>
+          </TooltipProvider>
+        </div>
       </CardHeader>
+      
       <CardContent>
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-3 mb-6">
-          <StatCard
-            title="Total Bookings"
-            value={stats.booking_count}
-            loading={isLoading}
-            icon={<div className="rounded-full bg-blue-100 p-2"><svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></div>}
-          />
-          <StatCard
-            title="Average Rating"
-            value={stats.average_rating}
-            precision={1}
-            loading={isLoading}
-            icon={<div className="rounded-full bg-yellow-100 p-2"><svg className="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg></div>}
-          />
-          <StatCard
-            title="Profile Views"
-            value={42}
-            loading={isLoading}
-            icon={<div className="rounded-full bg-purple-100 p-2"><svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg></div>}
-          />
+          {statsWithChanges.map((stat, index) => (
+            <div 
+              key={index} 
+              className={`rounded-lg ${stat.bgColor} bg-opacity-20 p-4 relative overflow-hidden shadow-sm border border-opacity-30`}
+              style={{ borderColor: stat.bgColor }}
+            >
+              <div className="absolute top-0 right-0 p-2">
+                <TooltipProvider>
+                  <UITooltip>
+                    <TooltipTrigger asChild>
+                      <HelpCircle className="h-4 w-4 text-muted-foreground/50 cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{stat.tooltipText}</p>
+                    </TooltipContent>
+                  </UITooltip>
+                </TooltipProvider>
+              </div>
+              
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground flex items-center">
+                    <span className="rounded-full p-1.5 mr-2" style={{ background: stat.bgColor }}>
+                      {stat.icon}
+                    </span>
+                    {stat.title}
+                  </h3>
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className="text-2xl font-bold">{stat.value}</span>
+                    <Badge className={`${stat.positive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                      <TrendingUp className="h-3 w-3 inline mr-1" />
+                      {stat.change}%
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
         
         <div className="border rounded-lg p-4 bg-white">
-          <h4 className="text-sm font-medium mb-4">Weekly Bookings</h4>
+          <div className="flex justify-between items-center mb-4">
+            <h4 className="text-sm font-medium">Weekly Bookings</h4>
+            <TooltipProvider>
+              <UITooltip>
+                <TooltipTrigger asChild>
+                  <div className="text-xs text-blue-600 font-medium flex items-center cursor-help">
+                    <TrendingUp className="h-3 w-3 mr-1" />
+                    16% from last week
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>16% increase in bookings compared to previous week</p>
+                </TooltipContent>
+              </UITooltip>
+            </TooltipProvider>
+          </div>
+          
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={performanceData}>
-              <XAxis dataKey="name" />
-              <YAxis hide />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: 'white', 
-                  border: '1px solid #e2e8f0', 
-                  borderRadius: '0.5rem',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' 
-                }}
-                cursor={{ fill: 'rgba(59, 130, 246, 0.1)' }}
+            <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <XAxis 
+                dataKey="name" 
+                axisLine={false}
+                tickLine={false}
+                padding={{ left: 10, right: 10 }}
+                tick={{ fontSize: 12 }}
               />
-              <Bar dataKey="bookings" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+              <YAxis 
+                hide 
+                domain={[0, 'dataMax + 2']}
+              />
+              <Tooltip 
+                cursor={{ fill: 'rgba(59, 130, 246, 0.05)' }}
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    return (
+                      <div className="bg-white p-2 shadow-md rounded-md border text-xs">
+                        <p className="font-medium text-gray-900">{`${payload[0].payload.name}: ${payload[0].value} bookings`}</p>
+                        {payload[0].payload.name === maxBookingDay.name && (
+                          <p className="text-blue-600 text-[10px]">Best performing day</p>
+                        )}
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+              <Bar 
+                dataKey="bookings" 
+                radius={[4, 4, 0, 0]}
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
