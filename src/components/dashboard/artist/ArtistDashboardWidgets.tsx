@@ -14,8 +14,11 @@ const ArtistDashboardWidgets = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   
-  // Fetch artist stats with explicit typing to avoid deep instantiation
-  const { data: stats, isLoading: isLoadingStats } = useQuery<DashboardStats | null>({
+  // Avoid deep type instantiation by explicitly typing the query result
+  type StatsQueryResult = { data: DashboardStats | null; isLoading: boolean };
+  
+  // Create the stats query with manual typing to avoid deep instantiation
+  const statsQuery = useQuery({
     queryKey: ['artist-stats', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
@@ -38,13 +41,17 @@ const ArtistDashboardWidgets = () => {
       }
     },
     enabled: !!user?.id
-  });
+  }) as StatsQueryResult;
 
-  // Define type for the booking query result to avoid deep instantiation
-  type BookingsQueryResult = BookingWithDetails[];
+  // Extract the stats data and loading state
+  const stats = statsQuery.data;
+  const isLoadingStats = statsQuery.isLoading;
 
-  // Fetch recent bookings with explicit typing
-  const { data: recentBookings, isLoading: isLoadingBookings } = useQuery<BookingsQueryResult>({
+  // Define type for the booking query result manually
+  type BookingsQueryResult = { data: BookingWithDetails[]; isLoading: boolean };
+
+  // Create the bookings query with manual typing
+  const bookingsQuery = useQuery({
     queryKey: ['recent-bookings', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
@@ -72,13 +79,17 @@ const ArtistDashboardWidgets = () => {
       }
     },
     enabled: !!user?.id
-  });
+  }) as BookingsQueryResult;
 
-  // Define the type for earnings data with a type alias to avoid infinite type instantiation
-  type EarningsQueryResult = EarningsData | null;
+  // Extract the bookings data and loading state
+  const recentBookings = bookingsQuery.data;
+  const isLoadingBookings = bookingsQuery.isLoading;
   
-  // Fetch earnings data with explicit typing
-  const { data: earningsData, isLoading: isLoadingEarnings } = useQuery<EarningsQueryResult>({
+  // Define the type for earnings query result manually
+  type EarningsQueryResult = { data: EarningsData | null; isLoading: boolean };
+  
+  // Create the earnings query with manual typing
+  const earningsQuery = useQuery({
     queryKey: ['earnings-data', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
@@ -104,7 +115,11 @@ const ArtistDashboardWidgets = () => {
       }
     },
     enabled: !!user?.id && activeTab === "earnings"
-  });
+  }) as EarningsQueryResult;
+
+  // Extract the earnings data and loading state
+  const earningsData = earningsQuery.data;
+  const isLoadingEarnings = earningsQuery.isLoading;
 
   return (
     <Tabs defaultValue="overview" className="space-y-4" onValueChange={setActiveTab}>
