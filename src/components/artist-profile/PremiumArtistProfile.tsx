@@ -133,7 +133,7 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
   const getArtistLevel = () => {
     // This would be more sophisticated in production
     const hasServices = userProfile.services && userProfile.services.length > 0;
-    const hasPortfolio = userProfile.portfolio_urls && userProfile.portfolio_urls.length > 0;
+    const hasPortfolio = userProfile.gallery && userProfile.gallery.length > 0;
     const hasBio = !!userProfile.bio && userProfile.bio.length > 20;
     const hasSpecialties = specialties.length > 0;
     
@@ -452,8 +452,7 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
             {/* Profile Highlights */}
             <ProfileHighlights stats={{
               rating: 4.9,
-              reviewCount: 87,
-              bookingsCount: 156,
+              clients: 156,
               completionRate: 98,
               responseTime: "2 hrs",
               repeatClients: 42,
