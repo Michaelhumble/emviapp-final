@@ -16,6 +16,7 @@ const ArtistDashboardWidgets = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   
+  // Use explicit type for stats query to prevent deep instantiation
   const { data: stats, isLoading: isLoadingStats } = useSafeQuery<DashboardStats>({
     queryKey: ['artist-stats', user?.id],
     queryFn: async () => {
@@ -49,6 +50,7 @@ const ArtistDashboardWidgets = () => {
     context: "artist-dashboard-stats"
   });
 
+  // Explicit typing for bookings query to prevent deep instantiation
   const { data: recentBookings, isLoading: isLoadingBookings } = useSafeQuery<BookingWithDetails[]>({
     queryKey: ['recent-bookings', user?.id],
     queryFn: async () => {
@@ -80,6 +82,7 @@ const ArtistDashboardWidgets = () => {
     context: "artist-dashboard-bookings"
   });
   
+  // Explicit typing for earnings query to prevent deep instantiation
   const { data: earningsData, isLoading: isLoadingEarnings } = useSafeQuery<EarningsData>({
     queryKey: ['earnings-data', user?.id],
     queryFn: async () => {
