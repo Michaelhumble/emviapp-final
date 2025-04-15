@@ -53,13 +53,10 @@ export function useArtistBookings() {
     setError(null);
 
     try {
+      // First, fetch the bookings
       let query = supabase
         .from('bookings')
-        .select(`
-          *,
-          services:service_id (title, price),
-          clients:sender_id (full_name)
-        `)
+        .select('*')
         .eq('recipient_id', user.id);
 
       // Apply status filter if provided
@@ -83,17 +80,54 @@ export function useArtistBookings() {
       // Order by date and time
       query = query.order('date_requested', { ascending: true });
 
-      const { data, error } = await query;
+      const { data: bookingsData, error: bookingsError } = await query;
 
-      if (error) throw new Error(error.message);
+      if (bookingsError) throw new Error(bookingsError.message);
 
-      // Process the data to include service and client information
-      const processedBookings = data.map(booking => ({
-        ...booking,
-        service_title: booking.services?.title || 'Unknown Service',
-        service_price: booking.services?.price || 0,
-        client_name: booking.clients?.full_name || 'Unknown Client',
-      }));
+      // Process bookings to include service and client information
+      const processedBookings: Booking[] = [];
+      
+      for (const booking of bookingsData || []) {
+        // Fetch service details if service_id is available
+        let serviceTitle = 'Unknown Service';
+        let servicePrice = 0;
+        
+        if (booking.service_id) {
+          const { data: serviceData, error: serviceError } = await supabase
+            .from('services')
+            .select('title, price')
+            .eq('id', booking.service_id)
+            .single();
+            
+          if (!serviceError && serviceData) {
+            serviceTitle = serviceData.title;
+            servicePrice = serviceData.price;
+          }
+        }
+        
+        // Fetch client name if sender_id is available
+        let clientName = 'Unknown Client';
+        
+        if (booking.sender_id) {
+          const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('full_name')
+            .eq('id', booking.sender_id)
+            .single();
+            
+          if (!userError && userData) {
+            clientName = userData.full_name;
+          }
+        }
+        
+        // Create the processed booking with all information
+        processedBookings.push({
+          ...booking,
+          service_title: serviceTitle,
+          service_price: servicePrice,
+          client_name: clientName
+        });
+      }
 
       setBookings(processedBookings);
     } catch (err) {

@@ -90,17 +90,35 @@ export function useArtistReferrals() {
   };
 
   const generateReferralCode = async () => {
-    if (!user) return;
+    if (!user) return false;
 
     try {
-      // Call the database function to generate a referral code
-      const { data: functionData, error: functionError } = await supabase
-        .rpc('generate_referral_code', { user_id: user.id });
+      // Since the generate_referral_code function isn't available, let's use a direct update
+      // Generate a random code
+      const randomCode = 'EMVI' + Math.random().toString(36).substring(2, 8).toUpperCase();
+      
+      // Update the user's referral code
+      const { error } = await supabase
+        .from('users')
+        .update({ referral_code: randomCode })
+        .eq('id', user.id);
 
-      if (functionError) throw new Error(functionError.message);
+      if (error) throw new Error(error.message);
 
       // Refresh data to get the new referral code
-      fetchReferralStats();
+      const { data: updatedUser, error: fetchError } = await supabase
+        .from('users')
+        .select('referral_code')
+        .eq('id', user.id)
+        .single();
+      
+      if (fetchError) throw new Error(fetchError.message);
+      
+      setStats(prev => ({
+        ...prev,
+        referralCode: updatedUser.referral_code || randomCode
+      }));
+      
       return true;
     } catch (err) {
       console.error('Error generating referral code:', err);
