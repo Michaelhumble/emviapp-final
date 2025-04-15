@@ -53,6 +53,7 @@ import Contact from './pages/Contact';
 import Terms from './pages/legal/Terms';
 import Privacy from './pages/legal/Privacy';
 import Cookies from './pages/legal/Cookies';
+import ArtistProfileSetupPage from './pages/setup/artist';
 
 const routes = [
   {
@@ -221,7 +222,7 @@ const routes = [
   },
   {
     path: '/setup/artist',
-    element: <ArtistSetup />,
+    element: <ArtistProfileSetupPage />,
   },
   {
     path: '/setup/salon',
