@@ -14,7 +14,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { UserProfile, getLocationString } from "@/types/profile";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ReferralWidget } from "@/components/dashboard/artist/components/ReferralWidget";
+import ReferralWidget from "@/components/dashboard/artist/components/ReferralWidget";
 import ArtistPortfolioSection from "@/components/portfolio/ArtistPortfolioSection";
 
 interface PremiumArtistProfileProps {

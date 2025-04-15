@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Image, Upload, AlertCircle } from 'lucide-react';
@@ -12,8 +11,8 @@ const PortfolioGallery = () => {
   const { userProfile } = useAuth();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   
-  // Gallery images from user profile or empty array
-  const galleryImages = userProfile?.gallery || [];
+  // Gallery images from user profile or empty array, using portfolio_urls from UserProfile type
+  const galleryImages = userProfile?.portfolio_urls || [];
   
   // Sample random images for demonstrating the layout (if no gallery images exist)
   const demoImages = [
