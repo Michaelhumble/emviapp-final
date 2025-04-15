@@ -17,13 +17,13 @@ const ArtistDashboardWidgets = () => {
   const [activeTab, setActiveTab] = useState("overview");
   
   // Use explicit type for stats query to prevent deep instantiation
-  const { data: stats, isLoading: isLoadingStats } = useSafeQuery<DashboardStats>({
+  const statsQuery = useSafeQuery({
     queryKey: ['artist-stats', user?.id],
     queryFn: async () => {
       if (!user?.id) throw new Error("User not authenticated");
       
       try {
-        const mockStats: DashboardStats = {
+        const mockStats = {
           booking_count: 12,
           completed_services: 8,
           total_earnings: 560,
@@ -49,8 +49,12 @@ const ArtistDashboardWidgets = () => {
     },
     context: "artist-dashboard-stats"
   });
+  
+  // Extract stats from query
+  const stats = statsQuery.data || {} as DashboardStats;
+  const isLoadingStats = statsQuery.isLoading;
 
-  // Explicitly cast the result type to prevent deep type instantiation
+  // Avoid type inference by using a separate query function without generic type parameters
   const bookingsQuery = useSafeQuery({
     queryKey: ['recent-bookings', user?.id],
     queryFn: async () => {
@@ -66,12 +70,13 @@ const ArtistDashboardWidgets = () => {
         
         if (error) throw error;
         
+        // Transform without relying on complex type inference
         return (data || []).map(booking => ({
           ...booking,
           service_name: "Nail Service",
           appointment_time: booking.date_requested + " " + booking.time_requested,
           price: 45
-        })) as BookingWithDetails[];
+        }));
       } catch (error) {
         console.error("Error fetching recent bookings:", error);
         throw error;
@@ -82,18 +87,18 @@ const ArtistDashboardWidgets = () => {
     context: "artist-dashboard-bookings"
   });
   
-  // Extract from the query result with explicit typing
-  const recentBookings = bookingsQuery.data as BookingWithDetails[];
+  // Cast after extraction to break the type dependency chain
+  const recentBookings = (bookingsQuery.data || []) as BookingWithDetails[];
   const isLoadingBookings = bookingsQuery.isLoading;
   
-  // Explicit typing for earnings query to prevent deep instantiation
+  // Avoid type inference by using a separate query function
   const earningsQuery = useSafeQuery({
     queryKey: ['earnings-data', user?.id],
     queryFn: async () => {
       if (!user?.id) throw new Error("User not authenticated");
       
       try {
-        const mockEarningsData: EarningsData = {
+        const mockEarningsData = {
           monthly_earnings: [
             { month: 'Jan', amount: 420 },
             { month: 'Feb', amount: 380 },
@@ -121,8 +126,8 @@ const ArtistDashboardWidgets = () => {
     context: "artist-dashboard-earnings"
   });
   
-  // Extract from the query result with explicit typing
-  const earningsData = earningsQuery.data as EarningsData;
+  // Cast after extraction to break the type dependency chain
+  const earningsData = (earningsQuery.data || {}) as EarningsData;
   const isLoadingEarnings = earningsQuery.isLoading;
 
   return (
