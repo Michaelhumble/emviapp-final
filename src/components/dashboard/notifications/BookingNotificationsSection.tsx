@@ -1,243 +1,158 @@
 
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { Bell, Calendar, CheckCircle2, XCircle } from "lucide-react";
-import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle } from "lucide-react";
-
-interface BookingNotification {
-  id: string;
-  createdAt: string;
-  message: string;
-  isRead: boolean;
-  type: 'booking_created' | 'booking_updated' | 'booking_cancelled' | 'info';
-  booking?: {
-    id: string;
-    clientName?: string;
-    service?: string;
-    date?: string;
-    time?: string;
-    status?: string;
-  };
-}
+import React from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useNotificationContext } from '@/context/notification';
+import { Notification } from '@/types/notification';
+import { useAuth } from '@/context/auth';
+import { Calendar, Clock, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
+import { useNavigate } from 'react-router-dom';
+import { Badge } from '@/components/ui/badge';
 
 const BookingNotificationsSection = () => {
+  const { notifications, markAsRead, markAllAsRead } = useNotificationContext();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const { user } = useAuth();
-  const [notifications, setNotifications] = useState<BookingNotification[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  // Filter only booking-related notifications
+  const bookingNotifications = notifications.filter(
+    notification => 
+      notification.message.includes('booking') || 
+      notification.message.includes('appointment') ||
+      notification.message.includes('lịch hẹn')
+  );
   
-  // Fetch notifications from Supabase
-  useEffect(() => {
-    if (!user) return;
+  const unreadCount = bookingNotifications.filter(n => !n.isRead).length;
+
+  // Handle click on a notification
+  const handleNotificationClick = (notification: Notification) => {
+    if (!notification.isRead) {
+      markAsRead(notification.id);
+    }
     
-    const fetchNotifications = async () => {
-      try {
-        setLoading(true);
-        
-        const { data, error } = await supabase
-          .from('notifications')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('is_read', false)
-          .order('created_at', { ascending: false })
-          .limit(5);
-        
-        if (error) throw error;
-        
-        const formattedNotifications: BookingNotification[] = (data || []).map(notif => {
-          // Safely access metadata properties with type checking
-          const metadata = notif.metadata as Record<string, any> || {};
-          
-          return {
-            id: notif.id,
-            createdAt: notif.created_at,
-            message: notif.message,
-            isRead: notif.is_read,
-            type: (metadata.type as any) || 'info',
-            booking: metadata.booking_id ? {
-              id: metadata.booking_id,
-              clientName: metadata.client_name,
-              service: metadata.service_name,
-              date: metadata.date,
-              time: metadata.time,
-              status: metadata.status
-            } : undefined
-          };
-        });
-        
-        setNotifications(formattedNotifications);
-      } catch (err) {
-        console.error('Error fetching notifications:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchNotifications();
-    
-    // Subscribe to new notifications
-    const channel = supabase
-      .channel('notifications-channel')
-      .on('postgres_changes', 
-        { 
-          event: 'INSERT', 
-          schema: 'public', 
-          table: 'notifications',
-          filter: `user_id=eq.${user.id}`
-        }, 
-        (payload) => {
-          const newNotif = payload.new as any;
-          const metadata = newNotif.metadata as Record<string, any> || {};
-          
-          // Add new notification to state
-          setNotifications(prev => [{
-            id: newNotif.id,
-            createdAt: newNotif.created_at,
-            message: newNotif.message,
-            isRead: newNotif.is_read,
-            type: (metadata.type as any) || 'info',
-            booking: metadata.booking_id ? {
-              id: metadata.booking_id,
-              clientName: metadata.client_name,
-              service: metadata.service_name,
-              date: metadata.date,
-              time: metadata.time,
-              status: metadata.status
-            } : undefined
-          }, ...prev]);
-          
-          // Show toast notification
-          toast(newNotif.message, {
-            duration: 5000,
-            icon: getNotificationIcon(metadata.type || 'info'),
-            action: {
-              label: "View",
-              onClick: () => {
-                // Mark as read
-                markAsRead(newNotif.id);
-              }
-            }
-          });
-        })
-      .subscribe();
-    
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user]);
-  
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case 'booking_created':
-        return <Calendar className="h-5 w-5 text-green-500" />;
-      case 'booking_updated':
-        return <CheckCircle2 className="h-5 w-5 text-blue-500" />;
-      case 'booking_cancelled':
-        return <XCircle className="h-5 w-5 text-red-500" />;
-      default:
-        return <Bell className="h-5 w-5 text-gray-500" />;
+    // Navigate if there's a link
+    if (notification.link) {
+      navigate(notification.link);
     }
   };
-  
-  const markAsRead = async (notificationId: string) => {
-    if (!user) return;
+
+  // Format time since notification was created
+  const formatTimeSince = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
     
-    try {
-      await supabase
-        .from('notifications')
-        .update({ is_read: true })
-        .eq('id', notificationId);
-      
-      // Update state
-      setNotifications(prev => 
-        prev.filter(n => n.id !== notificationId)
-      );
-    } catch (err) {
-      console.error('Error marking notification as read:', err);
+    if (diffInMinutes < 1) return t({ english: 'Just now', vietnamese: 'Vừa xong' });
+    if (diffInMinutes < 60) return `${diffInMinutes}${t({ english: 'm ago', vietnamese: ' phút trước' })}`;
+    
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours}${t({ english: 'h ago', vietnamese: ' giờ trước' })}`;
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays}${t({ english: 'd ago', vietnamese: ' ngày trước' })}`;
+    
+    return date.toLocaleDateString();
+  };
+
+  // Get icon for notification status
+  const getNotificationIcon = (message: string) => {
+    if (message.includes('confirmed') || message.includes('accepted') || message.includes('xác nhận')) {
+      return <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />;
+    } else if (message.includes('declined') || message.includes('cancelled') || message.includes('hủy') || message.includes('từ chối')) {
+      return <XCircle className="h-5 w-5 text-red-500 flex-shrink-0" />;
+    } else if (message.includes('new') || message.includes('mới')) {
+      return <Calendar className="h-5 w-5 text-blue-500 flex-shrink-0" />;
+    } else {
+      return <AlertCircle className="h-5 w-5 text-gray-500 flex-shrink-0" />;
     }
   };
-  
-  const markAllAsRead = async () => {
-    if (!user || notifications.length === 0) return;
-    
-    try {
-      await supabase
-        .from('notifications')
-        .update({ is_read: true })
-        .in('id', notifications.map(n => n.id));
-      
-      // Update state
-      setNotifications([]);
-      
-      toast.success('All notifications marked as read');
-    } catch (err) {
-      console.error('Error marking all notifications as read:', err);
-    }
-  };
-  
-  if (loading) {
-    return (
-      <div className="w-full">
-        <div className="h-16 bg-muted animate-pulse rounded-md mb-2"></div>
-        <div className="h-16 bg-muted animate-pulse rounded-md mb-2"></div>
-      </div>
-    );
-  }
-  
-  return (
-    <div className="w-full space-y-2">
-      {notifications.length > 0 ? (
-        <>
-          <div className="flex justify-between items-center mb-3">
-            <h3 className="text-sm font-medium flex items-center">
-              <Bell className="mr-1 h-4 w-4" />
-              Recent Notifications
-            </h3>
-            {notifications.length > 0 && (
-              <button 
-                onClick={markAllAsRead}
-                className="text-xs text-primary hover:text-primary/80"
-              >
-                Mark all as read
-              </button>
-            )}
-          </div>
-          
-          {notifications.map(notification => (
-            <div 
-              key={notification.id} 
-              className="p-3 bg-muted/40 hover:bg-muted/60 rounded-md flex items-start gap-2 transition-colors"
-            >
-              {getNotificationIcon(notification.type)}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm">{notification.message}</p>
-                <div className="mt-1 flex justify-between items-center">
-                  {notification.booking?.status && (
-                    <Badge variant="outline" className="text-xs">
-                      {notification.booking.status}
-                    </Badge>
-                  )}
-                  <button 
-                    onClick={() => markAsRead(notification.id)}
-                    className="text-xs text-primary hover:text-primary/80"
-                  >
-                    Mark as read
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </>
-      ) : (
-        <div className="text-center py-6 bg-muted/30 rounded-md">
-          <AlertCircle className="mx-auto h-8 w-8 text-muted-foreground/60 mb-2" />
-          <p className="text-sm text-muted-foreground">No new notifications</p>
-        </div>
-      )}
+
+  // Render empty state
+  const renderEmptyState = () => (
+    <div className="py-8 px-4 text-center">
+      <Calendar className="h-12 w-12 mx-auto text-gray-300 mb-3" />
+      <p className="text-gray-500 mb-2">
+        {t({
+          english: "No booking notifications yet",
+          vietnamese: "Chưa có thông báo lịch hẹn nào"
+        })}
+      </p>
+      <p className="text-xs text-gray-400">
+        {t({
+          english: "We'll notify you about your appointments here",
+          vietnamese: "Chúng tôi sẽ thông báo cho bạn về các lịch hẹn ở đây"
+        })}
+      </p>
     </div>
+  );
+
+  return (
+    <Card className="mb-6">
+      <CardHeader className="pb-3 flex flex-row items-center justify-between">
+        <CardTitle className="text-lg font-medium flex items-center">
+          <Calendar className="mr-2 h-5 w-5" />
+          {t({
+            english: "Booking Notifications",
+            vietnamese: "Thông báo lịch hẹn"
+          })}
+          {unreadCount > 0 && (
+            <Badge className="ml-2">
+              {unreadCount}
+            </Badge>
+          )}
+        </CardTitle>
+        {unreadCount > 0 && (
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={() => markAllAsRead()}
+          >
+            {t({
+              english: "Mark all as read",
+              vietnamese: "Đánh dấu tất cả đã đọc"
+            })}
+          </Button>
+        )}
+      </CardHeader>
+      <CardContent>
+        <ScrollArea className="h-[300px] pr-4">
+          {bookingNotifications.length > 0 ? (
+            <div className="space-y-3">
+              {bookingNotifications.map((notification) => (
+                <div 
+                  key={notification.id}
+                  className={`p-3 rounded-lg cursor-pointer transition-colors flex items-start ${
+                    notification.isRead ? 'bg-gray-50 hover:bg-gray-100' : 'bg-blue-50 hover:bg-blue-100'
+                  }`}
+                  onClick={() => handleNotificationClick(notification)}
+                >
+                  <div className="mr-3 mt-0.5">
+                    {getNotificationIcon(notification.message)}
+                  </div>
+                  
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-800 mb-1">{notification.message}</p>
+                    <div className="flex items-center text-xs text-gray-500">
+                      <Clock className="h-3 w-3 mr-1" />
+                      {formatTimeSince(notification.createdAt)}
+                    </div>
+                  </div>
+                  
+                  {!notification.isRead && (
+                    <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            renderEmptyState()
+          )}
+        </ScrollArea>
+      </CardContent>
+    </Card>
   );
 };
 

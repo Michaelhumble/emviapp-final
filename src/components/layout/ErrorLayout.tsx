@@ -10,7 +10,7 @@ interface ErrorLayoutProps {
 
 const ErrorLayout = ({ children, hideNavbar = false }: ErrorLayoutProps) => {
   return (
-    <Layout hideHeader={hideNavbar}>
+    <Layout hideNavbar={hideNavbar}>
       <motion.div 
         className="min-h-[80vh] flex flex-col items-center justify-center p-6"
         initial={{ opacity: 0, y: 20 }}

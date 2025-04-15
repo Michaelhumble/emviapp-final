@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -28,13 +29,9 @@ export type MessageType = {
   actionSuggestions?: ActionSuggestion[];
 };
 
-interface ChatSystemProps {
-  onClose?: () => void;
-}
-
-export function ChatSystem({ onClose }: ChatSystemProps) {
+export function ChatSystem() {
   const isMobile = useIsMobile();
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [inputValue, setInputValue] = useState("");
   const { user } = useAuth();
@@ -50,13 +47,14 @@ export function ChatSystem({ onClose }: ChatSystemProps) {
     if (isOpen && messages.length === 0) {
       const welcomeMessage: MessageType = {
         id: `assistant-${Date.now()}`,
-        content: "👋 Hi! I'm Little Sunshine ☀️ Need help finding a salon, time slot, or artist? Just ask!",
+        content: "👋 Hi there! I'm Little Sunshine, your personal assistant. How can I help you today?",
         sender: "assistant",
         timestamp: new Date(),
         actionSuggestions: [
           { id: "book", label: "Book an Artist", icon: "calendar", href: "/artists" },
-          { id: "explore", label: "Explore Services", icon: "search", href: "/services" },
-          { id: "availability", label: "Check Availability", icon: "clock", href: "/availability" }
+          { id: "jobs", label: "Post a Job", icon: "briefcase", href: "/jobs" },
+          { id: "salon", label: "Sell My Salon", icon: "store", href: "/salon-sales" },
+          { id: "explore", label: "Explore Artists", icon: "users", href: "/artists" }
         ]
       };
       
@@ -122,13 +120,6 @@ export function ChatSystem({ onClose }: ChatSystemProps) {
       }, 100);
     }
   }, [isOpen, isMobile]);
-
-  const handleCloseChat = () => {
-    setIsOpen(false);
-    if (onClose) {
-      onClose();
-    }
-  };
 
   const handleBookingConfirmation = async (bookingMatch: BookingMatch) => {
     if (!user) {
@@ -215,10 +206,13 @@ export function ChatSystem({ onClose }: ChatSystemProps) {
     ]);
     
     try {
+      // Log the message for future improvements
       console.log("Chat log - User:", trimmedInput);
       
+      // Process the user message and generate a response
       const response = await generateResponse(trimmedInput);
       
+      // Process the response to add action suggestions based on content
       const { message, suggestedActions } = processAiResponse(response);
       
       setMessages(prev => [
@@ -279,7 +273,7 @@ export function ChatSystem({ onClose }: ChatSystemProps) {
 
   return (
     <>
-      <ChatToggleButton isOpen={isOpen} onClick={() => isOpen ? handleCloseChat() : setIsOpen(true)} />
+      <ChatToggleButton isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
       
       <AnimatePresence>
         {isOpen && (
@@ -300,7 +294,7 @@ export function ChatSystem({ onClose }: ChatSystemProps) {
               backfaceVisibility: 'hidden'
             }}
           >
-            <ChatHeader onClose={handleCloseChat} />
+            <ChatHeader onClose={() => setIsOpen(false)} />
             
             <div 
               ref={messagesContainerRef}
@@ -332,7 +326,6 @@ export function ChatSystem({ onClose }: ChatSystemProps) {
                 onFocus={handleInputFocus}
                 onBlur={handleInputBlur}
                 isLoading={isLoading}
-                placeholder="Ask anything about bookings, salons, or artists..."
               />
             </div>
           </motion.div>

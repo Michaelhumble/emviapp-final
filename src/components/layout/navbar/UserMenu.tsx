@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
+import { NotificationCenter } from "@/components/notifications/NotificationCenter";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toast } from "sonner";
 import { validateRoute } from "@/utils/routeValidator";
@@ -67,6 +68,8 @@ export function UserMenu() {
   
   return (
     <div className="flex items-center gap-2">
+      {user && <NotificationCenter className="mr-1" />}
+      
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-8 w-8 rounded-full">

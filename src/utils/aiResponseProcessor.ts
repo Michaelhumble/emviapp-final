@@ -1,43 +1,80 @@
 
 import { ActionSuggestion } from "@/components/chat/ChatSystem";
 
-export interface ProcessedResponse {
+type ProcessedResponse = {
   message: string;
   suggestedActions: ActionSuggestion[];
-}
-
-export const processAiResponse = (response: string): ProcessedResponse => {
-  const result: ProcessedResponse = {
-    message: response,
-    suggestedActions: []
-  };
-  
-  // Add booking-related actions if the response mentions bookings
-  if (response.toLowerCase().includes('booking') || 
-      response.toLowerCase().includes('appointment') ||
-      response.toLowerCase().includes('schedule')) {
-    result.suggestedActions.push(
-      { id: "book", label: "Book Now", icon: "calendar", href: "/booking" }
-    );
-  }
-  
-  // Add artist exploration actions if the response mentions artists or services
-  if (response.toLowerCase().includes('artist') || 
-      response.toLowerCase().includes('salon') ||
-      response.toLowerCase().includes('service')) {
-    result.suggestedActions.push(
-      { id: "explore", label: "Explore Artists", icon: "users", href: "/artists" }
-    );
-  }
-  
-  // Add support actions if the response mentions issues or help
-  if (response.toLowerCase().includes('issue') || 
-      response.toLowerCase().includes('problem') ||
-      response.toLowerCase().includes('help')) {
-    result.suggestedActions.push(
-      { id: "support", label: "Get Support", icon: "help-circle", href: "/support" }
-    );
-  }
-  
-  return result;
 };
+
+/**
+ * Process the AI response to extract context and add appropriate action suggestions
+ */
+export function processAiResponse(response: string): ProcessedResponse {
+  // Default suggestions that are generally helpful
+  const defaultSuggestions: ActionSuggestion[] = [
+    { id: "book", label: "Book an Artist", icon: "calendar", href: "/artists" },
+    { id: "explore", label: "Explore Artists", icon: "users", href: "/artists" }
+  ];
+  
+  // Initialize suggestions with empty array
+  let suggestedActions: ActionSuggestion[] = [];
+  
+  // Check for specific keywords to add contextual action suggestions
+  const lowerResponse = response.toLowerCase();
+  
+  // Job-related suggestions
+  if (lowerResponse.includes("job") || 
+      lowerResponse.includes("hiring") || 
+      lowerResponse.includes("position") ||
+      lowerResponse.includes("opportunity") ||
+      lowerResponse.includes("employment")) {
+    suggestedActions.push(
+      { id: "post-job", label: "Post a Job", icon: "briefcase", href: "/jobs" },
+      { id: "find-jobs", label: "Find Jobs", icon: "briefcase", href: "/jobs" }
+    );
+  }
+  
+  // Salon-related suggestions
+  if (lowerResponse.includes("salon") || 
+      lowerResponse.includes("shop") || 
+      lowerResponse.includes("store") ||
+      lowerResponse.includes("business")) {
+    suggestedActions.push(
+      { id: "sell-salon", label: "Sell My Salon", icon: "store", href: "/salon-sales" },
+      { id: "find-salon", label: "Find Salons", icon: "store", href: "/salons" }
+    );
+  }
+  
+  // Booking-related suggestions
+  if (lowerResponse.includes("book") || 
+      lowerResponse.includes("appointment") || 
+      lowerResponse.includes("schedule") ||
+      lowerResponse.includes("reservation")) {
+    suggestedActions.push(
+      { id: "book-now", label: "Book Now", icon: "calendar", href: "/artists" }
+    );
+  }
+  
+  // Artist-related suggestions
+  if (lowerResponse.includes("artist") || 
+      lowerResponse.includes("stylist") || 
+      lowerResponse.includes("professional") ||
+      lowerResponse.includes("specialist")) {
+    suggestedActions.push(
+      { id: "find-artists", label: "Find Artists", icon: "users", href: "/artists" }
+    );
+  }
+  
+  // If we have no specific suggestions, use the defaults
+  if (suggestedActions.length === 0) {
+    suggestedActions = defaultSuggestions;
+  }
+  
+  // Limit to 3 suggestions to avoid cluttering the interface
+  suggestedActions = suggestedActions.slice(0, 3);
+  
+  return {
+    message: response,
+    suggestedActions
+  };
+}

@@ -5,30 +5,28 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UserPlus, RefreshCw, BadgeDollarSign } from "lucide-react";
+import { UserPlus, RefreshCw } from "lucide-react";
 
 interface InviteMemberModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSendInvite: (email: string, name: string, role: string, commissionRate: string) => Promise<void>;
+  onSendInvite: (email: string, name: string, role: string) => Promise<void>;
 }
 
 const InviteMemberModal = ({ isOpen, onClose, onSendInvite }: InviteMemberModalProps) => {
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteName, setInviteName] = useState("");
   const [inviteRole, setInviteRole] = useState("artist");
-  const [commissionRate, setCommissionRate] = useState("60");
   const [isSending, setIsSending] = useState(false);
 
   const handleSendInvite = async () => {
     setIsSending(true);
     try {
-      await onSendInvite(inviteEmail, inviteName, inviteRole, commissionRate);
+      await onSendInvite(inviteEmail, inviteName, inviteRole);
       // Reset form
       setInviteEmail("");
       setInviteName("");
       setInviteRole("artist");
-      setCommissionRate("60");
       onClose();
     } finally {
       setIsSending(false);
@@ -78,25 +76,6 @@ const InviteMemberModal = ({ isOpen, onClose, onSendInvite }: InviteMemberModalP
                 <SelectItem value="admin">Admin</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="commissionRate" className="flex items-center">
-              <BadgeDollarSign className="h-4 w-4 mr-1 text-muted-foreground" />
-              Commission Rate (%)
-            </Label>
-            <Input
-              id="commissionRate"
-              type="number"
-              min="0"
-              max="100"
-              placeholder="60"
-              value={commissionRate}
-              onChange={(e) => setCommissionRate(e.target.value)}
-            />
-            <p className="text-xs text-muted-foreground">
-              Percentage of service revenue the team member will receive
-            </p>
           </div>
         </div>
         

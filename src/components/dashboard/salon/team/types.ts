@@ -7,5 +7,4 @@ export type TeamMember = {
   role: string;
   specialty?: string;
   status?: 'active' | 'inactive';
-  commission_rate?: number;
 };

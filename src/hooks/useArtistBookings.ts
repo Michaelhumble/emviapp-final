@@ -7,13 +7,7 @@ import { Booking, BookingCounts } from "@/components/dashboard/artist/types/Arti
 
 export const useArtistBookings = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [counts, setCounts] = useState<BookingCounts>({ 
-    pending: 0, 
-    accepted: 0,
-    completed: 0,
-    upcoming: 0,
-    total: 0 
-  });
+  const [counts, setCounts] = useState<BookingCounts>({ pending: 0, upcoming: 0 });
   const [loading, setLoading] = useState(true);
   const [serviceTypes, setServiceTypes] = useState<Array<{ id: string; label: string }>>([]);
   const { user } = useAuth();
@@ -75,8 +69,6 @@ export const useArtistBookings = () => {
         
         // Calculate counts
         const pendingCount = bookingsWithUserDetails.filter(b => b.status === 'pending').length;
-        const acceptedCount = bookingsWithUserDetails.filter(b => b.status === 'accepted').length;
-        const completedCount = bookingsWithUserDetails.filter(b => b.status === 'completed').length;
         const upcomingCount = bookingsWithUserDetails.filter(b => 
           b.status === 'accepted' && 
           new Date(b.date_requested) >= new Date()
@@ -84,9 +76,6 @@ export const useArtistBookings = () => {
         
         setCounts({
           pending: pendingCount,
-          accepted: acceptedCount,
-          completed: completedCount,
-          total: bookingsWithUserDetails.length,
           upcoming: upcomingCount
         });
         
@@ -131,9 +120,7 @@ export const useArtistBookings = () => {
       
       // Update counts
       setCounts(prev => ({
-        ...prev,
         pending: Math.max(0, prev.pending - 1),
-        accepted: prev.accepted + 1,
         upcoming: prev.upcoming + 1
       }));
     } catch (error) {
@@ -164,11 +151,7 @@ export const useArtistBookings = () => {
       
       // Update counts
       setCounts(prev => ({
-        ...prev,
         pending: Math.max(0, prev.pending - 1),
-        accepted: prev.accepted,
-        completed: prev.completed,
-        total: prev.total,
         upcoming: prev.upcoming
       }));
     } catch (error) {

@@ -1,99 +1,70 @@
 
 import React from 'react';
+import { Clock } from 'lucide-react';
 import { Notification } from '@/types/notification';
-import { cn } from '@/lib/utils';
-import { format, formatDistanceToNow } from 'date-fns';
-import { WeeklyDigestContent } from './WeeklyDigestContent';
-
-// Import various icons for different notification types
-import { 
-  Calendar, 
-  MessageSquare, 
-  CheckSquare, 
-  AlertCircle,
-  CreditCard,
-  BarChart,
-  UserCheck
-} from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface NotificationItemProps {
   notification: Notification;
   onClick: (notification: Notification) => void;
 }
 
-export function NotificationItem({ 
-  notification, 
-  onClick 
-}: NotificationItemProps) {
-  const handleClick = () => {
-    onClick(notification);
-  };
-  
-  // Function to get appropriate icon based on notification type
-  const getIcon = () => {
-    switch (notification.type) {
-      case 'booking_created':
-      case 'booking_reminder':
-      case 'booking_pending':
-        return <Calendar className="h-5 w-5 text-blue-500" />;
-      case 'booking_updated':
-      case 'booking_accepted':
-        return <CheckSquare className="h-5 w-5 text-green-500" />;
-      case 'booking_cancelled':
-        return <AlertCircle className="h-5 w-5 text-red-500" />;
-      case 'message_received':
-        return <MessageSquare className="h-5 w-5 text-purple-500" />;
-      case 'credits_low':
-        return <CreditCard className="h-5 w-5 text-amber-500" />;
-      case 'weekly_summary':
-        return <BarChart className="h-5 w-5 text-emerald-500" />;
-      case 'profile_incomplete':
-        return <UserCheck className="h-5 w-5 text-orange-500" />;
-      default:
-        return <MessageSquare className="h-5 w-5 text-gray-500" />;
-    }
-  };
-  
-  // Format the time (e.g., "2 hours ago" or date if older)
+export function NotificationItem({ notification, onClick }: NotificationItemProps) {
+  const { t } = useTranslation();
+
+  // Format notification timestamp
   const formatTime = (timestamp: string) => {
     const date = new Date(timestamp);
     const now = new Date();
-    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
     
-    if (diffInHours < 24) {
-      return formatDistanceToNow(date, { addSuffix: true });
-    } else {
-      return format(date, 'MMM d, yyyy');
+    if (diffInMinutes < 1) return t('Just now');
+    if (diffInMinutes < 60) return `${diffInMinutes}m ${t('ago')}`;
+    
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours}h ${t('ago')}`;
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays}d ${t('ago')}`;
+    
+    return date.toLocaleDateString();
+  };
+
+  // Get icon for notification type
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case 'success':
+        return <span className="text-green-500 text-lg">✓</span>;
+      case 'warning':
+        return <span className="text-amber-500 text-lg">⚠</span>;
+      case 'error':
+        return <span className="text-red-500 text-lg">⚠</span>;
+      case 'info':
+      default:
+        return <span className="text-blue-500 text-lg">ℹ</span>;
     }
   };
 
   return (
     <div 
-      className={cn(
-        "flex items-start p-3 hover:bg-muted cursor-pointer border-b border-gray-100 transition-colors",
-        !notification.isRead && "bg-muted/50"
-      )}
-      onClick={handleClick}
+      className={`mb-2 p-3 rounded-md cursor-pointer transition-colors ${
+        notification.isRead ? 'bg-gray-50 hover:bg-gray-100' : 'bg-blue-50 hover:bg-blue-100'
+      }`}
+      onClick={() => onClick(notification)}
     >
-      <div className="flex-shrink-0 mr-3 mt-1">
-        {getIcon()}
-      </div>
-      
-      <div className="flex-grow">
-        {notification.type === 'weekly_summary' ? (
-          <WeeklyDigestContent notification={notification} />
-        ) : (
-          <p className={cn(
-            "text-sm",
-            !notification.isRead && "font-medium"
-          )}>
-            {notification.message}
-          </p>
+      <div className="flex items-start">
+        <div className="mr-2 mt-0.5">
+          {getNotificationIcon(notification.type)}
+        </div>
+        <div className="flex-1">
+          <div className="text-sm font-medium">{notification.message}</div>
+          <div className="text-xs text-gray-500 mt-1">
+            {formatTime(notification.createdAt)}
+          </div>
+        </div>
+        {!notification.isRead && (
+          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
         )}
-        
-        <p className="text-xs text-gray-500 mt-1">
-          {formatTime(notification.createdAt)}
-        </p>
       </div>
     </div>
   );

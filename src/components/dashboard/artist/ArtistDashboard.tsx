@@ -1,28 +1,45 @@
 
-import React from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import ArtistEarningsCard from "./earnings/ArtistEarningsCard";
-import { useArtistData } from "./context/ArtistDataContext";
+import ArtistDashboardContent from './components/ArtistDashboardContent';
+import ArtistErrorState from './components/ArtistErrorState';
+import ArtistLoadingState from './components/ArtistLoadingState';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/auth';
+import BookingNotificationsSection from '../notifications/BookingNotificationsSection';
+import ArtistPortfolioGallery from './portfolio/ArtistPortfolioGallery';
+import ArtistServiceManager from './services/ArtistServiceManager';
+import ArtistBookingCalendar from './calendar/ArtistBookingCalendar';
 
 const ArtistDashboard = () => {
-  const { loading } = useArtistData();
-  
+  const { user } = useAuth();
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['artist-dashboard', user?.id],
+    queryFn: async () => {
+      // This is a placeholder for actual API call
+      // In a real app, you would fetch artist-specific data here
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user?.id)
+        .single();
+        
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id,
+  });
+
+  if (isLoading) return <ArtistLoadingState />;
+  if (error) return <ArtistErrorState error={error as Error} />;
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      
-      <Card>
-        <CardHeader>
-          <CardTitle>Dashboard Overview</CardTitle>
-          <CardDescription>Welcome to your artist dashboard</CardDescription>
-        </CardHeader>
-        <CardContent>
-          
-          <p>View and manage your bookings, services, and profile</p>
-        </CardContent>
-      </Card>
-      
-      
-      <ArtistEarningsCard />
+    <div className="container mx-auto max-w-7xl px-4 py-6">
+      <BookingNotificationsSection />
+      <ArtistPortfolioGallery />
+      <ArtistServiceManager />
+      <ArtistBookingCalendar />
+      <ArtistDashboardContent />
     </div>
   );
 };

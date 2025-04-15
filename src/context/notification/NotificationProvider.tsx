@@ -5,13 +5,6 @@ import { Notification } from '@/types/notification';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
 
-interface NotificationPayload {
-  type: string;
-  message: string;
-  details?: Record<string, any>;
-  link?: string;
-}
-
 interface NotificationContextType {
   notifications: Notification[];
   unreadCount: number;
@@ -19,7 +12,6 @@ interface NotificationContextType {
   fetchNotifications: () => Promise<void>;
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
-  sendNotification: (payload: NotificationPayload) => Promise<void>;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
@@ -138,52 +130,6 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user]);
 
-  // Send a notification
-  const sendNotification = useCallback(async (payload: NotificationPayload) => {
-    if (!user) return;
-
-    try {
-      // Map notification type to UI type
-      let uiType: 'info' | 'warning' | 'success' | 'error' = 'info';
-      
-      if (payload.type.includes('error') || payload.type.includes('cancelled')) {
-        uiType = 'error';
-      } else if (payload.type.includes('success') || payload.type.includes('completed') || payload.type.includes('accepted')) {
-        uiType = 'success';
-      } else if (payload.type.includes('warning') || payload.type.includes('low') || payload.type.includes('pending')) {
-        uiType = 'warning';
-      }
-      
-      // Insert notification
-      const { error } = await supabase
-        .from('notifications')
-        .insert({
-          user_id: user.id,
-          type: uiType,
-          message: payload.message,
-          is_read: false,
-          link: payload.link || null,
-          metadata: payload.details || {}
-        });
-
-      if (error) throw error;
-      
-      // Show toast notification
-      toast(payload.message, {
-        action: payload.link ? {
-          label: "View",
-          onClick: () => window.location.href = payload.link || '#',
-        } : undefined,
-        duration: 5000,
-      });
-      
-      // Refresh notification list
-      fetchNotifications();
-    } catch (error) {
-      console.error('Error sending notification:', error);
-    }
-  }, [user, fetchNotifications]);
-
   // Set up realtime subscription for new notifications
   useEffect(() => {
     if (!user) return;
@@ -235,8 +181,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     loading,
     fetchNotifications,
     markAsRead,
-    markAllAsRead,
-    sendNotification
+    markAllAsRead
   };
   
   return (

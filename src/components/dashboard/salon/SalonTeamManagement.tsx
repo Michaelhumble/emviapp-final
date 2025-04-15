@@ -6,12 +6,9 @@ import TeamMembersList from "./team/TeamMembersList";
 import { useTeamMembers } from "./team/useTeamMembers";
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
-import EditMemberModal from "./team/EditMemberModal";
-import { TeamMember } from "./team/types";
 
 const SalonTeamManagement = () => {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
-  const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
   const { 
     teamMembers, 
     loading, 
@@ -19,20 +16,10 @@ const SalonTeamManagement = () => {
     sendInvite, 
     removeTeamMember,
     toggleMemberStatus,
-    updateTeamMember
   } = useTeamMembers();
 
-  const handleEditMember = (member: TeamMember) => {
-    setEditingMember(member);
-  };
-
-  const handleSendInvite = async (email: string, name: string, role: string, commissionRate: string) => {
-    await sendInvite(email, name, role, commissionRate);
-  };
-
-  const handleSaveMember = async (member: TeamMember) => {
-    await updateTeamMember(member);
-    setEditingMember(null);
+  const handleSendInvite = async (email: string, name: string, role: string) => {
+    await sendInvite(email, name, role);
   };
 
   return (
@@ -57,8 +44,6 @@ const SalonTeamManagement = () => {
           error={error}
           onRemoveTeamMember={removeTeamMember}
           onToggleMemberStatus={toggleMemberStatus}
-          onEditMember={handleEditMember}
-          onRefresh={() => console.log("Refresh requested")} // Adding a stub for onRefresh
         />
       </CardContent>
 
@@ -66,13 +51,6 @@ const SalonTeamManagement = () => {
         isOpen={isInviteModalOpen}
         onClose={() => setIsInviteModalOpen(false)}
         onSendInvite={handleSendInvite}
-      />
-      
-      <EditMemberModal
-        isOpen={!!editingMember}
-        onClose={() => setEditingMember(null)}
-        onSave={handleSaveMember}
-        member={editingMember}
       />
     </Card>
   );

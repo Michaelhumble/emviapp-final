@@ -4,15 +4,9 @@ import { Button } from "@/components/ui/button";
 
 interface ChatHeaderProps {
   onClose: () => void;
-  title?: string;
-  subtitle?: string;
 }
 
-export function ChatHeader({ 
-  onClose, 
-  title = "Little Sunshine", 
-  subtitle = "Your AI Assistant" 
-}: ChatHeaderProps) {
+export function ChatHeader({ onClose }: ChatHeaderProps) {
   return (
     <div className="flex items-center justify-between p-4 border-b bg-background shadow-sm">
       <div className="flex items-center gap-3">
@@ -20,8 +14,8 @@ export function ChatHeader({
           <Sparkles size={18} className="text-primary" />
         </div>
         <div>
-          <h3 className="font-medium text-sm">{title}</h3>
-          <p className="text-xs text-muted-foreground">{subtitle}</p>
+          <h3 className="font-medium text-sm">Little Sunshine</h3>
+          <p className="text-xs text-muted-foreground">Your AI Assistant</p>
         </div>
       </div>
       <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">

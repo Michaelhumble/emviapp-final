@@ -287,59 +287,6 @@ export type Database = {
           },
         ]
       }
-      completed_bookings: {
-        Row: {
-          artist_id: string
-          booking_id: string
-          commission_earned: number
-          commission_rate: number
-          completed_at: string | null
-          created_at: string | null
-          id: string
-          paid: boolean | null
-          payment_date: string | null
-          salon_id: string
-          service_id: string | null
-          service_price: number
-        }
-        Insert: {
-          artist_id: string
-          booking_id: string
-          commission_earned: number
-          commission_rate: number
-          completed_at?: string | null
-          created_at?: string | null
-          id?: string
-          paid?: boolean | null
-          payment_date?: string | null
-          salon_id: string
-          service_id?: string | null
-          service_price: number
-        }
-        Update: {
-          artist_id?: string
-          booking_id?: string
-          commission_earned?: number
-          commission_rate?: number
-          completed_at?: string | null
-          created_at?: string | null
-          id?: string
-          paid?: boolean | null
-          payment_date?: string | null
-          salon_id?: string
-          service_id?: string | null
-          service_price?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "completed_bookings_booking_id_fkey"
-            columns: ["booking_id"]
-            isOneToOne: false
-            referencedRelation: "bookings"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       contact_messages: {
         Row: {
           created_at: string
@@ -1420,18 +1367,6 @@ export type Database = {
       }
     }
     Views: {
-      artist_earnings_summary: {
-        Row: {
-          artist_id: string | null
-          booking_count: number | null
-          paid: boolean | null
-          salon_id: string | null
-          total_earnings: number | null
-          total_revenue: number | null
-          week_start: string | null
-        }
-        Relationships: []
-      }
       post_status_view: {
         Row: {
           contact_info: Json | null

@@ -9,6 +9,3 @@ verify_jwt = false
 
 [functions.send-booking-reminders]
 verify_jwt = true
-
-[functions.send-weekly-digest]
-verify_jwt = true

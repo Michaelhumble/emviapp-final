@@ -1,3 +1,4 @@
+
 import { forwardRef, useState, useRef, useEffect, KeyboardEvent } from "react";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,11 +11,10 @@ interface ChatInputProps {
   onFocus?: () => void;
   onBlur?: () => void;
   isLoading?: boolean;
-  placeholder?: string;
 }
 
 export const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
-  ({ value, onChange, onSend, onFocus, onBlur, isLoading, placeholder = "Message Little Sunshine..." }, ref) => {
+  ({ value, onChange, onSend, onFocus, onBlur, isLoading }, ref) => {
     const [isFocused, setIsFocused] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
     
@@ -69,7 +69,7 @@ export const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
               onKeyDown={handleKeyDown}
               onFocus={handleFocus}
               onBlur={handleBlur}
-              placeholder={placeholder}
+              placeholder="Message Little Sunshine..."
               className="resize-none w-full border rounded-md px-3 py-2 text-sm min-h-[40px] max-h-[120px] overflow-y-auto focus:ring-1 focus:ring-primary focus-visible:outline-none"
               style={{ 
                 fontSize: '16px', // Prevent iOS zoom

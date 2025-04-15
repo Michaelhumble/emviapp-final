@@ -4,13 +4,12 @@ import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
 import SalonDashboardBanner from "@/components/dashboard/salon/SalonDashboardBanner";
-import { useAuth } from "@/context/auth";
-import DashboardGreeting from "@/components/dashboard/common/DashboardGreeting";
 import SmartReminderBanner from "@/components/dashboard/salon/SmartReminderBanner";
 import SalonQuickStats from "@/components/dashboard/salon/SalonQuickStats";
 import SalonDashboardActionButtons from "@/components/dashboard/salon/SalonDashboardActionButtons";
 import SalonReferralCard from "@/components/dashboard/salon/SalonReferralCard";
 import SalonCreditStatus from "@/components/dashboard/salon/SalonCreditStatus";
+import { useAuth } from "@/context/auth";
 import SalonPostedJobsSection from "@/components/dashboard/salon/SalonPostedJobsSection";
 import SalonBoostStatus from "@/components/dashboard/salon/SalonBoostStatus";
 import SalonAnalyticsCards from "@/components/dashboard/salon/SalonAnalyticsCards";
@@ -33,33 +32,42 @@ import SalonAnalytics from "@/components/dashboard/salon/SalonAnalytics";
 import SalonMessagingCenter from "@/components/dashboard/salon/SalonMessagingCenter";
 import SalonBookingManager from "@/components/dashboard/salon/bookings/SalonBookingManager";
 import SalonBookingFeed from "@/components/dashboard/salon/bookings/SalonBookingFeed";
+import confetti from "canvas-confetti";
 import BookingAnalyticsCard from "@/components/dashboard/salon/analytics/BookingAnalyticsCard";
 import CreditUsageHistory from "@/components/dashboard/salon/credits/CreditUsageHistory";
 import MonthlyReportDownload from "@/components/dashboard/salon/reports/MonthlyReportDownload";
-import { SalonProvider, useSalon } from "@/context/salon";
+import { SalonProvider } from "@/context/salon";
 import SalonSwitcher from "@/components/dashboard/salon/SalonSwitcher";
 import AISmartReminder from "@/components/ai/AISmartReminder";
 import SalonReferralPanel from "@/components/dashboard/salon/referral/SalonReferralPanel";
 import SalonAvailabilityManager from "@/components/dashboard/salon/SalonAvailabilityManager";
-import { useBookingNotifications } from "@/hooks/useBookingNotifications";
-import { Toaster } from "sonner";
-import UpcomingAppointments from "@/components/dashboard/common/UpcomingAppointments";
 
-const OwnerDashboardContent = () => {
+const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
   const { userProfile } = useAuth();
-  const { currentSalon } = useSalon();
   const [showConfetti, setShowConfetti] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
-  
-  // Initialize booking notifications
-  const bookingNotifications = useBookingNotifications();
   
   useEffect(() => {
     document.title = "Salon Owner Dashboard | EmviApp";
     console.log("Owner Dashboard rendered with profile:", userProfile);
     
-    const savedTab = localStorage.getItem('owner_dashboard_tab');
+    const shouldShowConfetti = localStorage.getItem('salon_success');
+    
+    if (shouldShowConfetti) {
+      localStorage.removeItem('salon_success');
+      
+      setTimeout(() => {
+        setShowConfetti(true);
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      }, 1000);
+    }
+
+    const savedTab = localStorage.getItem('salon_dashboard_tab');
     if (savedTab) {
       setActiveTab(savedTab);
     }
@@ -67,109 +75,145 @@ const OwnerDashboardContent = () => {
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    localStorage.setItem('owner_dashboard_tab', value);
+    localStorage.setItem('salon_dashboard_tab', value);
   };
-
-  return (
-    <Layout>
-      <div className="container px-4 mx-auto py-12">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <RoleDashboardLayout>
-            <div className="space-y-6">
-              <DashboardGreeting className="mb-6" />
-              
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <SalonDashboardBanner userName={userProfile?.salon_name || userProfile?.full_name} />
-                <SalonSwitcher />
-              </div>
-              
-              <SmartReminderBanner />
-              
-              <Tabs value={activeTab} onValueChange={handleTabChange}>
-                <TabsList className="grid grid-cols-6 mb-8">
-                  <TabsTrigger value="overview">Overview</TabsTrigger>
-                  <TabsTrigger value="bookings">Bookings</TabsTrigger>
-                  <TabsTrigger value="clients">Clients</TabsTrigger>
-                  <TabsTrigger value="team">Team</TabsTrigger>
-                  <TabsTrigger value="services">Services</TabsTrigger>
-                  <TabsTrigger value="reports">Reports</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="overview" className="space-y-8">
-                  <SalonProfileCompletionMeter />
-                  
-                  <SalonQuickStats />
-                  
-                  <SalonBookingFeed />
-                  
-                  {currentSalon?.id && <SalonAvailabilityManager salonId={currentSalon.id} />}
-                  
-                  <SalonDashboardActionButtons />
-                  
-                  <SalonTeamManager />
-                  
-                  <SalonServiceManager />
-                  
-                  <SalonCreditStatus />
-                </TabsContent>
-
-                <TabsContent value="bookings" className="space-y-8">
-                  <SalonBookingFeed />
-                  
-                  <SalonBookingManager />
-                  
-                  <BookingAnalyticsCard />
-                  
-                  {currentSalon?.id && <SalonAvailabilityManager salonId={currentSalon.id} />}
-                  
-                  <SalonBookingCalendar />
-                </TabsContent>
-                
-                <TabsContent value="clients" className="space-y-8">
-                  <SalonClientManagement />
-                </TabsContent>
-                
-                <TabsContent value="team" className="space-y-8">
-                  <SalonManagersSection />
-                  <SalonTeamManager />
-                </TabsContent>
-                
-                <TabsContent value="services" className="space-y-8">
-                  <SalonServiceManager />
-                </TabsContent>
-                
-                <TabsContent value="reports" className="space-y-8">
-                  <SalonAnalytics />
-                  <MonthlyReportDownload />
-                  <CreditUsageHistory />
-                </TabsContent>
-              </Tabs>
-              
-              <SalonSuggestionBox />
-            </div>
-          </RoleDashboardLayout>
-        </motion.div>
-      </div>
-      
-      {showNotification && (
-        <VisibilityNotification 
-          onClose={() => setShowNotification(false)} 
-        />
-      )}
-      
-      <Toaster />
-    </Layout>
-  );
-};
-
-const OwnerDashboard = () => {
+  
   return (
     <SalonProvider>
-      <OwnerDashboardContent />
+      <Layout>
+        <div className="container px-4 mx-auto py-12">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <RoleDashboardLayout>
+              <div className="space-y-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                  <SalonDashboardBanner userName={userProfile?.salon_name || userProfile?.full_name} />
+                  <SalonSwitcher />
+                </div>
+                
+                <SmartReminderBanner />
+                
+                <Tabs value={activeTab} onValueChange={handleTabChange}>
+                  <TabsList className="grid grid-cols-7 mb-8">
+                    <TabsTrigger value="overview">Overview</TabsTrigger>
+                    <TabsTrigger value="bookings">Bookings</TabsTrigger>
+                    <TabsTrigger value="clients">Clients</TabsTrigger>
+                    <TabsTrigger value="team">Team</TabsTrigger>
+                    <TabsTrigger value="services">Services</TabsTrigger>
+                    <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                    <TabsTrigger value="messages">Messages</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="overview" className="space-y-8">
+                    <SalonProfileCompletionMeter />
+                    
+                    <SalonQuickStats />
+                    
+                    <SalonAvailabilityManager />
+                    
+                    <SalonBoostCreditPanel />
+                    
+                    <SalonDashboardActionButtons />
+                    
+                    <SalonBookingFeed />
+                    
+                    <SalonTeamManager />
+                    
+                    <SalonServiceManager />
+                    
+                    <NextStepsSmart />
+                    
+                    <SalonAnalyticsCards />
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                      <div className="lg:col-span-1">
+                        <SalonCreditPromotion />
+                      </div>
+                      
+                      <div className="lg:col-span-1">
+                        <TopLocalArtists />
+                      </div>
+                      
+                      <div className="lg:col-span-1">
+                        <SalonReferralPanel />
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="bookings" className="space-y-8">
+                    <SalonBookingFeed />
+                    
+                    <SalonBookingManager />
+                    
+                    <BookingAnalyticsCard />
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                      <div className="lg:col-span-1">
+                        <CreditUsageHistory />
+                      </div>
+                      
+                      <div className="lg:col-span-1">
+                        <MonthlyReportDownload />
+                      </div>
+                    </div>
+                    
+                    <SalonBookingCalendar />
+                  </TabsContent>
+                  
+                  <TabsContent value="clients" className="space-y-8">
+                    <SalonClientManagement />
+                  </TabsContent>
+                  
+                  <TabsContent value="team" className="space-y-8">
+                    <SalonManagersSection />
+                    <SalonTeamManager />
+                    <SalonReferralPanel />
+                  </TabsContent>
+                  
+                  <TabsContent value="services" className="space-y-8">
+                    <SalonServiceManager />
+                    
+                    <SalonCreditStatus />
+                  </TabsContent>
+                  
+                  <TabsContent value="analytics" className="space-y-8">
+                    <SalonAnalytics />
+                    
+                    <BookingAnalyticsCard />
+                    
+                    <CreditUsageHistory />
+                    
+                    <MonthlyReportDownload />
+                    
+                    <SalonAnalyticsCards />
+                    
+                    <SalonListingsManagement />
+                    
+                    <SalonPostedJobsSection />
+                  </TabsContent>
+                  
+                  <TabsContent value="messages" className="space-y-8">
+                    <SalonMessagingCenter />
+                    
+                    <SalonNotificationCenter />
+                  </TabsContent>
+                </Tabs>
+                
+                <SalonSuggestionBox />
+              </div>
+            </RoleDashboardLayout>
+          </motion.div>
+        </div>
+        
+        {showNotification && (
+          <VisibilityNotification 
+            onClose={() => setShowNotification(false)} 
+          />
+        )}
+      </Layout>
     </SalonProvider>
   );
 };
