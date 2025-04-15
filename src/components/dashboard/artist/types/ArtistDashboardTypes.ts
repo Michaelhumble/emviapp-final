@@ -40,3 +40,64 @@ export interface PortfolioImage {
   url: string;
   created_at: string;
 }
+
+// Missing types we need to add
+export interface Booking {
+  id: string;
+  sender_id: string;
+  recipient_id: string;
+  service_id?: string;
+  service_name?: string;
+  date_requested: string;
+  time_requested: string;
+  status: 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled';
+  note?: string;
+  created_at: string;
+  artist_name?: string;
+  client_name?: string;
+  client_avatar?: string;
+}
+
+export interface BookingCounts {
+  pending: number;
+  accepted: number;
+  completed: number;
+  total: number;
+  upcoming?: number;
+}
+
+export interface ServiceType {
+  id: string;
+  label: string;
+}
+
+export interface DaySchedule {
+  day: string;
+  active: boolean;
+  time: string;
+}
+
+export interface ArtistProfileState {
+  id: string;
+  user_id: string;
+  full_name: string;
+  portfolio_images: PortfolioImage[];
+  portfolio_urls: string[];
+  referral_count: number;
+  affiliate_code: string;
+  credits?: number;
+}
+
+export interface ArtistDataContextType {
+  artistProfile: ArtistProfileState | null;
+  loading: boolean;
+  error: Error | null;
+  refreshProfile: () => void;
+  handleCopyReferralLink: () => void;
+  copied: boolean;
+  firstName: string;
+  userCredits: number;
+  refreshArtistProfile: () => Promise<void>;
+  portfolioImages: PortfolioImage[];
+  loadingPortfolio: boolean;
+}

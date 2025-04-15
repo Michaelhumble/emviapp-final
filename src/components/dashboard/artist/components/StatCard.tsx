@@ -1,34 +1,35 @@
 
-import { Loader2 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardContent } from '@/components/ui/card';
 
-interface StatCardProps {
+export interface StatCardProps {
   title: string;
-  value: number;
-  description: string;
+  value: number | string;
   loading?: boolean;
-  prefix?: string;
-  suffix?: string;
+  precision?: number;
+  icon?: React.ReactNode;
 }
 
-const StatCard = ({ title, value, description, loading = false, prefix = '', suffix = '' }: StatCardProps) => {
+const StatCard = ({ title, value, loading = false, precision = 0, icon }: StatCardProps) => {
+  const displayValue = typeof value === 'number' 
+    ? value.toLocaleString(undefined, { minimumFractionDigits: precision, maximumFractionDigits: precision }) 
+    : value;
+
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {loading ? (
-          <div className="flex items-center space-x-2">
-            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-            <span className="text-muted-foreground">Loading...</span>
-          </div>
-        ) : (
-          <div className="text-2xl font-bold">
-            {prefix}{value.toLocaleString()}{suffix}
-          </div>
-        )}
-        <p className="text-xs text-muted-foreground">{description}</p>
+    <Card className="bg-white">
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between">
+          <div className="text-sm font-medium text-gray-500">{title}</div>
+          {icon && <div>{icon}</div>}
+        </div>
+        <div className="mt-2">
+          {loading ? (
+            <Skeleton className="h-7 w-16" />
+          ) : (
+            <div className="text-2xl font-bold">{displayValue}</div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

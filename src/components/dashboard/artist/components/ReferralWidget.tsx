@@ -52,7 +52,7 @@ const ReferralWidget = () => {
             </div>
             
             <Button 
-              variant={copied ? "success" : "secondary"}
+              variant={copied ? "outline" : "secondary"}
               className={copied ? "bg-green-100 text-green-700 hover:bg-green-200" : ""}
               onClick={handleCopy}
             >
