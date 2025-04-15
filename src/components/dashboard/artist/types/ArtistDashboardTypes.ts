@@ -1,16 +1,21 @@
+
 export interface BookingWithDetails {
   id: string;
   sender_id: string;
   recipient_id: string;
   service_id?: string;
   service_name?: string;
-  date_requested?: string;
-  time_requested?: string;
+  date_requested: string;
+  time_requested: string;
   appointment_time?: string;
   status: string;
   created_at: string;
   price?: number;
   note?: string;
+  services?: {
+    title?: string;
+    // Add other relevant service properties
+  };
 }
 
 export interface DashboardStats {
@@ -102,12 +107,4 @@ export interface ArtistDataContextType {
   refreshArtistProfile: () => Promise<void>;
   portfolioImages: PortfolioImage[];
   loadingPortfolio: boolean;
-}
-
-// Also update the BookingWithDetails to match the structure of your actual data
-export interface BookingWithDetails extends Booking {
-  services?: {
-    title?: string;
-    // Add other relevant service properties
-  };
 }
