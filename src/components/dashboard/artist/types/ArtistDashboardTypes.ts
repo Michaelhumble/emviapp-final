@@ -20,7 +20,7 @@ export interface DashboardStats {
   average_rating: number;
   referral_count: number;
   repeat_client_percentage: number;
-  profile_views?: number;
+  profile_views?: number; // Optional property added here
 }
 
 export interface EarningsData {
@@ -46,7 +46,7 @@ export interface Booking {
   sender_id: string;
   recipient_id: string;
   service_id?: string;
-  service_name?: string;
+  service_name?: string; // Kept for backwards compatibility
   date_requested: string;
   time_requested: string;
   status: 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled';
@@ -102,4 +102,12 @@ export interface ArtistDataContextType {
   refreshArtistProfile: () => Promise<void>;
   portfolioImages: PortfolioImage[];
   loadingPortfolio: boolean;
+}
+
+// Also update the BookingWithDetails to match the structure of your actual data
+export interface BookingWithDetails extends Booking {
+  services?: {
+    title?: string;
+    // Add other relevant service properties
+  };
 }
