@@ -4,9 +4,8 @@ import { useAuth } from "@/context/auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, Palette, MessageCircle, Users, BarChart, Heart } from "lucide-react";
+import { BarChart, Heart, MessageCircle, Palette, Users } from "lucide-react";
 import ProfileCompletionCard from "@/components/profile/ProfileCompletionCard";
-import ArtistCalendar from "./ArtistCalendar";
 import ArtistBookingsPanel from "../../artist/ArtistBookingsPanel";
 import ArtistPortfolio from "./ArtistPortfolio";
 import ArtistStats from "./ArtistStats";
@@ -21,7 +20,7 @@ const ArtistDashboardContent = () => {
   // Load last active tab from localStorage if available
   useEffect(() => {
     const savedTab = localStorage.getItem('artist_dashboard_tab');
-    if (savedTab) {
+    if (savedTab && ['overview', 'bookings', 'portfolio', 'messages', 'referrals', 'analytics'].includes(savedTab)) {
       setActiveTab(savedTab);
     }
   }, []);
@@ -55,13 +54,13 @@ const ArtistDashboardContent = () => {
         className="space-y-4"
       >
         <div className="bg-white rounded-lg p-1 border overflow-x-auto">
-          <TabsList className="grid grid-cols-3 md:grid-cols-6 gap-2">
+          <TabsList className="grid grid-cols-3 md:grid-cols-5 gap-2">
             <TabsTrigger value="overview" className="data-[state=active]:bg-slate-100">
-              <CalendarDays className="h-4 w-4 mr-2" />
+              <BarChart className="h-4 w-4 mr-2" />
               <span className="whitespace-nowrap">Overview</span>
             </TabsTrigger>
             <TabsTrigger value="bookings" className="data-[state=active]:bg-slate-100">
-              <CalendarDays className="h-4 w-4 mr-2" />
+              <Heart className="h-4 w-4 mr-2" />
               <span className="whitespace-nowrap">Bookings</span>
             </TabsTrigger>
             <TabsTrigger value="portfolio" className="data-[state=active]:bg-slate-100">
@@ -76,16 +75,11 @@ const ArtistDashboardContent = () => {
               <Users className="h-4 w-4 mr-2" />
               <span className="whitespace-nowrap">Referrals</span>
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="data-[state=active]:bg-slate-100">
-              <BarChart className="h-4 w-4 mr-2" />
-              <span className="whitespace-nowrap">Analytics</span>
-            </TabsTrigger>
           </TabsList>
         </div>
         
         <TabsContent value="overview" className="mt-6 space-y-6">
           <ArtistStats />
-          <ArtistCalendar />
           <div className="flex justify-center mt-6">
             <Button onClick={() => handleTabChange("bookings")}>
               View All Bookings
@@ -107,20 +101,6 @@ const ArtistDashboardContent = () => {
         
         <TabsContent value="referrals" className="mt-6">
           <ArtistReferrals />
-        </TabsContent>
-        
-        <TabsContent value="analytics" className="mt-6">
-          <div className="bg-white rounded-lg p-6 border text-center">
-            <BarChart className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-            <h3 className="text-xl font-medium mb-2">Analytics Coming Soon</h3>
-            <p className="text-gray-500 max-w-md mx-auto mb-6">
-              Track your business growth and customer engagement with detailed analytics.
-              This feature is currently in development.
-            </p>
-            <Button variant="outline" onClick={() => handleTabChange("overview")}>
-              Return to Overview
-            </Button>
-          </div>
         </TabsContent>
       </Tabs>
     </div>

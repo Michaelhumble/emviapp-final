@@ -5,9 +5,8 @@ import FallbackBoundary from "@/components/error-handling/FallbackBoundary";
 import StatsGrid from "./components/StatsGrid";
 import MainGrid from "./components/MainGrid";
 import EarningsSection from "./components/EarningsSection";
-import ArtistCalendar from "./components/ArtistCalendar";
 import { useArtistDashboardData } from "./hooks/useArtistDashboardData";
-import { BarChart3, CalendarDays, DollarSign } from "lucide-react";
+import { BarChart3, DollarSign } from "lucide-react";
 import AnalyticsWidget from "./components/AnalyticsWidget";
 
 const ArtistDashboardWidgets = () => {
@@ -34,10 +33,6 @@ const ArtistDashboardWidgets = () => {
             <DollarSign className="h-4 w-4 mr-2" />
             Earnings
           </TabsTrigger>
-          <TabsTrigger value="calendar" className="flex items-center">
-            <CalendarDays className="h-4 w-4 mr-2" />
-            Calendar
-          </TabsTrigger>
         </TabsList>
         
         <TabsContent value="overview" className="space-y-4">
@@ -56,12 +51,6 @@ const ArtistDashboardWidgets = () => {
               earningsData={earningsData}
               isLoading={isLoadingEarnings}
             />
-          </FallbackBoundary>
-        </TabsContent>
-        
-        <TabsContent value="calendar" className="space-y-4">
-          <FallbackBoundary>
-            <ArtistCalendar />
           </FallbackBoundary>
         </TabsContent>
       </Tabs>
