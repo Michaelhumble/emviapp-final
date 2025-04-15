@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuth } from "@/context/auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,14 +13,12 @@ const ArtistDashboardWidgets = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   
-  // Use our custom hook with a more explicit type definition
   const { data: stats, isLoading: isLoadingStats } = useTypedQuery<DashboardStats | null>({
     queryKey: ['artist-stats', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
       
       try {
-        // Since this is mock data, we're explicitly returning a typed object
         const mockStats: DashboardStats = {
           booking_count: 12,
           completed_services: 8,
@@ -40,7 +37,6 @@ const ArtistDashboardWidgets = () => {
     enabled: !!user?.id
   });
 
-  // Use our custom hook for bookings query
   const { data: recentBookings, isLoading: isLoadingBookings } = useTypedQuery<BookingWithDetails[]>({
     queryKey: ['recent-bookings', user?.id],
     queryFn: async () => {
@@ -56,7 +52,6 @@ const ArtistDashboardWidgets = () => {
         
         if (error) throw error;
         
-        // Type-safe mapping of the data
         return (data || []).map(booking => ({
           ...booking,
           service_name: "Nail Service",
@@ -71,7 +66,6 @@ const ArtistDashboardWidgets = () => {
     enabled: !!user?.id
   });
   
-  // Use our custom hook for earnings query
   const { data: earningsData, isLoading: isLoadingEarnings } = useTypedQuery<EarningsData | null>({
     queryKey: ['earnings-data', user?.id],
     queryFn: async () => {
