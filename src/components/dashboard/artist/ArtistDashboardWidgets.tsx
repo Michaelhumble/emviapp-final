@@ -70,9 +70,12 @@ const ArtistDashboardWidgets = () => {
           .rpc('get_user_referral_stats', { user_id: user.id });
         
         if (referralData) {
-          setReferralCount(Array.isArray(referralData) 
-            ? referralData[0]?.referral_count || 0 
-            : referralData.referral_count || 0);
+          // Fix the referral count access to avoid the "never" type issue
+          setReferralCount(
+            Array.isArray(referralData) && referralData.length > 0
+              ? (referralData[0]?.referral_count as number) || 0
+              : ((referralData as any)?.referral_count as number) || 0
+          );
         }
       } catch (error) {
         console.error("Error fetching dashboard data:", error);

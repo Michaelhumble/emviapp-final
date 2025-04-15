@@ -6,7 +6,8 @@ import ChatWindow from './ChatWindow';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ActionSuggestion, MessageType } from './types';
 
-export { ActionSuggestion, MessageType };
+// Use the 'export type' syntax instead of just 'export'
+export type { ActionSuggestion, MessageType };
 
 export const ChatSystem = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -85,3 +86,4 @@ export const ChatSystem = () => {
     </>
   );
 };
+

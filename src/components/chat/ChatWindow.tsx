@@ -1,8 +1,7 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { MessageBubble } from './MessageBubble';
-import ChatInput from './ChatInput';
-import ChatHeader from './ChatHeader';
+import { ChatInput } from './ChatInput';
+import { ChatHeader } from './ChatHeader';
 import { useAssistant } from '@/hooks/useAssistant';
 import { BookingMatch } from '@/services/assistantService';
 import { processAiResponse } from '@/utils/aiResponseProcessor';
@@ -20,9 +19,7 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
   const { generateResponse, isLoading, matches, createBooking } = useAssistant();
   const { user } = useAuth();
   
-  // Send initial greeting message when chat is opened
   useEffect(() => {
-    // Add a welcome message when the chat is first opened
     const initialMessage: MessageType = {
       id: 'welcome-1',
       content: "Hi there! I'm your EmviApp assistant. How can I help you today? I can find artists, book appointments, or answer questions about salon services.",
@@ -38,16 +35,13 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     setMessages([initialMessage]);
   }, []);
   
-  // Scroll to the bottom of the messages whenever a new message is added
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
   
-  // Handle sending a message
   const handleSendMessage = async (content: string) => {
     if (!content.trim()) return;
     
-    // Add the user's message to the chat
     const userMessage: MessageType = {
       id: Date.now().toString(),
       content,
@@ -57,7 +51,6 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     
     setMessages(prevMessages => [...prevMessages, userMessage]);
     
-    // Show typing indicator
     setIsTyping(true);
     const typingMessage: MessageType = {
       id: 'typing',
@@ -70,11 +63,9 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     setMessages(prevMessages => [...prevMessages, typingMessage]);
     
     try {
-      // Generate a response using the assistant
       const aiResponse = await generateResponse(content);
       const processedResponse = processAiResponse(aiResponse);
       
-      // Remove typing indicator and add the assistant's response
       setMessages(prevMessages => {
         const filteredMessages = prevMessages.filter(msg => msg.id !== 'typing');
         
@@ -92,7 +83,6 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     } catch (error) {
       console.error('Error generating response:', error);
       
-      // Remove typing indicator and add an error message
       setMessages(prevMessages => {
         const filteredMessages = prevMessages.filter(msg => msg.id !== 'typing');
         

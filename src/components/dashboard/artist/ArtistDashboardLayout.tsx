@@ -7,9 +7,9 @@ interface ArtistDashboardLayoutProps {
   className?: string;
 }
 
-const ArtistDashboardLayout = ({ children }: ArtistDashboardLayoutProps) => {
+const ArtistDashboardLayout = ({ children, className }: ArtistDashboardLayoutProps) => {
   return (
-    <RoleDashboardLayout>
+    <RoleDashboardLayout className={className}>
       {children}
     </RoleDashboardLayout>
   );

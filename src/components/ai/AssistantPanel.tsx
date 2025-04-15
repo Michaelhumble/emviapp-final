@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -31,12 +30,10 @@ export const AssistantPanel = () => {
   const { generateResponse, isLoading, matches, createBooking } = useAssistant();
   const { user } = useAuth();
   
-  // Refs for stable focus and scroll
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   
-  // State tracking refs (don't cause re-renders)
   const isTypingRef = useRef(false);
   const inputValueRef = useRef("");
   const scrollingRef = useRef(false);
@@ -44,17 +41,14 @@ export const AssistantPanel = () => {
   const isOpenRef = useRef(isOpen);
   const messageQueueRef = useRef<Message[]>([]);
   
-  // Track isOpen changes in ref
   useEffect(() => {
     isOpenRef.current = isOpen;
   }, [isOpen]);
   
-  // Track input value in ref (prevents re-renders during typing)
   useEffect(() => {
     inputValueRef.current = input;
   }, [input]);
 
-  // Initial greeting message
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       const welcomeMessage: Message = {
@@ -64,16 +58,13 @@ export const AssistantPanel = () => {
         timestamp: new Date()
       };
       
-      // Use timeout to ensure DOM is ready before state update
       setTimeout(() => {
         setMessages([welcomeMessage]);
       }, 100);
     }
   }, [isOpen, messages.length]);
 
-  // Improved scroll to bottom with better state tracking
   const scrollToBottom = useCallback((force = false) => {
-    // Avoid concurrent scroll operations
     if (scrollingRef.current && !force) {
       pendingScrollRef.current = true;
       return;
@@ -82,7 +73,6 @@ export const AssistantPanel = () => {
     scrollingRef.current = true;
     pendingScrollRef.current = false;
     
-    // Use requestAnimationFrame for performance and to ensure DOM is ready
     requestAnimationFrame(() => {
       if (messagesEndRef.current && isOpenRef.current) {
         messagesEndRef.current.scrollIntoView({
@@ -91,11 +81,9 @@ export const AssistantPanel = () => {
         });
       }
       
-      // Allow scroll operations again after animation
       setTimeout(() => {
         scrollingRef.current = false;
         
-        // Process any pending scroll requests
         if (pendingScrollRef.current) {
           scrollToBottom(true);
         }
@@ -103,30 +91,23 @@ export const AssistantPanel = () => {
     });
   }, []);
 
-  // Handle message updates and auto-scroll
   useEffect(() => {
     if (isOpen && messages.length > 0) {
-      // Wait for message rendering to complete
       requestAnimationFrame(() => {
-        // Only trigger if not actively typing, or force if we have a new message
         const hasNewMessage = messageQueueRef.current.length > 0;
         if (!isTypingRef.current || hasNewMessage) {
           scrollToBottom(hasNewMessage);
         } else {
-          // Queue scroll for when typing ends
           pendingScrollRef.current = true;
         }
         
-        // Clear processed messages
         messageQueueRef.current = [];
       });
     }
   }, [messages, isOpen, scrollToBottom]);
 
-  // Focus handling for desktop
   useEffect(() => {
     if (isOpen && !isMobile) {
-      // Use RAF to ensure DOM is ready
       requestAnimationFrame(() => {
         if (inputRef.current && !isTypingRef.current) {
           inputRef.current.focus();
@@ -135,7 +116,6 @@ export const AssistantPanel = () => {
     }
   }, [isOpen, isMobile]);
 
-  // Tracking typing state to manage focus
   useEffect(() => {
     const handleFocus = () => {
       isTypingRef.current = true;
@@ -144,7 +124,6 @@ export const AssistantPanel = () => {
     const handleBlur = () => {
       isTypingRef.current = false;
       
-      // Handle pending scroll after typing ends
       if (pendingScrollRef.current) {
         scrollToBottom(true);
       }
@@ -164,25 +143,21 @@ export const AssistantPanel = () => {
     };
   }, [scrollToBottom]);
 
-  // Mobile viewport/keyboard handling
   useEffect(() => {
     if (isMobile && isOpen) {
-      // Handle visual viewport resizing (keyboard)
       const handleVisualViewportResize = () => {
-        // Only adjust if not typing to prevent input issues
         if (document.activeElement !== inputRef.current) {
           requestAnimationFrame(() => {
             if (messagesEndRef.current && !isTypingRef.current) {
               messagesEndRef.current.scrollIntoView({
                 block: "end",
-                behavior: "auto" // Use auto to prevent smooth scroll conflicts
+                behavior: "auto"
               });
             }
           });
         }
       };
       
-      // Use visualViewport API when available (better keyboard detection)
       if (window.visualViewport) {
         window.visualViewport.addEventListener('resize', handleVisualViewportResize, { passive: true });
         window.visualViewport.addEventListener('scroll', handleVisualViewportResize, { passive: true });
@@ -197,7 +172,6 @@ export const AssistantPanel = () => {
     }
   }, [isMobile, isOpen]);
 
-  // Update booking matches when available
   useEffect(() => {
     if (matches && matches.length > 0 && messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
@@ -213,21 +187,16 @@ export const AssistantPanel = () => {
     }
   }, [matches, messages]);
 
-  // Send user message and get response
   const handleSendMessage = async () => {
-    // Get current input value directly from ref
     const messageToSend = inputValueRef.current.trim();
     if (!messageToSend) return;
     
-    // Clear input immediately
     setInput("");
     inputValueRef.current = "";
     
-    // Check if user is logged in for booking
     if (!user && messageToSend.toLowerCase().includes("book")) {
       toast.error("You need to be logged in to book appointments");
       
-      // Add both messages
       const userMsg: Message = {
         id: `user-${Date.now()}`,
         content: messageToSend,
@@ -242,16 +211,13 @@ export const AssistantPanel = () => {
         timestamp: new Date()
       };
       
-      // Add user message and error response
       setMessages(prev => [...prev, userMsg, errorMsg]);
       messageQueueRef.current = [userMsg, errorMsg];
       
-      // Ensure scroll after adding messages
       requestAnimationFrame(() => scrollToBottom(true));
       return;
     }
     
-    // Add user message
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       content: messageToSend,
@@ -262,7 +228,6 @@ export const AssistantPanel = () => {
     setMessages(prev => [...prev, userMessage]);
     messageQueueRef.current = [userMessage];
     
-    // Add typing indicator
     const typingId = `assistant-typing-${Date.now()}`;
     const typingMessage: Message = {
       id: typingId,
@@ -272,18 +237,14 @@ export const AssistantPanel = () => {
       isTyping: true
     };
     
-    // Add typing indicator message
     setMessages(prev => [...prev, typingMessage]);
     messageQueueRef.current = [userMessage, typingMessage];
     
-    // Scroll after message added
     requestAnimationFrame(() => scrollToBottom(true));
     
     try {
-      // Get AI response
       const response = await generateResponse(messageToSend);
       
-      // Remove typing indicator and add response
       const responseMessage: Message = {
         id: `assistant-${Date.now()}`,
         content: response,
@@ -300,7 +261,6 @@ export const AssistantPanel = () => {
       
       messageQueueRef.current = [responseMessage];
       
-      // Focus input on desktop after response
       if (!isMobile) {
         setTimeout(() => {
           if (inputRef.current && isOpenRef.current) {
@@ -309,11 +269,8 @@ export const AssistantPanel = () => {
         }, 100);
       }
       
-      // Ensure messages are scrolled to bottom
       requestAnimationFrame(() => scrollToBottom(true));
-      
     } catch (error) {
-      // Handle error response
       const errorMessage: Message = {
         id: `assistant-error-${Date.now()}`,
         content: "Sorry, I couldn't process your request right now.",
@@ -329,32 +286,27 @@ export const AssistantPanel = () => {
       messageQueueRef.current = [errorMessage];
       toast.error("Sorry, I couldn't process your request right now.");
       
-      // Ensure error message is scrolled into view
       requestAnimationFrame(() => scrollToBottom(true));
     }
   };
 
-  // Handle key presses for sending
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault(); // Prevent new line
+      e.preventDefault();
       handleSendMessage();
     }
   };
 
-  // Stable input handler that updates both state and ref
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setInput(value);
     inputValueRef.current = value;
   };
 
-  // Handle booking confirmation
   const handleBookingConfirmation = async (index: number) => {
     if (index >= 0 && matches && index < matches.length) {
       const selected = matches[index];
       
-      // Add user confirmation message
       const userMsg: Message = {
         id: `user-${Date.now()}`,
         content: `I'd like to book with ${selected.name}`,
@@ -365,7 +317,6 @@ export const AssistantPanel = () => {
       setMessages(prev => [...prev, userMsg]);
       messageQueueRef.current = [userMsg];
       
-      // Add typing indicator while processing
       const typingId = `assistant-typing-${Date.now()}`;
       const typingMsg: Message = {
         id: typingId,
@@ -378,18 +329,14 @@ export const AssistantPanel = () => {
       setMessages(prev => [...prev, typingMsg]);
       messageQueueRef.current = [userMsg, typingMsg];
       
-      // Scroll to see confirmation
       scrollToBottom(true);
       
-      // Create booking
-      const success = await createBooking(selected, user?.id);
+      const success = await createBooking(selected);
       
-      // Prepare response based on success
       const responseContent = success 
         ? `🎉 Great! I've sent a booking request to ${selected.name} for ${selected.service} on ${formatDate(selected.date)} at ${formatTime(selected.time)}. They'll confirm shortly. You can check the status in your bookings page.`
         : "I'm sorry, there was an issue creating your booking. Please try again or contact support if the problem persists.";
       
-      // Add response and remove typing indicator
       const responseMsg: Message = {
         id: `assistant-${Date.now()}`,
         content: responseContent,
@@ -404,12 +351,10 @@ export const AssistantPanel = () => {
       
       messageQueueRef.current = [responseMsg];
       
-      // Ensure scroll to see response
       scrollToBottom(true);
     }
   };
 
-  // Format date for display
   const formatDate = (dateString: string): string => {
     try {
       const date = new Date(dateString);
@@ -419,7 +364,6 @@ export const AssistantPanel = () => {
     }
   };
 
-  // Format time for display
   const formatTime = (timeString: string): string => {
     try {
       const [hours, minutes] = timeString.split(':');
@@ -432,7 +376,6 @@ export const AssistantPanel = () => {
     }
   };
 
-  // Animated typing indicator component
   const TypingIndicator = () => (
     <div className="flex items-center space-x-1 py-1">
       <div className="typing-indicator-dot"></div>
@@ -441,7 +384,6 @@ export const AssistantPanel = () => {
     </div>
   );
 
-  // Render all messages with animations
   const renderMessages = () => {
     return messages.map((message) => (
       <motion.div
@@ -463,7 +405,6 @@ export const AssistantPanel = () => {
           message.content
         )}
         
-        {/* Show booking options if available */}
         {message.isBookingOptions && message.bookingMatches && message.bookingMatches.length > 0 && (
           <div className="mt-3 space-y-2">
             {message.bookingMatches.map((match, index) => (
@@ -503,7 +444,6 @@ export const AssistantPanel = () => {
     ));
   };
 
-  // Mobile drawer component
   const MobileDrawer = () => (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>
@@ -577,7 +517,6 @@ export const AssistantPanel = () => {
     </Drawer>
   );
 
-  // Desktop sheet component
   const DesktopSheet = () => (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
