@@ -1,9 +1,8 @@
 
-import { BookingWithDetails } from "../types/ArtistDashboardTypes";
+import { BookingWithDetails, DashboardStats } from "../types/ArtistDashboardTypes";
 import FallbackBoundary from "@/components/error-handling/FallbackBoundary";
 import RecentActivity from "./RecentActivity";
 import PerformanceMetrics from "./PerformanceMetrics";
-import { DashboardStats } from "../types/ArtistDashboardTypes";
 
 interface MainGridProps {
   bookings: BookingWithDetails[];

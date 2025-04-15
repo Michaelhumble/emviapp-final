@@ -2,47 +2,33 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
-
-// Define simpler types to avoid deep nesting
-interface StatItem {
-  label: string;
-  value: string | number;
-  change?: number;
-  changeType?: 'increase' | 'decrease' | 'neutral';
-  icon?: string;
-}
-
-interface BookingItem {
-  id: string;
-  customerName: string;
-  date: string;
-  time: string;
-  service: string;
-  status: string;
-}
-
-interface EarningsData {
-  totalEarnings: number;
-  periodEarnings: number;
-  earningsChange: number;
-  earningsData: { name: string; earnings: number }[];
-}
+import { 
+  DashboardStats, 
+  BookingWithDetails, 
+  EarningsData 
+} from '../types/ArtistDashboardTypes';
 
 export const useArtistDashboardData = (activeTab: string) => {
   const { user } = useAuth();
-  const [stats, setStats] = useState<StatItem[]>([]);
+  const [stats, setStats] = useState<DashboardStats>({
+    booking_count: 0,
+    completed_services: 0,
+    total_earnings: 0,
+    average_rating: 0,
+    referral_count: 0,
+    repeat_client_percentage: 0
+  });
   const [isLoadingStats, setIsLoadingStats] = useState(true);
-  const [recentBookings, setRecentBookings] = useState<BookingItem[]>([]);
+  const [recentBookings, setRecentBookings] = useState<BookingWithDetails[]>([]);
   const [isLoadingBookings, setIsLoadingBookings] = useState(true);
   const [earningsData, setEarningsData] = useState<EarningsData>({
-    totalEarnings: 0,
-    periodEarnings: 0,
-    earningsChange: 0,
-    earningsData: []
+    monthly_earnings: [],
+    total_earnings: 0,
+    pending_payouts: 0
   });
   const [isLoadingEarnings, setIsLoadingEarnings] = useState(true);
 
-  // Fetch stats data when tab changes to 'overview'
+  // Fetch data when tab changes to 'overview'
   useEffect(() => {
     if (activeTab === 'overview') {
       fetchStatsData();
@@ -60,36 +46,14 @@ export const useArtistDashboardData = (activeTab: string) => {
       // In a real app, we would fetch from the API
       // For now we'll use mock data
       setTimeout(() => {
-        setStats([
-          {
-            label: 'Profile Views',
-            value: 152,
-            change: 12,
-            changeType: 'increase',
-            icon: 'eye'
-          },
-          {
-            label: 'Bookings',
-            value: 8,
-            change: 2,
-            changeType: 'increase',
-            icon: 'calendar'
-          },
-          {
-            label: 'Earnings',
-            value: '$1,248',
-            change: 5,
-            changeType: 'increase',
-            icon: 'dollar-sign'
-          },
-          {
-            label: 'Reviews',
-            value: '4.8',
-            change: 0,
-            changeType: 'neutral',
-            icon: 'star'
-          }
-        ]);
+        setStats({
+          booking_count: 8,
+          completed_services: 152,
+          total_earnings: 1248,
+          average_rating: 4.8,
+          referral_count: 5,
+          repeat_client_percentage: 62
+        });
         setIsLoadingStats(false);
       }, 1000);
     } catch (error) {
@@ -109,27 +73,45 @@ export const useArtistDashboardData = (activeTab: string) => {
         setRecentBookings([
           {
             id: '1',
-            customerName: 'Sarah Johnson',
-            date: '2025-04-15',
-            time: '10:00 AM',
-            service: 'Manicure',
-            status: 'confirmed'
+            sender_id: 'client-123',
+            recipient_id: user.id,
+            service_id: 'service-1',
+            service_name: 'Manicure',
+            date_requested: '2025-04-15',
+            time_requested: '10:00 AM',
+            appointment_time: '2025-04-15T10:00:00',
+            status: 'confirmed',
+            created_at: '2025-04-10T08:30:00',
+            price: 40,
+            note: 'First time customer'
           },
           {
             id: '2',
-            customerName: 'Michael Brown',
-            date: '2025-04-16',
-            time: '2:30 PM',
-            service: 'Haircut',
-            status: 'pending'
+            sender_id: 'client-456',
+            recipient_id: user.id,
+            service_id: 'service-2',
+            service_name: 'Haircut',
+            date_requested: '2025-04-16',
+            time_requested: '2:30 PM',
+            appointment_time: '2025-04-16T14:30:00',
+            status: 'pending',
+            created_at: '2025-04-12T09:15:00',
+            price: 65,
+            note: ''
           },
           {
             id: '3',
-            customerName: 'Emma Wilson',
-            date: '2025-04-18',
-            time: '11:15 AM',
-            service: 'Pedicure',
-            status: 'confirmed'
+            sender_id: 'client-789',
+            recipient_id: user.id,
+            service_id: 'service-3',
+            service_name: 'Pedicure',
+            date_requested: '2025-04-18',
+            time_requested: '11:15 AM',
+            appointment_time: '2025-04-18T11:15:00',
+            status: 'confirmed',
+            created_at: '2025-04-14T14:45:00',
+            price: 50,
+            note: 'Returning customer'
           }
         ]);
         setIsLoadingBookings(false);
@@ -149,17 +131,16 @@ export const useArtistDashboardData = (activeTab: string) => {
       // For now we'll use mock data
       setTimeout(() => {
         setEarningsData({
-          totalEarnings: 4850,
-          periodEarnings: 1248,
-          earningsChange: 8.5,
-          earningsData: [
-            { name: 'Jan', earnings: 500 },
-            { name: 'Feb', earnings: 650 },
-            { name: 'Mar', earnings: 800 },
-            { name: 'Apr', earnings: 950 },
-            { name: 'May', earnings: 1100 },
-            { name: 'Jun', earnings: 850 }
-          ]
+          monthly_earnings: [
+            { month: 'Jan', amount: 500 },
+            { month: 'Feb', amount: 650 },
+            { month: 'Mar', amount: 800 },
+            { month: 'Apr', amount: 950 },
+            { month: 'May', amount: 1100 },
+            { month: 'Jun', amount: 850 }
+          ],
+          total_earnings: 4850,
+          pending_payouts: 750
         });
         setIsLoadingEarnings(false);
       }, 1500);

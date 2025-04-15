@@ -5,7 +5,7 @@ import StatCard from "./StatCard";
 import { EarningsData } from "../types/ArtistDashboardTypes";
 
 interface EarningsSectionProps {
-  earningsData: EarningsData | null;
+  earningsData: EarningsData;
   isLoading: boolean;
 }
 
