@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { 
@@ -16,7 +15,6 @@ import { UserProfile, getLocationString } from "@/types/profile";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ReferralWidget from "@/components/dashboard/artist/components/ReferralWidget";
 
-// Import newly created components
 import PortfolioGallery from "@/components/portfolio/PortfolioGallery";
 import ServiceMenu from "@/components/artist-profile/ServiceMenu";
 import ClientTestimonials from "@/components/artist-profile/ClientTestimonials";
@@ -86,12 +84,10 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
   };
   
   const handleBookService = (serviceId: string) => {
-    // In a real app, store the selected service ID
     console.log("Book service:", serviceId);
     handleBookNow();
   };
   
-  // Sample service data for demonstration
   const sampleServices = [
     {
       id: "1",
@@ -129,9 +125,7 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
     }
   ];
   
-  // Calculate artist level based on profile completion, reviews, etc.
   const getArtistLevel = () => {
-    // This would be more sophisticated in production
     const hasServices = userProfile.services && userProfile.services.length > 0;
     const hasPortfolio = userProfile.gallery && userProfile.gallery.length > 0;
     const hasBio = !!userProfile.bio && userProfile.bio.length > 20;
@@ -145,7 +139,6 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
     if (userProfile.instagram) points += 1;
     if (userProfile.website) points += 1;
     
-    // Levels: Newcomer (0-3), Emerging (4-6), Established (7-9), Elite (10+)
     if (points >= 10) return { title: "Elite Artist", badge: "👑 Elite" };
     if (points >= 7) return { title: "Established Professional", badge: "⭐ Pro" };
     if (points >= 4) return { title: "Emerging Talent", badge: "✨ Rising" };
@@ -156,7 +149,6 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
   
   return (
     <div className="relative min-h-screen pb-16">
-      {/* Desktop Book Now CTA */}
       {!isMobile && (
         <div className="fixed top-24 right-6 z-30">
           <BookArtistCta 
@@ -167,9 +159,8 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
         </div>
       )}
       
-      {/* Parallax Hero Section */}
       <motion.div 
-        className="relative h-[40vh] md:h-[50vh] overflow-hidden"
+        className="relative h-[30vh] md:h-[40vh] overflow-hidden"
         style={{ 
           y: parallaxY,
           opacity: opacityTransform
@@ -233,9 +224,7 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
       
       <div className="container max-w-5xl mx-auto px-4 -mt-20 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Left Column */}
           <div className="md:col-span-1 space-y-6">
-            {/* Contact Card */}
             <Card className="border border-gray-100 shadow-sm overflow-hidden">
               <CardHeader className="pb-2 pt-5">
                 <CardTitle className="text-xl flex items-center">
@@ -356,7 +345,6 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
                     className="mt-4 bg-gray-50 rounded-lg p-4 flex flex-col items-center"
                   >
                     <div className="bg-white p-2 rounded-lg shadow-sm">
-                      {/* Placeholder for actual QR code - in production this would be a real QR */}
                       <div className="w-32 h-32 bg-[url('https://api.qrserver.com/v1/create-qr-code/?size=150x150&data='+window.location.href)] bg-contain bg-no-repeat bg-center"></div>
                     </div>
                     <p className="text-xs text-center text-gray-500 mt-2">
@@ -367,13 +355,10 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
               </CardContent>
             </Card>
             
-            {/* Availability Calendar */}
             <AvailabilityCalendar />
             
-            {/* Artist Referral Widget */}
             <ReferralWidget />
             
-            {/* Artist Achievements/Badges */}
             <Card className="border border-gray-100 shadow-sm overflow-hidden">
               <CardHeader className="pb-2 pt-5">
                 <CardTitle className="text-xl flex items-center">
@@ -422,9 +407,7 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
             </Card>
           </div>
           
-          {/* Right Column (Main Content) */}
           <div className="md:col-span-2 space-y-6">
-            {/* About Section */}
             <Card className="border border-gray-100 shadow-sm overflow-hidden">
               <CardHeader className="pb-2 pt-5">
                 <CardTitle className="text-xl flex items-center">
@@ -446,10 +429,8 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
               </CardContent>
             </Card>
             
-            {/* Style & Signature Section */}
             <StyleSignature specialties={specialties} />
             
-            {/* Profile Highlights */}
             <ProfileHighlights stats={{
               rating: 4.9,
               clients: 156,
@@ -459,16 +440,13 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
               experience: userProfile.years_experience ? `${userProfile.years_experience} years` : "5+ years"
             }} />
             
-            {/* Personal Message Banner */}
             <PersonalMessageBanner artistName={userProfile.full_name} />
             
-            {/* Service Menu */}
             <ServiceMenu 
               services={sampleServices} 
               onBookService={handleBookService} 
             />
             
-            {/* Portfolio Gallery */}
             <div className="mt-8">
               <h2 className="text-xl font-serif font-semibold mb-4 flex items-center">
                 <Palette className="mr-2 h-5 w-5 text-purple-500" />
@@ -477,7 +455,6 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
               <PortfolioGallery />
             </div>
             
-            {/* Client Testimonials */}
             <div className="mt-8">
               <ClientTestimonials />
             </div>
@@ -485,14 +462,12 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
         </div>
       </div>
       
-      {/* Mobile Book Now CTA */}
       <BookArtistCta 
         artistName={userProfile.full_name || "Artist"} 
         rating={4.9} 
         onBookNow={handleBookNow}
       />
       
-      {/* Booking Modal (Placeholder) */}
       {showBookingModal && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
           <motion.div
