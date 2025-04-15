@@ -16,7 +16,9 @@ export const useArtistDashboardData = (activeTab: string) => {
     queryKey: ['artist-stats', user?.id],
     queryFn: async () => {
       if (!user?.id) throw new Error("User not authenticated");
-      return {
+      
+      // Using the mock data with explicit return type
+      const mockStats: DashboardStats = {
         booking_count: 12,
         completed_services: 8,
         total_earnings: 560,
@@ -24,6 +26,8 @@ export const useArtistDashboardData = (activeTab: string) => {
         referral_count: 3,
         repeat_client_percentage: 65
       };
+      
+      return mockStats;
     },
     enabled: !!user?.id
   });
@@ -33,6 +37,7 @@ export const useArtistDashboardData = (activeTab: string) => {
     queryFn: async () => {
       if (!user?.id) throw new Error("User not authenticated");
       
+      // Use explicit type annotation for the query result
       const { data, error } = await supabase
         .from('bookings')
         .select('*')
@@ -41,7 +46,9 @@ export const useArtistDashboardData = (activeTab: string) => {
         .limit(5);
       
       if (error) throw error;
-      return data || [];
+      
+      // Return with explicit type assertion
+      return (data || []) as BookingWithDetails[];
     },
     enabled: !!user?.id
   });
@@ -51,7 +58,8 @@ export const useArtistDashboardData = (activeTab: string) => {
     queryFn: async () => {
       if (!user?.id) throw new Error("User not authenticated");
       
-      return {
+      // Create mock data with explicit type
+      const mockEarnings: EarningsData = {
         monthly_earnings: [
           { month: 'Jan', amount: 420 },
           { month: 'Feb', amount: 380 },
@@ -63,11 +71,13 @@ export const useArtistDashboardData = (activeTab: string) => {
         total_earnings: 3010,
         pending_payouts: 280
       };
+      
+      return mockEarnings;
     },
     enabled: !!user?.id && activeTab === "earnings"
   });
 
-  // No need for type assertions anymore since we're using the typed query hook
+  // Return with safe defaults using explicit type assertions
   return {
     stats: statsQuery.data,
     isLoadingStats: statsQuery.isLoading,
