@@ -57,14 +57,13 @@ const ServiceFormDialog = ({
                 <Input 
                   id="price" 
                   type="number" 
-                  min="1" 
+                  min="0.01" 
                   step="0.01"
-                  placeholder="Enter price"
+                  placeholder="Enter price" 
                   value={service.price || ''} 
                   onChange={(e) => {
-                    const inputValue = e.target.value.replace(/^0+/, '');
-                    const parsedValue = inputValue === '' ? null : parseFloat(inputValue);
-                    onServiceChange('price', parsedValue);
+                    const inputValue = parseFloat(e.target.value);
+                    onServiceChange('price', isNaN(inputValue) ? null : inputValue);
                   }}
                   required
                 />
