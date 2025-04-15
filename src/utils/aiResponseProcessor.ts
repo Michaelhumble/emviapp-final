@@ -1,5 +1,5 @@
 
-import { ActionSuggestion } from "@/components/chat/ChatSystem";
+import { ActionSuggestion } from "@/components/chat/types";
 
 type ProcessedResponse = {
   message: string;

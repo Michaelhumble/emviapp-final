@@ -1,5 +1,5 @@
 
-import { ActionSuggestion } from "@/components/chat/ChatSystem";
+import { ActionSuggestion } from "@/components/chat/types";
 
 /**
  * Helper function to generate default action suggestions

@@ -110,7 +110,7 @@ const ProfileCompletionCard = () => {
               <span>Profile completion</span>
               <span className="font-medium text-green-700">100%</span>
             </div>
-            <Progress value={100} className="h-2 bg-green-100" indicatorColor="bg-green-500" />
+            <Progress value={100} className="h-2 bg-green-100" indicatorClassName="bg-green-500" />
           </div>
         </CardContent>
       </Card>

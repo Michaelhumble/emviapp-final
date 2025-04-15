@@ -1,11 +1,11 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { MessageType, ActionSuggestion } from "./ChatSystem";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, User, Check, ChevronRight } from "lucide-react";
 import { BookingMatch } from "@/services/assistantService";
 import { Link } from "react-router-dom";
+import { MessageType, ActionSuggestion } from "./types";
 
 interface MessageBubbleProps {
   message: MessageType;

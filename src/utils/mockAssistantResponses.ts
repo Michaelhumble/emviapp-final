@@ -1,98 +1,93 @@
 
-type MockResponse = {
-  keywords: string[];
-  responses: string[];
-};
-
-export const mockAssistantResponses: MockResponse[] = [
+export const mockAssistantResponses = [
   {
-    keywords: ['hello', 'hi', 'hey', 'howdy', 'greetings'],
+    category: 'booking',
+    keywords: ['book', 'appointment', 'schedule', 'reserve'],
     responses: [
-      "Hi there! I'm Little Sunshine, your AI assistant. How can I help you today? 😊",
-      "Hello! I'm here to help with bookings, finding salons, or answering any questions about EmviApp.",
-      "Hey there! I'm Little Sunshine. Looking for a salon, want to book an appointment, or have questions?",
-      "Welcome to EmviApp! I'm Little Sunshine, and I'm here to make your beauty service experience seamless."
+      "I can help you book an appointment! Let me know what service you're looking for, and when you'd like to schedule it.",
+      "Looking to book an appointment? I can help with that. What type of nail service are you interested in?",
+      "I'd be happy to help you schedule an appointment. When are you thinking of coming in, and what service would you like?"
     ]
   },
   {
-    keywords: ['book', 'appointment', 'schedule', 'reservation'],
+    category: 'prices',
+    keywords: ['price', 'cost', 'how much', 'fee', 'pricing'],
     responses: [
-      "I'd be happy to help you book an appointment! Do you have a specific artist or service in mind? 📅",
-      "Looking to book a service? I can help with that! What kind of appointment are you looking for?",
-      "Ready to book? Tell me what service you're interested in, and I'll help you find the perfect artist. ✨",
-      "Booking is easy with EmviApp! Let me know what service you need, and I can show you available artists in your area."
+      "Our pricing varies by service and artist experience level. Basic manicures start at $25, gel manicures at $35, and full sets starting at $45. Would you like to see the full price list?",
+      "I'd be happy to share our pricing information! Was there a specific service you were interested in?",
+      "Our prices range depending on the service and artist you choose. Can I help you find pricing for a specific service?"
     ]
   },
   {
-    keywords: ['job', 'hiring', 'position', 'work', 'employ'],
+    category: 'services',
+    keywords: ['service', 'offer', 'provide', 'treatment', 'do you do'],
     responses: [
-      "Looking to post a job or find work? EmviApp makes connecting salons with talented artists simple! 💼",
-      "EmviApp's job marketplace helps salon owners find the perfect staff and artists find great opportunities.",
-      "You can post job openings or browse available positions right here on EmviApp. What specifically are you looking for?",
-      "Whether you're hiring or looking for work, EmviApp's job marketplace has you covered. What would you like to know about it?"
+      "We offer a full range of nail services including manicures, pedicures, gel polish, acrylics, dipping powder, nail art, and more. Is there something specific you're looking for?",
+      "Our salon provides comprehensive nail care services, from basic treatments to advanced techniques and artistic designs. What kind of service are you interested in?",
+      "We offer everything from quick polish changes to full spa pedicures and elaborate nail art. How can we help beautify your nails today?"
     ]
   },
   {
-    keywords: ['salon', 'shop', 'store', 'business'],
+    category: 'hours',
+    keywords: ['hours', 'open', 'close', 'schedule', 'time'],
     responses: [
-      "EmviApp helps salon owners manage their business, attract clients, and grow their team all in one place! 🏪",
-      "Looking to promote your salon? EmviApp connects you with clients searching for exactly what you offer.",
-      "Salon owners love EmviApp because it simplifies booking, team management, and client communication.",
-      "Whether you're running a small salon or a large business, EmviApp has tools to help you succeed."
+      "Most of our partner salons are open Monday-Saturday from 9am-7pm, and Sundays from 10am-5pm. However, specific hours vary by location. Would you like me to check a specific salon's hours?",
+      "Operating hours vary by salon, but typical hours are 9am-7pm weekdays, 9am-6pm Saturdays, and 10am-5pm Sundays. I can check specific hours for you if needed.",
+      "Each salon in our network sets their own hours, but most are open 7 days a week. Is there a particular salon you're asking about?"
     ]
   },
   {
-    keywords: ['artist', 'stylist', 'professional', 'talent'],
+    category: 'location',
+    keywords: ['location', 'address', 'where', 'directions', 'near'],
     responses: [
-      "EmviApp helps beauty artists showcase their work, get booked, and build their client base! 🧑‍🎨",
-      "Are you a beauty professional? EmviApp helps you manage your schedule, display your portfolio, and connect with clients.",
-      "Beauty artists on EmviApp can build their personal brand, set their availability, and get discovered by new clients.",
-      "EmviApp supports beauty professionals with tools to grow their business, whether they work at a salon or independently."
+      "We have partner salons throughout the city. If you're looking for the closest one to you, I can help you find it. What area are you in?",
+      "Our network includes salons across multiple neighborhoods. Where are you located? I can help find the nearest options.",
+      "To find the closest salon to you, I'll need to know what area you're in. Could you share your general location or zip code?"
     ]
   },
   {
-    keywords: ['price', 'cost', 'fee', 'pricing', 'expensive'],
+    category: 'artists',
+    keywords: ['artist', 'technician', 'specialist', 'professional', 'expert'],
     responses: [
-      "EmviApp offers different pricing plans to fit your needs. Basic listings are free, with premium options for increased visibility! 💰",
-      "Our pricing is flexible - salon owners, artists, and clients all have different options. What specific pricing are you curious about?",
-      "EmviApp's basic features are free! Premium plans add extra visibility and business tools starting at affordable monthly rates.",
-      "Using EmviApp to find and book services is always free for clients! Businesses can choose from several pricing tiers."
+      "We have many talented nail artists in our network. Each has their own specialties and styles. Are you looking for someone who specializes in a particular technique?",
+      "Our platform connects you with skilled nail professionals. Is there a specific style or technique you're looking for?",
+      "I can help you find the perfect nail artist for your needs. What kind of work are you looking to have done?"
     ]
   },
   {
-    keywords: ['how', 'work', 'use', 'function', 'feature'],
+    category: 'jobs',
+    keywords: ['job', 'hiring', 'career', 'employment', 'work', 'position'],
     responses: [
-      "EmviApp is an all-in-one platform connecting beauty professionals with clients. What specific feature would you like to learn about? ✨",
-      "EmviApp helps salon owners, independent artists, and clients connect seamlessly. Our platform handles bookings, payments, and communication!",
-      "EmviApp works by connecting beauty service providers with clients looking for those services. We handle scheduling, promotion, and more!",
-      "The EmviApp platform makes it easy to discover, book, and manage beauty services. What part would you like me to explain?"
+      "Are you a nail professional looking for job opportunities? Our platform connects talented artists with salons that are hiring. I can help you browse current openings.",
+      "We help nail technicians find great employment opportunities. Are you looking for a position, or are you a salon owner looking to hire?",
+      "EmviApp connects nail artists with salon job opportunities. Whether you're looking for full-time positions or booth rentals, I can help you explore options."
     ]
   },
   {
-    keywords: ['refer', 'invite', 'friend', 'share'],
+    category: 'salon_sales',
+    keywords: ['sell salon', 'buy salon', 'salon for sale', 'business', 'purchase', 'selling my salon'],
     responses: [
-      "Our referral program rewards you for sharing EmviApp! Both you and your friends get credits when they join. 🎁",
-      "You can earn rewards by inviting friends and colleagues to EmviApp! Each successful referral gives you platform credits.",
-      "Referring friends to EmviApp is rewarding! You'll both receive credits that can be used for profile boosts and premium features.",
-      "Want to invite friends to EmviApp? Our referral program gives you both credits to use on the platform when they sign up!"
+      "EmviApp helps salon owners list their businesses for sale, and connects buyers with great opportunities. Are you interested in selling your salon or purchasing one?",
+      "We have a marketplace for salon sales. Whether you're looking to sell your existing salon or purchase one, our platform can help connect you with the right people.",
+      "Interested in buying or selling a salon business? Our platform includes a specialized marketplace for salon sales. Would you like more information?"
     ]
   },
   {
-    keywords: ['problem', 'issue', 'error', 'trouble', 'help', 'support'],
+    category: 'greeting',
+    keywords: ['hi', 'hello', 'hey', 'greetings', 'good morning', 'good afternoon', 'good evening'],
     responses: [
-      "I'm sorry to hear you're having trouble! I'd be happy to help resolve the issue or connect you with our support team. 🛟",
-      "Let me help troubleshoot that for you. Could you provide more details about what's happening?",
-      "I'm here to help! What specific problem are you experiencing with EmviApp?",
-      "I'd be happy to assist with any issues you're having. Would you like me to guide you through some troubleshooting steps?"
+      "Hello! Welcome to EmviApp. I'm here to help you with booking appointments, finding salons, or answering any questions about our services. How can I assist you today?",
+      "Hi there! How can I help you today? I can assist with finding nail artists, booking appointments, or answering questions about our services.",
+      "Hello! I'm your EmviApp assistant. Whether you're looking to book a nail appointment, find a salon, or learn more about our services, I'm here to help!"
     ]
   },
   {
-    keywords: ['thank', 'thanks', 'appreciate'],
+    category: 'thanks',
+    keywords: ['thanks', 'thank you', 'appreciate', 'helpful', 'great'],
     responses: [
-      "You're very welcome! I'm always here if you need anything else. 😊",
-      "Happy to help! Is there anything else you'd like to know about EmviApp?",
-      "Anytime! Don't hesitate to reach out if you have more questions.",
-      "It's my pleasure! I'm here to make your EmviApp experience better. Anything else I can assist with?"
+      "You're welcome! Is there anything else I can help you with today?",
+      "Happy to help! Let me know if you need assistance with anything else.",
+      "My pleasure! Is there anything else you'd like to know about our services or platform?"
     ]
   }
 ];

@@ -1,46 +1,102 @@
 
-import { Plus, Users, Store, Percent } from "lucide-react";
-import { Link } from "react-router-dom";
-import SalonFeatureCard from "./SalonFeatureCard";
-import AffiliateReferralCard from "@/components/dashboard/common/AffiliateReferralCard";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { 
+  BriefcaseBusiness, 
+  ScrollText, 
+  Search, 
+  ShoppingBag, 
+  Camera, 
+  Users, 
+  Settings, 
+  Calendar 
+} from "lucide-react";
+import { Link } from "react-router-dom";
 
-const SalonFeatureCardsGrid = () => {
+interface SalonFeatureCardsGridProps {
+  credits?: number;
+}
+
+const SalonFeatureCardsGrid = ({ credits = 0 }: SalonFeatureCardsGridProps) => {
+  // Features for salon owners
+  const features = [
+    {
+      title: "Post a Job",
+      description: "Find qualified nail technicians",
+      icon: BriefcaseBusiness,
+      link: "/jobs/post",
+      highlight: true
+    },
+    {
+      title: "Manage Listings",
+      description: "Control your job postings",
+      icon: ScrollText,
+      link: "/dashboard/jobs"
+    },
+    {
+      title: "Staff Directory",
+      description: "Manage your team",
+      icon: Users,
+      link: "/dashboard/staff"
+    },
+    {
+      title: "Bookings",
+      description: "Track appointments",
+      icon: Calendar,
+      link: "/dashboard/bookings"
+    },
+    {
+      title: "Browse Artists",
+      description: "Discover talented professionals",
+      icon: Search,
+      link: "/artists"
+    },
+    {
+      title: "Sell Your Salon",
+      description: credits > 0 ? `You have ${credits} credits` : "List your business for sale",
+      icon: ShoppingBag,
+      link: "/salon/sell",
+      credits: credits
+    }
+  ];
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {/* Post Jobs Card */}
-      <SalonFeatureCard
-        title="Post Jobs"
-        description="Find artists for your salon"
-        icon={Plus}
-        buttonText="Post a Job"
-        buttonLink="/post/job"
-      />
-      
-      {/* Create Promotions Card */}
-      <Card className="border-green-200">
-        <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-t-lg">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Percent className="h-5 w-5 text-green-600" />
-            Special Offers
-          </CardTitle>
-          <CardDescription className="text-green-800">
-            Attract new customers
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground mb-4">
-            Create special discounts and promotions to bring in new clients.
-          </p>
-          <Button className="w-full bg-green-600 hover:bg-green-700" asChild>
-            <Link to="/offers/create">Create Offer</Link>
-          </Button>
-        </CardContent>
-      </Card>
-      
-      {/* Affiliate Referral Card */}
-      <AffiliateReferralCard />
+      {features.map((feature, index) => (
+        <div 
+          key={index}
+          className={`bg-white rounded-lg border ${feature.highlight ? 'border-indigo-200 shadow-sm' : 'border-gray-100'} 
+                      p-5 flex flex-col h-full`}
+        >
+          <div className="flex items-start gap-3 mb-3">
+            <div className={`rounded-full p-2 ${feature.highlight ? 'bg-indigo-100' : 'bg-gray-100'}`}>
+              <feature.icon className={`h-5 w-5 ${feature.highlight ? 'text-indigo-600' : 'text-gray-600'}`} />
+            </div>
+            <div>
+              <h3 className="font-medium text-gray-900">{feature.title}</h3>
+              <p className="text-sm text-gray-500">{feature.description}</p>
+              
+              {feature.credits !== undefined && feature.credits > 0 && (
+                <span className="inline-block px-2 py-1 mt-2 text-xs font-medium text-green-800 bg-green-100 rounded-full">
+                  {feature.credits} credits available
+                </span>
+              )}
+            </div>
+          </div>
+          
+          <div className="mt-auto pt-3">
+            <Button 
+              variant={feature.highlight ? "default" : "outline"} 
+              size="sm" 
+              className={feature.highlight ? "bg-indigo-600 hover:bg-indigo-700 w-full" : "w-full"}
+              asChild
+            >
+              <Link to={feature.link}>
+                {feature.highlight ? "Post Now" : "View"}
+              </Link>
+            </Button>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

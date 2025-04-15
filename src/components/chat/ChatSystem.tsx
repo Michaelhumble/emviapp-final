@@ -4,6 +4,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { MessageSquare, X } from 'lucide-react';
 import ChatWindow from './ChatWindow';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ActionSuggestion, MessageType } from './types';
+
+export { ActionSuggestion, MessageType };
 
 export const ChatSystem = () => {
   const [isOpen, setIsOpen] = useState(false);

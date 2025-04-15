@@ -31,7 +31,7 @@ const ArtistDashboardWidgets = () => {
     if (userProfile.instagram) completedFields++;
     if (userProfile.phone) completedFields++;
     if (userProfile.location) completedFields++;
-    if (userProfile.skills && userProfile.skills.length > 0) completedFields++;
+    if (userProfile.portfolio_urls && userProfile.portfolio_urls.length > 0) completedFields++;
     
     return Math.round((completedFields / totalFields) * 100);
   };
