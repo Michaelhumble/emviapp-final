@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useArtistCalendar } from "@/hooks/useArtistCalendar";
 import { CalendarDays, Clock, UserPlus } from "lucide-react";
@@ -7,7 +6,6 @@ import { format, parseISO } from "date-fns";
 const ArtistCalendar = () => {
   const { appointments, blockedTimes } = useArtistCalendar();
   
-  // Get today's bookings and scheduled times
   const today = new Date();
   const todayDateString = format(today, 'yyyy-MM-dd');
   
@@ -26,7 +24,6 @@ const ArtistCalendar = () => {
   const hasBookingsToday = todayAppointments.length > 0;
   const hasBlockedToday = todayBlocked.length > 0;
   
-  // Get upcoming bookings (future dates, limit to 5)
   const upcomingAppointments = appointments.filter(appointment => 
     format(parseISO(appointment.start_time), 'yyyy-MM-dd') > todayDateString
   ).sort((a, b) => 
@@ -40,7 +37,6 @@ const ArtistCalendar = () => {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Today's Schedule */}
           <div className="space-y-4">
             <h3 className="font-medium flex items-center">
               <CalendarDays className="h-4 w-4 mr-2 text-blue-500" />
@@ -50,16 +46,16 @@ const ArtistCalendar = () => {
               <div className="space-y-2">
                 {todayAppointments.map((appointment) => (
                   <div key={appointment.id} className="p-3 bg-blue-50 border border-blue-100 rounded-md">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <div className="font-medium">
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="min-w-0 flex-1">
+                        <div className="font-medium truncate">
                           {format(parseISO(appointment.start_time), 'h:mm a')} - {format(parseISO(appointment.end_time), 'h:mm a')}
                         </div>
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-gray-600 break-words whitespace-normal">
                           {appointment.customer_name || "Unnamed Client"}
                         </div>
                       </div>
-                      <div className="text-xs text-blue-700 px-2 py-1 bg-blue-100 rounded-full">
+                      <div className="text-xs text-blue-700 px-2 py-1 bg-blue-100 rounded-full whitespace-nowrap">
                         {appointment.status}
                       </div>
                     </div>
@@ -68,12 +64,12 @@ const ArtistCalendar = () => {
                 {hasBlockedToday && todayBlocked.map((blocked) => (
                   <div key={blocked.id} className="p-3 bg-gray-50 border border-gray-200 rounded-md">
                     <div className="flex items-start gap-2">
-                      <Clock className="h-4 w-4 text-gray-500 mt-0.5" />
-                      <div>
-                        <div className="font-medium">
+                      <Clock className="h-4 w-4 text-gray-500 mt-0.5 flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <div className="font-medium truncate">
                           {format(parseISO(blocked.start_time), 'h:mm a')} - {format(parseISO(blocked.end_time), 'h:mm a')}
                         </div>
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-gray-600 break-words whitespace-normal">
                           {blocked.reason || "Blocked Time"}
                         </div>
                       </div>
@@ -90,7 +86,6 @@ const ArtistCalendar = () => {
             )}
           </div>
           
-          {/* Upcoming Schedule */}
           <div className="space-y-4">
             <h3 className="font-medium flex items-center">
               <UserPlus className="h-4 w-4 mr-2 text-purple-500" />
@@ -100,19 +95,19 @@ const ArtistCalendar = () => {
               <div className="space-y-2">
                 {upcomingAppointments.map((appointment) => (
                   <div key={appointment.id} className="p-3 bg-purple-50 border border-purple-100 rounded-md">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <div className="font-medium">
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="min-w-0 flex-1">
+                        <div className="font-medium truncate">
                           {format(parseISO(appointment.start_time), 'EEE, MMM d')}
                         </div>
-                        <div className="text-sm">
+                        <div className="text-sm truncate">
                           {format(parseISO(appointment.start_time), 'h:mm a')} - {format(parseISO(appointment.end_time), 'h:mm a')}
                         </div>
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-gray-600 break-words whitespace-normal">
                           {appointment.customer_name || "Unnamed Client"}
                         </div>
                       </div>
-                      <div className="text-xs text-purple-700 px-2 py-1 bg-purple-100 rounded-full">
+                      <div className="text-xs text-purple-700 px-2 py-1 bg-purple-100 rounded-full whitespace-nowrap">
                         {appointment.status}
                       </div>
                     </div>

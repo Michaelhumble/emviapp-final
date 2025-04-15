@@ -57,9 +57,9 @@ const ServiceFormDialog = ({
                   type="number" 
                   min="1" 
                   step="0.01"
-                  value={service.price === 0 ? '' : service.price || ''} 
+                  value={service.price === 0 ? '' : service.price} 
                   onChange={(e) => {
-                    const value = e.target.value === '' ? 0 : parseFloat(e.target.value);
+                    const value = e.target.value === '' ? 0 : Math.max(1, parseFloat(e.target.value));
                     onServiceChange('price', value);
                   }}
                   placeholder="45.00"

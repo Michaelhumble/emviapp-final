@@ -5,7 +5,6 @@ import { useArtistDashboardData } from './hooks/useArtistDashboardData';
 import AnalyticsWidget from './components/AnalyticsWidget';
 import WeeklyCalendar from './calendar/WeeklyCalendar';
 import ServicesManager from './services/ServicesManager';
-import ArtistPortfolioManager from './portfolio/ArtistPortfolioManager';
 import ReferralWidget from './components/ReferralWidget';
 import EarningsSection from './components/EarningsSection';
 import MainGrid from './components/MainGrid';
@@ -43,10 +42,7 @@ const ArtistDashboard = () => {
             stats={stats}
           />
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <ReferralWidget />
-            <ArtistPortfolioManager />
-          </div>
+          <ReferralWidget />
         </TabsContent>
         
         <TabsContent value="calendar" className="space-y-6 mt-6">
