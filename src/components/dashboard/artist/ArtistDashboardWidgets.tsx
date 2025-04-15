@@ -77,7 +77,7 @@ const ArtistDashboardWidgets = () => {
   const [activeTab, setActiveTab] = useState("overview");
   
   // Fetch artist stats
-  const { data: stats, isLoading: isLoadingStats } = useQuery({
+  const { data: stats, isLoading: isLoadingStats } = useQuery<DashboardStats | null>({
     queryKey: ['artist-stats', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
@@ -110,11 +110,11 @@ const ArtistDashboardWidgets = () => {
     enabled: !!user?.id
   });
 
-  // Fetch recent bookings
+  // Fetch recent bookings with explicit return type
   const { data: recentBookings, isLoading: isLoadingBookings } = useQuery<BookingWithDetails[]>({
     queryKey: ['recent-bookings', user?.id],
     queryFn: async () => {
-      if (!user?.id) return [];
+      if (!user?.id) return [] as BookingWithDetails[];
       
       try {
         const { data, error } = await supabase
@@ -135,14 +135,14 @@ const ArtistDashboardWidgets = () => {
         })) as BookingWithDetails[];
       } catch (error) {
         console.error("Error fetching recent bookings:", error);
-        return [];
+        return [] as BookingWithDetails[];
       }
     },
     enabled: !!user?.id
   });
 
-  // Fetch earnings data
-  const { data: earningsData, isLoading: isLoadingEarnings } = useQuery<EarningsData>({
+  // Fetch earnings data with explicit return type
+  const { data: earningsData, isLoading: isLoadingEarnings } = useQuery<EarningsData | null>({
     queryKey: ['earnings-data', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
@@ -321,7 +321,7 @@ const ArtistDashboardWidgets = () => {
           <StatCard
             title="This Month"
             value={
-              earningsData?.monthly_earnings?.[0]?.amount || 0
+              earningsData?.monthly_earnings?.[earningsData.monthly_earnings.length - 1]?.amount || 0
             }
             description="Current month earnings"
             loading={isLoadingEarnings}
@@ -353,7 +353,7 @@ const ArtistDashboardWidgets = () => {
                           className="w-12 bg-primary rounded-t-md" 
                           style={{ 
                             height: `${Math.max(
-                              (month.amount / (Math.max(...(earningsData?.monthly_earnings || []).map(m => m.amount)) || 1)) * 200, 
+                              ((month.amount || 0) / (Math.max(...(earningsData?.monthly_earnings || []).map(m => m.amount || 0)) || 1)) * 200, 
                               20
                             )}px` 
                           }}
