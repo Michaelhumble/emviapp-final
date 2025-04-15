@@ -1,7 +1,8 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useArtistCalendar } from "@/hooks/useArtistCalendar";
-import { CalendarDays, ChevronLeft, ChevronRight, Clock, Info, UserPlus } from "lucide-react";
-import { format, parseISO, addDays, subDays, isSameDay } from "date-fns";
+import { CalendarDays, ChevronLeft, ChevronRight, Clock, Info, UserPlus, X, Calendar as CalendarIcon } from "lucide-react";
+import { format, parseISO, addDays, subDays, isSameDay, isToday, startOfDay, endOfDay } from "date-fns";
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,10 +12,17 @@ import { cn } from "@/lib/utils";
 const TIME_SLOTS = Array.from({ length: 32 }, (_, i) => i + 6); // 6 AM to 10 PM
 
 const ArtistCalendar = () => {
-  const { appointments, blockedTimes } = useArtistCalendar();
+  const { 
+    appointments, 
+    blockedTimes,
+    deleteAppointment,
+    deleteBlockedTime
+  } = useArtistCalendar();
+  
   const [visibleDays, setVisibleDays] = useState(window.innerWidth >= 768 ? 3 : 1);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  const [showEmptyDays, setShowEmptyDays] = useState(true);
   const calendarRef = useRef<HTMLDivElement>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -114,13 +122,39 @@ const ArtistCalendar = () => {
     return getAppointmentsForDay(day).length > 0 || getBlockedTimesForDay(day).length > 0;
   };
   
-  const daysWithAppointments = days.filter(day => dayHasAppointments(day));
-  const visibleDaysArray = daysWithAppointments.length > 0 ? daysWithAppointments : days;
+  // Filter out empty days if showEmptyDays is false
+  const visibleDaysArray = !showEmptyDays 
+    ? days.filter(day => dayHasAppointments(day))
+    : days;
+  
+  // If all days would be filtered out, show at least the first day
+  const displayDays = visibleDaysArray.length > 0 ? visibleDaysArray : [days[0]];
+  
+  const handleDeleteAppointment = async (id: string) => {
+    try {
+      await deleteAppointment(id);
+      setSelectedBooking(null);
+    } catch (error) {
+      console.error("Error deleting appointment:", error);
+    }
+  };
+  
+  const handleDeleteBlockedTime = async (id: string) => {
+    try {
+      await deleteBlockedTime(id);
+      setSelectedBooking(null);
+    } catch (error) {
+      console.error("Error deleting blocked time:", error);
+    }
+  };
   
   return (
     <Card>
       <CardHeader className="pb-3 flex flex-row items-center justify-between">
-        <CardTitle className="text-xl">Calendar</CardTitle>
+        <CardTitle className="text-xl flex items-center">
+          <CalendarDays className="h-5 w-5 text-blue-500 mr-2" />
+          Calendar
+        </CardTitle>
         <div className="flex items-center space-x-2">
           <Button variant="outline" size="sm" onClick={goToPreviousDay}>
             <ChevronLeft className="h-4 w-4" />
@@ -131,6 +165,18 @@ const ArtistCalendar = () => {
           <Button variant="outline" size="sm" onClick={goToNextDay}>
             <ChevronRight className="h-4 w-4" />
           </Button>
+          <div className="flex items-center ml-4">
+            <label htmlFor="show-empty-days" className="text-sm text-muted-foreground mr-2">
+              Show Empty Days
+            </label>
+            <input
+              id="show-empty-days"
+              type="checkbox" 
+              checked={showEmptyDays}
+              onChange={() => setShowEmptyDays(!showEmptyDays)}
+              className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+            />
+          </div>
         </div>
       </CardHeader>
       
@@ -153,8 +199,8 @@ const ArtistCalendar = () => {
               <div className="h-14"></div>
             </div>
             
-            {visibleDaysArray.map((day, dayIndex) => {
-              const isToday = isSameDay(day, new Date());
+            {displayDays.map((day, dayIndex) => {
+              const isCurrentDay = isToday(day);
               const dayAppointments = getAppointmentsForDay(day);
               
               return (
@@ -162,13 +208,13 @@ const ArtistCalendar = () => {
                   key={dayIndex}
                   className={cn(
                     "min-w-[200px] flex-1 border-r px-1 text-center",
-                    isToday && "bg-blue-50"
+                    isCurrentDay && "bg-blue-50"
                   )}
                 >
                   <div className="py-2">
                     <div className={cn(
                       "inline-flex h-8 w-8 items-center justify-center rounded-full text-sm",
-                      isToday && "bg-blue-600 text-white font-medium"
+                      isCurrentDay && "bg-blue-600 text-white font-medium"
                     )}>
                       {format(day, "d")}
                     </div>
@@ -198,7 +244,7 @@ const ArtistCalendar = () => {
               ))}
             </div>
             
-            {visibleDaysArray.map((day, dayIndex) => {
+            {displayDays.map((day, dayIndex) => {
               const dayAppointments = getAppointmentsForDay(day);
               const dayBlockedTimes = getBlockedTimesForDay(day);
               
@@ -207,7 +253,7 @@ const ArtistCalendar = () => {
                   key={dayIndex}
                   className={cn(
                     "relative min-w-[200px] flex-1 border-r",
-                    isSameDay(day, new Date()) && "bg-blue-50/30"
+                    isToday(day) && "bg-blue-50/30"
                   )}
                 >
                   {TIME_SLOTS.map((hour) => (
@@ -260,8 +306,9 @@ const ArtistCalendar = () => {
                     return (
                       <div
                         key={blocked.id}
-                        className="absolute left-1 right-1 rounded-md px-2 py-1 bg-gray-100 border border-gray-200 shadow-sm"
+                        className="absolute left-1 right-1 rounded-md px-2 py-1 bg-gray-100 border border-gray-200 shadow-sm cursor-pointer"
                         style={style}
+                        onClick={() => handleAppointmentClick(blocked)}
                       >
                         <div className="text-xs font-medium truncate">
                           {format(parseISO(blocked.start_time), "h:mm a")}
@@ -280,42 +327,85 @@ const ArtistCalendar = () => {
         
         {selectedBooking && (
           <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center" onClick={closePreview}>
-            <div className="bg-white rounded-lg shadow-lg p-4 max-w-md w-full mx-4" onClick={e => e.stopPropagation()}>
-              <div className="flex justify-between items-start">
-                <h3 className="text-lg font-medium">{selectedBooking.service_name || "Appointment"}</h3>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={closePreview}>
-                  <span className="sr-only">Close</span>
-                  <span className="text-xl">×</span>
-                </Button>
-              </div>
+            <div className="bg-white rounded-lg shadow-lg p-4 max-w-md w-full mx-4 relative" onClick={e => e.stopPropagation()}>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="absolute right-2 top-2" 
+                onClick={closePreview}
+              >
+                <X className="h-4 w-4" />
+              </Button>
               
-              <div className="mt-4 space-y-3">
-                <div className="flex items-center">
-                  <UserPlus className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <span className="text-sm">{selectedBooking.customer_name || "Unnamed Client"}</span>
-                </div>
+              <div className="pt-2">
+                <h3 className="text-lg font-medium">
+                  {'services' in selectedBooking 
+                    ? (selectedBooking.services?.title || "Appointment") 
+                    : (selectedBooking.reason || "Blocked Time")}
+                </h3>
                 
-                <div className="flex items-center">
-                  <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <span className="text-sm">
-                    {format(parseISO(selectedBooking.start_time), "EEE, MMM d, yyyy")} • 
-                    {format(parseISO(selectedBooking.start_time), " h:mm a")} - 
-                    {format(parseISO(selectedBooking.end_time), " h:mm a")}
-                  </span>
-                </div>
-                
-                <div className="flex items-center justify-between mt-6">
-                  <Badge className={cn(
-                    selectedBooking.status === 'confirmed' 
-                      ? "bg-green-100 text-green-800 hover:bg-green-200" 
-                      : "bg-amber-100 text-amber-800 hover:bg-amber-200"
-                  )}>
-                    {selectedBooking.status}
-                  </Badge>
+                <div className="mt-4 space-y-3">
+                  {'customer_name' in selectedBooking && (
+                    <div className="flex items-center">
+                      <UserPlus className="h-4 w-4 mr-2 text-muted-foreground" />
+                      <span className="text-sm">{selectedBooking.customer_name || "Unnamed Client"}</span>
+                    </div>
+                  )}
                   
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline">Cancel</Button>
-                    <Button size="sm">Manage</Button>
+                  <div className="flex items-center">
+                    <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
+                    <span className="text-sm">
+                      {format(parseISO(selectedBooking.start_time), "EEE, MMM d, yyyy")} • 
+                      {format(parseISO(selectedBooking.start_time), " h:mm a")} - 
+                      {format(parseISO(selectedBooking.end_time), " h:mm a")}
+                    </span>
+                  </div>
+                  
+                  {'notes' in selectedBooking && selectedBooking.notes && (
+                    <div className="flex items-start">
+                      <Info className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground" />
+                      <span className="text-sm">{selectedBooking.notes}</span>
+                    </div>
+                  )}
+                  
+                  {'reason' in selectedBooking && selectedBooking.reason && (
+                    <div className="flex items-start">
+                      <Info className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground" />
+                      <span className="text-sm">{selectedBooking.reason}</span>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center justify-between mt-6">
+                    {'status' in selectedBooking && (
+                      <Badge className={cn(
+                        selectedBooking.status === 'confirmed' 
+                          ? "bg-green-100 text-green-800 hover:bg-green-200" 
+                          : "bg-amber-100 text-amber-800 hover:bg-amber-200"
+                      )}>
+                        {selectedBooking.status}
+                      </Badge>
+                    )}
+                    
+                    <div className="flex gap-2">
+                      {'customer_name' in selectedBooking ? (
+                        <Button 
+                          size="sm" 
+                          variant="destructive" 
+                          onClick={() => handleDeleteAppointment(selectedBooking.id)}
+                        >
+                          Cancel
+                        </Button>
+                      ) : (
+                        <Button 
+                          size="sm" 
+                          variant="destructive"
+                          onClick={() => handleDeleteBlockedTime(selectedBooking.id)}
+                        >
+                          Remove Block
+                        </Button>
+                      )}
+                      <Button size="sm">Manage</Button>
+                    </div>
                   </div>
                 </div>
               </div>

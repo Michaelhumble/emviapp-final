@@ -8,6 +8,7 @@ import EarningsSection from "./components/EarningsSection";
 import ArtistCalendar from "./components/ArtistCalendar";
 import { useArtistDashboardData } from "./hooks/useArtistDashboardData";
 import { BarChart3, CalendarDays, DollarSign } from "lucide-react";
+import AnalyticsWidget from "./components/AnalyticsWidget";
 
 const ArtistDashboardWidgets = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -50,6 +51,7 @@ const ArtistDashboardWidgets = () => {
         
         <TabsContent value="earnings" className="space-y-4">
           <FallbackBoundary>
+            <AnalyticsWidget stats={stats} isLoading={isLoadingStats} />
             <EarningsSection 
               earningsData={earningsData}
               isLoading={isLoadingEarnings}
