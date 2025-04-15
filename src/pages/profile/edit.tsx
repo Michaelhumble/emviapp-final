@@ -43,7 +43,8 @@ export default function EditProfilePage() {
     if (focus) {
       const element = document.getElementById(focus);
       if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+        element.focus();
       }
     }
   }, [focus]);

@@ -4,9 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import Layout from "@/components/layout/Layout";
+import { useAuth } from "@/context/auth";
 
 export default function ArtistProfileSetupPage() {
   const { completionStatus, isLoading } = useProfileCompletion();
+  const { userProfile } = useAuth();
   const navigate = useNavigate();
 
   if (isLoading) {
