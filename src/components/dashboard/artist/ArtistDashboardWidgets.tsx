@@ -1,24 +1,20 @@
-
 import { useState } from "react";
 import { useAuth } from "@/context/auth";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { supabase } from "@/integrations/supabase/client";
 import StatCard from "./components/StatCard";
 import RecentActivity from "./components/RecentActivity";
 import PerformanceMetrics from "./components/PerformanceMetrics";
 import EarningsSection from "./components/EarningsSection";
 import { DashboardStats, EarningsData, BookingWithDetails } from "./types/ArtistDashboardTypes";
+import { useTypedQuery } from "@/hooks/useTypedQuery";
 
 const ArtistDashboardWidgets = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   
-  // Avoid deep type instantiation by explicitly typing the query result
-  type StatsQueryResult = { data: DashboardStats | null; isLoading: boolean };
-  
-  // Create the stats query with manual typing to avoid deep instantiation
-  const statsQuery = useQuery({
+  // Use our custom hook that handles type instantiation properly
+  const { data: stats, isLoading: isLoadingStats } = useTypedQuery<DashboardStats | null>({
     queryKey: ['artist-stats', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
@@ -41,17 +37,10 @@ const ArtistDashboardWidgets = () => {
       }
     },
     enabled: !!user?.id
-  }) as StatsQueryResult;
+  });
 
-  // Extract the stats data and loading state
-  const stats = statsQuery.data;
-  const isLoadingStats = statsQuery.isLoading;
-
-  // Define type for the booking query result manually
-  type BookingsQueryResult = { data: BookingWithDetails[]; isLoading: boolean };
-
-  // Create the bookings query with manual typing
-  const bookingsQuery = useQuery({
+  // Use our custom hook for bookings query
+  const { data: recentBookings, isLoading: isLoadingBookings } = useTypedQuery<BookingWithDetails[]>({
     queryKey: ['recent-bookings', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
@@ -79,17 +68,10 @@ const ArtistDashboardWidgets = () => {
       }
     },
     enabled: !!user?.id
-  }) as BookingsQueryResult;
-
-  // Extract the bookings data and loading state
-  const recentBookings = bookingsQuery.data;
-  const isLoadingBookings = bookingsQuery.isLoading;
+  });
   
-  // Define the type for earnings query result manually
-  type EarningsQueryResult = { data: EarningsData | null; isLoading: boolean };
-  
-  // Create the earnings query with manual typing
-  const earningsQuery = useQuery({
+  // Use our custom hook for earnings query
+  const { data: earningsData, isLoading: isLoadingEarnings } = useTypedQuery<EarningsData | null>({
     queryKey: ['earnings-data', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
@@ -115,11 +97,7 @@ const ArtistDashboardWidgets = () => {
       }
     },
     enabled: !!user?.id && activeTab === "earnings"
-  }) as EarningsQueryResult;
-
-  // Extract the earnings data and loading state
-  const earningsData = earningsQuery.data;
-  const isLoadingEarnings = earningsQuery.isLoading;
+  });
 
   return (
     <Tabs defaultValue="overview" className="space-y-4" onValueChange={setActiveTab}>
