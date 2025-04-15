@@ -1,9 +1,11 @@
 
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/auth';
 import { useProfileCompletion } from '@/hooks/useProfileCompletion';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { useNavigate } from 'react-router-dom';
 import { UserRole } from '@/context/auth/types';
 
 interface ProfileCompletionGuardProps {
@@ -14,6 +16,12 @@ interface ProfileCompletionGuardProps {
 export function ProfileCompletionGuard({ children, role }: ProfileCompletionGuardProps) {
   const { completionStatus, isLoading } = useProfileCompletion();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLoading && completionStatus && !completionStatus.isComplete) {
+      navigate(`/setup/${role}`);
+    }
+  }, [completionStatus, isLoading, role, navigate]);
 
   if (isLoading) {
     return (
@@ -32,7 +40,10 @@ export function ProfileCompletionGuard({ children, role }: ProfileCompletionGuar
   if (!completionStatus?.isComplete) {
     return (
       <Card className="max-w-md mx-auto my-8">
-        <CardContent className="space-y-4 p-6">
+        <CardHeader>
+          <CardTitle>Complete Your Profile</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
           <Progress 
             value={completionStatus?.completionPercentage || 0} 
             className="w-full"
@@ -42,7 +53,7 @@ export function ProfileCompletionGuard({ children, role }: ProfileCompletionGuar
             Required: {completionStatus?.minCompletionPercentage}% completion.
           </p>
           <Button 
-            className="w-full" 
+            className="w-full"
             onClick={() => navigate(`/setup/${role}`)}
           >
             Complete Profile
