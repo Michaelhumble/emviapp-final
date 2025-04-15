@@ -4,15 +4,18 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 
 interface Service {
   id: string;
-  name: string;
+  title: string;
+  description?: string | null;
   price: number;
-  duration: number | null;
+  duration_minutes: number;
+  is_visible: boolean;
 }
 
-interface ServiceFormProps {
+interface ServiceFormDialogProps {
   isOpen: boolean;
   onClose: () => void;
   service: Partial<Service>;
@@ -28,10 +31,10 @@ const ServiceFormDialog = ({
   onServiceChange,
   onSubmit,
   isEditing 
-}: ServiceFormProps) => {
+}: ServiceFormDialogProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{isEditing ? "Edit Service" : "Add New Service"}</DialogTitle>
         </DialogHeader>
@@ -42,8 +45,8 @@ const ServiceFormDialog = ({
               <Label htmlFor="name">Service Name</Label>
               <Input 
                 id="name" 
-                value={service.name || ''} 
-                onChange={(e) => onServiceChange('name', e.target.value)}
+                value={service.title || ''} 
+                onChange={(e) => onServiceChange('title', e.target.value)}
                 placeholder="e.g. Gel Full Set" 
                 required
               />
@@ -57,12 +60,15 @@ const ServiceFormDialog = ({
                   type="number" 
                   min="1" 
                   step="0.01"
-                  value={service.price === 0 ? '' : service.price} 
-                  onChange={(e) => {
-                    const value = e.target.value === '' ? 0 : Math.max(1, parseFloat(e.target.value));
-                    onServiceChange('price', value);
-                  }}
                   placeholder="45.00"
+                  value={service.price === 0 ? '' : service.price}
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+                    const parsedValue = inputValue === '' ? 0 : parseFloat(inputValue);
+                    // Ensure at least 1 and remove leading zeros
+                    const cleanValue = Math.max(1, parsedValue);
+                    onServiceChange('price', cleanValue);
+                  }}
                   required
                 />
               </div>
@@ -74,11 +80,34 @@ const ServiceFormDialog = ({
                   type="number" 
                   min="5" 
                   step="5"
-                  value={service.duration || ''} 
-                  onChange={(e) => onServiceChange('duration', parseInt(e.target.value))}
+                  value={service.duration_minutes || ''} 
+                  onChange={(e) => {
+                    const value = e.target.value === '' ? null : parseInt(e.target.value);
+                    onServiceChange('duration_minutes', value);
+                  }}
                   placeholder="60"
                 />
               </div>
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="description">Description (Optional)</Label>
+              <textarea 
+                id="description" 
+                value={service.description || ''} 
+                onChange={(e) => onServiceChange('description', e.target.value)}
+                placeholder="Brief description of what's included in this service"
+                className="w-full p-2 border rounded min-h-[80px]"
+              />
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <Switch 
+                id="is_visible" 
+                checked={service.is_visible !== false} 
+                onCheckedChange={(checked) => onServiceChange('is_visible', checked)} 
+              />
+              <Label htmlFor="is_visible">Visible to clients</Label>
             </div>
           </div>
           
@@ -87,7 +116,7 @@ const ServiceFormDialog = ({
               Cancel
             </Button>
             <Button type="submit">
-              {isEditing ? "Update Service" : "Add Service"}
+              {isEditing ? "Save Changes" : "Add Service"}
             </Button>
           </DialogFooter>
         </form>
