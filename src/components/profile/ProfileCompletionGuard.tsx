@@ -13,7 +13,7 @@ interface ProfileCompletionGuardProps {
 
 export default function ProfileCompletionGuard({ children }: ProfileCompletionGuardProps) {
   const { userRole } = useAuth();
-  const { completionStatus, isLoading } = useProfileCompletion();
+  const { completionStatus, isLoading, isProfileComplete } = useProfileCompletion();
   const navigate = useNavigate();
 
   useEffect(() => {

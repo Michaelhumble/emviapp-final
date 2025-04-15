@@ -4,6 +4,7 @@ import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
 import DashboardContent from "@/components/dashboard/DashboardContent";
 import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
+import ProfileCompletionGuard from "@/components/profile/ProfileCompletionGuard";
 
 const OtherDashboard = () => {
   useEffect(() => {

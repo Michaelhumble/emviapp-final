@@ -1,10 +1,14 @@
 
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useAuth } from '@/context/auth';
+import { ProfileCompletionStatus } from '@/types/profile-completion';
+import { useSafeQuery } from '@/hooks/useSafeQuery';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ProfileCompletionContextProps {
-  completedTasks: string[];
-  pendingTasks: string[];
+  completionStatus: ProfileCompletionStatus | undefined;
+  isLoading: boolean;
+  isProfileComplete: boolean;
   completionPercentage: number;
   markTaskComplete: (taskId: string) => void;
   isTaskComplete: (taskId: string) => boolean;
@@ -13,64 +17,78 @@ interface ProfileCompletionContextProps {
 const ProfileCompletionContext = createContext<ProfileCompletionContextProps | undefined>(undefined);
 
 export const ProfileCompletionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { userProfile, user } = useAuth();
+  const { user, userRole, userProfile } = useAuth();
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
-  const [pendingTasks, setPendingTasks] = useState<string[]>([]);
-  const [completionPercentage, setCompletionPercentage] = useState(0);
 
-  useEffect(() => {
-    if (!userProfile) return;
-    
-    // Define required tasks based on user role
-    const requiredTasks = [
-      'bio',
-      'location',
-      'profile_picture',
-      'specialty',
-      'portfolio'
-    ];
-    
-    // Check which tasks are completed
-    const completed: string[] = [];
-    
-    if (userProfile.bio) completed.push('bio');
-    if (userProfile.location) completed.push('location');
-    if (userProfile.avatar_url) completed.push('profile_picture');
-    if (userProfile.specialty) completed.push('specialty');
-    if (userProfile.portfolio_urls && userProfile.portfolio_urls.length > 0) completed.push('portfolio');
-    
-    // Check for completed_profile_tasks in user profile
-    if (userProfile.completed_profile_tasks && Array.isArray(userProfile.completed_profile_tasks)) {
-      userProfile.completed_profile_tasks.forEach(task => {
-        if (!completed.includes(task)) {
-          completed.push(task);
-        }
+  // Fetch profile completion status from the database view
+  const { data: dbCompletionStatus, isLoading } = useSafeQuery<any>({
+    queryKey: ['profile-completion', user?.id],
+    queryFn: async () => {
+      if (!user?.id || !userRole) {
+        throw new Error('User or role not found');
+      }
+
+      const { data, error } = await supabase
+        .from('profile_completion_view')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error) throw error;
+
+      // Map missing required fields
+      const missingFields = (data.required_fields || []).filter(field => {
+        const value = data[field];
+        return !value || value.length === 0;
       });
+
+      return {
+        isComplete: data.is_complete,
+        completionPercentage: data.calculated_completion,
+        requiredFields: data.required_fields || [],
+        optionalFields: data.optional_fields || [],
+        minCompletionPercentage: data.min_completion_percentage,
+        missingFields
+      };
+    },
+    enabled: !!user?.id && !!userRole,
+    context: "profile-completion"
+  });
+
+  // Load completed tasks from userProfile
+  useEffect(() => {
+    if (userProfile?.completed_profile_tasks && Array.isArray(userProfile.completed_profile_tasks)) {
+      setCompletedTasks(userProfile.completed_profile_tasks);
     }
-    
-    // Calculate pending tasks
-    const pending = requiredTasks.filter(task => !completed.includes(task));
-    
-    // Update state
-    setCompletedTasks(completed);
-    setPendingTasks(pending);
-    
-    // Calculate completion percentage
-    const percentage = Math.round((completed.length / requiredTasks.length) * 100);
-    setCompletionPercentage(percentage);
-    
   }, [userProfile]);
   
   // Function to mark a task as complete
-  const markTaskComplete = (taskId: string) => {
-    if (!completedTasks.includes(taskId)) {
-      setCompletedTasks(prev => [...prev, taskId]);
-      setPendingTasks(prev => prev.filter(task => task !== taskId));
-      
-      // Recalculate percentage
-      const totalTasks = completedTasks.length + pendingTasks.length;
-      const newPercentage = Math.round(((completedTasks.length + 1) / totalTasks) * 100);
-      setCompletionPercentage(newPercentage);
+  const markTaskComplete = async (taskId: string) => {
+    if (!user) return;
+    
+    try {
+      // Add to local state immediately for UI feedback
+      if (!completedTasks.includes(taskId)) {
+        const updatedTasks = [...completedTasks, taskId];
+        setCompletedTasks(updatedTasks);
+        
+        // Update in the database
+        const { error } = await supabase
+          .from('users')
+          .update({ 
+            completed_profile_tasks: updatedTasks,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', user.id);
+          
+        if (error) {
+          console.error('Error updating completed tasks:', error);
+          // Revert local state on error
+          setCompletedTasks(completedTasks);
+        }
+      }
+    } catch (error) {
+      console.error('Error marking task complete:', error);
     }
   };
   
@@ -82,9 +100,10 @@ export const ProfileCompletionProvider: React.FC<{ children: React.ReactNode }> 
   return (
     <ProfileCompletionContext.Provider
       value={{
-        completedTasks,
-        pendingTasks,
-        completionPercentage,
+        completionStatus: dbCompletionStatus,
+        isLoading,
+        isProfileComplete: dbCompletionStatus?.isComplete ?? false,
+        completionPercentage: dbCompletionStatus?.completionPercentage || 0,
         markTaskComplete,
         isTaskComplete
       }}

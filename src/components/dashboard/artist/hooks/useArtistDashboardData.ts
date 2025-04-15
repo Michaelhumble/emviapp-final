@@ -21,14 +21,6 @@ export const useArtistDashboardData = (activeTab: string) => {
       };
     },
     enabled: !!user?.id,
-    fallbackData: {
-      booking_count: 0,
-      completed_services: 0,
-      total_earnings: 0,
-      average_rating: 0,
-      referral_count: 0,
-      repeat_client_percentage: 0
-    },
     context: "artist-dashboard-stats"
   });
 
@@ -48,7 +40,6 @@ export const useArtistDashboardData = (activeTab: string) => {
       return data || [];
     },
     enabled: !!user?.id,
-    fallbackData: [],
     context: "artist-dashboard-bookings"
   });
 
@@ -71,18 +62,12 @@ export const useArtistDashboardData = (activeTab: string) => {
       };
     },
     enabled: !!user?.id && activeTab === "earnings",
-    fallbackData: {
-      monthly_earnings: [],
-      total_earnings: 0,
-      pending_payouts: 0
-    },
     context: "artist-dashboard-earnings"
   });
 
+  // Use type assertions to avoid excessive type depth
   const stats = statsQuery.data as DashboardStats;
-  const recentBookings = Array.isArray(bookingsQuery.data) 
-    ? [...bookingsQuery.data].map(booking => ({ ...booking })) as BookingWithDetails[]
-    : [] as BookingWithDetails[];
+  const recentBookings = (bookingsQuery.data || []) as BookingWithDetails[];
   const earningsData = earningsQuery.data as EarningsData;
 
   return {
