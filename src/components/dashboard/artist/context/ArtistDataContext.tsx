@@ -47,7 +47,8 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
       return {
         id: `portfolio-${index}`,
         url: url,
-        name: fileName // This is now required
+        name: fileName,
+        created_at: new Date().toISOString()
       };
     });
     

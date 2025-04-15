@@ -5,210 +5,165 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { X, Check, DollarSign, Clock, Save, Loader2 } from 'lucide-react';
 import { Service } from './ServicesManager';
 
 interface ServiceFormProps {
-  initialData?: Partial<Service>;
-  onSave: (data: Partial<Service>) => Promise<void>;
+  initialData?: Service;
+  onSave: (data: Partial<Service>) => void;
   onCancel: () => void;
 }
 
-const ServiceForm = ({ initialData, onSave, onCancel }: ServiceFormProps) => {
-  const [title, setTitle] = useState(initialData?.title || '');
-  const [description, setDescription] = useState(initialData?.description || '');
-  const [price, setPrice] = useState(initialData?.price?.toString() || '');
-  const [durationHours, setDurationHours] = useState(Math.floor((initialData?.duration_minutes || 0) / 60).toString());
-  const [durationMinutes, setDurationMinutes] = useState(((initialData?.duration_minutes || 0) % 60).toString());
-  const [isVisible, setIsVisible] = useState(initialData?.is_visible !== false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
+interface FormErrors {
+  title?: string;
+  price?: string;
+  duration_minutes?: string;
+}
 
-  const validate = () => {
-    const newErrors: {[key: string]: string} = {};
+const ServiceForm = ({ initialData, onSave, onCancel }: ServiceFormProps) => {
+  const [formData, setFormData] = useState<Partial<Service>>({
+    title: initialData?.title || '',
+    description: initialData?.description || '',
+    price: initialData?.price || 0,
+    duration_minutes: initialData?.duration_minutes || 30,
+    is_visible: initialData?.is_visible !== false, // Default to true if not specified
+    image_url: initialData?.image_url || null,
+  });
+  
+  const [errors, setErrors] = useState<FormErrors>({});
+  
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
     
-    if (!title.trim()) {
-      newErrors.title = 'Title is required';
+    if (name === 'price' || name === 'duration_minutes') {
+      // Parse numeric values
+      const numValue = parseFloat(value);
+      setFormData({ ...formData, [name]: isNaN(numValue) ? 0 : numValue });
+    } else {
+      setFormData({ ...formData, [name]: value });
     }
     
-    if (!price || isNaN(Number(price)) || Number(price) <= 0) {
-      newErrors.price = 'Valid price is required';
+    // Clear error when field is edited
+    if (errors[name as keyof FormErrors]) {
+      setErrors({ ...errors, [name]: undefined });
+    }
+  };
+  
+  const handleToggleVisible = (checked: boolean) => {
+    setFormData({ ...formData, is_visible: checked });
+  };
+  
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+    
+    if (!formData.title || formData.title.trim().length === 0) {
+      newErrors.title = 'Service name is required';
+    } else if (formData.title.length > 100) {
+      newErrors.title = 'Service name must be 100 characters or less';
     }
     
-    const hours = Number(durationHours) || 0;
-    const minutes = Number(durationMinutes) || 0;
-    const totalMinutes = hours * 60 + minutes;
+    if (typeof formData.price !== 'number' || formData.price <= 0) {
+      newErrors.price = 'Price must be greater than zero';
+    }
     
-    if (totalMinutes <= 0) {
-      newErrors.duration = 'Duration must be greater than 0';
+    if (typeof formData.duration_minutes !== 'number' || formData.duration_minutes < 5) {
+      newErrors.duration_minutes = 'Duration must be at least 5 minutes';
     }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
-  const handleSubmit = async () => {
-    if (!validate()) return;
+  
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     
-    setIsSubmitting(true);
-    
-    const hours = Number(durationHours) || 0;
-    const minutes = Number(durationMinutes) || 0;
-    const totalMinutes = hours * 60 + minutes;
-    
-    try {
-      await onSave({
-        title,
-        description: description || null,
-        price: Number(price),
-        duration_minutes: totalMinutes,
-        is_visible: isVisible
-      });
-    } finally {
-      setIsSubmitting(false);
+    if (validateForm()) {
+      onSave(formData);
     }
   };
-
+  
   return (
-    <div className="space-y-4 bg-gray-50 p-4 rounded-lg border">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium">
-          {initialData ? 'Edit Service' : 'Add New Service'}
-        </h3>
-        <Button variant="ghost" size="sm" onClick={onCancel} disabled={isSubmitting}>
-          <X className="h-4 w-4" />
-        </Button>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-1">
+        <Label htmlFor="title">Service Name <span className="text-red-500">*</span></Label>
+        <Input 
+          id="title"
+          name="title"
+          value={formData.title}
+          onChange={handleChange}
+          placeholder="e.g. Gel Manicure, Acrylic Full Set"
+          className={errors.title ? "border-red-500" : ""}
+        />
+        {errors.title && (
+          <p className="text-sm text-red-500">{errors.title}</p>
+        )}
       </div>
       
-      <div className="space-y-4">
-        <div>
-          <Label htmlFor="title" className={errors.title ? 'text-red-500' : ''}>
-            Service Name*
-          </Label>
-          <Input
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="e.g., Gel Manicure"
-            className={errors.title ? 'border-red-500' : ''}
+      <div className="space-y-1">
+        <Label htmlFor="description">Description</Label>
+        <Textarea 
+          id="description"
+          name="description"
+          value={formData.description || ''}
+          onChange={handleChange}
+          placeholder="Briefly describe what's included in this service..."
+          rows={3}
+        />
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-1">
+          <Label htmlFor="price">Price ($) <span className="text-red-500">*</span></Label>
+          <Input 
+            id="price"
+            name="price"
+            type="number"
+            min="0.01"
+            step="0.01"
+            value={formData.price}
+            onChange={handleChange}
+            className={errors.price ? "border-red-500" : ""}
           />
-          {errors.title && (
-            <p className="text-red-500 text-xs mt-1">{errors.title}</p>
-          )}
-        </div>
-        
-        <div>
-          <Label htmlFor="description">
-            Description (Optional)
-          </Label>
-          <Textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Describe your service..."
-            rows={3}
-          />
-        </div>
-        
-        <div>
-          <Label htmlFor="price" className={errors.price ? 'text-red-500' : ''}>
-            Price*
-          </Label>
-          <div className="relative">
-            <DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-            <Input
-              id="price"
-              type="number"
-              min="0"
-              step="0.01"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              placeholder="0.00"
-              className={`pl-10 ${errors.price ? 'border-red-500' : ''}`}
-            />
-          </div>
           {errors.price && (
-            <p className="text-red-500 text-xs mt-1">{errors.price}</p>
+            <p className="text-sm text-red-500">{errors.price}</p>
           )}
         </div>
         
-        <div>
-          <Label htmlFor="duration" className={errors.duration ? 'text-red-500' : ''}>
-            Duration*
-          </Label>
-          <div className="flex items-center space-x-2">
-            <div className="relative flex-1">
-              <Clock className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-              <Input
-                id="duration-hours"
-                type="number"
-                min="0"
-                max="24"
-                value={durationHours}
-                onChange={(e) => setDurationHours(e.target.value)}
-                placeholder="0"
-                className={`pl-10 ${errors.duration ? 'border-red-500' : ''}`}
-              />
-              <span className="absolute right-3 top-2.5 text-gray-500">hr</span>
-            </div>
-            <div className="relative flex-1">
-              <Input
-                id="duration-minutes"
-                type="number"
-                min="0"
-                max="59"
-                value={durationMinutes}
-                onChange={(e) => setDurationMinutes(e.target.value)}
-                placeholder="0"
-                className={errors.duration ? 'border-red-500' : ''}
-              />
-              <span className="absolute right-3 top-2.5 text-gray-500">min</span>
-            </div>
-          </div>
-          {errors.duration && (
-            <p className="text-red-500 text-xs mt-1">{errors.duration}</p>
-          )}
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="visible"
-            checked={isVisible}
-            onCheckedChange={setIsVisible}
+        <div className="space-y-1">
+          <Label htmlFor="duration_minutes">Duration (minutes) <span className="text-red-500">*</span></Label>
+          <Input 
+            id="duration_minutes"
+            name="duration_minutes"
+            type="number"
+            min="5"
+            step="5"
+            value={formData.duration_minutes}
+            onChange={handleChange}
+            className={errors.duration_minutes ? "border-red-500" : ""}
           />
-          <Label htmlFor="visible" className="cursor-pointer">
-            {isVisible ? 'Visible to clients' : 'Hidden from clients'}
-          </Label>
-        </div>
-        
-        <div className="pt-2 flex justify-end space-x-2">
-          <Button
-            variant="outline"
-            onClick={onCancel}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className="bg-emerald-600 hover:bg-emerald-700"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="mr-2 h-4 w-4" />
-                Save Service
-              </>
-            )}
-          </Button>
+          {errors.duration_minutes && (
+            <p className="text-sm text-red-500">{errors.duration_minutes}</p>
+          )}
         </div>
       </div>
-    </div>
+      
+      <div className="flex items-center space-x-2">
+        <Switch 
+          id="is_visible" 
+          checked={formData.is_visible} 
+          onCheckedChange={handleToggleVisible} 
+        />
+        <Label htmlFor="is_visible">Visible to clients</Label>
+      </div>
+      
+      <div className="flex justify-end space-x-2 pt-4">
+        <Button type="button" variant="outline" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700">
+          {initialData ? 'Save Changes' : 'Add Service'}
+        </Button>
+      </div>
+    </form>
   );
 };
 

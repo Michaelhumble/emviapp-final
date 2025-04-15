@@ -86,6 +86,9 @@ export interface ArtistProfileState {
   referral_count: number;
   affiliate_code: string;
   credits?: number;
+  preferred_language?: string;
+  accepts_bookings?: boolean;
+  preferences?: string[];
 }
 
 export interface ArtistDataContextType {

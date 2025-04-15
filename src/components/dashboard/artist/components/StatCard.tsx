@@ -9,9 +9,21 @@ export interface StatCardProps {
   loading?: boolean;
   precision?: number;
   icon?: React.ReactNode;
+  description?: string;
+  prefix?: string;
+  suffix?: string;
 }
 
-const StatCard = ({ title, value, loading = false, precision = 0, icon }: StatCardProps) => {
+const StatCard = ({ 
+  title, 
+  value, 
+  loading = false, 
+  precision = 0, 
+  icon,
+  description,
+  prefix = '',
+  suffix = ''
+}: StatCardProps) => {
   const displayValue = typeof value === 'number' 
     ? value.toLocaleString(undefined, { minimumFractionDigits: precision, maximumFractionDigits: precision }) 
     : value;
@@ -27,9 +39,12 @@ const StatCard = ({ title, value, loading = false, precision = 0, icon }: StatCa
           {loading ? (
             <Skeleton className="h-7 w-16" />
           ) : (
-            <div className="text-2xl font-bold">{displayValue}</div>
+            <div className="text-2xl font-bold">{prefix}{displayValue}{suffix}</div>
           )}
         </div>
+        {description && (
+          <p className="text-xs text-muted-foreground mt-1">{description}</p>
+        )}
       </CardContent>
     </Card>
   );
