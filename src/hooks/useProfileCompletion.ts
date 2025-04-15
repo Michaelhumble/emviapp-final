@@ -1,15 +1,15 @@
 
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/context/auth';
-import { ProfileCompletionStatus } from '@/types/profile-completion';
+import { useAuth } from "@/context/auth";
+import { useSafeQuery } from "./useSafeQuery";
+import { ProfileCompletionStatus } from "@/types/profile-completion";
+import { supabase } from "@/integrations/supabase/client";
 
 export function useProfileCompletion() {
   const { user, userRole } = useAuth();
 
-  const { data: completionStatus, isLoading } = useQuery({
+  const { data: completionStatus, isLoading } = useSafeQuery<ProfileCompletionStatus>({
     queryKey: ['profile-completion', user?.id],
-    queryFn: async (): Promise<ProfileCompletionStatus> => {
+    queryFn: async () => {
       if (!user?.id || !userRole) {
         throw new Error('User or role not found');
       }
@@ -37,7 +37,8 @@ export function useProfileCompletion() {
         missingFields
       };
     },
-    enabled: !!user?.id && !!userRole
+    enabled: !!user?.id && !!userRole,
+    context: "profile-completion"
   });
 
   return {
