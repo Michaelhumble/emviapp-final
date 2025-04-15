@@ -1,4 +1,3 @@
-
 export interface BookingWithDetails {
   id: string;
   sender_id: string;
@@ -21,6 +20,7 @@ export interface DashboardStats {
   average_rating: number;
   referral_count: number;
   repeat_client_percentage: number;
+  profile_views?: number;
 }
 
 export interface EarningsData {
@@ -41,7 +41,6 @@ export interface PortfolioImage {
   created_at: string;
 }
 
-// Missing types we need to add
 export interface Booking {
   id: string;
   sender_id: string;

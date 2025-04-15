@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useArtistCalendar } from "@/hooks/useArtistCalendar";
 import { CalendarDays, ChevronLeft, ChevronRight, Clock, Info, UserPlus } from "lucide-react";
@@ -20,7 +19,6 @@ const ArtistCalendar = () => {
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   
-  // Handle responsive layout
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1280) {
@@ -38,17 +36,14 @@ const ArtistCalendar = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
-  // Generate visible days
   const days = Array.from({ length: visibleDays }, (_, i) => 
     addDays(currentDate, i)
   );
   
-  // Navigate between days
   const goToPreviousDay = () => setCurrentDate(prev => subDays(prev, visibleDays));
   const goToNextDay = () => setCurrentDate(prev => addDays(prev, visibleDays));
   const goToToday = () => setCurrentDate(new Date());
   
-  // Handle swipe for mobile
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStart(e.targetTouches[0].clientX);
   };
@@ -74,7 +69,6 @@ const ArtistCalendar = () => {
     setTouchEnd(null);
   };
   
-  // Get appointments for a specific day
   const getAppointmentsForDay = (day: Date) => {
     return appointments.filter(appointment => 
       isSameDay(parseISO(appointment.start_time), day)
@@ -83,7 +77,6 @@ const ArtistCalendar = () => {
     );
   };
   
-  // Get blocked times for a specific day
   const getBlockedTimesForDay = (day: Date) => {
     return blockedTimes.filter(blocked => 
       isSameDay(parseISO(blocked.start_time), day)
@@ -92,7 +85,6 @@ const ArtistCalendar = () => {
     );
   };
   
-  // Calculate position and height for appointment blocks
   const getAppointmentStyle = (appointment: any) => {
     const startTime = parseISO(appointment.start_time);
     const endTime = parseISO(appointment.end_time);
@@ -100,10 +92,8 @@ const ArtistCalendar = () => {
     const startHour = startTime.getHours() + startTime.getMinutes() / 60;
     const endHour = endTime.getHours() + endTime.getMinutes() / 60;
     
-    // Calculate top position (relative to 6 AM start)
     const topPosition = Math.max(0, (startHour - 6) * 60);
     
-    // Calculate height (1 hour = 60px)
     const height = Math.max(30, (endHour - startHour) * 60);
     
     return {
@@ -112,22 +102,18 @@ const ArtistCalendar = () => {
     };
   };
   
-  // Handle click on appointment
   const handleAppointmentClick = (appointment: any) => {
     setSelectedBooking(appointment);
   };
   
-  // Close appointment preview
   const closePreview = () => {
     setSelectedBooking(null);
   };
   
-  // Check if day has any appointments
   const dayHasAppointments = (day: Date) => {
     return getAppointmentsForDay(day).length > 0 || getBlockedTimesForDay(day).length > 0;
   };
   
-  // Filter days that have appointments (for collapsing empty days)
   const daysWithAppointments = days.filter(day => dayHasAppointments(day));
   const visibleDaysArray = daysWithAppointments.length > 0 ? daysWithAppointments : days;
   
@@ -155,7 +141,6 @@ const ArtistCalendar = () => {
           </div>
         </div>
         
-        {/* Calendar Grid */}
         <div 
           className="relative overflow-x-auto" 
           ref={calendarRef}
@@ -163,7 +148,6 @@ const ArtistCalendar = () => {
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          {/* Days Header */}
           <div className="flex border-b">
             <div className="w-16 shrink-0 border-r bg-muted/30 px-2">
               <div className="h-14"></div>
@@ -200,14 +184,12 @@ const ArtistCalendar = () => {
             })}
           </div>
           
-          {/* Time Grid */}
-          <div className="flex h-[960px]"> {/* 16 hours * 60px per hour */}
-            {/* Time Labels */}
+          <div className="flex h-[960px]">
             <div className="w-16 shrink-0 border-r bg-muted/30">
               {TIME_SLOTS.filter(hour => hour % 2 === 0).map((hour) => (
                 <div 
                   key={hour} 
-                  className="relative h-[120px]" // 2 hours = 120px
+                  className="relative h-[120px]"
                 >
                   <div className="absolute -top-2.5 left-0 right-0 text-xs text-muted-foreground text-center">
                     {hour % 12 === 0 ? 12 : hour % 12} {hour >= 12 ? 'PM' : 'AM'}
@@ -216,7 +198,6 @@ const ArtistCalendar = () => {
               ))}
             </div>
             
-            {/* Appointments Columns */}
             {visibleDaysArray.map((day, dayIndex) => {
               const dayAppointments = getAppointmentsForDay(day);
               const dayBlockedTimes = getBlockedTimesForDay(day);
@@ -229,7 +210,6 @@ const ArtistCalendar = () => {
                     isSameDay(day, new Date()) && "bg-blue-50/30"
                   )}
                 >
-                  {/* Hour Lines */}
                   {TIME_SLOTS.map((hour) => (
                     <div 
                       key={hour}
@@ -237,7 +217,6 @@ const ArtistCalendar = () => {
                     />
                   ))}
                   
-                  {/* Appointment Blocks */}
                   {dayAppointments.map((appointment) => {
                     const style = getAppointmentStyle(appointment);
                     const isConfirmed = appointment.status === 'confirmed';
@@ -258,7 +237,7 @@ const ArtistCalendar = () => {
                           {format(parseISO(appointment.start_time), "h:mm a")}
                         </div>
                         <div className="text-xs font-medium truncate">
-                          {appointment.service_name || "Service"}
+                          {appointment.services?.title || "Service"}
                         </div>
                         <div className="text-xs truncate">
                           {appointment.customer_name || "Client"}
@@ -275,7 +254,6 @@ const ArtistCalendar = () => {
                     );
                   })}
                   
-                  {/* Blocked Time Blocks */}
                   {dayBlockedTimes.map((blocked) => {
                     const style = getAppointmentStyle(blocked);
                     
@@ -300,7 +278,6 @@ const ArtistCalendar = () => {
           </div>
         </div>
         
-        {/* Booking Preview */}
         {selectedBooking && (
           <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center" onClick={closePreview}>
             <div className="bg-white rounded-lg shadow-lg p-4 max-w-md w-full mx-4" onClick={e => e.stopPropagation()}>
