@@ -1,13 +1,18 @@
 
 import { useAuth } from "@/context/auth";
-import { useSafeQuery } from "@/hooks/useSafeQuery";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardStats, BookingWithDetails, EarningsData } from "../types/ArtistDashboardTypes";
+import { useTypedQuery } from "@/hooks/useTypedQuery";
 
+/**
+ * Hook to fetch data for the artist dashboard
+ * This version uses explicit type annotations to avoid deep instantiation errors
+ */
 export const useArtistDashboardData = (activeTab: string) => {
   const { user } = useAuth();
 
-  const statsQuery = useSafeQuery({
+  // Use useTypedQuery which has simpler type inference
+  const statsQuery = useTypedQuery<DashboardStats, Error>({
     queryKey: ['artist-stats', user?.id],
     queryFn: async () => {
       if (!user?.id) throw new Error("User not authenticated");
@@ -20,11 +25,10 @@ export const useArtistDashboardData = (activeTab: string) => {
         repeat_client_percentage: 65
       };
     },
-    enabled: !!user?.id,
-    context: "artist-dashboard-stats"
+    enabled: !!user?.id
   });
 
-  const bookingsQuery = useSafeQuery({
+  const bookingsQuery = useTypedQuery<BookingWithDetails[], Error>({
     queryKey: ['recent-bookings', user?.id],
     queryFn: async () => {
       if (!user?.id) throw new Error("User not authenticated");
@@ -39,11 +43,10 @@ export const useArtistDashboardData = (activeTab: string) => {
       if (error) throw error;
       return data || [];
     },
-    enabled: !!user?.id,
-    context: "artist-dashboard-bookings"
+    enabled: !!user?.id
   });
 
-  const earningsQuery = useSafeQuery({
+  const earningsQuery = useTypedQuery<EarningsData, Error>({
     queryKey: ['earnings-data', user?.id],
     queryFn: async () => {
       if (!user?.id) throw new Error("User not authenticated");
@@ -61,21 +64,16 @@ export const useArtistDashboardData = (activeTab: string) => {
         pending_payouts: 280
       };
     },
-    enabled: !!user?.id && activeTab === "earnings",
-    context: "artist-dashboard-earnings"
+    enabled: !!user?.id && activeTab === "earnings"
   });
 
-  // Use type assertions to avoid excessive type depth
-  const stats = statsQuery.data as DashboardStats;
-  const recentBookings = (bookingsQuery.data || []) as BookingWithDetails[];
-  const earningsData = earningsQuery.data as EarningsData;
-
+  // No need for type assertions anymore since we're using the typed query hook
   return {
-    stats,
+    stats: statsQuery.data,
     isLoadingStats: statsQuery.isLoading,
-    recentBookings,
+    recentBookings: bookingsQuery.data || [],
     isLoadingBookings: bookingsQuery.isLoading,
-    earningsData,
+    earningsData: earningsQuery.data,
     isLoadingEarnings: earningsQuery.isLoading
   };
 };
