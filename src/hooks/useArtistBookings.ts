@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
@@ -7,7 +6,7 @@ import { Booking, BookingCounts } from "@/components/dashboard/artist/types/Arti
 
 export const useArtistBookings = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [counts, setCounts] = useState<BookingCounts>({ pending: 0, upcoming: 0 });
+  const [counts, setCounts] = useState<BookingCounts>({ pending: 0, upcoming: 0, accepted: 0, completed: 0, total: 0 });
   const [loading, setLoading] = useState(true);
   const [serviceTypes, setServiceTypes] = useState<Array<{ id: string; label: string }>>([]);
   const { user } = useAuth();
@@ -73,13 +72,18 @@ export const useArtistBookings = () => {
           b.status === 'accepted' && 
           new Date(b.date_requested) >= new Date()
         ).length;
+        const acceptedCount = bookingsWithUserDetails.filter(b => b.status === 'accepted').length;
+        const completedCount = bookingsWithUserDetails.filter(b => b.status === 'completed').length;
         
         setCounts({
           pending: pendingCount,
-          upcoming: upcomingCount
+          upcoming: upcomingCount,
+          accepted: acceptedCount,
+          completed: completedCount,
+          total: bookingsWithUserDetails.length
         });
         
-        // Extract unique service types for filtering
+        // Extract unique service types for filtering with proper typing
         const uniqueServices = Array.from(
           new Map(
             bookingsWithUserDetails
@@ -88,7 +92,8 @@ export const useArtistBookings = () => {
           ).values()
         );
         
-        setServiceTypes(uniqueServices);
+        // Explicitly type the array to match the state type
+        setServiceTypes(uniqueServices as Array<{ id: string; label: string }>);
       }
     } catch (error) {
       console.error("Error fetching bookings:", error);
@@ -121,7 +126,10 @@ export const useArtistBookings = () => {
       // Update counts
       setCounts(prev => ({
         pending: Math.max(0, prev.pending - 1),
-        upcoming: prev.upcoming + 1
+        upcoming: prev.upcoming + 1,
+        accepted: prev.accepted + 1,
+        completed: prev.completed,
+        total: prev.total
       }));
     } catch (error) {
       console.error("Error accepting booking:", error);
@@ -152,7 +160,8 @@ export const useArtistBookings = () => {
       // Update counts
       setCounts(prev => ({
         pending: Math.max(0, prev.pending - 1),
-        upcoming: prev.upcoming
+        accepted: prev.accepted,
+        total: prev.total
       }));
     } catch (error) {
       console.error("Error declining booking:", error);

@@ -14,13 +14,14 @@ const ArtistDashboardWidgets = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   
-  // Fetch artist stats
+  // Fetch artist stats with explicit typing to avoid deep instantiation
   const { data: stats, isLoading: isLoadingStats } = useQuery<DashboardStats | null>({
     queryKey: ['artist-stats', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
       
       try {
+        // Since this is mock data, we're explicitly returning a typed object
         const mockStats: DashboardStats = {
           booking_count: 12,
           completed_services: 8,
@@ -39,7 +40,7 @@ const ArtistDashboardWidgets = () => {
     enabled: !!user?.id
   });
 
-  // Fetch recent bookings
+  // Fetch recent bookings with explicit typing
   const { data: recentBookings, isLoading: isLoadingBookings } = useQuery<BookingWithDetails[]>({
     queryKey: ['recent-bookings', user?.id],
     queryFn: async () => {
@@ -60,7 +61,7 @@ const ArtistDashboardWidgets = () => {
           service_name: "Nail Service",
           appointment_time: booking.date_requested + " " + booking.time_requested,
           price: 45
-        }));
+        })) as BookingWithDetails[];
       } catch (error) {
         console.error("Error fetching recent bookings:", error);
         return [];
@@ -69,14 +70,14 @@ const ArtistDashboardWidgets = () => {
     enabled: !!user?.id
   });
 
-  // Fetch earnings data
+  // Fetch earnings data with explicit typing
   const { data: earningsData, isLoading: isLoadingEarnings } = useQuery<EarningsData | null>({
     queryKey: ['earnings-data', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
       
       try {
-        return {
+        const mockEarningsData: EarningsData = {
           monthly_earnings: [
             { month: 'Jan', amount: 420 },
             { month: 'Feb', amount: 380 },
@@ -88,6 +89,8 @@ const ArtistDashboardWidgets = () => {
           total_earnings: 3010,
           pending_payouts: 280
         };
+        
+        return mockEarningsData;
       } catch (error) {
         console.error("Error fetching earnings data:", error);
         return null;
