@@ -1,105 +1,130 @@
 
-import React from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import React from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Loader2 } from 'lucide-react';
 
-interface ServiceProps {
-  id?: string;
-  name: string;
+interface ServiceFormData {
+  title: string;
+  description: string;
   price: number;
-  duration: number | null;
-  description?: string | null;
+  duration_minutes: number;
+  is_visible: boolean;
 }
 
 interface ServiceFormDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  service: ServiceProps;
-  onServiceChange: (field: string, value: any) => void;
+  service: Partial<ServiceFormData>;
+  onServiceChange: (field: keyof ServiceFormData, value: any) => void;
   onSubmit: (e: React.FormEvent) => void;
   isEditing: boolean;
+  isSaving?: boolean;
 }
 
-const ServiceFormDialog = ({
+const ServiceFormDialog: React.FC<ServiceFormDialogProps> = ({
   isOpen,
   onClose,
   service,
   onServiceChange,
   onSubmit,
-  isEditing
-}: ServiceFormDialogProps) => {
+  isEditing,
+  isSaving = false
+}) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>{isEditing ? "Edit Service" : "Add New Service"}</DialogTitle>
+          <DialogTitle>{isEditing ? 'Edit Service' : 'Add New Service'}</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={onSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">Service Name</Label>
+              <Label htmlFor="title">Service Name*</Label>
               <Input 
-                id="name" 
-                value={service.name} 
-                onChange={(e) => onServiceChange('name', e.target.value)}
-                placeholder="e.g. Gel Full Set" 
+                id="title" 
+                value={service.title || ''} 
+                onChange={(e) => onServiceChange('title', e.target.value)}
+                placeholder="e.g. Full Set Acrylic" 
                 required
+              />
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea 
+                id="description" 
+                value={service.description || ''} 
+                onChange={(e) => onServiceChange('description', e.target.value)}
+                placeholder="Describe what's included in this service"
+                rows={3}
               />
             </div>
             
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="price">Price ($)</Label>
+                <Label htmlFor="price">Price ($)*</Label>
                 <Input 
                   id="price" 
                   type="number" 
                   min="0" 
                   step="0.01"
-                  value={service.price} 
+                  value={service.price || ''} 
                   onChange={(e) => onServiceChange('price', parseFloat(e.target.value))}
                   required
                 />
               </div>
               
               <div className="grid gap-2">
-                <Label htmlFor="duration">Duration (minutes)</Label>
+                <Label htmlFor="duration">Duration (minutes)*</Label>
                 <Input 
                   id="duration" 
                   type="number" 
-                  min="0" 
+                  min="5" 
                   step="5"
-                  value={service.duration || ''} 
-                  onChange={(e) => {
-                    const value = e.target.value === '' ? null : parseInt(e.target.value);
-                    onServiceChange('duration', value);
-                  }}
-                  placeholder="60"
+                  value={service.duration_minutes || ''} 
+                  onChange={(e) => onServiceChange('duration_minutes', parseInt(e.target.value))}
+                  required
                 />
               </div>
             </div>
             
-            <div className="grid gap-2">
-              <Label htmlFor="description">Description (Optional)</Label>
-              <Textarea 
-                id="description" 
-                value={service.description || ''} 
-                onChange={(e) => onServiceChange('description', e.target.value)}
-                placeholder="Brief description of what's included in this service"
-                rows={3}
+            <div className="flex items-center space-x-2">
+              <Switch 
+                id="is_visible" 
+                checked={service.is_visible !== false} // Default to true
+                onCheckedChange={(checked) => onServiceChange('is_visible', checked)}
               />
+              <Label htmlFor="is_visible">Visible to clients</Label>
             </div>
           </div>
           
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={onClose}
+              disabled={isSaving}
+            >
               Cancel
             </Button>
-            <Button type="submit">
-              {isEditing ? "Save Changes" : "Add Service"}
+            <Button 
+              type="submit" 
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {isEditing ? 'Updating...' : 'Saving...'}
+                </>
+              ) : (
+                isEditing ? 'Update Service' : 'Save Service'
+              )}
             </Button>
           </DialogFooter>
         </form>

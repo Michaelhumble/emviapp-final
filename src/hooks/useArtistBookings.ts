@@ -1,188 +1,179 @@
 
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/context/auth";
-import { toast } from "sonner";
-import { Booking, BookingCounts, ServiceType } from "@/components/dashboard/artist/types/ArtistDashboardTypes";
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/auth';
+import { toast } from 'sonner';
 
-export const useArtistBookings = () => {
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [counts, setCounts] = useState<BookingCounts>({ pending: 0, upcoming: 0, accepted: 0, completed: 0, total: 0 });
-  const [loading, setLoading] = useState(true);
-  const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([]);
+export type BookingViewType = 'day' | 'week' | 'month';
+
+export interface Booking {
+  id: string;
+  sender_id: string;
+  recipient_id: string;
+  service_id: string | null;
+  status: string;
+  date_requested: string | null;
+  time_requested: string | null;
+  note: string | null;
+  created_at: string;
+  service_title?: string;
+  service_price?: number;
+  client_name?: string;
+}
+
+export interface BookingFilters {
+  status?: string;
+  dateRange?: {
+    start: Date;
+    end: Date;
+  };
+}
+
+export function useArtistBookings() {
   const { user } = useAuth();
-
-  const fetchBookings = async () => {
-    try {
-      setLoading(true);
-      
-      if (!user) return;
-      
-      // Get bookings where the artist is the recipient
-      const { data, error } = await supabase
-        .from('bookings')
-        .select(`*`)
-        .eq('recipient_id', user.id)
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      
-      if (data) {
-        // Transform data to include customer names
-        const bookingsWithUserDetails = await Promise.all(
-          data.map(async (booking) => {
-            // Get customer name
-            const { data: userData, error: userError } = await supabase
-              .from('users')
-              .select('full_name')
-              .eq('id', booking.sender_id)
-              .single();
-            
-            // Check for errors but don't throw
-            if (userError) {
-              console.error("Error fetching customer details:", userError);
-            }
-            
-            // Get service details if possible
-            let serviceName = "";
-            if (booking.service_id) {
-              const { data: serviceData, error: serviceError } = await supabase
-                .from('services')
-                .select('title')
-                .eq('id', booking.service_id)
-                .single();
-                
-              if (!serviceError && serviceData) {
-                serviceName = serviceData.title;
-              }
-            }
-            
-            return {
-              ...booking,
-              customer_name: userData?.full_name || "Unknown",
-              service_name: serviceName
-            } as Booking;
-          })
-        );
-        
-        setBookings(bookingsWithUserDetails);
-        
-        // Calculate counts
-        const pendingCount = bookingsWithUserDetails.filter(b => b.status === 'pending').length;
-        const upcomingCount = bookingsWithUserDetails.filter(b => 
-          b.status === 'accepted' && 
-          new Date(b.date_requested) >= new Date()
-        ).length;
-        const acceptedCount = bookingsWithUserDetails.filter(b => b.status === 'accepted').length;
-        const completedCount = bookingsWithUserDetails.filter(b => b.status === 'completed').length;
-        
-        setCounts({
-          pending: pendingCount,
-          upcoming: upcomingCount,
-          accepted: acceptedCount,
-          completed: completedCount,
-          total: bookingsWithUserDetails.length
-        });
-        
-        // Extract unique service types for filtering
-        const uniqueServices = Array.from(
-          new Map(
-            bookingsWithUserDetails
-              .filter(b => b.service_id && b.service_name)
-              .map(b => [b.service_id, { id: b.service_id || '', label: b.service_name || '' }])
-          ).values()
-        );
-        
-        // Explicitly type the array to match the state type
-        setServiceTypes(uniqueServices as ServiceType[]);
-      }
-    } catch (error) {
-      console.error("Error fetching bookings:", error);
-      toast.error("Failed to load bookings");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAccept = async (bookingId: string) => {
-    try {
-      const { error } = await supabase
-        .from('bookings')
-        .update({ status: 'accepted' })
-        .eq('id', bookingId);
-      
-      if (error) throw error;
-      
-      toast.success("Booking accepted");
-      
-      // Update the local state
-      setBookings(prev => 
-        prev.map(booking => 
-          booking.id === bookingId 
-            ? { ...booking, status: 'accepted' as const } 
-            : booking
-        )
-      );
-      
-      // Update counts
-      setCounts(prev => ({
-        pending: Math.max(0, prev.pending - 1),
-        upcoming: (prev.upcoming || 0) + 1,
-        accepted: prev.accepted + 1,
-        completed: prev.completed,
-        total: prev.total
-      }));
-    } catch (error) {
-      console.error("Error accepting booking:", error);
-      toast.error("Failed to accept booking");
-    }
-  };
-  
-  const handleDecline = async (bookingId: string) => {
-    try {
-      const { error } = await supabase
-        .from('bookings')
-        .update({ status: 'declined' })
-        .eq('id', bookingId);
-      
-      if (error) throw error;
-      
-      toast.success("Booking declined");
-      
-      // Update the local state
-      setBookings(prev => 
-        prev.map(booking => 
-          booking.id === bookingId 
-            ? { ...booking, status: 'declined' as const } 
-            : booking
-        )
-      );
-      
-      // Update counts - ensure all required properties are included
-      setCounts(prev => ({
-        pending: Math.max(0, prev.pending - 1),
-        accepted: prev.accepted,
-        completed: prev.completed,
-        total: prev.total,
-        upcoming: prev.upcoming
-      }));
-    } catch (error) {
-      console.error("Error declining booking:", error);
-      toast.error("Failed to decline booking");
-    }
-  };
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [viewType, setViewType] = useState<BookingViewType>('week');
+  const [filters, setFilters] = useState<BookingFilters>({});
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   useEffect(() => {
-    fetchBookings();
-  }, [user]);
+    if (user) {
+      fetchBookings();
+    } else {
+      setIsLoading(false);
+    }
+  }, [user, viewType, filters, selectedDate]);
+
+  const fetchBookings = async () => {
+    if (!user) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      let query = supabase
+        .from('bookings')
+        .select(`
+          *,
+          services:service_id (title, price),
+          clients:sender_id (full_name)
+        `)
+        .eq('recipient_id', user.id);
+
+      // Apply status filter if provided
+      if (filters.status) {
+        query = query.eq('status', filters.status);
+      }
+
+      // Apply date filters based on the view type and selected date
+      if (filters.dateRange) {
+        query = query
+          .gte('date_requested', filters.dateRange.start.toISOString().split('T')[0])
+          .lte('date_requested', filters.dateRange.end.toISOString().split('T')[0]);
+      } else {
+        // If no custom date range, use viewType to determine range
+        const { start, end } = getDateRangeFromViewType(viewType, selectedDate);
+        query = query
+          .gte('date_requested', start.toISOString().split('T')[0])
+          .lte('date_requested', end.toISOString().split('T')[0]);
+      }
+
+      // Order by date and time
+      query = query.order('date_requested', { ascending: true });
+
+      const { data, error } = await query;
+
+      if (error) throw new Error(error.message);
+
+      // Process the data to include service and client information
+      const processedBookings = data.map(booking => ({
+        ...booking,
+        service_title: booking.services?.title || 'Unknown Service',
+        service_price: booking.services?.price || 0,
+        client_name: booking.clients?.full_name || 'Unknown Client',
+      }));
+
+      setBookings(processedBookings);
+    } catch (err) {
+      console.error('Error fetching bookings:', err);
+      setError(err instanceof Error ? err : new Error('Failed to fetch bookings'));
+      toast.error('Failed to load your bookings');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getDateRangeFromViewType = (viewType: BookingViewType, baseDate: Date): { start: Date, end: Date } => {
+    const start = new Date(baseDate);
+    const end = new Date(baseDate);
+
+    switch (viewType) {
+      case 'day':
+        // Just the selected day
+        return { start, end };
+      
+      case 'week':
+        // Start from Sunday of the current week
+        const day = start.getDay();
+        start.setDate(start.getDate() - day);
+        
+        // End on Saturday
+        end.setDate(start.getDate() + 6);
+        return { start, end };
+      
+      case 'month':
+        // Start from the 1st day of the month
+        start.setDate(1);
+        
+        // End on the last day of the month
+        end.setMonth(end.getMonth() + 1);
+        end.setDate(0);
+        return { start, end };
+        
+      default:
+        return { start, end };
+    }
+  };
+
+  const updateBookingStatus = async (bookingId: string, status: string) => {
+    if (!user) return false;
+
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ status })
+        .eq('id', bookingId)
+        .eq('recipient_id', user.id);
+
+      if (error) throw new Error(error.message);
+
+      // Update local state
+      setBookings(prev => prev.map(booking => 
+        booking.id === bookingId ? { ...booking, status } : booking
+      ));
+      
+      toast.success(`Booking ${status}`);
+      return true;
+    } catch (err) {
+      console.error(`Error updating booking status:`, err);
+      toast.error('Failed to update booking');
+      return false;
+    }
+  };
 
   return {
     bookings,
-    counts,
-    loading,
-    serviceTypes,
-    handleAccept,
-    handleDecline,
-    refreshBookings: fetchBookings
+    isLoading,
+    error,
+    viewType,
+    setViewType,
+    filters,
+    setFilters,
+    selectedDate,
+    setSelectedDate,
+    fetchBookings,
+    updateBookingStatus,
   };
-};
+}

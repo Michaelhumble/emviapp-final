@@ -1,9 +1,10 @@
 
-import { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   Upload, 
@@ -12,32 +13,44 @@ import {
   Image as ImageIcon, 
   Info, 
   Loader2, 
-  Plus 
+  Plus, 
+  Move
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useArtistPortfolio, PortfolioImage } from '@/hooks/useArtistPortfolio';
 import { useAuth } from '@/context/auth';
+import { useProfileCompletion } from '@/hooks/useProfileCompletion';
+import { cn } from '@/lib/utils';
 
-const ArtistPortfolioGallery = () => {
+const ArtistPortfolioGallery: React.FC = () => {
   const { user } = useAuth();
   const { 
     images, 
     isLoading, 
     isUploading, 
+    uploadProgress,
     fileInputRef, 
     uploadImage, 
-    deleteImage 
+    deleteImage,
+    updateImageOrder
   } = useArtistPortfolio();
   
+  const { markTaskComplete, isTaskComplete } = useProfileCompletion();
   const [selectedImage, setSelectedImage] = useState<PortfolioImage | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isDragModeActive, setIsDragModeActive] = useState(false);
   
   // Handle file selection
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       await uploadImage(file);
+      
+      // Mark portfolio task as complete
+      if (!isTaskComplete('portfolio_uploaded')) {
+        markTaskComplete('portfolio_uploaded');
+      }
     }
   };
   
@@ -46,7 +59,7 @@ const ArtistPortfolioGallery = () => {
     if (!selectedImage) return;
     
     setIsDeleting(true);
-    await deleteImage(selectedImage.name);
+    await deleteImage(selectedImage.id);
     setIsDeleting(false);
     setSelectedImage(null);
   };
@@ -68,7 +81,24 @@ const ArtistPortfolioGallery = () => {
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
       await uploadImage(file);
+      
+      // Mark portfolio task as complete
+      if (!isTaskComplete('portfolio_uploaded')) {
+        markTaskComplete('portfolio_uploaded');
+      }
     }
+  };
+
+  // Handle reordering
+  const handleDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+
+    const reorderedImages = Array.from(images);
+    const [movedItem] = reorderedImages.splice(result.source.index, 1);
+    reorderedImages.splice(result.destination.index, 0, movedItem);
+    
+    // Update state and database
+    updateImageOrder(reorderedImages);
   };
   
   if (!user) {
@@ -97,55 +127,73 @@ const ArtistPortfolioGallery = () => {
     >
       <Card className="shadow-sm border-purple-100">
         <CardHeader className="pb-3">
-          <CardTitle className="flex items-center text-xl font-serif">
-            <ImageIcon className="h-5 w-5 mr-2 text-purple-500" />
-            My Portfolio
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center text-xl font-serif">
+              <ImageIcon className="h-5 w-5 mr-2 text-purple-500" />
+              My Portfolio
+            </CardTitle>
+            
+            {images.length > 1 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsDragModeActive(!isDragModeActive)}
+                className={cn(
+                  "text-xs",
+                  isDragModeActive && "bg-purple-50 border-purple-200"
+                )}
+              >
+                <Move className="h-3.5 w-3.5 mr-1.5" />
+                {isDragModeActive ? "Exit Reorder Mode" : "Reorder Images"}
+              </Button>
+            )}
+          </div>
         </CardHeader>
         
         <CardContent>
-          {/* Upload area */}
-          <div
-            className={`
-              border-2 border-dashed rounded-lg p-6 text-center mb-6
-              ${isDragging ? 'border-purple-400 bg-purple-50/50' : 'border-gray-200 hover:border-purple-200 hover:bg-gray-50'}
-              ${isUploading ? 'border-purple-300 bg-purple-50/30' : ''}
-              transition-colors cursor-pointer
-            `}
-            onClick={() => fileInputRef.current?.click()}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-          >
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              className="hidden"
-              accept="image/jpeg,image/png,image/webp"
-            />
-            
-            {isUploading ? (
-              <div className="flex flex-col items-center py-4">
-                <Loader2 className="h-10 w-10 text-purple-500 animate-spin mb-3" />
-                <p className="text-sm font-medium">Uploading your image...</p>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center py-4">
-                <Upload className="h-10 w-10 text-gray-400 mb-3" />
-                <p className="text-sm font-medium mb-1">
-                  Drag & drop your photos or click to browse
-                </p>
-                <p className="text-xs text-gray-500 mb-3">
-                  Upload your best work to showcase your skills
-                </p>
-                <Button size="sm">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Select Image
-                </Button>
-              </div>
-            )}
-          </div>
+          {!isDragModeActive && (
+            <div
+              className={`
+                border-2 border-dashed rounded-lg p-6 text-center mb-6
+                ${isDragging ? 'border-purple-400 bg-purple-50/50' : 'border-gray-200 hover:border-purple-200 hover:bg-gray-50'}
+                ${isUploading ? 'border-purple-300 bg-purple-50/30' : ''}
+                transition-colors cursor-pointer
+              `}
+              onClick={() => fileInputRef.current?.click()}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+                accept="image/jpeg,image/png,image/webp"
+              />
+              
+              {isUploading ? (
+                <div className="flex flex-col items-center py-4">
+                  <Loader2 className="h-10 w-10 text-purple-500 animate-spin mb-3" />
+                  <p className="text-sm font-medium">Uploading your image... {uploadProgress}%</p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center py-4">
+                  <Upload className="h-10 w-10 text-gray-400 mb-3" />
+                  <p className="text-sm font-medium mb-1">
+                    Drag & drop your photos or click to browse
+                  </p>
+                  <p className="text-xs text-gray-500 mb-3">
+                    Upload your best work to showcase your skills
+                  </p>
+                  <Button size="sm">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Select Image
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
           
           {/* Portfolio grid */}
           {isLoading ? (
@@ -167,12 +215,49 @@ const ArtistPortfolioGallery = () => {
                 Upload your best work to showcase your skills and attract clients.
               </p>
             </div>
+          ) : isDragModeActive ? (
+            // Draggable grid mode
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <Droppable droppableId="portfolio-images" direction="horizontal">
+                {(provided) => (
+                  <div 
+                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                  >
+                    {images.map((image, index) => (
+                      <Draggable key={image.id} draggableId={image.id} index={index}>
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            className="relative aspect-square rounded-md overflow-hidden group border bg-white"
+                          >
+                            <img
+                              src={image.url}
+                              alt={`Portfolio image - ${image.name}`}
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                              <Move className="h-8 w-8 text-white opacity-70" />
+                            </div>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
           ) : (
+            // Standard grid mode
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               <AnimatePresence>
                 {images.map((image) => (
                   <motion.div
-                    key={image.id || image.name}
+                    key={image.id}
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
@@ -199,6 +284,7 @@ const ArtistPortfolioGallery = () => {
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedImage(image);
+                            setIsDeleting(true);
                           }}
                           size="sm"
                           variant="destructive"
@@ -211,6 +297,19 @@ const ArtistPortfolioGallery = () => {
                   </motion.div>
                 ))}
               </AnimatePresence>
+            </div>
+          )}
+          
+          {/* Add back the upload button if in dragging mode */}
+          {isDragModeActive && images.length > 0 && (
+            <div className="mt-4 flex justify-center">
+              <Button 
+                onClick={() => setIsDragModeActive(false)}
+                variant="default"
+                className="min-h-[44px] mr-2"
+              >
+                Done Reordering
+              </Button>
             </div>
           )}
         </CardContent>
@@ -248,7 +347,7 @@ const ArtistPortfolioGallery = () => {
                 <Button
                   variant="destructive"
                   size="sm"
-                  onClick={confirmDelete}
+                  onClick={() => setIsDeleting(true)}
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete Image
@@ -260,19 +359,27 @@ const ArtistPortfolioGallery = () => {
       </Dialog>
       
       {/* Delete confirmation modal */}
-      <Dialog open={!!selectedImage && isDeleting} onOpenChange={(open) => !open && setSelectedImage(null)}>
+      <Dialog open={!!selectedImage && isDeleting} onOpenChange={(open) => {
+        if (!open) {
+          setIsDeleting(false);
+          setSelectedImage(null);
+        }
+      }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Delete Image</DialogTitle>
           </DialogHeader>
           <p>Are you sure you want to delete this image? This action cannot be undone.</p>
-          <div className="flex justify-end space-x-2">
-            <Button variant="outline" onClick={() => setSelectedImage(null)}>Cancel</Button>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setIsDeleting(false);
+              setSelectedImage(null);
+            }}>Cancel</Button>
             <Button variant="destructive" onClick={confirmDelete}>
-              {isDeleting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Trash2 className="h-4 w-4 mr-2" />}
+              {isDeleting && selectedImage ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Trash2 className="h-4 w-4 mr-2" />}
               Delete
             </Button>
-          </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </motion.div>

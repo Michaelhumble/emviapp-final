@@ -96,7 +96,7 @@ export function useOwnerDashboardData(): OwnerDashboardData {
   // Function to get date range based on selected filter
   const getDateRange = (rangeOption: string): { start: Date; end: Date } => {
     const endDate = new Date();
-    let startDate = new Date();
+    const startDate = new Date();
     
     switch (rangeOption) {
       case "last7Days":
@@ -110,7 +110,10 @@ export function useOwnerDashboardData(): OwnerDashboardData {
         break;
       case "lastMonth":
         startDate = new Date(endDate.getFullYear(), endDate.getMonth() - 1, 1);
-        endDate.setDate(0); // Last day of previous month
+        const lastDay = new Date(endDate.getFullYear(), endDate.getMonth(), 0);
+        endDate.setFullYear(lastDay.getFullYear());
+        endDate.setMonth(lastDay.getMonth());
+        endDate.setDate(lastDay.getDate());
         break;
       case "thisYear":
         startDate = new Date(endDate.getFullYear(), 0, 1);
@@ -299,7 +302,7 @@ export function useOwnerDashboardData(): OwnerDashboardData {
       const previousEnd = new Date(end.getTime() - periodLength);
       
       // Get completed bookings for current period
-      const { data: currentCompletedBookings, error: completedError } = await supabase
+      const { data: currentCompletedData, error: completedError } = await supabase
         .from("completed_bookings")
         .select("service_price")
         .eq("salon_id", currentSalonId)
@@ -329,8 +332,8 @@ export function useOwnerDashboardData(): OwnerDashboardData {
       const totalBookings = bookingStats?.length || 0;
       const pendingBookings = bookingStats?.filter(b => b.status === "pending").length || 0;
       const cancelledBookings = bookingStats?.filter(b => b.status === "cancelled" || b.status === "declined").length || 0;
-      const completedBookingsCount = currentCompletedBookings?.length || 0;
-      const totalRevenue = currentCompletedBookings?.reduce((sum, booking) => sum + Number(booking.service_price), 0) || 0;
+      const completedBookingsCount = currentCompletedData?.length || 0;
+      const totalRevenue = currentCompletedData?.reduce((sum, booking) => sum + Number(booking.service_price), 0) || 0;
       
       const previousPeriodBookings = previousBookings?.length || 0;
       let percentChange = 0;
@@ -349,7 +352,7 @@ export function useOwnerDashboardData(): OwnerDashboardData {
           percentChange,
           previousPeriodBookings
         }
-      };
+      } as BookingAnalytics;
     },
     enabled: !!currentSalonId,
   });
