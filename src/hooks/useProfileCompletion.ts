@@ -2,21 +2,18 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
-
-interface ProfileCompletionStatus {
-  isComplete: boolean;
-  completionPercentage: number;
-  minCompletionPercentage: number;
-  requiredFields: string[];
-  optionalFields: string[];
-  missingFields: string[];
-}
+import { ProfileCompletionStatus } from "@/types/profile-completion";
 
 export function useProfileCompletion() {
   const { user, userProfile, userRole } = useAuth();
   const [completionStatus, setCompletionStatus] = useState<ProfileCompletionStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [completedTasks, setCompletedTasks] = useState<string[]>([]);
+
+  // Calculate completion percentage
+  const completionPercentage = completionStatus?.completionPercentage || 0;
+  const isProfileComplete = completionStatus?.isComplete || false;
 
   useEffect(() => {
     const fetchProfileCompletion = async () => {
@@ -128,5 +125,55 @@ export function useProfileCompletion() {
     fetchProfileCompletion();
   }, [user, userProfile, userRole]);
 
-  return { completionStatus, isLoading, error };
+  // Load completed tasks from userProfile
+  useEffect(() => {
+    if (userProfile?.completed_profile_tasks && Array.isArray(userProfile.completed_profile_tasks)) {
+      setCompletedTasks(userProfile.completed_profile_tasks);
+    }
+  }, [userProfile]);
+
+  // Function to mark a task as complete
+  const markTaskComplete = async (taskId: string) => {
+    if (!user) return;
+    
+    try {
+      // Add to local state immediately for UI feedback
+      if (!completedTasks.includes(taskId)) {
+        const updatedTasks = [...completedTasks, taskId];
+        setCompletedTasks(updatedTasks);
+        
+        // Update in the database
+        const { error } = await supabase
+          .from('users')
+          .update({ 
+            completed_profile_tasks: updatedTasks,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', user.id);
+          
+        if (error) {
+          console.error('Error updating completed tasks:', error);
+          // Revert local state on error
+          setCompletedTasks(completedTasks);
+        }
+      }
+    } catch (error) {
+      console.error('Error marking task complete:', error);
+    }
+  };
+  
+  // Function to check if a task is complete
+  const isTaskComplete = (taskId: string): boolean => {
+    return completedTasks.includes(taskId);
+  };
+
+  return { 
+    completionStatus, 
+    isLoading, 
+    error, 
+    isProfileComplete, 
+    completionPercentage, 
+    markTaskComplete, 
+    isTaskComplete 
+  };
 }

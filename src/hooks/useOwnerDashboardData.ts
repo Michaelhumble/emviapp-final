@@ -95,31 +95,31 @@ export function useOwnerDashboardData(): OwnerDashboardData {
 
   // Function to get date range based on selected filter
   const getDateRange = (rangeOption: string): { start: Date; end: Date } => {
-    const end = new Date();
-    let start = new Date();
+    const endDate = new Date();
+    let startDate = new Date();
     
     switch (rangeOption) {
       case "last7Days":
-        start.setDate(end.getDate() - 7);
+        startDate.setDate(endDate.getDate() - 7);
         break;
       case "last30Days":
-        start.setDate(end.getDate() - 30);
+        startDate.setDate(endDate.getDate() - 30);
         break;
       case "thisMonth":
-        start = new Date(end.getFullYear(), end.getMonth(), 1);
+        startDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
         break;
       case "lastMonth":
-        start = new Date(end.getFullYear(), end.getMonth() - 1, 1);
-        end = new Date(end.getFullYear(), end.getMonth(), 0);
+        startDate = new Date(endDate.getFullYear(), endDate.getMonth() - 1, 1);
+        endDate.setDate(0); // Last day of previous month
         break;
       case "thisYear":
-        start = new Date(end.getFullYear(), 0, 1);
+        startDate = new Date(endDate.getFullYear(), 0, 1);
         break;
       default:
-        start.setDate(end.getDate() - 30); // Default to last 30 days
+        startDate.setDate(endDate.getDate() - 30); // Default to last 30 days
     }
     
-    return { start, end };
+    return { start: startDate, end: endDate };
   };
 
   // Query to fetch salons
@@ -299,7 +299,7 @@ export function useOwnerDashboardData(): OwnerDashboardData {
       const previousEnd = new Date(end.getTime() - periodLength);
       
       // Get completed bookings for current period
-      const { data: completedBookings, error: completedError } = await supabase
+      const { data: currentCompletedBookings, error: completedError } = await supabase
         .from("completed_bookings")
         .select("service_price")
         .eq("salon_id", currentSalonId)
@@ -329,19 +329,19 @@ export function useOwnerDashboardData(): OwnerDashboardData {
       const totalBookings = bookingStats?.length || 0;
       const pendingBookings = bookingStats?.filter(b => b.status === "pending").length || 0;
       const cancelledBookings = bookingStats?.filter(b => b.status === "cancelled" || b.status === "declined").length || 0;
-      const completedBookings = completedBookings?.length || 0;
-      const totalRevenue = completedBookings?.reduce((sum, booking) => sum + Number(booking.service_price), 0) || 0;
+      const completedBookingsCount = currentCompletedBookings?.length || 0;
+      const totalRevenue = currentCompletedBookings?.reduce((sum, booking) => sum + Number(booking.service_price), 0) || 0;
       
       const previousPeriodBookings = previousBookings?.length || 0;
       let percentChange = 0;
       
       if (previousPeriodBookings > 0) {
-        percentChange = ((completedBookings?.length || 0) - previousPeriodBookings) / previousPeriodBookings * 100;
+        percentChange = ((completedBookingsCount - previousPeriodBookings) / previousPeriodBookings) * 100;
       }
       
       return {
         totalBookings,
-        completedBookings,
+        completedBookings: completedBookingsCount,
         cancelledBookings,
         pendingBookings,
         totalRevenue,
