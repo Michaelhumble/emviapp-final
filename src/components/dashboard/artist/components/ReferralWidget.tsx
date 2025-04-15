@@ -1,113 +1,107 @@
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/context/auth';
-import { Copy, Gift, Check, Heart } from 'lucide-react';
+import { Copy, CheckCircle2, Facebook, Twitter } from 'lucide-react';
+import { useArtistData } from '../context/ArtistDataContext';
+import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
 const ReferralWidget = () => {
-  const { toast } = useToast();
-  const { user } = useAuth();
+  const { userCredits, artistProfile } = useArtistData();
   const [copied, setCopied] = useState(false);
-  
-  // Generate a referral link based on user ID
-  const referralLink = `https://emviapp.com/invite/${user?.id?.substring(0, 8) || 'demo'}`;
-  
+
+  // Generate referral link based on user's profile or ID
+  const referralLink = artistProfile?.affiliate_code 
+    ? `https://emviapp.com/invite/${artistProfile.affiliate_code}`
+    : 'https://emviapp.com/join';
+
   const handleCopy = () => {
     navigator.clipboard.writeText(referralLink);
     setCopied(true);
-    toast({
-      title: "Link copied!",
-      description: "Referral link copied to clipboard."
-    });
-    
-    setTimeout(() => setCopied(false), 2000);
+    toast.success('Referral link copied to clipboard!');
+    setTimeout(() => setCopied(false), 3000);
   };
-  
+
+  const shareOnTwitter = () => {
+    const text = "Join me on EmviApp - the platform for nail artists and beauty professionals!";
+    window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(text)}`, '_blank');
+  };
+
+  const shareOnFacebook = () => {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}`, '_blank');
+  };
+
   return (
-    <Card className="shadow-sm border-pink-100 overflow-hidden">
+    <Card className="overflow-hidden">
       <div className="absolute -right-8 -top-8 w-24 h-24 bg-gradient-to-br from-pink-200 to-purple-200 rounded-full opacity-70" />
       
       <CardHeader className="pb-2 relative">
         <CardTitle className="text-xl font-serif flex items-center">
-          <Gift className="h-5 w-5 mr-2 text-pink-500" />
-          Invite & Earn
+          <span role="img" aria-label="gift" className="mr-2">🎁</span>
+          Invite & Earn Credits
         </CardTitle>
-        <CardDescription>
-          Share EmviApp and earn rewards
-        </CardDescription>
       </CardHeader>
       
       <CardContent className="relative">
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4 mb-4">
-          <p className="text-sm text-gray-600 mb-3 flex items-center">
-            Share your link and earn <span className="font-medium mx-1 text-pink-600">15 credits</span> 
-            for every friend who joins EmviApp <Heart className="h-3 w-3 inline text-pink-500 ml-1" />
-          </p>
+        <p className="text-sm text-gray-600 mb-4">
+          Share your unique link and earn <span className="font-medium text-pink-600">15 credits</span> for 
+          every friend who joins EmviApp! <span role="img" aria-label="sparkles">✨</span>
+        </p>
+        
+        <div className="relative mb-4 group">
+          <motion.div
+            className="absolute -inset-1 bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg blur opacity-40 group-hover:opacity-75 transition duration-300"
+            animate={{ scale: [1, 1.02, 1] }}
+            transition={{ duration: 3, repeat: Infinity }}
+          />
           
-          <div className="flex items-center space-x-2">
-            <div className="bg-white border rounded-md py-2 px-3 flex-1 text-sm truncate">
+          <div className="relative flex items-center bg-white border border-purple-100 rounded-lg p-3">
+            <div className="flex-1 truncate text-sm text-purple-800 font-mono">
               {referralLink}
             </div>
-            
             <Button 
-              variant={copied ? "outline" : "secondary"}
-              className={copied ? "bg-green-100 text-green-700 hover:bg-green-200" : ""}
+              size="sm" 
+              variant="outline"
+              className={copied ? "text-green-600 border-green-200" : "text-purple-600"}
               onClick={handleCopy}
             >
               {copied ? (
                 <>
-                  <Check className="mr-1 h-4 w-4" />
+                  <CheckCircle2 className="h-4 w-4 mr-1" />
                   Copied!
                 </>
               ) : (
                 <>
-                  <Copy className="mr-1 h-4 w-4" />
-                  Copy
+                  <Copy className="h-4 w-4 mr-1" />
+                  Copy Link
                 </>
               )}
             </Button>
           </div>
-          
-          <div className="mt-3 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <div className="text-xs text-gray-500">
-              You've invited <span className="font-medium">0</span> friends so far
-            </div>
-            
-            <div className="flex gap-1">
-              <Button 
-                variant="ghost" 
-                size="sm"
-                className="h-8 text-xs"
-                onClick={() => {
-                  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}`, '_blank');
-                }}
-              >
-                Facebook
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                className="h-8 text-xs"
-                onClick={() => {
-                  window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent('Join me on EmviApp for nail artists!')}`, '_blank');
-                }}
-              >
-                Twitter
-              </Button>
-            </div>
-          </div>
         </div>
         
-        <div className="grid grid-cols-2 gap-3">
-          <div className="border rounded-lg p-3 text-center">
-            <div className="text-2xl font-medium text-purple-600">15</div>
-            <div className="text-xs text-gray-500">Credits per referral</div>
+        <div className="flex justify-between items-center text-sm">
+          <div className="text-gray-500">
+            <span role="img" aria-label="credits">💎</span> Your Credits: {userCredits || 0}
           </div>
-          <div className="border rounded-lg p-3 text-center">
-            <div className="text-2xl font-medium text-pink-600">0</div>
-            <div className="text-xs text-gray-500">Total Credits Earned</div>
+          <div className="flex gap-2">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="text-[#1DA1F2]"
+              onClick={shareOnTwitter}
+            >
+              <Twitter className="h-4 w-4" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="text-[#4267B2]"
+              onClick={shareOnFacebook}
+            >
+              <Facebook className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </CardContent>
