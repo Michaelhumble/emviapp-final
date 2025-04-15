@@ -50,8 +50,8 @@ const ArtistDashboardWidgets = () => {
     context: "artist-dashboard-stats"
   });
 
-  // Explicit typing for bookings query to prevent deep instantiation
-  const { data: recentBookings, isLoading: isLoadingBookings } = useSafeQuery<BookingWithDetails[]>({
+  // Explicitly cast the result type to prevent deep type instantiation
+  const bookingsQuery = useSafeQuery({
     queryKey: ['recent-bookings', user?.id],
     queryFn: async () => {
       if (!user?.id) throw new Error("User not authenticated");
@@ -82,8 +82,12 @@ const ArtistDashboardWidgets = () => {
     context: "artist-dashboard-bookings"
   });
   
+  // Extract from the query result with explicit typing
+  const recentBookings = bookingsQuery.data as BookingWithDetails[];
+  const isLoadingBookings = bookingsQuery.isLoading;
+  
   // Explicit typing for earnings query to prevent deep instantiation
-  const { data: earningsData, isLoading: isLoadingEarnings } = useSafeQuery<EarningsData>({
+  const earningsQuery = useSafeQuery({
     queryKey: ['earnings-data', user?.id],
     queryFn: async () => {
       if (!user?.id) throw new Error("User not authenticated");
@@ -116,6 +120,10 @@ const ArtistDashboardWidgets = () => {
     },
     context: "artist-dashboard-earnings"
   });
+  
+  // Extract from the query result with explicit typing
+  const earningsData = earningsQuery.data as EarningsData;
+  const isLoadingEarnings = earningsQuery.isLoading;
 
   return (
     <FallbackBoundary>
