@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MessageSquare, X } from 'lucide-react';
@@ -6,7 +5,7 @@ import ChatWindow from './ChatWindow';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ActionSuggestion, MessageType } from './types';
 
-// Use the 'export type' syntax instead of just 'export'
+// Use the 'export type' syntax for re-exporting types
 export type { ActionSuggestion, MessageType };
 
 export const ChatSystem = () => {
@@ -86,4 +85,3 @@ export const ChatSystem = () => {
     </>
   );
 };
-

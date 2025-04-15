@@ -1,245 +1,347 @@
-
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/context/auth";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { PlusCircle, Scissors, Calendar, Bell, Search, Sparkles, TrendingUp, Camera, BookOpen, Award } from "lucide-react";
-import AffiliateReferralCard from "@/components/dashboard/common/AffiliateReferralCard";
-import { Progress } from "@/components/ui/progress";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Loader2 } from "lucide-react";
+
+interface StatCardProps {
+  title: string;
+  value: number;
+  description: string;
+  loading?: boolean;
+  prefix?: string;
+  suffix?: string;
+}
+
+const StatCard = ({ title, value, description, loading = false, prefix = '', suffix = '' }: StatCardProps) => {
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <div className="flex items-center space-x-2">
+            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            <span className="text-muted-foreground">Loading...</span>
+          </div>
+        ) : (
+          <div className="text-2xl font-bold">
+            {prefix}{value.toLocaleString()}{suffix}
+          </div>
+        )}
+        <p className="text-xs text-muted-foreground">{description}</p>
+      </CardContent>
+    </Card>
+  );
+};
 
 const ArtistDashboardWidgets = () => {
-  const { userProfile, user } = useAuth();
-  const [profileViews, setProfileViews] = useState(0);
-  const [bookingCount, setBookingCount] = useState(0);
-  const [portfolioCount, setPortfolioCount] = useState(0);
-  const [referralCount, setReferralCount] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const { user, userProfile } = useAuth();
+  const [activeTab, setActiveTab] = useState("overview");
   
-  // Calculate profile completion percentage
-  const getProfileCompletion = () => {
-    if (!userProfile) return 30;
-    
-    let totalFields = 8;
-    let completedFields = 0;
-    
-    if (userProfile.full_name) completedFields++;
-    if (userProfile.bio) completedFields++;
-    if (userProfile.specialty) completedFields++;
-    if (userProfile.avatar_url) completedFields++;
-    if (userProfile.instagram) completedFields++;
-    if (userProfile.phone) completedFields++;
-    if (userProfile.location) completedFields++;
-    if (userProfile.portfolio_urls && userProfile.portfolio_urls.length > 0) completedFields++;
-    
-    return Math.round((completedFields / totalFields) * 100);
-  };
-  
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      if (!user?.id) return;
+  // Fetch artist stats
+  const { data: stats, isLoading: isLoadingStats } = useQuery({
+    queryKey: ['artist-stats', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
       
-      setLoading(true);
+      // Fetch basic stats from multiple tables
       try {
-        // Fetch profile views (using mock for now, as this might be tracked in analytics)
-        setProfileViews(userProfile?.profile_views || Math.floor(Math.random() * 30) + 5);
+        const { data, error } = await supabase.rpc('get_artist_dashboard_stats', {
+          artist_id: user.id
+        });
         
-        // Fetch portfolio items count
-        if (userProfile?.portfolio_urls) {
-          setPortfolioCount(userProfile.portfolio_urls.length);
-        } else {
-          const { data: portfolioData } = await supabase
-            .from('portfolio_items')
-            .select('id')
-            .eq('user_id', user.id);
-          
-          setPortfolioCount(portfolioData?.length || 0);
-        }
+        if (error) throw error;
         
-        // Fetch booking count
-        const { count: bookingCountResult } = await supabase
-          .from('bookings')
-          .select('id', { count: 'exact', head: true })
-          .eq('recipient_id', user.id);
-        
-        setBookingCount(bookingCountResult || 0);
-        
-        // Fetch referral count
-        const { data: referralData } = await supabase
-          .rpc('get_user_referral_stats', { user_id: user.id });
-        
-        if (referralData) {
-          // Fix the referral count access to avoid the "never" type issue
-          setReferralCount(
-            Array.isArray(referralData) && referralData.length > 0
-              ? (referralData[0]?.referral_count as number) || 0
-              : ((referralData as any)?.referral_count as number) || 0
-          );
-        }
+        return data || {
+          booking_count: 0,
+          completed_services: 0,
+          total_earnings: 0,
+          average_rating: 0,
+          referral_count: 0
+        };
       } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-      } finally {
-        setLoading(false);
+        console.error("Error fetching artist stats:", error);
+        return {
+          booking_count: 0,
+          completed_services: 0,
+          total_earnings: 0,
+          average_rating: 0,
+          referral_count: 0
+        };
       }
-    };
-    
-    fetchDashboardData();
-  }, [user?.id, userProfile]);
-  
-  const profileCompletion = getProfileCompletion();
-  
+    },
+    enabled: !!user?.id
+  });
+
+  // Fetch recent bookings
+  const { data: recentBookings, isLoading: isLoadingBookings } = useQuery({
+    queryKey: ['recent-bookings', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      
+      try {
+        const { data, error } = await supabase
+          .from('bookings')
+          .select('*')
+          .eq('artist_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(5);
+        
+        if (error) throw error;
+        
+        return data || [];
+      } catch (error) {
+        console.error("Error fetching recent bookings:", error);
+        return [];
+      }
+    },
+    enabled: !!user?.id
+  });
+
+  // Fetch earnings data
+  const { data: earningsData, isLoading: isLoadingEarnings } = useQuery({
+    queryKey: ['earnings-data', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      try {
+        const { data, error } = await supabase.rpc('get_artist_earnings_data', {
+          artist_id: user.id
+        });
+        
+        if (error) throw error;
+        
+        return data || {
+          monthly_earnings: [],
+          total_earnings: 0,
+          pending_payouts: 0
+        };
+      } catch (error) {
+        console.error("Error fetching earnings data:", error);
+        return {
+          monthly_earnings: [],
+          total_earnings: 0,
+          pending_payouts: 0
+        };
+      }
+    },
+    enabled: !!user?.id && activeTab === "earnings"
+  });
+
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-serif">Artist Dashboard</h2>
+    <Tabs defaultValue="overview" className="space-y-4" onValueChange={setActiveTab}>
+      <TabsList>
+        <TabsTrigger value="overview">Overview</TabsTrigger>
+        <TabsTrigger value="earnings">Earnings</TabsTrigger>
+        <TabsTrigger value="calendar">Calendar</TabsTrigger>
+      </TabsList>
       
-      {/* Motivational Message Banner */}
-      <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-100">
-        <CardContent className="py-6">
-          <div className="flex items-center gap-3 mb-3">
-            <Sparkles className="h-6 w-6 text-indigo-500" />
-            <h3 className="text-lg font-medium text-indigo-900">Your Artistry Matters!</h3>
-          </div>
-          <p className="text-indigo-700">
-            Your talent deserves to be seen. Complete your profile and showcase your best work to connect with clients looking for your unique style.
-          </p>
-          <div className="mt-4">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-green-500" />
-              <span className="text-sm font-medium text-green-700">
-                Profile views: {loading ? "..." : profileViews} this week
-              </span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-      
-      {/* Profile Completion Card */}
-      {profileCompletion < 100 && (
-        <Card className="border-amber-200">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Award className="h-5 w-5 text-amber-500" />
-              Complete Your Profile
-            </CardTitle>
-            <CardDescription>
-              Artists with complete profiles get up to 3x more client views
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Profile completion</span>
-                <span className="font-medium">{profileCompletion}%</span>
+      <TabsContent value="overview" className="space-y-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <StatCard
+            title="Bookings"
+            value={stats?.booking_count || 0}
+            description="Total bookings"
+            loading={isLoadingStats}
+          />
+          <StatCard
+            title="Services"
+            value={stats?.completed_services || 0}
+            description="Completed services"
+            loading={isLoadingStats}
+          />
+          <StatCard
+            title="Earnings"
+            value={stats?.total_earnings || 0}
+            description="Total earnings"
+            loading={isLoadingStats}
+            prefix="$"
+          />
+          <StatCard
+            title="Referrals"
+            value={stats?.referral_count || 0}
+            description="Client referrals"
+            loading={isLoadingStats}
+          />
+        </div>
+        
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+          <Card className="col-span-4">
+            <CardHeader>
+              <CardTitle>Recent Activity</CardTitle>
+              <CardDescription>
+                Your latest bookings and client interactions
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoadingBookings ? (
+                <div className="flex items-center justify-center h-[200px]">
+                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                </div>
+              ) : recentBookings && recentBookings.length > 0 ? (
+                <div className="space-y-4">
+                  {recentBookings.map((booking) => (
+                    <div key={booking.id} className="flex items-center">
+                      <div className="ml-4 space-y-1">
+                        <p className="text-sm font-medium leading-none">
+                          {booking.service_name || "Nail Service"}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {new Date(booking.appointment_time).toLocaleString()}
+                        </p>
+                      </div>
+                      <div className="ml-auto font-medium">
+                        ${booking.price || 0}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  No recent bookings found
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          <Card className="col-span-3">
+            <CardHeader>
+              <CardTitle>Performance</CardTitle>
+              <CardDescription>
+                Your client satisfaction metrics
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center">
+                  <div className="w-full">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Rating</span>
+                      <span className="text-sm font-medium">
+                        {stats?.average_rating?.toFixed(1) || "N/A"} / 5.0
+                      </span>
+                    </div>
+                    <div className="mt-2 h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-primary" 
+                        style={{ 
+                          width: `${((stats?.average_rating || 0) / 5) * 100}%` 
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center">
+                  <div className="w-full">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Repeat Clients</span>
+                      <span className="text-sm font-medium">
+                        {stats?.repeat_client_percentage || 0}%
+                      </span>
+                    </div>
+                    <div className="mt-2 h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-primary" 
+                        style={{ 
+                          width: `${stats?.repeat_client_percentage || 0}%` 
+                        }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <Progress value={profileCompletion} className="h-2" />
-              
-              <p className="text-xs text-muted-foreground mt-2">
-                {profileCompletion < 50 
-                  ? "Add your bio, specialty, and upload a profile photo" 
-                  : "Add your skills and social links to complete your profile"}
-              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </TabsContent>
+      
+      <TabsContent value="earnings" className="space-y-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <StatCard
+            title="Total Earnings"
+            value={earningsData?.total_earnings || 0}
+            description="Lifetime earnings"
+            loading={isLoadingEarnings}
+            prefix="$"
+          />
+          <StatCard
+            title="Pending Payout"
+            value={earningsData?.pending_payouts || 0}
+            description="To be paid out"
+            loading={isLoadingEarnings}
+            prefix="$"
+          />
+          <StatCard
+            title="This Month"
+            value={
+              earningsData?.monthly_earnings?.[0]?.amount || 0
+            }
+            description="Current month earnings"
+            loading={isLoadingEarnings}
+            prefix="$"
+          />
+        </div>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Earnings History</CardTitle>
+            <CardDescription>
+              Your earnings over the past 6 months
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {isLoadingEarnings ? (
+              <div className="flex items-center justify-center h-[300px]">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              </div>
+            ) : (
+              <div className="h-[300px]">
+                {/* Chart would go here - using placeholder for now */}
+                <div className="flex items-end justify-between h-full pt-6">
+                  {(earningsData?.monthly_earnings || Array(6).fill({ month: '', amount: 0 }))
+                    .slice(0, 6)
+                    .map((month, i) => (
+                      <div key={i} className="flex flex-col items-center">
+                        <div 
+                          className="w-12 bg-primary rounded-t-md" 
+                          style={{ 
+                            height: `${Math.max(
+                              (month.amount / (Math.max(...(earningsData?.monthly_earnings || []).map(m => m.amount)) || 1)) * 200, 
+                              20
+                            )}px` 
+                          }}
+                        ></div>
+                        <span className="text-xs mt-2">{month.month || `Month ${i+1}`}</span>
+                      </div>
+                    ))
+                  }
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </TabsContent>
+      
+      <TabsContent value="calendar" className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Upcoming Appointments</CardTitle>
+            <CardDescription>
+              Your schedule for the next 7 days
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-12 text-muted-foreground">
+              Calendar view will be available soon
             </div>
-            
-            <Button size="sm" className="mt-4 w-full" asChild>
-              <Link to="/profile/edit">Complete Profile</Link>
-            </Button>
           </CardContent>
         </Card>
-      )}
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Find Jobs Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Search className="h-5 w-5 text-indigo-500" />
-              Find Jobs
-            </CardTitle>
-            <CardDescription>Discover local job opportunities</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">
-              Browse jobs from salons in your area seeking experienced nail technicians.
-            </p>
-            <Button className="w-full" asChild>
-              <Link to="/jobs">View Job Listings</Link>
-            </Button>
-          </CardContent>
-        </Card>
-        
-        {/* Post Your Job CTA Card */}
-        <Card className="border-indigo-200 shadow-sm">
-          <CardHeader className="bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-t-lg">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <PlusCircle className="h-5 w-5 text-indigo-600" />
-              Post Your Job
-            </CardTitle>
-            <CardDescription className="font-medium text-indigo-700">
-              First-time post only $5!
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-4">
-            <p className="text-sm text-muted-foreground mb-4">
-              Looking for a new opportunity? Post your job request and get seen by salon owners in your area.
-            </p>
-          </CardContent>
-          <CardFooter className="pt-0">
-            <Button className="w-full bg-indigo-600 hover:bg-indigo-700" asChild>
-              <Link to="/post/job">Post a Job Request</Link>
-            </Button>
-          </CardFooter>
-        </Card>
-        
-        {/* Affiliate Referral Card */}
-        <AffiliateReferralCard />
-      </div>
-      
-      {/* Second Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Portfolio Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Camera className="h-5 w-5 text-indigo-500" />
-              Portfolio
-            </CardTitle>
-            <CardDescription>
-              {loading ? "Loading..." : `${portfolioCount} items in your portfolio`}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">
-              Upload photos of your best work to attract new clients and opportunities.
-            </p>
-            <Button className="w-full" asChild>
-              <Link to="/portfolio">Manage Portfolio</Link>
-            </Button>
-          </CardContent>
-        </Card>
-        
-        {/* Learning Resources */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <BookOpen className="h-5 w-5 text-indigo-500" />
-              Learning Center
-            </CardTitle>
-            <CardDescription>
-              {loading ? "Loading..." : `${bookingCount} bookings received`}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">
-              Access tutorials, webinars, and resources to help grow your career.
-            </p>
-            <Button className="w-full" asChild>
-              <Link to="/resources">Browse Resources</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+      </TabsContent>
+    </Tabs>
   );
 };
 

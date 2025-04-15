@@ -1,102 +1,69 @@
 
-import { forwardRef, useState, useRef, useEffect, KeyboardEvent } from "react";
-import { Send } from "lucide-react";
+import { useState, useRef, KeyboardEvent } from 'react';
+import { PaperPlaneIcon } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import TextareaAutosize from 'react-textarea-autosize';
 
-interface ChatInputProps {
-  value: string;
-  onChange: (value: string) => void;
-  onSend: () => void;
-  onFocus?: () => void;
-  onBlur?: () => void;
-  isLoading?: boolean;
+export interface ChatInputProps {
+  onSendMessage: (content: string) => Promise<void>;
+  isProcessing: boolean;
 }
 
-export const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
-  ({ value, onChange, onSend, onFocus, onBlur, isLoading }, ref) => {
-    const [isFocused, setIsFocused] = useState(false);
-    const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-    
-    // Sync forwarded ref with internal ref
-    useEffect(() => {
-      if (typeof ref === 'function') {
-        ref(textareaRef.current);
-      } else if (ref) {
-        ref.current = textareaRef.current;
-      }
-    }, [ref]);
-    
-    // Auto-resize textarea based on content
-    useEffect(() => {
-      const textarea = textareaRef.current;
-      if (textarea) {
-        textarea.style.height = 'auto';
-        textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
-      }
-    }, [value]);
-    
-    // Handle key presses (Enter to send)
-    const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        onSend();
-      }
-    };
-    
-    // Focus event handling
-    const handleFocus = () => {
-      setIsFocused(true);
-      onFocus?.();
-    };
-    
-    const handleBlur = () => {
-      setIsFocused(false);
-      onBlur?.();
-    };
+export const ChatInput = ({ onSendMessage, isProcessing }: ChatInputProps) => {
+  const [message, setMessage] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    return (
-      <div className={cn(
-        "transition-shadow",
-        isFocused && "shadow-[0_-2px_10px_rgba(0,0,0,0.05)]"
-      )}>
-        <div className="flex gap-2 items-end">
-          <div className="relative flex-1">
-            <textarea
-              ref={textareaRef}
-              value={value}
-              onChange={(e) => onChange(e.target.value)}
-              onKeyDown={handleKeyDown}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-              placeholder="Message Little Sunshine..."
-              className="resize-none w-full border rounded-md px-3 py-2 text-sm min-h-[40px] max-h-[120px] overflow-y-auto focus:ring-1 focus:ring-primary focus-visible:outline-none"
-              style={{ 
-                fontSize: '16px', // Prevent iOS zoom
-                lineHeight: 1.5,
-              }}
-              disabled={isLoading}
-            />
-          </div>
-          <Button 
-            onClick={onSend} 
-            size="icon" 
-            disabled={!value.trim() || isLoading}
-            className={cn(
-              "h-10 w-10 shrink-0",
-              (!value.trim() || isLoading) && "opacity-50 cursor-not-allowed"
-            )}
-          >
-            {isLoading ? (
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-            ) : (
-              <Send size={18} />
-            )}
-          </Button>
-        </div>
+  const handleSend = async () => {
+    if (message.trim() === '' || isProcessing) return;
+    
+    const content = message.trim();
+    setMessage('');
+    
+    try {
+      await onSendMessage(content);
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
+    
+    // Focus back on the textarea after sending
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    // Send message on Enter without Shift
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  return (
+    <div className="flex items-end gap-2">
+      <div className="flex-1 bg-background rounded-lg border relative">
+        <TextareaAutosize
+          ref={textareaRef}
+          className="w-full p-3 pr-10 bg-transparent resize-none focus:outline-none min-h-[50px] max-h-[200px]"
+          placeholder="Type a message..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
+          disabled={isProcessing}
+          rows={1}
+        />
       </div>
-    );
-  }
-);
-
-ChatInput.displayName = "ChatInput";
+      
+      <Button 
+        type="button" 
+        size="icon" 
+        onClick={handleSend}
+        disabled={isProcessing || message.trim() === ''}
+        className="shrink-0 h-10 w-10 rounded-full bg-primary text-primary-foreground"
+      >
+        <PaperPlaneIcon className="h-5 w-5" />
+        <span className="sr-only">Send message</span>
+      </Button>
+    </div>
+  );
+};
