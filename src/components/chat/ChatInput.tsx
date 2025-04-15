@@ -1,6 +1,6 @@
 
 import { useState, useRef, KeyboardEvent } from 'react';
-import { PaperPlaneIcon } from 'lucide-react';
+import { Send } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import TextareaAutosize from 'react-textarea-autosize';
 
@@ -61,7 +61,7 @@ export const ChatInput = ({ onSendMessage, isProcessing }: ChatInputProps) => {
         disabled={isProcessing || message.trim() === ''}
         className="shrink-0 h-10 w-10 rounded-full bg-primary text-primary-foreground"
       >
-        <PaperPlaneIcon className="h-5 w-5" />
+        <Send className="h-5 w-5" />
         <span className="sr-only">Send message</span>
       </Button>
     </div>
