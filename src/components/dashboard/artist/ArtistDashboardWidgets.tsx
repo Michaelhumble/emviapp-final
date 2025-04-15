@@ -56,6 +56,22 @@ interface EarningsData {
   pending_payouts: number;
 }
 
+// Type for bookings 
+interface BookingWithDetails {
+  id: string;
+  sender_id: string;
+  recipient_id: string;
+  service_id?: string;
+  service_name?: string;
+  date_requested: string;
+  time_requested: string;
+  appointment_time?: string;
+  status: string;
+  created_at: string;
+  price?: number;
+  note?: string;
+}
+
 const ArtistDashboardWidgets = () => {
   const { user, userProfile } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
@@ -95,7 +111,7 @@ const ArtistDashboardWidgets = () => {
   });
 
   // Fetch recent bookings
-  const { data: recentBookings, isLoading: isLoadingBookings } = useQuery({
+  const { data: recentBookings, isLoading: isLoadingBookings } = useQuery<BookingWithDetails[]>({
     queryKey: ['recent-bookings', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
@@ -116,7 +132,7 @@ const ArtistDashboardWidgets = () => {
           service_name: "Nail Service",
           appointment_time: booking.date_requested + " " + booking.time_requested,
           price: 45 // Mock price
-        }));
+        })) as BookingWithDetails[];
       } catch (error) {
         console.error("Error fetching recent bookings:", error);
         return [];
@@ -126,7 +142,7 @@ const ArtistDashboardWidgets = () => {
   });
 
   // Fetch earnings data
-  const { data: earningsData, isLoading: isLoadingEarnings } = useQuery({
+  const { data: earningsData, isLoading: isLoadingEarnings } = useQuery<EarningsData>({
     queryKey: ['earnings-data', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
@@ -218,7 +234,7 @@ const ArtistDashboardWidgets = () => {
                           {booking.service_name || "Nail Service"}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          {new Date(booking.appointment_time).toLocaleString()}
+                          {new Date(booking.appointment_time || "").toLocaleString()}
                         </p>
                       </div>
                       <div className="ml-auto font-medium">
