@@ -43,7 +43,7 @@ export function ProfileCompletionGuard({ children, role }: ProfileCompletionGuar
           </p>
           <Button 
             className="w-full" 
-            onClick={() => navigate(`/profile/${role}/setup`)}
+            onClick={() => navigate(`/setup/${role}`)}
           >
             Complete Profile
           </Button>
