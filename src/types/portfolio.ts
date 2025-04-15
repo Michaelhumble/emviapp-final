@@ -6,6 +6,7 @@ export interface PortfolioItem {
   description: string | null;
   image_url: string;
   created_at: string;
+  order: number;
 }
 
 export interface PortfolioFormData {
