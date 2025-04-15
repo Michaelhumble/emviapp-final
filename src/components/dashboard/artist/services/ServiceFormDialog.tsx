@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -61,13 +60,11 @@ const ServiceFormDialog = ({
                   min="1" 
                   step="0.01"
                   placeholder="45.00"
-                  value={service.price === 0 ? '' : service.price}
+                  value={service.price || ''} 
                   onChange={(e) => {
                     const inputValue = e.target.value;
                     const parsedValue = inputValue === '' ? 0 : parseFloat(inputValue);
-                    // Ensure at least 1 and remove leading zeros
-                    const cleanValue = Math.max(1, parsedValue);
-                    onServiceChange('price', cleanValue);
+                    onServiceChange('price', parsedValue);
                   }}
                   required
                 />
