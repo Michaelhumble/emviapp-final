@@ -10,7 +10,7 @@ interface PersonalMessageBannerProps {
 }
 
 const PersonalMessageBanner: React.FC<PersonalMessageBannerProps> = ({ 
-  message = "Thank you for visiting my profile! I'm passionate about making you look and feel your absolute best. I can't wait to create something beautiful together!",
+  message = "Behind every design I create is a story. I'm here to help you feel beautiful, powerful, and seen.",
   artistName = "Your Artist"
 }) => {
   return (
@@ -32,7 +32,7 @@ const PersonalMessageBanner: React.FC<PersonalMessageBannerProps> = ({
             
             <div>
               <motion.p 
-                className="text-gray-700 italic mb-2 relative"
+                className="text-gray-700 italic mb-2 relative font-serif"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
@@ -44,7 +44,7 @@ const PersonalMessageBanner: React.FC<PersonalMessageBannerProps> = ({
               
               <div className="flex items-center">
                 <Sparkles className="h-4 w-4 text-purple-500 mr-2" />
-                <span className="text-sm font-medium text-purple-700">
+                <span className="text-sm font-medium text-purple-700 font-serif">
                   {artistName}
                 </span>
               </div>

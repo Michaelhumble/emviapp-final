@@ -1,79 +1,46 @@
 
-import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar, Star } from 'lucide-react';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 interface BookArtistCtaProps {
   artistName: string;
-  rating?: number;
+  rating: number;
   onBookNow: () => void;
 }
 
-const BookArtistCta: React.FC<BookArtistCtaProps> = ({ 
-  artistName, 
-  rating = 4.9, 
-  onBookNow 
-}) => {
-  const isMobile = useIsMobile();
-  const [isScrolled, setIsScrolled] = useState(false);
-  
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      setIsScrolled(scrollPosition > 300);
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-  
-  if (!isMobile) {
-    // Desktop: Static button in the top right
-    return (
-      <div className="hidden md:block">
-        <Button 
-          onClick={onBookNow}
-          size="lg"
-          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-md"
-        >
-          <Calendar className="mr-2 h-4 w-4" />
-          Book with {artistName}
-        </Button>
-      </div>
-    );
-  }
-  
-  // Mobile: Sticky button at the bottom
+const BookArtistCta: React.FC<BookArtistCtaProps> = ({ artistName, rating, onBookNow }) => {
   return (
-    <AnimatePresence>
-      {isScrolled && (
-        <motion.div 
-          className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-white border-t border-gray-200 shadow-lg"
-          initial={{ y: 100 }}
-          animate={{ y: 0 }}
-          exit={{ y: 100 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        >
-          <div className="flex justify-between items-center mb-2">
-            <div className="text-sm font-medium">{artistName}</div>
-            <div className="flex items-center">
-              <Star className="h-3.5 w-3.5 text-amber-400 fill-amber-400 mr-1" />
-              <span className="text-sm">{rating}</span>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ type: "spring", stiffness: 100, delay: 0.4 }}
+      whileHover={{ scale: 1.03 }}
+      className="transition-all duration-200"
+    >
+      <Card className="border-0 shadow-lg overflow-hidden bg-white/95 backdrop-blur-sm">
+        <CardContent className="p-5">
+          <div className="flex flex-col items-center text-center mb-4">
+            <h3 className="font-semibold text-lg mb-1">Book with {artistName}</h3>
+            <div className="flex items-center gap-1">
+              <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+              <span className="text-sm font-medium">{rating}</span>
+              <span className="text-xs text-gray-500">(42 reviews)</span>
             </div>
           </div>
           
           <Button 
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-md"
             onClick={onBookNow}
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
           >
             <Calendar className="mr-2 h-4 w-4" />
             Book Now
           </Button>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
 

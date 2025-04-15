@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { 
@@ -160,7 +161,7 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
       )}
       
       <motion.div 
-        className="relative h-[25vh] md:h-[35vh] overflow-hidden"
+        className="relative h-[22vh] md:h-[30vh] overflow-hidden"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -173,62 +174,115 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
         <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-10 mix-blend-overlay"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
         
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <motion.div 
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="relative -mb-16 md:-mb-20 z-10"
+        <div className="absolute inset-0 flex items-center justify-center">
+          <motion.h1 
+            className="text-3xl md:text-4xl font-bold text-white drop-shadow-lg text-center px-4 relative"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.4 }}
           >
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full blur opacity-70"></div>
-            <Avatar className="h-24 w-24 md:h-32 md:w-32 ring-4 ring-white shadow-xl relative">
-              {userProfile.avatar_url ? (
-                <AvatarImage src={userProfile.avatar_url} alt={userProfile.full_name || "Artist"} />
-              ) : (
-                <AvatarFallback className="bg-gradient-to-br from-purple-100 to-pink-100 text-purple-800">
-                  <User className="h-12 w-12" />
-                </AvatarFallback>
-              )}
-            </Avatar>
-          </motion.div>
-          
-          <motion.div 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className="mt-4 text-center px-4 relative"
-          >
-            <div className="absolute inset-0 backdrop-blur-sm -m-2 rounded-lg opacity-30"></div>
-            <h1 className="text-2xl md:text-3xl font-bold text-white drop-shadow-md relative">
-              {userProfile.full_name || "Artist Profile"}
-            </h1>
-            
-            <div className="flex flex-wrap justify-center gap-2 mt-3">
-              <Badge className="bg-white/90 hover:bg-white text-purple-700 shadow-sm">
-                {userProfile.role || "Artist"}
-              </Badge>
-              
-              <Badge className="bg-white/90 hover:bg-white text-pink-600 shadow-sm" variant="outline">
-                {artistLevel.badge}
-              </Badge>
-              
-              {specialties.length > 0 && (
-                <Badge className="bg-white/90 hover:bg-white text-blue-600 shadow-sm">
-                  {specialties[0]}
-                </Badge>
-              )}
-            </div>
-            
-            <p className="mt-3 text-white text-opacity-90 max-w-lg mx-auto drop-shadow-sm">
-              {userProfile.professional_name || userProfile.title || (specialties.length > 0 ? `Specialized in ${specialties.join(', ')}` : "Beauty Professional")}
-            </p>
-          </motion.div>
+            {userProfile.full_name || "Artist Profile"}
+          </motion.h1>
         </div>
       </motion.div>
       
-      <div className="container max-w-5xl mx-auto px-4 -mt-12 relative z-10">
+      <div className="container max-w-5xl mx-auto px-4 -mt-16 md:-mt-20 relative z-10">
+        {/* Sticky Profile Header - Mobile */}
+        {isMobile && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="sticky top-2 z-20 mb-6"
+          >
+            <Card className="border-0 shadow-lg bg-white/95 backdrop-blur-sm">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-14 w-14 ring-4 ring-white shadow-md">
+                    {userProfile.avatar_url ? (
+                      <AvatarImage src={userProfile.avatar_url} alt={userProfile.full_name || "Artist"} />
+                    ) : (
+                      <AvatarFallback className="bg-gradient-to-br from-purple-100 to-pink-100 text-purple-800">
+                        <User className="h-8 w-8" />
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                  
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-lg font-bold text-gray-900 truncate">
+                      {userProfile.full_name || "Artist"}
+                    </h2>
+                    <div className="flex items-center gap-1">
+                      <Star className="h-3.5 w-3.5 text-amber-400 fill-amber-400" />
+                      <span className="text-sm font-medium">4.9</span>
+                      <span className="text-xs text-gray-500">(42)</span>
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    size="sm" 
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-md"
+                    onClick={handleBookNow}
+                  >
+                    Book Now
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+        
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-1 space-y-6">
+            {/* Desktop Profile Header */}
+            {!isMobile && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="sticky top-24"
+              >
+                <Card className="border border-gray-100 shadow-sm overflow-hidden">
+                  <CardContent className="p-6 flex flex-col items-center text-center">
+                    <div className="relative mb-4">
+                      <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full blur opacity-70"></div>
+                      <Avatar className="h-24 w-24 ring-4 ring-white shadow-xl relative">
+                        {userProfile.avatar_url ? (
+                          <AvatarImage src={userProfile.avatar_url} alt={userProfile.full_name || "Artist"} />
+                        ) : (
+                          <AvatarFallback className="bg-gradient-to-br from-purple-100 to-pink-100 text-purple-800">
+                            <User className="h-12 w-12" />
+                          </AvatarFallback>
+                        )}
+                      </Avatar>
+                    </div>
+                    
+                    <h2 className="text-xl font-bold text-gray-900 mb-1">
+                      {userProfile.full_name || "Artist"}
+                    </h2>
+                    
+                    <div className="flex items-center justify-center gap-1 mb-2">
+                      <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+                      <span className="text-sm font-medium">4.9</span>
+                      <span className="text-xs text-gray-500">(42 reviews)</span>
+                    </div>
+                    
+                    <Badge className="mb-4 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 border-0">
+                      {userProfile.role || specialties[0] || "Artist"}
+                    </Badge>
+                    
+                    <Button 
+                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-md"
+                      onClick={handleBookNow}
+                    >
+                      <Calendar className="mr-2 h-4 w-4" />
+                      Book This Artist
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+            
             <Card className="border border-gray-100 shadow-sm overflow-hidden">
               <CardHeader className="pb-2 pt-5">
                 <CardTitle className="text-xl flex items-center">
@@ -466,11 +520,23 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
         </div>
       </div>
       
-      <BookArtistCta 
-        artistName={userProfile.full_name || "Artist"} 
-        rating={4.9} 
-        onBookNow={handleBookNow}
-      />
+      {/* Sticky Mobile CTA */}
+      {isMobile && (
+        <motion.div 
+          className="fixed bottom-0 left-0 right-0 z-40 p-3 bg-white/95 border-t border-gray-200 backdrop-blur-sm shadow-lg"
+          initial={{ y: 100 }}
+          animate={{ y: 0 }}
+          transition={{ delay: 0.5, type: "spring", stiffness: 100 }}
+        >
+          <Button 
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-md"
+            onClick={handleBookNow}
+          >
+            <Calendar className="mr-2 h-4 w-4" />
+            Book {userProfile.full_name || "This Artist"}
+          </Button>
+        </motion.div>
+      )}
       
       {showBookingModal && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
