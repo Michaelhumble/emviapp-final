@@ -17,6 +17,7 @@ export interface Service {
 }
 
 export interface ServiceFormData {
+  id?: string; // Make id optional for new services
   title: string;
   description: string;
   price: number;
