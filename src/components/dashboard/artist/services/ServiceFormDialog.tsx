@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -60,11 +61,8 @@ const ServiceFormDialog = ({
                   min="0.01" 
                   step="0.01"
                   placeholder="45.00" 
-                  value={service.price || ''} 
-                  onChange={(e) => {
-                    const inputValue = parseFloat(e.target.value);
-                    onServiceChange('price', isNaN(inputValue) ? null : inputValue);
-                  }}
+                  value={service.price === 0 ? '' : service.price} 
+                  onChange={(e) => onServiceChange('price', e.target.value === '' ? null : Number(e.target.value))}
                   required
                 />
               </div>
