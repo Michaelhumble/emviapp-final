@@ -9,27 +9,27 @@ import { Star, Quote, MessageSquare, User } from 'lucide-react';
 const testimonials = [
   {
     id: 1,
-    name: 'Jessica Smith',
-    avatar: 'https://randomuser.me/api/portraits/women/45.jpg',
+    name: "Jessica Smith",
+    avatar: "https://randomuser.me/api/portraits/women/45.jpg",
     rating: 5,
-    date: '2 months ago',
-    comment: 'Absolutely love what they did with my hair! So professional and attentive to detail. Will definitely be coming back!'
+    date: "2 months ago",
+    comment: "Absolutely love what they did with my hair! So professional and attentive to detail. Will definitely be coming back!"
   },
   {
     id: 2,
-    name: 'Michael Johnson',
-    avatar: 'https://randomuser.me/api/portraits/men/22.jpg',
+    name: "Michael Johnson",
+    avatar: "https://randomuser.me/api/portraits/men/22.jpg",
     rating: 4,
-    date: '3 weeks ago',
-    comment: 'Great service and friendly atmosphere. The style was exactly what I wanted.'
+    date: "3 weeks ago",
+    comment: "Great service and friendly atmosphere. The style was exactly what I wanted."
   },
   {
     id: 3,
-    name: 'Amanda Wilson',
-    avatar: 'https://randomuser.me/api/portraits/women/63.jpg',
+    name: "Amanda Wilson",
+    avatar: "https://randomuser.me/api/portraits/women/63.jpg",
     rating: 5,
-    date: '1 month ago',
-    comment: 'I've been to many stylists before, but this experience was truly exceptional. Highly recommend!'
+    date: "1 month ago",
+    comment: "I've been to many stylists before, but this experience was truly exceptional. Highly recommend!"
   }
 ];
 
