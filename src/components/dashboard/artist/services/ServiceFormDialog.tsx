@@ -59,7 +59,7 @@ const ServiceFormDialog = ({
                   type="number" 
                   min="0.01" 
                   step="0.01"
-                  placeholder="Enter price" 
+                  placeholder="45.00" 
                   value={service.price || ''} 
                   onChange={(e) => {
                     const inputValue = parseFloat(e.target.value);
