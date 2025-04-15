@@ -1,5 +1,5 @@
 
-import { useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import { toast } from 'sonner';
@@ -8,10 +8,8 @@ export interface PortfolioImage {
   id: string;
   url: string;
   name: string;
-  description?: string;
+  size: number;
   created_at: string;
-  order: number;
-  user_id: string;
 }
 
 export function useArtistPortfolio() {
@@ -22,177 +20,138 @@ export function useArtistPortfolio() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const fetchImages = async () => {
+  // Fetch portfolio images when component mounts
+  useEffect(() => {
+    if (user) {
+      fetchPortfolioImages();
+    }
+  }, [user]);
+
+  const fetchPortfolioImages = async () => {
     if (!user) return;
+    
     setIsLoading(true);
-
     try {
-      const { data, error } = await supabase
-        .from('portfolio_items')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('order', { ascending: true });
-
+      // Get list of files from the user's folder in the artist_portfolios bucket
+      const { data, error } = await supabase.storage
+        .from('artist_portfolios')
+        .list(`${user.id}`);
+      
       if (error) throw error;
       
-      // Transform the portfolio_items data to match the PortfolioImage type
-      const portfolioImages: PortfolioImage[] = (data || []).map(item => ({
-        id: item.id,
-        url: item.image_url,
-        name: item.title || '',
-        description: item.description || '',
-        created_at: item.created_at,
-        order: item.order || 0,
-        user_id: item.user_id
-      }));
+      // Get public URLs for each file
+      const imagePromises = data.map(async (file) => {
+        const { data: urlData } = supabase.storage
+          .from('artist_portfolios')
+          .getPublicUrl(`${user.id}/${file.name}`);
+        
+        return {
+          id: file.id,
+          name: file.name,
+          size: file.metadata?.size || 0,
+          url: urlData.publicUrl,
+          created_at: file.created_at
+        };
+      });
       
+      const portfolioImages = await Promise.all(imagePromises);
       setImages(portfolioImages);
-    } catch (err) {
-      console.error('Error fetching portfolio images:', err);
-      toast.error('Failed to load portfolio');
+    } catch (error) {
+      console.error('Error fetching portfolio images:', error);
+      toast.error('Failed to load portfolio images');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const uploadImage = async (file: File, title?: string, description?: string) => {
-    if (!user) return null;
+  const uploadImage = async (file: File) => {
+    if (!user) {
+      toast.error('You must be logged in to upload images');
+      return false;
+    }
+    
+    // Validate file type
+    const fileExt = file.name.split('.').pop()?.toLowerCase();
+    if (!['jpg', 'jpeg', 'png', 'webp'].includes(fileExt || '')) {
+      toast.error('Only JPG, PNG and WebP images are allowed');
+      return false;
+    }
+    
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File size too large (max 5MB)');
+      return false;
+    }
+    
+    // Start upload
     setIsUploading(true);
     setUploadProgress(0);
-
+    
     try {
-      // Upload image to storage
-      const fileExt = file.name.split('.').pop();
-      const filePath = `${user.id}/${Date.now()}.${fileExt}`;
+      // Create a unique filename
+      const fileName = `${Date.now()}-${file.name}`;
       
-      const { error: uploadError, data } = await supabase.storage
-        .from('portfolio_images')
-        .upload(filePath, file, {
+      // Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('artist_portfolios')
+        .upload(`${user.id}/${fileName}`, file, {
           cacheControl: '3600',
           upsert: false
         });
-
-      if (uploadError) throw uploadError;
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('portfolio_images')
-        .getPublicUrl(filePath);
-
-      // Get current max order
-      const { data: currentImages } = await supabase
-        .from('portfolio_items')
-        .select('order')
-        .eq('user_id', user.id)
-        .order('order', { ascending: false })
-        .limit(1);
-
-      const nextOrder = (currentImages?.[0]?.order || 0) + 1;
-
-      // Add record to portfolio_items table
-      const { data: newItem, error: dbError } = await supabase
-        .from('portfolio_items')
-        .insert([{
-          user_id: user.id,
-          image_url: publicUrl,
-          title: title || file.name,
-          description,
-          order: nextOrder
-        }])
-        .select()
-        .single();
-
-      if (dbError) throw dbError;
-
-      // Transform the new item to match PortfolioImage type
-      const newImage: PortfolioImage = {
-        id: newItem.id,
-        url: newItem.image_url,
-        name: newItem.title,
-        description: newItem.description,
-        created_at: newItem.created_at,
-        order: newItem.order,
-        user_id: newItem.user_id
-      };
-
-      setImages(prev => [...prev, newImage]);
-      toast.success('Image uploaded successfully!');
-      return newImage;
-    } catch (err) {
-      console.error('Error uploading image:', err);
-      toast.error('Failed to upload image');
-      return null;
-    } finally {
-      setIsUploading(false);
-      setUploadProgress(0);
-    }
-  };
-
-  const updateImageOrder = async (reorderedImages: PortfolioImage[]) => {
-    try {
-      // Update local state immediately for optimistic UI
-      setImages(reorderedImages);
-
-      // Update order in database
-      for (let i = 0; i < reorderedImages.length; i++) {
-        const { error } = await supabase
-          .from('portfolio_items')
-          .update({ order: i })
-          .eq('id', reorderedImages[i].id);
-
-        if (error) throw error;
-      }
-    } catch (err) {
-      console.error('Error updating image order:', err);
-      toast.error('Failed to save new order');
-      // Revert to previous order by re-fetching
-      fetchImages();
-    }
-  };
-
-  const deleteImage = async (id: string) => {
-    if (!user || isUploading) return false;
-
-    try {
-      setIsUploading(true);
-      toast.info("Removing image...");
-
-      // Find the image to delete
-      const imageToDelete = images.find(img => img.id === id);
-      if (!imageToDelete) return false;
-
-      // Remove from local state first for immediate UI feedback
-      setImages(prev => prev.filter(img => img.id !== id));
-
-      // Extract the file path from the URL
-      const filePath = imageToDelete.url.split('portfolio_images/')[1];
       
-      if (filePath) {
-        // Try to remove the file from storage
-        await supabase.storage
-          .from('portfolio_images')
-          .remove([filePath]);
-      }
-
-      // Delete the database record
-      const { error } = await supabase
-        .from('portfolio_items')
-        .delete()
-        .eq('id', id)
-        .eq('user_id', user.id);
-
       if (error) throw error;
-
-      toast.success("Image removed from portfolio");
+      
+      // Get the public URL
+      const { data: urlData } = supabase.storage
+        .from('artist_portfolios')
+        .getPublicUrl(`${user.id}/${fileName}`);
+      
+      // Add the new image to the state
+      const newImage: PortfolioImage = {
+        id: data.id,
+        name: fileName,
+        size: file.size,
+        url: urlData.publicUrl,
+        created_at: new Date().toISOString()
+      };
+      
+      setImages(prev => [...prev, newImage]);
+      toast.success('Image uploaded successfully');
       return true;
-    } catch (err) {
-      console.error("Error removing portfolio image:", err);
-      toast.error("Failed to remove image");
-      // Restore the original state on failure
-      fetchImages();
+    } catch (error: any) {
+      console.error('Error uploading image:', error);
+      toast.error(error.message || 'Failed to upload image');
       return false;
     } finally {
       setIsUploading(false);
+      setUploadProgress(0);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const deleteImage = async (imageName: string) => {
+    if (!user) return false;
+    
+    try {
+      // Delete from Supabase Storage
+      const { error } = await supabase.storage
+        .from('artist_portfolios')
+        .remove([`${user.id}/${imageName}`]);
+      
+      if (error) throw error;
+      
+      // Remove from local state
+      setImages(prev => prev.filter(img => img.name !== imageName));
+      
+      toast.success('Image deleted successfully');
+      return true;
+    } catch (error: any) {
+      console.error('Error deleting image:', error);
+      toast.error(error.message || 'Failed to delete image');
+      return false;
     }
   };
 
@@ -202,9 +161,8 @@ export function useArtistPortfolio() {
     isUploading,
     uploadProgress,
     fileInputRef,
-    fetchImages,
     uploadImage,
     deleteImage,
-    updateImageOrder
+    fetchPortfolioImages
   };
 }

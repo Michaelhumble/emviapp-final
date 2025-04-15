@@ -1,161 +1,147 @@
 
-import { useEffect, useState } from "react";
-import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { useSearchParams } from "react-router-dom";
-import { toast } from "sonner";
-import Layout from "@/components/layout/Layout";
-import { Loader2 } from "lucide-react";
-import { Label } from "@/components/ui/label";
+import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '@/context/auth';
+import Layout from '@/components/layout/Layout';
+import ArtistProfileEditor from '@/components/profile/ArtistProfileEditor';
+import SalonProfileEditor from '@/components/profile/SalonProfileEditor';
+import CustomerProfileEditor from '@/components/profile/CustomerProfileEditor';
+import OtherProfileEditor from '@/components/profile/OtherProfileEditor';
+import ProfileLoadingManager from '@/components/profile/ProfileLoadingManager';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
-export default function EditProfilePage() {
-  const { userProfile, refreshUserProfile } = useAuth();
-  const [searchParams] = useSearchParams();
-  const focus = searchParams.get("focus");
-  const [saving, setSaving] = useState(false);
+// Cache for editor selection to prevent flicker
+const editorCache = new Map<string, JSX.Element>();
+
+const ProfileEdit = () => {
+  const { userProfile, userRole, loading, refreshUserProfile, isError } = useAuth();
+  const [pageTitle, setPageTitle] = useState('Edit Profile');
+  const navigate = useNavigate();
   
-  const [formData, setFormData] = useState({
-    bio: userProfile?.bio || "",
-    specialty: userProfile?.specialty || "",
-    location: userProfile?.location || "",
-    instagram: userProfile?.instagram || "",
-    website: userProfile?.website || ""
-  });
-
-  // Update form data when profile loads/changes
+  // Set page title based on role - optimized to reduce re-renders
   useEffect(() => {
-    if (userProfile) {
-      setFormData({
-        bio: userProfile.bio || "",
-        specialty: userProfile.specialty || "",
-        location: userProfile.location || "",
-        instagram: userProfile.instagram || "",
-        website: userProfile.website || ""
-      });
-    }
-  }, [userProfile]);
-
-  // Scroll to focused field
-  useEffect(() => {
-    if (focus) {
-      const element = document.getElementById(focus);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "center" });
-        element.focus();
+    if (userRole) {
+      let title = 'Edit Your Profile';
+      
+      switch (userRole) {
+        case 'artist':
+        case 'nail technician/artist':
+          title = 'Edit Artist Profile';
+          break;
+        case 'salon':
+        case 'owner':
+          title = 'Edit Salon Profile';
+          break;
+        case 'vendor':
+        case 'supplier':
+        case 'beauty supplier':
+          title = 'Edit Vendor Profile';
+          break;
+        case 'freelancer':
+          title = 'Edit Freelancer Profile';
+          break;
+        default:
+          title = 'Edit Profile';
       }
+      
+      setPageTitle(title);
+      document.title = `${title} | EmviApp`;
     }
-  }, [focus]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!userProfile?.id) return;
-
-    setSaving(true);
+  }, [userRole]);
+  
+  // Optimized refresh function with type adapter pattern
+  const handleRefresh = useCallback(async () => {
+    if (!refreshUserProfile) return;
+    
     try {
-      const { error } = await supabase
-        .from("users")
-        .update(formData)
-        .eq("id", userProfile.id);
-
-      if (error) throw error;
-
-      await refreshUserProfile();
-      toast.success("Profile updated successfully");
+      // Adapt the boolean return to void to satisfy TypeScript
+      const success = await refreshUserProfile();
+      if (!success) {
+        toast.error("Could not load your profile. Please try again later.");
+      }
     } catch (error) {
-      console.error("Error updating profile:", error);
-      toast.error("Failed to update profile");
-    } finally {
-      setSaving(false);
+      console.error("Error refreshing profile:", error);
+      toast.error("Could not load your profile. Please try again later.");
     }
-  };
-
+  }, [refreshUserProfile]);
+  
+  // Memoized editor selection to reduce re-renders and improve performance
+  const renderProfileEditor = useCallback(() => {
+    // If still loading, show loading state
+    if (loading) {
+      return (
+        <ProfileLoadingManager 
+          message="Loading your profile editor..."
+          duration={3000}
+          onRefresh={handleRefresh}
+          loadingType="edit"
+        />
+      );
+    }
+    
+    // If error or no profile, show error state
+    if (isError || !userProfile) {
+      return (
+        <ProfileLoadingManager 
+          isError={true}
+          onRefresh={handleRefresh}
+          loadingType="edit"
+        />
+      );
+    }
+    
+    // Check if we have a cached editor component
+    const cacheKey = `${userRole}-editor`;
+    if (editorCache.has(cacheKey)) {
+      return editorCache.get(cacheKey);
+    }
+    
+    // Select appropriate editor based on role
+    let editorComponent: JSX.Element;
+    
+    switch (userRole) {
+      case 'artist':
+      case 'nail technician/artist':
+        editorComponent = <ArtistProfileEditor />;
+        break;
+      case 'salon':
+      case 'owner':
+        editorComponent = <SalonProfileEditor />;
+        break;
+      case 'customer':
+        editorComponent = <CustomerProfileEditor />;
+        break;
+      case 'vendor':
+      case 'supplier':
+      case 'beauty supplier':
+        editorComponent = <SalonProfileEditor />; // Reuse salon editor for now
+        break;
+      case 'freelancer':
+        editorComponent = <ArtistProfileEditor />; // Reuse artist editor for freelancers
+        break;
+      case 'other':
+        editorComponent = <OtherProfileEditor />;
+        break;
+      default:
+        editorComponent = <CustomerProfileEditor />; // Default to customer editor
+    }
+    
+    // Cache the component to prevent unnecessary re-renders
+    editorCache.set(cacheKey, editorComponent);
+    return editorComponent;
+    
+  }, [userRole, userProfile, loading, isError, handleRefresh]);
+  
   return (
     <Layout>
-      <div className="p-6 max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">Edit Your Profile</h1>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div id="bio">
-            <Label htmlFor="bio">Bio</Label>
-            <Textarea
-              id="bio"
-              name="bio"
-              value={formData.bio}
-              onChange={handleChange}
-              placeholder="Tell us about yourself..."
-              className="mt-1"
-            />
-          </div>
-
-          <div id="specialty">
-            <Label htmlFor="specialty">Specialty</Label>
-            <Input
-              id="specialty"
-              name="specialty"
-              value={formData.specialty}
-              onChange={handleChange}
-              placeholder="e.g. Nail Art, Hair Styling"
-              className="mt-1"
-            />
-          </div>
-
-          <div id="location">
-            <Label htmlFor="location">Location</Label>
-            <Input
-              id="location"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              placeholder="City, State"
-              className="mt-1"
-            />
-          </div>
-
-          <div id="instagram">
-            <Label htmlFor="instagram">Instagram</Label>
-            <Input
-              id="instagram"
-              name="instagram"
-              value={formData.instagram}
-              onChange={handleChange}
-              placeholder="@yourusername"
-              className="mt-1"
-            />
-          </div>
-
-          <div id="website">
-            <Label htmlFor="website">Website</Label>
-            <Input
-              id="website"
-              name="website"
-              value={formData.website}
-              onChange={handleChange}
-              placeholder="https://yourwebsite.com"
-              type="url"
-              className="mt-1"
-            />
-          </div>
-
-          <Button type="submit" className="w-full" disabled={saving}>
-            {saving ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              "Save Changes"
-            )}
-          </Button>
-        </form>
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-3xl mx-auto">
+          <h1 className="text-3xl font-serif mb-8">{pageTitle}</h1>
+          {renderProfileEditor()}
+        </div>
       </div>
     </Layout>
   );
-}
+};
+
+export default ProfileEdit;
