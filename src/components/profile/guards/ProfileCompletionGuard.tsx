@@ -10,18 +10,21 @@ import { UserRole } from '@/context/auth/types';
 
 interface ProfileCompletionGuardProps {
   children: React.ReactNode;
-  role: UserRole;
+  role?: UserRole;
 }
 
 export function ProfileCompletionGuard({ children, role }: ProfileCompletionGuardProps) {
   const { completionStatus, isLoading } = useProfileCompletion();
+  const { userRole } = useAuth();
   const navigate = useNavigate();
+  
+  const effectiveRole = role || userRole || 'customer';
 
   useEffect(() => {
     if (!isLoading && completionStatus && !completionStatus.isComplete) {
-      navigate(`/setup/${role}`);
+      navigate(`/setup/${effectiveRole}`);
     }
-  }, [completionStatus, isLoading, role, navigate]);
+  }, [completionStatus, isLoading, effectiveRole, navigate]);
 
   if (isLoading) {
     return (
@@ -54,7 +57,7 @@ export function ProfileCompletionGuard({ children, role }: ProfileCompletionGuar
           </p>
           <Button 
             className="w-full"
-            onClick={() => navigate(`/setup/${role}`)}
+            onClick={() => navigate(`/setup/${effectiveRole}`)}
           >
             Complete Profile
           </Button>
