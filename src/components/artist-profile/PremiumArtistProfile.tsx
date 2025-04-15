@@ -15,7 +15,16 @@ import { toast } from "sonner";
 import { UserProfile, getLocationString } from "@/types/profile";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ReferralWidget from "@/components/dashboard/artist/components/ReferralWidget";
-import ArtistPortfolioSection from "@/components/portfolio/ArtistPortfolioSection";
+
+// Import newly created components
+import PortfolioGallery from "@/components/portfolio/PortfolioGallery";
+import ServiceMenu from "@/components/artist-profile/ServiceMenu";
+import ClientTestimonials from "@/components/artist-profile/ClientTestimonials";
+import ProfileHighlights from "@/components/artist-profile/ProfileHighlights";
+import AvailabilityCalendar from "@/components/artist-profile/AvailabilityCalendar";
+import StyleSignature from "@/components/artist-profile/StyleSignature";
+import BookArtistCta from "@/components/artist-profile/BookArtistCta";
+import PersonalMessageBanner from "@/components/artist-profile/PersonalMessageBanner";
 
 interface PremiumArtistProfileProps {
   userProfile: UserProfile;
@@ -28,6 +37,7 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
   const parallaxY = useTransform(scrollYProgress, [0, 1], [0, -100]);
   const opacityTransform = useTransform(scrollYProgress, [0, 0.2], [1, 0.3]);
   const [showQrCode, setShowQrCode] = useState(false);
+  const [showBookingModal, setShowBookingModal] = useState(false);
 
   const locationString = getLocationString(userProfile.location);
   
@@ -70,12 +80,60 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
       handleCopyProfileLink();
     }
   };
+
+  const handleBookNow = () => {
+    setShowBookingModal(true);
+  };
+  
+  const handleBookService = (serviceId: string) => {
+    // In a real app, store the selected service ID
+    console.log("Book service:", serviceId);
+    handleBookNow();
+  };
+  
+  // Sample service data for demonstration
+  const sampleServices = [
+    {
+      id: "1",
+      name: "Basic Haircut",
+      description: "A classic haircut tailored to your face shape and style preferences.",
+      price: 45,
+      duration: 45,
+      category: "Haircuts",
+      popular: true
+    },
+    {
+      id: "2",
+      name: "Color & Style",
+      description: "Full color service with styling. Includes consultation to find your perfect shade.",
+      price: 120,
+      duration: 120,
+      category: "Color"
+    },
+    {
+      id: "3",
+      name: "Balayage",
+      description: "Hand-painted highlights for a natural, sun-kissed look.",
+      price: 180,
+      duration: 150,
+      category: "Color",
+      popular: true
+    },
+    {
+      id: "4",
+      name: "Blowout & Style",
+      description: "Professional blowdry and styling for any occasion.",
+      price: 60,
+      duration: 45,
+      category: "Styling"
+    }
+  ];
   
   // Calculate artist level based on profile completion, reviews, etc.
   const getArtistLevel = () => {
     // This would be more sophisticated in production
     const hasServices = userProfile.services && userProfile.services.length > 0;
-    const hasPortfolio = userProfile.gallery && userProfile.gallery.length > 0;
+    const hasPortfolio = userProfile.portfolio_urls && userProfile.portfolio_urls.length > 0;
     const hasBio = !!userProfile.bio && userProfile.bio.length > 20;
     const hasSpecialties = specialties.length > 0;
     
@@ -98,6 +156,17 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
   
   return (
     <div className="relative min-h-screen pb-16">
+      {/* Desktop Book Now CTA */}
+      {!isMobile && (
+        <div className="fixed top-24 right-6 z-30">
+          <BookArtistCta 
+            artistName={userProfile.full_name || "Artist"} 
+            rating={4.9} 
+            onBookNow={handleBookNow}
+          />
+        </div>
+      )}
+      
       {/* Parallax Hero Section */}
       <motion.div 
         className="relative h-[40vh] md:h-[50vh] overflow-hidden"
@@ -298,6 +367,9 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
               </CardContent>
             </Card>
             
+            {/* Availability Calendar */}
+            <AvailabilityCalendar />
+            
             {/* Artist Referral Widget */}
             <ReferralWidget />
             
@@ -374,59 +446,84 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
               </CardContent>
             </Card>
             
-            {/* My Style & Signature Section */}
-            <Card className="border border-gray-100 shadow-sm overflow-hidden">
-              <CardHeader className="pb-2 pt-5">
-                <CardTitle className="text-xl flex items-center">
-                  <Palette className="mr-2 h-5 w-5 text-purple-500" />
-                  My Style & Signature
-                </CardTitle>
-              </CardHeader>
-              
-              <CardContent>
-                {specialties.length > 0 ? (
-                  <div className="space-y-4">
-                    <div className="flex flex-wrap gap-2">
-                      {specialties.map((specialty, index) => (
-                        <motion.div
-                          key={`specialty-${index}`}
-                          whileHover={{ scale: 1.05 }}
-                          transition={{ type: "spring", stiffness: 300 }}
-                          className="px-3 py-2 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg flex items-center"
-                        >
-                          <PenTool className="h-4 w-4 mr-2 text-purple-400" />
-                          <span className="text-purple-800 font-medium text-sm">
-                            {specialty}
-                          </span>
-                        </motion.div>
-                      ))}
-                    </div>
-                    
-                    <p className="text-gray-600">
-                      {userProfile.bio ? (
-                        <span>
-                          Specializing in {specialties.join(', ')}, creating unique styles tailored to each client's needs.
-                        </span>
-                      ) : (
-                        <span>
-                          Specializing in {specialties.join(', ')}
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-gray-500 italic">
-                    <p>No specialties have been added yet.</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            {/* Style & Signature Section */}
+            <StyleSignature specialties={specialties} />
             
-            {/* Portfolio Section */}
-            <ArtistPortfolioSection />
+            {/* Profile Highlights */}
+            <ProfileHighlights stats={{
+              rating: 4.9,
+              reviewCount: 87,
+              bookingsCount: 156,
+              completionRate: 98,
+              responseTime: "2 hrs",
+              repeatClients: 42,
+              experience: userProfile.years_experience ? `${userProfile.years_experience} years` : "5+ years"
+            }} />
+            
+            {/* Personal Message Banner */}
+            <PersonalMessageBanner artistName={userProfile.full_name} />
+            
+            {/* Service Menu */}
+            <ServiceMenu 
+              services={sampleServices} 
+              onBookService={handleBookService} 
+            />
+            
+            {/* Portfolio Gallery */}
+            <div className="mt-8">
+              <h2 className="text-xl font-serif font-semibold mb-4 flex items-center">
+                <Palette className="mr-2 h-5 w-5 text-purple-500" />
+                Portfolio Gallery
+              </h2>
+              <PortfolioGallery />
+            </div>
+            
+            {/* Client Testimonials */}
+            <div className="mt-8">
+              <ClientTestimonials />
+            </div>
           </div>
         </div>
       </div>
+      
+      {/* Mobile Book Now CTA */}
+      <BookArtistCta 
+        artistName={userProfile.full_name || "Artist"} 
+        rating={4.9} 
+        onBookNow={handleBookNow}
+      />
+      
+      {/* Booking Modal (Placeholder) */}
+      {showBookingModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-white rounded-lg shadow-xl w-full max-w-md"
+          >
+            <div className="p-6">
+              <h2 className="text-xl font-bold mb-4">Book with {userProfile.full_name}</h2>
+              <p className="mb-4">Booking functionality is coming soon! Please contact the artist directly to schedule an appointment.</p>
+              <div className="flex justify-end gap-3">
+                <Button variant="outline" onClick={() => setShowBookingModal(false)}>
+                  Close
+                </Button>
+                <Button onClick={() => {
+                  if (userProfile.email) {
+                    window.location.href = `mailto:${userProfile.email}?subject=Booking Request&body=Hi ${userProfile.full_name}, I'd like to book an appointment with you.`;
+                  } else {
+                    toast.error("No contact email available");
+                  }
+                }}>
+                  <Mail className="h-4 w-4 mr-2" />
+                  Contact Now
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };
