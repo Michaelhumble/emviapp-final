@@ -42,8 +42,9 @@ export const useServiceUpsells = (serviceId: string | null, bookingValue: number
         
         if (queryError) throw queryError;
         
-        // Only set the data if it's an array
+        // Only set the data if it's an array - fix for type instantiation issue
         if (Array.isArray(data)) {
+          // Force cast to UpsellService[] to avoid deep type instantiation
           setUpsells(data as UpsellService[]);
         } else {
           setUpsells([]);
