@@ -56,6 +56,7 @@ const ArtistDashboardWidgets = () => {
         
         if (error) throw error;
         
+        // Type-safe mapping of the data
         return (data || []).map(booking => ({
           ...booking,
           service_name: "Nail Service",
@@ -70,8 +71,11 @@ const ArtistDashboardWidgets = () => {
     enabled: !!user?.id
   });
 
+  // Define the type for earnings data with a type alias to avoid infinite type instantiation
+  type EarningsDataResult = EarningsData | null;
+  
   // Fetch earnings data with explicit typing
-  const { data: earningsData, isLoading: isLoadingEarnings } = useQuery<EarningsData | null>({
+  const { data: earningsData, isLoading: isLoadingEarnings } = useQuery<EarningsDataResult>({
     queryKey: ['earnings-data', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;

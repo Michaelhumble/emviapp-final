@@ -1,14 +1,15 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
-import { Booking, BookingCounts } from "@/components/dashboard/artist/types/ArtistDashboardTypes";
+import { Booking, BookingCounts, ServiceType } from "@/components/dashboard/artist/types/ArtistDashboardTypes";
 
 export const useArtistBookings = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [counts, setCounts] = useState<BookingCounts>({ pending: 0, upcoming: 0, accepted: 0, completed: 0, total: 0 });
   const [loading, setLoading] = useState(true);
-  const [serviceTypes, setServiceTypes] = useState<Array<{ id: string; label: string }>>([]);
+  const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([]);
   const { user } = useAuth();
 
   const fetchBookings = async () => {
@@ -83,7 +84,7 @@ export const useArtistBookings = () => {
           total: bookingsWithUserDetails.length
         });
         
-        // Extract unique service types for filtering with proper typing
+        // Extract unique service types for filtering
         const uniqueServices = Array.from(
           new Map(
             bookingsWithUserDetails
@@ -93,7 +94,7 @@ export const useArtistBookings = () => {
         );
         
         // Explicitly type the array to match the state type
-        setServiceTypes(uniqueServices as Array<{ id: string; label: string }>);
+        setServiceTypes(uniqueServices as ServiceType[]);
       }
     } catch (error) {
       console.error("Error fetching bookings:", error);
@@ -126,7 +127,7 @@ export const useArtistBookings = () => {
       // Update counts
       setCounts(prev => ({
         pending: Math.max(0, prev.pending - 1),
-        upcoming: prev.upcoming + 1,
+        upcoming: (prev.upcoming || 0) + 1,
         accepted: prev.accepted + 1,
         completed: prev.completed,
         total: prev.total
@@ -157,11 +158,13 @@ export const useArtistBookings = () => {
         )
       );
       
-      // Update counts
+      // Update counts - ensure all required properties are included
       setCounts(prev => ({
         pending: Math.max(0, prev.pending - 1),
         accepted: prev.accepted,
-        total: prev.total
+        completed: prev.completed,
+        total: prev.total,
+        upcoming: prev.upcoming
       }));
     } catch (error) {
       console.error("Error declining booking:", error);

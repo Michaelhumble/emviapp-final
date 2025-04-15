@@ -101,3 +101,9 @@ export interface DaySchedule {
   time: string;
   active: boolean;
 }
+
+// Explicitly define the service types interface for useArtistBookings
+export interface ServiceType {
+  id: string;
+  label: string;
+}
