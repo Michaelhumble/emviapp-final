@@ -160,7 +160,10 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
       )}
       
       <motion.div 
-        className="relative h-[30vh] md:h-[40vh] overflow-hidden"
+        className="relative h-[25vh] md:h-[35vh] overflow-hidden"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
         style={{ 
           y: parallaxY,
           opacity: opacityTransform
@@ -174,11 +177,11 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
           <motion.div 
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="relative"
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="relative -mb-16 md:-mb-20 z-10"
           >
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full blur opacity-70"></div>
-            <Avatar className="h-32 w-32 border-4 border-white shadow-lg relative">
+            <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full blur opacity-70"></div>
+            <Avatar className="h-24 w-24 md:h-32 md:w-32 ring-4 ring-white shadow-xl relative">
               {userProfile.avatar_url ? (
                 <AvatarImage src={userProfile.avatar_url} alt={userProfile.full_name || "Artist"} />
               ) : (
@@ -192,10 +195,11 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
           <motion.div 
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="mt-4 text-center px-4"
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="mt-4 text-center px-4 relative"
           >
-            <h1 className="text-3xl md:text-4xl font-bold text-white drop-shadow-md">
+            <div className="absolute inset-0 backdrop-blur-sm -m-2 rounded-lg opacity-30"></div>
+            <h1 className="text-2xl md:text-3xl font-bold text-white drop-shadow-md relative">
               {userProfile.full_name || "Artist Profile"}
             </h1>
             
@@ -222,7 +226,7 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
         </div>
       </motion.div>
       
-      <div className="container max-w-5xl mx-auto px-4 -mt-20 relative z-10">
+      <div className="container max-w-5xl mx-auto px-4 -mt-12 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-1 space-y-6">
             <Card className="border border-gray-100 shadow-sm overflow-hidden">
