@@ -215,13 +215,13 @@ const WeeklyCalendar = () => {
                               : 'bg-amber-50 border-amber-200'}
                           `}
                         >
-                          <div className="font-medium">{booking.title}</div>
-                          <div className="flex items-center text-gray-500 mt-1">
-                            <Users className="h-3 w-3 mr-1" />
-                            {booking.customerName}
+                          <div className="font-medium whitespace-normal break-words">{booking.title}</div>
+                          <div className="flex items-center text-gray-500 mt-1 flex-wrap">
+                            <Users className="h-3 w-3 mr-1 flex-shrink-0" />
+                            <span className="whitespace-normal break-words">{booking.customerName}</span>
                           </div>
                           <div className="flex items-center text-gray-500 mt-0.5">
-                            <Clock className="h-3 w-3 mr-1" />
+                            <Clock className="h-3 w-3 mr-1 flex-shrink-0" />
                             {format(booking.start, 'h:mm a')}
                           </div>
                           <div className={`

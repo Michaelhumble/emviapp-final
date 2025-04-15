@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Copy, CheckCircle2, Facebook, Twitter, Gift, Sparkles } from 'lucide-react';
+import { Copy, CheckCircle2, Facebook, Twitter, Gift, Sparkles, Share2 } from 'lucide-react';
 import { useArtistData } from '../context/ArtistDataContext';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -33,12 +33,12 @@ const ReferralWidget = () => {
   };
 
   return (
-    <Card className="overflow-hidden bg-gradient-to-r from-purple-50 to-pink-50 border-purple-100 shadow-sm">
+    <Card className="overflow-hidden border-0 shadow-md bg-gradient-to-r from-purple-50 to-pink-50">
       <motion.div 
-        className="absolute -right-8 -top-8 w-32 h-32 bg-gradient-to-br from-pink-200/70 to-purple-200/70 rounded-full"
+        className="absolute -right-12 -top-12 w-40 h-40 bg-gradient-to-br from-pink-200/40 to-purple-200/40 rounded-full"
         animate={{ 
           scale: [1, 1.05, 1],
-          opacity: [0.7, 0.9, 0.7],
+          opacity: [0.5, 0.7, 0.5],
           rotate: [0, 3, 0]
         }}
         transition={{ 
@@ -50,8 +50,17 @@ const ReferralWidget = () => {
       
       <CardHeader className="pb-2 relative">
         <CardTitle className="text-xl font-serif flex items-center">
-          <Gift className="h-5 w-5 text-pink-500 mr-2" />
-          Invite & Earn Credits
+          <motion.div 
+            initial={{ rotate: -10 }}
+            animate={{ rotate: [0, -10, 0] }}
+            transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
+            className="mr-2"
+          >
+            <Gift className="h-5 w-5 text-pink-500" />
+          </motion.div>
+          <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Invite & Earn Credits
+          </span>
         </CardTitle>
       </CardHeader>
       
@@ -59,10 +68,20 @@ const ReferralWidget = () => {
         <p className="text-sm text-gray-600 mb-4">
           Share your unique link and earn <motion.span 
             className="font-bold text-pink-600"
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-          >15 credits</motion.span> for 
-          every friend who joins EmviApp! <Sparkles className="h-4 w-4 inline text-amber-500" />
+          >
+            15 credits
+            <motion.span 
+              className="inline-block ml-0.5"
+              initial={{ opacity: 0.8, y: 0 }}
+              animate={{ opacity: [0.8, 1, 0.8], y: [-1, 1, -1] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
+              <Sparkles className="h-4 w-4 inline text-amber-500" />
+            </motion.span>
+          </motion.span> for 
+          every friend who joins EmviApp!
         </p>
         
         <motion.div 
@@ -72,7 +91,7 @@ const ReferralWidget = () => {
         >
           <div className="absolute -inset-1 bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg blur opacity-40 group-hover:opacity-75 transition duration-300" />
           
-          <div className="relative flex items-center bg-white/80 backdrop-blur-sm border border-purple-100 rounded-lg p-3">
+          <div className="relative flex items-center bg-white/90 backdrop-blur-sm border border-purple-100 rounded-lg p-3">
             <div className="flex-1 truncate text-sm text-purple-800 font-mono">
               {referralLink}
             </div>
@@ -99,7 +118,7 @@ const ReferralWidget = () => {
         
         <div className="flex justify-between items-center text-sm">
           <motion.div 
-            className="text-gray-600 bg-white/80 px-3 py-1.5 rounded-full border border-purple-100 shadow-sm"
+            className="text-gray-600 bg-white/90 px-3 py-1.5 rounded-full border border-purple-100 shadow-sm"
             whileHover={{ y: -2 }}
             transition={{ type: "spring", stiffness: 400 }}
           >
@@ -107,22 +126,40 @@ const ReferralWidget = () => {
             Your Credits: <span className="font-semibold text-purple-700">{userCredits || 0}</span>
           </motion.div>
           <div className="flex gap-2">
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="text-[#1DA1F2] hover:bg-[#1DA1F2]/10"
+            <motion.button 
+              whileHover={{ scale: 1.1 }} 
+              whileTap={{ scale: 0.9 }}
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-[#1DA1F2]/10 text-[#1DA1F2]"
               onClick={shareOnTwitter}
             >
               <Twitter className="h-4 w-4" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="text-[#4267B2] hover:bg-[#4267B2]/10"
+            </motion.button>
+            <motion.button 
+              whileHover={{ scale: 1.1 }} 
+              whileTap={{ scale: 0.9 }}
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-[#4267B2]/10 text-[#4267B2]"
               onClick={shareOnFacebook}
             >
               <Facebook className="h-4 w-4" />
-            </Button>
+            </motion.button>
+            <motion.button 
+              whileHover={{ scale: 1.1 }} 
+              whileTap={{ scale: 0.9 }}
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-600"
+              onClick={() => {
+                if (navigator.share) {
+                  navigator.share({
+                    title: 'Join me on EmviApp',
+                    text: 'Check out EmviApp - the platform for nail artists and beauty professionals!',
+                    url: referralLink,
+                  })
+                } else {
+                  handleCopy();
+                }
+              }}
+            >
+              <Share2 className="h-4 w-4" />
+            </motion.button>
           </div>
         </div>
       </CardContent>

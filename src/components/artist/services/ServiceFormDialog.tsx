@@ -61,7 +61,12 @@ const ServiceFormDialog = ({
                   step="0.01"
                   placeholder="45.00"
                   value={service.price || ''}
-                  onChange={(e) => onServiceChange('price', parseFloat(e.target.value) || 0)}
+                  onChange={(e) => {
+                    // Ensure we handle the empty string case properly
+                    const inputValue = e.target.value;
+                    const parsedValue = inputValue === '' ? 0 : parseFloat(inputValue);
+                    onServiceChange('price', parsedValue);
+                  }}
                   required
                 />
               </div>
