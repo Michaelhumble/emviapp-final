@@ -147,10 +147,13 @@ const ArtistDashboardWidgets = () => {
     enabled: !!user?.id
   });
 
+  // Using an explicit type definition to solve the deep instantiation issue
+  type EarningsQueryResult = EarningsData | null;
+  
   // Fetch earnings data with explicit type annotation to avoid deep type instantiation
-  const { data: earningsData, isLoading: isLoadingEarnings } = useQuery({
+  const { data: earningsData, isLoading: isLoadingEarnings } = useQuery<EarningsQueryResult>({
     queryKey: ['earnings-data', user?.id],
-    queryFn: async (): Promise<EarningsData | null> => {
+    queryFn: async () => {
       if (!user?.id) return null;
       
       try {
