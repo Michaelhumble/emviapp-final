@@ -1,50 +1,49 @@
 
-import { useState } from 'react';
-import { useAuth } from '@/context/auth';
-import { toast } from 'sonner';
-import { useReferralData } from './referral/useReferralData';
-import { useReferralStats } from './referral/useReferralStats';
-import { useReferralProgress } from './referral/useReferralProgress';
-import { useReferralUtils } from './referral/useReferralUtils';
-import { ReferralData, ReferralStats, ReferralProgress } from '@/components/referral/types';
+import { useState, useEffect } from 'react';
+
+// Define the types for our referral system
+interface ReferralStats {
+  completedReferrals: number;
+  pendingReferrals: number;
+  earnedCredits: number;
+}
+
+interface ReferralProgress {
+  percentage: number;
+  nextMilestone: number;
+  nextMilestoneIn: number;
+  level: number;
+}
 
 export const useReferralSystem = () => {
-  const { user, userRole } = useAuth();
-  const { loading: dataLoading, referralCode, referralLink, referrals } = useReferralData();
-  const { loading: statsLoading, referralStats } = useReferralStats();
-  const referralProgress = useReferralProgress(referralStats);
-  const { copyReferralLink, getMotivationalMessage } = useReferralUtils();
-  const [copied, setCopied] = useState(false);
-  
-  const handleCopyReferralLink = () => {
-    navigator.clipboard.writeText(referralLink)
-      .then(() => {
-        setCopied(true);
-        toast.success('Referral link copied to clipboard!');
-        setTimeout(() => setCopied(false), 3000);
-      })
-      .catch(() => {
-        toast.error('Failed to copy link. Please try again.');
-      });
-  };
+  const [referralStats, setReferralStats] = useState<ReferralStats>({
+    completedReferrals: 3,
+    pendingReferrals: 2,
+    earnedCredits: 45
+  });
 
-  const getReferralMessage = (preferred_language: string = 'English') => {
-    return getMotivationalMessage(
-      referralStats.completedReferrals,
-      referralProgress.nextMilestoneIn,
-      preferred_language
-    );
-  };
-  
+  const [referralProgress, setReferralProgress] = useState<ReferralProgress>({
+    percentage: 60,
+    nextMilestone: 5,
+    nextMilestoneIn: 2,
+    level: 1
+  });
+
+  // In a real app, we would fetch this data from an API
+  useEffect(() => {
+    // Mock API call
+    const fetchReferralData = () => {
+      // This would be replaced with actual API calls
+      console.log('Fetching referral data...');
+      
+      // We're just using the default values for now
+    };
+
+    fetchReferralData();
+  }, []);
+
   return {
-    loading: dataLoading || statsLoading,
-    referralCode,
-    referralLink,
     referralStats,
-    referralProgress,
-    referrals,
-    copied,
-    copyReferralLink: handleCopyReferralLink,
-    getMotivationalMessage: getReferralMessage,
+    referralProgress
   };
 };

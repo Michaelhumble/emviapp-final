@@ -20,12 +20,12 @@ const ReferralWidget = () => {
         <div className="text-2xl font-bold mb-2">
           {referralStats.completedReferrals}
           <span className="text-sm ml-1 font-normal text-gray-500">
-            / {referralProgress.totalMilestone} referrals
+            / {referralProgress.nextMilestone} referrals
           </span>
         </div>
         
         <Progress 
-          value={(referralStats.completedReferrals / referralProgress.totalMilestone) * 100} 
+          value={(referralStats.completedReferrals / referralProgress.nextMilestone) * 100} 
           className="h-2 mb-3" 
         />
         
