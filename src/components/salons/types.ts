@@ -6,4 +6,10 @@ export interface SalonFilters {
   location: string;
   features: string[];
   sortBy: string;
+  featured?: boolean;
+  showExpired?: boolean;
+  hasHousing?: boolean;
+  industry?: string;
+  stations?: number;
+  squareFeet?: [number, number];
 }
