@@ -180,10 +180,17 @@ export default function ServicesTab() {
         
         toast.success("Service updated successfully");
       } else {
-        // Add new service
+        // Add new service - Fix: Ensuring all required fields are included
         const { error } = await supabase
           .from("services")
-          .insert([{ ...values, user_id: user.id }]);
+          .insert({
+            title: values.title,
+            description: values.description || null,
+            price: values.price,
+            duration_minutes: values.duration_minutes,
+            is_visible: values.is_visible,
+            user_id: user.id
+          });
         
         if (error) throw error;
         

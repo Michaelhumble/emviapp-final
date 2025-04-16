@@ -187,7 +187,7 @@ export default function CalendarTab() {
                             <div>
                               <div className="flex items-center">
                                 <h4 className="font-medium">
-                                  {appointment.service_name || "Custom Service"}
+                                  {appointment.services?.title || "Custom Service"}
                                 </h4>
                                 <div className="ml-2">
                                   {getStatusBadge(appointment.status)}
