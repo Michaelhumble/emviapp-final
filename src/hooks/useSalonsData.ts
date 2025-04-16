@@ -1,177 +1,160 @@
 
-import { useState, useEffect, useMemo } from 'react';
-import { Job } from '@/types/job';
-import { getSalonsForSale, getFeaturedSalonsForSale } from '@/utils/featuredContent';
+import { useState, useEffect, useCallback } from "react";
+import { Job } from "@/types/job";
 
-interface SalonsFilters {
-  location: string;
-  priceRange: [number, number];
-  sizeRange: [number, number];
-  features: string[];
-  businessType: string;
+export interface SalonFilters {
+  featured?: boolean;
+  forSale?: boolean;
+  location?: string;
+  hasWaxRoom?: boolean;
+  hasHousing?: boolean;
+  salonType?: string;
+  priceRange?: string;
+  minStations?: number;
+  maxStations?: number;
+  stationsCount?: string;
+  boosted?: boolean;
+  status?: string;
+  showExpired?: boolean;
 }
 
-// Helper function to get a realistic salon price range
-const getSalonPriceRange = (): [number, number] => {
-  return [30000, 300000];
-};
-
-// Helper function to get a realistic salon size range
-const getSalonSizeRange = (): [number, number] => {
-  return [500, 4000];
-};
-
-// List of suggested keywords for salon search
-const SUGGESTED_KEYWORDS = [
-  "Nail Salon", "Hair Studio", "Spa & Waxing", "Barber Shop", "Beauty Lounge",
-  "Westminster", "Garden Grove", "Houston", "San Jose", "Atlanta",
-  "For Sale", "New Listing", "Premium", "Modern", "Established"
-];
-
-const useSalonsData = () => {
+export const useSalonsData = (initialFilters: SalonFilters = {}) => {
+  // Mock salons data - in a real app this would come from an API
   const [salons, setSalons] = useState<Job[]>([]);
-  const [featuredSalons, setFeaturedSalons] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<any>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [priceRange, setPriceRange] = useState<[number, number]>(getSalonPriceRange());
-  const [sizeRange, setSizeRange] = useState<[number, number]>(getSalonSizeRange());
-  const [filters, setFilters] = useState<SalonsFilters>({
-    location: '',
-    priceRange: getSalonPriceRange(),
-    sizeRange: getSalonSizeRange(),
-    features: [],
-    businessType: 'all'
-  });
+  const [error, setError] = useState<Error | null>(null);
+  const [filters, setFilters] = useState<SalonFilters>(initialFilters);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [featuredSalons, setFeaturedSalons] = useState<Job[]>([]);
+  const [suggestedKeywords, setSuggestedKeywords] = useState<string[]>([]);
 
-  // Suggested keywords for search, combining static and dynamic keywords
-  const suggestedKeywords = useMemo(() => {
-    const dynamicKeywords: string[] = [];
-    
-    // Add top locations from the data
-    const locations = salons
-      .map(salon => salon.location?.split(',')[0]?.trim())
-      .filter(Boolean) as string[];
-    
-    const uniqueLocations = [...new Set(locations)];
-    dynamicKeywords.push(...uniqueLocations.slice(0, 5));
-    
-    // Add top salon types
-    const salonTypes = salons
-      .map(salon => salon.salon_type)
-      .filter(Boolean) as string[];
-    
-    const uniqueTypes = [...new Set(salonTypes)];
-    dynamicKeywords.push(...uniqueTypes.slice(0, 5));
-    
-    // Combine with static keywords and remove duplicates
-    return [...new Set([...SUGGESTED_KEYWORDS, ...dynamicKeywords])];
-  }, [salons]);
-
-  // Fetch salon data
-  useEffect(() => {
-    const fetchSalons = async () => {
-      try {
-        setLoading(true);
-        
-        // Get premium salon data
-        const allSalons = getSalonsForSale();
-        const featured = getFeaturedSalonsForSale(6);
-        
-        setSalons(allSalons);
-        setFeaturedSalons(featured);
-        setLoading(false);
-      } catch (err) {
-        console.error('Error fetching salons:', err);
-        setError(err);
-        setLoading(false);
-      }
-    };
-
-    fetchSalons();
-  }, []);
-
-  // Filter salons based on search and filters
-  const filteredSalons = useMemo(() => {
-    if (!salons.length) return [];
-
-    return salons.filter(salon => {
-      // Search term filter
-      const searchLower = searchTerm.toLowerCase();
-      const matchesSearch = !searchTerm || 
-        (salon.company && salon.company.toLowerCase().includes(searchLower)) ||
-        (salon.location && salon.location.toLowerCase().includes(searchLower)) ||
-        (salon.description && salon.description.toLowerCase().includes(searchLower)) ||
-        (salon.salon_type && salon.salon_type.toLowerCase().includes(searchLower));
-
-      // Location filter
-      const matchesLocation = !filters.location || 
-        (salon.location && salon.location.toLowerCase().includes(filters.location.toLowerCase()));
-
-      // Price range filter
-      const salonPrice = salon.asking_price ? parseInt(salon.asking_price.replace(/[^0-9]/g, '')) : 0;
-      const matchesPrice = salonPrice >= filters.priceRange[0] && salonPrice <= filters.priceRange[1];
-
-      // Size range filter
-      const salonSize = salon.square_feet ? parseInt(salon.square_feet.replace(/[^0-9]/g, '')) : 0;
-      const matchesSize = salonSize >= filters.sizeRange[0] && salonSize <= filters.sizeRange[1];
-
-      // Features filter
-      const matchesFeatures = filters.features.length === 0 || 
-        filters.features.every(feature => 
-          salon.salon_features?.some(f => f.toLowerCase().includes(feature.toLowerCase()))
-        );
-
-      // Business type filter
-      const matchesType = filters.businessType === 'all' || 
-        (salon.salon_type && salon.salon_type.toLowerCase() === filters.businessType.toLowerCase());
-
-      return matchesSearch && matchesLocation && matchesPrice && matchesSize && matchesFeatures && matchesType;
-    });
-  }, [salons, searchTerm, filters]);
-
-  // Update filters function
-  const updateFilters = (newFilters: Partial<SalonsFilters>) => {
-    setFilters(prev => ({
-      ...prev,
-      ...newFilters
-    }));
-  };
-
-  // Reset filters function
-  const resetFilters = () => {
-    setFilters({
-      location: '',
-      priceRange: getSalonPriceRange(),
-      sizeRange: getSalonSizeRange(),
-      features: [],
-      businessType: 'all'
-    });
-    setSearchTerm('');
-  };
-
-  // Refresh salons data
-  const refreshSalons = async () => {
+  const fetchSalons = useCallback(async () => {
+    setLoading(true);
     try {
-      setLoading(true);
+      // In a real app, this would be an API call
+      // For now, just mock the data
       
-      // Get premium salon data again
-      const allSalons = getSalonsForSale();
-      const featured = getFeaturedSalonsForSale(6);
+      // Simulate an API call with a timeout
+      setTimeout(() => {
+        const mockSalons: Job[] = [
+          {
+            id: "101",
+            company: "Luxe Nail Spa",
+            location: "San Jose, CA",
+            image: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60",
+            for_sale: true,
+            asking_price: "$120,000",
+            monthly_rent: "$3,500",
+            number_of_stations: "8",
+            square_feet: "1,200",
+            salon_features: ["Modern Equipment", "Prime Location", "Parking"],
+            salon_type: "Nail Salon",
+            description: "Well-established nail salon with loyal clientele. Great location in busy shopping center.",
+            vietnamese_description: "Tiệm nail đã hoạt động lâu năm, có khách hàng quen. Vị trí tốt trong trung tâm mua sắm.",
+            created_at: new Date().toISOString(),
+            is_featured: true,
+            status: "active",
+            has_wax_room: true,
+            has_housing: false,
+            reason_for_selling: "Moving to another state",
+            revenue: "$25,000/month"
+          },
+          // ... more salons would be here
+        ];
+        
+        // Apply filters
+        let filteredSalons = [...mockSalons];
+        
+        // Apply keyword search
+        if (searchTerm) {
+          const query = searchTerm.toLowerCase();
+          filteredSalons = filteredSalons.filter(salon => 
+            (salon.company && salon.company.toLowerCase().includes(query)) ||
+            (salon.location && salon.location.toLowerCase().includes(query)) ||
+            (salon.description && salon.description.toLowerCase().includes(query)) ||
+            (salon.salon_features && salon.salon_features.some(feature => feature.toLowerCase().includes(query)))
+          );
+        }
+        
+        // Apply specific filters
+        if (filters.featured) {
+          filteredSalons = filteredSalons.filter(salon => salon.is_featured);
+        }
+        
+        if (filters.forSale) {
+          filteredSalons = filteredSalons.filter(salon => salon.for_sale);
+        }
+        
+        if (filters.location && filters.location !== 'all') {
+          filteredSalons = filteredSalons.filter(salon => 
+            salon.location && salon.location.toLowerCase().includes(filters.location!.toLowerCase())
+          );
+        }
+        
+        if (filters.hasWaxRoom) {
+          filteredSalons = filteredSalons.filter(salon => salon.has_wax_room);
+        }
+        
+        if (filters.hasHousing) {
+          filteredSalons = filteredSalons.filter(salon => salon.has_housing);
+        }
+        
+        if (filters.salonType && filters.salonType !== 'all') {
+          filteredSalons = filteredSalons.filter(salon => 
+            salon.salon_type === filters.salonType
+          );
+        }
+        
+        // Only show active salons unless showExpired is true
+        if (!filters.showExpired) {
+          filteredSalons = filteredSalons.filter(salon => salon.status !== 'expired');
+        }
+        
+        // Extract featured salons
+        const featured = mockSalons.filter(salon => salon.is_featured).slice(0, 3);
+        
+        // Generate suggested keywords
+        const keywords = new Set<string>();
+        mockSalons.forEach(salon => {
+          if (salon.salon_features) {
+            salon.salon_features.forEach(f => keywords.add(f));
+          }
+          if (salon.salon_type) {
+            keywords.add(salon.salon_type);
+          }
+          if (salon.location) {
+            const city = salon.location.split(',')[0];
+            keywords.add(city);
+          }
+        });
+        
+        setSalons(filteredSalons);
+        setFeaturedSalons(featured);
+        setSuggestedKeywords(Array.from(keywords));
+        setLoading(false);
+      }, 500);
       
-      setSalons(allSalons);
-      setFeaturedSalons(featured);
-      setLoading(false);
     } catch (err) {
-      console.error('Error refreshing salons:', err);
-      setError(err);
+      setError(err instanceof Error ? err : new Error(String(err)));
       setLoading(false);
     }
+  }, [filters, searchTerm]);
+
+  useEffect(() => {
+    fetchSalons();
+  }, [fetchSalons]);
+
+  const updateFilters = (newFilters: Partial<SalonFilters>) => {
+    setFilters(prev => ({ ...prev, ...newFilters }));
+  };
+
+  const resetFilters = () => {
+    setFilters({});
+    setSearchTerm("");
   };
 
   return {
-    salons: filteredSalons,
-    featuredSalons,
+    salons,
     loading,
     error,
     filters,
@@ -179,12 +162,8 @@ const useSalonsData = () => {
     setSearchTerm,
     updateFilters,
     resetFilters,
-    refreshSalons,
-    suggestedKeywords,
-    priceRange,
-    setPriceRange,
-    sizeRange,
-    setSizeRange
+    featuredSalons,
+    suggestedKeywords
   };
 };
 

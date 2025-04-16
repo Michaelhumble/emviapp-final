@@ -1,9 +1,9 @@
 
 import { Job } from '@/types/job';
 import { Salon } from '@/types/salon';
-import { premiumSalons, getSalonsForSale, getFeaturedSalons as getPremiumFeaturedSalons } from '@/data/mockPremiumSalons';
+import { premiumSalons } from '@/data/mockPremiumSalons';
 import { premiumJobs, getFeaturedJobs as getPremiumFeaturedJobs } from '@/data/mockPremiumJobs';
-import { premiumBooths, getFeaturedBooths } from '@/data/mockPremiumBooths';
+import { premiumBooths } from '@/data/mockPremiumBooths';
 
 /**
  * Get a list of salons for sale
@@ -110,5 +110,7 @@ export const getAllBooths = (count?: number): Job[] => {
  * @returns Array of featured booth listings
  */
 export const getFeaturedBooths = (count: number = 3): Job[] => {
-  return getPremiumFeaturedBooths(count);
+  // Filter premium booths for featured ones
+  const featuredBooths = premiumBooths.filter(booth => booth.is_featured);
+  return featuredBooths.slice(0, count);
 };

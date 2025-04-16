@@ -14,7 +14,7 @@ export interface Job {
     owner_name?: string;
     phone?: string;
     email?: string;
-    notes?: string; // Added this field
+    notes?: string;
   };
   for_sale?: boolean;
   asking_price?: string;
@@ -37,13 +37,19 @@ export interface Job {
   salon_type?: string;
   expires_at?: string;
   boosted_until?: string;
-  user_id?: string; // Added this field
-  requirements?: string[] | string; // Added this field
-  preferred_languages?: string[]; // Added this field
-  benefits?: string[]; // Added this field
-  features?: string[]; // Added this field
-  price?: string; // Added this field
-  monthly_rent?: string; // Added this field
-  trust_indicators?: any; // Added this field (could be refined later)
-  compensation_type?: string; // Added this field
+  user_id?: string;
+  requirements?: string[] | string;
+  preferred_languages?: string[];
+  benefits?: string[];
+  features?: string[];
+  price?: string;
+  monthly_rent?: string;
+  trust_indicators?: any;
+  compensation_type?: string;
+  revenue?: string;
+  has_dining_room?: boolean;
+  has_laundry?: boolean;
+  experience_level?: string;
+  is_remote?: boolean;
+  role_normalized?: string;
 }

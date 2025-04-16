@@ -3,12 +3,22 @@ import React from 'react';
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface ToastProps {
+export interface ToastProps {
   title?: string;
   description?: string;
   variant?: 'default' | 'success' | 'error' | 'warning' | 'info';
   onClose?: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  id?: string;
+  action?: React.ReactNode;
 }
+
+export type ToastActionElement = React.ReactElement<{
+  className?: string;
+  altText?: string;
+  onClick?: () => void;
+}>;
 
 export const Toast: React.FC<ToastProps> = ({
   title,
@@ -56,4 +66,28 @@ export const Toast: React.FC<ToastProps> = ({
       </div>
     </div>
   );
+};
+
+export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
+  return <>{children}</>;
+};
+
+export const ToastTitle = ({ children }: { children: React.ReactNode }) => {
+  return <div className="font-medium text-gray-900">{children}</div>;
+};
+
+export const ToastDescription = ({ children }: { children: React.ReactNode }) => {
+  return <div className="mt-1 text-sm text-gray-600">{children}</div>;
+};
+
+export const ToastClose = ({ onClick }: { onClick?: () => void }) => {
+  return (
+    <button onClick={onClick} className="flex-shrink-0 ml-3 text-gray-400 hover:text-gray-500">
+      <X className="h-4 w-4" />
+    </button>
+  );
+};
+
+export const ToastViewport = () => {
+  return <div className="fixed bottom-0 right-0 z-50 p-4 space-y-4"></div>;
 };
