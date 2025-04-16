@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -8,7 +9,7 @@ import type { SalonFilters } from "@/components/salons/types";
 import { salonsForSaleJobs } from "@/utils/jobs/mockJobData";
 import { getSalonsForSale } from "@/utils/featuredContent";
 
-// Re-export SalonFilters type
+// Export SalonFilters type
 export type { SalonFilters };
 
 // Default filters
@@ -26,8 +27,12 @@ export const useSalonsData = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [filters, setFilters] = useState<SalonFilters>({
+    searchTerm: "",
+    category: "",
     location: 'all',
     priceRange: [0, 500000],
+    features: [],
+    sortBy: "Newest",
     showExpired: false,
     hasHousing: false,
   });
@@ -137,8 +142,12 @@ export const useSalonsData = () => {
   const resetFilters = () => {
     setSearchTerm("");
     setFilters({
+      searchTerm: "",
+      category: "",
       location: 'all',
       priceRange: [0, 500000],
+      features: [],
+      sortBy: "Newest",
       showExpired: false,
       hasHousing: false,
     });

@@ -1,11 +1,11 @@
 
 export interface SalonFilters {
-  searchTerm: string;
-  category: string;
+  searchTerm?: string;
+  category?: string;
   priceRange: number[];
   location: string;
-  features: string[];
-  sortBy: string;
+  features?: string[];
+  sortBy?: string;
   featured?: boolean;
   showExpired?: boolean;
   hasHousing?: boolean;
