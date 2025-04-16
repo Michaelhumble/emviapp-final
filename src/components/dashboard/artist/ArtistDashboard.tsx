@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useArtistDashboardData } from './hooks/useArtistDashboardData';
 import AnalyticsWidget from './components/AnalyticsWidget';
-import WeeklyCalendar from './calendar/WeeklyCalendar';
+import { WeeklyCalendar } from './calendar/WeeklyCalendar';
 import ServicesManager from './services/ServicesManager';
 import ReferralWidget from './components/ReferralWidget';
 import EarningsSection from './components/EarningsSection';

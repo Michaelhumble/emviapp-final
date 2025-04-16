@@ -29,7 +29,20 @@ export const WeeklyCalendar = () => {
         return isSameDay(bookingDate, day);
       }
       return false;
-    }) as Booking[];
+    }).map(booking => {
+      // Convert from API format to our Booking type
+      return {
+        id: booking.id,
+        sender_id: booking.customer_id || '',
+        recipient_id: booking.artist_id || '',
+        client_name: booking.customer_name || 'Client',
+        service_name: booking.services?.title || 'Service',
+        date_requested: booking.start_time || '',
+        time_requested: format(parseISO(booking.start_time || new Date().toISOString()), 'h:mm a'),
+        status: booking.status as 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled',
+        created_at: booking.created_at || new Date().toISOString()
+      } as Booking;
+    });
   };
 
   return (

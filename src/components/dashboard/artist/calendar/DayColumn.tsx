@@ -44,7 +44,7 @@ export const DayColumn = ({ day, bookings, isToday }: DayColumnProps) => {
               <div 
                 className={`
                   p-3 rounded-lg border shadow-sm hover:shadow-md transition-all
-                  ${booking.status === 'confirmed' 
+                  ${booking.status === 'accepted' 
                     ? 'bg-gradient-to-br from-emerald-50 to-emerald-100/50 border-emerald-200' 
                     : booking.status === 'pending'
                       ? 'bg-gradient-to-br from-amber-50 to-amber-100/50 border-amber-200'
@@ -55,10 +55,10 @@ export const DayColumn = ({ day, bookings, isToday }: DayColumnProps) => {
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     <div className="font-medium truncate">
-                      {booking.services?.title || "Service"}
+                      {booking.service_name || "Service"}
                     </div>
                     <div className="text-sm text-muted-foreground truncate">
-                      Client
+                      {booking.client_name || "Client"}
                     </div>
                     <div className="text-sm font-medium mt-1">
                       {booking.time_requested}
@@ -66,7 +66,7 @@ export const DayColumn = ({ day, bookings, isToday }: DayColumnProps) => {
                   </div>
                   <div 
                     className={`w-2 h-2 rounded-full mt-1 ${
-                      booking.status === 'confirmed' 
+                      booking.status === 'accepted' 
                         ? 'bg-emerald-500' 
                         : booking.status === 'pending'
                           ? 'bg-amber-500'
