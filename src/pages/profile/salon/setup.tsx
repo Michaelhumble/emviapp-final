@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from "react";
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ import { cn } from "@/lib/utils";
 
 const SalonProfileSetup = () => {
   const { user, userProfile, refreshUserProfile } = useAuth();
-  const router = useRouter();
+  const navigate = useNavigate();
   const [salonName, setSalonName] = useState("");
   const [location, setLocation] = useState("");
   const [salonType, setSalonType] = useState("");
@@ -77,7 +78,7 @@ const SalonProfileSetup = () => {
         title: "Success",
         description: "Salon profile updated successfully!"
       });
-      router.push('/dashboard/salon');
+      navigate('/dashboard/salon');
     } catch (error: any) {
       console.error("Error updating salon profile:", error);
       handleError(error.message || "Failed to update salon profile.");

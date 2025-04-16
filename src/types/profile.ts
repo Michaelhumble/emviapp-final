@@ -53,6 +53,14 @@ export interface UserProfile {
   number_of_stations?: number;
   professional_name?: string;
   
+  // Additional salon properties
+  salon_type?: string;
+  phone_number?: string;
+  website_url?: string;
+  instagram_url?: string;
+  description?: string;
+  accepts_walk_ins?: boolean;
+  
   // Professional information
   specialties?: string[];
   services?: string[] | any[];
