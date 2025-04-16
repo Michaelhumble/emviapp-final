@@ -1,368 +1,225 @@
 
-import { useEffect, useState } from "react";
-import { Briefcase, MapPin, Search, Filter, X } from "lucide-react";
-import Layout from "@/components/layout/Layout";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useJobsData } from "@/hooks/useJobsData";
-import { Job } from "@/types/job";
-import JobsGrid from "@/components/jobs/JobsGrid";
-import JobDetailModal from "@/components/jobs/JobDetailModal";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/auth";
-import FeaturedJobsSection from "@/components/jobs/FeaturedJobsSection";
-import JobLoadingState from "@/components/jobs/JobLoadingState";
-import JobEmptyState from "@/components/jobs/JobEmptyState";
+import React, { useState, useEffect } from 'react';
+import Layout from '@/components/layout/Layout';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { MapPin, Briefcase, Calendar, DollarSign, Clock, Home, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
+import { Job } from '@/types/job';
+import { getAllJobs } from '@/utils/featuredContent';
+
+// Define job type filters
+const JOB_TYPES = ["All Types", "Full-time", "Part-time", "Commission", "Booth Rental"];
+
+// Define job category filters
+const JOB_CATEGORIES = [
+  "All Categories", 
+  "Nail Technician", 
+  "Hair Stylist", 
+  "Esthetician", 
+  "Barber",
+  "Salon Manager",
+  "Receptionist"
+];
 
 const JobsPage = () => {
-  const navigate = useNavigate();
-  const { isSignedIn } = useAuth();
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [expirations, setExpirations] = useState<Record<string, boolean>>({});
-  const [isRenewing, setIsRenewing] = useState(false);
-  const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
-  
-  const { 
-    jobs, 
-    loading, 
-    error, 
-    filters, 
-    searchTerm, 
-    updateFilters, 
-    updateSearchTerm, 
-    featuredJobs,
-    suggestedKeywords
-  } = useJobsData();
-  
-  useEffect(() => {
-    document.title = "Job Listings | EmviApp";
-  }, []);
-  
-  const handleViewDetails = (job: Job) => {
-    setSelectedJob(job);
-  };
-  
-  const handleCloseDetails = () => {
-    setSelectedJob(null);
-  };
-  
-  const handleRenewJob = (job: Job) => {
-    // This is a placeholder - job renewal will be implemented later
-    console.log("Would renew job:", job.id);
-    setIsRenewing(true);
-    setRenewalJobId(job.id);
-    
-    // Simulate a renewal process
-    setTimeout(() => {
-      setIsRenewing(false);
-      setRenewalJobId(null);
-      
-      // Update the expiration status
-      setExpirations(prev => ({
-        ...prev,
-        [job.id]: false
-      }));
-    }, 1500);
-  };
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedType, setSelectedType] = useState("All Types");
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const toggleFilters = () => {
-    setIsFilterOpen(!isFilterOpen);
-  };
-  
-  const clearFilters = () => {
-    updateFilters({
-      featured: false,
-      remote: false,
-      fullTime: false,
-      partTime: false,
-      location: 'all',
-      weeklyPay: false,
-      ownerWillTrain: false,
-      hasHousing: false,
-      noSupplyDeduction: false,
-      employmentType: 'all',
-      industry: 'all',
-      language: 'all'
-    });
-    updateSearchTerm('');
-  };
-  
-  const handleApplyClick = () => {
-    if (!isSignedIn) {
-      navigate('/sign-in', { state: { returnTo: '/jobs' } });
-    } else {
-      // Future implementation - actual application flow
+  useEffect(() => {
+    const fetchJobs = () => {
+      try {
+        // Use our premium jobs data
+        const premiumJobs = getAllJobs();
+        setJobs(premiumJobs);
+        setFilteredJobs(premiumJobs);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error loading jobs:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+
+  // Filter jobs based on selected filters and search term
+  useEffect(() => {
+    let result = jobs;
+
+    // Filter by job type
+    if (selectedType !== "All Types") {
+      result = result.filter(job => 
+        job.employment_type?.toLowerCase() === selectedType.toLowerCase()
+      );
     }
+
+    // Filter by job category
+    if (selectedCategory !== "All Categories") {
+      result = result.filter(job => 
+        job.title?.toLowerCase().includes(selectedCategory.toLowerCase())
+      );
+    }
+
+    // Filter by search term
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      result = result.filter(job => 
+        job.title?.toLowerCase().includes(term) ||
+        job.company?.toLowerCase().includes(term) ||
+        job.location?.toLowerCase().includes(term) ||
+        job.description?.toLowerCase().includes(term)
+      );
+    }
+
+    setFilteredJobs(result);
+  }, [jobs, selectedType, selectedCategory, searchTerm]);
+
+  // Reset all filters
+  const resetFilters = () => {
+    setSelectedType("All Types");
+    setSelectedCategory("All Categories");
+    setSearchTerm("");
   };
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8 pb-20">
-        {/* Header Section */}
-        <div className="text-center max-w-4xl mx-auto mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold font-serif mb-4">
-            Explore Salon Job Listings
-          </h1>
-          <p className="text-gray-600 text-lg mb-2">
-            Booth rentals, hourly jobs, commissions — discover opportunities near you.
-          </p>
-          <p className="text-gray-600 italic">
-            Khám phá công việc tiệm làm đẹp tại địa phương của bạn.
+      <div className="container mx-auto py-10 px-4">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold">Beauty Industry Jobs</h1>
+          <p className="text-muted-foreground mt-2">
+            Find your next opportunity in the beauty industry
           </p>
         </div>
-        
-        {featuredJobs.length > 0 && (
-          <FeaturedJobsSection 
-            featuredJobs={featuredJobs} 
-            onViewDetails={handleViewDetails} 
-          />
-        )}
-        
-        {/* Search and Filter Bar */}
-        <div className="bg-white rounded-lg shadow-md p-4 mb-8">
+
+        {/* Search and filters */}
+        <div className="bg-gray-50 p-4 rounded-lg mb-8">
           <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-grow">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <Input
-                placeholder="Search job titles, skills, or locations..."
+            <div className="flex-1">
+              <input
+                type="text"
+                placeholder="Search jobs by title, location, or salon..."
+                className="w-full p-2 border rounded-md"
                 value={searchTerm}
-                onChange={(e) => updateSearchTerm(e.target.value)}
-                className="pl-10"
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            
             <div className="flex gap-2">
-              <Select 
-                value={filters.location || 'all'} 
-                onValueChange={(value) => updateFilters({ location: value })}
+              <select
+                className="px-3 py-2 border rounded-md bg-white"
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value)}
               >
-                <SelectTrigger className="w-full md:w-40">
-                  <SelectValue placeholder="Location" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Locations</SelectItem>
-                  <SelectItem value="ca">California</SelectItem>
-                  <SelectItem value="tx">Texas</SelectItem>
-                  <SelectItem value="fl">Florida</SelectItem>
-                  <SelectItem value="ny">New York</SelectItem>
-                  <SelectItem value="ga">Georgia</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Select 
-                value={filters.employmentType || 'all'} 
-                onValueChange={(value) => updateFilters({ employmentType: value })}
+                {JOB_TYPES.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+              <select
+                className="px-3 py-2 border rounded-md bg-white"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
               >
-                <SelectTrigger className="w-full md:w-40">
-                  <SelectValue placeholder="Job Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="Full-Time">Full Time</SelectItem>
-                  <SelectItem value="Part-Time">Part Time</SelectItem>
-                  <SelectItem value="Booth Rental">Booth Rental</SelectItem>
-                  <SelectItem value="Commission">Commission</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Button 
-                variant="outline" 
-                className="shrink-0"
-                onClick={toggleFilters}
-              >
-                <Filter className="h-4 w-4 mr-2" />
-                Filters
-              </Button>
+                {JOB_CATEGORIES.map(category => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
+              <Button variant="outline" onClick={resetFilters}>Reset</Button>
             </div>
           </div>
-          
-          {/* Extended Filters */}
-          {isFilterOpen && (
-            <div className="mt-4 pt-4 border-t border-gray-100">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="font-medium text-gray-700">Advanced Filters</h3>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={clearFilters}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  <X className="h-3 w-3 mr-1" />
-                  Clear All
-                </Button>
-              </div>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    checked={filters.weeklyPay || false}
-                    onChange={(e) => updateFilters({ weeklyPay: e.target.checked })}
-                    className="rounded border-gray-300 text-primary"
+        </div>
+
+        {/* Job listings */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="h-96 bg-gray-100 animate-pulse rounded-lg"></div>
+            ))}
+          </div>
+        ) : filteredJobs.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredJobs.map(job => (
+              <Card key={job.id} className="overflow-hidden h-full flex flex-col">
+                <div className="aspect-video w-full overflow-hidden">
+                  <ImageWithFallback
+                    src={job.image}
+                    alt={job.title || "Job Opening"}
+                    className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                    businessName={job.company || "Beauty Job"}
+                    fallbackImage="https://images.unsplash.com/photo-1562322140-8baeececf3df?w=800&auto=format&fit=crop&q=80"
                   />
-                  <span className="text-sm text-gray-700">Weekly Pay</span>
-                </label>
-                
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    checked={filters.ownerWillTrain || false}
-                    onChange={(e) => updateFilters({ ownerWillTrain: e.target.checked })}
-                    className="rounded border-gray-300 text-primary"
-                  />
-                  <span className="text-sm text-gray-700">Training Provided</span>
-                </label>
-                
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    checked={filters.hasHousing || false}
-                    onChange={(e) => updateFilters({ hasHousing: e.target.checked })}
-                    className="rounded border-gray-300 text-primary"
-                  />
-                  <span className="text-sm text-gray-700">Housing Available</span>
-                </label>
-                
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    checked={filters.noSupplyDeduction || false}
-                    onChange={(e) => updateFilters({ noSupplyDeduction: e.target.checked })}
-                    className="rounded border-gray-300 text-primary"
-                  />
-                  <span className="text-sm text-gray-700">No Supply Deduction</span>
-                </label>
-              </div>
-              
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Select 
-                  value={filters.industry || 'all'} 
-                  onValueChange={(value) => updateFilters({ industry: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Specialty" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Specialties</SelectItem>
-                    <SelectItem value="nails">Nails</SelectItem>
-                    <SelectItem value="hair">Hair</SelectItem>
-                    <SelectItem value="facial">Facial</SelectItem>
-                    <SelectItem value="massage">Massage</SelectItem>
-                    <SelectItem value="eyelash">Eyelash</SelectItem>
-                    <SelectItem value="makeup">Makeup</SelectItem>
-                  </SelectContent>
-                </Select>
-                
-                <Select 
-                  value={filters.language || 'all'} 
-                  onValueChange={(value) => updateFilters({ language: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Language" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Languages</SelectItem>
-                    <SelectItem value="english">English</SelectItem>
-                    <SelectItem value="vietnamese">Vietnamese</SelectItem>
-                    <SelectItem value="bilingual">Bilingual</SelectItem>
-                  </SelectContent>
-                </Select>
-                
-                <Select 
-                  value={filters.remote ? 'remote' : 'all'} 
-                  onValueChange={(value) => updateFilters({ remote: value === 'remote' })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Work Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Work Types</SelectItem>
-                    <SelectItem value="remote">Remote Available</SelectItem>
-                    <SelectItem value="onsite">On-site Only</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {suggestedKeywords.length > 0 && (
-                <div className="mt-4">
-                  <p className="text-xs text-gray-500 mb-2">Suggested Keywords:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {suggestedKeywords.slice(0, 8).map((keyword, i) => (
-                      <Button 
-                        key={i} 
-                        variant="outline" 
-                        size="sm" 
-                        className="text-xs py-1 h-6"
-                        onClick={() => updateSearchTerm(keyword)}
-                      >
-                        {keyword}
-                      </Button>
-                    ))}
-                  </div>
                 </div>
-              )}
-            </div>
-          )}
-        </div>
-        
-        {/* Main Content */}
-        <div className="relative">
-          {loading ? (
-            <JobLoadingState />
-          ) : jobs.length === 0 ? (
-            <JobEmptyState 
-              searchTerm={searchTerm}
-              onClearFilters={clearFilters}
-            />
-          ) : (
-            <>
-              <p className="text-gray-600 mb-6">
-                Showing {jobs.length} job {jobs.length === 1 ? 'listing' : 'listings'}
-              </p>
-              
-              <JobsGrid 
-                jobs={jobs}
-                expirations={expirations}
-                onRenew={handleRenewJob}
-                isRenewing={isRenewing}
-                renewalJobId={renewalJobId}
-              />
-            </>
-          )}
-        </div>
-        
-        {/* CTA at Bottom */}
-        {!isSignedIn && (
-          <div className="mt-16 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-8 text-center">
-            <h3 className="text-2xl font-serif font-bold mb-3">
-              Ready to find your next opportunity?
-            </h3>
-            <p className="text-gray-600 mb-2 max-w-xl mx-auto">
-              Join EmviApp to apply for jobs, get notifications about new listings, and connect directly with salon owners.
-            </p>
-            <p className="text-gray-600 italic mb-6">
-              Đăng ký để ứng tuyển và kết nối với chủ tiệm.
-            </p>
-            <Button 
-              size="lg" 
-              className="font-medium px-8"
-              onClick={() => navigate('/sign-up')}
-            >
-              Join EmviApp to Apply
-            </Button>
+                <CardHeader>
+                  <div className="flex justify-between items-start gap-2">
+                    <CardTitle className="text-xl">{job.title}</CardTitle>
+                    {job.boosted_until && new Date(job.boosted_until) > new Date() && (
+                      <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                        <Sparkles className="h-3 w-3 mr-1" /> Featured
+                      </Badge>
+                    )}
+                  </div>
+                  <CardDescription className="flex flex-col gap-1 mt-1">
+                    <div className="flex items-center">
+                      <Briefcase className="h-4 w-4 mr-1" />
+                      {job.company}
+                    </div>
+                    <div className="flex items-center">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      {job.location}
+                    </div>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    <Badge variant="secondary" className="font-normal">
+                      {job.employment_type || "Job"}
+                    </Badge>
+                    {job.weekly_pay && (
+                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 font-normal">
+                        Weekly Pay
+                      </Badge>
+                    )}
+                    {job.has_housing && (
+                      <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 font-normal">
+                        <Home className="h-3 w-3 mr-1" /> Housing
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center text-sm font-medium text-gray-800 mb-3">
+                    <DollarSign className="h-4 w-4 mr-1 text-green-600" />
+                    {job.compensation_details || "Competitive Pay"}
+                  </div>
+                  
+                  <p className="text-sm text-gray-600 line-clamp-3">
+                    {job.description?.split('\n')[0] || "Exciting opportunity in the beauty industry."}
+                  </p>
+                </CardContent>
+                <CardFooter className="border-t pt-4">
+                  <div className="w-full flex justify-between items-center">
+                    <span className="text-xs text-gray-500 flex items-center">
+                      <Calendar className="h-3 w-3 mr-1" />
+                      Posted {new Date(job.created_at).toLocaleDateString()}
+                    </span>
+                    <Link to={`/jobs/${job.id}`}>
+                      <Button variant="outline" size="sm">View Details</Button>
+                    </Link>
+                  </div>
+                </CardFooter>
+              </Card>
+            ))}
           </div>
-        )}
-        
-        {/* Job Detail Modal */}
-        {selectedJob && (
-          <JobDetailModal
-            job={selectedJob}
-            isOpen={!!selectedJob}
-            onClose={handleCloseDetails}
-          />
+        ) : (
+          <div className="text-center p-10 bg-gray-50 rounded-lg">
+            <p className="text-xl font-medium mb-2">No jobs match your criteria</p>
+            <p className="text-gray-500 mb-4">Try adjusting your filters or search term</p>
+            <Button onClick={resetFilters}>Reset Filters</Button>
+          </div>
         )}
       </div>
     </Layout>

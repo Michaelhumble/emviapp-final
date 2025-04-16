@@ -1,5 +1,13 @@
 
-// Re-export the toast function from sonner for global use
-import { toast } from "sonner";
+import { useContext } from 'react';
+import { ToastContext, ToastContextType } from '@/components/ui/toast-context';
 
-export { toast };
+export const useToast = (): ToastContextType => {
+  const context = useContext(ToastContext);
+  
+  if (!context) {
+    throw new Error('useToast must be used within a ToastProvider');
+  }
+  
+  return context;
+};

@@ -1,4 +1,3 @@
-
 import { Job } from "@/types/job";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -58,18 +57,19 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
 
   const getFallbackImage = () => {
     const businessType = salon.salon_type?.toLowerCase() || '';
+    const salonName = sanitizedCompany.toLowerCase();
     
-    if (businessType.includes('nail') || sanitizedCompany.toLowerCase().includes('nail')) {
+    if (businessType.includes('nail') || salonName.includes('nail')) {
       return "https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=2070&auto=format&fit=crop";
-    } else if (businessType.includes('hair') || sanitizedCompany.toLowerCase().includes('hair')) {
+    } else if (businessType.includes('hair') || salonName.includes('hair')) {
       return "https://images.unsplash.com/photo-1633681926022-84c23e8cb3d6?q=80&w=1976&auto=format&fit=crop";
-    } else if (businessType.includes('spa') || sanitizedCompany.toLowerCase().includes('spa')) {
+    } else if (businessType.includes('spa') || salonName.includes('spa')) {
       return "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=2070&auto=format&fit=crop";
-    } else if (businessType.includes('barber') || sanitizedCompany.toLowerCase().includes('barber')) {
+    } else if (businessType.includes('barber') || salonName.includes('barber')) {
       return "https://images.unsplash.com/photo-1587909209111-5097ee578ec3?q=80&w=2070&auto=format&fit=crop";
-    } else if (sanitizedCompany.toLowerCase().includes('tea') || sanitizedCompany.toLowerCase().includes('boba')) {
+    } else if (salonName.includes('tea') || salonName.includes('boba')) {
       return "https://images.unsplash.com/photo-1558857563-b371033873b8?q=80&w=2070&auto=format&fit=crop";
-    } else if (sanitizedCompany.toLowerCase().includes('bakery') || sanitizedCompany.toLowerCase().includes('bao')) {
+    } else if (salonName.includes('bakery') || salonName.includes('bao')) {
       return "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=2070&auto=format&fit=crop";
     } else if (salon.asking_price || salon.for_sale) {
       return "https://images.unsplash.com/photo-1613843351058-1dd06fccdc6a?q=80&w=2070&auto=format&fit=crop";

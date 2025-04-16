@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import {
@@ -14,48 +14,29 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { MapPin, DollarSign } from 'lucide-react';
-
-// Sample booth listings data
-const SAMPLE_BOOTHS = [
-  {
-    id: '1',
-    title: 'Premium Salon Booth #1',
-    location: 'Downtown, Los Angeles, CA',
-    price: 275,
-    priceUnit: 'week',
-    imageUrl: 'https://images.unsplash.com/photo-1571646034647-52e6ea84b28c?q=80&w=2070&auto=format&fit=crop',
-    available: true
-  },
-  {
-    id: '2',
-    title: 'Luxury Styling Booth #2',
-    location: 'Beverly Hills, Los Angeles, CA',
-    price: 300,
-    priceUnit: 'week',
-    imageUrl: 'https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?q=80&w=2070&auto=format&fit=crop',
-    available: true
-  },
-  {
-    id: '3',
-    title: 'Affordable Booth #3',
-    location: 'Pasadena, CA',
-    price: 225,
-    priceUnit: 'week',
-    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=2070&auto=format&fit=crop',
-    available: true
-  },
-  {
-    id: '4',
-    title: 'Modern Salon Space #4',
-    location: 'Santa Monica, CA',
-    price: 325,
-    priceUnit: 'week',
-    imageUrl: 'https://images.unsplash.com/photo-1470259078422-826894b933aa?q=80&w=2070&auto=format&fit=crop',
-    available: false
-  },
-];
+import { getAllBooths } from '@/utils/featuredContent';
+import { Job } from '@/types/job';
 
 const BoothsIndex = () => {
+  const [booths, setBooths] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBooths = () => {
+      try {
+        // Use our premium booths data
+        const premiumBooths = getAllBooths();
+        setBooths(premiumBooths);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error loading booths:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchBooths();
+  }, []);
+
   return (
     <Layout>
       <div className="container mx-auto py-10 px-4">
@@ -66,47 +47,66 @@ const BoothsIndex = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {SAMPLE_BOOTHS.map(booth => (
-            <Card key={booth.id} className="overflow-hidden h-full flex flex-col">
-              <div className="aspect-video w-full overflow-hidden">
-                <ImageWithFallback
-                  src={booth.imageUrl}
-                  alt={booth.title}
-                  className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
-                  businessName="Salon Booth"
-                  fallbackImage="https://images.unsplash.com/photo-1571646034647-52e6ea84b28c?q=80&w=2070&auto=format&fit=crop"
-                />
-              </div>
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-xl">{booth.title}</CardTitle>
-                  <Badge 
-                    variant={booth.available ? "outline" : "secondary"} 
-                    className={booth.available ? "bg-green-50 text-green-700 border-green-200" : "bg-red-50 text-red-700 border-red-200"}
-                  >
-                    {booth.available ? 'Available' : 'Unavailable'}
-                  </Badge>
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="h-96 bg-gray-100 animate-pulse rounded-lg"></div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {booths.map(booth => (
+              <Card key={booth.id} className="overflow-hidden h-full flex flex-col">
+                <div className="aspect-video w-full overflow-hidden">
+                  <ImageWithFallback
+                    src={booth.image}
+                    alt={booth.title || "Booth Rental"}
+                    className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                    businessName={booth.company || "Salon Booth"}
+                    fallbackImage="https://images.unsplash.com/photo-1571646034647-52e6ea84b28c?q=80&w=2070&auto=format&fit=crop"
+                  />
                 </div>
-                <CardDescription className="flex items-center mt-1">
-                  <MapPin className="h-4 w-4 mr-1" />
-                  {booth.location}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex-grow">
-                <div className="flex items-center text-lg font-semibold">
-                  <DollarSign className="h-5 w-5 text-primary" />
-                  {booth.price}/{booth.priceUnit}
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Link to={`/booths/${booth.id}`} className="w-full">
-                  <Button className="w-full">View Details</Button>
-                </Link>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-xl">{booth.title || "Booth Rental"}</CardTitle>
+                    <Badge 
+                      variant={booth.status === "active" ? "outline" : "secondary"} 
+                      className={booth.status === "active" ? "bg-green-50 text-green-700 border-green-200" : "bg-red-50 text-red-700 border-red-200"}
+                    >
+                      {booth.status === "active" ? 'Available' : 'Unavailable'}
+                    </Badge>
+                  </div>
+                  <CardDescription className="flex items-center mt-1">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    {booth.location}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  <div className="flex items-center text-lg font-semibold">
+                    <DollarSign className="h-5 w-5 text-primary" />
+                    {booth.compensation_details || "Contact for pricing"}
+                  </div>
+                  
+                  <p className="mt-3 text-sm text-gray-600 line-clamp-3">
+                    {booth.description?.split('\n')[0] || "Beautiful booth available in a premium salon location."}
+                  </p>
+                  
+                  {booth.company && (
+                    <div className="mt-3 flex items-center text-sm">
+                      <span className="font-medium">At: </span>
+                      <span className="ml-1 text-primary">{booth.company}</span>
+                    </div>
+                  )}
+                </CardContent>
+                <CardFooter>
+                  <Link to={`/booths/${booth.id}`} className="w-full">
+                    <Button className="w-full">View Details</Button>
+                  </Link>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </Layout>
   );
