@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -8,14 +8,7 @@ import { toast } from "sonner";
 import ServiceList from "./ServiceList";
 import EmptyServiceState from "./EmptyServiceState";
 import ServiceFormDialog from "./ServiceFormDialog";
-
-// Define service interface
-interface Service {
-  id: string;
-  name: string;
-  price: number;
-  duration: number | null;
-}
+import { Service } from "./ServicesManager";
 
 const ArtistServiceManager = () => {
   // State
@@ -23,71 +16,61 @@ const ArtistServiceManager = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [currentService, setCurrentService] = useState<Service | null>(null);
-  const [newService, setNewService] = useState({
-    name: "",
-    price: 0,
-    duration: 30,
-  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Handle adding a new service
-  const handleAddService = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAddService = (serviceData: Partial<Service>) => {
+    setIsSubmitting(true);
     
-    // Simple validation
-    if (!newService.name.trim()) {
-      toast.error("Service name is required");
-      return;
-    }
-    
-    if (newService.price <= 0) {
-      toast.error("Price must be greater than zero");
-      return;
-    }
-    
-    const service = {
-      id: Date.now().toString(),
-      name: newService.name,
-      price: newService.price,
-      duration: newService.duration,
-    };
-    
-    setServices([...services, service]);
-    setIsAddDialogOpen(false);
-    setNewService({ name: "", price: 0, duration: 30 });
-    toast.success("Service added successfully!");
+    // Simulate API call
+    setTimeout(() => {
+      // Create a new service with generated ID
+      const newService: Service = {
+        id: Date.now().toString(),
+        title: serviceData.title || "",
+        description: serviceData.description || null,
+        price: serviceData.price || 0,
+        duration_minutes: serviceData.duration_minutes || 60,
+        is_visible: serviceData.is_visible !== false,
+        user_id: "current-user-id", // Replace with actual user ID
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      
+      setServices([...services, newService]);
+      setIsAddDialogOpen(false);
+      setIsSubmitting(false);
+      toast.success("Service added successfully!");
+    }, 800); // Simulate network delay
   };
 
   // Handle editing a service
-  const handleEditService = (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleEditService = (serviceData: Partial<Service>) => {
     if (!currentService) return;
+    setIsSubmitting(true);
     
-    // Simple validation
-    if (!currentService.name.trim()) {
-      toast.error("Service name is required");
-      return;
-    }
-    
-    if (currentService.price <= 0) {
-      toast.error("Price must be greater than zero");
-      return;
-    }
-    
-    setServices(services.map(service => 
-      service.id === currentService.id ? currentService : service
-    ));
-    
-    setIsEditDialogOpen(false);
-    setCurrentService(null);
-    toast.success("Service updated successfully!");
+    // Simulate API call
+    setTimeout(() => {
+      const updatedServices = services.map(service => 
+        service.id === currentService.id ? { ...currentService, ...serviceData, updated_at: new Date().toISOString() } : service
+      );
+      
+      setServices(updatedServices);
+      setIsEditDialogOpen(false);
+      setCurrentService(null);
+      setIsSubmitting(false);
+      toast.success("Service updated successfully!");
+    }, 800); // Simulate network delay
   };
 
   // Handle deleting a service
   const handleDeleteService = (id: string) => {
     if (window.confirm("Are you sure you want to delete this service?")) {
-      setServices(services.filter(service => service.id !== id));
-      toast.success("Service deleted successfully!");
+      // Simulate API call
+      setTimeout(() => {
+        setServices(services.filter(service => service.id !== id));
+        toast.success("Service deleted successfully!");
+      }, 500);
     }
   };
 
@@ -95,18 +78,6 @@ const ArtistServiceManager = () => {
   const openEditDialog = (service: Service) => {
     setCurrentService(service);
     setIsEditDialogOpen(true);
-  };
-
-  // Handle form field changes for new service
-  const handleNewServiceChange = (field: string, value: any) => {
-    setNewService({ ...newService, [field]: value });
-  };
-
-  // Handle form field changes for current service
-  const handleCurrentServiceChange = (field: string, value: any) => {
-    if (currentService) {
-      setCurrentService({ ...currentService, [field]: value });
-    }
   };
 
   return (
@@ -150,23 +121,18 @@ const ArtistServiceManager = () => {
       <ServiceFormDialog 
         isOpen={isAddDialogOpen}
         onClose={() => setIsAddDialogOpen(false)}
-        service={newService}
-        onServiceChange={handleNewServiceChange}
-        onSubmit={handleAddService}
-        isEditing={false}
+        onSave={handleAddService}
+        isSubmitting={isSubmitting}
       />
 
       {/* Edit Service Dialog */}
-      {currentService && (
-        <ServiceFormDialog 
-          isOpen={isEditDialogOpen}
-          onClose={() => setIsEditDialogOpen(false)}
-          service={currentService}
-          onServiceChange={handleCurrentServiceChange}
-          onSubmit={handleEditService}
-          isEditing={true}
-        />
-      )}
+      <ServiceFormDialog 
+        isOpen={isEditDialogOpen}
+        onClose={() => setIsEditDialogOpen(false)}
+        initialData={currentService}
+        onSave={handleEditService}
+        isSubmitting={isSubmitting}
+      />
     </motion.div>
   );
 };

@@ -26,7 +26,6 @@ const ServiceForm = ({ initialData, onSave, onCancel }: ServiceFormProps) => {
     price: initialData?.price || 0,
     duration_minutes: initialData?.duration_minutes || 30,
     is_visible: initialData?.is_visible !== false, // Default to true if not specified
-    image_url: initialData?.image_url || null,
   });
   
   const [errors, setErrors] = useState<FormErrors>({});

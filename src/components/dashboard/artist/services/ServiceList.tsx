@@ -1,13 +1,7 @@
 
 import React from "react";
 import ServiceCard from "./ServiceCard";
-
-interface Service {
-  id: string;
-  name: string;
-  price: number;
-  duration: number | null;
-}
+import { Service } from "./ServicesManager";
 
 interface ServiceListProps {
   services: Service[];
@@ -22,8 +16,8 @@ const ServiceList = ({ services, onEditService, onDeleteService }: ServiceListPr
         <ServiceCard
           key={service.id}
           service={service}
-          onEdit={onEditService}
-          onDelete={onDeleteService}
+          onEdit={() => onEditService(service)}
+          onDelete={() => onDeleteService(service.id)}
         />
       ))}
     </div>
