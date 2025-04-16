@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Job } from "@/types/job";
 import SalonDetailModal from "./SalonDetailModal";
@@ -17,11 +18,14 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedSalon, setSelectedSalon] = useState<Job | null>(null);
 
+  // Check if a salon is expired (for demo purposes, using random)
   const isExpired = (salon: Job) => {
-    if (salon.id === "104") return true;
+    // In a real application, this would check the creation date against current date
+    if (salon.id === "104") return true; // Make one of the salons expired for demonstration
     return false;
   };
 
+  // Filter salons based on selected criteria
   const filteredSalons = salonsForSale.filter(salon => {
     const matchesLocation = locationFilter === "" || 
       salon.location.toLowerCase().includes(locationFilter.toLowerCase());
@@ -49,6 +53,7 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
 
   return (
     <div className="space-y-6">
+      {/* Smart filters section */}
       <FilterSection 
         locationFilter={locationFilter}
         setLocationFilter={setLocationFilter}
@@ -60,25 +65,27 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
         setStatusFilter={setStatusFilter}
       />
 
+      {/* Pricing info card */}
       <PricingInfoCard />
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+      {/* Salon listings grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {filteredSalons.length > 0 ? (
           filteredSalons.map((salon, index) => (
-            <div key={salon.id} className="h-full">
-              <SalonCard 
-                salon={salon}
-                index={index}
-                isExpired={isExpired(salon)}
-                onViewDetails={handleViewDetails}
-              />
-            </div>
+            <SalonCard 
+              key={salon.id}
+              salon={salon}
+              index={index}
+              isExpired={isExpired(salon)}
+              onViewDetails={handleViewDetails}
+            />
           ))
         ) : (
           <EmptyState />
         )}
       </div>
       
+      {/* Salon detail modal */}
       <SalonDetailModal
         salon={selectedSalon}
         isOpen={!!selectedSalon}

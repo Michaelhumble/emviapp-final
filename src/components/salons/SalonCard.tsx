@@ -1,4 +1,3 @@
-
 import { Job } from "@/types/job";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -57,34 +56,38 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
   return (
     <Card 
       className={`h-full flex flex-col ${isExpired ? 'opacity-70' : ''} transition-all duration-300 hover:shadow-md`}
+      style={{
+        animationDelay: `${index * 0.05}s`,
+      }}
     >
       <CardContent className="flex flex-col h-full p-4">
-        <div className="mb-4 aspect-video relative overflow-hidden rounded-md">
+        <div className="mb-4">
           <ImageWithFallback
             src={salon.image}
-            alt={sanitizedCompany || "Salon"}
-            className="h-full w-full object-cover"
+            alt={sanitizedCompany || "Salon for Sale"}
+            className="h-40 w-full object-cover rounded-md"
+            fallbackImage="https://emvi.app/images/fallback-profile.jpg"
             businessName={sanitizedCompany}
           />
         </div>
         
         <div className="flex-grow">
           <div className="flex justify-between items-start">
-            <h3 className="font-medium text-lg font-serif line-clamp-1">{sanitizedCompany || "Salon for Sale"}</h3>
-            <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-200 whitespace-nowrap">
+            <h3 className="font-medium text-lg font-serif">{sanitizedCompany || "Salon for Sale"}</h3>
+            <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-200">
               For Sale
             </Badge>
           </div>
           
           <div className="mt-2 space-y-2 text-sm">
             <div className="flex items-center text-gray-600">
-              <MapPin className="h-4 w-4 mr-2 text-gray-400 shrink-0" />
-              <span className="line-clamp-1">{sanitizedLocation || "Location not specified"}</span>
+              <MapPin className="h-4 w-4 mr-2 text-gray-400" />
+              <span>{sanitizedLocation || "Location not specified"}</span>
             </div>
             
             {salon.asking_price && (
               <div className="flex items-center text-gray-600">
-                <DollarSign className="h-4 w-4 mr-2 text-gray-400 shrink-0" />
+                <DollarSign className="h-4 w-4 mr-2 text-gray-400" />
                 <span>Asking: {formatCurrency(salon.asking_price)}</span>
               </div>
             )}
