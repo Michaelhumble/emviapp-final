@@ -56,17 +56,13 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
   return (
     <Card 
       className={`h-full flex flex-col ${isExpired ? 'opacity-70' : ''} transition-all duration-300 hover:shadow-md`}
-      style={{
-        animationDelay: `${index * 0.05}s`,
-      }}
     >
       <CardContent className="flex flex-col h-full p-4">
-        <div className="mb-4">
+        <div className="mb-4 aspect-video relative overflow-hidden rounded-md">
           <ImageWithFallback
             src={salon.image}
-            alt={sanitizedCompany || "Salon for Sale"}
-            className="h-40 w-full object-cover rounded-md"
-            fallbackImage="https://emvi.app/images/fallback-profile.jpg"
+            alt={sanitizedCompany || "Salon"}
+            className="h-full w-full object-cover"
             businessName={sanitizedCompany}
           />
         </div>

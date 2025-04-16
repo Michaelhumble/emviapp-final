@@ -1,86 +1,32 @@
-
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { useIsMobile } from "@/hooks/use-mobile";
+import React from "react";
 import { motion } from "framer-motion";
-import { ChevronRight } from "lucide-react";
-import { heroImages } from "./hero/heroData";
-import HeroCarousel from "./hero/HeroCarousel";
-import HeroContent from "./hero/HeroContent";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
-  const isMobile = useIsMobile();
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isChanging, setIsChanging] = useState(false);
-  const [viewportHeight, setViewportHeight] = useState<number>(window.innerHeight);
-  
-  // Update viewport height when it changes
-  useEffect(() => {
-    const handleResize = () => {
-      setViewportHeight(window.innerHeight);
-    };
-    
-    window.addEventListener('resize', handleResize);
-    
-    // Initial calculation
-    handleResize();
-    
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-  
-  // Change background image every 5 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsChanging(true);
-      setTimeout(() => {
-        setCurrentImageIndex((prevIndex) => 
-          prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1
-        );
-        setIsChanging(false);
-      }, 500);
-    }, 5000);
-    
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleDotClick = (index: number) => {
-    setIsChanging(true);
-    setTimeout(() => {
-      setCurrentImageIndex(index);
-      setIsChanging(false);
-    }, 300);
-  };
-
   return (
-    <section 
-      className="relative overflow-hidden"
-      style={{
-        width: '100%',
-        height: `${viewportHeight}px`,
-        maxWidth: '100vw',
-        maxHeight: `${viewportHeight}px`,
-        position: 'relative',
-        margin: 0,
-        padding: 0,
-        border: 'none'
-      }}
-    >
-      {/* Background image carousel */}
-      <HeroCarousel 
-        images={heroImages} 
-        activeIndex={currentImageIndex} 
-        isMobile={isMobile}
-      />
-      
-      {/* Main content */}
-      <div className="relative z-10 w-full h-full flex items-center justify-center">
-        <HeroContent 
-          activeIndex={currentImageIndex}
-          setActiveIndex={handleDotClick}
-          heroImages={heroImages}
-          isMobile={isMobile}
-        />
+    <section className="py-12 md:py-16 bg-white relative overflow-hidden">
+      <div className="container mx-auto px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">
+            Let's Experience EmviApp Together
+          </h1>
+          <p className="text-gray-600 text-lg mb-8">
+            Find your dream salon, booth, or talented artist.
+          </p>
+          <div className="flex justify-center gap-4">
+            <Link to="/salons">
+              <Button size="lg" className="px-8 font-medium">
+                Find a Salon
+              </Button>
+            </Link>
+            <Link to="/jobs">
+              <Button size="lg" variant="outline" className="px-8 font-medium">
+                Find a Job
+              </Button>
+            </Link>
+          </div>
+        </div>
       </div>
     </section>
   );

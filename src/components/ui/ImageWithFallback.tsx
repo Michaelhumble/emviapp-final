@@ -12,32 +12,43 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   src, 
   alt, 
   className, 
-  fallbackClassName = "flex items-center justify-center bg-muted",
+  fallbackClassName = "flex items-center justify-center bg-gradient-to-br from-purple-50 to-gray-50",
   businessName,
-  fallbackImage = "https://emvi.app/images/fallback-profile.jpg",
+  fallbackImage = "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800",
   ...props
 }) => {
   const [error, setError] = useState(false);
 
+  const defaultImage = "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800";
+
+  // Try to load the provided fallback first, if that fails use the default
+  const handleError = () => {
+    if (src !== defaultImage) {
+      setError(true);
+    }
+  };
+
   return error ? (
-    fallbackImage ? (
+    <div className={`relative overflow-hidden ${className}`}>
       <img 
-        src={fallbackImage} 
-        alt={alt || "Profile"} 
-        className={className}
+        src={fallbackImage || defaultImage}
+        alt={alt || businessName || "Business"}
+        className={`w-full h-full object-cover ${className}`}
+        onError={() => setError(true)}
         {...props}
       />
-    ) : (
-      <div className={`${className} ${fallbackClassName}`}>
-        <User className="h-1/2 w-1/2 text-muted-foreground opacity-50" />
-      </div>
-    )
+      {businessName && (
+        <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+          <span className="text-white text-xl font-medium">{businessName.charAt(0)}</span>
+        </div>
+      )}
+    </div>
   ) : (
     <img
       src={src}
       alt={alt}
       className={className}
-      onError={() => setError(true)}
+      onError={handleError}
       {...props}
     />
   );
