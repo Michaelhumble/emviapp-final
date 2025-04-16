@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from "@/context/auth";
@@ -30,6 +29,7 @@ import { toast } from "sonner";
 import ProfileCompletionWarning from "../overview/ProfileCompletionWarning";
 import StatCard from "../StatCard";
 import ViewAllBookingsButton from "../overview/ViewAllBookingsButton";
+import BookingCard from "../booking/BookingCard";
 
 // Types for our data
 interface Stats {
@@ -302,31 +302,7 @@ const OverviewTab = () => {
             ) : upcomingBookings && upcomingBookings.length > 0 ? (
               <div className="space-y-3">
                 {upcomingBookings.map((booking: Booking) => (
-                  <div key={booking.id} className="flex items-center p-3 rounded-lg bg-white shadow-sm border border-gray-100 hover:border-primary/20 transition-colors group">
-                    <div className="flex-1">
-                      <div className="flex justify-between">
-                        <h4 className="font-medium">Client</h4>
-                        <p className="text-sm text-muted-foreground">
-                          {new Date(booking.date_requested).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                        </p>
-                      </div>
-                      <div className="flex items-center justify-between mt-1">
-                        <p className="text-sm text-gray-500">{booking.services?.title || "Custom Service"}</p>
-                        <div className="flex items-center">
-                          <Badge 
-                            variant="outline" 
-                            className={`text-xs ${
-                              booking.status === 'confirmed' ? 'bg-green-100 text-green-800 border-green-200' :
-                              booking.status === 'pending' ? 'bg-amber-100 text-amber-800 border-amber-200' :
-                              'bg-red-100 text-red-800 border-red-200'
-                            }`}
-                          >
-                            {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <BookingCard key={booking.id} booking={booking} />
                 ))}
               </div>
             ) : (
