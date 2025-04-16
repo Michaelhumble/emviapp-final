@@ -415,4 +415,4 @@ const ArtistCalendar = ({ artistId }: { artistId: string }) => {
   const [isTimeSlotConfirmedDialogOpen, setIsTimeSlotConfirmedDialogOpen] = useState(false);
   const [isTimeSlotRejectedDialogOpen, setIsTimeSlotRejectedDialogOpen] = useState(false);
   const [isTimeSlotDeletedDialogOpen, setIsTimeSlotDeletedDialogOpen] = useState(false);
-  const [isTimeSlot
+  const [isTimeSlotCompletedDialogOpen, setIs
