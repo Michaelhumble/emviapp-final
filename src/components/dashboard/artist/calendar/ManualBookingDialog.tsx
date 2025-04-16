@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { CalendarIcon, Clock } from "lucide-react";
+import { CalendarIcon, Clock, Phone } from "lucide-react";
 import { format } from "date-fns";
 
 interface ManualBookingDialogProps {
@@ -27,6 +27,8 @@ export const ManualBookingDialog = ({ isOpen, onClose, onSave, services }: Manua
     service_id: "",
     time: "",
     notes: "",
+    duration_minutes: "",
+    is_manual: true
   });
 
   const timeSlots = Array.from({ length: 32 }, (_, i) => {
@@ -39,6 +41,15 @@ export const ManualBookingDialog = ({ isOpen, onClose, onSave, services }: Manua
     };
   });
 
+  const durationOptions = [
+    { value: "30", label: "30 minutes" },
+    { value: "45", label: "45 minutes" },
+    { value: "60", label: "1 hour" },
+    { value: "75", label: "1 hour 15 minutes" },
+    { value: "90", label: "1 hour 30 minutes" },
+    { value: "120", label: "2 hours" },
+  ];
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!date || !formData.time || !formData.customer_name || !formData.service_id) return;
@@ -49,15 +60,15 @@ export const ManualBookingDialog = ({ isOpen, onClose, onSave, services }: Manua
       const startTime = new Date(date);
       startTime.setHours(parseInt(hours), parseInt(minutes));
 
-      const selectedService = services.find(s => s.id === formData.service_id);
+      // Calculate end time based on duration
+      const duration = parseInt(formData.duration_minutes || "60");
       const endTime = new Date(startTime);
-      endTime.setMinutes(startTime.getMinutes() + (selectedService?.duration_minutes || 60));
+      endTime.setMinutes(startTime.getMinutes() + duration);
 
       await onSave({
         ...formData,
         start_time: startTime.toISOString(),
         end_time: endTime.toISOString(),
-        is_manual: true,
         status: "confirmed"
       });
 
@@ -66,9 +77,10 @@ export const ManualBookingDialog = ({ isOpen, onClose, onSave, services }: Manua
         service_id: "",
         time: "",
         notes: "",
+        duration_minutes: "",
+        is_manual: true
       });
       setDate(undefined);
-      onClose();
     } catch (error) {
       console.error("Error saving manual booking:", error);
     } finally {
@@ -80,7 +92,10 @@ export const ManualBookingDialog = ({ isOpen, onClose, onSave, services }: Manua
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-serif text-xl">Add Manual Booking</DialogTitle>
+          <DialogTitle className="text-xl flex items-center">
+            <Phone className="h-5 w-5 mr-2 text-purple-600" />
+            Add Manual Booking
+          </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
@@ -92,6 +107,7 @@ export const ManualBookingDialog = ({ isOpen, onClose, onSave, services }: Manua
               onChange={(e) => setFormData(prev => ({ ...prev, customer_name: e.target.value }))}
               placeholder="Enter client name"
               required
+              className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
             />
           </div>
 
@@ -99,15 +115,22 @@ export const ManualBookingDialog = ({ isOpen, onClose, onSave, services }: Manua
             <Label>Service <span className="text-red-500">*</span></Label>
             <Select
               value={formData.service_id}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, service_id: value }))}
+              onValueChange={(value) => {
+                const selectedService = services.find(s => s.id === value);
+                setFormData(prev => ({ 
+                  ...prev, 
+                  service_id: value,
+                  duration_minutes: selectedService ? selectedService.duration_minutes.toString() : prev.duration_minutes
+                }));
+              }}
             >
-              <SelectTrigger>
+              <SelectTrigger className="border-gray-300 focus:border-purple-500 focus:ring-purple-500">
                 <SelectValue placeholder="Select a service" />
               </SelectTrigger>
               <SelectContent>
                 {services.map((service) => (
                   <SelectItem key={service.id} value={service.id}>
-                    {service.title}
+                    {service.title} ({service.duration_minutes} min)
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -121,7 +144,7 @@ export const ManualBookingDialog = ({ isOpen, onClose, onSave, services }: Manua
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal",
+                    "w-full justify-start text-left font-normal border-gray-300 focus:border-purple-500 focus:ring-purple-500",
                     !date && "text-muted-foreground"
                   )}
                 >
@@ -147,7 +170,7 @@ export const ManualBookingDialog = ({ isOpen, onClose, onSave, services }: Manua
               value={formData.time}
               onValueChange={(value) => setFormData(prev => ({ ...prev, time: value }))}
             >
-              <SelectTrigger>
+              <SelectTrigger className="border-gray-300 focus:border-purple-500 focus:ring-purple-500">
                 <SelectValue placeholder="Select time">
                   <div className="flex items-center">
                     <Clock className="mr-2 h-4 w-4" />
@@ -169,6 +192,25 @@ export const ManualBookingDialog = ({ isOpen, onClose, onSave, services }: Manua
           </div>
 
           <div className="space-y-2">
+            <Label>Duration <span className="text-red-500">*</span></Label>
+            <Select
+              value={formData.duration_minutes}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, duration_minutes: value }))}
+            >
+              <SelectTrigger className="border-gray-300 focus:border-purple-500 focus:ring-purple-500">
+                <SelectValue placeholder="Select duration" />
+              </SelectTrigger>
+              <SelectContent>
+                {durationOptions.map(({ value, label }) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="notes">Notes (Optional)</Label>
             <Textarea
               id="notes"
@@ -176,6 +218,7 @@ export const ManualBookingDialog = ({ isOpen, onClose, onSave, services }: Manua
               onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
               placeholder="Add phone number or special instructions..."
               rows={3}
+              className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
             />
           </div>
 
@@ -185,7 +228,8 @@ export const ManualBookingDialog = ({ isOpen, onClose, onSave, services }: Manua
             </Button>
             <Button 
               type="submit" 
-              disabled={!date || !formData.time || !formData.customer_name || !formData.service_id || isSubmitting}
+              disabled={!date || !formData.time || !formData.customer_name || !formData.service_id || !formData.duration_minutes || isSubmitting}
+              className="bg-purple-600 hover:bg-purple-700"
             >
               {isSubmitting ? "Adding..." : "Add Booking"}
             </Button>

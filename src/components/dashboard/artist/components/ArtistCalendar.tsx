@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useArtistCalendar } from "@/hooks/useArtistCalendar";
-import { CalendarDays, ChevronLeft, ChevronRight, Clock, Info, UserPlus, X, Calendar as CalendarIcon, Plus } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Clock, Info, UserPlus, X, Calendar as CalendarIcon, Plus, Phone } from "lucide-react";
 import { format, parseISO, addDays, subDays, isSameDay, isToday, startOfDay, endOfDay } from "date-fns";
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -315,15 +315,18 @@ const ArtistCalendar = () => {
                   {dayAppointments.map((appointment) => {
                     const style = getAppointmentStyle(appointment);
                     const isConfirmed = appointment.status === 'confirmed';
+                    const isManual = appointment.is_manual;
                     
                     return (
                       <div
                         key={appointment.id}
                         className={cn(
                           "absolute left-1 right-1 rounded-md px-2 py-1 shadow-sm cursor-pointer transition-all hover:shadow-md",
-                          isConfirmed 
-                            ? "bg-green-50 border border-green-200" 
-                            : "bg-amber-50 border border-amber-200"
+                          isManual
+                            ? "bg-purple-50 border border-purple-200"
+                            : isConfirmed 
+                              ? "bg-green-50 border border-green-200" 
+                              : "bg-amber-50 border border-amber-200"
                         )}
                         style={style}
                         onClick={() => handleAppointmentClick(appointment)}
@@ -334,15 +337,20 @@ const ArtistCalendar = () => {
                         <div className="text-xs font-medium truncate">
                           {appointment.services?.title || "Service"}
                         </div>
-                        <div className="text-xs truncate">
+                        <div className="text-xs truncate flex items-center">
+                          {isManual && <Phone className="h-3 w-3 mr-1 text-purple-600" />}
                           {appointment.customer_name || "Client"}
                         </div>
-                        <div className="mt-1">
+                        <div className="mt-1 flex items-center gap-1">
                           <Badge variant="outline" className={cn(
                             "text-[10px] py-0 h-4",
-                            isConfirmed ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"
+                            isManual 
+                              ? "bg-purple-100 text-purple-800"
+                              : isConfirmed 
+                                ? "bg-green-100 text-green-800" 
+                                : "bg-amber-100 text-amber-800"
                           )}>
-                            {appointment.status}
+                            {isManual ? "Manual" : appointment.status}
                           </Badge>
                         </div>
                       </div>
@@ -387,10 +395,16 @@ const ArtistCalendar = () => {
               </Button>
               
               <div className="pt-2">
-                <h3 className="text-lg font-medium">
+                <h3 className="text-lg font-medium flex items-center">
                   {'services' in selectedBooking 
                     ? (selectedBooking.services?.title || "Appointment") 
                     : (selectedBooking.reason || "Blocked Time")}
+                  {selectedBooking.is_manual && (
+                    <Badge className="ml-2 bg-purple-100 text-purple-800 border-purple-200">
+                      <Phone className="h-3 w-3 mr-1" />
+                      Manual
+                    </Badge>
+                  )}
                 </h3>
                 
                 <div className="mt-4 space-y-3">
@@ -427,11 +441,13 @@ const ArtistCalendar = () => {
                   <div className="flex items-center justify-between mt-6">
                     {'status' in selectedBooking && (
                       <Badge className={cn(
-                        selectedBooking.status === 'confirmed' 
-                          ? "bg-green-100 text-green-800 hover:bg-green-200" 
-                          : "bg-amber-100 text-amber-800 hover:bg-amber-200"
+                        selectedBooking.is_manual
+                          ? "bg-purple-100 text-purple-800 hover:bg-purple-200"
+                          : selectedBooking.status === 'confirmed' 
+                            ? "bg-green-100 text-green-800 hover:bg-green-200" 
+                            : "bg-amber-100 text-amber-800 hover:bg-amber-200"
                       )}>
-                        {selectedBooking.status}
+                        {selectedBooking.is_manual ? "Manual" : selectedBooking.status}
                       </Badge>
                     )}
                     
