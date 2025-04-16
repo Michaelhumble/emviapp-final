@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useArtistCalendar } from "@/hooks/useArtistCalendar";
 import { CalendarDays, ChevronLeft, ChevronRight, Clock, Info, UserPlus, X, Calendar as CalendarIcon, Plus } from "lucide-react";
@@ -177,6 +178,7 @@ const ArtistCalendar = () => {
 
       if (error) throw error;
       toast.success('Manual booking added successfully');
+      setIsManualBookingOpen(false);
     } catch (error) {
       console.error('Error adding manual booking:', error);
       toast.error('Failed to add manual booking');
@@ -191,11 +193,11 @@ const ArtistCalendar = () => {
             <CalendarDays className="h-5 w-5 text-blue-500 mr-2" />
             Calendar
           </CardTitle>
-          <div className="flex items-center space-x-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button 
-              variant="outline" 
+              variant="default" 
               size="sm" 
-              className="bg-white"
+              className="bg-purple-600 hover:bg-purple-700"
               onClick={() => setIsManualBookingOpen(true)}
             >
               <Plus className="h-4 w-4 mr-1" />
@@ -211,7 +213,7 @@ const ArtistCalendar = () => {
             <Button variant="outline" size="sm" onClick={goToNextDay}>
               <ChevronRight className="h-4 w-4" />
             </Button>
-            <div className="flex items-center ml-4">
+            <div className="flex items-center ml-2">
               <label htmlFor="show-empty-days" className="text-sm text-muted-foreground mr-2">
                 Show Empty Days
               </label>
