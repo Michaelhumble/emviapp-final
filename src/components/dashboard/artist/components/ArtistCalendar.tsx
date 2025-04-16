@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useArtistCalendar } from "@/hooks/useArtistCalendar";
-import { CalendarDays, ChevronLeft, ChevronRight, Clock, Info, UserPlus, X, Calendar as CalendarIcon } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Clock, Info, UserPlus, X, Calendar as CalendarIcon, Plus } from "lucide-react";
 import { format, parseISO, addDays, subDays, isSameDay, isToday, startOfDay, endOfDay } from "date-fns";
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { ManualBookingDialog } from "../calendar/ManualBookingDialog";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/context/auth";
 
 const TIME_SLOTS = Array.from({ length: 32 }, (_, i) => i + 6); // 6 AM to 10 PM
 
@@ -20,6 +23,7 @@ const ArtistCalendar = () => {
     deleteBlockedTime
   } = useArtistCalendar();
   
+  const { user: auth } = useAuth();
   const [visibleDays, setVisibleDays] = useState(window.innerWidth >= 768 ? 3 : 1);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
@@ -28,13 +32,14 @@ const ArtistCalendar = () => {
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isManualBookingOpen, setIsManualBookingOpen] = useState(false);
+  
   const { data: services } = useQuery({
     queryKey: ['services'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('services')
         .select('id, title, duration_minutes')
-        .eq('user_id', auth.user?.id);
+        .eq('user_id', auth?.id);
       
       if (error) throw error;
       return data || [];
@@ -166,7 +171,7 @@ const ArtistCalendar = () => {
         .from('appointments')
         .insert([{
           ...bookingData,
-          artist_id: auth.user?.id,
+          artist_id: auth?.id,
           customer_id: null
         }]);
 
