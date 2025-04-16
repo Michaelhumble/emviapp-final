@@ -12,19 +12,19 @@ import { Booking } from "@/components/dashboard/artist/types/ArtistDashboardType
 export const WeeklyCalendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 }); // Start from Monday
-  const { appointments, isLoadingAppointments, isLoadingBlockedTimes } = useArtistCalendar();
+  const { 
+    appointments, 
+    isLoadingAppointments, 
+    isLoadingBlockedTimes 
+  } = useArtistCalendar();
   const loading = isLoadingAppointments || isLoadingBlockedTimes;
 
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
   const getBookingsForDay = (day: Date) => {
     return appointments.filter((booking) => {
-      // Check if the booking has the right property
-      if (booking.date_requested) {
-        const bookingDate = new Date(booking.date_requested);
-        return isSameDay(bookingDate, day);
-      } else if (booking.start_time) {
-        // Alternative: use start_time property if date_requested is not available
+      if (booking.start_time) {
+        // Use start_time instead of date_requested
         const bookingDate = parseISO(booking.start_time);
         return isSameDay(bookingDate, day);
       }
@@ -38,7 +38,7 @@ export const WeeklyCalendar = () => {
         client_name: booking.customer_name || 'Client',
         service_name: booking.services?.title || 'Service',
         date_requested: booking.start_time || '',
-        time_requested: format(parseISO(booking.start_time || new Date().toISOString()), 'h:mm a'),
+        time_requested: booking.start_time ? format(parseISO(booking.start_time), 'h:mm a') : '',
         status: booking.status as 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled',
         created_at: booking.created_at || new Date().toISOString()
       } as Booking;
