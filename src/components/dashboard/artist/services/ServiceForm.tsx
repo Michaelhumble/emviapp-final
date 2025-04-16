@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { usePriceInput } from '@/hooks/usePriceInput';
 import { Service } from './ServicesManager';
 
 interface ServiceFormProps {
@@ -15,27 +16,26 @@ interface ServiceFormProps {
 
 interface FormErrors {
   title?: string;
-  price?: string;
   duration_minutes?: string;
 }
 
 const ServiceForm = ({ initialData, onSave, onCancel }: ServiceFormProps) => {
+  // Initialize form data with initial values or defaults
   const [formData, setFormData] = useState<Partial<Service>>({
     title: initialData?.title || '',
     description: initialData?.description || '',
-    price: initialData?.price || 0,
     duration_minutes: initialData?.duration_minutes || 30,
-    is_visible: initialData?.is_visible !== false, // Default to true if not specified
+    is_visible: initialData?.is_visible !== false,
   });
   
+  const priceInput = usePriceInput(initialData?.price || 0);
   const [errors, setErrors] = useState<FormErrors>({});
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     
-    if (name === 'price' || name === 'duration_minutes') {
-      // Parse numeric values
-      const numValue = parseFloat(value);
+    if (name === 'duration_minutes') {
+      const numValue = parseInt(value);
       setFormData({ ...formData, [name]: isNaN(numValue) ? 0 : numValue });
     } else {
       setFormData({ ...formData, [name]: value });
@@ -60,28 +60,28 @@ const ServiceForm = ({ initialData, onSave, onCancel }: ServiceFormProps) => {
       newErrors.title = 'Service name must be 100 characters or less';
     }
     
-    if (typeof formData.price !== 'number' || formData.price <= 0) {
-      newErrors.price = 'Price must be greater than zero';
-    }
-    
     if (typeof formData.duration_minutes !== 'number' || formData.duration_minutes < 5) {
       newErrors.duration_minutes = 'Duration must be at least 5 minutes';
     }
     
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return Object.keys(newErrors).length === 0 && priceInput.isValid;
   };
   
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     if (validateForm()) {
-      onSave(formData);
+      onSave({
+        ...formData,
+        price: parseFloat(priceInput.getFormattedValue())
+      });
     }
   };
   
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Title field */}
       <div className="space-y-1">
         <Label htmlFor="title">Service Name <span className="text-red-500">*</span></Label>
         <Input 
@@ -97,6 +97,7 @@ const ServiceForm = ({ initialData, onSave, onCancel }: ServiceFormProps) => {
         )}
       </div>
       
+      {/* Description field */}
       <div className="space-y-1">
         <Label htmlFor="description">Description</Label>
         <Textarea 
@@ -110,23 +111,24 @@ const ServiceForm = ({ initialData, onSave, onCancel }: ServiceFormProps) => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Price field */}
         <div className="space-y-1">
           <Label htmlFor="price">Price ($) <span className="text-red-500">*</span></Label>
           <Input 
             id="price"
-            name="price"
-            type="number"
-            min="0.01"
-            step="0.01"
-            value={formData.price}
-            onChange={handleChange}
-            className={errors.price ? "border-red-500" : ""}
+            inputMode="decimal"
+            type="text"
+            value={priceInput.value}
+            onChange={(e) => priceInput.handlePriceChange(e.target.value)}
+            placeholder="75.00"
+            className={priceInput.error ? "border-red-500" : ""}
           />
-          {errors.price && (
-            <p className="text-sm text-red-500">{errors.price}</p>
+          {priceInput.error && (
+            <p className="text-sm text-red-500">{priceInput.error}</p>
           )}
         </div>
         
+        {/* Duration field */}
         <div className="space-y-1">
           <Label htmlFor="duration_minutes">Duration (minutes) <span className="text-red-500">*</span></Label>
           <Input 
