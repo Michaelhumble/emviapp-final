@@ -1,223 +1,299 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Calendar as CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format, isSameDay, isBefore, addDays, subDays } from 'date-fns';
+import { DayPicker } from 'react-day-picker';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createArtistAvailability, updateArtistAvailability, deleteArtistAvailability } from "@/lib/api/artist-availability";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
-import { format, addMinutes, isWithinInterval, set, parseISO } from 'date-fns';
-import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
-import { Loader2 } from "lucide-react";
-import { TimePicker } from "@/components/ui/time-picker";
-import { DateRange } from 'react-day-picker';
-
-// Define types
-interface TimeSlot {
-  id: string;
-  start_time: string;
-  end_time: string;
-  is_available: boolean;
-  day_of_week: number;
-}
+import { ArtistAvailability } from "@/types/artist";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 interface ArtistCalendarProps {
   artistId: string;
+  existingAvailability: ArtistAvailability[];
 }
 
-const ArtistCalendar: React.FC<ArtistCalendarProps> = ({ artistId }) => {
-  const { t } = useTranslation();
-  const { toast } = useToast();
-  const { userProfile } = useAuth();
-
-  // State variables
+const ArtistCalendar: React.FC<ArtistCalendarProps> = ({ artistId, existingAvailability }) => {
   const [date, setDate] = useState<Date | undefined>(new Date());
-  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState<TimeSlot | null>(null);
-  const [isCreating, setIsCreating] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isTimeSlotCompletedDialogOpen, setIsTimeSlotCompletedDialogOpen] = useState(false);
-  const [selectedTimeSlotForCompletion, setSelectedTimeSlotForCompletion] = useState<TimeSlot | null>(null);
-  const [isMarkingComplete, setIsMarkingComplete] = useState(false);
-  const [isMarkingIncomplete, setIsMarkingIncomplete] = useState(false);
-  const [isTimeSlotIncompleteDialogOpen, setIsTimeSlotIncompleteDialogOpen] = useState(false);
-  const [selectedTimeSlotForIncompletion, setSelectedTimeSlotForIncompletion] = useState<TimeSlot | null>(null);
-  const [isSavingNotes, setIsSavingNotes] = useState(false);
-  const [notes, setNotes] = useState('');
-  const [selectedDateRange, setSelectedDateRange] = useState<DateRange | undefined>(undefined);
-  const [isBulkUpdating, setIsBulkUpdating] = useState(false);
-  const [bulkStartTime, setBulkStartTime] = useState<Date | null>(null);
-  const [bulkEndTime, setBulkEndTime] = useState<Date | null>(null);
-  const [isBulkAvailable, setIsBulkAvailable] = useState(true);
-  const [isBulkUpdatingAvailability, setIsBulkUpdatingAvailability] = useState(false);
-  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
-  const [isBulkDeleteConfirmationOpen, setIsBulkDeleteConfirmationOpen] = useState(false);
-  const [isBulkCompleteConfirmationOpen, setIsBulkCompleteConfirmationOpen] = useState(false);
-  const [isBulkIncompleteConfirmationOpen, setIsBulkIncompleteConfirmationOpen] = useState(false);
-  const [isBulkMarkingComplete, setIsBulkMarkingComplete] = useState(false);
-  const [isBulkMarkingIncomplete, setIsBulkMarkingIncomplete] = useState(false);
-  const [isBulkCompleting, setIsBulkCompleting] = useState(false);
-  const [isBulkIncompleting, setIsBulkIncompleting] = useState(false);
-  const [isBulkCompletingAll, setIsBulkCompletingAll] = useState(false);
-  const [isBulkIncompletingAll, setIsBulkIncompletingAll] = useState(false);
-  const [isBulkCompleteAllConfirmationOpen, setIsBulkCompleteAllConfirmationOpen] = useState(false);
-  const [isBulkIncompleteAllConfirmationOpen, setIsBulkIncompleteAllConfirmationOpen] = useState(false);
-  const [isBulkCompleteAllConfirmationLoading, setIsBulkCompleteAllConfirmationLoading] = useState(false);
-  const [isBulkIncompleteAllConfirmationLoading, setIsBulkIncompleteAllConfirmationLoading] = useState(false);
-  const [isBulkCompletingAllLoading, setIsBulkCompletingAllLoading] = useState(false);
-  const [isBulkIncompletingAllLoading, setIsBulkIncompletingAllLoading] = useState(false);
-  const [isBulkCompletingLoading, setIsBulkCompletingLoading] = useState(false);
-  const [isBulkIncompletingLoading, setIsBulkIncompletingLoading] = useState(false);
-  const [isBulkDeleteLoading, setIsBulkDeleteLoading] = useState(false);
-  const [isBulkDeleteAllLoading, setIsBulkDeleteAllLoading] = useState(false);
-  const [isBulkDeleteAllConfirmationOpen, setIsBulkDeleteAllConfirmationOpen] = useState(false);
-  const [isBulkDeletingAll, setIsBulkDeletingAll] = useState(false);
-  const [isBulkDeletingAllLoading, setIsBulkDeletingAllLoading] = useState(false);
-  const [isBulkDeleteConfirmationLoading, setIsBulkDeleteConfirmationLoading] = useState(false);
-  const [isBulkDeleteAllConfirmationLoading, setIsBulkDeleteAllConfirmationLoading] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenLoading, setIsBulkDeleteAllConfirmationOpenLoading] = useState(false);
-  const [isBulkDeleteConfirmationOpenLoading, setIsBulkDeleteConfirmationOpenLoading] = useState(false);
-  const [isBulkDeleteAllLoadingAll, setIsBulkDeleteAllLoadingAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAll, setIsBulkDeleteAllConfirmationOpenAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAll, setIsBulkDeleteAllConfirmationLoadingAll] = useState(false);
-  const [isBulkDeletingAllAll, setIsBulkDeletingAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAll, setIsBulkDeleteAllLoadingAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAll, setIsBulkDeleteAllConfirmationOpenAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAll, setIsBulkDeleteAllConfirmationLoadingAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAll, setIsBulkDeleteAllLoadingAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAll, setIsBulkDeleteAllConfirmationOpenAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAll, setIsBulkDeletingAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAll, setIsBulkDeletingAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllConfirmationLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeletingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAllLoadingAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll] = useState(false);
-  const [isBulkDeleteAllConfirmationOpenAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAllAll, setIsBulkDeleteAll
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [startTime, setStartTime] = useState<number>(9);
+  const [endTime, setEndTime] = useState<number>(17);
+  const [isRecurring, setIsRecurring] = useState<boolean>(false);
+  const [notes, setNotes] = useState<string>('');
+  const [selectedAvailability, setSelectedAvailability] = useState<ArtistAvailability | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  const createAvailabilityMutation = useMutation(createArtistAvailability, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['artist-availability', artistId]);
+      toast({
+        title: "Availability Created",
+        description: "Your availability has been successfully created.",
+      });
+      resetForm();
+      setIsPopoverOpen(false);
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to create availability.",
+      });
+    },
+  });
+
+  const updateAvailabilityMutation = useMutation(updateArtistAvailability, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['artist-availability', artistId]);
+      toast({
+        title: "Availability Updated",
+        description: "Your availability has been successfully updated.",
+      });
+      resetForm();
+      setIsPopoverOpen(false);
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to update availability.",
+      });
+    },
+  });
+
+  const deleteAvailabilityMutation = useMutation(deleteArtistAvailability, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['artist-availability', artistId]);
+      toast({
+        title: "Availability Deleted",
+        description: "Your availability has been successfully deleted.",
+      });
+      resetForm();
+      setIsPopoverOpen(false);
+      setIsDeleteDialogOpen(false);
+    },
+    onError: (error: any) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to delete availability.",
+      });
+      setIsDeleteDialogOpen(false);
+    },
+  });
+
+  const resetForm = () => {
+    setDate(undefined);
+    setStartTime(9);
+    setEndTime(17);
+    setIsRecurring(false);
+    setNotes('');
+    setSelectedAvailability(null);
+  };
+
+  const handleDayClick = useCallback((day: Date) => {
+    setDate(day);
+    setSelectedAvailability(existingAvailability.find(availability =>
+      isSameDay(new Date(availability.date), day)
+    ) || null);
+    setIsPopoverOpen(true);
+  }, [existingAvailability]);
+
+  useEffect(() => {
+    if (selectedAvailability) {
+      setDate(new Date(selectedAvailability.date));
+      setStartTime(selectedAvailability.start_time);
+      setEndTime(selectedAvailability.end_time);
+      setIsRecurring(selectedAvailability.is_recurring);
+      setNotes(selectedAvailability.notes);
+    } else if (date) {
+      setDate(date);
+      setStartTime(9);
+      setEndTime(17);
+      setIsRecurring(false);
+      setNotes('');
+    }
+  }, [selectedAvailability, date]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!date) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please select a date.",
+      });
+      return;
+    }
+
+    const availabilityData = {
+      artist_id: artistId,
+      date: format(date, 'yyyy-MM-dd'),
+      start_time: startTime,
+      end_time: endTime,
+      is_recurring: isRecurring,
+      notes: notes,
+      user_id: user?.id
+    };
+
+    if (selectedAvailability) {
+      updateAvailabilityMutation.mutate({
+        id: selectedAvailability.id,
+        ...availabilityData
+      });
+    } else {
+      createAvailabilityMutation.mutate(availabilityData);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (selectedAvailability) {
+      deleteAvailabilityMutation.mutate(selectedAvailability.id);
+    }
+  };
+
+  const isDayAvailable = (day: Date) => {
+    return !isBefore(day, subDays(new Date(), 1));
+  };
+
+  const isDayBooked = (day: Date) => {
+    return existingAvailability.some(availability =>
+      isSameDay(new Date(availability.date), day)
+    );
+  };
+
+  return (
+    <div className="flex flex-col space-y-4 w-full">
+      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant={"outline"}
+            className={cn(
+              "w-full justify-start text-left font-normal",
+              !date && "text-muted-foreground"
+            )}
+          >
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            {date ? format(date, "PPP") : <span>Pick a date</span>}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="center" side="bottom">
+          <DayPicker
+            mode="single"
+            selected={date}
+            onSelect={handleDayClick}
+            disabled={!isDayAvailable}
+            modifiers={{
+              booked: isDayBooked,
+            }}
+            modifiersStyles={{
+              booked: {
+                backgroundColor: "hsl(var(--primary))",
+                color: "white",
+              },
+            }}
+            showOutsideDays
+          />
+        </PopoverContent>
+      </Popover>
+
+      {date && (
+        <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+          <div>
+            <Label htmlFor="startTime">Start Time</Label>
+            <Slider
+              id="startTime"
+              defaultValue={[startTime]}
+              max={24}
+              min={0}
+              step={1}
+              onValueChange={(value) => setStartTime(value[0])}
+              className="w-full"
+            />
+            <p className="text-sm text-muted-foreground">
+              {startTime}:00
+            </p>
+          </div>
+          <div>
+            <Label htmlFor="endTime">End Time</Label>
+            <Slider
+              id="endTime"
+              defaultValue={[endTime]}
+              max={24}
+              min={0}
+              step={1}
+              onValueChange={(value) => setEndTime(value[0])}
+              className="w-full"
+            />
+            <p className="text-sm text-muted-foreground">
+              {endTime}:00
+            </p>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Switch id="recurring" checked={isRecurring} onCheckedChange={setIsRecurring} />
+            <Label htmlFor="recurring">Recurring</Label>
+          </div>
+          <div>
+            <Label htmlFor="notes">Notes</Label>
+            <Textarea
+              id="notes"
+              placeholder="Add any notes about your availability"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+            />
+          </div>
+          <div className="flex justify-end space-x-2">
+            {selectedAvailability && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" size="sm">Delete</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete your availability from our servers.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete}>Continue</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+            <Button type="submit" disabled={createAvailabilityMutation.isLoading || updateAvailabilityMutation.isLoading}>
+              {selectedAvailability ? (updateAvailabilityMutation.isLoading ? "Updating..." : "Update Availability") : (createAvailabilityMutation.isLoading ? "Creating..." : "Create Availability")}
+            </Button>
+          </div>
+        </form>
+      )}
+    </div>
+  );
+};
+
+export default ArtistCalendar;
