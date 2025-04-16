@@ -1,26 +1,32 @@
 
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import OverviewTab from "./tabs/OverviewTab";
 import BookingsTab from "./tabs/BookingsTab";
 import PortfolioTab from "./tabs/PortfolioTab";
 import MessagesTab from "./tabs/MessagesTab";
 import ReferralsTab from "./tabs/ReferralsTab";
-import CalendarTab from "./tabs/CalendarTab";
-import ServicesTab from "./tabs/ServicesTab";
 
-// Define the tabs with their names and visibility
+// Define the tabs with their names and visibility - hiding Calendar, Services and Earnings
 const tabs = [
   { id: "Overview", label: "Overview", visible: true },
   { id: "Bookings", label: "Bookings", visible: true },
   { id: "Portfolio", label: "Portfolio", visible: true },
   { id: "Messages", label: "Messages", visible: true },
   { id: "Referrals", label: "Referrals", visible: true },
-  { id: "Calendar", label: "Calendar", visible: true },
-  { id: "Services", label: "Services", visible: true }
+  { id: "Calendar", label: "Calendar", visible: false }, // Hidden
+  { id: "Services", label: "Services", visible: false }  // Hidden
 ];
 
 // Get only visible tabs
 const visibleTabs = tabs.filter(tab => tab.visible).map(tab => tab.id);
+
+// Animation variants
+const tabVariants = {
+  inactive: { opacity: 0.7, y: 0 },
+  active: { opacity: 1, y: 0 },
+  hover: { opacity: 0.9, y: 0 }
+};
 
 export default function ArtistDashboardContent() {
   const [activeTab, setActiveTab] = useState("Overview");
@@ -43,17 +49,23 @@ export default function ArtistDashboardContent() {
     <div className="w-full max-w-6xl mx-auto px-4 py-6">
       <div className="flex space-x-1 sm:space-x-2 overflow-x-auto pb-2 border-b border-gray-200 mb-6 no-scrollbar">
         {tabs.filter(tab => tab.visible).map((tab) => (
-          <button
+          <motion.button
             key={tab.id}
             onClick={() => handleTabChange(tab.id)}
+            id={tab.id}
             className={`pb-2 border-b-2 transition-all whitespace-nowrap px-3 text-sm sm:text-base ${
               activeTab === tab.id
                 ? "border-primary text-primary font-semibold"
                 : "border-transparent text-gray-500 hover:text-primary hover:border-gray-300"
             }`}
+            variants={tabVariants}
+            initial="inactive"
+            animate={activeTab === tab.id ? "active" : "inactive"}
+            whileHover="hover"
+            transition={{ duration: 0.2 }}
           >
             {tab.label}
-          </button>
+          </motion.button>
         ))}
       </div>
 
@@ -63,8 +75,6 @@ export default function ArtistDashboardContent() {
         {activeTab === "Portfolio" && <PortfolioTab />}
         {activeTab === "Messages" && <MessagesTab />}
         {activeTab === "Referrals" && <ReferralsTab />}
-        {activeTab === "Calendar" && <CalendarTab />}
-        {activeTab === "Services" && <ServicesTab />}
       </div>
     </div>
   );
