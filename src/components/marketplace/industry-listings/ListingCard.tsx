@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { 
   Card, CardContent, CardHeader, CardTitle, CardDescription,
@@ -60,6 +59,20 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
     setIsFavorited(!isFavorited);
   };
   
+  const getFallbackImage = () => {
+    if (isForSale) {
+      return "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800";
+    } else if (listing.employment_type?.toLowerCase().includes('part-time')) {
+      return "https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=800";
+    } else if (listing.title?.toLowerCase().includes('wax') || listing.company?.toLowerCase().includes('spa')) {
+      return "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=800";
+    } else if (listing.title?.toLowerCase().includes('hair') || listing.company?.toLowerCase().includes('hair')) {
+      return "https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=800";
+    }
+    
+    return "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=800";
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -80,10 +93,11 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
                 alt={listing.title || "Listing"} 
                 className="h-full w-full object-cover transition-transform duration-500"
                 style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }}
-                fallbackImage="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=800"
+                fallbackImage={getFallbackImage()}
                 businessName={listing.company}
               />
             </div>
+            
             <div className="absolute top-2 right-2">
               <Button 
                 variant="ghost" 

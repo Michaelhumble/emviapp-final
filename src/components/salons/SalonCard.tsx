@@ -54,6 +54,18 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
 
   const isVietnameseSalon = salon.vietnamese_description || (salon.id && salon.id.startsWith('vn-salon'));
 
+  // Determine appropriate fallback image based on business type
+  const getFallbackImage = () => {
+    if (salon.salon_type === "nail") {
+      return "https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=800";
+    } else if (salon.salon_type === "hair") {
+      return "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800";
+    } else if (salon.salon_type === "spa") {
+      return "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=800";
+    }
+    return "https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=800";
+  };
+
   return (
     <Card 
       className={`h-full flex flex-col ${isExpired ? 'opacity-70' : ''} transition-all duration-300 hover:shadow-md`}
@@ -67,7 +79,7 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
             src={salon.image}
             alt={sanitizedCompany || "Salon for Sale"}
             className="h-full w-full object-cover"
-            fallbackImage="https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=800"
+            fallbackImage={getFallbackImage()}
             businessName={sanitizedCompany}
           />
         </div>

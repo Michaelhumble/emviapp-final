@@ -31,6 +31,16 @@ const JobListingCard = ({
   const [isHovered, setIsHovered] = useState(false);
   const isOwner = currentUserId === job.user_id;
 
+  // Determine appropriate fallback image based on job type
+  const getFallbackImage = () => {
+    if (job.employment_type?.toLowerCase().includes('sale')) {
+      return "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800";
+    } else if (job.employment_type?.toLowerCase().includes('part')) {
+      return "https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=800";
+    }
+    return "https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=800";
+  };
+
   return (
     <Card 
       className={`overflow-hidden transition-all duration-200 ${
@@ -45,7 +55,7 @@ const JobListingCard = ({
             src={job.image}
             alt={job.title || "Job listing"}
             className="w-full h-full object-cover"
-            fallbackImage="https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=800"
+            fallbackImage={getFallbackImage()}
             businessName={job.company}
           />
         </div>
