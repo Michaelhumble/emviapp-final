@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useArtistCalendar } from "@/hooks/useArtistCalendar";
 import { CalendarDays, ChevronLeft, ChevronRight, Clock, Info, UserPlus, X, Calendar as CalendarIcon } from "lucide-react";
@@ -8,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { ManualBookingDialog } from "../calendar/ManualBookingDialog";
 
 const TIME_SLOTS = Array.from({ length: 32 }, (_, i) => i + 6); // 6 AM to 10 PM
 
@@ -26,7 +27,20 @@ const ArtistCalendar = () => {
   const calendarRef = useRef<HTMLDivElement>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  
+  const [isManualBookingOpen, setIsManualBookingOpen] = useState(false);
+  const { data: services } = useQuery({
+    queryKey: ['services'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('services')
+        .select('id, title, duration_minutes')
+        .eq('user_id', auth.user?.id);
+      
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1280) {
@@ -122,12 +136,10 @@ const ArtistCalendar = () => {
     return getAppointmentsForDay(day).length > 0 || getBlockedTimesForDay(day).length > 0;
   };
   
-  // Filter out empty days if showEmptyDays is false
   const visibleDaysArray = !showEmptyDays 
     ? days.filter(day => dayHasAppointments(day))
     : days;
   
-  // If all days would be filtered out, show at least the first day
   const displayDays = visibleDaysArray.length > 0 ? visibleDaysArray : [days[0]];
   
   const handleDeleteAppointment = async (id: string) => {
@@ -148,34 +160,64 @@ const ArtistCalendar = () => {
     }
   };
   
+  const handleSaveManualBooking = async (bookingData: any) => {
+    try {
+      const { data, error } = await supabase
+        .from('appointments')
+        .insert([{
+          ...bookingData,
+          artist_id: auth.user?.id,
+          customer_id: null
+        }]);
+
+      if (error) throw error;
+      toast.success('Manual booking added successfully');
+    } catch (error) {
+      console.error('Error adding manual booking:', error);
+      toast.error('Failed to add manual booking');
+    }
+  };
+
   return (
     <Card>
-      <CardHeader className="pb-3 flex flex-row items-center justify-between">
-        <CardTitle className="text-xl flex items-center">
-          <CalendarDays className="h-5 w-5 text-blue-500 mr-2" />
-          Calendar
-        </CardTitle>
-        <div className="flex items-center space-x-2">
-          <Button variant="outline" size="sm" onClick={goToPreviousDay}>
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="sm" onClick={goToToday}>
-            Today
-          </Button>
-          <Button variant="outline" size="sm" onClick={goToNextDay}>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-          <div className="flex items-center ml-4">
-            <label htmlFor="show-empty-days" className="text-sm text-muted-foreground mr-2">
-              Show Empty Days
-            </label>
-            <input
-              id="show-empty-days"
-              type="checkbox" 
-              checked={showEmptyDays}
-              onChange={() => setShowEmptyDays(!showEmptyDays)}
-              className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-            />
+      <CardHeader>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <CardTitle className="text-xl flex items-center">
+            <CalendarDays className="h-5 w-5 text-blue-500 mr-2" />
+            Calendar
+          </CardTitle>
+          <div className="flex items-center space-x-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="bg-white"
+              onClick={() => setIsManualBookingOpen(true)}
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Add Manual Booking
+            </Button>
+
+            <Button variant="outline" size="sm" onClick={goToPreviousDay}>
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="sm" onClick={goToToday}>
+              Today
+            </Button>
+            <Button variant="outline" size="sm" onClick={goToNextDay}>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            <div className="flex items-center ml-4">
+              <label htmlFor="show-empty-days" className="text-sm text-muted-foreground mr-2">
+                Show Empty Days
+              </label>
+              <input
+                id="show-empty-days"
+                type="checkbox" 
+                checked={showEmptyDays}
+                onChange={() => setShowEmptyDays(!showEmptyDays)}
+                className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+              />
+            </div>
           </div>
         </div>
       </CardHeader>
@@ -413,6 +455,13 @@ const ArtistCalendar = () => {
           </div>
         )}
       </CardContent>
+      
+      <ManualBookingDialog
+        isOpen={isManualBookingOpen}
+        onClose={() => setIsManualBookingOpen(false)}
+        onSave={handleSaveManualBooking}
+        services={services || []}
+      />
     </Card>
   );
 };
