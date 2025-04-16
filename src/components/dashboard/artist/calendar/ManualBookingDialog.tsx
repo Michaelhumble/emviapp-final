@@ -99,7 +99,7 @@ export const ManualBookingDialog = ({ isOpen, onClose, onSave, services }: Manua
             <Label>Service <span className="text-red-500">*</span></Label>
             <Select
               value={formData.service_id}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, service_id: value })}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, service_id: value }))}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select a service" />
