@@ -5,9 +5,22 @@ import BookingsTab from "./tabs/BookingsTab";
 import PortfolioTab from "./tabs/PortfolioTab";
 import MessagesTab from "./tabs/MessagesTab";
 import ReferralsTab from "./tabs/ReferralsTab";
+import CalendarTab from "./tabs/CalendarTab";
+import ServicesTab from "./tabs/ServicesTab";
 
-// Define only the visible tabs
-const visibleTabs = ["Overview", "Bookings", "Portfolio", "Messages", "Referrals"];
+// Define the tabs with their names and visibility
+const tabs = [
+  { id: "Overview", label: "Overview", visible: true },
+  { id: "Bookings", label: "Bookings", visible: true },
+  { id: "Portfolio", label: "Portfolio", visible: true },
+  { id: "Messages", label: "Messages", visible: true },
+  { id: "Referrals", label: "Referrals", visible: true },
+  { id: "Calendar", label: "Calendar", visible: true },
+  { id: "Services", label: "Services", visible: true }
+];
+
+// Get only visible tabs
+const visibleTabs = tabs.filter(tab => tab.visible).map(tab => tab.id);
 
 export default function ArtistDashboardContent() {
   const [activeTab, setActiveTab] = useState("Overview");
@@ -28,28 +41,30 @@ export default function ArtistDashboardContent() {
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-6">
-      <div className="flex space-x-4 overflow-x-auto pb-2 border-b border-gray-200 mb-6">
-        {visibleTabs.map((tab) => (
+      <div className="flex space-x-1 sm:space-x-2 overflow-x-auto pb-2 border-b border-gray-200 mb-6 no-scrollbar">
+        {tabs.filter(tab => tab.visible).map((tab) => (
           <button
-            key={tab}
-            onClick={() => handleTabChange(tab)}
-            className={`pb-2 border-b-2 transition-all whitespace-nowrap px-2 ${
-              activeTab === tab
+            key={tab.id}
+            onClick={() => handleTabChange(tab.id)}
+            className={`pb-2 border-b-2 transition-all whitespace-nowrap px-3 text-sm sm:text-base ${
+              activeTab === tab.id
                 ? "border-primary text-primary font-semibold"
-                : "border-transparent text-gray-500 hover:text-primary"
+                : "border-transparent text-gray-500 hover:text-primary hover:border-gray-300"
             }`}
           >
-            {tab}
+            {tab.label}
           </button>
         ))}
       </div>
 
-      <div>
+      <div className="py-2">
         {activeTab === "Overview" && <OverviewTab />}
         {activeTab === "Bookings" && <BookingsTab />}
         {activeTab === "Portfolio" && <PortfolioTab />}
         {activeTab === "Messages" && <MessagesTab />}
         {activeTab === "Referrals" && <ReferralsTab />}
+        {activeTab === "Calendar" && <CalendarTab />}
+        {activeTab === "Services" && <ServicesTab />}
       </div>
     </div>
   );
