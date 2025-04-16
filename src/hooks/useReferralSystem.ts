@@ -6,6 +6,9 @@ interface ReferralStats {
   completedReferrals: number;
   pendingReferrals: number;
   earnedCredits: number;
+  credits?: number;
+  estimatedEarnings?: number;
+  totalReferrals?: number;
 }
 
 interface ReferralProgress {
@@ -19,7 +22,9 @@ export const useReferralSystem = () => {
   const [referralStats, setReferralStats] = useState<ReferralStats>({
     completedReferrals: 3,
     pendingReferrals: 2,
-    earnedCredits: 45
+    earnedCredits: 45,
+    credits: 45,
+    estimatedEarnings: 150
   });
 
   const [referralProgress, setReferralProgress] = useState<ReferralProgress>({
@@ -29,21 +34,35 @@ export const useReferralSystem = () => {
     level: 1
   });
 
+  const [loading, setLoading] = useState(true);
+  const [referralCode] = useState('EMVI123');
+  const [referralLink] = useState('https://emvi.app/join?ref=EMVI123');
+
   // In a real app, we would fetch this data from an API
   useEffect(() => {
-    // Mock API call
     const fetchReferralData = () => {
-      // This would be replaced with actual API calls
       console.log('Fetching referral data...');
-      
-      // We're just using the default values for now
+      // Mock API call completed
+      setLoading(false);
     };
 
     fetchReferralData();
   }, []);
 
+  const getMotivationalMessage = (language = 'English') => {
+    const isVietnamese = language.toLowerCase() === 'vietnamese';
+    return isVietnamese 
+      ? 'Tiếp tục giới thiệu để nhận thêm phần thưởng!'
+      : 'Keep referring to earn more rewards!';
+  };
+
   return {
+    loading,
+    referralCode,
+    referralLink,
     referralStats,
-    referralProgress
+    referralProgress,
+    getMotivationalMessage,
+    referrals: [] // Empty array to satisfy type requirements
   };
 };

@@ -6,15 +6,16 @@ import PortfolioTab from "./tabs/PortfolioTab";
 import MessagesTab from "./tabs/MessagesTab";
 import ReferralsTab from "./tabs/ReferralsTab";
 
-const tabs = ["Overview", "Bookings", "Portfolio", "Messages", "Referrals"];
+// Define only the visible tabs
+const visibleTabs = ["Overview", "Bookings", "Portfolio", "Messages", "Referrals"];
 
 export default function ArtistDashboardContent() {
   const [activeTab, setActiveTab] = useState("Overview");
 
-  // Load last active tab from localStorage if available
+  // Load last active tab from localStorage if it's one of the visible tabs
   useEffect(() => {
     const savedTab = localStorage.getItem('artist_dashboard_tab');
-    if (savedTab && tabs.includes(savedTab)) {
+    if (savedTab && visibleTabs.includes(savedTab)) {
       setActiveTab(savedTab);
     }
   }, []);
@@ -28,7 +29,7 @@ export default function ArtistDashboardContent() {
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-6">
       <div className="flex space-x-4 overflow-x-auto pb-2 border-b border-gray-200 mb-6">
-        {tabs.map((tab) => (
+        {visibleTabs.map((tab) => (
           <button
             key={tab}
             onClick={() => handleTabChange(tab)}
