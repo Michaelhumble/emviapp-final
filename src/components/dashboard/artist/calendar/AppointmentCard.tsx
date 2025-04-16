@@ -3,8 +3,20 @@ import { format, parseISO } from "date-fns";
 import { Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+interface Appointment {
+  id: string;
+  start_time: string;
+  customer_name?: string;
+  services?: {
+    title?: string;
+  };
+  status: string;
+  is_manual?: boolean;
+  duration_minutes?: number;
+}
+
 interface AppointmentCardProps {
-  appointment: any;
+  appointment: Appointment;
   onClick: () => void;
 }
 

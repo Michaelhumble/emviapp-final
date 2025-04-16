@@ -69,7 +69,8 @@ export const ManualBookingDialog = ({ isOpen, onClose, onSave, services }: Manua
         ...formData,
         start_time: startTime.toISOString(),
         end_time: endTime.toISOString(),
-        status: "confirmed"
+        status: "confirmed",
+        is_manual: true
       });
 
       setFormData({

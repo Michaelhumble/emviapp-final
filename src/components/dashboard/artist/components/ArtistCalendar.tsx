@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useArtistCalendar } from "@/hooks/useArtistCalendar";
 import { CalendarDays, ChevronLeft, ChevronRight, Clock, Info, UserPlus, X, Calendar as CalendarIcon, Plus, Phone } from "lucide-react";
@@ -13,6 +12,7 @@ import { ManualBookingDialog } from "../calendar/ManualBookingDialog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
+import { Appointment } from "@/hooks/calendar/useAppointments";
 
 const TIME_SLOTS = Array.from({ length: 32 }, (_, i) => i + 6); // 6 AM to 10 PM
 
@@ -173,7 +173,8 @@ const ArtistCalendar = () => {
         .insert([{
           ...bookingData,
           artist_id: auth?.id,
-          customer_id: null
+          customer_id: null,
+          is_manual: true
         }]);
 
       if (error) throw error;

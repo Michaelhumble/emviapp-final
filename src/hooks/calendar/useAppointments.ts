@@ -4,6 +4,29 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
+export interface Appointment {
+  id: string;
+  artist_id: string;
+  customer_id?: string | null;
+  customer_name?: string | null;
+  customer_email?: string | null;
+  customer_phone?: string | null;
+  service_id?: string | null;
+  start_time: string;
+  end_time: string;
+  notes?: string | null;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  is_manual?: boolean;
+  duration_minutes?: number;
+  services?: {
+    title?: string;
+    price?: number;
+    duration_minutes?: number;
+  };
+}
+
 export const useAppointments = (startDate: Date, endDate: Date) => {
   const queryClient = useQueryClient();
 
