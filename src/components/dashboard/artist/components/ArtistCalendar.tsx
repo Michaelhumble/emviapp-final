@@ -23,7 +23,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { format, addMinutes, isWithinInterval, set, parseISO } from 'date-fns';
-import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
+import { toZonedTime, fromZonedTime } from 'date-fns-tz'; // Updated function names
 import { Loader2 } from "lucide-react";
 import { TimePicker } from "@/components/ui/time-picker";
 import { DateRange } from 'react-day-picker';

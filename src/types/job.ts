@@ -14,6 +14,7 @@ export interface Job {
     owner_name?: string;
     phone?: string;
     email?: string;
+    notes?: string; // Added this field
   };
   for_sale?: boolean;
   asking_price?: string;
@@ -33,7 +34,16 @@ export interface Job {
   tip_range?: string;
   salary_range?: string;
   vietnamese_description?: string;
-  salon_type?: string; // Added this property
+  salon_type?: string;
   expires_at?: string;
   boosted_until?: string;
+  user_id?: string; // Added this field
+  requirements?: string[] | string; // Added this field
+  preferred_languages?: string[]; // Added this field
+  benefits?: string[]; // Added this field
+  features?: string[]; // Added this field
+  price?: string; // Added this field
+  monthly_rent?: string; // Added this field
+  trust_indicators?: any; // Added this field (could be refined later)
+  compensation_type?: string; // Added this field
 }
