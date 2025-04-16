@@ -37,6 +37,7 @@ export const useReferralSystem = () => {
   const [loading, setLoading] = useState(true);
   const [referralCode] = useState('EMVI123');
   const [referralLink] = useState('https://emvi.app/join?ref=EMVI123');
+  const [copied, setCopied] = useState(false);
 
   // In a real app, we would fetch this data from an API
   useEffect(() => {
@@ -56,6 +57,16 @@ export const useReferralSystem = () => {
       : 'Keep referring to earn more rewards!';
   };
 
+  const copyReferralLink = () => {
+    navigator.clipboard.writeText(referralLink);
+    setCopied(true);
+    
+    // Reset copied state after 2 seconds
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
+  };
+
   return {
     loading,
     referralCode,
@@ -63,6 +74,8 @@ export const useReferralSystem = () => {
     referralStats,
     referralProgress,
     getMotivationalMessage,
-    referrals: [] // Empty array to satisfy type requirements
+    referrals: [], // Empty array to satisfy type requirements
+    copied,
+    copyReferralLink
   };
 };
