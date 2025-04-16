@@ -29,7 +29,53 @@ import { toast } from "sonner";
 
 import ProfileCompletionWarning from "../overview/ProfileCompletionWarning";
 import StatCard from "../StatCard";
-import ReferralWidget from "../ReferralWidget";
+import ViewAllBookingsButton from "../overview/ViewAllBookingsButton";
+
+// Types for our data
+interface Stats {
+  bookings: number;
+  profileViews: number;
+  rating: number;
+  revenue: number;
+  repeatClients: number;
+}
+
+interface Booking {
+  id: string;
+  sender_id: string;
+  recipient_id: string;
+  service_id?: string;
+  service_name?: string;
+  date_requested: string;
+  time_requested: string;
+  status: string;
+  created_at: string;
+  note?: string;
+  services?: {
+    title?: string;
+  };
+}
+
+interface Service {
+  id: string;
+  title: string;
+  price: number;
+  duration_minutes: number;
+  created_at: string;
+}
+
+interface PortfolioItem {
+  id: string;
+  image_url: string;
+  created_at: string;
+}
+
+interface Message {
+  id: string;
+  sender_name: string;
+  message: string;
+  created_at: string;
+}
 
 // Animations
 const containerVariants = {
@@ -82,7 +128,7 @@ const OverviewTab = () => {
         rating: 4.8,
         revenue: 1850,
         repeatClients: 72
-      };
+      } as Stats;
     }
   });
   
@@ -94,9 +140,9 @@ const OverviewTab = () => {
       const { data, error } = await supabase
         .from('bookings')
         .select('*, services:service_id(*)')
-        .eq('artist_id', user?.id)
-        .gte('start_time', new Date().toISOString())
-        .order('start_time', { ascending: true })
+        .eq('recipient_id', user?.id)
+        .gte('date_requested', new Date().toISOString().slice(0, 10))
+        .order('date_requested', { ascending: true })
         .limit(3);
       
       if (error) throw error;
@@ -131,7 +177,7 @@ const OverviewTab = () => {
       return [
         { id: '1', image_url: 'https://placehold.co/300x300/F5F5F5/A076F9?text=Nail+Art', created_at: new Date().toISOString() },
         { id: '2', image_url: 'https://placehold.co/300x300/F5F5F5/A076F9?text=Manicure', created_at: new Date().toISOString() }
-      ];
+      ] as PortfolioItem[];
     }
   });
   
@@ -143,7 +189,7 @@ const OverviewTab = () => {
       return [
         { id: '1', sender_name: 'Emma Johnson', message: 'Hi, I would like to book an appointment for next week...', created_at: new Date().toISOString() },
         { id: '2', sender_name: 'Michael Smith', message: 'Thank you for the amazing service yesterday!', created_at: new Date().toISOString() }
-      ];
+      ] as Message[];
     }
   });
   
@@ -255,13 +301,13 @@ const OverviewTab = () => {
               </div>
             ) : upcomingBookings && upcomingBookings.length > 0 ? (
               <div className="space-y-3">
-                {upcomingBookings.map(booking => (
+                {upcomingBookings.map((booking: Booking) => (
                   <div key={booking.id} className="flex items-center p-3 rounded-lg bg-white shadow-sm border border-gray-100 hover:border-primary/20 transition-colors group">
                     <div className="flex-1">
                       <div className="flex justify-between">
-                        <h4 className="font-medium">{booking.customer_name}</h4>
+                        <h4 className="font-medium">Client</h4>
                         <p className="text-sm text-muted-foreground">
-                          {new Date(booking.start_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          {new Date(booking.date_requested).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                         </p>
                       </div>
                       <div className="flex items-center justify-between mt-1">
@@ -290,10 +336,7 @@ const OverviewTab = () => {
             )}
           </CardContent>
           <CardFooter className="pt-0">
-            <Button variant="link" className="ml-auto gap-1 group" onClick={() => document.getElementById('Calendar')?.click()}>
-              <span>View All</span>
-              <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <ViewAllBookingsButton />
           </CardFooter>
         </Card>
       </motion.section>
@@ -318,7 +361,7 @@ const OverviewTab = () => {
               </div>
             ) : services && services.length > 0 ? (
               <div className="space-y-3">
-                {services.map(service => (
+                {services.map((service: Service) => (
                   <div key={service.id} className="flex items-center justify-between p-3 rounded-lg bg-white shadow-sm border border-gray-100 hover:border-primary/20 transition-colors">
                     <div className="flex-1">
                       <h4 className="font-medium">{service.title}</h4>
