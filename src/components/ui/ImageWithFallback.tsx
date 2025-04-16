@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { User } from 'lucide-react';
 
@@ -81,6 +80,13 @@ const PREMIUM_FALLBACK_IMAGES = {
     "https://images.unsplash.com/photo-1558857563-b371033873b8?q=80&w=2070&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1558857792-b63ef2e96c18?q=80&w=2070&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1525803377221-4f6ccdaa5133?q=80&w=2070&auto=format&fit=crop"
+  ],
+  // Artist-specific fallback images
+  artist: [
+    "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1595621864030-1d25895f69c5?w=800&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=800&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&auto=format&fit=crop&q=80"
   ]
 };
 
