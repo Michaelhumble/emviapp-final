@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import useSalonsData from "@/hooks/useSalonsData";
+import { useSalonsData } from "@/hooks/useSalonsData";
 import { getSalonsForSale } from "@/utils/featuredContent";
 import { ensureSalonsForSale } from "@/utils/jobs/mockJobData";
 import { Job } from "@/types/job";
