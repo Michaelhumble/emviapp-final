@@ -47,7 +47,7 @@ export const formatJobListing = (dbJob: any): Job => {
                      description?.toLowerCase().includes('vietnamese');
 
   if (isVietnamese) {
-    const vietnameseJobs = generateVietnameseNailJobs(1);
+    const vietnameseJobs = generateVietnameseNailJobs();
     if (vietnameseJobs.length > 0) {
       const sampleJob = vietnameseJobs[0];
       // Enhance with Vietnamese-specific fields

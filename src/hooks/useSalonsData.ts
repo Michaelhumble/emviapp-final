@@ -19,6 +19,7 @@ export const useSalonsData = () => {
   const [salons, setSalons] = useState<Job[]>([]);
   const [filters, setFilters] = useState<SalonFilters>(defaultFilters);
   const [searchTerm, setSearchTerm] = useState("");
+  const [featuredSalons, setFeaturedSalons] = useState<Job[]>([]);
   
   // Function to fetch salons data
   const fetchSalons = async () => {
@@ -46,9 +47,11 @@ export const useSalonsData = () => {
         has_dining_room: i % 4 === 0,
         has_laundry: i % 6 === 0,
         revenue: `${(Math.random() * 300000 + 80000).toFixed(0)}`,
+        is_featured: i < 3, // First 3 items are featured
       }));
       
       setSalons(mockSalons);
+      setFeaturedSalons(mockSalons.filter(salon => salon.is_featured));
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Unknown error occurred'));
     } finally {
@@ -149,6 +152,7 @@ export const useSalonsData = () => {
     setSearchTerm,
     updateFilters,
     resetFilters,
-    suggestedKeywords
+    suggestedKeywords,
+    featuredSalons
   };
 };

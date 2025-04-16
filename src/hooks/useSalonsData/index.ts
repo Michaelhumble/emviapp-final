@@ -1,6 +1,6 @@
 
 import { useSalonsData, defaultFilters } from "../useSalonsData";
-import type { SalonFilters } from "@/components/salons/types";
+import { SalonFilters } from "@/components/salons/types";
 
-// Re-export the main hook
+// Re-export the main hook and types
 export { useSalonsData, defaultFilters, SalonFilters };

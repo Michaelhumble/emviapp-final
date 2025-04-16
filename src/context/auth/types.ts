@@ -62,6 +62,14 @@ export interface UserProfile {
   company_name?: string;
   preferences?: string[];
   profile_completion?: number;
+
+  // Add the missing salon-related properties
+  salon_type?: string;
+  phone_number?: string;
+  website_url?: string;
+  instagram_url?: string;
+  description?: string;
+  accepts_walk_ins?: boolean;
 }
 
 export interface AuthContextType {
