@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { MapPin, DollarSign } from 'lucide-react';
 
-// Enhanced booth listings data with high-quality images
+// Sample booth listings data
 const SAMPLE_BOOTHS = [
   {
     id: '1',
@@ -23,7 +23,7 @@ const SAMPLE_BOOTHS = [
     location: 'Downtown, Los Angeles, CA',
     price: 275,
     priceUnit: 'week',
-    imageUrl: '/lovable-uploads/309a44f7-5049-447f-b754-f5d0e0489098.png',
+    imageUrl: 'https://images.unsplash.com/photo-1571646034647-52e6ea84b28c?q=80&w=2070&auto=format&fit=crop',
     available: true
   },
   {
@@ -32,7 +32,7 @@ const SAMPLE_BOOTHS = [
     location: 'Beverly Hills, Los Angeles, CA',
     price: 300,
     priceUnit: 'week',
-    imageUrl: '/lovable-uploads/f97a440a-ebc5-4ac9-8b59-e8514a7bd514.png',
+    imageUrl: 'https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?q=80&w=2070&auto=format&fit=crop',
     available: true
   },
   {
@@ -41,7 +41,7 @@ const SAMPLE_BOOTHS = [
     location: 'Pasadena, CA',
     price: 225,
     priceUnit: 'week',
-    imageUrl: '/lovable-uploads/5a445a21-8d55-4ad1-a31e-fff7b5f34852.png',
+    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=2070&auto=format&fit=crop',
     available: true
   },
   {
@@ -50,7 +50,7 @@ const SAMPLE_BOOTHS = [
     location: 'Santa Monica, CA',
     price: 325,
     priceUnit: 'week',
-    imageUrl: '/lovable-uploads/9e679247-cf36-42c8-a8ba-0cb0e44ea72a.png',
+    imageUrl: 'https://images.unsplash.com/photo-1470259078422-826894b933aa?q=80&w=2070&auto=format&fit=crop',
     available: false
   },
 ];

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
@@ -5,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
+// Define the listing item type
 interface ListingItem {
   id: string;
   name: string;
@@ -15,13 +17,15 @@ interface ListingItem {
   url: string;
 }
 
+// Sample data for listings
 const listings: ListingItem[] = [
+  // Nail Industry - Vietnamese names
   { 
     id: "n1", 
     name: "Kim's Nail & Spa", 
     location: "Westminster, CA", 
     status: "Hiring 2 techs now", 
-    imageSrc: "/lovable-uploads/309a44f7-5049-447f-b754-f5d0e0489098.png", 
+    imageSrc: "https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
     category: "salons", 
     url: "/salons/1" 
   },
@@ -30,7 +34,7 @@ const listings: ListingItem[] = [
     name: "Amy Nguyen", 
     location: "Garden Grove, CA", 
     status: "Classic Gel Expert - Book now", 
-    imageSrc: "/lovable-uploads/f97a440a-ebc5-4ac9-8b59-e8514a7bd514.png", 
+    imageSrc: "https://images.unsplash.com/photo-1519014816548-bf5fe059798b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
     category: "artists", 
     url: "/artists/1" 
   },
@@ -39,7 +43,7 @@ const listings: ListingItem[] = [
     name: "Anh Salon", 
     location: "San Diego, CA", 
     status: "Booth available", 
-    imageSrc: "/lovable-uploads/5a445a21-8d55-4ad1-a31e-fff7b5f34852.png", 
+    imageSrc: "https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
     category: "booths", 
     url: "/booths/1" 
   },
@@ -48,7 +52,7 @@ const listings: ListingItem[] = [
     name: "Modern Nails", 
     location: "Atlanta, GA", 
     status: "Salon for sale: retiring soon", 
-    imageSrc: "/lovable-uploads/9e679247-cf36-42c8-a8ba-0cb0e44ea72a.png", 
+    imageSrc: "https://images.unsplash.com/photo-1610992015732-2449b76025bb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
     category: "sales", 
     url: "/salon-sales/1" 
   },
@@ -107,6 +111,7 @@ const listings: ListingItem[] = [
     url: "/artists/3" 
   },
   
+  // Additional diverse industries
   { 
     id: "r1", 
     name: "Pho 88", 
@@ -293,6 +298,7 @@ const DynamicListingGrid = () => {
   const [language, setLanguage] = useState<"en" | "vi">("en");
   const [activeCategory, setActiveCategory] = useState<string>("all");
   
+  // Listen for language change event
   useEffect(() => {
     const handleLanguageChange = (event: CustomEvent) => {
       if (event.detail && event.detail.language) {
@@ -302,6 +308,7 @@ const DynamicListingGrid = () => {
     
     window.addEventListener('languageChanged', handleLanguageChange as EventListener);
     
+    // Get initial language preference
     const storedLanguage = localStorage.getItem('emvi_language_preference');
     if (storedLanguage === 'vi' || storedLanguage === 'en') {
       setLanguage(storedLanguage as "en" | "vi");

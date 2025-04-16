@@ -1,29 +1,47 @@
+
 export const heroImages = [
   // Nail technician images (prioritized - approximately 50%)
   {
-    url: "/lovable-uploads/309a44f7-5049-447f-b754-f5d0e0489098.png",
+    url: "/lovable-uploads/1b5ea814-ad33-4a65-b01e-6c406c98ffc1.png",
     alt: "Close-up of manicurist applying nail polish with precision"
   },
   {
-    url: "/lovable-uploads/f97a440a-ebc5-4ac9-8b59-e8514a7bd514.png",
+    url: "/lovable-uploads/253b19a3-141f-40c7-9cce-fc10464f0615.png",
     alt: "Person getting a professional manicure with blue gloves"
   },
   {
-    url: "/lovable-uploads/5a445a21-8d55-4ad1-a31e-fff7b5f34852.png",
+    url: "/lovable-uploads/9f39ea95-e42c-4f4e-89a9-b44cb4e215e2.png",
     alt: "Close-up of nail technician applying polish to client's nails"
   },
   {
-    url: "/lovable-uploads/9e679247-cf36-42c8-a8ba-0cb0e44ea72a.png", 
+    url: "/lovable-uploads/e930cd80-e3b9-4783-a57c-9486ffa34cdf.png", 
     alt: "Manicurist working on client's nails in a pink salon setting"
   },
   {
-    url: "https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+    url: "/lovable-uploads/68440114-1848-438a-8b69-5667e8d9ec77.png",
     alt: "Close-up of hands with beautiful nail polish application"
   },
   {
-    url: "https://images.unsplash.com/photo-1517433367423-c7e5b0f35086?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
+    url: "/lovable-uploads/264f30fa-7e38-43a5-957e-7171f5e9160e.png", 
     alt: "Close-up of nail technician with pink gloves applying nail polish"
   },
+  {
+    url: "/lovable-uploads/9d6f82f3-66a2-4ff3-bdd8-7b7cd561bf8f.png", 
+    alt: "Nail technician with black gloves working on client's nails"
+  },
+  {
+    url: "/lovable-uploads/7d585be5-b70d-4d65-b57f-803de81839ba.png", 
+    alt: "Group of hands with various nail designs arranged in a circle"
+  },
+  {
+    url: "/lovable-uploads/5af131ca-038f-40e6-892a-502d1e822395.png", 
+    alt: "Nail technician preparing client's hand for manicure"
+  },
+  {
+    url: "/lovable-uploads/e603b7f1-096e-4b5f-a826-8d014a9a9446.png", 
+    alt: "Nail professional giving a pedicure with purple gloves"
+  },
+  
   // Hair styling images
   {
     url: "/lovable-uploads/a3c08446-c1cb-492d-a361-7ec4aca18cfd.png",
