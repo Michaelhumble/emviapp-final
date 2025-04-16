@@ -49,6 +49,23 @@ export const SalonSaleCard = ({
     return null;
   };
 
+  // Determine the appropriate fallback image based on business type
+  const getFallbackImage = () => {
+    const businessType = salon.business_type?.toLowerCase() || '';
+    
+    if (businessType.includes('nail')) {
+      return "https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=2070&fit=crop&auto=format";
+    } else if (businessType.includes('hair')) {
+      return "https://images.unsplash.com/photo-1633681926022-84c23e8cb3d6?q=80&w=1976&fit=crop&auto=format";
+    } else if (businessType.includes('spa')) {
+      return "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=2070&fit=crop&auto=format";
+    } else if (businessType.includes('barber')) {
+      return "https://images.unsplash.com/photo-1587909209111-5097ee578ec3?q=80&w=2070&fit=crop&auto=format";
+    }
+    
+    return "https://images.unsplash.com/photo-1613843351058-1dd06fccdc6a?q=80&w=2070&fit=crop&auto=format";
+  };
+
   return (
     <Card 
       className={`overflow-hidden transition-shadow hover:shadow-md h-full flex flex-col ${
@@ -79,8 +96,8 @@ export const SalonSaleCard = ({
           src={getThumbnailUrl()}
           alt={salon.salon_name || "Salon for sale"}
           className="w-full h-full object-cover"
-          fallbackImage="https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800"
-          businessName={salon.salon_name}
+          fallbackImage={getFallbackImage()}
+          businessName={salon.salon_name || salon.business_type || "Salon"}
           loading="lazy"
         />
       </div>

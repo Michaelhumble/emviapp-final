@@ -1,4 +1,3 @@
-
 import { Job } from "@/types/job";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -54,16 +53,17 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
 
   const isVietnameseSalon = salon.vietnamese_description || (salon.id && salon.id.startsWith('vn-salon'));
 
-  // Determine appropriate fallback image based on business type
   const getFallbackImage = () => {
     if (salon.salon_type === "nail") {
-      return "https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=800";
+      return "https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=2070&fit=crop&auto=format";
     } else if (salon.salon_type === "hair") {
-      return "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800";
+      return "https://images.unsplash.com/photo-1633681926022-84c23e8cb3d6?q=80&w=1976&fit=crop&auto=format";
     } else if (salon.salon_type === "spa") {
-      return "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=800";
+      return "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=2070&fit=crop&auto=format";
+    } else if (salon.asking_price || salon.for_sale) {
+      return "https://images.unsplash.com/photo-1613843351058-1dd06fccdc6a?q=80&w=2070&fit=crop&auto=format";
     }
-    return "https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=800";
+    return "https://images.unsplash.com/photo-1607008829749-c0f284a49841?q=80&w=2070&fit=crop&auto=format";
   };
 
   return (
@@ -77,7 +77,7 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
         <div className="mb-4 aspect-video w-full h-40 overflow-hidden rounded-md">
           <ImageWithFallback
             src={salon.image}
-            alt={sanitizedCompany || "Salon for Sale"}
+            alt={sanitizedCompany || "Salon listing"}
             className="h-full w-full object-cover"
             fallbackImage={getFallbackImage()}
             businessName={sanitizedCompany}
@@ -86,7 +86,7 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
         
         <div className="flex-grow">
           <div className="flex justify-between items-start">
-            <h3 className="font-medium text-lg font-serif line-clamp-1">{sanitizedCompany || "Salon for Sale"}</h3>
+            <h3 className="font-medium text-lg font-serif line-clamp-1">{sanitizedCompany || "Salon listing"}</h3>
             <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-200 whitespace-nowrap">
               For Sale
             </Badge>

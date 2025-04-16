@@ -8,16 +8,19 @@ interface ImageWithFallbackProps extends React.ImgHTMLAttributes<HTMLImageElemen
   fallbackImage?: string;
 }
 
-// Enhanced default fallback images for different business types
-const FALLBACK_IMAGES = {
-  default: "https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=800",
-  salon: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800",
-  restaurant: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=800",
-  nail: "https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=800",
-  spa: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=800",
-  barber: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?q=80&w=800",
-  tattoo: "https://images.unsplash.com/photo-1583516537377-affb9e9f4e53?q=80&w=800",
-  coffee: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=800"
+// Beautiful, high-quality fallback images for different salon types
+const PREMIUM_FALLBACK_IMAGES = {
+  default: "https://images.unsplash.com/photo-1607008829749-c0f284a49841?q=80&w=2070&fit=crop&auto=format",
+  salon: "https://images.unsplash.com/photo-1633681926022-84c23e8cb3d6?q=80&w=1976&fit=crop&auto=format",
+  nails: "https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=2070&fit=crop&auto=format",
+  hair: "https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=2069&fit=crop&auto=format",
+  spa: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=2070&fit=crop&auto=format",
+  barber: "https://images.unsplash.com/photo-1587909209111-5097ee578ec3?q=80&w=2070&fit=crop&auto=format",
+  restaurant: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=2074&fit=crop&auto=format",
+  beauty: "https://images.unsplash.com/photo-1598452963314-b09f397a5c48?q=80&w=2070&fit=crop&auto=format",
+  booth: "https://images.unsplash.com/photo-1571646034647-52e6ea84b28c?q=80&w=2070&fit=crop&auto=format",
+  forSale: "https://images.unsplash.com/photo-1613843351058-1dd06fccdc6a?q=80&w=2070&fit=crop&auto=format",
+  coffee: "https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?q=80&w=2070&fit=crop&auto=format"
 };
 
 const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
@@ -32,93 +35,100 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   const [error, setError] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [finalSrc, setFinalSrc] = useState<string | undefined>(src);
+  const [fallbackAttempted, setFallbackAttempted] = useState(false);
 
-  // Determine the most appropriate fallback image based on business name or type
-  const getFallbackImage = () => {
-    if (fallbackImage) return fallbackImage;
+  // More robust business type detection based on business name
+  const getBusinessTypeFromName = (name: string): string => {
+    name = name.toLowerCase();
     
-    const lowerBusinessName = businessName?.toLowerCase() || '';
-    
-    if (lowerBusinessName.includes('nail') || lowerBusinessName.includes('manicure')) {
-      return FALLBACK_IMAGES.nail;
-    } else if (lowerBusinessName.includes('spa') || lowerBusinessName.includes('massage')) {
-      return FALLBACK_IMAGES.spa;
-    } else if (lowerBusinessName.includes('salon') || lowerBusinessName.includes('hair')) {
-      return FALLBACK_IMAGES.salon;
-    } else if (lowerBusinessName.includes('restaurant') || lowerBusinessName.includes('café') || 
-               lowerBusinessName.includes('cafe') || lowerBusinessName.includes('food')) {
-      return FALLBACK_IMAGES.restaurant;
-    } else if (lowerBusinessName.includes('barber') || lowerBusinessName.includes('cut')) {
-      return FALLBACK_IMAGES.barber;
-    } else if (lowerBusinessName.includes('tattoo') || lowerBusinessName.includes('ink')) {
-      return FALLBACK_IMAGES.tattoo;
-    } else if (lowerBusinessName.includes('coffee') || lowerBusinessName.includes('tea') || 
-               lowerBusinessName.includes('boba')) {
-      return FALLBACK_IMAGES.coffee;
+    if (name.includes('nail') || name.includes('manicure') || name.includes('pedicure')) {
+      return 'nails';
+    } else if (name.includes('spa') || name.includes('massage') || name.includes('facial')) {
+      return 'spa';
+    } else if (name.includes('hair') || name.includes('salon') || name.includes('stylist')) {
+      return 'hair';
+    } else if (name.includes('barber') || name.includes('cut') || name.includes('trim')) {
+      return 'barber';
+    } else if (name.includes('restaurant') || name.includes('café') || name.includes('cafe') || 
+               name.includes('food') || name.includes('bistro') || name.includes('diner')) {
+      return 'restaurant';
+    } else if (name.includes('booth') || name.includes('station') || name.includes('chair rental')) {
+      return 'booth';
+    } else if (name.includes('coffee') || name.includes('tea') || name.includes('boba')) {
+      return 'coffee';
+    } else if (name.includes('for sale') || name.includes('buy') || name.includes('offer')) {
+      return 'forSale';
     }
     
-    return FALLBACK_IMAGES.default;
+    return 'default';
   };
+
+  // Determine the most appropriate fallback image based on business name or provided fallback
+  const getFallbackImageUrl = (): string => {
+    // Use provided fallback if it exists
+    if (fallbackImage) return fallbackImage;
+    
+    // Or determine based on business name
+    if (businessName) {
+      const businessType = getBusinessTypeFromName(businessName);
+      return PREMIUM_FALLBACK_IMAGES[businessType] || PREMIUM_FALLBACK_IMAGES.default;
+    }
+    
+    return PREMIUM_FALLBACK_IMAGES.default;
+  };
+
+  // Reset component state when src changes
+  useEffect(() => {
+    if (src !== finalSrc && !fallbackAttempted) {
+      setError(false);
+      setLoaded(false);
+      setFinalSrc(src);
+    }
+  }, [src, finalSrc, fallbackAttempted]);
 
   // Handle the case when src is null, undefined, or empty string
   useEffect(() => {
     if (!src || src === '') {
-      setError(true);
-    } else {
-      setFinalSrc(src);
-      setError(false);
-      setLoaded(false);
+      handleImageError();
     }
   }, [src]);
 
-  // Generate a reliable alt text
-  const altText = alt || (businessName ? `${businessName} image` : "Business image");
+  const handleImageError = () => {
+    if (!fallbackAttempted) {
+      console.log("Image failed to load, using fallback:", finalSrc);
+      setError(true);
+      setLoaded(false);
+      setFinalSrc(getFallbackImageUrl());
+      setFallbackAttempted(true);
+    } else {
+      // If fallback also fails, use the default fallback
+      console.log("Fallback image also failed, using default fallback");
+      setFinalSrc(PREMIUM_FALLBACK_IMAGES.default);
+    }
+  };
 
-  if (error) {
-    // If there's an error with the original image, show the fallback
-    return (
-      <div className={`${className} ${fallbackClassName} overflow-hidden`}>
-        <img 
-          src={getFallbackImage()}
-          alt={altText}
-          className="w-full h-full object-cover"
-          onError={() => {
-            console.log("Fallback image failed to load, using default fallback");
-            // If even the fallback fails, use the default one
-            if (getFallbackImage() !== FALLBACK_IMAGES.default) {
-              setFinalSrc(FALLBACK_IMAGES.default);
-            } else {
-              // If default also fails, show a user icon
-              setError(true);
-              setLoaded(true);
-            }
-          }}
-          onLoad={() => setLoaded(true)}
-          {...props}
-        />
-      </div>
-    );
-  }
+  // Generate reliable alt text for accessibility
+  const getAltText = (): string => {
+    if (alt && alt !== "") return alt;
+    if (businessName) return `${businessName} image`;
+    return "Salon listing image";
+  };
 
   return (
     <div className={`${className} relative overflow-hidden`}>
       {/* Loading state */}
       {!loaded && (
-        <div className={`absolute inset-0 ${fallbackClassName} flex items-center justify-center bg-gray-100 animate-pulse`}>
-          <User className="h-1/5 w-1/5 text-muted-foreground opacity-20" />
+        <div className={`absolute inset-0 ${fallbackClassName} flex items-center justify-center bg-gray-100`}>
+          <div className="w-12 h-12 rounded-full animate-pulse bg-gray-200"></div>
         </div>
       )}
       
       {/* Actual image */}
       <img
         src={finalSrc}
-        alt={altText}
+        alt={getAltText()}
         className={`w-full h-full object-cover transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
-        onError={() => {
-          console.log("Image failed to load:", finalSrc);
-          setError(true);
-          setLoaded(false);
-        }}
+        onError={handleImageError}
         onLoad={() => setLoaded(true)}
         {...props}
       />

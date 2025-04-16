@@ -34,11 +34,15 @@ const JobListingCard = ({
   // Determine appropriate fallback image based on job type
   const getFallbackImage = () => {
     if (job.employment_type?.toLowerCase().includes('sale')) {
-      return "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800";
+      return "https://images.unsplash.com/photo-1613843351058-1dd06fccdc6a?q=80&w=2070&fit=crop&auto=format";
     } else if (job.employment_type?.toLowerCase().includes('part')) {
-      return "https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=800";
+      return "https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=2069&fit=crop&auto=format";
+    } else if (job.specialties?.some(s => s.toLowerCase().includes('nail'))) {
+      return "https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=2070&fit=crop&auto=format";
+    } else if (job.specialties?.some(s => s.toLowerCase().includes('hair'))) {
+      return "https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=2070&fit=crop&auto=format";
     }
-    return "https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=800";
+    return "https://images.unsplash.com/photo-1607008829749-c0f284a49841?q=80&w=2070&fit=crop&auto=format";
   };
 
   return (
@@ -49,17 +53,15 @@ const JobListingCard = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {job.image && (
-        <div className="aspect-video w-full overflow-hidden">
-          <ImageWithFallback
-            src={job.image}
-            alt={job.title || "Job listing"}
-            className="w-full h-full object-cover"
-            fallbackImage={getFallbackImage()}
-            businessName={job.company}
-          />
-        </div>
-      )}
+      <div className="aspect-video w-full overflow-hidden">
+        <ImageWithFallback
+          src={job.image}
+          alt={job.title || "Job listing"}
+          className="w-full h-full object-cover"
+          fallbackImage={getFallbackImage()}
+          businessName={job.company}
+        />
+      </div>
       
       <CardContent className="p-6 flex flex-col h-full">
         <JobCardHeader job={job} />
