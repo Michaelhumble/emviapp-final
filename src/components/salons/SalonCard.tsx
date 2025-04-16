@@ -1,3 +1,4 @@
+
 import { Job } from "@/types/job";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -69,21 +70,21 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
         
         <div className="flex-grow">
           <div className="flex justify-between items-start">
-            <h3 className="font-medium text-lg font-serif">{sanitizedCompany || "Salon for Sale"}</h3>
-            <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-200">
+            <h3 className="font-medium text-lg font-serif line-clamp-1">{sanitizedCompany || "Salon for Sale"}</h3>
+            <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-200 whitespace-nowrap">
               For Sale
             </Badge>
           </div>
           
           <div className="mt-2 space-y-2 text-sm">
             <div className="flex items-center text-gray-600">
-              <MapPin className="h-4 w-4 mr-2 text-gray-400" />
-              <span>{sanitizedLocation || "Location not specified"}</span>
+              <MapPin className="h-4 w-4 mr-2 text-gray-400 shrink-0" />
+              <span className="line-clamp-1">{sanitizedLocation || "Location not specified"}</span>
             </div>
             
             {salon.asking_price && (
               <div className="flex items-center text-gray-600">
-                <DollarSign className="h-4 w-4 mr-2 text-gray-400" />
+                <DollarSign className="h-4 w-4 mr-2 text-gray-400 shrink-0" />
                 <span>Asking: {formatCurrency(salon.asking_price)}</span>
               </div>
             )}

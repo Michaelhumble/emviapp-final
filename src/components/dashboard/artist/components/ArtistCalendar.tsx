@@ -1,492 +1,275 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useArtistCalendar } from "@/hooks/useArtistCalendar";
-import { CalendarDays, ChevronLeft, ChevronRight, Clock, Info, UserPlus, X, Calendar as CalendarIcon, Plus, Phone } from "lucide-react";
-import { format, parseISO, addDays, subDays, isSameDay, isToday, startOfDay, endOfDay } from "date-fns";
-import { useState, useRef, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+
+import React, { useState } from 'react';
 import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
-import { toast } from "sonner";
-import { ManualBookingDialog } from "../calendar/ManualBookingDialog";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/context/auth";
-import { Appointment } from "@/hooks/calendar/useAppointments";
+import { Button } from "@/components/ui/button";
+import { Plus, Calendar, Clock, User, Film, Phone } from "lucide-react";
+import { format, addDays, startOfWeek, addWeeks, subWeeks, parseISO, differenceInMinutes } from 'date-fns';
+import { Card } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useAppointments } from "@/hooks/useAppointments";
+import { Appointment } from "@/types/appointment";
+import { ManualBookingDialog } from '../calendar/ManualBookingDialog';
 
-const TIME_SLOTS = Array.from({ length: 32 }, (_, i) => i + 6); // 6 AM to 10 PM
+// Type definition for a time slot
+interface TimeSlot {
+  hour: number;
+  minute: number;
+  label: string;
+}
 
-const ArtistCalendar = () => {
-  const { 
-    appointments, 
-    blockedTimes,
-    deleteAppointment,
-    deleteBlockedTime
-  } = useArtistCalendar();
-  
-  const { user: auth } = useAuth();
-  const [visibleDays, setVisibleDays] = useState(window.innerWidth >= 768 ? 3 : 1);
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedBooking, setSelectedBooking] = useState<any>(null);
-  const [showEmptyDays, setShowEmptyDays] = useState(true);
-  const calendarRef = useRef<HTMLDivElement>(null);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  const [isManualBookingOpen, setIsManualBookingOpen] = useState(false);
-  
-  const { data: services } = useQuery({
-    queryKey: ['services'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('services')
-        .select('id, title, duration_minutes')
-        .eq('user_id', auth?.id);
-      
-      if (error) throw error;
-      return data || [];
+// Helper function to generate time slots
+const generateTimeSlots = (): TimeSlot[] => {
+  const slots: TimeSlot[] = [];
+  for (let hour = 9; hour <= 20; hour++) {
+    for (let minute = 0; minute < 60; minute += 30) {
+      slots.push({
+        hour,
+        minute,
+        label: `${hour % 12 === 0 ? 12 : hour % 12}:${minute === 0 ? '00' : minute} ${hour >= 12 ? 'PM' : 'AM'}`
+      });
     }
+  }
+  return slots;
+};
+
+const timeSlots = generateTimeSlots();
+
+// Component for a single day column in the calendar
+const DayColumn = ({ 
+  date, 
+  appointments = [],
+  onBookingSelect
+}: { 
+  date: Date; 
+  appointments: Appointment[];
+  onBookingSelect: (appointment: Appointment) => void;
+}) => {
+  // Format appointments for this day
+  const filteredAppointments = appointments.filter(appointment => {
+    const appointmentDate = parseISO(appointment.start_time);
+    return appointmentDate.getDate() === date.getDate() &&
+           appointmentDate.getMonth() === date.getMonth() &&
+           appointmentDate.getFullYear() === date.getFullYear();
   });
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1280) {
-        setVisibleDays(5);
-      } else if (window.innerWidth >= 768) {
-        setVisibleDays(3);
-      } else {
-        setVisibleDays(1);
-      }
-    };
-    
-    window.addEventListener('resize', handleResize);
-    handleResize();
-    
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-  
-  const days = Array.from({ length: visibleDays }, (_, i) => 
-    addDays(currentDate, i)
-  );
-  
-  const goToPreviousDay = () => setCurrentDate(prev => subDays(prev, visibleDays));
-  const goToNextDay = () => setCurrentDate(prev => addDays(prev, visibleDays));
-  const goToToday = () => setCurrentDate(new Date());
-  
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-  
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-  
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
-    
-    if (isLeftSwipe) {
-      goToNextDay();
-    } else if (isRightSwipe) {
-      goToPreviousDay();
-    }
-    
-    setTouchStart(null);
-    setTouchEnd(null);
-  };
-  
-  const getAppointmentsForDay = (day: Date) => {
-    return appointments.filter(appointment => 
-      isSameDay(parseISO(appointment.start_time), day)
-    ).sort((a, b) => 
-      new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
-    );
-  };
-  
-  const getBlockedTimesForDay = (day: Date) => {
-    return blockedTimes.filter(blocked => 
-      isSameDay(parseISO(blocked.start_time), day)
-    ).sort((a, b) => 
-      new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
-    );
-  };
-  
-  const getAppointmentStyle = (appointment: any) => {
-    const startTime = parseISO(appointment.start_time);
-    const endTime = parseISO(appointment.end_time);
-    
-    const startHour = startTime.getHours() + startTime.getMinutes() / 60;
-    const endHour = endTime.getHours() + endTime.getMinutes() / 60;
-    
-    const topPosition = Math.max(0, (startHour - 6) * 60);
-    
-    const height = Math.max(30, (endHour - startHour) * 60);
-    
-    return {
-      top: `${topPosition}px`,
-      height: `${height}px`
-    };
-  };
-  
-  const handleAppointmentClick = (appointment: any) => {
-    setSelectedBooking(appointment);
-  };
-  
-  const closePreview = () => {
-    setSelectedBooking(null);
-  };
-  
-  const dayHasAppointments = (day: Date) => {
-    return getAppointmentsForDay(day).length > 0 || getBlockedTimesForDay(day).length > 0;
-  };
-  
-  const visibleDaysArray = !showEmptyDays 
-    ? days.filter(day => dayHasAppointments(day))
-    : days;
-  
-  const displayDays = visibleDaysArray.length > 0 ? visibleDaysArray : [days[0]];
-  
-  const handleDeleteAppointment = async (id: string) => {
-    try {
-      await deleteAppointment(id);
-      setSelectedBooking(null);
-    } catch (error) {
-      console.error("Error deleting appointment:", error);
-    }
-  };
-  
-  const handleDeleteBlockedTime = async (id: string) => {
-    try {
-      await deleteBlockedTime(id);
-      setSelectedBooking(null);
-    } catch (error) {
-      console.error("Error deleting blocked time:", error);
-    }
-  };
-  
-  const handleSaveManualBooking = async (bookingData: any) => {
-    try {
-      const { data, error } = await supabase
-        .from('appointments')
-        .insert([{
-          ...bookingData,
-          artist_id: auth?.id,
-          customer_id: null,
-          is_manual: true
-        }]);
-
-      if (error) throw error;
-      toast.success('Manual booking added successfully');
-      setIsManualBookingOpen(false);
-    } catch (error) {
-      console.error('Error adding manual booking:', error);
-      toast.error('Failed to add manual booking');
-    }
-  };
-
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <CardTitle className="text-xl flex items-center">
-            <CalendarDays className="h-5 w-5 text-blue-500 mr-2" />
-            Calendar
-          </CardTitle>
-          <div className="flex flex-wrap items-center gap-2">
-            <Button 
-              variant="default" 
-              size="sm" 
-              className="bg-purple-600 hover:bg-purple-700"
-              onClick={() => setIsManualBookingOpen(true)}
-            >
-              <Plus className="h-4 w-4 mr-1" />
-              Add Manual Booking
-            </Button>
-
-            <Button variant="outline" size="sm" onClick={goToPreviousDay}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="sm" onClick={goToToday}>
-              Today
-            </Button>
-            <Button variant="outline" size="sm" onClick={goToNextDay}>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <div className="flex items-center ml-2">
-              <label htmlFor="show-empty-days" className="text-sm text-muted-foreground mr-2">
-                Show Empty Days
-              </label>
-              <input
-                id="show-empty-days"
-                type="checkbox" 
-                checked={showEmptyDays}
-                onChange={() => setShowEmptyDays(!showEmptyDays)}
-                className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-              />
+    <div className="min-w-[150px] flex-1">
+      <div className="text-center p-2 border-b font-medium">
+        <div className="text-sm">{format(date, 'EEE')}</div>
+        <div>{format(date, 'MMM d')}</div>
+      </div>
+      <div className="h-[600px] overflow-y-auto relative">
+        {timeSlots.map((slot, idx) => (
+          <div key={idx} className="border-b border-gray-100 h-[50px] relative">
+            <div className="absolute left-0 text-xs text-gray-400 px-1">
+              {idx % 2 === 0 && slot.label}
             </div>
           </div>
-        </div>
-      </CardHeader>
-      
-      <CardContent>
-        <div className="mb-3 flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">
-            {format(currentDate, "MMMM yyyy")}
-          </div>
-        </div>
+        ))}
         
-        <div 
-          className="relative overflow-x-auto" 
-          ref={calendarRef}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
-          <div className="flex border-b">
-            <div className="w-16 shrink-0 border-r bg-muted/30 px-2">
-              <div className="h-14"></div>
-            </div>
-            
-            {displayDays.map((day, dayIndex) => {
-              const isCurrentDay = isToday(day);
-              const dayAppointments = getAppointmentsForDay(day);
-              
-              return (
-                <div 
-                  key={dayIndex}
-                  className={cn(
-                    "min-w-[200px] flex-1 border-r px-1 text-center",
-                    isCurrentDay && "bg-blue-50"
-                  )}
-                >
-                  <div className="py-2">
-                    <div className={cn(
-                      "inline-flex h-8 w-8 items-center justify-center rounded-full text-sm",
-                      isCurrentDay && "bg-blue-600 text-white font-medium"
-                    )}>
-                      {format(day, "d")}
-                    </div>
-                    <div className="text-sm font-medium">
-                      {format(day, "EEE")}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {dayAppointments.length} {dayAppointments.length === 1 ? 'appt' : 'appts'}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+        {filteredAppointments.map((appointment) => {
+          const startTime = parseISO(appointment.start_time);
+          const endTime = parseISO(appointment.end_time);
+          const durationMinutes = differenceInMinutes(endTime, startTime);
+          const startHour = startTime.getHours();
+          const startMinute = startTime.getMinutes();
           
-          <div className="flex h-[960px]">
-            <div className="w-16 shrink-0 border-r bg-muted/30">
-              {TIME_SLOTS.filter(hour => hour % 2 === 0).map((hour) => (
-                <div 
-                  key={hour} 
-                  className="relative h-[120px]"
-                >
-                  <div className="absolute -top-2.5 left-0 right-0 text-xs text-muted-foreground text-center">
-                    {hour % 12 === 0 ? 12 : hour % 12} {hour >= 12 ? 'PM' : 'AM'}
+          // Calculate position
+          const minutesSince9AM = (startHour - 9) * 60 + startMinute;
+          const topPosition = (minutesSince9AM / 30) * 50;
+          const height = (durationMinutes / 30) * 50;
+          
+          // Determine style based on type or status
+          const isManual = appointment.is_manual;
+          const bgColor = isManual 
+            ? 'bg-purple-100 border-purple-300 text-purple-800' 
+            : appointment.status === 'confirmed' 
+              ? 'bg-green-100 border-green-300 text-green-800'
+              : 'bg-blue-100 border-blue-300 text-blue-800';
+          
+          return (
+            <Card
+              key={appointment.id}
+              className={`absolute left-0 right-0 mx-1 p-1 rounded cursor-pointer overflow-hidden shadow-sm ${bgColor}`}
+              style={{
+                top: `${topPosition}px`,
+                height: `${height}px`,
+                minHeight: '25px'
+              }}
+              onClick={() => onBookingSelect(appointment)}
+            >
+              <div className="flex flex-col h-full overflow-hidden">
+                <div className="flex justify-between items-start">
+                  <div className="font-medium text-xs truncate">
+                    {isManual && <Phone className="h-3 w-3 inline mr-1" />}
+                    {appointment.customer_name}
                   </div>
-                </div>
-              ))}
-            </div>
-            
-            {displayDays.map((day, dayIndex) => {
-              const dayAppointments = getAppointmentsForDay(day);
-              const dayBlockedTimes = getBlockedTimesForDay(day);
-              
-              return (
-                <div 
-                  key={dayIndex}
-                  className={cn(
-                    "relative min-w-[200px] flex-1 border-r",
-                    isToday(day) && "bg-blue-50/30"
-                  )}
-                >
-                  {TIME_SLOTS.map((hour) => (
-                    <div 
-                      key={hour}
-                      className="border-b h-[30px] border-gray-100"
-                    />
-                  ))}
-                  
-                  {dayAppointments.map((appointment) => {
-                    const style = getAppointmentStyle(appointment);
-                    const isConfirmed = appointment.status === 'confirmed';
-                    const isManual = appointment.is_manual;
-                    
-                    return (
-                      <div
-                        key={appointment.id}
-                        className={cn(
-                          "absolute left-1 right-1 rounded-md px-2 py-1 shadow-sm cursor-pointer transition-all hover:shadow-md",
-                          isManual
-                            ? "bg-purple-50 border border-purple-200"
-                            : isConfirmed 
-                              ? "bg-green-50 border border-green-200" 
-                              : "bg-amber-50 border border-amber-200"
-                        )}
-                        style={style}
-                        onClick={() => handleAppointmentClick(appointment)}
-                      >
-                        <div className="text-xs font-medium truncate">
-                          {format(parseISO(appointment.start_time), "h:mm a")}
-                        </div>
-                        <div className="text-xs font-medium truncate">
-                          {appointment.services?.title || "Service"}
-                        </div>
-                        <div className="text-xs truncate flex items-center">
-                          {isManual && <Phone className="h-3 w-3 mr-1 text-purple-600" />}
-                          {appointment.customer_name || "Client"}
-                        </div>
-                        <div className="mt-1 flex items-center gap-1">
-                          <Badge variant="outline" className={cn(
-                            "text-[10px] py-0 h-4",
-                            isManual 
-                              ? "bg-purple-100 text-purple-800"
-                              : isConfirmed 
-                                ? "bg-green-100 text-green-800" 
-                                : "bg-amber-100 text-amber-800"
-                          )}>
-                            {isManual ? "Manual" : appointment.status}
-                          </Badge>
-                        </div>
-                      </div>
-                    );
-                  })}
-                  
-                  {dayBlockedTimes.map((blocked) => {
-                    const style = getAppointmentStyle(blocked);
-                    
-                    return (
-                      <div
-                        key={blocked.id}
-                        className="absolute left-1 right-1 rounded-md px-2 py-1 bg-gray-100 border border-gray-200 shadow-sm cursor-pointer"
-                        style={style}
-                        onClick={() => handleAppointmentClick(blocked)}
-                      >
-                        <div className="text-xs font-medium truncate">
-                          {format(parseISO(blocked.start_time), "h:mm a")}
-                        </div>
-                        <div className="text-xs text-gray-600 truncate">
-                          {blocked.reason || "Blocked"}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        
-        {selectedBooking && (
-          <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center" onClick={closePreview}>
-            <div className="bg-white rounded-lg shadow-lg p-4 max-w-md w-full mx-4 relative" onClick={e => e.stopPropagation()}>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="absolute right-2 top-2" 
-                onClick={closePreview}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-              
-              <div className="pt-2">
-                <h3 className="text-lg font-medium flex items-center">
-                  {'services' in selectedBooking 
-                    ? (selectedBooking.services?.title || "Appointment") 
-                    : (selectedBooking.reason || "Blocked Time")}
-                  {selectedBooking.is_manual && (
-                    <Badge className="ml-2 bg-purple-100 text-purple-800 border-purple-200">
-                      <Phone className="h-3 w-3 mr-1" />
+                  {isManual && (
+                    <Badge variant="outline" className="bg-purple-50 text-purple-700 text-[10px] px-1 py-0">
                       Manual
                     </Badge>
                   )}
-                </h3>
-                
-                <div className="mt-4 space-y-3">
-                  {'customer_name' in selectedBooking && (
-                    <div className="flex items-center">
-                      <UserPlus className="h-4 w-4 mr-2 text-muted-foreground" />
-                      <span className="text-sm">{selectedBooking.customer_name || "Unnamed Client"}</span>
-                    </div>
-                  )}
-                  
-                  <div className="flex items-center">
-                    <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-                    <span className="text-sm">
-                      {format(parseISO(selectedBooking.start_time), "EEE, MMM d, yyyy")} • 
-                      {format(parseISO(selectedBooking.start_time), " h:mm a")} - 
-                      {format(parseISO(selectedBooking.end_time), " h:mm a")}
-                    </span>
+                </div>
+                <div className="text-[10px] truncate mt-0.5">
+                  {format(startTime, 'h:mma')} - {format(endTime, 'h:mma')}
+                </div>
+                {height > 50 && (
+                  <div className="text-[10px] truncate">
+                    {appointment.services?.name || 'Service'}
                   </div>
-                  
-                  {'notes' in selectedBooking && selectedBooking.notes && (
-                    <div className="flex items-start">
-                      <Info className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground" />
-                      <span className="text-sm">{selectedBooking.notes}</span>
-                    </div>
-                  )}
-                  
-                  {'reason' in selectedBooking && selectedBooking.reason && (
-                    <div className="flex items-start">
-                      <Info className="h-4 w-4 mr-2 mt-0.5 text-muted-foreground" />
-                      <span className="text-sm">{selectedBooking.reason}</span>
-                    </div>
-                  )}
-                  
-                  <div className="flex items-center justify-between mt-6">
-                    {'status' in selectedBooking && (
-                      <Badge className={cn(
-                        selectedBooking.is_manual
-                          ? "bg-purple-100 text-purple-800 hover:bg-purple-200"
-                          : selectedBooking.status === 'confirmed' 
-                            ? "bg-green-100 text-green-800 hover:bg-green-200" 
-                            : "bg-amber-100 text-amber-800 hover:bg-amber-200"
-                      )}>
-                        {selectedBooking.is_manual ? "Manual" : selectedBooking.status}
-                      </Badge>
-                    )}
-                    
-                    <div className="flex gap-2">
-                      {'customer_name' in selectedBooking ? (
-                        <Button 
-                          size="sm" 
-                          variant="destructive" 
-                          onClick={() => handleDeleteAppointment(selectedBooking.id)}
-                        >
-                          Cancel
-                        </Button>
-                      ) : (
-                        <Button 
-                          size="sm" 
-                          variant="destructive"
-                          onClick={() => handleDeleteBlockedTime(selectedBooking.id)}
-                        >
-                          Remove Block
-                        </Button>
-                      )}
-                      <Button size="sm">Manage</Button>
-                    </div>
+                )}
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const ArtistCalendar = () => {
+  const [currentWeek, setCurrentWeek] = useState<Date>(startOfWeek(new Date(), { weekStartsOn: 0 }));
+  const [selectedBooking, setSelectedBooking] = useState<Appointment | null>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isManualBookingOpen, setIsManualBookingOpen] = useState(false);
+  
+  const { appointments, isLoading, error, refetch } = useAppointments();
+  
+  const handleNextWeek = () => {
+    setCurrentWeek(addWeeks(currentWeek, 1));
+  };
+  
+  const handlePreviousWeek = () => {
+    setCurrentWeek(subWeeks(currentWeek, 1));
+  };
+  
+  const handleBookingSelect = (appointment: Appointment) => {
+    setSelectedBooking(appointment);
+    setIsDetailsOpen(true);
+  };
+  
+  const handleManualBookingComplete = () => {
+    setIsManualBookingOpen(false);
+    refetch();
+  };
+  
+  // Generate the 7 days of the week
+  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(currentWeek, i));
+  
+  if (isLoading) {
+    return <div className="p-8 text-center">Loading calendar...</div>;
+  }
+  
+  if (error) {
+    return <div className="p-8 text-center text-red-500">Error loading appointments</div>;
+  }
+  
+  return (
+    <div className="bg-white rounded-lg shadow">
+      <div className="flex justify-between items-center p-4 border-b">
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={handlePreviousWeek}>
+            Previous
+          </Button>
+          <span className="font-medium">
+            {format(weekDays[0], 'MMM d')} - {format(weekDays[6], 'MMM d, yyyy')}
+          </span>
+          <Button variant="outline" size="sm" onClick={handleNextWeek}>
+            Next
+          </Button>
+        </div>
+        <Button 
+          variant="outline" 
+          className="flex items-center gap-1"
+          onClick={() => setIsManualBookingOpen(true)}
+        >
+          <Plus className="h-4 w-4" />
+          <span>Add Manual Booking</span>
+        </Button>
+      </div>
+      
+      <div className="overflow-x-auto">
+        <div className="flex min-w-[1050px]">
+          {weekDays.map((day, idx) => (
+            <DayColumn 
+              key={idx} 
+              date={day} 
+              appointments={appointments || []} 
+              onBookingSelect={handleBookingSelect}
+            />
+          ))}
+        </div>
+      </div>
+      
+      <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Booking Details</DialogTitle>
+          </DialogHeader>
+          
+          {selectedBooking && (
+            <div className="space-y-4">
+              <div className="flex items-start gap-4">
+                <div className="bg-gray-100 p-3 rounded-full">
+                  <User className="h-6 w-6 text-gray-500" />
+                </div>
+                <div>
+                  <h3 className="font-medium">{selectedBooking.customer_name}</h3>
+                  <p className="text-sm text-gray-500">{selectedBooking.customer_phone || 'No phone provided'}</p>
+                  <p className="text-sm text-gray-500">{selectedBooking.customer_email || 'No email provided'}</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-gray-400" />
+                  <div className="text-sm">
+                    {format(parseISO(selectedBooking.start_time), 'MMM d, yyyy')}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-gray-400" />
+                  <div className="text-sm">
+                    {format(parseISO(selectedBooking.start_time), 'h:mm a')} - {format(parseISO(selectedBooking.end_time), 'h:mm a')}
                   </div>
                 </div>
               </div>
+              
+              <div className="flex items-center gap-2">
+                <Film className="h-5 w-5 text-gray-400" />
+                <div>
+                  <div className="font-medium text-sm">Service</div>
+                  <div>{selectedBooking.services?.name || 'Service not specified'}</div>
+                </div>
+              </div>
+              
+              {selectedBooking.notes && (
+                <div className="bg-gray-50 p-3 rounded">
+                  <div className="font-medium text-sm mb-1">Notes</div>
+                  <p className="text-sm">{selectedBooking.notes}</p>
+                </div>
+              )}
+              
+              {selectedBooking.is_manual && (
+                <Badge className="bg-purple-100 text-purple-800 mt-2">
+                  <Phone className="h-3 w-3 mr-1" /> Manual Booking
+                </Badge>
+              )}
+              
+              <div className="flex justify-end gap-2 pt-2">
+                <Button variant="outline" onClick={() => setIsDetailsOpen(false)}>Close</Button>
+              </div>
             </div>
-          </div>
-        )}
-      </CardContent>
+          )}
+        </DialogContent>
+      </Dialog>
       
-      <ManualBookingDialog
-        isOpen={isManualBookingOpen}
-        onClose={() => setIsManualBookingOpen(false)}
-        onSave={handleSaveManualBooking}
-        services={services || []}
+      <ManualBookingDialog 
+        open={isManualBookingOpen} 
+        onOpenChange={setIsManualBookingOpen}
+        onComplete={handleManualBookingComplete}
       />
-    </Card>
+    </div>
   );
 };
 
