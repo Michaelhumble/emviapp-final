@@ -1,25 +1,35 @@
 
 import { motion } from "framer-motion";
-import { format, addDays, startOfWeek, isSameDay } from "date-fns";
+import { format, addDays, startOfWeek, isSameDay, parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { DayColumn } from "./DayColumn";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
 import { useArtistCalendar } from "@/hooks/useArtistCalendar";
+import { Booking } from "@/components/dashboard/artist/types/ArtistDashboardTypes";
 
 export const WeeklyCalendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 }); // Start from Monday
-  const { appointments, loading } = useArtistCalendar();
+  const { appointments, isLoadingAppointments, isLoadingBlockedTimes } = useArtistCalendar();
+  const loading = isLoadingAppointments || isLoadingBlockedTimes;
 
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
   const getBookingsForDay = (day: Date) => {
     return appointments.filter((booking) => {
-      const bookingDate = new Date(booking.date_requested);
-      return isSameDay(bookingDate, day);
-    });
+      // Check if the booking has the right property
+      if (booking.date_requested) {
+        const bookingDate = new Date(booking.date_requested);
+        return isSameDay(bookingDate, day);
+      } else if (booking.start_time) {
+        // Alternative: use start_time property if date_requested is not available
+        const bookingDate = parseISO(booking.start_time);
+        return isSameDay(bookingDate, day);
+      }
+      return false;
+    }) as Booking[];
   };
 
   return (

@@ -1,7 +1,7 @@
 
 import { motion } from "framer-motion";
 import { format, isSameDay } from "date-fns";
-import { Booking } from "@/types/booking";
+import { Booking } from "@/components/dashboard/artist/types/ArtistDashboardTypes";
 
 interface DayColumnProps {
   day: Date;
