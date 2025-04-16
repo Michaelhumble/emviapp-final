@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -76,20 +77,21 @@ export const SalonSaleCard = ({
         )}
         <ImageWithFallback
           src={getThumbnailUrl()}
-          alt={salon.salon_name}
+          alt={salon.salon_name || "Salon for sale"}
           className="w-full h-full object-cover"
-          fallbackImage="https://emvi.app/images/fallback-profile.jpg"
+          fallbackImage="https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800"
+          businessName={salon.salon_name}
           loading="lazy"
         />
       </div>
       <CardContent className="p-4 flex-1 flex flex-col">
-        <h3 className="text-xl font-semibold mb-2 truncate">
+        <h3 className="text-xl font-semibold mb-2 line-clamp-1">
           {salon.salon_name}
         </h3>
         <div className="flex items-center text-gray-500 mb-1">
           <MapPin className="h-4 w-4 mr-1 shrink-0" />
           <span className="text-sm truncate">
-            {salon.city}, {salon.state}
+            {salon.city}{salon.state ? `, ${salon.state}` : ''}
           </span>
         </div>
         <div className="flex items-center text-gray-500 mb-3">

@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { 
   Card, CardContent, CardHeader, CardTitle, CardDescription,
@@ -79,7 +80,8 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
                 alt={listing.title || "Listing"} 
                 className="h-full w-full object-cover transition-transform duration-500"
                 style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }}
-                fallbackImage="https://emvi.app/images/fallback-profile.jpg"
+                fallbackImage="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=800"
+                businessName={listing.company}
               />
             </div>
             <div className="absolute top-2 right-2">
@@ -100,14 +102,14 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
         <CardHeader className="pb-2">
           <div className="flex justify-between items-start">
             <div>
-              <CardTitle className="text-lg font-serif">
+              <CardTitle className="text-lg font-serif line-clamp-1">
                 {listing.title}
               </CardTitle>
-              <CardDescription className="font-medium text-base">
+              <CardDescription className="font-medium text-base line-clamp-1">
                 {listing.company}
               </CardDescription>
             </div>
-            <Badge className={`${isForSale ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'} font-medium`}>
+            <Badge className={`${isForSale ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'} font-medium whitespace-nowrap`}>
               {listing.employment_type}
             </Badge>
           </div>
@@ -115,38 +117,41 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
         
         <CardContent className="flex-grow">
           <div className="flex items-center text-sm text-gray-600 mb-2">
-            <MapPin className="h-4 w-4 mr-1.5" /> {listing.location}
+            <MapPin className="h-4 w-4 mr-1.5 flex-shrink-0" /> 
+            <span className="line-clamp-1">{listing.location}</span>
           </div>
           
           {listing.salary_range && (
             <div className="flex items-center text-sm text-gray-600 mb-2">
-              <DollarSign className="h-4 w-4 mr-1.5" /> {listing.salary_range}
+              <DollarSign className="h-4 w-4 mr-1.5 flex-shrink-0" /> 
+              <span className="line-clamp-1">{listing.salary_range}</span>
             </div>
           )}
           
           {listing.compensation_details && !listing.salary_range && (
             <div className="flex items-center text-sm text-gray-600 mb-2">
-              <DollarSign className="h-4 w-4 mr-1.5" /> {listing.compensation_details}
+              <DollarSign className="h-4 w-4 mr-1.5 flex-shrink-0" /> 
+              <span className="line-clamp-1">{listing.compensation_details}</span>
             </div>
           )}
           
           {listing.price && (
             <div className="flex items-center text-sm text-gray-700 mb-2">
-              <DollarSign className="h-4 w-4 mr-1.5" /> 
+              <DollarSign className="h-4 w-4 mr-1.5 flex-shrink-0" /> 
               <span className="font-medium">{listing.price}</span>
-              {listing.monthly_rent && <span className="text-gray-500 ml-2">| Rent: {listing.monthly_rent}</span>}
+              {listing.monthly_rent && <span className="text-gray-500 ml-2 line-clamp-1">| Rent: {listing.monthly_rent}</span>}
             </div>
           )}
           
           {isForSale && listing.reason_for_selling && (
             <div className="flex items-start text-sm text-gray-600 mb-2">
-              <Building className="h-4 w-4 mr-1.5 mt-0.5" /> 
-              <span>Reason: {listing.reason_for_selling}</span>
+              <Building className="h-4 w-4 mr-1.5 mt-0.5 flex-shrink-0" /> 
+              <span className="line-clamp-2">Reason: {listing.reason_for_selling}</span>
             </div>
           )}
           
           <div className="flex items-center text-sm text-gray-600 mb-3">
-            <Calendar className="h-4 w-4 mr-1.5" /> 
+            <Calendar className="h-4 w-4 mr-1.5 flex-shrink-0" /> 
             <span>Posted: {formatDate(listing.created_at)}</span>
           </div>
           
@@ -166,11 +171,16 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
             <div className="mb-3">
               <div className="text-xs font-medium text-gray-500 mb-1">SPECIALTIES:</div>
               <div className="flex flex-wrap gap-1.5">
-                {listing.specialties.map((specialty, i) => (
+                {listing.specialties.slice(0, 2).map((specialty, i) => (
                   <Badge key={i} variant="outline" className="text-xs bg-gray-50">
                     {specialty}
                   </Badge>
                 ))}
+                {listing.specialties.length > 2 && (
+                  <Badge variant="outline" className="text-xs bg-gray-50">
+                    +{listing.specialties.length - 2} more
+                  </Badge>
+                )}
               </div>
             </div>
           )}
@@ -179,11 +189,16 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
             <div className="mb-4">
               <div className="text-xs font-medium text-gray-500 mb-1">PERKS & FEATURES:</div>
               <div className="flex flex-wrap gap-1.5">
-                {perks.map((perk, i) => (
+                {perks.slice(0, 2).map((perk, i) => (
                   <Badge key={i} variant="outline" className="text-xs bg-green-50 text-green-800 border-green-100">
                     <CheckCircle2 className="h-3 w-3 mr-1" /> {perk}
                   </Badge>
                 ))}
+                {perks.length > 2 && (
+                  <Badge variant="outline" className="text-xs bg-green-50 text-green-800 border-green-100">
+                    +{perks.length - 2} more
+                  </Badge>
+                )}
               </div>
             </div>
           )}

@@ -8,6 +8,8 @@ interface ImageWithFallbackProps extends React.ImgHTMLAttributes<HTMLImageElemen
   fallbackImage?: string;
 }
 
+const defaultFallbackImage = "https://images.unsplash.com/photo-1600428853876-fb5a850b444f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80";
+
 const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   src, 
   alt, 
@@ -18,28 +20,43 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   ...props
 }) => {
   const [error, setError] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  // Use a more reliable fallback strategy
+  const actualFallbackImage = fallbackImage || defaultFallbackImage;
+  
+  // Generate a reliable alt text
+  const altText = alt || (businessName ? `${businessName} image` : "Image");
 
   return error ? (
-    fallbackImage ? (
+    <div className={`${className} ${fallbackClassName} overflow-hidden`}>
       <img 
-        src={fallbackImage} 
-        alt={alt || "Profile"} 
-        className={className}
+        src={actualFallbackImage} 
+        alt={altText}
+        className="w-full h-full object-cover"
+        onError={() => {
+          console.log("Even fallback image failed to load");
+          // If even the fallback fails, show the icon
+          setError(true);
+        }}
+      />
+    </div>
+  ) : (
+    <div className={`${className} relative overflow-hidden`}>
+      {!loaded && (
+        <div className={`absolute inset-0 ${fallbackClassName} flex items-center justify-center bg-gray-100 animate-pulse`}>
+          <User className="h-1/4 w-1/4 text-muted-foreground opacity-20" />
+        </div>
+      )}
+      <img
+        src={src || actualFallbackImage}
+        alt={altText}
+        className={`${className} object-cover w-full h-full transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        onError={() => setError(true)}
+        onLoad={() => setLoaded(true)}
         {...props}
       />
-    ) : (
-      <div className={`${className} ${fallbackClassName}`}>
-        <User className="h-1/2 w-1/2 text-muted-foreground opacity-50" />
-      </div>
-    )
-  ) : (
-    <img
-      src={src}
-      alt={alt}
-      className={className}
-      onError={() => setError(true)}
-      {...props}
-    />
+    </div>
   );
 };
 

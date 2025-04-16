@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Job } from "@/types/job";
@@ -38,6 +39,18 @@ const JobListingCard = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
+      {job.image && (
+        <div className="aspect-video w-full overflow-hidden">
+          <ImageWithFallback
+            src={job.image}
+            alt={job.title || "Job listing"}
+            className="w-full h-full object-cover"
+            fallbackImage="https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=800"
+            businessName={job.company}
+          />
+        </div>
+      )}
+      
       <CardContent className="p-6 flex flex-col h-full">
         <JobCardHeader job={job} />
         
