@@ -23,7 +23,7 @@ const SAMPLE_BOOTHS = [
     location: 'Downtown, Los Angeles, CA',
     price: 275,
     priceUnit: 'week',
-    imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800',
+    imageUrl: 'https://images.unsplash.com/photo-1571646034647-52e6ea84b28c?q=80&w=2070&auto=format&fit=crop',
     available: true
   },
   {
@@ -32,7 +32,7 @@ const SAMPLE_BOOTHS = [
     location: 'Beverly Hills, Los Angeles, CA',
     price: 300,
     priceUnit: 'week',
-    imageUrl: 'https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?q=80&w=800',
+    imageUrl: 'https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?q=80&w=2070&auto=format&fit=crop',
     available: true
   },
   {
@@ -41,7 +41,7 @@ const SAMPLE_BOOTHS = [
     location: 'Pasadena, CA',
     price: 225,
     priceUnit: 'week',
-    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=800',
+    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=2070&auto=format&fit=crop',
     available: true
   },
   {
@@ -50,7 +50,7 @@ const SAMPLE_BOOTHS = [
     location: 'Santa Monica, CA',
     price: 325,
     priceUnit: 'week',
-    imageUrl: 'https://images.unsplash.com/photo-1470259078422-826894b933aa?q=80&w=800',
+    imageUrl: 'https://images.unsplash.com/photo-1470259078422-826894b933aa?q=80&w=2070&auto=format&fit=crop',
     available: false
   },
 ];
@@ -74,6 +74,8 @@ const BoothsIndex = () => {
                   src={booth.imageUrl}
                   alt={booth.title}
                   className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                  businessName="Salon Booth"
+                  fallbackImage="https://images.unsplash.com/photo-1571646034647-52e6ea84b28c?q=80&w=2070&auto=format&fit=crop"
                 />
               </div>
               <CardHeader>

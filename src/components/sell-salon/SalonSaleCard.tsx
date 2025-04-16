@@ -51,19 +51,23 @@ export const SalonSaleCard = ({
 
   // Determine the appropriate fallback image based on business type
   const getFallbackImage = () => {
-    const businessType = salon.business_type?.toLowerCase() || '';
+    const businessType = (salon.business_type || '').toLowerCase();
     
     if (businessType.includes('nail')) {
-      return "https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=2070&fit=crop&auto=format";
+      return "https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=2070&auto=format&fit=crop";
     } else if (businessType.includes('hair')) {
-      return "https://images.unsplash.com/photo-1633681926022-84c23e8cb3d6?q=80&w=1976&fit=crop&auto=format";
+      return "https://images.unsplash.com/photo-1633681926022-84c23e8cb3d6?q=80&w=1976&auto=format&fit=crop";
     } else if (businessType.includes('spa')) {
-      return "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=2070&fit=crop&auto=format";
+      return "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=2070&auto=format&fit=crop";
     } else if (businessType.includes('barber')) {
-      return "https://images.unsplash.com/photo-1587909209111-5097ee578ec3?q=80&w=2070&fit=crop&auto=format";
+      return "https://images.unsplash.com/photo-1587909209111-5097ee578ec3?q=80&w=2070&auto=format&fit=crop";
+    } else if (businessType.includes('restaurant') || businessType.includes('food')) {
+      return "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=2074&auto=format&fit=crop";
+    } else if (businessType.includes('coffee') || businessType.includes('cafe')) {
+      return "https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?q=80&w=2070&auto=format&fit=crop";
     }
     
-    return "https://images.unsplash.com/photo-1613843351058-1dd06fccdc6a?q=80&w=2070&fit=crop&auto=format";
+    return "https://images.unsplash.com/photo-1613843351058-1dd06fccdc6a?q=80&w=2070&auto=format&fit=crop";
   };
 
   return (
@@ -103,7 +107,7 @@ export const SalonSaleCard = ({
       </div>
       <CardContent className="p-4 flex-1 flex flex-col">
         <h3 className="text-xl font-semibold mb-2 line-clamp-1">
-          {salon.salon_name}
+          {salon.salon_name || "Salon for sale"}
         </h3>
         <div className="flex items-center text-gray-500 mb-1">
           <MapPin className="h-4 w-4 mr-1 shrink-0" />

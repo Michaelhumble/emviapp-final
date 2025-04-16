@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { 
   Card, CardContent, CardHeader, CardTitle, CardDescription,
@@ -61,18 +62,26 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
   
   const getFallbackImage = () => {
     if (isForSale) {
-      return "https://images.unsplash.com/photo-1613843351058-1dd06fccdc6a?q=80&w=2070&fit=crop&auto=format";
+      return "https://images.unsplash.com/photo-1613843351058-1dd06fccdc6a?q=80&w=2070&auto=format&fit=crop";
     } else if (listing.employment_type?.toLowerCase().includes('part-time')) {
-      return "https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=2069&fit=crop&auto=format";
+      return "https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=2069&auto=format&fit=crop";
     } else if (listing.title?.toLowerCase().includes('wax') || listing.company?.toLowerCase().includes('spa')) {
-      return "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=2070&fit=crop&auto=format";
+      return "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=2070&auto=format&fit=crop";
     } else if (listing.title?.toLowerCase().includes('hair') || listing.company?.toLowerCase().includes('hair')) {
-      return "https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=2070&fit=crop&auto=format";
+      return "https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=2070&auto=format&fit=crop";
     } else if (listing.title?.toLowerCase().includes('nail') || listing.company?.toLowerCase().includes('nail')) {
-      return "https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=2070&fit=crop&auto=format";
+      return "https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=2070&auto=format&fit=crop";
+    } else if (listing.title?.toLowerCase().includes('barber') || listing.company?.toLowerCase().includes('barber')) {
+      return "https://images.unsplash.com/photo-1587909209111-5097ee578ec3?q=80&w=2070&auto=format&fit=crop";
+    } else if (listing.title?.toLowerCase().includes('restaurant') || listing.company?.toLowerCase().includes('restaurant')) {
+      return "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=2074&auto=format&fit=crop";
+    } else if (listing.title?.toLowerCase().includes('coffee') || listing.company?.toLowerCase().includes('coffee')) {
+      return "https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?q=80&w=2070&auto=format&fit=crop";
+    } else if (listing.title?.toLowerCase().includes('booth') || listing.company?.toLowerCase().includes('booth')) {
+      return "https://images.unsplash.com/photo-1571646034647-52e6ea84b28c?q=80&w=2070&auto=format&fit=crop";
     }
     
-    return "https://images.unsplash.com/photo-1607008829749-c0f284a49841?q=80&w=2070&fit=crop&auto=format";
+    return "https://images.unsplash.com/photo-1607008829749-c0f284a49841?q=80&w=2070&auto=format&fit=crop";
   };
 
   return (
@@ -117,14 +126,14 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
           <div className="flex justify-between items-start">
             <div>
               <CardTitle className="text-lg font-serif line-clamp-1">
-                {listing.title}
+                {listing.title || "Business Listing"}
               </CardTitle>
               <CardDescription className="font-medium text-base line-clamp-1">
-                {listing.company}
+                {listing.company || "Business Name"}
               </CardDescription>
             </div>
             <Badge className={`${isForSale ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'} font-medium whitespace-nowrap`}>
-              {listing.employment_type}
+              {listing.employment_type || "Listing"}
             </Badge>
           </div>
         </CardHeader>
@@ -132,7 +141,7 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
         <CardContent className="flex-grow">
           <div className="flex items-center text-sm text-gray-600 mb-2">
             <MapPin className="h-4 w-4 mr-1.5 flex-shrink-0" /> 
-            <span className="line-clamp-1">{listing.location}</span>
+            <span className="line-clamp-1">{listing.location || "Location not specified"}</span>
           </div>
           
           {listing.salary_range && (

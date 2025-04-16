@@ -1,3 +1,4 @@
+
 import { Job } from "@/types/job";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +31,8 @@ const nameReplacements: Record<string, string> = {
 };
 
 const sanitizeBusinessName = (name: string): string => {
+  if (!name) return "Business Listing";
+  
   let sanitized = name;
   
   Object.entries(nameReplacements).forEach(([original, replacement]) => {
@@ -54,16 +57,24 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
   const isVietnameseSalon = salon.vietnamese_description || (salon.id && salon.id.startsWith('vn-salon'));
 
   const getFallbackImage = () => {
-    if (salon.salon_type === "nail") {
-      return "https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=2070&fit=crop&auto=format";
-    } else if (salon.salon_type === "hair") {
-      return "https://images.unsplash.com/photo-1633681926022-84c23e8cb3d6?q=80&w=1976&fit=crop&auto=format";
-    } else if (salon.salon_type === "spa") {
-      return "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=2070&fit=crop&auto=format";
+    const businessType = salon.salon_type?.toLowerCase() || '';
+    
+    if (businessType.includes('nail') || sanitizedCompany.toLowerCase().includes('nail')) {
+      return "https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=2070&auto=format&fit=crop";
+    } else if (businessType.includes('hair') || sanitizedCompany.toLowerCase().includes('hair')) {
+      return "https://images.unsplash.com/photo-1633681926022-84c23e8cb3d6?q=80&w=1976&auto=format&fit=crop";
+    } else if (businessType.includes('spa') || sanitizedCompany.toLowerCase().includes('spa')) {
+      return "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=2070&auto=format&fit=crop";
+    } else if (businessType.includes('barber') || sanitizedCompany.toLowerCase().includes('barber')) {
+      return "https://images.unsplash.com/photo-1587909209111-5097ee578ec3?q=80&w=2070&auto=format&fit=crop";
+    } else if (sanitizedCompany.toLowerCase().includes('tea') || sanitizedCompany.toLowerCase().includes('boba')) {
+      return "https://images.unsplash.com/photo-1558857563-b371033873b8?q=80&w=2070&auto=format&fit=crop";
+    } else if (sanitizedCompany.toLowerCase().includes('bakery') || sanitizedCompany.toLowerCase().includes('bao')) {
+      return "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=2070&auto=format&fit=crop";
     } else if (salon.asking_price || salon.for_sale) {
-      return "https://images.unsplash.com/photo-1613843351058-1dd06fccdc6a?q=80&w=2070&fit=crop&auto=format";
+      return "https://images.unsplash.com/photo-1613843351058-1dd06fccdc6a?q=80&w=2070&auto=format&fit=crop";
     }
-    return "https://images.unsplash.com/photo-1607008829749-c0f284a49841?q=80&w=2070&fit=crop&auto=format";
+    return "https://images.unsplash.com/photo-1607008829749-c0f284a49841?q=80&w=2070&auto=format&fit=crop";
   };
 
   return (
