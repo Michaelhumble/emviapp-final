@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format, isSameDay, isBefore, addDays, subDays } from 'date-fns';
@@ -11,11 +12,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createArtistAvailability, updateArtistAvailability, deleteArtistAvailability } from "@/lib/api/artist-availability";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
-import { ArtistAvailability } from "@/types/artist";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,7 +26,52 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
+
+// Define the ArtistAvailability type
+interface ArtistAvailability {
+  id: string;
+  artist_id: string;
+  date: string;
+  start_time: number;
+  end_time: number;
+  is_recurring: boolean;
+  notes: string;
+}
+
+// API functions for artist availability
+const createArtistAvailability = async (data: any) => {
+  const { data: result, error } = await supabase
+    .from('artist_availability')
+    .insert(data)
+    .select()
+    .single();
+  
+  if (error) throw error;
+  return result;
+};
+
+const updateArtistAvailability = async (data: any) => {
+  const { data: result, error } = await supabase
+    .from('artist_availability')
+    .update(data)
+    .eq('id', data.id)
+    .select()
+    .single();
+  
+  if (error) throw error;
+  return result;
+};
+
+const deleteArtistAvailability = async (id: string) => {
+  const { error } = await supabase
+    .from('artist_availability')
+    .delete()
+    .eq('id', id);
+  
+  if (error) throw error;
+  return id;
+};
 
 interface ArtistCalendarProps {
   artistId: string;
@@ -42,53 +87,48 @@ const ArtistCalendar: React.FC<ArtistCalendarProps> = ({ artistId, existingAvail
   const [notes, setNotes] = useState<string>('');
   const [selectedAvailability, setSelectedAvailability] = useState<ArtistAvailability | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
-  const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  const createAvailabilityMutation = useMutation(createArtistAvailability, {
+  const createAvailabilityMutation = useMutation({
+    mutationFn: createArtistAvailability,
     onSuccess: () => {
-      queryClient.invalidateQueries(['artist-availability', artistId]);
-      toast({
-        title: "Availability Created",
+      queryClient.invalidateQueries({ queryKey: ['artist-availability', artistId] });
+      toast.success("Availability Created", {
         description: "Your availability has been successfully created.",
       });
       resetForm();
       setIsPopoverOpen(false);
     },
     onError: (error: any) => {
-      toast({
-        variant: "destructive",
-        title: "Error",
+      toast.error("Error", {
         description: error.message || "Failed to create availability.",
       });
     },
   });
 
-  const updateAvailabilityMutation = useMutation(updateArtistAvailability, {
+  const updateAvailabilityMutation = useMutation({
+    mutationFn: updateArtistAvailability,
     onSuccess: () => {
-      queryClient.invalidateQueries(['artist-availability', artistId]);
-      toast({
-        title: "Availability Updated",
+      queryClient.invalidateQueries({ queryKey: ['artist-availability', artistId] });
+      toast.success("Availability Updated", {
         description: "Your availability has been successfully updated.",
       });
       resetForm();
       setIsPopoverOpen(false);
     },
     onError: (error: any) => {
-      toast({
-        variant: "destructive",
-        title: "Error",
+      toast.error("Error", {
         description: error.message || "Failed to update availability.",
       });
     },
   });
 
-  const deleteAvailabilityMutation = useMutation(deleteArtistAvailability, {
+  const deleteAvailabilityMutation = useMutation({
+    mutationFn: deleteArtistAvailability,
     onSuccess: () => {
-      queryClient.invalidateQueries(['artist-availability', artistId]);
-      toast({
-        title: "Availability Deleted",
+      queryClient.invalidateQueries({ queryKey: ['artist-availability', artistId] });
+      toast.success("Availability Deleted", {
         description: "Your availability has been successfully deleted.",
       });
       resetForm();
@@ -96,9 +136,7 @@ const ArtistCalendar: React.FC<ArtistCalendarProps> = ({ artistId, existingAvail
       setIsDeleteDialogOpen(false);
     },
     onError: (error: any) => {
-      toast({
-        variant: "destructive",
-        title: "Error",
+      toast.error("Error", {
         description: error.message || "Failed to delete availability.",
       });
       setIsDeleteDialogOpen(false);
@@ -142,9 +180,7 @@ const ArtistCalendar: React.FC<ArtistCalendarProps> = ({ artistId, existingAvail
     e.preventDefault();
 
     if (!date) {
-      toast({
-        variant: "destructive",
-        title: "Error",
+      toast.error("Error", {
         description: "Please select a date.",
       });
       return;
@@ -286,8 +322,8 @@ const ArtistCalendar: React.FC<ArtistCalendarProps> = ({ artistId, existingAvail
                 </AlertDialogContent>
               </AlertDialog>
             )}
-            <Button type="submit" disabled={createAvailabilityMutation.isLoading || updateAvailabilityMutation.isLoading}>
-              {selectedAvailability ? (updateAvailabilityMutation.isLoading ? "Updating..." : "Update Availability") : (createAvailabilityMutation.isLoading ? "Creating..." : "Create Availability")}
+            <Button type="submit" disabled={createAvailabilityMutation.isPending || updateAvailabilityMutation.isPending}>
+              {selectedAvailability ? (updateAvailabilityMutation.isPending ? "Updating..." : "Update Availability") : (createAvailabilityMutation.isPending ? "Creating..." : "Create Availability")}
             </Button>
           </div>
         </form>

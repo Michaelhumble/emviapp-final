@@ -57,7 +57,7 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
   const isVietnameseSalon = salon.vietnamese_description || (salon.id && salon.id.startsWith('vn-salon'));
 
   const getFallbackImage = () => {
-    const businessType = salon.salon_type?.toLowerCase() || '';
+    const businessType = salon.business_type?.toLowerCase() || '';
     
     if (businessType.includes('nail') || sanitizedCompany.toLowerCase().includes('nail')) {
       return "https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=2070&auto=format&fit=crop";
