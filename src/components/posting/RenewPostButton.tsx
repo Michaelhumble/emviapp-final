@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
@@ -52,7 +51,7 @@ const RenewPostButton = ({ postId, onRenew, isExpired = false }: RenewPostButton
       toast({
         title: "Renewal failed",
         description: "There was a problem renewing your post. Please try again.",
-        variant: "destructive"
+        variant: "error"
       });
     } finally {
       setIsLoading(false);

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Trash2, ZoomIn, Loader2, ImageIcon, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -63,7 +62,7 @@ const ArtistPortfolioGrid = ({ images, isLoading }: ArtistPortfolioGridProps) =>
       toast({
         title: "Error deleting image",
         description: "There was a problem removing the image. Please try again.",
-        variant: "destructive"
+        variant: "error"
       });
     }
   };

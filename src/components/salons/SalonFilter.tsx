@@ -13,7 +13,23 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { motion } from "framer-motion";
-import { SalonFilters } from "@/hooks/useSalonsData";
+
+// Define it here to match what's used in the component
+export interface SalonFilters {
+  featured?: boolean;
+  forSale?: boolean;
+  location?: string;
+  hasWaxRoom?: boolean;
+  hasHousing?: boolean;
+  salonType?: string;
+  priceRange?: number[];
+  minStations?: number;
+  maxStations?: number;
+  stationsCount?: string;
+  boosted?: boolean;
+  status?: string;
+  showExpired?: boolean;
+}
 
 export interface SalonFilterProps {
   searchTerm: string;
@@ -33,6 +49,9 @@ export const SalonFilter = ({
   suggestedKeywords
 }: SalonFilterProps) => {
   const [showFilters, setShowFilters] = useState(false);
+  
+  // Set default priceRange if not provided
+  const priceRange = filters.priceRange || [0, 500000];
 
   // Locations for dropdown
   const locations = [
@@ -54,7 +73,7 @@ export const SalonFilter = ({
   };
 
   // Handle price range changes
-  const handlePriceRangeChange = (value: [number, number]) => {
+  const handlePriceRangeChange = (value: number[]) => {
     updateFilters({ priceRange: value });
   };
 
@@ -122,15 +141,15 @@ export const SalonFilter = ({
               <div className="space-y-2">
                 <label className="text-sm text-gray-600">Price Range</label>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs">${filters.priceRange[0].toLocaleString()}</span>
+                  <span className="text-xs">${priceRange[0].toLocaleString()}</span>
                   <Slider 
-                    value={filters.priceRange}
+                    value={priceRange}
                     max={500000} 
                     step={10000}
-                    onValueChange={(value) => handlePriceRangeChange([value[0], value[1]])}
+                    onValueChange={handlePriceRangeChange}
                     className="flex-1" 
                   />
-                  <span className="text-xs">${filters.priceRange[1].toLocaleString()}</span>
+                  <span className="text-xs">${priceRange[1].toLocaleString()}</span>
                 </div>
               </div>
             </div>

@@ -1,119 +1,240 @@
-import { Job } from '@/types/job';
+import { Job } from "@/types/job";
 
-// Generate Vietnamese nail job listings with appropriate details
-export const generateVietnameseNailJobs = (count: number = 5): Job[] => {
-  const locations = [
-    'Houston, TX',
-    'Atlanta, GA',
-    'Orlando, FL',
-    'Dallas, TX',
-    'San Jose, CA',
-    'Philadelphia, PA',
-    'Seattle, WA',
-    'Denver, CO',
-    'Charlotte, NC',
-    'Las Vegas, NV'
-  ];
-
-  const salonNames = [
-    'Luxury Nails & Spa',
-    'Diamond Nails',
-    'VIP Nails',
-    'Crystal Nail Salon',
-    'Perfect Nails',
-    'Queen Nails',
-    'Royal Nails',
-    'Elite Nails',
-    'Golden Nails',
-    'Star Nails & Spa'
-  ];
-
-  const specialties = [
-    ['Acrylic', 'Gel', 'Dipping Powder', 'Nail Art'],
-    ['Gel', 'Pedicure', 'Manicure', 'Waxing'],
-    ['Acrylic', 'Dipping Powder', 'Nail Design', 'Pedicure'],
-    ['Gel-X', 'Acrylic', 'Ombre', 'Nail Art'],
-    ['Pedicure', 'Manicure', 'Gel Polish', 'Paraffin Treatment'],
-    ['Acrylic', 'Gel', 'Nail Art', 'Massage'],
-    ['Dipping Powder', 'Gel', 'Acrylic', 'Nail Repair'],
-    ['Acrylic', 'Gel', 'Pedicure', 'Waxing'],
-    ['Nail Art', 'Gel', 'Acrylic', 'Pedicure'],
-    ['Gel-X', 'Dipping Powder', 'Acrylic', 'Nail Design']
-  ];
-
-  const vietnameseDescriptions = [
-    'Tiệm nail ở khu Mỹ trắng, đông khách, cần thợ nail biết làm đủ thứ (bột, gel, chân tay nước). Bao lương $1,000-$1,200/tuần, hơn chia 6/4. Chỗ làm vui vẻ, không khí gia đình.',
-    'Cần thợ nail gấp, bao lương $900-$1,100/tuần. Tiệm đông khách, tip cao. Chủ lo chỗ ở, có thể đón từ xa tới. Môi trường làm việc thoải mái.',
-    'Tiệm rộng rãi, khu Mỹ trắng, giàu, cần thợ nail có kinh nghiệm. Lương $800-$1,000/tuần hơn chia 6/4. Chủ lo nhà ở, có phòng riêng.',
-    'Cần thợ bột và chân tay nước, bao lương $900-$1,300 tùy theo khả năng. Tiệm khu Mỹ trắng, giá cao, tip hậu. Chỗ làm vui vẻ, không drama.',
-    'Tiệm khu sang, khách tip hậu, cần thợ nail biết làm đủ thứ. Thu nhập $1,200-$1,500/tuần. Bao ăn ở, đón từ xa.',
-    'Cần thợ nail nam nữ, bao lương $800-$1,000/tuần. Tiệm lớn, khu Mỹ trắng, tip cao. Chủ lo chỗ ở, có phòng riêng.',
-    'Tiệm mới, sang trọng, cần thợ nail có kinh nghiệm. Lương $1,000-$1,300/tuần. Môi trường làm việc thân thiện, vui vẻ.',
-    'Cần thợ nail gấp, bao lương $900-$1,100/tuần. Tiệm đông khách, khu Mỹ trắng, tip hậu. Chủ lo chỗ ở, có thể đón từ xa.',
-    'Tiệm khu Mỹ trắng, khách sang, cần thợ nail full-time hoặc part-time. Thu nhập $1,000-$1,400/tuần. Chỗ làm vui vẻ, thoải mái.',
-    'Cần thợ nail biết làm đủ thứ, bao lương $1,100-$1,400/tuần. Tiệm đẹp, sang trọng, khu Mỹ trắng, tip cao.'
-  ];
-
-  const jobs: Job[] = [];
-
-  for (let i = 0; i < count; i++) {
-    const index = i % 10;
-    const id = `vn-${Date.now()}-${i}`;
-    
-    const job: Job = {
-      id,
-      role: 'Nail Technician',
-      role_normalized: 'nail_technician',
-      title: `Nail Technician / Thợ Nail - ${salonNames[index]}`,
-      company: salonNames[index],
-      location: locations[index],
-      posted_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
-      created_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
-      experience_level: 'All Levels',
-      employment_type: 'Full-Time',
-      description: `${salonNames[index]} is looking for experienced nail technicians to join our team. We offer competitive pay, flexible hours, and a friendly work environment. Our salon is located in a busy shopping center with a loyal client base.`,
-      vietnamese_description: vietnameseDescriptions[index],
-      requirements: ['Experience with acrylic and gel nails', 'Customer service skills', 'Reliable transportation'],
-      specialties: specialties[index],
-      benefits: ['Competitive pay', 'Flexible schedule', 'Growth opportunities'],
-      is_featured: Math.random() > 0.7,
-      is_remote: false,
-      is_urgent: Math.random() > 0.7,
-      weekly_pay: true,
-      has_housing: Math.random() > 0.5,
-      owner_will_train: Math.random() > 0.7,
-      no_supply_deduction: Math.random() > 0.6,
-      tip_range: '$100-200/day',
-      salary_range: '$900-1,400/week',
+export const generateVietNailJobSamples = (): Job[] => {
+  return [
+    {
+      id: "job-vn-001",
+      role: "Nail Technician",
+      title: "Cần Thợ Nail Giỏi",
+      company: "Luxury Nails & Spa",
+      location: "Houston, TX",
+      posted_at: "2 days ago",
+      created_at: new Date().toISOString(),
+      description: "Tiệm nail sang trọng ở Houston cần tuyển thợ nail có kinh nghiệm làm everything. Bao lương hoặc ăn chia.",
+      employment_type: "Full-time/Part-time",
+      compensation_details: "$800 - $1200/week",
       contact_info: {
-        phone: `(${Math.floor(Math.random() * 900) + 100}) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
-        email: `${salonNames[index].toLowerCase().replace(/\s+/g, '')}@gmail.com`,
-        owner_name: getRandomVietnameseName()
+        owner_name: "Linh Nguyen",
+        phone: "832-123-4567",
+        email: "linh.nguyen@luxurynails.com",
+        notes: "Liên hệ sau 5 giờ chiều."
       },
-      trust_indicators: {
-        verified: true,
-        activelyHiring: true,
-        chatAvailable: Math.random() > 0.5
-      }
-    };
-    
-    jobs.push(job);
-  }
-  
-  return jobs;
+      for_sale: false,
+      is_featured: true,
+      status: "active",
+      image: "https://example.com/nail-salon.jpg",
+      weekly_pay: true,
+      has_housing: true,
+      has_wax_room: true,
+      no_supply_deduction: true,
+      owner_will_train: false,
+      tip_range: "20%+",
+      salary_range: "$40k - $60k",
+      vietnamese_description: "Tiệm lớn, khách sang trọng, môi trường làm việc thoải mái.",
+      salon_type: "Nail Salon",
+      expires_at: new Date(new Date().setDate(new Date().getDate() + 30)).toISOString(),
+      requirements: ["Có bằng nail", "Kinh nghiệm 2 năm trở lên"],
+      preferred_languages: ["Vietnamese", "English"],
+      benefits: ["Bảo hiểm y tế", "Nghỉ phép có lương"],
+      features: ["Máy lạnh", "Wifi miễn phí"],
+      price: "$0",
+      monthly_rent: "$0",
+      is_urgent: false,
+    },
+    {
+      id: "job-vn-002",
+      role: "Eyelash Technician",
+      title: "Tuyển Thợ Nối Mi",
+      company: "Bella Lash Studio",
+      location: "Garden Grove, CA",
+      posted_at: "1 week ago",
+      created_at: new Date().toISOString(),
+      description: "Studio nối mi chuyên nghiệp tại Garden Grove cần tuyển thợ nối mi có tay nghề cao. Lương cao, thưởng hấp dẫn.",
+      employment_type: "Full-time",
+      compensation_details: "$1000 - $1500/week",
+      contact_info: {
+        owner_name: "Mai Tran",
+        phone: "714-987-6543",
+        email: "mai.tran@bellalash.com",
+        notes: "Ưu tiên người có kinh nghiệm."
+      },
+      for_sale: false,
+      is_featured: false,
+      status: "active",
+      image: "https://example.com/eyelash-studio.jpg",
+      weekly_pay: true,
+      has_housing: false,
+      has_wax_room: false,
+      no_supply_deduction: true,
+      owner_will_train: false,
+      tip_range: "15%+",
+      salary_range: "$50k - $70k",
+      vietnamese_description: "Môi trường làm việc thân thiện, cơ hội phát triển nghề nghiệp.",
+      salon_type: "Eyelash Studio",
+      expires_at: new Date(new Date().setDate(new Date().getDate() + 30)).toISOString(),
+      requirements: ["Chứng chỉ nối mi", "Kỹ năng giao tiếp tốt"],
+      preferred_languages: ["Vietnamese"],
+      benefits: ["Hoa hồng cao", "Đào tạo nâng cao"],
+      features: ["Thiết bị hiện đại", "Sản phẩm chất lượng"],
+      price: "$0",
+      monthly_rent: "$0",
+      is_urgent: false,
+    },
+    {
+      id: "job-vn-003",
+      role: "Salon Manager",
+      title: "Tìm Quản Lý Tiệm Nail",
+      company: "Diamond Nails",
+      location: "San Jose, CA",
+      posted_at: "3 weeks ago",
+      created_at: new Date().toISOString(),
+      description: "Tiệm nail lớn ở San Jose cần tuyển quản lý có kinh nghiệm. Lương thỏa thuận, có thưởng.",
+      employment_type: "Full-time",
+      compensation_details: "$50k - $80k/year",
+      contact_info: {
+        owner_name: "Duc Pham",
+        phone: "408-555-1212",
+        email: "duc.pham@diamondnails.com",
+        notes: "Gửi resume qua email."
+      },
+      for_sale: false,
+      is_featured: false,
+      status: "active",
+      image: "https://example.com/nail-salon-interior.jpg",
+      weekly_pay: false,
+      has_housing: false,
+      has_wax_room: false,
+      no_supply_deduction: false,
+      owner_will_train: false,
+      tip_range: "N/A",
+      salary_range: "$50k - $80k",
+      vietnamese_description: "Cần người có khả năng quản lý, giao tiếp tốt.",
+      salon_type: "Nail Salon",
+      expires_at: new Date(new Date().setDate(new Date().getDate() + 30)).toISOString(),
+      requirements: ["Kinh nghiệm quản lý 3 năm", "Tiếng Anh lưu loát"],
+      preferred_languages: ["Vietnamese", "English"],
+      benefits: ["Bảo hiểm", "Thưởng cuối năm"],
+      features: ["Môi trường chuyên nghiệp", "Cơ hội thăng tiến"],
+      price: "$0",
+      monthly_rent: "$0",
+      is_urgent: false,
+    },
+    {
+      id: "job-vn-004",
+      role: "Waxing Specialist",
+      title: "Cần Thợ Waxing",
+      company: "Smooth Skin Spa",
+      location: "Dallas, TX",
+      posted_at: "1 month ago",
+      created_at: new Date().toISOString(),
+      description: "Spa chuyên về waxing ở Dallas cần tuyển thợ waxing có kinh nghiệm. Lương cao, có khách hàng.",
+      employment_type: "Full-time/Part-time",
+      compensation_details: "$900 - $1400/week",
+      contact_info: {
+        owner_name: "Thuy Le",
+        phone: "214-777-8888",
+        email: "thuy.le@smoothskin.com",
+        notes: "Gọi điện để phỏng vấn."
+      },
+      for_sale: false,
+      is_featured: false,
+      status: "active",
+      image: "https://example.com/waxing-room.jpg",
+      weekly_pay: true,
+      has_housing: false,
+      has_wax_room: true,
+      no_supply_deduction: true,
+      owner_will_train: false,
+      tip_range: "18%+",
+      salary_range: "$45k - $65k",
+      vietnamese_description: "Môi trường làm việc thoải mái, đồng nghiệp thân thiện.",
+      salon_type: "Waxing Spa",
+      expires_at: new Date(new Date().setDate(new Date().getDate() + 30)).toISOString(),
+      requirements: ["Chứng chỉ waxing", "Kỹ năng làm việc nhóm"],
+      preferred_languages: ["Vietnamese"],
+      benefits: ["Chiết khấu dịch vụ", "Thưởng theo doanh số"],
+      features: ["Phòng waxing riêng", "Sản phẩm chất lượng"],
+      price: "$0",
+      monthly_rent: "$0",
+      is_urgent: false,
+    },
+    {
+      id: "job-vn-005",
+      role: "Manicurist/Pedicurist",
+      title: "Tuyển Thợ Làm Móng Tay Chân",
+      company: "Elegant Nails",
+      location: "Atlanta, GA",
+      posted_at: "2 months ago",
+      created_at: new Date().toISOString(),
+      description: "Tiệm nail ở Atlanta cần tuyển thợ làm móng tay chân có kinh nghiệm. Bao lương hoặc ăn chia, tùy chọn.",
+      employment_type: "Full-time/Part-time",
+      compensation_details: "$700 - $1100/week",
+      contact_info: {
+        owner_name: "Hung Nguyen",
+        phone: "404-222-3333",
+        email: "hung.nguyen@elegantnails.com",
+        notes: "Liên hệ trực tiếp để biết thêm chi tiết."
+      },
+      for_sale: false,
+      is_featured: false,
+      status: "active",
+      image: "https://example.com/manicure-table.jpg",
+      weekly_pay: true,
+      has_housing: true,
+      has_wax_room: false,
+      no_supply_deduction: true,
+      owner_will_train: false,
+      tip_range: "20%+",
+      salary_range: "$35k - $55k",
+      vietnamese_description: "Tiệm đông khách, thu nhập ổn định.",
+      salon_type: "Nail Salon",
+      expires_at: new Date(new Date().setDate(new Date().getDate() + 30)).toISOString(),
+      requirements: ["Kinh nghiệm làm móng 1 năm", "Nhiệt tình, chịu khó"],
+      preferred_languages: ["Vietnamese"],
+      benefits: ["Thưởng lễ tết", "Tăng lương định kỳ"],
+      features: ["Môi trường làm việc vui vẻ", "Khách hàng lịch sự"],
+      price: "$0",
+      monthly_rent: "$0",
+      is_urgent: false,
+    },
+    {
+      id: "job-vn-123",
+      role: "Nail Technician",
+      title: "Gấp! Cần Thợ Nail Gấp",
+      company: "Express Nails",
+      location: "Westminster, CA",
+      posted_at: "1 day ago",
+      created_at: new Date().toISOString(),
+      description: "Tiệm nail ở Westminster cần thợ nail gấp, có kinh nghiệm làm bột và shellac. Lương cao, bao ăn ở.",
+      employment_type: "Full-time",
+      compensation_details: "$1200 - $1800/week",
+      contact_info: {
+        owner_name: "Loan Tran",
+        phone: "714-111-2222",
+        email: "loan.tran@expressnails.com",
+        notes: "Gọi ngay để nhận việc."
+      },
+      for_sale: false,
+      is_featured: true,
+      status: "active",
+      image: "https://example.com/urgent-nail-job.jpg",
+      weekly_pay: true,
+      has_housing: true,
+      has_wax_room: false,
+      no_supply_deduction: true,
+      owner_will_train: false,
+      tip_range: "25%+",
+      salary_range: "$60k - $90k",
+      vietnamese_description: "Cần thợ giỏi, làm nhanh, có trách nhiệm.",
+      salon_type: "Nail Salon",
+      expires_at: new Date(new Date().setDate(new Date().getDate() + 30)).toISOString(),
+      requirements: ["Kinh nghiệm 3 năm trở lên", "Biết làm everything"],
+      preferred_languages: ["Vietnamese"],
+      benefits: ["Bao ăn ở", "Thưởng thêm"],
+      features: ["Môi trường làm việc năng động", "Khách hàng dễ tính"],
+      price: "$0",
+      monthly_rent: "$0",
+      is_urgent: true,
+    },
+  ];
 };
-
-// Helper function to generate random Vietnamese names
-function getRandomVietnameseName(): string {
-  const firstNames = ['Nguyen', 'Tran', 'Le', 'Pham', 'Hoang', 'Huynh', 'Vo', 'Dang', 'Bui', 'Do'];
-  const middleNames = ['Van', 'Thi', 'Huu', 'Duc', 'Dinh', 'Minh', 'Quoc', 'Thanh', 'Tuan', 'Kim'];
-  const lastNames = ['Anh', 'Linh', 'Hoa', 'Tuan', 'Minh', 'Hai', 'Hung', 'Phuong', 'Thao', 'Dung'];
-  
-  const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-  const middleName = middleNames[Math.floor(Math.random() * middleNames.length)];
-  const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-  
-  return `${firstName} ${middleName} ${lastName}`;
-}
-
-export default generateVietnameseNailJobs;

@@ -6,12 +6,14 @@ import { cn } from '@/lib/utils';
 export interface ToastProps {
   title?: string;
   description?: string;
-  variant?: 'default' | 'success' | 'error' | 'warning' | 'info';
+  variant?: 'default' | 'success' | 'error' | 'warning' | 'info' | 'destructive';
   onClose?: () => void;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   id?: string;
   action?: React.ReactNode;
+  children?: React.ReactNode;
+  duration?: number;
 }
 
 export type ToastActionElement = React.ReactElement<{
@@ -25,6 +27,7 @@ export const Toast: React.FC<ToastProps> = ({
   description,
   variant = 'default',
   onClose,
+  children,
 }) => {
   const variantClassMap = {
     default: 'bg-white border-gray-200',
@@ -32,6 +35,7 @@ export const Toast: React.FC<ToastProps> = ({
     error: 'bg-red-50 border-red-200',
     warning: 'bg-yellow-50 border-yellow-200',
     info: 'bg-blue-50 border-blue-200',
+    destructive: 'bg-red-50 border-red-200',
   };
   
   const variantIconMap = {
@@ -40,6 +44,7 @@ export const Toast: React.FC<ToastProps> = ({
     error: <AlertCircle className="h-5 w-5 text-red-500" />,
     warning: <AlertTriangle className="h-5 w-5 text-yellow-500" />,
     info: <Info className="h-5 w-5 text-blue-500" />,
+    destructive: <AlertCircle className="h-5 w-5 text-red-500" />,
   };
 
   return (
@@ -56,6 +61,7 @@ export const Toast: React.FC<ToastProps> = ({
         <div className="flex-1">
           {title && <h4 className="font-medium text-gray-900">{title}</h4>}
           {description && <p className="mt-1 text-sm text-gray-600">{description}</p>}
+          {children}
         </div>
         <button
           onClick={onClose}

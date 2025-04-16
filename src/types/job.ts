@@ -10,6 +10,7 @@ export interface Job {
   description?: string;
   employment_type?: string;
   compensation_details?: string;
+  compensation_type?: string;
   contact_info?: {
     owner_name?: string;
     phone?: string;
@@ -45,11 +46,11 @@ export interface Job {
   price?: string;
   monthly_rent?: string;
   trust_indicators?: any;
-  compensation_type?: string;
   revenue?: string;
   has_dining_room?: boolean;
   has_laundry?: boolean;
   experience_level?: string;
   is_remote?: boolean;
   role_normalized?: string;
+  is_urgent?: boolean;
 }

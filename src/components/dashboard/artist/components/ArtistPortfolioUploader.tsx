@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload, Loader2 } from "lucide-react";
@@ -29,7 +28,7 @@ const ArtistPortfolioUploader = ({ onComplete }: ArtistPortfolioUploaderProps) =
       toast({
         title: "Upload limit reached",
         description: `You can only have up to 12 portfolio images. You currently have ${currentImages.length}.`,
-        variant: "destructive"
+        variant: "error"
       });
       return;
     }
@@ -101,7 +100,7 @@ const ArtistPortfolioUploader = ({ onComplete }: ArtistPortfolioUploaderProps) =
         toast({
           title: "Error updating profile",
           description: "Your images were uploaded but we couldn't update your profile. Please try again.",
-          variant: "destructive"
+          variant: "error"
         });
       }
     }
@@ -110,7 +109,7 @@ const ArtistPortfolioUploader = ({ onComplete }: ArtistPortfolioUploaderProps) =
       toast({
         title: "Upload issues",
         description: `${errorCount} image${errorCount !== 1 ? 's' : ''} failed to upload.`,
-        variant: "destructive"
+        variant: "error"
       });
     }
 

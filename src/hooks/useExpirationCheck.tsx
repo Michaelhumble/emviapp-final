@@ -31,7 +31,7 @@ export const useExpirationCheck = (userId: string | null) => {
           toast({
             title: "Post expiring soon",
             description: `Your ${post.post_type} post "${post.title}" will expire on ${format(expirationDate, "MMMM d, yyyy")}. Renew it to keep it active.`,
-            duration: 10000, // 10 seconds
+            // Remove duration property as it's not part of the ToastProps interface
           });
         });
         

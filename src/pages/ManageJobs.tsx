@@ -1,10 +1,11 @@
+
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Edit, Trash2, UserCheck, Clock, Eye, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -19,6 +20,7 @@ interface JobWithApplications extends Job {
 
 const ManageJobs = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [jobs, setJobs] = useState<JobWithApplications[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -109,7 +111,7 @@ const ManageJobs = () => {
         toast({
           title: "Error",
           description: "Failed to delete the job.",
-          variant: "destructive"
+          variant: "error"
         });
       }
     }
@@ -129,15 +131,13 @@ const ManageJobs = () => {
       ));
       
       toast({
-        description: `Job status updated to ${newStatus}`,
-        duration: 3000,
+        description: `Job status updated to ${newStatus}`
       });
     } catch (error) {
       console.error('Error updating job status:', error);
       toast({
-        variant: "destructive",
-        description: "Failed to update job status",
-        duration: 3000,
+        variant: "error",
+        description: "Failed to update job status"
       });
     }
   };

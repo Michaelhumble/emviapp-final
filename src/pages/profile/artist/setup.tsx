@@ -1,16 +1,16 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { toast } from '@/components/ui/use-toast';
 import { useAuth } from '@/context/auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from "@/hooks/use-toast";
 
 // Temporary setup page until proper components are implemented
-const ArtistSetup = () => {
+const ArtistProfileSetup = () => {
   const navigate = useNavigate();
   const { userProfile } = useAuth();
+  const { toast } = useToast();
   
   const handleSkip = () => {
     navigate('/dashboard');
@@ -41,4 +41,4 @@ const ArtistSetup = () => {
   );
 };
 
-export default ArtistSetup;
+export default ArtistProfileSetup;
