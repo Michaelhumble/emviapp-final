@@ -1,3 +1,4 @@
+
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { ClientData } from "./types";
 import { formatDistanceToNow, format } from "date-fns";

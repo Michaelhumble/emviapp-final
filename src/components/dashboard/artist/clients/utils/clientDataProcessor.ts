@@ -1,49 +1,69 @@
 
-import { BookingHistoryItem, ClientData } from "../types";
-import { ClientBookingMetadata } from "../types/clientTypes";
+import { ArtistClientRow, ClientData, BookingHistoryItem } from "../types";
 
-export const processBookingMetadata = (metadata: any): { name: string; phone: string } => {
-  const clientName = metadata?.client_name || metadata?.customer_name || 'Unknown Client';
-  const clientPhone = metadata?.phone || metadata?.client_phone || '';
-  return { name: clientName, phone: clientPhone };
-};
-
-export const createClientFromBooking = (
-  clientId: string,
-  metadata: ClientBookingMetadata,
-  booking: any,
-  servicePrice: number
-): ClientData => {
-  const { name, phone } = processBookingMetadata(metadata);
-  
+export const createManualClient = (clientRow: ArtistClientRow): ClientData => {
   return {
-    id: clientId,
-    name,
-    phone,
-    notes: '',
-    visitCount: 1,
-    lastVisit: booking.date_requested,
-    totalSpent: servicePrice,
-    bookingHistory: [{
-      id: booking.id,
-      date: booking.date_requested,
-      service: booking.services?.title || 'Unnamed service',
-      price: servicePrice,
-      status: booking.status
-    }],
-    isManualEntry: false
+    id: clientRow.id,
+    name: clientRow.name,
+    phone: clientRow.phone || '',
+    notes: clientRow.notes || '',
+    visitCount: 0,
+    totalSpent: 0,
+    lastVisit: null,
+    bookingHistory: [],
+    isManualEntry: true
   };
 };
 
-export const createManualClient = (client: any): ClientData => {
+export const processClientBookings = (
+  client: ClientData, 
+  bookings: any[]
+): ClientData => {
+  // Find all bookings for this client
+  const clientBookings = bookings.filter(booking => {
+    const metadata = booking.metadata || {};
+    const isForClient = 
+      metadata.client_name === client.name || 
+      metadata.client_phone === client.phone ||
+      metadata.customer_name === client.name;
+    
+    return isForClient;
+  });
+  
+  // Create booking history entries
+  const bookingHistory: BookingHistoryItem[] = clientBookings.map(booking => {
+    return {
+      id: booking.id,
+      date: booking.created_at || booking.date_requested,
+      service: booking.services?.title || 'Service',
+      price: booking.services?.price || 0,
+      status: booking.status
+    };
+  });
+  
+  // Calculate metrics
+  const totalSpent = bookingHistory.reduce((sum, item) => 
+    sum + (item.status === 'completed' ? item.price : 0), 0);
+  
+  const visitCount = bookingHistory.filter(item => 
+    item.status === 'completed').length;
+  
+  // Find the last visit date
+  let lastVisit = null;
+  if (bookingHistory.length > 0) {
+    const sortedBookings = [...bookingHistory].sort((a, b) => {
+      if (!a.date) return 1;
+      if (!b.date) return -1;
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
+    lastVisit = sortedBookings[0]?.date;
+  }
+  
   return {
-    id: client.id,
-    name: client.name,
-    phone: client.phone || '',
-    notes: client.notes || '',
-    visitCount: 0,
-    totalSpent: 0,
-    bookingHistory: [],
-    isManualEntry: true
+    ...client,
+    bookingHistory,
+    totalSpent,
+    visitCount,
+    lastVisit
   };
 };
