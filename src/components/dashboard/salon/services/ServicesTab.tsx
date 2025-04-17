@@ -23,7 +23,7 @@ export default function ServicesTab() {
     setEditingService(null);
   };
 
-  const handleSubmit = async (serviceData: Partial<SalonService>) => {
+  const handleSubmit = async (serviceData: Omit<SalonService, 'id' | 'created_at' | 'updated_at'>) => {
     if (editingService) {
       await updateService(editingService.id, serviceData);
     } else {

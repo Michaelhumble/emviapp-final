@@ -1,13 +1,13 @@
 
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { TeamMember } from "./types";
+import { SalonTeamMember } from "../types";
 import TeamMemberItem from "./TeamMemberItem";
 
 interface TeamMembersListProps {
   loading: boolean;
   error: Error | null;
-  teamMembers: TeamMember[];
+  teamMembers: SalonTeamMember[];
   onRemoveTeamMember: (memberId: string, name: string) => void;
   onToggleMemberStatus: (memberId: string, currentStatus: 'active' | 'inactive' | 'pending' | undefined) => void;
 }

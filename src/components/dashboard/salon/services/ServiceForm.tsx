@@ -11,19 +11,17 @@ import { Switch } from "@/components/ui/switch";
 import { SalonService } from "../types";
 
 interface ServiceFormProps {
-  isOpen: boolean;
+  open: boolean;
   onClose: () => void;
   onSubmit: (service: Omit<SalonService, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
-  initialData?: SalonService;
-  title: string;
+  initialData: SalonService | null;
 }
 
 const ServiceForm: React.FC<ServiceFormProps> = ({
-  isOpen,
+  open,
   onClose,
   onSubmit,
-  initialData,
-  title
+  initialData
 }) => {
   const [formData, setFormData] = useState<Omit<SalonService, 'id' | 'created_at' | 'updated_at'>>({
     title: "",
@@ -53,7 +51,7 @@ const ServiceForm: React.FC<ServiceFormProps> = ({
         is_visible: true
       });
     }
-  }, [initialData, isOpen]);
+  }, [initialData, open]);
 
   const validateForm = () => {
     const newErrors: {[key: string]: string} = {};
@@ -107,10 +105,12 @@ const ServiceForm: React.FC<ServiceFormProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle className="text-xl font-serif text-purple-900">{title}</DialogTitle>
+          <DialogTitle className="text-xl font-serif text-purple-900">
+            {initialData ? "Edit Service" : "Add Service"}
+          </DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4 py-2">

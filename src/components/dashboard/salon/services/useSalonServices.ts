@@ -68,7 +68,7 @@ export const useSalonServices = () => {
     }
   };
 
-  const updateService = async (id: string, updates: Partial<SalonService>) => {
+  const updateService = async (id: string, updates: Omit<SalonService, 'id' | 'created_at' | 'updated_at'>) => {
     if (!currentSalon?.id) return;
 
     try {
@@ -128,7 +128,13 @@ export const useSalonServices = () => {
   };
 
   const toggleServiceVisibility = async (id: string, isVisible: boolean) => {
-    await updateService(id, { is_visible: isVisible });
+    await updateService(id, { 
+      title: services.find(s => s.id === id)?.title || "",
+      price: services.find(s => s.id === id)?.price || 0,
+      duration_minutes: services.find(s => s.id === id)?.duration_minutes || 30,
+      description: services.find(s => s.id === id)?.description || "",
+      is_visible: isVisible 
+    });
   };
 
   useEffect(() => {

@@ -37,12 +37,11 @@ export default function TeamTab() {
         </CardHeader>
         <CardContent>
           <TeamMembersList 
-            members={teamMembers}
             loading={loading}
             error={error}
-            onEdit={handleEditMember}
-            onRemove={removeTeamMember}
-            onToggleStatus={toggleMemberStatus}
+            teamMembers={teamMembers}
+            onRemoveTeamMember={removeTeamMember}
+            onToggleMemberStatus={toggleMemberStatus}
           />
         </CardContent>
       </Card>
