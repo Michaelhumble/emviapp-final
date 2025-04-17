@@ -36,58 +36,90 @@ export const useSalonInsights = () => {
       try {
         setLoading(true);
         
-        // Instead of using rpc, let's use a direct query with proper error handling
-        const { data, error: queryError } = await supabase
-          .from('salons')
-          .select(`
-            id,
-            salon_name,
-            (select count(*) from bookings where recipient_id in (select id from salon_staff where salon_id = salons.id)) as total_bookings,
-            (select count(*) from bookings where recipient_id in (select id from salon_staff where salon_id = salons.id) and date_requested >= date_trunc('month', now())) as bookings_this_month,
-            (select count(*) from profile_views where artist_id in (select id from salon_staff where salon_id = salons.id) and viewed_at >= date_trunc('week', now())) as profile_views_week,
-            (select count(*) from posts where user_id = salons.owner_id) as total_post_views,
-            (select coalesce(round((select count(*) from bookings where recipient_id in (select id from salon_staff where salon_id = salons.id) and sender_id in (select sender_id from bookings where recipient_id in (select id from salon_staff where salon_id = salons.id) group by sender_id having count(*) > 1)) * 100.0 / nullif(count(*), 0)), 0) from bookings where recipient_id in (select id from salon_staff where salon_id = salons.id)) as repeat_client_rate
-          `)
-          .eq('id', currentSalon.id)
-          .single();
+        // Get salon staff IDs
+        const { data: staffData } = await supabase
+          .from('salon_staff')
+          .select('id')
+          .eq('salon_id', currentSalon.id);
         
-        if (queryError) {
-          // If we can't get data from the query, generate default values
-          console.warn('Error fetching salon insights:', queryError);
+        const staffIds = staffData ? staffData.map(staff => staff.id) : [];
+        
+        // Create a default insights object
+        const rawInsights: SalonInsightsRaw = {
+          total_bookings: 0,
+          bookings_this_month: 0,
+          profile_views_week: 0,
+          total_post_views: 0,
+          repeat_client_rate: 0
+        };
+        
+        if (staffIds.length > 0) {
+          // Get total bookings
+          const { data: totalBookingsData } = await supabase
+            .from('bookings')
+            .select('id', { count: 'exact' })
+            .in('recipient_id', staffIds);
           
-          // Set default fallback data
-          const defaultInsights: SalonInsights = {
-            total_bookings: 0,
-            bookings_this_month: 0,
-            profile_views_week: 0,
-            total_post_views: 0,
-            repeat_client_rate: 0
-          };
+          rawInsights.total_bookings = totalBookingsData?.length || 0;
           
-          setInsights(defaultInsights);
-        } else if (data) {
-          // Process and normalize the data
-          const typedData: SalonInsights = {
-            total_bookings: Number(data.total_bookings || 0),
-            bookings_this_month: Number(data.bookings_this_month || 0),
-            profile_views_week: Number(data.profile_views_week || 0),
-            total_post_views: Number(data.total_post_views || 0),
-            repeat_client_rate: Number(data.repeat_client_rate || 0)
-          };
+          // Get bookings this month
+          const firstDayOfMonth = new Date();
+          firstDayOfMonth.setDate(1);
+          firstDayOfMonth.setHours(0, 0, 0, 0);
           
-          setInsights(typedData);
-        } else {
-          // If data is empty, use defaults
-          const defaultInsights: SalonInsights = {
-            total_bookings: 0,
-            bookings_this_month: 0,
-            profile_views_week: 0,
-            total_post_views: 0,
-            repeat_client_rate: 0
-          };
+          const { data: monthlyBookingsData } = await supabase
+            .from('bookings')
+            .select('id')
+            .in('recipient_id', staffIds)
+            .gte('created_at', firstDayOfMonth.toISOString());
           
-          setInsights(defaultInsights);
+          rawInsights.bookings_this_month = monthlyBookingsData?.length || 0;
+          
+          // Get profile views this week
+          const firstDayOfWeek = new Date();
+          firstDayOfWeek.setDate(firstDayOfWeek.getDate() - firstDayOfWeek.getDay());
+          firstDayOfWeek.setHours(0, 0, 0, 0);
+          
+          const { data: profileViewsData } = await supabase
+            .from('profile_views')
+            .select('id')
+            .in('artist_id', staffIds)
+            .gte('viewed_at', firstDayOfWeek.toISOString());
+          
+          rawInsights.profile_views_week = profileViewsData?.length || 0;
+          
+          // Get total post views (just counting posts for now)
+          const { data: postsData } = await supabase
+            .from('posts')
+            .select('id')
+            .eq('user_id', currentSalon.owner_id || '');
+          
+          rawInsights.total_post_views = postsData?.length || 0;
+          
+          // Calculate repeat client rate
+          if (rawInsights.total_bookings > 0) {
+            const { data: repeatClientsData } = await supabase
+              .from('bookings')
+              .select('sender_id, count(*)')
+              .in('recipient_id', staffIds)
+              .group('sender_id')
+              .having('count(*) > 1');
+            
+            const repeatClients = repeatClientsData?.length || 0;
+            rawInsights.repeat_client_rate = Math.round((repeatClients / rawInsights.total_bookings) * 100);
+          }
         }
+        
+        // Process and normalize the data
+        const typedData: SalonInsights = {
+          total_bookings: Number(rawInsights.total_bookings || 0),
+          bookings_this_month: Number(rawInsights.bookings_this_month || 0),
+          profile_views_week: Number(rawInsights.profile_views_week || 0),
+          total_post_views: Number(rawInsights.total_post_views || 0),
+          repeat_client_rate: Number(rawInsights.repeat_client_rate || 0)
+        };
+        
+        setInsights(typedData);
       } catch (err) {
         console.error('Error fetching salon insights:', err);
         setError(err instanceof Error ? err : new Error('Failed to fetch insights'));
