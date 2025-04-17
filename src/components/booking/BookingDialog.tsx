@@ -3,6 +3,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useState } from "react";
 import { UserProfile } from "@/types/profile";
 import { Service } from "@/pages/u/artist-profile/types";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import BookingForm from "./BookingForm";
 import BookingConfirmation from "./BookingConfirmation";
 
