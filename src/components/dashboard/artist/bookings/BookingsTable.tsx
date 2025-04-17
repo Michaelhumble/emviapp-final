@@ -1,20 +1,12 @@
 
-import { Booking } from "@/components/dashboard/artist/hooks/useArtistBookings";
-import { Button } from "@/components/ui/button";
-import { useTranslation } from "@/hooks/useTranslation";
-import { format } from "date-fns";
-import { CheckCircle, Clock, X, XCircle } from "lucide-react";
-import { useState } from "react";
+import React from "react";
 import { 
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle 
-} from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+  Table, TableBody, TableCaption 
+} from "@/components/ui/table";
+import { Booking } from "@/components/dashboard/artist/hooks/useArtistBookings";
+import BookingTableHeader from "./BookingTableHeader";
+import BookingTableRow from "./BookingTableRow";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface BookingsTableProps {
   bookings: Booking[];
@@ -30,80 +22,6 @@ const BookingsTable = ({
   handleDecline 
 }: BookingsTableProps) => {
   const { t } = useTranslation();
-  const [declineDialogOpen, setDeclineDialogOpen] = useState(false);
-  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
-  const [declineReason, setDeclineReason] = useState("");
-  
-  // Confirm decline booking
-  const confirmDecline = async () => {
-    if (selectedBookingId) {
-      await handleDecline(selectedBookingId);
-      setDeclineDialogOpen(false);
-      setSelectedBookingId(null);
-      setDeclineReason("");
-    }
-  };
-  
-  // Open decline dialog
-  const openDeclineDialog = (bookingId: string) => {
-    setSelectedBookingId(bookingId);
-    setDeclineDialogOpen(true);
-  };
-  
-  // Get status badge class
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "bg-amber-100 text-amber-800 border-amber-200";
-      case "accepted":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      case "completed":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "declined":
-      case "cancelled":
-        return "bg-red-100 text-red-800 border-red-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
-  
-  // Get status icon
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "pending":
-        return <Clock className="h-4 w-4 text-amber-600" />;
-      case "accepted":
-        return <CheckCircle className="h-4 w-4 text-blue-600" />;
-      case "completed":
-        return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case "declined":
-      case "cancelled":
-        return <XCircle className="h-4 w-4 text-red-600" />;
-      default:
-        return null;
-    }
-  };
-  
-  // Format date from string
-  const formatDate = (dateStr?: string) => {
-    if (!dateStr) return "Not specified";
-    
-    try {
-      return format(new Date(dateStr), "MMM d, yyyy");
-    } catch (error) {
-      return dateStr;
-    }
-  };
-  
-  // Get initials for avatar
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map(n => n[0])
-      .join("")
-      .toUpperCase()
-      .substring(0, 2);
-  };
   
   if (loading) {
     return (
@@ -199,7 +117,7 @@ const BookingsTable = ({
                         {t({ english: "Accept", vietnamese: "Chấp nhận" })}
                       </Button>
                       <Button 
-                        onClick={() => openDeclineDialog(booking.id)} 
+                        onClick={() => handleDecline(booking.id)} 
                         size="sm" 
                         variant="outline" 
                         className="text-red-600 border-red-200 hover:bg-red-50"
@@ -220,48 +138,6 @@ const BookingsTable = ({
           </tbody>
         </table>
       </div>
-      
-      {/* Decline Dialog */}
-      <Dialog open={declineDialogOpen} onOpenChange={setDeclineDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {t({ english: "Decline Booking", vietnamese: "Từ chối lịch hẹn" })}
-            </DialogTitle>
-            <DialogDescription>
-              {t({
-                english: "Are you sure you want to decline this booking? The client will be notified.",
-                vietnamese: "Bạn có chắc chắn muốn từ chối lịch hẹn này? Khách hàng sẽ được thông báo."
-              })}
-            </DialogDescription>
-          </DialogHeader>
-          
-          <Textarea
-            placeholder={t({
-              english: "Reason for declining (optional)",
-              vietnamese: "Lý do từ chối (không bắt buộc)"
-            })}
-            value={declineReason}
-            onChange={(e) => setDeclineReason(e.target.value)}
-            className="min-h-[100px]"
-          />
-          
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeclineDialogOpen(false)}
-            >
-              {t({ english: "Cancel", vietnamese: "Hủy" })}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDecline}
-            >
-              {t({ english: "Decline Booking", vietnamese: "Từ chối lịch hẹn" })}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </>
   );
 };
