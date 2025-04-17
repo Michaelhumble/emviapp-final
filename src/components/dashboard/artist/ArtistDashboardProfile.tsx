@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -79,14 +78,9 @@ const ArtistDashboardProfile = ({ artistProfile }: ArtistDashboardProfileProps) 
                       <Instagram className="h-4 w-4" />
                       @{artistProfile.instagram.replace('@', '')}
                     </a>
-                  ) : (
-                    <span className="flex items-center gap-1 text-sm text-gray-400 italic">
-                      <Instagram className="h-4 w-4" />
-                      Add Instagram profile
-                    </span>
                   )}
                   
-                  {artistProfile?.website ? (
+                  {artistProfile?.website && (
                     <a 
                       href={artistProfile.website.startsWith('http') ? artistProfile.website : `https://${artistProfile.website}`} 
                       target="_blank" 
@@ -96,11 +90,6 @@ const ArtistDashboardProfile = ({ artistProfile }: ArtistDashboardProfileProps) 
                       <Globe className="h-4 w-4" />
                       {artistProfile.website.replace(/^https?:\/\//, '')}
                     </a>
-                  ) : (
-                    <span className="flex items-center gap-1 text-sm text-gray-400 italic">
-                      <Globe className="h-4 w-4" />
-                      Add your website
-                    </span>
                   )}
                 </div>
               </div>
