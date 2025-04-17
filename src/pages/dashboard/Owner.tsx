@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
@@ -20,7 +21,7 @@ import SalonListingsManagement from "@/components/dashboard/salon/SalonListingsM
 import SalonCreditPromotion from "@/components/dashboard/salon/SalonCreditPromotion";
 import TopLocalArtists from "@/components/dashboard/salon/TopLocalArtists";
 import NextStepsSmart from "@/components/dashboard/salon/NextStepsSmart";
-import SalonTeamManagement from "@/components/dashboard/salon/SalonTeamManagement";
+import SalonTeamManagement from "@/components/dashboard/salon/team/SalonTeamManagement";
 import SalonTeamManager from "@/components/dashboard/salon/team/SalonTeamManager";
 import SalonManagersSection from "@/components/dashboard/salon/team/SalonManagersSection";
 import SalonServiceManager from "@/components/dashboard/salon/SalonServiceManager";
@@ -41,6 +42,8 @@ import SalonSwitcher from "@/components/dashboard/salon/SalonSwitcher";
 import AISmartReminder from "@/components/ai/AISmartReminder";
 import SalonReferralPanel from "@/components/dashboard/salon/referral/SalonReferralPanel";
 import SalonAvailabilityManager from "@/components/dashboard/salon/SalonAvailabilityManager";
+import SalonBookingsOverview from "@/components/dashboard/salon/bookings/SalonBookingsOverview";
+import SalonServiceManagement from "@/components/dashboard/salon/services/SalonServiceManagement";
 
 const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -144,6 +147,8 @@ const OwnerDashboard = () => {
                   </TabsContent>
 
                   <TabsContent value="bookings" className="space-y-8">
+                    <SalonBookingsOverview />
+                    
                     <SalonBookingFeed />
                     
                     <SalonBookingManager />
@@ -168,14 +173,15 @@ const OwnerDashboard = () => {
                   </TabsContent>
                   
                   <TabsContent value="team" className="space-y-8">
+                    <SalonTeamManagement />
                     <SalonManagersSection />
                     <SalonTeamManager />
                     <SalonReferralPanel />
                   </TabsContent>
                   
                   <TabsContent value="services" className="space-y-8">
+                    <SalonServiceManagement />
                     <SalonServiceManager />
-                    
                     <SalonCreditStatus />
                   </TabsContent>
                   
