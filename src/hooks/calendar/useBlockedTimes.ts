@@ -40,7 +40,7 @@ export const useBlockedTimes = (startDate: Date, endDate: Date) => {
     enabled: !!user?.id
   });
 
-  const { mutateAsync: saveBlockedTime, isLoading: isSavingBlockedTime } = useMutation({
+  const { mutateAsync: saveBlockedTime, isPending: isSavingBlockedTime } = useMutation({
     mutationFn: async (blockedTimeData: Partial<BlockedTime>) => {
       if (!user?.id) throw new Error('User not authenticated');
       
@@ -49,6 +49,11 @@ export const useBlockedTimes = (startDate: Date, endDate: Date) => {
         ...blockedTimeData,
         artist_id: user.id
       };
+      
+      // Ensure start_time and end_time are present
+      if (!dataToSave.start_time || !dataToSave.end_time) {
+        throw new Error("Start time and end time are required");
+      }
       
       const { data, error } = await supabase
         .from('blocked_times')
@@ -69,7 +74,7 @@ export const useBlockedTimes = (startDate: Date, endDate: Date) => {
     }
   });
 
-  const { mutateAsync: deleteBlockedTime, isLoading: isDeletingBlockedTime } = useMutation({
+  const { mutateAsync: deleteBlockedTime, isPending: isDeletingBlockedTime } = useMutation({
     mutationFn: async (id: string) => {
       if (!user?.id) throw new Error('User not authenticated');
       
@@ -92,13 +97,22 @@ export const useBlockedTimes = (startDate: Date, endDate: Date) => {
     }
   });
 
+  // Create void-returning wrapper functions to match expected types
+  const saveBlockedTimeVoid = async (blockedTimeData: Partial<BlockedTime>): Promise<void> => {
+    await saveBlockedTime(blockedTimeData);
+  };
+
+  const deleteBlockedTimeVoid = async (id: string): Promise<void> => {
+    await deleteBlockedTime(id);
+  };
+
   return {
     blockedTimes,
     isLoadingBlockedTimes,
     blockedTimesError,
     isSavingBlockedTime,
     isDeletingBlockedTime,
-    saveBlockedTime,
-    deleteBlockedTime
+    saveBlockedTime: saveBlockedTimeVoid,
+    deleteBlockedTime: deleteBlockedTimeVoid
   };
 };

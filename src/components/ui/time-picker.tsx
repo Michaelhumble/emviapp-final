@@ -10,36 +10,47 @@ import {
 } from '@/components/ui/select';
 
 interface TimePickerProps {
-  value: Date | null;
-  onChange: (date: Date | null) => void;
+  value?: Date | null;
+  onChange?: (date: Date | null) => void;
+  date?: Date | null; // Added to support existing usage
+  setDate?: (date: Date | null) => void; // Added to support existing usage
   label?: string;
   className?: string;
   disabled?: boolean;
+  granularity?: string; // Added to support granularity prop
 }
 
 export const TimePicker: React.FC<TimePickerProps> = ({
   value,
   onChange,
+  date, // Support both patterns
+  setDate,
   label,
   className,
   disabled = false,
+  granularity = '15',
 }) => {
+  // Use either value/onChange or date/setDate pattern
+  const selectedDate = date || value;
+  const handleChange = setDate || onChange;
+  
   const hours = Array.from({ length: 24 }, (_, i) => i);
-  const minutes = [0, 15, 30, 45];
+  const minuteStep = granularity === '30minutes' ? 30 : 15;
+  const minutes = Array.from({ length: 60 / minuteStep }, (_, i) => i * minuteStep);
 
-  const selectedHour = value ? value.getHours() : 9;
-  const selectedMinute = value ? Math.floor(value.getMinutes() / 15) * 15 : 0;
+  const selectedHour = selectedDate ? selectedDate.getHours() : 9;
+  const selectedMinute = selectedDate ? Math.floor(selectedDate.getMinutes() / minuteStep) * minuteStep : 0;
 
   const handleHourChange = (hour: string) => {
-    const newDate = new Date(value || new Date());
+    const newDate = new Date(selectedDate || new Date());
     newDate.setHours(parseInt(hour, 10));
-    onChange(newDate);
+    if (handleChange) handleChange(newDate);
   };
 
   const handleMinuteChange = (minute: string) => {
-    const newDate = new Date(value || new Date());
+    const newDate = new Date(selectedDate || new Date());
     newDate.setMinutes(parseInt(minute, 10));
-    onChange(newDate);
+    if (handleChange) handleChange(newDate);
   };
 
   const formatHour = (hour: number) => {

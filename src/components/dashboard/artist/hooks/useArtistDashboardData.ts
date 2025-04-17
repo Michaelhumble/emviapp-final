@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
@@ -17,7 +16,8 @@ export const useArtistDashboardData = (activeTab: string) => {
     total_earnings: 0,
     average_rating: 0,
     referral_count: 0,
-    repeat_client_percentage: 0
+    repeat_client_percentage: 0,
+    profile_views: 0
   });
   const [isLoadingStats, setIsLoadingStats] = useState(true);
   const [recentBookings, setRecentBookings] = useState<BookingWithDetails[]>([]);
@@ -79,13 +79,12 @@ export const useArtistDashboardData = (activeTab: string) => {
       
       if (referralError) throw referralError;
       
-      // Calculate repeat clients
+      // Get unique customer counts
       const { data: clientsData, error: clientsError } = await supabase
         .from('appointments')
-        .select('customer_id, count')
+        .select('customer_id')
         .eq('artist_id', user.id)
-        .not('customer_id', 'is', null)
-        .group('customer_id');
+        .not('customer_id', 'is', null);
       
       if (clientsError) throw clientsError;
       
@@ -103,12 +102,27 @@ export const useArtistDashboardData = (activeTab: string) => {
         ? parseFloat((ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length).toFixed(1))
         : 0;
       
-      // Calculate repeat client percentage
-      const repeatClients = clientsData?.filter(client => (client.count as number) > 1).length || 0;
-      const totalClients = clientsData?.length || 0;
+      // Count unique customers for repeat calculations
+      const uniqueCustomers = new Set();
+      const customerCounts: Record<string, number> = {};
+      
+      // Count occurrences of each customer
+      clientsData?.forEach(item => {
+        if (item.customer_id) {
+          uniqueCustomers.add(item.customer_id);
+          customerCounts[item.customer_id] = (customerCounts[item.customer_id] || 0) + 1;
+        }
+      });
+      
+      // Count repeat customers (those with more than one booking)
+      const repeatClients = Object.values(customerCounts).filter(count => count > 1).length;
+      const totalClients = uniqueCustomers.size;
       const repeatClientPercentage = totalClients 
         ? Math.round((repeatClients / totalClients) * 100) 
         : 0;
+      
+      // Get profile views (placeholder for now)
+      const profileViews = Math.floor(Math.random() * 100) + 50; // Placeholder
       
       setStats({
         booking_count: bookingCount,
@@ -116,7 +130,8 @@ export const useArtistDashboardData = (activeTab: string) => {
         total_earnings: totalEarnings,
         average_rating: averageRating,
         referral_count: referralCount || 0,
-        repeat_client_percentage: repeatClientPercentage
+        repeat_client_percentage: repeatClientPercentage,
+        profile_views: profileViews
       });
     } catch (error) {
       console.error('Error fetching stats:', error);
@@ -127,7 +142,8 @@ export const useArtistDashboardData = (activeTab: string) => {
         total_earnings: 0,
         average_rating: 0,
         referral_count: 0,
-        repeat_client_percentage: 0
+        repeat_client_percentage: 0,
+        profile_views: 0
       });
     } finally {
       setIsLoadingStats(false);

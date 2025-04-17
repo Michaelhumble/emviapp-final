@@ -6,6 +6,7 @@ export interface DashboardStats {
   average_rating: number;
   referral_count: number;
   repeat_client_percentage: number;
+  profile_views?: number; // Added this missing property
 }
 
 export interface MonthlyEarning {
@@ -31,9 +32,50 @@ export interface Booking {
   created_at: string;
   price?: number;
   note?: string;
+  artist_name?: string; // Added missing property
 }
 
 export interface BookingWithDetails extends Booking {
   service_id?: string;
   appointment_time?: string;
+}
+
+// Add missing types needed by other components
+export interface DaySchedule {
+  day: string;
+  time: string;
+  active: boolean;
+}
+
+export interface PortfolioImage {
+  id: string;
+  url: string;
+  name: string;
+  created_at: string;
+}
+
+export interface ArtistProfileState {
+  id: string;
+  user_id: string;
+  full_name: string;
+  portfolio_images: PortfolioImage[];
+  portfolio_urls: string[];
+  referral_count: number;
+  affiliate_code: string;
+  credits?: number;
+  [key: string]: any; // To allow for additional properties
+}
+
+export interface ArtistDataContextType {
+  artistProfile: ArtistProfileState | null;
+  loading: boolean;
+  error: Error | null;
+  refreshProfile: () => void;
+  handleCopyReferralLink: () => void;
+  copied: boolean;
+  firstName: string;
+  userCredits: number;
+  refreshArtistProfile: () => Promise<void>;
+  portfolioImages: PortfolioImage[];
+  loadingPortfolio: boolean;
 }

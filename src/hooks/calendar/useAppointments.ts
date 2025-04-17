@@ -54,7 +54,7 @@ export const useAppointments = (startDate: Date, endDate: Date) => {
     enabled: !!user?.id
   });
 
-  const { mutateAsync: saveAppointment, isLoading: isSavingAppointment } = useMutation({
+  const { mutateAsync: saveAppointment, isPending: isSavingAppointment } = useMutation({
     mutationFn: async (appointmentData: Partial<Appointment>) => {
       if (!user?.id) throw new Error('User not authenticated');
       
@@ -68,6 +68,11 @@ export const useAppointments = (startDate: Date, endDate: Date) => {
       // If creating new appointment
       if (!appointmentData.id) {
         dataToSave.created_at = new Date().toISOString();
+      }
+      
+      // Ensure required fields are present
+      if (!dataToSave.start_time || !dataToSave.end_time) {
+        throw new Error('Start time and end time are required');
       }
       
       const { data, error } = await supabase
@@ -89,7 +94,7 @@ export const useAppointments = (startDate: Date, endDate: Date) => {
     }
   });
 
-  const { mutateAsync: deleteAppointment, isLoading: isDeletingAppointment } = useMutation({
+  const { mutateAsync: deleteAppointment, isPending: isDeletingAppointment } = useMutation({
     mutationFn: async (id: string) => {
       if (!user?.id) throw new Error('User not authenticated');
       
@@ -112,13 +117,22 @@ export const useAppointments = (startDate: Date, endDate: Date) => {
     }
   });
 
+  // Create void-returning wrapper functions to match expected types
+  const saveAppointmentVoid = async (appointmentData: Partial<Appointment>): Promise<void> => {
+    await saveAppointment(appointmentData);
+  };
+
+  const deleteAppointmentVoid = async (id: string): Promise<void> => {
+    await deleteAppointment(id);
+  };
+
   return {
     appointments,
     isLoadingAppointments,
     appointmentsError,
     isSavingAppointment,
     isDeletingAppointment,
-    saveAppointment,
-    deleteAppointment
+    saveAppointment: saveAppointmentVoid,
+    deleteAppointment: deleteAppointmentVoid
   };
 };
