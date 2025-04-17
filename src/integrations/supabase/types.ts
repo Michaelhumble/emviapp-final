@@ -134,6 +134,33 @@ export type Database = {
           },
         ]
       }
+      artist_clients: {
+        Row: {
+          artist_id: string
+          created_at: string
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+        }
+        Insert: {
+          artist_id: string
+          created_at?: string
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+        }
+        Update: {
+          artist_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+        }
+        Relationships: []
+      }
       artist_services: {
         Row: {
           created_at: string

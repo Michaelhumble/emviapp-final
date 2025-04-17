@@ -1,7 +1,8 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
-import { ClientData } from "../types";
+import { ClientData, ArtistClientRow } from "../types";
 import { toast } from "sonner";
 
 export const useClientList = () => {
@@ -22,7 +23,7 @@ export const useClientList = () => {
 
       if (bookingsError) throw bookingsError;
 
-      // Next, get any manually added clients
+      // Next, get manually added clients
       const { data: manualClients, error: manualClientsError } = await supabase
         .from('artist_clients')
         .select('*')
@@ -47,15 +48,13 @@ export const useClientList = () => {
             existingClient.visitCount = (existingClient.visitCount || 0) + 1;
             existingClient.totalSpent = (existingClient.totalSpent || 0) + servicePrice;
             
-            // Update last visit if this booking is more recent
-            const bookingDate = booking.date_requested ? new Date(booking.date_requested) : null;
-            const existingDate = existingClient.lastVisit ? new Date(existingClient.lastVisit) : null;
-            
-            if (bookingDate && (!existingDate || bookingDate > existingDate)) {
-              existingClient.lastVisit = booking.date_requested;
+            if (booking.date_requested) {
+              const bookingDate = new Date(booking.date_requested);
+              if (!existingClient.lastVisit || bookingDate > new Date(existingClient.lastVisit)) {
+                existingClient.lastVisit = booking.date_requested;
+              }
             }
             
-            // Add this booking to the history
             existingClient.bookingHistory.push({
               id: booking.id,
               date: booking.date_requested,
@@ -66,16 +65,11 @@ export const useClientList = () => {
             
             clientMap.set(clientId, existingClient);
           } else {
-            // Get customer name from the booking or metadata
-            let clientName = 'Unknown Client';
-            let clientPhone = '';
+            // Get customer name from the booking metadata
+            const metadata = booking.metadata as Record<string, any>;
+            const clientName = metadata?.client_name || metadata?.customer_name || 'Unknown Client';
+            const clientPhone = metadata?.phone || metadata?.client_phone || '';
             
-            if (booking.metadata && typeof booking.metadata === 'object') {
-              clientName = booking.metadata.client_name || booking.metadata.customer_name || 'Unknown Client';
-              clientPhone = booking.metadata.phone || booking.metadata.client_phone || '';
-            }
-            
-            // Create new client record
             clientMap.set(clientId, {
               id: clientId,
               name: clientName,
@@ -99,7 +93,7 @@ export const useClientList = () => {
       
       // Add manually created clients
       if (manualClients) {
-        manualClients.forEach(client => {
+        (manualClients as ArtistClientRow[]).forEach(client => {
           if (!clientMap.has(client.id)) {
             clientMap.set(client.id, {
               id: client.id,
@@ -112,7 +106,7 @@ export const useClientList = () => {
               isManualEntry: true
             });
           } else {
-            // If this client also has bookings, update the notes from the manual entry
+            // If this client also has bookings, update the notes
             const existingClient = clientMap.get(client.id)!;
             existingClient.notes = client.notes || existingClient.notes;
             clientMap.set(client.id, existingClient);
@@ -129,7 +123,6 @@ export const useClientList = () => {
     }
   }, [user?.id]);
 
-  // Add a new client manually
   const addClient = async (clientData: { name: string; phone: string; notes: string }) => {
     if (!user?.id) return;
     
@@ -147,7 +140,6 @@ export const useClientList = () => {
       
       if (error) throw error;
       
-      // Add the new client to the local state
       if (data) {
         setClients(prev => [...prev, {
           id: data.id,
@@ -168,63 +160,18 @@ export const useClientList = () => {
     }
   };
 
-  // Update client notes
   const updateClientNotes = async (clientId: string, notes: string) => {
     if (!user?.id) return;
     
     try {
-      // Check if this is a manual entry client
-      const clientToUpdate = clients.find(c => c.id === clientId);
-      
-      if (clientToUpdate?.isManualEntry) {
-        // Update in artist_clients table
-        const { error } = await supabase
-          .from('artist_clients')
-          .update({ notes })
-          .eq('id', clientId)
-          .eq('artist_id', user.id);
-          
-        if (error) throw error;
-      } else {
-        // For booking-based clients, we need to create or update a record in artist_clients
-        const { data: existingEntry, error: checkError } = await supabase
-          .from('artist_clients')
-          .select()
-          .eq('client_id', clientId)
-          .eq('artist_id', user.id)
-          .maybeSingle();
-          
-        if (checkError) throw checkError;
+      const { error } = await supabase
+        .from('artist_clients')
+        .update({ notes })
+        .eq('id', clientId)
+        .eq('artist_id', user.id);
         
-        if (existingEntry) {
-          // Update existing entry
-          const { error } = await supabase
-            .from('artist_clients')
-            .update({ notes })
-            .eq('id', existingEntry.id);
-            
-          if (error) throw error;
-        } else {
-          // Create new entry with reference to the booking client
-          const clientData = clients.find(c => c.id === clientId);
-          
-          if (clientData) {
-            const { error } = await supabase
-              .from('artist_clients')
-              .insert({
-                artist_id: user.id,
-                client_id: clientId,
-                name: clientData.name,
-                phone: clientData.phone,
-                notes
-              });
-              
-            if (error) throw error;
-          }
-        }
-      }
+      if (error) throw error;
       
-      // Update local state
       setClients(prev => 
         prev.map(client => 
           client.id === clientId 
