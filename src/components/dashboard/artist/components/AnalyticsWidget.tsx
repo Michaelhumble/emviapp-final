@@ -1,299 +1,132 @@
 
+import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DashboardStats } from "@/components/dashboard/artist/types/ArtistDashboardTypes";
 import { 
-  Bar, 
-  BarChart, 
-  ResponsiveContainer, 
-  XAxis, 
-  YAxis, 
-  Tooltip as RechartsTooltip, 
-  Cell, 
-  PieChart, 
-  Pie,
-  Legend
-} from 'recharts';
-import { DashboardStats } from '../types/ArtistDashboardTypes';
-import { 
-  BarChart3, 
-  Calendar, 
-  Star, 
-  TrendingUp, 
+  DollarSign, 
   Users, 
-  HelpCircle, 
-  DollarSign,
-  PieChart as PieChartIcon
+  Star, 
+  Calendar,
+  TrendingUp,
+  Activity,
+  Eye
 } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface AnalyticsWidgetProps {
-  stats: DashboardStats;
+  stats: DashboardStats | null;
   isLoading?: boolean;
 }
 
-const AnalyticsWidget = ({ stats, isLoading = false }: AnalyticsWidgetProps) => {
-  // Weekly performance data
-  const performanceData = [
-    { name: 'Mon', bookings: 4, color: '#e0f2fe' },
-    { name: 'Tue', bookings: 3, color: '#e0f2fe' },
-    { name: 'Wed', bookings: 6, color: '#e0f2fe' },
-    { name: 'Thu', bookings: 4, color: '#e0f2fe' },
-    { name: 'Fri', bookings: 8, color: '#e0f2fe' },
-    { name: 'Sat', bookings: 9, color: '#bfdbfe' },
-    { name: 'Sun', bookings: 5, color: '#e0f2fe' },
-  ];
-  
-  // Find max day for highlighting
-  const maxBookingDay = [...performanceData].sort((a, b) => b.bookings - a.bookings)[0];
-  
-  // Update colors to highlight the max day
-  const chartData = performanceData.map(day => ({
-    ...day,
-    color: day.name === maxBookingDay.name ? '#3b82f6' : '#e0f2fe'
-  }));
-  
-  // Earnings by service data for donut chart
-  const earningsByService = [
-    { name: 'Manicure', value: 1200, color: '#3b82f6' },
-    { name: 'Pedicure', value: 900, color: '#8b5cf6' },
-    { name: 'Gel Nails', value: 1500, color: '#f472b6' },
-    { name: 'Nail Art', value: 850, color: '#34d399' },
-    { name: 'Other', value: 550, color: '#a3e635' },
-  ];
-  
-  // Stats with percent changes
-  const statsWithChanges = [
-    {
-      title: "Bookings",
-      value: stats.booking_count,
-      change: 12,
-      icon: <Calendar className="h-4 w-4 text-blue-600" />,
-      positive: true,
-      bgColor: "bg-blue-100",
-      tooltipText: "Total number of bookings in the last 30 days"
-    },
-    {
-      title: "Rating",
-      value: stats.average_rating?.toFixed(1) || "N/A",
-      change: 5,
-      icon: <Star className="h-4 w-4 text-yellow-600" />,
-      positive: true,
-      bgColor: "bg-yellow-100",
-      tooltipText: "Average customer rating from all reviews"
-    },
-    {
-      title: "Profile Views",
-      value: stats.profile_views || 42,
-      change: 24,
-      icon: <Users className="h-4 w-4 text-purple-600" />,
-      positive: true,
-      bgColor: "bg-purple-100",
-      tooltipText: "Number of times your profile was viewed in the last 30 days"
-    },
-    {
-      title: "Earnings",
-      value: `$${stats.total_earnings}`,
-      change: 16,
-      icon: <DollarSign className="h-4 w-4 text-green-600" />,
-      positive: true,
-      bgColor: "bg-green-100",
-      tooltipText: "Total earnings in the last 30 days"
-    }
-  ];
+const MetricCard = ({ 
+  icon: Icon, 
+  label, 
+  value, 
+  trend, 
+  trendLabel,
+  className
+}: { 
+  icon: any; 
+  label: string; 
+  value: string | number; 
+  trend?: number;
+  trendLabel?: string;
+  className?: string;
+}) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    className={cn(
+      "rounded-xl p-6 bg-gradient-to-br from-white to-gray-50/80 border shadow-md",
+      className
+    )}
+  >
+    <div className="flex justify-between items-start mb-4">
+      <div className="p-2 rounded-lg bg-purple-100">
+        <Icon className="h-5 w-5 text-purple-600" />
+      </div>
+      {trend && (
+        <span className={cn(
+          "text-xs px-2 py-1 rounded-full",
+          trend > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+        )}>
+          {trend > 0 ? "+" : ""}{trend}% {trendLabel}
+        </span>
+      )}
+    </div>
+    <motion.p 
+      className="text-2xl font-bold mb-1"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ 
+        duration: 1,
+        ease: [0.16, 1, 0.3, 1],
+        delay: 0.2 
+      }}
+    >
+      {value}
+    </motion.p>
+    <p className="text-sm text-gray-600">{label}</p>
+  </motion.div>
+);
 
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-white p-2 shadow-md rounded-md border text-xs">
-          <p className="font-medium text-gray-900">{`${payload[0].name}: $${payload[0].value}`}</p>
-        </div>
-      );
+const AnalyticsWidget = ({ stats, isLoading }: AnalyticsWidgetProps) => {
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[...Array(4)].map((_, i) => (
+          <div 
+            key={i}
+            className="h-32 rounded-xl bg-gray-100 animate-pulse"
+          />
+        ))}
+      </div>
+    );
+  }
+
+  const metrics = [
+    {
+      icon: DollarSign,
+      label: "Total Earnings",
+      value: stats?.total_earnings ? `$${stats.total_earnings.toLocaleString()}` : "$0",
+      trend: 12,
+      trendLabel: "vs last month",
+      className: "from-purple-50 to-purple-100/30"
+    },
+    {
+      icon: Calendar,
+      label: "Completed Services",
+      value: stats?.completed_services || 0,
+      trend: 8,
+      trendLabel: "this week",
+      className: "from-blue-50 to-blue-100/30"
+    },
+    {
+      icon: Star,
+      label: "Average Rating",
+      value: stats?.average_rating?.toFixed(1) || "0.0",
+      className: "from-amber-50 to-amber-100/30"
+    },
+    {
+      icon: Eye,
+      label: "Profile Views",
+      value: stats?.profile_views || 0,
+      trend: 15,
+      trendLabel: "this week",
+      className: "from-green-50 to-green-100/30"
     }
-    return null;
-  };
+  ];
 
   return (
-    <Card className="shadow-sm border-blue-100">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-xl font-serif flex items-center">
-            <BarChart3 className="h-5 w-5 text-blue-500 mr-2" />
-            Performance Analytics
-          </CardTitle>
-          
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs">
-                <p>View your booking performance and client engagement metrics</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-      </CardHeader>
-      
-      <CardContent>
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4 mb-6">
-          {statsWithChanges.map((stat, index) => (
-            <div 
-              key={index} 
-              className={`rounded-lg ${stat.bgColor} bg-opacity-20 p-4 relative overflow-hidden shadow-sm border border-opacity-30`}
-              style={{ borderColor: stat.bgColor }}
-            >
-              <div className="absolute top-0 right-0 p-2">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <HelpCircle className="h-4 w-4 text-muted-foreground/50 cursor-help" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{stat.tooltipText}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-              
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground flex items-center">
-                    <span className="rounded-full p-1.5 mr-2" style={{ background: stat.bgColor }}>
-                      {stat.icon}
-                    </span>
-                    {stat.title}
-                  </h3>
-                  <div className="mt-2 flex items-center gap-2">
-                    <span className="text-2xl font-bold">{stat.value}</span>
-                    <Badge className={`${stat.positive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                      <TrendingUp className="h-3 w-3 inline mr-1" />
-                      {stat.change}%
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
-          {/* Earnings By Service Donut Chart */}
-          <div className="border rounded-lg p-4 bg-white">
-            <div className="flex justify-between items-center mb-4">
-              <h4 className="text-sm font-medium flex items-center">
-                <PieChartIcon className="h-4 w-4 mr-2 text-indigo-500" />
-                Earnings By Service
-              </h4>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="text-xs text-blue-600 font-medium flex items-center cursor-help">
-                      <TrendingUp className="h-3 w-3 mr-1" />
-                      16% from last month
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>16% increase in earnings compared to previous month</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            
-            <div className="h-[220px] flex items-center justify-center">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={earningsByService}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={2}
-                    dataKey="value"
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    labelLine={false}
-                  >
-                    {earningsByService.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Legend
-                    layout="horizontal"
-                    verticalAlign="bottom"
-                    align="center"
-                    wrapperStyle={{ fontSize: '12px', marginTop: '10px' }}
-                  />
-                  <RechartsTooltip content={<CustomTooltip />} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Weekly Bookings Bar Chart */}
-          <div className="border rounded-lg p-4 bg-white">
-            <div className="flex justify-between items-center mb-4">
-              <h4 className="text-sm font-medium flex items-center">
-                <BarChart3 className="h-4 w-4 mr-2 text-blue-500" />
-                Weekly Bookings
-              </h4>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="text-xs text-blue-600 font-medium flex items-center cursor-help">
-                      <TrendingUp className="h-3 w-3 mr-1" />
-                      16% from last week
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>16% increase in bookings compared to previous week</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <XAxis 
-                  dataKey="name" 
-                  axisLine={false}
-                  tickLine={false}
-                  padding={{ left: 10, right: 10 }}
-                  tick={{ fontSize: 12 }}
-                />
-                <YAxis 
-                  hide 
-                  domain={[0, 'dataMax + 2']}
-                />
-                <RechartsTooltip 
-                  cursor={{ fill: 'rgba(59, 130, 246, 0.05)' }}
-                  content={({ active, payload }) => {
-                    if (active && payload && payload.length) {
-                      return (
-                        <div className="bg-white p-2 shadow-md rounded-md border text-xs">
-                          <p className="font-medium text-gray-900">{`${payload[0].payload.name}: ${payload[0].value} bookings`}</p>
-                          {payload[0].payload.name === maxBookingDay.name && (
-                            <p className="text-blue-600 text-[10px]">Best performing day</p>
-                          )}
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-                <Bar 
-                  dataKey="bookings" 
-                  radius={[4, 4, 0, 0]}
-                >
-                  {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {metrics.map((metric, index) => (
+        <MetricCard 
+          key={metric.label}
+          {...metric}
+        />
+      ))}
+    </div>
   );
 };
 
