@@ -1267,6 +1267,33 @@ export type Database = {
           },
         ]
       }
+      salon_views: {
+        Row: {
+          id: string
+          salon_id: string
+          session_id: string | null
+          source: string | null
+          viewed_at: string | null
+          viewer_id: string | null
+        }
+        Insert: {
+          id?: string
+          salon_id: string
+          session_id?: string | null
+          source?: string | null
+          viewed_at?: string | null
+          viewer_id?: string | null
+        }
+        Update: {
+          id?: string
+          salon_id?: string
+          session_id?: string | null
+          source?: string | null
+          viewed_at?: string | null
+          viewer_id?: string | null
+        }
+        Relationships: []
+      }
       salons: {
         Row: {
           about: string | null
@@ -1777,6 +1804,10 @@ export type Database = {
           p_review_text: string
         }
         Returns: boolean
+      }
+      track_salon_view: {
+        Args: { p_salon_id: string; p_viewer_id?: string; p_source?: string }
+        Returns: undefined
       }
       user_has_salon_access: {
         Args: {
