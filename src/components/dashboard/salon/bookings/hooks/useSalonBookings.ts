@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSalon } from "@/context/salon";
@@ -77,29 +76,18 @@ export const useSalonBookings = () => {
 
       // Transform the data to match our SalonBooking type
       const formattedBookings = (data || []).map(booking => {
-        // Extract values with proper type checking and defaults
-        const senderData = booking.sender || {};
-        const serviceData = booking.service || {};
-        const recipientData = booking.recipient || {};
+        // Type assertion to help TypeScript understand these are objects with properties
+        const senderData = booking.sender as { full_name?: string; email?: string; phone?: string } | null;
+        const serviceData = booking.service as { title?: string; price?: number; duration_minutes?: number } | null;
+        const recipientData = booking.recipient as { full_name?: string } | null;
         
         // Safely access nested properties with fallbacks
-        const clientName = typeof senderData === 'object' && senderData !== null ? 
-          (senderData.full_name || "Unknown Client") : "Unknown Client";
-          
-        const clientEmail = typeof senderData === 'object' && senderData !== null ? 
-          senderData.email : null;
-          
-        const clientPhone = typeof senderData === 'object' && senderData !== null ? 
-          senderData.phone : null;
-          
-        const serviceName = typeof serviceData === 'object' && serviceData !== null ? 
-          (serviceData.title || "General Service") : "General Service";
-          
-        const servicePrice = typeof serviceData === 'object' && serviceData !== null ? 
-          (serviceData.price || 0) : 0;
-          
-        const staffName = typeof recipientData === 'object' && recipientData !== null ? 
-          recipientData.full_name : null;
+        const clientName = senderData?.full_name || "Unknown Client";
+        const clientEmail = senderData?.email || null;
+        const clientPhone = senderData?.phone || null;
+        const serviceName = serviceData?.title || "General Service";
+        const servicePrice = serviceData?.price || 0;
+        const staffName = recipientData?.full_name || null;
         
         const bookingStatus = booking.status || 'pending';
         // Ensure the status is one of the allowed values

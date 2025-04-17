@@ -26,15 +26,28 @@ export const useSalonInsights = () => {
 
       try {
         setLoading(true);
-        const { data, error } = await supabase
+        
+        // Use a generic query approach since salon_insights is a materialized view
+        const { data, error: queryError } = await supabase
           .from('salon_insights')
           .select('*')
           .eq('id', currentSalon.id)
           .single();
 
-        if (error) throw error;
+        if (queryError) throw queryError;
 
-        setInsights(data);
+        // Type guard to ensure data matches our expected interface
+        if (data) {
+          const typedData: SalonInsights = {
+            total_bookings: data.total_bookings || 0,
+            bookings_this_month: data.bookings_this_month || 0,
+            profile_views_week: data.profile_views_week || 0,
+            total_post_views: data.total_post_views || 0,
+            repeat_client_rate: data.repeat_client_rate || 0
+          };
+          
+          setInsights(typedData);
+        }
       } catch (err) {
         console.error('Error fetching salon insights:', err);
         setError(err instanceof Error ? err : new Error('Failed to fetch insights'));
