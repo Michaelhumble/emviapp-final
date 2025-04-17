@@ -48,40 +48,62 @@ export const useEarningsData = () => {
       const bookingIds = completedBookings.map(booking => booking.booking_id);
       
       // Fetch booking details for client names
+      // Use explicit field selection instead of foreign key references
       const { data: bookingDetails, error: bookingError } = await supabase
         .from('bookings')
-        .select(`
-          id,
-          sender_id,
-          service_id,
-          users:sender_id(full_name),
-          services:service_id(title)
-        `)
-        .in('id', bookingIds);
+        .select('id, sender_id, service_id');
         
       if (bookingError) throw bookingError;
-
-      // Create a map for easy lookup
+      
+      // Now fetch user details separately
+      const userIds = bookingDetails?.map(booking => booking.sender_id) || [];
+      const { data: userDetails, error: userError } = await supabase
+        .from('users')
+        .select('id, full_name')
+        .in('id', userIds);
+        
+      if (userError) throw userError;
+      
+      // And service details separately
+      const serviceIds = bookingDetails?.map(booking => booking.service_id).filter(id => id) || [];
+      const { data: serviceDetails, error: serviceError } = await supabase
+        .from('services')
+        .select('id, title')
+        .in('id', serviceIds);
+        
+      if (serviceError) throw serviceError;
+      
+      // Create maps for easy lookup
+      const userMap = new Map();
+      userDetails?.forEach(user => {
+        userMap.set(user.id, user.full_name);
+      });
+      
+      const serviceMap = new Map();
+      serviceDetails?.forEach(service => {
+        serviceMap.set(service.id, service.title);
+      });
+      
+      // Create a map for booking data
       const bookingMap = new Map();
       bookingDetails?.forEach(booking => {
         bookingMap.set(booking.id, {
-          clientName: booking.users?.full_name || 'Unknown',
-          serviceName: booking.services?.title || 'Unknown Service'
+          senderId: booking.sender_id,
+          serviceId: booking.service_id
         });
       });
 
       // Transform data for transactions
       const transformedTransactions = completedBookings.map(booking => {
-        const bookingInfo = bookingMap.get(booking.booking_id) || { 
-          clientName: 'Unknown', 
-          serviceName: 'Unknown Service' 
-        };
+        const bookingInfo = bookingMap.get(booking.booking_id) || { senderId: null, serviceId: null };
+        const clientName = bookingInfo.senderId ? userMap.get(bookingInfo.senderId) || 'Unknown' : 'Unknown';
+        const serviceName = bookingInfo.serviceId ? serviceMap.get(bookingInfo.serviceId) || 'Unknown Service' : 'Unknown Service';
         
         return {
           id: booking.id,
           date: booking.created_at,
-          clientName: bookingInfo.clientName,
-          serviceName: bookingInfo.serviceName,
+          clientName,
+          serviceName,
           price: booking.service_price || 0,
           status: booking.paid ? 'paid' as const : 'pending' as const
         };
