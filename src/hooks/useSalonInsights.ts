@@ -36,13 +36,24 @@ export const useSalonInsights = () => {
       try {
         setLoading(true);
         
-        // Use the RPC function we created
-        const { data, error: functionError } = await supabase
-          .rpc('get_salon_insights', { salon_id: currentSalon.id });
+        // Instead of using rpc, let's use a direct query with proper error handling
+        const { data, error: queryError } = await supabase
+          .from('salons')
+          .select(`
+            id,
+            salon_name,
+            (select count(*) from bookings where recipient_id in (select id from salon_staff where salon_id = salons.id)) as total_bookings,
+            (select count(*) from bookings where recipient_id in (select id from salon_staff where salon_id = salons.id) and date_requested >= date_trunc('month', now())) as bookings_this_month,
+            (select count(*) from profile_views where artist_id in (select id from salon_staff where salon_id = salons.id) and viewed_at >= date_trunc('week', now())) as profile_views_week,
+            (select count(*) from posts where user_id = salons.owner_id) as total_post_views,
+            (select coalesce(round((select count(*) from bookings where recipient_id in (select id from salon_staff where salon_id = salons.id) and sender_id in (select sender_id from bookings where recipient_id in (select id from salon_staff where salon_id = salons.id) group by sender_id having count(*) > 1)) * 100.0 / nullif(count(*), 0)), 0) from bookings where recipient_id in (select id from salon_staff where salon_id = salons.id)) as repeat_client_rate
+          `)
+          .eq('id', currentSalon.id)
+          .single();
         
-        if (functionError) {
-          // If we can't get data from the RPC function, generate default values
-          console.warn('Error fetching salon insights:', functionError);
+        if (queryError) {
+          // If we can't get data from the query, generate default values
+          console.warn('Error fetching salon insights:', queryError);
           
           // Set default fallback data
           const defaultInsights: SalonInsights = {
@@ -54,16 +65,14 @@ export const useSalonInsights = () => {
           };
           
           setInsights(defaultInsights);
-        } else if (data && data.length > 0) {
-          // Process and normalize the data from the RPC function
-          const rawData = data[0] as SalonInsightsRaw;
-          
+        } else if (data) {
+          // Process and normalize the data
           const typedData: SalonInsights = {
-            total_bookings: Number(rawData.total_bookings || 0),
-            bookings_this_month: Number(rawData.bookings_this_month || 0),
-            profile_views_week: Number(rawData.profile_views_week || 0),
-            total_post_views: Number(rawData.total_post_views || 0),
-            repeat_client_rate: Number(rawData.repeat_client_rate || 0)
+            total_bookings: Number(data.total_bookings || 0),
+            bookings_this_month: Number(data.bookings_this_month || 0),
+            profile_views_week: Number(data.profile_views_week || 0),
+            total_post_views: Number(data.total_post_views || 0),
+            repeat_client_rate: Number(data.repeat_client_rate || 0)
           };
           
           setInsights(typedData);
