@@ -28,7 +28,6 @@ export interface ServiceType {
   label: string;
 }
 
-// Adding missing types
 export interface DaySchedule {
   id?: string;
   day: string;
@@ -62,6 +61,8 @@ export interface PortfolioImage {
   url: string;
   title?: string;
   description?: string;
+  name?: string; // Add name property
+  created_at?: string;
 }
 
 export interface ArtistProfileState {
@@ -75,6 +76,17 @@ export interface ArtistProfileState {
   rating?: number;
   portfolio?: PortfolioImage[];
   services?: any[];
+  
+  // Add missing properties
+  full_name?: string;
+  user_id?: string;
+  credits?: number;
+  referral_count?: number; 
+  affiliate_code?: string;
+  portfolio_urls?: string[];
+  preferred_language?: string;
+  accepts_bookings?: boolean;
+  preferences?: string[];
 }
 
 export interface ArtistDataContextType {
@@ -82,4 +94,14 @@ export interface ArtistDataContextType {
   loading: boolean;
   error: Error | null;
   updateProfile: (data: Partial<ArtistProfileState>) => Promise<void>;
+  
+  // Add missing properties 
+  refreshProfile: () => void;
+  refreshArtistProfile: () => Promise<void>;
+  handleCopyReferralLink?: () => void;
+  copied?: boolean;
+  firstName?: string;
+  userCredits?: number;
+  portfolioImages: PortfolioImage[];
+  loadingPortfolio: boolean;
 }
