@@ -1,57 +1,42 @@
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
-import { MessageSquare, Heart, Sparkles } from 'lucide-react';
+import { motion } from "framer-motion";
+import { MessageSquare, Award, ThumbsUp } from "lucide-react";
 
 interface PersonalMessageBannerProps {
-  message?: string;
   artistName?: string;
 }
 
-const PersonalMessageBanner: React.FC<PersonalMessageBannerProps> = ({ 
-  message = "Behind every design I create is a story. I'm here to help you feel beautiful, powerful, and seen.",
-  artistName = "Your Artist"
-}) => {
+const PersonalMessageBanner = ({ artistName }: PersonalMessageBannerProps) => {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ 
-        type: "spring", 
-        stiffness: 100, 
-        delay: 0.3 
-      }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="rounded-xl overflow-hidden border border-purple-100 shadow-sm bg-gradient-to-r from-purple-50 to-pink-50"
     >
-      <Card className="border-purple-100 bg-gradient-to-r from-purple-50 to-pink-50 overflow-hidden">
-        <CardContent className="p-6">
-          <div className="flex items-start space-x-4">
-            <div className="rounded-full bg-white p-2 shadow-sm">
-              <Heart className="h-5 w-5 text-pink-500" />
-            </div>
-            
-            <div>
-              <motion.p 
-                className="text-gray-700 italic mb-2 relative font-serif"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                <span className="text-3xl text-purple-300 absolute -left-4 -top-2">"</span>
-                {message}
-                <span className="text-3xl text-purple-300">"</span>
-              </motion.p>
-              
+      <div className="p-6">
+        <div className="flex items-start">
+          <div className="hidden sm:flex items-center justify-center w-12 h-12 rounded-full bg-white mr-4 shadow-sm flex-shrink-0">
+            <MessageSquare className="h-6 w-6 text-purple-500" />
+          </div>
+          <div>
+            <h3 className="text-lg font-medium text-gray-800 mb-2">A message from {artistName || "the artist"}</h3>
+            <p className="text-gray-600">
+              Thank you for visiting my profile! I take pride in my work and strive to create unique, beautiful nail designs for every client. I look forward to working with you and bringing your nail visions to life!
+            </p>
+            <div className="flex items-center mt-4 text-sm text-gray-500">
+              <div className="flex items-center mr-4">
+                <Award className="h-4 w-4 mr-1 text-purple-500" />
+                <span>Professional Service</span>
+              </div>
               <div className="flex items-center">
-                <Sparkles className="h-4 w-4 text-purple-500 mr-2" />
-                <span className="text-sm font-medium text-purple-700 font-serif">
-                  {artistName}
-                </span>
+                <ThumbsUp className="h-4 w-4 mr-1 text-purple-500" />
+                <span>100% Satisfaction</span>
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </motion.div>
   );
 };

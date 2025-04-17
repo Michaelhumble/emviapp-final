@@ -1,4 +1,3 @@
-
 export interface Location {
   lat: number | null;
   lng: number | null;
@@ -64,7 +63,7 @@ export interface UserProfile {
   // Professional information
   specialties?: string[];
   services?: string[] | any[];
-  gallery?: string[];
+  gallery?: string[] | any[];
   resume?: string;
   certifications?: string[];
   yearsOfExperience?: number;
@@ -100,4 +99,38 @@ export function getLocationString(location: Location | string | undefined | null
   
   // Handle Location object
   return location.address || '';
+}
+
+// New interface for portfolio images
+export interface PortfolioImage {
+  id: string;
+  url: string;
+  alt?: string;
+  created_at?: string;
+}
+
+// New interface for service items
+export interface ServiceItem {
+  id: string;
+  name: string;
+  price: number;
+  duration: string;
+  description?: string;
+}
+
+// Helper function to safely get portfolio images
+export function getPortfolioImages(profile: UserProfile): PortfolioImage[] {
+  if (!profile) return [];
+  
+  // Handle array of image URLs
+  if (profile.gallery && Array.isArray(profile.gallery)) {
+    return profile.gallery.map((url, index) => ({
+      id: `gallery-${index}`,
+      url: typeof url === 'string' ? url : '',
+      alt: `Portfolio image ${index + 1}`
+    }));
+  }
+  
+  // Empty default
+  return [];
 }

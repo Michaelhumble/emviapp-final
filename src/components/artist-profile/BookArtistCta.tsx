@@ -1,9 +1,8 @@
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Calendar, Star } from 'lucide-react';
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Calendar, Clock, Star, ArrowRight } from "lucide-react";
+import { useState } from "react";
 
 interface BookArtistCtaProps {
   artistName: string;
@@ -11,35 +10,70 @@ interface BookArtistCtaProps {
   onBookNow: () => void;
 }
 
-const BookArtistCta: React.FC<BookArtistCtaProps> = ({ artistName, rating, onBookNow }) => {
+const BookArtistCta = ({ artistName, rating, onBookNow }: BookArtistCtaProps) => {
+  const [isHovered, setIsHovered] = useState(false);
+  
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ type: "spring", stiffness: 100, delay: 0.4 }}
-      whileHover={{ scale: 1.03 }}
-      className="transition-all duration-200"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="rounded-xl overflow-hidden border border-purple-100 shadow-sm"
     >
-      <Card className="border-0 shadow-lg overflow-hidden bg-white/95 backdrop-blur-sm">
-        <CardContent className="p-5">
-          <div className="flex flex-col items-center text-center mb-4">
-            <h3 className="font-semibold text-lg mb-1">Book with {artistName}</h3>
-            <div className="flex items-center gap-1">
-              <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
-              <span className="text-sm font-medium">{rating}</span>
-              <span className="text-xs text-gray-500">(42 reviews)</span>
+      <div className="bg-gradient-to-br from-purple-100 to-pink-100 px-6 py-5 border-b border-purple-200">
+        <h3 className="text-lg font-medium text-purple-900">Book with {artistName}</h3>
+        <div className="flex items-center mt-1">
+          <div className="flex items-center">
+            {[...Array(5)].map((_, i) => (
+              <Star 
+                key={i} 
+                className={`h-4 w-4 ${i < Math.floor(rating) ? 'text-amber-500 fill-amber-500' : 'text-gray-300'}`} 
+              />
+            ))}
+          </div>
+          <span className="ml-2 text-sm text-gray-600">{rating.toFixed(1)}</span>
+        </div>
+      </div>
+      
+      <div className="bg-white p-6">
+        <div className="space-y-4 mb-5">
+          <div className="flex items-start">
+            <Calendar className="h-5 w-5 text-purple-500 mt-0.5 mr-3 flex-shrink-0" />
+            <div>
+              <h4 className="font-medium text-gray-900">Flexible Scheduling</h4>
+              <p className="text-sm text-gray-500">Book appointments that work with your schedule</p>
             </div>
           </div>
           
+          <div className="flex items-start">
+            <Clock className="h-5 w-5 text-purple-500 mt-0.5 mr-3 flex-shrink-0" />
+            <div>
+              <h4 className="font-medium text-gray-900">Quick Response</h4>
+              <p className="text-sm text-gray-500">Usually responds within 2 hours</p>
+            </div>
+          </div>
+        </div>
+        
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onHoverStart={() => setIsHovered(true)}
+          onHoverEnd={() => setIsHovered(false)}
+        >
           <Button 
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-md"
             onClick={onBookNow}
+            className="w-full py-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
           >
-            <Calendar className="mr-2 h-4 w-4" />
-            Book Now
+            <span className="mr-2">Book Now</span>
+            <motion.div
+              animate={{ x: isHovered ? 5 : 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ArrowRight className="h-4 w-4" />
+            </motion.div>
           </Button>
-        </CardContent>
-      </Card>
+        </motion.div>
+      </div>
     </motion.div>
   );
 };

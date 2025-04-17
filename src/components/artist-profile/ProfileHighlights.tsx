@@ -1,8 +1,13 @@
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
-import { Star, Users, Award, TrendingUp, Clock, Heart, Eye, DollarSign } from 'lucide-react';
+import { motion } from "framer-motion";
+import { 
+  Star, 
+  Users, 
+  Shield, 
+  Clock, 
+  ArrowUpRight, 
+  Calendar 
+} from "lucide-react";
 
 interface ProfileHighlightsProps {
   stats: {
@@ -15,79 +20,73 @@ interface ProfileHighlightsProps {
   };
 }
 
-const ProfileHighlights: React.FC<ProfileHighlightsProps> = ({ stats }) => {
-  const metrics = [
+const ProfileHighlights = ({ stats }: ProfileHighlightsProps) => {
+  const items = [
     {
-      icon: Star,
       label: "Rating",
-      value: stats.rating,
-      color: "text-amber-500"
+      value: `${stats.rating}/5`,
+      icon: <Star className="h-4 w-4 text-amber-500" />,
+      color: "bg-amber-50 border-amber-100",
     },
     {
-      icon: Users,
       label: "Happy Clients",
-      value: stats.clients,
-      color: "text-blue-500"
+      value: stats.clients.toString(),
+      icon: <Users className="h-4 w-4 text-blue-500" />,
+      color: "bg-blue-50 border-blue-100",
     },
     {
-      icon: TrendingUp,
-      label: "Completion",
+      label: "Completion Rate",
       value: `${stats.completionRate}%`,
-      color: "text-green-500"
+      icon: <Shield className="h-4 w-4 text-emerald-500" />,
+      color: "bg-emerald-50 border-emerald-100",
     },
     {
-      icon: Clock,
       label: "Response Time",
       value: stats.responseTime,
-      color: "text-purple-500"
+      icon: <Clock className="h-4 w-4 text-purple-500" />,
+      color: "bg-purple-50 border-purple-100",
     },
     {
-      icon: Heart,
       label: "Repeat Clients",
-      value: stats.repeatClients,
-      color: "text-pink-500"
+      value: `${stats.repeatClients}%`,
+      icon: <ArrowUpRight className="h-4 w-4 text-rose-500" />,
+      color: "bg-rose-50 border-rose-100",
     },
     {
-      icon: Award,
       label: "Experience",
       value: stats.experience,
-      color: "text-indigo-500"
+      icon: <Calendar className="h-4 w-4 text-indigo-500" />,
+      color: "bg-indigo-50 border-indigo-100",
     }
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.5, delay: 0.1 }}
+      className="rounded-xl overflow-hidden border border-gray-100 shadow-sm"
     >
-      <h2 className="text-xl font-serif font-semibold mb-4 flex items-center">
-        <Award className="mr-2 h-5 w-5 text-purple-500" />
-        Artist Performance
-      </h2>
-      
-      <Card className="border-gray-100 overflow-hidden">
-        <CardContent className="p-6">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {metrics.map((metric, index) => (
-              <motion.div
-                key={metric.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -4, scale: 1.03 }}
-                className="transition-all duration-200"
-              >
-                <div className="text-center p-4 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-100 h-full flex flex-col justify-center items-center">
-                  <metric.icon className={`h-6 w-6 mb-2 ${metric.color}`} />
-                  <div className="text-2xl font-bold">{metric.value}</div>
-                  <div className="text-sm text-gray-600">{metric.label}</div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <div className="bg-gradient-to-r from-purple-50 to-pink-50 px-6 py-4 border-b border-gray-100">
+        <h3 className="text-lg font-medium text-gray-800">Professional Highlights</h3>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 p-6 bg-white">
+        {items.map((item, index) => (
+          <motion.div
+            key={item.label}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 + index * 0.05 }}
+            className={`flex flex-col items-center justify-center p-3 rounded-lg border ${item.color}`}
+          >
+            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white mb-2 shadow-sm">
+              {item.icon}
+            </div>
+            <span className="font-medium text-lg">{item.value}</span>
+            <span className="text-xs text-gray-500 mt-1">{item.label}</span>
+          </motion.div>
+        ))}
+      </div>
     </motion.div>
   );
 };
