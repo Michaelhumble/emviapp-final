@@ -87,7 +87,7 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
           id: data.id,
           user_id: data.id,
           full_name: data.full_name || '',
-          portfolio_images: [],
+          portfolio: [],
           portfolio_urls: data.portfolio_urls || [],
           referral_count: data.credits || 0,
           affiliate_code: data.referral_code || '',
@@ -138,11 +138,38 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
     fetchArtistProfile();
   };
   
+  // Update profile function
+  const updateProfile = async (data: Partial<ArtistProfileState>) => {
+    if (!user?.id) return;
+    
+    try {
+      setState(prev => ({ ...prev, loading: true }));
+      
+      const { error } = await supabase
+        .from('users')
+        .update({
+          ...data,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+      
+      if (error) throw error;
+      
+      await fetchArtistProfile();
+      toast.success("Profile updated successfully");
+    } catch (err) {
+      console.error('Error updating profile:', err);
+      toast.error("Failed to update profile");
+      setState(prev => ({ ...prev, loading: false }));
+    }
+  };
+  
   // Create the value object with all required properties from ArtistDataContextType
   const value: ArtistDataContextType = {
     artistProfile: state.artistProfile,
     loading: state.loading,
     error: state.error,
+    updateProfile,
     refreshProfile,
     handleCopyReferralLink,
     copied,
