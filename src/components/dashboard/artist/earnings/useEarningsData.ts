@@ -33,23 +33,10 @@ export const useEarningsData = () => {
       const monthStart = startOfMonth(now);
       const monthEnd = endOfMonth(now);
 
+      // First, fetch the completed bookings
       const { data: completedBookings, error } = await supabase
         .from('completed_bookings')
-        .select(`
-          *,
-          bookings (
-            sender_id,
-            service_id,
-            created_at,
-            status
-          ),
-          services (
-            title
-          ),
-          users!bookings(
-            full_name
-          )
-        `)
+        .select('*, booking_id')
         .eq('artist_id', user?.id)
         .gte('created_at', monthStart.toISOString())
         .lte('created_at', monthEnd.toISOString())
@@ -57,15 +44,48 @@ export const useEarningsData = () => {
 
       if (error) throw error;
 
+      // Now fetch related booking data to get client names
+      const bookingIds = completedBookings.map(booking => booking.booking_id);
+      
+      // Fetch booking details for client names
+      const { data: bookingDetails, error: bookingError } = await supabase
+        .from('bookings')
+        .select(`
+          id,
+          sender_id,
+          service_id,
+          users:sender_id(full_name),
+          services:service_id(title)
+        `)
+        .in('id', bookingIds);
+        
+      if (bookingError) throw bookingError;
+
+      // Create a map for easy lookup
+      const bookingMap = new Map();
+      bookingDetails?.forEach(booking => {
+        bookingMap.set(booking.id, {
+          clientName: booking.users?.full_name || 'Unknown',
+          serviceName: booking.services?.title || 'Unknown Service'
+        });
+      });
+
       // Transform data for transactions
-      const transformedTransactions = completedBookings.map(booking => ({
-        id: booking.id,
-        date: booking.created_at,
-        clientName: booking.users?.full_name || 'Unknown',
-        serviceName: booking.services?.title || 'Unknown Service',
-        price: booking.service_price || 0,
-        status: booking.paid ? 'paid' as const : 'pending' as const
-      }));
+      const transformedTransactions = completedBookings.map(booking => {
+        const bookingInfo = bookingMap.get(booking.booking_id) || { 
+          clientName: 'Unknown', 
+          serviceName: 'Unknown Service' 
+        };
+        
+        return {
+          id: booking.id,
+          date: booking.created_at,
+          clientName: bookingInfo.clientName,
+          serviceName: bookingInfo.serviceName,
+          price: booking.service_price || 0,
+          status: booking.paid ? 'paid' as const : 'pending' as const
+        };
+      });
 
       // Calculate stats
       const weeklyBookings = completedBookings.filter(

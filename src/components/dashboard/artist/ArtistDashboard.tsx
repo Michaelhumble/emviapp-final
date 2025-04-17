@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -7,7 +8,7 @@ import AnalyticsWidget from './components/AnalyticsWidget';
 import { WeeklyCalendar } from './calendar/WeeklyCalendar';
 import ServicesManager from './services/ServicesManager';
 import ReferralWidget from './components/ReferralWidget';
-import EarningsSection from './earnings/EarningsSection';
+import { EarningsSection } from './earnings/EarningsSection';
 import MainGrid from './components/MainGrid';
 import { BarChart3, Calendar, Palette, DollarSign, Sparkles, Clock } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
