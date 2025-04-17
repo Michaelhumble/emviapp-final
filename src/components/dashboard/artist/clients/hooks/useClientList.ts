@@ -17,24 +17,112 @@ export const useClientList = (): UseClientListReturn => {
     
     setIsLoading(true);
     try {
-      const { data: artistClients, error } = await supabase
+      // Get manual clients first
+      const { data: artistClients, error: clientsError } = await supabase
         .from('artist_clients')
         .select('*')
         .eq('artist_id', user.id);
 
-      if (error) throw error;
+      if (clientsError) throw clientsError;
 
-      // Convert artist_clients to ClientData format
+      // Get completed bookings to calculate totals
+      const { data: bookings, error: bookingsError } = await supabase
+        .from('completed_bookings')
+        .select('*, booking_id')
+        .eq('artist_id', user.id);
+
+      if (bookingsError) throw bookingsError;
+
+      // Get booking details for customer info
+      const bookingIds = bookings?.map(b => b.booking_id) || [];
+      const { data: bookingDetails, error: bookingDetailsError } = await supabase
+        .from('bookings')
+        .select('id, sender_id, service_id')
+        .in('id', bookingIds);
+
+      if (bookingDetailsError) throw bookingDetailsError;
+
+      // Get customer names
+      const customerIds = [...new Set(bookingDetails?.map(b => b.sender_id) || [])];
+      const { data: customers, error: customersError } = await supabase
+        .from('users')
+        .select('id, full_name')
+        .in('id', customerIds);
+
+      if (customersError) throw customersError;
+
+      // Create lookup maps
+      const customerMap = new Map(customers?.map(c => [c.id, c.full_name]) || []);
+      const bookingMap = new Map();
+      
+      // Group bookings by customer
+      bookings?.forEach(booking => {
+        const bookingDetail = bookingDetails?.find(bd => bd.id === booking.booking_id);
+        if (!bookingDetail) return;
+        
+        const customerId = bookingDetail.sender_id;
+        if (!bookingMap.has(customerId)) {
+          bookingMap.set(customerId, {
+            totalSpent: 0,
+            visitCount: 0,
+            lastVisit: null,
+            bookingHistory: []
+          });
+        }
+        
+        const customerData = bookingMap.get(customerId);
+        customerData.totalSpent += Number(booking.service_price) || 0;
+        customerData.visitCount += 1;
+        customerData.lastVisit = !customerData.lastVisit || new Date(booking.completed_at) > new Date(customerData.lastVisit) 
+          ? booking.completed_at 
+          : customerData.lastVisit;
+        customerData.bookingHistory.push({
+          id: booking.id,
+          date: booking.completed_at,
+          price: booking.service_price,
+          status: booking.paid ? 'completed' : 'pending'
+        });
+      });
+
+      // Combine manual clients and booking data
       const processedClients = artistClients.map(client => ({
         id: client.id,
         name: client.name,
         phone: client.phone || '',
         notes: client.notes || '',
-        visitCount: 0, // We'll need to track this separately
-        totalSpent: 0, // We'll need to track this separately
-        bookingHistory: [], // We'll need to fetch this separately
+        visitCount: 0,
+        totalSpent: 0,
+        lastVisit: null,
+        bookingHistory: [],
         isManualEntry: true
       }));
+
+      // Add customers from bookings who aren't manual clients
+      bookingMap.forEach((data, customerId) => {
+        const customerName = customerMap.get(customerId);
+        if (!customerName) return;
+        
+        const existingClient = processedClients.find(c => c.name === customerName);
+        if (existingClient) {
+          existingClient.totalSpent = data.totalSpent;
+          existingClient.visitCount = data.visitCount;
+          existingClient.lastVisit = data.lastVisit;
+          existingClient.bookingHistory = data.bookingHistory;
+          existingClient.isManualEntry = false;
+        } else {
+          processedClients.push({
+            id: customerId,
+            name: customerName,
+            phone: '',
+            notes: '',
+            totalSpent: data.totalSpent,
+            visitCount: data.visitCount,
+            lastVisit: data.lastVisit,
+            bookingHistory: data.bookingHistory,
+            isManualEntry: false
+          });
+        }
+      });
 
       setClients(processedClients);
     } catch (error) {

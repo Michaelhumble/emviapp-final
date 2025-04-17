@@ -1,18 +1,15 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useArtistDashboardData } from './hooks/useArtistDashboardData';
-import AnalyticsWidget from './components/AnalyticsWidget';
-import { WeeklyCalendar } from './calendar/WeeklyCalendar';
-import ServicesManager from './services/ServicesManager';
-import ReferralWidget from './components/ReferralWidget';
-import { EarningsSection } from './earnings/EarningsSection';
-import MainGrid from './components/MainGrid';
-import { BarChart3, Calendar, Palette, DollarSign, Sparkles, Clock } from 'lucide-react';
+import { BarChart3, Calendar, Palette, DollarSign, Sparkles, Clock, Users } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { AvailabilitySettings } from './availability/AvailabilitySettings';
+import { EarningsSection } from './earnings/EarningsSection';
+import MainGrid from './components/MainGrid';
+import ServicesManager from './services/ServicesManager';
+import ClientsTab from './components/tabs/ClientsTab';
 
 const hasErrors = (errors: any[]) => errors.some(error => error !== null && error !== undefined);
 
@@ -72,7 +69,7 @@ const ArtistDashboard = () => {
               onValueChange={setActiveTab}
               className="space-y-6"
             >
-              <TabsList className="grid grid-cols-2 sm:grid-cols-5 h-auto bg-slate-100/50 w-full">
+              <TabsList className="grid grid-cols-2 sm:grid-cols-6 h-auto bg-slate-100/50 w-full">
                 <TabsTrigger value="overview" className="py-3 data-[state=active]:bg-white data-[state=active]:text-purple-600">
                   <BarChart3 className="h-4 w-4 mr-2" />
                   <span className="hidden sm:inline">Overview</span>
@@ -82,6 +79,11 @@ const ArtistDashboard = () => {
                   <Calendar className="h-4 w-4 mr-2" />
                   <span className="hidden sm:inline">Calendar</span>
                   <span className="sm:hidden">Calendar</span>
+                </TabsTrigger>
+                <TabsTrigger value="clients" className="py-3 data-[state=active]:bg-white data-[state=active]:text-purple-600">
+                  <Users className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Clients</span>
+                  <span className="sm:hidden">Clients</span>
                 </TabsTrigger>
                 <TabsTrigger value="services" className="py-3 data-[state=active]:bg-white data-[state=active]:text-purple-600">
                   <Palette className="h-4 w-4 mr-2" />
@@ -134,6 +136,10 @@ const ArtistDashboard = () => {
               
               <TabsContent value="availability" className="space-y-6 mt-6 p-0">
                 <AvailabilitySettings />
+              </TabsContent>
+              
+              <TabsContent value="clients" className="space-y-6 mt-6 p-0">
+                <ClientsTab />
               </TabsContent>
             </Tabs>
           </CardContent>

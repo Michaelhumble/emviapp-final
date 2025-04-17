@@ -157,7 +157,12 @@ const ClientTable = ({
                   ) : (
                     <div className="py-8">
                       <p>No clients yet</p>
-                      <p className="text-sm mt-1">Add clients manually or complete bookings</p>
+                      <button 
+                        onClick={() => document.getElementById('add-client-button')?.click()}
+                        className="mt-2 text-purple-600 hover:text-purple-700 font-medium"
+                      >
+                        + Add New Client
+                      </button>
                     </div>
                   )}
                 </TableCell>
