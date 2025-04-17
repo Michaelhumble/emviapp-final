@@ -4,9 +4,10 @@ import { MessageSquare, Award, ThumbsUp } from "lucide-react";
 
 interface PersonalMessageBannerProps {
   artistName?: string;
+  message?: string;
 }
 
-const PersonalMessageBanner = ({ artistName }: PersonalMessageBannerProps) => {
+const PersonalMessageBanner = ({ artistName, message }: PersonalMessageBannerProps) => {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
@@ -22,7 +23,7 @@ const PersonalMessageBanner = ({ artistName }: PersonalMessageBannerProps) => {
           <div>
             <h3 className="text-lg font-medium text-gray-800 mb-2">A message from {artistName || "the artist"}</h3>
             <p className="text-gray-600">
-              Thank you for visiting my profile! I take pride in my work and strive to create unique, beautiful nail designs for every client. I look forward to working with you and bringing your nail visions to life!
+              {message || "Thank you for visiting my profile! I take pride in my work and strive to create unique, beautiful nail designs for every client. I look forward to working with you and bringing your nail visions to life!"}
             </p>
             <div className="flex items-center mt-4 text-sm text-gray-500">
               <div className="flex items-center mr-4">

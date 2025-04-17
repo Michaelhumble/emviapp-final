@@ -9,7 +9,7 @@ import ProfileTabs from "./ProfileTabs";
 import ProfileLoadingManager from "./ProfileLoadingManager";
 import ProfileAISupport from "./ProfileAISupport";
 import { getRoleTheme } from "./utils/themeHelpers";
-import { UserProfile as UserProfileType } from "@/types/profile";
+import { UserProfile as UserProfileType } from "@/context/auth/types";
 import PremiumArtistProfile from "@/components/artist-profile/PremiumArtistProfile";
 
 // Reduced cache timeout to prevent stale data issues
@@ -74,9 +74,9 @@ const UserProfile = () => {
     if (userProfile) {
       // Update cache with new data
       console.log("User profile data available, updating cache");
-      cachedProfileData = userProfile;
+      cachedProfileData = userProfile as UserProfileType;
       lastLoadedTime = Date.now();
-      setLocalProfile(userProfile);
+      setLocalProfile(userProfile as UserProfileType);
       setShowCachedData(false);
       setLoadTimeout(false); // Reset timeout if profile loaded successfully
       setLoadAttempts(0); // Reset attempts counter

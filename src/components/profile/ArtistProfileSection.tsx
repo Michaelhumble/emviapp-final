@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -126,7 +125,7 @@ const ArtistProfileSection = () => {
                 </div>
               </div>
               <Button className={`${theme.accentColor} hover:shadow-md transition-shadow`}>
-                <Sparkles className="h-4 w-4 mr-2" />
+                <Star className="h-4 w-4 mr-2" />
                 Promote My Services
               </Button>
             </div>
