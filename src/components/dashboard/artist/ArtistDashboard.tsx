@@ -7,7 +7,7 @@ import AnalyticsWidget from './components/AnalyticsWidget';
 import { WeeklyCalendar } from './calendar/WeeklyCalendar';
 import ServicesManager from './services/ServicesManager';
 import ReferralWidget from './components/ReferralWidget';
-import EarningsSection from './components/EarningsSection';
+import EarningsSection from './earnings/EarningsSection';
 import MainGrid from './components/MainGrid';
 import { BarChart3, Calendar, Palette, DollarSign, Sparkles, Clock } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -128,11 +128,7 @@ const ArtistDashboard = () => {
               </TabsContent>
               
               <TabsContent value="earnings" className="space-y-6 mt-6 p-0">
-                <AnalyticsWidget stats={stats} isLoading={isLoadingStats} />
-                <EarningsSection 
-                  earningsData={earningsData}
-                  isLoading={isLoadingEarnings}
-                />
+                <EarningsSection />
               </TabsContent>
               
               <TabsContent value="availability" className="space-y-6 mt-6 p-0">
