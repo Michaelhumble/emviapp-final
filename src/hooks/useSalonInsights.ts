@@ -37,10 +37,12 @@ export const useSalonInsights = () => {
         setLoading(true);
         
         // Get salon staff IDs
-        const { data: staffData } = await supabase
+        const { data: staffData, error: staffError } = await supabase
           .from('salon_staff')
           .select('id')
           .eq('salon_id', currentSalon.id);
+        
+        if (staffError) throw staffError;
         
         const staffIds = staffData ? staffData.map(staff => staff.id) : [];
         
@@ -55,10 +57,12 @@ export const useSalonInsights = () => {
         
         if (staffIds.length > 0) {
           // Get total bookings
-          const { data: totalBookingsData } = await supabase
+          const { data: totalBookingsData, error: bookingsError } = await supabase
             .from('bookings')
             .select('id', { count: 'exact' })
             .in('recipient_id', staffIds);
+          
+          if (bookingsError) throw bookingsError;
           
           rawInsights.total_bookings = totalBookingsData?.length || 0;
           
@@ -67,46 +71,65 @@ export const useSalonInsights = () => {
           firstDayOfMonth.setDate(1);
           firstDayOfMonth.setHours(0, 0, 0, 0);
           
-          const { data: monthlyBookingsData } = await supabase
+          const { data: monthlyBookingsData, error: monthlyError } = await supabase
             .from('bookings')
             .select('id')
             .in('recipient_id', staffIds)
             .gte('created_at', firstDayOfMonth.toISOString());
           
+          if (monthlyError) throw monthlyError;
+          
           rawInsights.bookings_this_month = monthlyBookingsData?.length || 0;
           
-          // Get profile views this week
+          // For profile views this week, we'll use activity_log as a workaround
+          // since profile_views table doesn't exist
           const firstDayOfWeek = new Date();
           firstDayOfWeek.setDate(firstDayOfWeek.getDate() - firstDayOfWeek.getDay());
           firstDayOfWeek.setHours(0, 0, 0, 0);
           
-          const { data: profileViewsData } = await supabase
-            .from('profile_views')
+          const { data: profileViewsData, error: viewsError } = await supabase
+            .from('activity_log')
             .select('id')
-            .in('artist_id', staffIds)
-            .gte('viewed_at', firstDayOfWeek.toISOString());
+            .eq('activity_type', 'profile_view')
+            .in('user_id', staffIds)
+            .gte('created_at', firstDayOfWeek.toISOString());
+          
+          if (viewsError) throw viewsError;
           
           rawInsights.profile_views_week = profileViewsData?.length || 0;
           
           // Get total post views (just counting posts for now)
-          const { data: postsData } = await supabase
+          const { data: postsData, error: postsError } = await supabase
             .from('posts')
             .select('id')
             .eq('user_id', currentSalon.owner_id || '');
+          
+          if (postsError) throw postsError;
           
           rawInsights.total_post_views = postsData?.length || 0;
           
           // Calculate repeat client rate
           if (rawInsights.total_bookings > 0) {
-            const { data: repeatClientsData } = await supabase
+            // Get repeat clients using a counter approach instead of group
+            const { data: bookingData, error: repeatError } = await supabase
               .from('bookings')
-              .select('sender_id, count(*)')
-              .in('recipient_id', staffIds)
-              .group('sender_id')
-              .having('count(*) > 1');
+              .select('sender_id, recipient_id')
+              .in('recipient_id', staffIds);
             
-            const repeatClients = repeatClientsData?.length || 0;
-            rawInsights.repeat_client_rate = Math.round((repeatClients / rawInsights.total_bookings) * 100);
+            if (repeatError) throw repeatError;
+
+            // Count unique sender_ids that appear more than once
+            const clientCounts: Record<string, number> = {};
+            bookingData?.forEach(booking => {
+              if (booking.sender_id) {
+                clientCounts[booking.sender_id] = (clientCounts[booking.sender_id] || 0) + 1;
+              }
+            });
+            
+            const repeatClients = Object.values(clientCounts).filter(count => count > 1).length;
+            const uniqueClients = Object.keys(clientCounts).length || 1; // Avoid division by zero
+            
+            rawInsights.repeat_client_rate = Math.round((repeatClients / uniqueClients) * 100);
           }
         }
         
@@ -140,7 +163,7 @@ export const useSalonInsights = () => {
     };
 
     fetchSalonInsights();
-  }, [currentSalon?.id]);
+  }, [currentSalon?.id, currentSalon?.owner_id]);
 
   return { insights, loading, error };
 };
