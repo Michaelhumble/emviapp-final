@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, format } from "date-fns";
 import { Transaction } from "./TransactionsTable";
+import { toast } from "sonner";
 
 export const useEarningsData = () => {
   const { user } = useAuth();
@@ -33,47 +34,68 @@ export const useEarningsData = () => {
       const monthStart = startOfMonth(now);
       const monthEnd = endOfMonth(now);
 
+      console.log("Fetching earnings data for artist:", user?.id);
+      console.log("Date range:", { weekStart, weekEnd, monthStart, monthEnd });
+
       // First, fetch the completed bookings
       const { data: completedBookings, error } = await supabase
         .from('completed_bookings')
         .select('*, booking_id')
         .eq('artist_id', user?.id)
-        .gte('created_at', monthStart.toISOString())
-        .lte('created_at', monthEnd.toISOString())
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching completed bookings:", error);
+        throw error;
+      }
 
-      // Now fetch related booking data to get client names
-      const bookingIds = completedBookings.map(booking => booking.booking_id);
+      console.log("Completed bookings data:", completedBookings);
+
+      // Get booking IDs for further queries
+      const bookingIds = completedBookings?.map(booking => booking.booking_id) || [];
       
-      // Fetch booking details for client names
-      // Use explicit field selection instead of foreign key references
+      // Fetch booking details to get client info
       const { data: bookingDetails, error: bookingError } = await supabase
         .from('bookings')
-        .select('id, sender_id, service_id');
+        .select('id, sender_id, service_id')
+        .in('id', bookingIds.length > 0 ? bookingIds : ['no-bookings']);
         
-      if (bookingError) throw bookingError;
+      if (bookingError) {
+        console.error("Error fetching booking details:", bookingError);
+        throw bookingError;
+      }
+
+      console.log("Booking details:", bookingDetails);
       
-      // Now fetch user details separately
+      // Get client names
       const userIds = bookingDetails?.map(booking => booking.sender_id) || [];
       const { data: userDetails, error: userError } = await supabase
         .from('users')
         .select('id, full_name')
-        .in('id', userIds);
+        .in('id', userIds.length > 0 ? userIds : ['no-users']);
         
-      if (userError) throw userError;
+      if (userError) {
+        console.error("Error fetching user details:", userError);
+        throw userError;
+      }
+
+      console.log("User details:", userDetails);
       
-      // And service details separately
-      const serviceIds = bookingDetails?.map(booking => booking.service_id).filter(id => id) || [];
+      // Get service details
+      const serviceIds = bookingDetails?.map(booking => booking.service_id).filter(Boolean) || [];
       const { data: serviceDetails, error: serviceError } = await supabase
         .from('services')
         .select('id, title')
-        .in('id', serviceIds);
+        .in('id', serviceIds.length > 0 ? serviceIds : ['no-services']);
         
-      if (serviceError) throw serviceError;
+      if (serviceError) {
+        console.error("Error fetching service details:", serviceError);
+        throw serviceError;
+      }
+
+      console.log("Service details:", serviceDetails);
       
-      // Create maps for easy lookup
+      // Create lookup maps
       const userMap = new Map();
       userDetails?.forEach(user => {
         userMap.set(user.id, user.full_name);
@@ -84,7 +106,6 @@ export const useEarningsData = () => {
         serviceMap.set(service.id, service.title);
       });
       
-      // Create a map for booking data
       const bookingMap = new Map();
       bookingDetails?.forEach(booking => {
         bookingMap.set(booking.id, {
@@ -93,10 +114,10 @@ export const useEarningsData = () => {
         });
       });
 
-      // Transform data for transactions
-      const transformedTransactions = completedBookings.map(booking => {
+      // Transform the data for display
+      const transformedTransactions = completedBookings?.map(booking => {
         const bookingInfo = bookingMap.get(booking.booking_id) || { senderId: null, serviceId: null };
-        const clientName = bookingInfo.senderId ? userMap.get(bookingInfo.senderId) || 'Unknown' : 'Unknown';
+        const clientName = bookingInfo.senderId ? userMap.get(bookingInfo.senderId) || 'Unknown Client' : 'Unknown Client';
         const serviceName = bookingInfo.serviceId ? serviceMap.get(bookingInfo.serviceId) || 'Unknown Service' : 'Unknown Service';
         
         return {
@@ -107,29 +128,35 @@ export const useEarningsData = () => {
           price: booking.service_price || 0,
           status: booking.paid ? 'paid' as const : 'pending' as const
         };
-      });
+      }) || [];
 
-      // Calculate stats
-      const weeklyBookings = completedBookings.filter(
+      console.log("Transformed transactions:", transformedTransactions);
+
+      // Calculate weekly and monthly totals
+      const weeklyBookings = completedBookings?.filter(
         b => new Date(b.created_at) >= weekStart && new Date(b.created_at) <= weekEnd
-      );
+      ) || [];
       
       const weeklyTotal = weeklyBookings.reduce((sum, b) => sum + (b.commission_earned || 0), 0);
-      const monthlyTotal = completedBookings.reduce((sum, b) => sum + (b.commission_earned || 0), 0);
-      const totalBookings = completedBookings.length;
+      const monthlyTotal = completedBookings?.reduce((sum, b) => sum + (b.commission_earned || 0), 0) || 0;
+      const totalBookings = completedBookings?.length || 0;
       const averagePerBooking = totalBookings > 0 ? monthlyTotal / totalBookings : 0;
 
+      console.log("Earnings stats:", { weeklyTotal, monthlyTotal, totalBookings, averagePerBooking });
+
       // Prepare chart data
-      const dailyEarnings = completedBookings.reduce((acc, booking) => {
+      const dailyEarnings = completedBookings?.reduce((acc, booking) => {
         const date = format(new Date(booking.created_at), 'MMM d');
         acc[date] = (acc[date] || 0) + (booking.commission_earned || 0);
         return acc;
-      }, {} as Record<string, number>);
+      }, {} as Record<string, number>) || {};
 
       const chartData = Object.entries(dailyEarnings).map(([date, amount]) => ({
         date,
         amount
       }));
+
+      console.log("Chart data:", chartData);
 
       setTransactions(transformedTransactions);
       setStats({
@@ -142,6 +169,7 @@ export const useEarningsData = () => {
 
     } catch (error) {
       console.error('Error fetching earnings data:', error);
+      toast.error('Failed to load earnings data');
     } finally {
       setIsLoading(false);
     }
