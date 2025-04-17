@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -68,7 +69,7 @@ const ArtistDashboardProfile = ({ artistProfile }: ArtistDashboardProfileProps) 
                 </p>
                 
                 <div className="flex flex-wrap gap-3 mt-3">
-                  {artistProfile?.instagram ? (
+                  {artistProfile?.instagram && (
                     <a 
                       href={`https://instagram.com/${artistProfile.instagram.replace('@', '')}`} 
                       target="_blank" 
@@ -116,3 +117,4 @@ const ArtistDashboardProfile = ({ artistProfile }: ArtistDashboardProfileProps) 
 };
 
 export default ArtistDashboardProfile;
+
