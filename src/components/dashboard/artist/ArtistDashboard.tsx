@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -10,10 +9,9 @@ import ServicesManager from './services/ServicesManager';
 import ReferralWidget from './components/ReferralWidget';
 import EarningsSection from './components/EarningsSection';
 import MainGrid from './components/MainGrid';
-import { BarChart3, Calendar, Palette, DollarSign, Sparkles } from 'lucide-react';
+import { BarChart3, Calendar, Palette, DollarSign, Sparkles, Clock } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
-// Helper to check for loading errors
 const hasErrors = (errors: any[]) => errors.some(error => error !== null && error !== undefined);
 
 const ArtistDashboard = () => {
@@ -72,7 +70,7 @@ const ArtistDashboard = () => {
               onValueChange={setActiveTab}
               className="space-y-6"
             >
-              <TabsList className="grid grid-cols-2 sm:grid-cols-4 h-auto bg-slate-100/50 w-full">
+              <TabsList className="grid grid-cols-2 sm:grid-cols-5 h-auto bg-slate-100/50 w-full">
                 <TabsTrigger value="overview" className="py-3 data-[state=active]:bg-white data-[state=active]:text-purple-600">
                   <BarChart3 className="h-4 w-4 mr-2" />
                   <span className="hidden sm:inline">Overview</span>
@@ -92,6 +90,11 @@ const ArtistDashboard = () => {
                   <DollarSign className="h-4 w-4 mr-2" />
                   <span className="hidden sm:inline">Earnings</span>
                   <span className="sm:hidden">Earnings</span>
+                </TabsTrigger>
+                <TabsTrigger value="availability" className="py-3 data-[state=active]:bg-white data-[state=active]:text-purple-600">
+                  <Clock className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Availability</span>
+                  <span className="sm:hidden">Hours</span>
                 </TabsTrigger>
               </TabsList>
               
@@ -129,6 +132,10 @@ const ArtistDashboard = () => {
                   earningsData={earningsData}
                   isLoading={isLoadingEarnings}
                 />
+              </TabsContent>
+              
+              <TabsContent value="availability" className="space-y-6 mt-6 p-0">
+                <AvailabilitySettings />
               </TabsContent>
             </Tabs>
           </CardContent>

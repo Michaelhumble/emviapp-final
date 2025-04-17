@@ -134,6 +134,36 @@ export type Database = {
           },
         ]
       }
+      artist_availability: {
+        Row: {
+          artist_id: string
+          created_at: string
+          day_of_week: string
+          end_time: string
+          id: string
+          is_available: boolean
+          start_time: string
+        }
+        Insert: {
+          artist_id: string
+          created_at?: string
+          day_of_week: string
+          end_time: string
+          id?: string
+          is_available?: boolean
+          start_time: string
+        }
+        Update: {
+          artist_id?: string
+          created_at?: string
+          day_of_week?: string
+          end_time?: string
+          id?: string
+          is_available?: boolean
+          start_time?: string
+        }
+        Relationships: []
+      }
       artist_clients: {
         Row: {
           artist_id: string
@@ -188,6 +218,33 @@ export type Database = {
           name?: string
           price?: number
           user_id?: string
+        }
+        Relationships: []
+      }
+      artist_time_off: {
+        Row: {
+          artist_id: string
+          created_at: string
+          end_date: string
+          id: string
+          reason: string | null
+          start_date: string
+        }
+        Insert: {
+          artist_id: string
+          created_at?: string
+          end_date: string
+          id?: string
+          reason?: string | null
+          start_date: string
+        }
+        Update: {
+          artist_id?: string
+          created_at?: string
+          end_date?: string
+          id?: string
+          reason?: string | null
+          start_date?: string
         }
         Relationships: []
       }
@@ -1676,6 +1733,15 @@ export type Database = {
         Returns: {
           referral_count: number
         }[]
+      }
+      is_artist_available: {
+        Args: {
+          p_artist_id: string
+          p_date: string
+          p_start_time: string
+          p_end_time: string
+        }
+        Returns: boolean
       }
       is_post_expired: {
         Args: { expires_at: string }
