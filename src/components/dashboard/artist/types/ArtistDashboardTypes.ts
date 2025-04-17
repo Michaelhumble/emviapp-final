@@ -12,6 +12,7 @@ export interface Booking {
   status: 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled';
   note?: string;
   created_at: string;
+  artist_name?: string; // Added for customer bookings view
 }
 
 export interface BookingCounts {
@@ -25,4 +26,60 @@ export interface BookingCounts {
 export interface ServiceType {
   id: string;
   label: string;
+}
+
+// Adding missing types
+export interface DaySchedule {
+  id?: string;
+  day: string;
+  time: string;
+  active: boolean;
+}
+
+export interface BookingWithDetails extends Booking {
+  price?: number;
+  appointment_time?: string;
+}
+
+export interface DashboardStats {
+  booking_count: number;
+  completed_services: number;
+  total_earnings: number;
+  average_rating: number;
+  referral_count: number;
+  repeat_client_percentage: number;
+  profile_views: number;
+}
+
+export interface EarningsData {
+  monthly_earnings: Array<{month: string, amount: number}>;
+  total_earnings: number;
+  pending_payouts: number;
+}
+
+export interface PortfolioImage {
+  id: string;
+  url: string;
+  title?: string;
+  description?: string;
+}
+
+export interface ArtistProfileState {
+  id?: string;
+  name?: string;
+  avatar?: string;
+  bio?: string;
+  location?: string;
+  specialty?: string;
+  experience?: number;
+  rating?: number;
+  portfolio?: PortfolioImage[];
+  services?: any[];
+}
+
+export interface ArtistDataContextType {
+  artistProfile: ArtistProfileState;
+  loading: boolean;
+  error: Error | null;
+  updateProfile: (data: Partial<ArtistProfileState>) => Promise<void>;
 }

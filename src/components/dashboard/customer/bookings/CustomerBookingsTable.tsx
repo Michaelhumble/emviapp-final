@@ -1,4 +1,3 @@
-
 import { format, parseISO } from "date-fns";
 import { Booking } from "@/components/dashboard/artist/types/ArtistDashboardTypes";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -102,7 +101,7 @@ const CustomerBookingsTable = ({ bookings, loading }: CustomerBookingsTableProps
         <TableBody>
           {bookings.map((booking) => (
             <TableRow key={booking.id} className="hover:bg-gray-50">
-              <TableCell>{booking.artist_name}</TableCell>
+              <TableCell>{booking.artist_name || "Artist"}</TableCell>
               <TableCell>{booking.service_name || t({
                 english: "Not specified",
                 vietnamese: "Không xác định"

@@ -1,4 +1,3 @@
-
 import { format, parseISO } from "date-fns";
 import { Booking } from "@/components/dashboard/artist/types/ArtistDashboardTypes";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -37,7 +36,7 @@ const CustomerBookingNotes = ({ bookings }: CustomerBookingNotesProps) => {
         {bookingsWithNotes.map(b => (
           <div key={`note-${b.id}`} className="p-3 bg-gray-50 rounded-md">
             <div className="font-medium text-sm">
-              {b.artist_name} - {formatDate(b.date_requested)}
+              {b.artist_name || "Artist"} - {formatDate(b.date_requested)}
             </div>
             <div className="text-gray-600 text-sm mt-1">{b.note}</div>
           </div>

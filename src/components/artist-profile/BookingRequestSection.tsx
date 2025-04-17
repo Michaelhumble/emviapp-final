@@ -8,11 +8,16 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
 import { UserProfile } from "@/types/profile";
-import { DaySchedule } from "@/components/dashboard/artist/types/ArtistDashboardTypes";
 import { format } from "date-fns";
 import { CalendarIcon, Clock } from "lucide-react";
 import BookingConfirmationModal from "./BookingConfirmationModal";
 import { Service } from "@/pages/u/artist-profile/types";
+
+interface DaySchedule {
+  day: string;
+  time: string;
+  active: boolean;
+}
 
 interface BookingTime {
   day: string;
