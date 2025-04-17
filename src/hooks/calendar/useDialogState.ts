@@ -1,18 +1,20 @@
 
 import { useState } from 'react';
+import { Appointment } from './useAppointments';
+import { BlockedTime } from './useBlockedTimes';
 
 export const useDialogState = () => {
-  const [selectedBooking, setSelectedBooking] = useState<any>(null);
-  const [selectedBlockedTime, setSelectedBlockedTime] = useState<any>(null);
   const [isBookingDialogOpen, setIsBookingDialogOpen] = useState(false);
   const [isBlockTimeDialogOpen, setIsBlockTimeDialogOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<Appointment | null>(null);
+  const [selectedBlockedTime, setSelectedBlockedTime] = useState<BlockedTime | null>(null);
   
   const openAddBookingDialog = () => {
     setSelectedBooking(null);
     setIsBookingDialogOpen(true);
   };
   
-  const openEditBookingDialog = (booking: any) => {
+  const openEditBookingDialog = (booking: Appointment) => {
     setSelectedBooking(booking);
     setIsBookingDialogOpen(true);
   };
@@ -22,18 +24,18 @@ export const useDialogState = () => {
     setIsBlockTimeDialogOpen(true);
   };
   
-  const openEditBlockedTimeDialog = (blockedTime: any) => {
+  const openEditBlockedTimeDialog = (blockedTime: BlockedTime) => {
     setSelectedBlockedTime(blockedTime);
     setIsBlockTimeDialogOpen(true);
   };
-
+  
   return {
+    isBookingDialogOpen,
+    setIsBookingDialogOpen,
+    isBlockTimeDialogOpen,
+    setIsBlockTimeDialogOpen,
     selectedBooking,
     selectedBlockedTime,
-    isBookingDialogOpen,
-    isBlockTimeDialogOpen,
-    setIsBookingDialogOpen,
-    setIsBlockTimeDialogOpen,
     openAddBookingDialog,
     openEditBookingDialog,
     openBlockTimeDialog,

@@ -11,6 +11,10 @@ import ReferralWidget from './components/ReferralWidget';
 import EarningsSection from './components/EarningsSection';
 import MainGrid from './components/MainGrid';
 import { BarChart3, Calendar, Palette, DollarSign, Sparkles } from 'lucide-react';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+
+// Helper to check for loading errors
+const hasErrors = (errors: any[]) => errors.some(error => error !== null && error !== undefined);
 
 const ArtistDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -53,10 +57,14 @@ const ArtistDashboard = () => {
       <motion.div variants={itemVariants}>
         <Card className="overflow-hidden border-purple-100 shadow-sm">
           <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100 pb-2">
-            <CardTitle className="text-xl font-serif">Your Dashboard</CardTitle>
-            <CardDescription>
-              Manage your services, bookings, and earnings
-            </CardDescription>
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+              <div>
+                <CardTitle className="text-xl font-serif">Your Dashboard</CardTitle>
+                <CardDescription>
+                  Manage your services, bookings, and earnings
+                </CardDescription>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="p-4 md:p-6">
             <Tabs 
@@ -64,22 +72,26 @@ const ArtistDashboard = () => {
               onValueChange={setActiveTab}
               className="space-y-6"
             >
-              <TabsList className="grid grid-cols-2 sm:grid-cols-4 h-auto bg-slate-100/50">
+              <TabsList className="grid grid-cols-2 sm:grid-cols-4 h-auto bg-slate-100/50 w-full">
                 <TabsTrigger value="overview" className="py-3 data-[state=active]:bg-white data-[state=active]:text-purple-600">
                   <BarChart3 className="h-4 w-4 mr-2" />
-                  Overview
+                  <span className="hidden sm:inline">Overview</span>
+                  <span className="sm:hidden">Overview</span>
                 </TabsTrigger>
                 <TabsTrigger value="calendar" className="py-3 data-[state=active]:bg-white data-[state=active]:text-purple-600">
                   <Calendar className="h-4 w-4 mr-2" />
-                  Calendar
+                  <span className="hidden sm:inline">Calendar</span>
+                  <span className="sm:hidden">Calendar</span>
                 </TabsTrigger>
                 <TabsTrigger value="services" className="py-3 data-[state=active]:bg-white data-[state=active]:text-purple-600">
                   <Palette className="h-4 w-4 mr-2" />
-                  Services
+                  <span className="hidden sm:inline">Services</span>
+                  <span className="sm:hidden">Services</span>
                 </TabsTrigger>
                 <TabsTrigger value="earnings" className="py-3 data-[state=active]:bg-white data-[state=active]:text-purple-600">
                   <DollarSign className="h-4 w-4 mr-2" />
-                  Earnings
+                  <span className="hidden sm:inline">Earnings</span>
+                  <span className="sm:hidden">Earnings</span>
                 </TabsTrigger>
               </TabsList>
               
@@ -95,7 +107,7 @@ const ArtistDashboard = () => {
                   className="bg-gradient-to-r from-purple-100 to-pink-100 p-4 rounded-lg"
                 >
                   <div className="flex items-center space-x-3 text-purple-700">
-                    <Sparkles className="h-5 w-5 text-purple-600" />
+                    <Sparkles className="h-5 w-5 text-purple-600 flex-shrink-0" />
                     <span className="font-medium">Pro Tip: Complete your profile to attract 70% more clients</span>
                   </div>
                 </motion.div>

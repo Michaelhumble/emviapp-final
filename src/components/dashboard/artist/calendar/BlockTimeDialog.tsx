@@ -3,59 +3,56 @@ import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { CalendarIcon, Clock } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { BlockedTime } from "@/hooks/calendar/useBlockedTimes";
+import { TimePicker } from "@/components/ui/time-picker";
 
 interface BlockTimeDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: any) => Promise<void>;
-  blockedTime?: any;
+  onSave: (blockedTimeData: Partial<BlockedTime>) => Promise<void>;
+  onDelete?: (id: string) => Promise<void>;
+  blockedTime?: BlockedTime | null;
   isEditing?: boolean;
 }
-
-const timeSlots = [
-  "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-  "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
-  "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
-  "18:00", "18:30", "19:00", "19:30", "20:00"
-];
 
 const BlockTimeDialog: React.FC<BlockTimeDialogProps> = ({
   isOpen,
   onClose,
   onSave,
+  onDelete,
   blockedTime,
   isEditing = false
 }) => {
   const [date, setDate] = useState<Date | undefined>(
     blockedTime ? new Date(blockedTime.start_time) : new Date()
   );
-  const [startTime, setStartTime] = useState(
-    blockedTime ? format(new Date(blockedTime.start_time), "HH:mm") : "09:00"
+  const [startTime, setStartTime] = useState<Date | undefined>(
+    blockedTime ? new Date(blockedTime.start_time) : undefined
   );
-  const [endTime, setEndTime] = useState(
-    blockedTime ? format(new Date(blockedTime.end_time), "HH:mm") : "17:00"
+  const [endTime, setEndTime] = useState<Date | undefined>(
+    blockedTime ? new Date(blockedTime.end_time) : undefined
   );
   const [reason, setReason] = useState(blockedTime?.reason || "");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Reset form when blockedTime changes
   useEffect(() => {
     if (blockedTime) {
       setDate(new Date(blockedTime.start_time));
-      setStartTime(format(new Date(blockedTime.start_time), "HH:mm"));
-      setEndTime(format(new Date(blockedTime.end_time), "HH:mm"));
+      setStartTime(new Date(blockedTime.start_time));
+      setEndTime(new Date(blockedTime.end_time));
       setReason(blockedTime.reason || "");
     } else {
       setDate(new Date());
-      setStartTime("09:00");
-      setEndTime("17:00");
+      setStartTime(undefined);
+      setEndTime(undefined);
       setReason("");
     }
   }, [blockedTime, isOpen]);
@@ -64,39 +61,55 @@ const BlockTimeDialog: React.FC<BlockTimeDialogProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!date) {
-      toast.error("Please select a date");
+    if (!date || !startTime || !endTime) {
+      toast.error("Please select date and times");
+      return;
+    }
+    
+    // Validate time range
+    if (startTime >= endTime) {
+      toast.error("End time must be after start time");
       return;
     }
     
     try {
-      // Create start and end datetime by combining date with time
-      const [startHour, startMinute] = startTime.split(':').map(Number);
-      const [endHour, endMinute] = endTime.split(':').map(Number);
+      setIsSubmitting(true);
       
+      // Create full datetime by combining date with times
       const startDateTime = new Date(date);
-      startDateTime.setHours(startHour, startMinute, 0);
+      startDateTime.setHours(startTime.getHours(), startTime.getMinutes(), 0);
       
       const endDateTime = new Date(date);
-      endDateTime.setHours(endHour, endMinute, 0);
+      endDateTime.setHours(endTime.getHours(), endTime.getMinutes(), 0);
       
-      // Validate time range
-      if (startDateTime >= endDateTime) {
-        toast.error("End time must be after start time");
-        return;
-      }
-      
-      const data = {
+      const blockedTimeData: Partial<BlockedTime> = {
         id: blockedTime?.id,
         start_time: startDateTime.toISOString(),
         end_time: endDateTime.toISOString(),
-        reason
+        reason: reason.trim() || null
       };
       
-      await onSave(data);
+      await onSave(blockedTimeData);
       onClose();
     } catch (error: any) {
-      toast.error(`Error saving blocked time: ${error.message}`);
+      toast.error(`Error saving time block: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  // Handle deletion
+  const handleDelete = async () => {
+    if (blockedTime?.id && onDelete) {
+      try {
+        setIsSubmitting(true);
+        await onDelete(blockedTime.id);
+        onClose();
+      } catch (error: any) {
+        toast.error(`Error deleting time block: ${error.message}`);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
   
@@ -140,30 +153,20 @@ const BlockTimeDialog: React.FC<BlockTimeDialogProps> = ({
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="startTime">Start Time</Label>
-                <Select value={startTime} onValueChange={setStartTime}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select time" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {timeSlots.map((time) => (
-                      <SelectItem key={`start-${time}`} value={time}>{time}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <TimePicker 
+                  date={startTime}
+                  setDate={setStartTime}
+                  granularity="30minutes" 
+                />
               </div>
               
               <div className="grid gap-2">
                 <Label htmlFor="endTime">End Time</Label>
-                <Select value={endTime} onValueChange={setEndTime}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select time" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {timeSlots.map((time) => (
-                      <SelectItem key={`end-${time}`} value={time}>{time}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <TimePicker 
+                  date={endTime}
+                  setDate={setEndTime}
+                  granularity="30minutes" 
+                />
               </div>
             </div>
             
@@ -174,19 +177,34 @@ const BlockTimeDialog: React.FC<BlockTimeDialogProps> = ({
                 id="reason"
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                placeholder="E.g., Personal day off, Training, Vacation"
                 rows={3}
+                placeholder="e.g., Personal appointment, Out of office, etc."
               />
             </div>
           </div>
           
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit">
-              {isEditing ? "Update" : "Block Time"}
-            </Button>
+          <DialogFooter className="flex justify-between">
+            {isEditing && onDelete && (
+              <Button type="button" variant="destructive" onClick={handleDelete} disabled={isSubmitting}>
+                {isSubmitting ? "Deleting..." : "Delete Block"}
+              </Button>
+            )}
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <span className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Saving...
+                  </span>
+                ) : isEditing ? "Update Block" : "Block Time"}
+              </Button>
+            </div>
           </DialogFooter>
         </form>
       </DialogContent>

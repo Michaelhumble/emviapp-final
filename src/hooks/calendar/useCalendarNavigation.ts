@@ -1,24 +1,26 @@
 
-import { useState } from 'react';
-import { addDays, startOfWeek } from 'date-fns';
+import { useState, useCallback } from 'react';
+import { addDays, startOfWeek, endOfWeek, subWeeks, addWeeks } from 'date-fns';
 
 export const useCalendarNavigation = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 }); // Monday as first day
+  
+  // Get week days starting from Monday (weekStartsOn: 1)
+  const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
-
-  const goToPreviousWeek = () => {
-    setCurrentDate(prevDate => addDays(prevDate, -7));
-  };
   
-  const goToNextWeek = () => {
-    setCurrentDate(prevDate => addDays(prevDate, 7));
-  };
+  const goToPreviousWeek = useCallback(() => {
+    setCurrentDate(prevDate => subWeeks(prevDate, 1));
+  }, []);
   
-  const goToToday = () => {
+  const goToNextWeek = useCallback(() => {
+    setCurrentDate(prevDate => addWeeks(prevDate, 1));
+  }, []);
+  
+  const goToToday = useCallback(() => {
     setCurrentDate(new Date());
-  };
-
+  }, []);
+  
   return {
     currentDate,
     weekDays,

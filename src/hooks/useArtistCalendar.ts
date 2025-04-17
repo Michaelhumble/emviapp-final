@@ -12,6 +12,9 @@ export const useArtistCalendar = () => {
   const {
     appointments,
     isLoadingAppointments,
+    appointmentsError,
+    isSavingAppointment,
+    isDeletingAppointment,
     saveAppointment,
     deleteAppointment
   } = useAppointments(weekDays[0], weekEnd);
@@ -19,6 +22,9 @@ export const useArtistCalendar = () => {
   const {
     blockedTimes,
     isLoadingBlockedTimes,
+    blockedTimesError,
+    isSavingBlockedTime,
+    isDeletingBlockedTime,
     saveBlockedTime,
     deleteBlockedTime
   } = useBlockedTimes(weekDays[0], weekEnd);
@@ -31,7 +37,13 @@ export const useArtistCalendar = () => {
     appointments,
     blockedTimes,
     isLoadingAppointments,
+    appointmentsError,
     isLoadingBlockedTimes,
+    blockedTimesError,
+    isSavingAppointment,
+    isDeletingAppointment,
+    isSavingBlockedTime,
+    isDeletingBlockedTime,
     ...dialogState,
     goToPreviousWeek,
     goToNextWeek,

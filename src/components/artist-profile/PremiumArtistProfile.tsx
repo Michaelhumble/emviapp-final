@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { Edit, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { GradientBackground } from "@/components/ui/gradient-background";
 import ArtistProfileFormCard from "./ArtistProfileFormCard";
 import PersonalMessageBanner from "./PersonalMessageBanner";
 import ProfileHighlights from "./ProfileHighlights";
@@ -36,9 +35,9 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
             transition={{ duration: 0.5 }}
             className="bg-white rounded-xl shadow-md overflow-hidden"
           >
-            {/* Profile Header */}
-            <div className="flex flex-col md:flex-row items-center md:items-start p-6 pb-8">
-              <div className="relative -mt-16">
+            {/* Profile Header - Fixed layout issues */}
+            <div className="flex flex-col md:flex-row p-4 md:p-6 pb-6 md:pb-8 items-center md:items-start">
+              <div className="relative -mt-16 flex-shrink-0">
                 {userProfile?.avatar_url ? (
                   <img 
                     src={userProfile.avatar_url} 
@@ -55,7 +54,7 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
                 </div>
               </div>
               
-              <div className="mt-4 md:mt-0 md:ml-6 text-center md:text-left">
+              <div className="mt-4 md:mt-0 md:ml-6 text-center md:text-left w-full"> {/* Added w-full for proper sizing */}
                 <h1 className="text-2xl font-bold text-gray-800">{userProfile?.full_name || "Artist Profile"}</h1>
                 <p className="text-gray-600 mt-1">{userProfile?.specialty || "Nail Artist"}</p>
                 
@@ -73,7 +72,7 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
                   )}
                 </div>
                 
-                <div className="flex gap-3 mt-4 justify-center md:justify-start">
+                <div className="flex flex-wrap gap-2 mt-4 justify-center md:justify-start">
                   <Button size="sm" variant="outline" onClick={() => navigate('/profile/edit')}>
                     <Edit className="h-3.5 w-3.5 mr-1.5" />
                     Edit Profile
@@ -88,7 +87,7 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
             </div>
             
             {/* Profile Content */}
-            <div className="p-6 pt-0">
+            <div className="p-4 md:p-6 pt-0">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">
                   <PersonalMessageBanner artistName={userProfile.full_name} />

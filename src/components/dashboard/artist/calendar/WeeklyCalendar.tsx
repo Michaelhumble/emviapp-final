@@ -2,24 +2,41 @@
 import { motion } from "framer-motion";
 import { format, addDays, startOfWeek, isSameDay, parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Clock, Plus } from "lucide-react";
 import { DayColumn } from "./DayColumn";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useState } from "react";
 import { useArtistCalendar } from "@/hooks/useArtistCalendar";
 import { Booking } from "@/components/dashboard/artist/types/ArtistDashboardTypes";
+import ArtistBookingDialog from "./ArtistBookingDialog";
+import BlockTimeDialog from "./BlockTimeDialog";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const WeeklyCalendar = () => {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 }); // Start from Monday
   const { 
+    currentDate,
+    weekDays,
     appointments, 
+    blockedTimes,
     isLoadingAppointments, 
-    isLoadingBlockedTimes 
+    isLoadingBlockedTimes,
+    goToPreviousWeek,
+    goToNextWeek,
+    goToToday,
+    selectedBooking,
+    selectedBlockedTime,
+    isBookingDialogOpen,
+    isBlockTimeDialogOpen,
+    setIsBookingDialogOpen,
+    setIsBlockTimeDialogOpen,
+    openAddBookingDialog,
+    openBlockTimeDialog,
+    saveAppointment,
+    saveBlockedTime,
+    deleteAppointment,
+    deleteBlockedTime
   } = useArtistCalendar();
+  
   const loading = isLoadingAppointments || isLoadingBlockedTimes;
-
-  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
   const getBookingsForDay = (day: Date) => {
     return appointments.filter((booking) => {
@@ -46,36 +63,33 @@ export const WeeklyCalendar = () => {
   };
 
   return (
-    <Card className="shadow-sm border-gray-100/50 bg-gradient-to-br from-white to-gray-50/30">
+    <Card className="shadow-sm border-gray-100/50">
       <CardHeader className="pb-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <CardTitle className="text-xl font-playfair flex items-center">
+          <CardTitle className="text-xl flex items-center">
             <CalendarDays className="h-5 w-5 mr-2 text-primary" />
             Calendar
           </CardTitle>
           
-          <div className="flex gap-2">
+          <div className="flex space-x-2">
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={() => setCurrentDate(d => addDays(d, -7))}
-              className="bg-white"
+              onClick={goToPreviousWeek}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={() => setCurrentDate(new Date())}
-              className="bg-white"
+              onClick={goToToday}
             >
               Today
             </Button>
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={() => setCurrentDate(d => addDays(d, 7))}
-              className="bg-white"
+              onClick={goToNextWeek}
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -83,14 +97,32 @@ export const WeeklyCalendar = () => {
         </div>
       </CardHeader>
       
-      <CardContent>
-        <div className="font-medium text-muted-foreground mb-4">
-          {format(weekStart, "MMMM d")} - {format(addDays(weekStart, 6), "MMMM d, yyyy")}
+      <CardContent className="pb-6">
+        <div className="mb-4 flex flex-col sm:flex-row justify-between gap-2">
+          <div className="font-medium text-muted-foreground mb-2">
+            {format(weekDays[0], "MMMM d")} - {format(weekDays[6], "MMMM d, yyyy")}
+          </div>
+          
+          <div className="flex space-x-2">
+            <Button size="sm" onClick={openAddBookingDialog}>
+              <Plus className="h-4 w-4 mr-1.5" />
+              Add Booking
+            </Button>
+            <Button size="sm" variant="outline" onClick={openBlockTimeDialog}>
+              <Clock className="h-4 w-4 mr-1.5" />
+              Block Time
+            </Button>
+          </div>
         </div>
         
         {loading ? (
-          <div className="h-[400px] flex items-center justify-center">
-            <div className="text-muted-foreground">Loading calendar...</div>
+          <div className="grid grid-cols-7 gap-2">
+            {Array.from({ length: 7 }).map((_, i) => (
+              <div key={i} className="flex-1">
+                <Skeleton className="h-10 w-full rounded-t-md mb-2" />
+                <Skeleton className="h-[400px] w-full rounded-b-md" />
+              </div>
+            ))}
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -112,6 +144,26 @@ export const WeeklyCalendar = () => {
           </div>
         )}
       </CardContent>
+      
+      {/* Booking Dialog */}
+      <ArtistBookingDialog
+        isOpen={isBookingDialogOpen}
+        onClose={() => setIsBookingDialogOpen(false)}
+        onSave={saveAppointment}
+        onDelete={deleteAppointment}
+        booking={selectedBooking}
+        isEditing={!!selectedBooking}
+      />
+      
+      {/* Block Time Dialog */}
+      <BlockTimeDialog
+        isOpen={isBlockTimeDialogOpen}
+        onClose={() => setIsBlockTimeDialogOpen(false)}
+        onSave={saveBlockedTime}
+        onDelete={deleteBlockedTime}
+        blockedTime={selectedBlockedTime}
+        isEditing={!!selectedBlockedTime}
+      />
     </Card>
   );
 };
