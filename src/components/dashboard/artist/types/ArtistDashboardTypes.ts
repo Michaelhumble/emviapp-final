@@ -6,7 +6,7 @@ export interface DashboardStats {
   average_rating: number;
   referral_count: number;
   repeat_client_percentage: number;
-  profile_views?: number; // Added this missing property
+  profile_views: number; // Added this missing property
 }
 
 export interface MonthlyEarning {
@@ -32,7 +32,8 @@ export interface Booking {
   created_at: string;
   price?: number;
   note?: string;
-  artist_name?: string; // Added missing property
+  artist_name?: string;
+  service_id?: string; // Added missing property for booking type
 }
 
 export interface BookingWithDetails extends Booking {
@@ -78,4 +79,19 @@ export interface ArtistDataContextType {
   refreshArtistProfile: () => Promise<void>;
   portfolioImages: PortfolioImage[];
   loadingPortfolio: boolean;
+}
+
+// Add BookingCounts interface that was missing
+export interface BookingCounts {
+  pending: number;
+  upcoming?: number;
+  accepted: number;
+  completed: number;
+  total: number;
+}
+
+// Add ServiceType interface that was missing
+export interface ServiceType {
+  id: string;
+  label: string;
 }

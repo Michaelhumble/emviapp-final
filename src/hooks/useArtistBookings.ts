@@ -45,6 +45,7 @@ export const useArtistBookings = () => {
             
             // Get service details if possible
             let serviceName = "";
+            let serviceId = booking.service_id || "";
             if (booking.service_id) {
               const { data: serviceData, error: serviceError } = await supabase
                 .from('services')
@@ -60,7 +61,9 @@ export const useArtistBookings = () => {
             return {
               ...booking,
               customer_name: userData?.full_name || "Unknown",
-              service_name: serviceName
+              service_name: serviceName,
+              service_id: serviceId,
+              client_name: userData?.full_name || "Unknown"
             } as Booking;
           })
         );

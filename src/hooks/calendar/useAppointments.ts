@@ -75,9 +75,16 @@ export const useAppointments = (startDate: Date, endDate: Date) => {
         throw new Error('Start time and end time are required');
       }
       
+      // Make sure start_time and end_time are strings (not optional)
+      const finalData = {
+        ...dataToSave,
+        start_time: dataToSave.start_time,
+        end_time: dataToSave.end_time
+      };
+      
       const { data, error } = await supabase
         .from('appointments')
-        .upsert(dataToSave)
+        .upsert(finalData)
         .select()
         .single();
       

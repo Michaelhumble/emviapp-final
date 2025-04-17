@@ -55,9 +55,16 @@ export const useBlockedTimes = (startDate: Date, endDate: Date) => {
         throw new Error("Start time and end time are required");
       }
       
+      // Create a guaranteed valid object with non-optional required fields
+      const finalData = {
+        ...dataToSave,
+        start_time: dataToSave.start_time,
+        end_time: dataToSave.end_time
+      };
+      
       const { data, error } = await supabase
         .from('blocked_times')
-        .upsert(dataToSave)
+        .upsert(finalData)
         .select()
         .single();
       
