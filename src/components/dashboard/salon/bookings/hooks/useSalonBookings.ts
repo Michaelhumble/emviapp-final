@@ -77,10 +77,29 @@ export const useSalonBookings = () => {
 
       // Transform the data to match our SalonBooking type
       const formattedBookings = (data || []).map(booking => {
-        // Extract values with proper type checking
+        // Extract values with proper type checking and defaults
         const senderData = booking.sender || {};
         const serviceData = booking.service || {};
         const recipientData = booking.recipient || {};
+        
+        // Safely access nested properties with fallbacks
+        const clientName = typeof senderData === 'object' && senderData !== null ? 
+          (senderData.full_name || "Unknown Client") : "Unknown Client";
+          
+        const clientEmail = typeof senderData === 'object' && senderData !== null ? 
+          senderData.email : null;
+          
+        const clientPhone = typeof senderData === 'object' && senderData !== null ? 
+          senderData.phone : null;
+          
+        const serviceName = typeof serviceData === 'object' && serviceData !== null ? 
+          (serviceData.title || "General Service") : "General Service";
+          
+        const servicePrice = typeof serviceData === 'object' && serviceData !== null ? 
+          (serviceData.price || 0) : 0;
+          
+        const staffName = typeof recipientData === 'object' && recipientData !== null ? 
+          recipientData.full_name : null;
         
         const bookingStatus = booking.status || 'pending';
         // Ensure the status is one of the allowed values
@@ -90,15 +109,15 @@ export const useSalonBookings = () => {
         
         return {
           id: booking.id,
-          client_name: senderData.full_name || "Unknown Client",
-          client_email: senderData.email,
-          client_phone: senderData.phone,
-          service_name: serviceData.title || "General Service",
-          service_price: serviceData.price || 0,
+          client_name: clientName,
+          client_email: clientEmail,
+          client_phone: clientPhone,
+          service_name: serviceName,
+          service_price: servicePrice,
           date: booking.date_requested ? new Date(booking.date_requested) : null,
           time: booking.time_requested || "",
           status: validStatus,
-          assigned_staff_name: recipientData.full_name || null,
+          assigned_staff_name: staffName,
           assigned_staff_id: booking.recipient_id,
           notes: booking.note,
           created_at: booking.created_at
