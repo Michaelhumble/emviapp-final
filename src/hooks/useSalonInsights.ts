@@ -27,23 +27,40 @@ export const useSalonInsights = () => {
       try {
         setLoading(true);
         
-        // Use a generic query approach since salon_insights is a materialized view
+        // Use a raw query approach to avoid type issues with the materialized view
         const { data, error: queryError } = await supabase
-          .from('salon_insights')
-          .select('*')
-          .eq('id', currentSalon.id)
+          .rpc('get_salon_insights', { salon_id: currentSalon.id })
           .single();
 
-        if (queryError) throw queryError;
-
-        // Type guard to ensure data matches our expected interface
-        if (data) {
+        if (queryError) {
+          // Fallback to direct query with type casting if RPC function is not available
+          const { data: viewData, error: viewError } = await supabase
+            .from('salon_insights')
+            .select('*')
+            .eq('id', currentSalon.id)
+            .single();
+            
+          if (viewError) throw viewError;
+          
+          if (viewData) {
+            const typedData: SalonInsights = {
+              total_bookings: Number(viewData.total_bookings || 0),
+              bookings_this_month: Number(viewData.bookings_this_month || 0),
+              profile_views_week: Number(viewData.profile_views_week || 0),
+              total_post_views: Number(viewData.total_post_views || 0),
+              repeat_client_rate: Number(viewData.repeat_client_rate || 0)
+            };
+            
+            setInsights(typedData);
+          }
+        } else if (data) {
+          // Handle response from RPC function
           const typedData: SalonInsights = {
-            total_bookings: data.total_bookings || 0,
-            bookings_this_month: data.bookings_this_month || 0,
-            profile_views_week: data.profile_views_week || 0,
-            total_post_views: data.total_post_views || 0,
-            repeat_client_rate: data.repeat_client_rate || 0
+            total_bookings: Number(data.total_bookings || 0),
+            bookings_this_month: Number(data.bookings_this_month || 0),
+            profile_views_week: Number(data.profile_views_week || 0),
+            total_post_views: Number(data.total_post_views || 0),
+            repeat_client_rate: Number(data.repeat_client_rate || 0)
           };
           
           setInsights(typedData);
