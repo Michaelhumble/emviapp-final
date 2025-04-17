@@ -76,21 +76,34 @@ export const useSalonBookings = () => {
       if (error) throw error;
 
       // Transform the data to match our SalonBooking type
-      const formattedBookings: SalonBooking[] = data.map(booking => ({
-        id: booking.id,
-        client_name: booking.sender?.full_name || "Unknown Client",
-        client_email: booking.sender?.email,
-        client_phone: booking.sender?.phone,
-        service_name: booking.service?.title || "General Service",
-        service_price: booking.service?.price || 0,
-        date: booking.date_requested ? new Date(booking.date_requested) : null,
-        time: booking.time_requested || "",
-        status: booking.status,
-        assigned_staff_name: booking.recipient?.full_name || null,
-        assigned_staff_id: booking.recipient_id,
-        notes: booking.note,
-        created_at: booking.created_at
-      }));
+      const formattedBookings = (data || []).map(booking => {
+        // Extract values with proper type checking
+        const senderData = booking.sender || {};
+        const serviceData = booking.service || {};
+        const recipientData = booking.recipient || {};
+        
+        const bookingStatus = booking.status || 'pending';
+        // Ensure the status is one of the allowed values
+        const validStatus = ['pending', 'accepted', 'completed', 'cancelled', 'declined'].includes(bookingStatus) 
+          ? bookingStatus as SalonBooking['status']
+          : 'pending';
+        
+        return {
+          id: booking.id,
+          client_name: senderData.full_name || "Unknown Client",
+          client_email: senderData.email,
+          client_phone: senderData.phone,
+          service_name: serviceData.title || "General Service",
+          service_price: serviceData.price || 0,
+          date: booking.date_requested ? new Date(booking.date_requested) : null,
+          time: booking.time_requested || "",
+          status: validStatus,
+          assigned_staff_name: recipientData.full_name || null,
+          assigned_staff_id: booking.recipient_id,
+          notes: booking.note,
+          created_at: booking.created_at
+        } as SalonBooking;
+      });
 
       setBookings(formattedBookings);
     } catch (err: any) {
@@ -102,7 +115,7 @@ export const useSalonBookings = () => {
     }
   }, [currentSalon?.id]);
   
-  const updateBookingStatus = async (bookingId: string, newStatus: string) => {
+  const updateBookingStatus = async (bookingId: string, newStatus: SalonBooking['status']) => {
     try {
       setLoading(true);
       
@@ -115,7 +128,7 @@ export const useSalonBookings = () => {
       
       setBookings(prev => 
         prev.map(booking => 
-          booking.id === bookingId ? { ...booking, status: newStatus as any } : booking
+          booking.id === bookingId ? { ...booking, status: newStatus } : booking
         )
       );
       

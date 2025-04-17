@@ -18,26 +18,26 @@ import { format, parseISO } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface SalonTeamTableProps {
-  members: SalonTeamMember[];
+  teamMembers: SalonTeamMember[];
   loading: boolean;
-  onRemoveMember: (id: string) => void;
+  onRemoveTeamMember: (id: string) => void;
   onToggleStatus: (id: string, status: 'active' | 'inactive') => void;
   onResendInvite: (email: string) => void;
 }
 
 const SalonTeamTable: React.FC<SalonTeamTableProps> = ({
-  members,
+  teamMembers,
   loading,
-  onRemoveMember,
+  onRemoveTeamMember,
   onToggleStatus,
   onResendInvite
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   
-  const filteredMembers = members.filter(member => 
+  const filteredMembers = teamMembers.filter(member => 
     member.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     member.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    member.specialty.toLowerCase().includes(searchQuery.toLowerCase())
+    member.specialty?.toLowerCase().includes(searchQuery.toLowerCase()) || ''
   );
 
   const getInitials = (name: string) => {
@@ -116,7 +116,7 @@ const SalonTeamTable: React.FC<SalonTeamTableProps> = ({
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={member.avatar_url} alt={member.full_name} />
+                        <AvatarImage src={member.avatar_url || ''} alt={member.full_name} />
                         <AvatarFallback className="bg-purple-100 text-purple-800">
                           {getInitials(member.full_name)}
                         </AvatarFallback>
@@ -173,7 +173,7 @@ const SalonTeamTable: React.FC<SalonTeamTableProps> = ({
                         
                         <DropdownMenuItem 
                           className="flex items-center gap-2 text-red-600"
-                          onClick={() => onRemoveMember(member.id)}
+                          onClick={() => onRemoveTeamMember(member.id)}
                         >
                           <UserX className="h-4 w-4" /> Remove Member
                         </DropdownMenuItem>
