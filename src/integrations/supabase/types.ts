@@ -1418,6 +1418,42 @@ export type Database = {
         }
         Relationships: []
       }
+      staff_service_assignments: {
+        Row: {
+          created_at: string | null
+          id: string
+          service_id: string | null
+          staff_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          service_id?: string | null
+          staff_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          service_id?: string | null
+          staff_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_service_assignments_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_service_assignments_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "salon_staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       support_logs: {
         Row: {
           admin_notes: string | null
