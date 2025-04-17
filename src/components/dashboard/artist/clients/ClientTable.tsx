@@ -1,4 +1,3 @@
-
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { ClientData } from "./types";
 import { formatDistanceToNow, format } from "date-fns";
@@ -33,26 +32,44 @@ const ClientTable = ({
 }: ClientTableProps) => {
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Filter clients based on search query
-  const filteredClients = clients.filter(client => 
+  const getSortedClients = () => {
+    if (!clients) return [];
+    
+    const clientsCopy = [...clients];
+    
+    switch (sortBy) {
+      case 'recent':
+        // Since we don't have lastVisit, default to created_at if we add it to the table
+        return clientsCopy.sort((a, b) => {
+          // Default to alphabetical if no creation date
+          return a.name.localeCompare(b.name);
+        });
+      case 'frequent':
+        // Since visitCount is always 0 for now, sort by name
+        return clientsCopy.sort((a, b) => a.name.localeCompare(b.name));
+      case 'alphabetical':
+        return clientsCopy.sort((a, b) => a.name.localeCompare(b.name));
+      default:
+        return clientsCopy;
+    }
+  };
+
+  const filteredClients = getSortedClients().filter(client => 
     client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     client.phone.includes(searchQuery)
   );
 
-  // Function to mask phone number (show only last 4 digits)
   const maskPhone = (phone: string) => {
     if (!phone || phone.length < 4) return "—";
     return `***-***-${phone.slice(-4)}`;
   };
 
-  // Format date to "X days/months ago" or actual date if older
   const formatDate = (dateString?: string | null) => {
     if (!dateString) return "Never";
     
     const date = new Date(dateString);
     const now = new Date();
     
-    // If date is within the last 2 months, show relative time
     const twoMonthsAgo = new Date();
     twoMonthsAgo.setMonth(now.getMonth() - 2);
     
@@ -119,7 +136,6 @@ const ClientTable = ({
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              // Loading skeletons
               Array(5).fill(0).map((_, i) => (
                 <TableRow key={`loading-${i}`}>
                   <TableCell><Skeleton className="h-6 w-36" /></TableCell>
