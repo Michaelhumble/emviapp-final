@@ -19,20 +19,17 @@ const SalonDashboardBanner: React.FC<SalonDashboardBannerProps> = ({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="bg-gradient-to-r from-primary-50 to-blue-50 rounded-lg p-6 border border-blue-100"
+      className="mt-8"
     >
-      <div className="flex items-start justify-between">
-        <div className="space-y-1">
-          <h1 className="text-xl md:text-2xl font-serif font-semibold text-gray-900">
-            Welcome back, {trimmedName} {businessName && "☀️"}
-          </h1>
-          <p className="text-sm text-gray-600 font-medium max-w-lg">
-            Let's grow your bookings, team, and reach — one beautiful step at a time.
-          </p>
-        </div>
-      </div>
+      <h1 className="text-xl md:text-2xl font-serif font-semibold text-gray-900">
+        Welcome back, {trimmedName} {businessName && "☀️"}
+      </h1>
+      <p className="text-sm text-gray-600 font-medium max-w-lg mt-1">
+        Your salon is live. Let's keep building something beautiful.
+      </p>
     </motion.div>
   );
 };
 
 export default SalonDashboardBanner;
+
