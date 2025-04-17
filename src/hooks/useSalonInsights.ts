@@ -88,7 +88,8 @@ export const useSalonInsights = () => {
               .select('sender_id')
               .in('recipient_id', staffIds);
 
-            const clientCounts = {};
+            // Fix: Properly type clientCounts as a Record with number values
+            const clientCounts: Record<string, number> = {};
             bookingData?.forEach(booking => {
               if (booking.sender_id) {
                 clientCounts[booking.sender_id] = (clientCounts[booking.sender_id] || 0) + 1;
