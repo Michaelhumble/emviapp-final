@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { Salon } from '@/types/salon';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
 
 interface SalonTeamSectionProps {
   salon: Salon;
