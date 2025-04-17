@@ -6,12 +6,14 @@ import BookingsTab from "./tabs/BookingsTab";
 import PortfolioTab from "./tabs/PortfolioTab";
 import MessagesTab from "./tabs/MessagesTab";
 import ReferralsTab from "./tabs/ReferralsTab";
+import ClientsTab from "./tabs/ClientsTab";
 
-// Define the tabs with their names and visibility - hiding Calendar, Services and Earnings
+// Define the tabs with their names and visibility - adding Clients tab
 const tabs = [
   { id: "Overview", label: "Overview", visible: true },
   { id: "Bookings", label: "Bookings", visible: true },
   { id: "Portfolio", label: "Portfolio", visible: true },
+  { id: "Clients", label: "Clients", visible: true },
   { id: "Messages", label: "Messages", visible: true },
   { id: "Referrals", label: "Referrals", visible: true },
   { id: "Calendar", label: "Calendar", visible: false }, // Hidden
@@ -73,6 +75,7 @@ export default function ArtistDashboardContent() {
         {activeTab === "Overview" && <OverviewTab />}
         {activeTab === "Bookings" && <BookingsTab />}
         {activeTab === "Portfolio" && <PortfolioTab />}
+        {activeTab === "Clients" && <ClientsTab />}
         {activeTab === "Messages" && <MessagesTab />}
         {activeTab === "Referrals" && <ReferralsTab />}
       </div>
