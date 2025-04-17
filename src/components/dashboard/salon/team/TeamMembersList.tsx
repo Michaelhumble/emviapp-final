@@ -9,7 +9,7 @@ interface TeamMembersListProps {
   error: Error | null;
   teamMembers: TeamMember[];
   onRemoveTeamMember: (memberId: string, name: string) => void;
-  onToggleMemberStatus: (memberId: string, currentStatus: 'active' | 'inactive' | undefined) => void;
+  onToggleMemberStatus: (memberId: string, currentStatus: 'active' | 'inactive' | 'pending' | undefined) => void;
 }
 
 const TeamMembersList = ({ 

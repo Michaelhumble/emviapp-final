@@ -7,7 +7,7 @@ import { TeamMember } from "./types";
 interface TeamMemberItemProps {
   member: TeamMember;
   onRemove: (id: string, name: string) => void;
-  onToggleStatus: (id: string, currentStatus: 'active' | 'inactive' | undefined) => void;
+  onToggleStatus: (id: string, currentStatus: 'active' | 'inactive' | 'pending' | undefined) => void;
 }
 
 const TeamMemberItem = ({ member, onRemove, onToggleStatus }: TeamMemberItemProps) => {
