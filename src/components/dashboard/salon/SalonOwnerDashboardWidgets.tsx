@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth";
 import SalonBoostBanner from "@/components/salon/SalonBoostBanner";
@@ -11,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSafeQuery } from "@/hooks/useSafeQuery";
 import FallbackBoundary from "@/components/error-handling/FallbackBoundary";
 import SimpleLoadingFallback from "@/components/error-handling/SimpleLoadingFallback";
+import SalonDashboard from "./SalonDashboard";
 
 interface SalonDashboardData {
   postViews: number;
@@ -78,13 +78,9 @@ const SalonOwnerDashboardWidgets = () => {
       <div className="space-y-6">
         <h2 className="text-2xl font-serif">Salon Owner Dashboard</h2>
         
-        {/* Salon Boost Banner */}
+        {/* Enhanced Salon Dashboard */}
         <FallbackBoundary>
-          <SalonBoostBanner 
-            onBoostClick={handleBoostClick} 
-            loading={isLoading}
-            isPremium={dashboardData.isPremium}
-          />
+          <SalonDashboard />
         </FallbackBoundary>
         
         {/* Customer Visibility Banner */}
