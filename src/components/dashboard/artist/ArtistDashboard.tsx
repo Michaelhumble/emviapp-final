@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -10,6 +11,9 @@ import { EarningsSection } from './earnings/EarningsSection';
 import MainGrid from './components/MainGrid';
 import ServicesManager from './services/ServicesManager';
 import ClientsTab from './components/tabs/ClientsTab';
+import ReferralWidget from './components/ReferralWidget';
+import { WeeklyCalendar } from './calendar/WeeklyCalendar';
+import BookingsTab from './components/tabs/BookingsTab';
 
 const hasErrors = (errors: any[]) => errors.some(error => error !== null && error !== undefined);
 
