@@ -11,6 +11,7 @@ import EarningsSection from './components/EarningsSection';
 import MainGrid from './components/MainGrid';
 import { BarChart3, Calendar, Palette, DollarSign, Sparkles, Clock } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { AvailabilitySettings } from './availability/AvailabilitySettings';
 
 const hasErrors = (errors: any[]) => errors.some(error => error !== null && error !== undefined);
 

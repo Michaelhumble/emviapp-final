@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AvailabilityDay, TimeOffPeriod } from "../types";
 import { toast } from "sonner";
+import { format } from "date-fns";
 
 export const useArtistAvailability = () => {
   const { user } = useAuth();
@@ -78,12 +79,17 @@ export const useArtistAvailability = () => {
 
   const saveTimeOff = async (timeOff: TimeOffPeriod) => {
     try {
+      // Convert Date objects to ISO strings for Supabase
+      const formattedTimeOff = {
+        artist_id: user?.id,
+        start_date: format(timeOff.start_date, 'yyyy-MM-dd'),
+        end_date: format(timeOff.end_date, 'yyyy-MM-dd'),
+        reason: timeOff.reason
+      };
+
       const { error } = await supabase
         .from('artist_time_off')
-        .insert({
-          artist_id: user?.id,
-          ...timeOff
-        });
+        .insert(formattedTimeOff);
 
       if (error) throw error;
       toast.success('Time off period added');
