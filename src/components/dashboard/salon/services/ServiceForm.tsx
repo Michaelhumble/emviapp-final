@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { SalonService } from "../types";
 import { FileUpload } from "@/components/ui/file-upload";
+import { toast } from "sonner";
 
 export interface ServiceFormProps {
   open: boolean;
@@ -74,7 +74,6 @@ const ServiceForm: React.FC<ServiceFormProps> = ({
 
   const handleSubmit = async () => {
     if (!formData.name || typeof formData.price !== 'number' || !formData.duration_min) {
-      // Validation error
       toast.error("Please fill out all required fields");
       return;
     }

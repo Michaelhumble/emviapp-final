@@ -46,13 +46,15 @@ export function FileUpload({ onUploadComplete, initialUrl, bucket = 'salon_photo
       setPreviewUrl(objectUrl);
 
       // Upload to Supabase Storage
+      // Create an AbortController to manage the upload
+      const abortController = new AbortController();
+      
+      // Upload to Supabase Storage without onUploadProgress
       const { data, error } = await supabase.storage
         .from(bucket)
         .upload(filePath, file, {
           upsert: true,
-          onUploadProgress: (progress) => {
-            setUploadProgress(Math.round((progress.loaded / progress.total) * 100));
-          }
+          // We'll manually simulate the progress since onUploadProgress isn't available
         });
 
       if (error) throw error;
