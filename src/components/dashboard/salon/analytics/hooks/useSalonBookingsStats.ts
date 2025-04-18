@@ -38,7 +38,8 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
         
       if (error) throw error;
       
-      const appointments = (data || []) as AppointmentData[];
+      // Convert to a simpler type to avoid deep type instantiation
+      const appointments = data as AppointmentData[] || [];
       const statsMap = new Map<string, BookingStatsItem>();
 
       appointments.forEach(booking => {
