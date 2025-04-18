@@ -1,36 +1,36 @@
 
 import { useState } from 'react';
-import { useTypedQuery } from "@/hooks/useTypedQuery";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from 'date-fns';
 
-// Explicitly define interfaces to prevent deep type inference
-interface AppointmentData {
+// Simple flat types to avoid complex inference
+export interface AppointmentData {
   id: string;
   artist_id: string;
-  customer_name?: string | null;
-  customer_email?: string | null;
-  customer_phone?: string | null;
+  customer_name: string | null;
+  customer_email: string | null;
+  customer_phone: string | null;
   start_time: string;
   end_time: string;
   status: string;
-  assigned_staff_id?: string | null;
-  assigned_staff_name?: string | null;
-  notes?: string | null;
+  assigned_staff_id: string | null;
+  assigned_staff_name: string | null;
+  notes: string | null;
   created_at: string;
-  services?: {
-    title?: string;
-    price?: number;
-    duration_minutes?: number;
+  services: {
+    title: string | undefined;
+    price: number | undefined;
+    duration_minutes: number | undefined;
   } | null;
 }
 
-interface SalonBooking {
+export interface SalonBooking {
   id: string;
   client_name: string;
-  client_email?: string | null;
-  client_phone?: string | null;
+  client_email: string | null;
+  client_phone: string | null;
   service_name: string;
   service_price: number;
   date: Date | null;
@@ -42,7 +42,7 @@ interface SalonBooking {
   created_at: string;
 }
 
-interface SalonCalendarReturn {
+export interface SalonCalendarReturn {
   currentMonth: Date;
   calendarDays: Date[];
   appointments: SalonBooking[];
@@ -62,7 +62,7 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
   const formattedStartDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Create a completely separate query with explicit return types
+  // Simple fetch function with explicit return type
   const fetchAppointments = async (): Promise<AppointmentData[]> => {
     if (!salonId) return [];
 
@@ -75,21 +75,22 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
 
     if (error) throw error;
     
-    return data || [];
+    return data as AppointmentData[] || [];
   };
 
-  // Use a simplified query with explicit typing
-  const { 
-    data: appointmentsData = [], 
-    isLoading, 
-    error 
-  } = useTypedQuery<AppointmentData[], Error>({
+  // Direct query with no type inference complexity
+  const queryResult = useQuery({
     queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
     queryFn: fetchAppointments,
     enabled: !!salonId
   });
+  
+  // Extract data, loading and error states with explicit typing
+  const isLoading = queryResult.isLoading;
+  const error = queryResult.error as Error | null;
+  const appointmentsData = (queryResult.data || []) as AppointmentData[];
 
-  // Transform data after fetching - outside of the query to break the type inference chain
+  // Transform data with explicit typing after fetching
   const appointments: SalonBooking[] = appointmentsData.map(item => ({
     id: item.id,
     client_name: item.customer_name || '',
@@ -132,6 +133,7 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
     );
   };
 
+  // Explicitly return with the defined interface type
   return {
     currentMonth,
     calendarDays,
