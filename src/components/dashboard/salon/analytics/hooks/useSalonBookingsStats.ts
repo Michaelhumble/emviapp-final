@@ -1,5 +1,5 @@
 
-import { useTypedQuery } from "@/hooks/useTypedQuery";
+import { useQuery } from "@tanstack/react-query";
 import { subDays, format } from "date-fns";
 import { useSalon } from "@/context/salon";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +7,7 @@ import { BookingStatsItem } from "@/types/BookingStatsItem";
 
 type StatsPeriod = '7' | '30' | '90';
 
+// Define a simple type that matches the exact structure we get from Supabase
 type RawAppointment = {
   start_time: string;
   status: string;
@@ -24,25 +25,29 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
   const formattedStartDate = format(startDate, 'yyyy-MM-dd');
   const formattedEndDate = format(new Date(), 'yyyy-MM-dd');
 
-  return useTypedQuery<BookingStatsItem[]>({
+  const queryResult = useQuery({
     queryKey: ['salon-booking-stats', salonId, period],
     queryFn: async () => {
-      if (!salonId) return [];
-
-      // Break the type inference chain by using type assertions with 'as any'
-      const result = await (supabase
-        .from('appointments')
-        .select('start_time, status')
-        .eq('salon_id', salonId)
-        .gte('start_time', formattedStartDate)
-        .lte('start_time', formattedEndDate) as any);
+      if (!salonId) return [] as BookingStatsItem[];
       
-      const { data, error } = result;
-
-      if (error) throw error;
-      if (!data) return [];
-
-      const appointments = data as RawAppointment[];
+      // Use a generic Promise type to avoid TypeScript's deep type inference
+      const fetchData = async (): Promise<RawAppointment[]> => {
+        // Execute the query without type propagation
+        const { data, error } = await supabase
+          .from('appointments')
+          .select('start_time, status')
+          .eq('salon_id', salonId)
+          .gte('start_time', formattedStartDate)
+          .lte('start_time', formattedEndDate);
+          
+        if (error) throw error;
+        return (data || []) as RawAppointment[];
+      };
+      
+      // Get the raw data
+      const appointments = await fetchData();
+      
+      // Process the data into our stats format
       const statsMap = new Map<string, BookingStatsItem>();
 
       appointments.forEach(booking => {
@@ -71,4 +76,12 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
     },
     enabled: !!salonId
   });
+  
+  return {
+    data: queryResult.data || [],
+    isLoading: queryResult.isLoading,
+    error: queryResult.error,
+    refetch: queryResult.refetch,
+    isFetching: queryResult.isFetching
+  };
 };
