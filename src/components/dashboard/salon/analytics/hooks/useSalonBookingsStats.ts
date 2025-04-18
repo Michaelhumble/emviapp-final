@@ -25,14 +25,14 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
   const formattedStartDate = format(startDate, 'yyyy-MM-dd');
   const formattedEndDate = format(new Date(), 'yyyy-MM-dd');
 
-  // Break the type inference chain to avoid deep instantiation
+  // Force TypeScript to use our explicit return type and avoid deep instantiation
   const query = useTypedQuery<BookingStatsItem[]>({
     queryKey: ['salon-booking-stats', salonId, period],
     queryFn: async () => {
       if (!salonId) return [];
 
-      // Use the explicitly typed interface for appointments data
-      const { data: bookings, error } = await supabase
+      // Cast to our explicitly typed interface to break type inference chain
+      const { data: appointmentsData, error } = await supabase
         .from('appointments')
         .select('start_time, status')
         .eq('salon_id', salonId)
@@ -41,11 +41,14 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
 
       if (error) throw error;
       
+      // Explicitly cast the data to our interface
+      const bookings = appointmentsData as unknown as AppointmentData[];
+      
       // Transform the data into BookingStatsItem format
       const statsMap = new Map<string, BookingStatsItem>();
       
       if (bookings && Array.isArray(bookings)) {
-        for (const booking of bookings as AppointmentData[]) {
+        for (const booking of bookings) {
           const dateStr = format(new Date(booking.start_time), 'yyyy-MM-dd');
           
           if (!statsMap.has(dateStr)) {
