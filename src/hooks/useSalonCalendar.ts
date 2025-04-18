@@ -27,7 +27,7 @@ interface AppointmentRecord {
   status: string;
   created_at: string;
   updated_at: string;
-  services?: SalonServiceRecord;
+  services?: SalonServiceRecord | null;
   assigned_staff_id?: string;
   assigned_staff_name?: string;
 }
@@ -148,30 +148,44 @@ export const useSalonCalendar = () => {
 
         if (error) throw error;
 
-        // Explicitly cast and map the appointments to match our interface
-        const mappedAppointments: AppointmentRecord[] = data.map((apt: any) => ({
-          id: apt.id,
-          artist_id: apt.artist_id,
-          customer_id: apt.customer_id,
-          customer_name: apt.customer_name,
-          customer_email: apt.customer_email,
-          customer_phone: apt.customer_phone,
-          service_id: apt.service_id,
-          start_time: apt.start_time,
-          end_time: apt.end_time,
-          notes: apt.notes,
-          status: apt.status,
-          created_at: apt.created_at,
-          updated_at: apt.updated_at,
-          services: apt.services ? {
-            id: apt.services.id,
-            name: apt.services.name,
-            price: apt.services.price,
-            duration_min: apt.services.duration_min
-          } : undefined,
-          assigned_staff_id: apt.assigned_staff_id,
-          assigned_staff_name: apt.assigned_staff_name
-        }));
+        // Safely cast and map the appointments
+        const mappedAppointments: AppointmentRecord[] = [];
+        
+        if (data) {
+          for (const apt of data) {
+            const appointment: AppointmentRecord = {
+              id: apt.id,
+              artist_id: apt.artist_id,
+              customer_id: apt.customer_id,
+              customer_name: apt.customer_name,
+              customer_email: apt.customer_email,
+              customer_phone: apt.customer_phone,
+              service_id: apt.service_id,
+              start_time: apt.start_time,
+              end_time: apt.end_time,
+              notes: apt.notes,
+              status: apt.status,
+              created_at: apt.created_at,
+              updated_at: apt.updated_at,
+              assigned_staff_id: apt.assigned_staff_id,
+              assigned_staff_name: apt.assigned_staff_name
+            };
+            
+            // Only add services if they exist and have the expected shape
+            if (apt.services && typeof apt.services === 'object' && 'id' in apt.services) {
+              appointment.services = {
+                id: apt.services.id,
+                name: apt.services.name,
+                price: apt.services.price,
+                duration_min: apt.services.duration_min
+              };
+            } else {
+              appointment.services = null;
+            }
+            
+            mappedAppointments.push(appointment);
+          }
+        }
 
         setState(prevState => ({
           ...prevState,

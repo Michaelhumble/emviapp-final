@@ -3,12 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
 import { startOfWeek, endOfWeek, format, subWeeks } from 'date-fns';
-
-// Define a simple interface to avoid excessive type instantiation
-interface BookingStatsItem {
-  week: string;
-  count: number;
-}
+import { BookingStatsItem } from '@/components/dashboard/salon/types';
 
 export function useSalonBookingsStats(numWeeks = 8) {
   const [stats, setStats] = useState<BookingStatsItem[]>([]);

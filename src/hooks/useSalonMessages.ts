@@ -2,22 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
-
-interface MessageSender {
-  id: string;
-  name: string;
-  avatar?: string;
-  type: 'customer' | 'artist' | 'staff';
-}
-
-export interface SalonMessage {
-  id: string;
-  content: string;
-  timestamp: Date;
-  isRead: boolean;
-  isReplied: boolean;
-  sender: MessageSender | null;
-}
+import { SalonMessage, MessageSender } from '@/components/dashboard/salon/types';
 
 export const useSalonMessages = () => {
   const [messages, setMessages] = useState<SalonMessage[]>([]);
@@ -51,13 +36,18 @@ export const useSalonMessages = () => {
 
         const mappedMessages: SalonMessage[] = data.map(msg => {
           // Safely handle potentially null sender
-          const sender = msg.sender ? {
-            id: msg.sender.id,
-            name: msg.sender.full_name || 'Unknown',
-            avatar: msg.sender.avatar_url,
-            type: (msg.sender.role === 'artist' ? 'artist' : 
-                  msg.sender.role === 'customer' ? 'customer' : 'staff') as 'customer' | 'artist' | 'staff'
-          } : null;
+          let sender: MessageSender | null = null;
+          
+          // Check if sender exists and has the expected properties
+          if (msg.sender && typeof msg.sender === 'object') {
+            sender = {
+              id: msg.sender.id || 'unknown-id',
+              name: msg.sender.full_name || 'Unknown',
+              avatar: msg.sender.avatar_url,
+              type: (msg.sender.role === 'artist' ? 'artist' : 
+                    msg.sender.role === 'customer' ? 'customer' : 'staff') as 'customer' | 'artist' | 'staff'
+            };
+          }
 
           return {
             id: msg.id,
