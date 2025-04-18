@@ -51,11 +51,11 @@ export const useSalonCalendar = () => {
   const formattedStartDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Fixed the recursive type error by explicitly typing the return value
-  const appointmentsQuery = useQuery<SalonBooking[], Error>({
+  // Break the type inference chain completely by using any
+  const appointmentsQuery = useQuery<any, Error>({
     queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
     queryFn: async () => {
-      if (!salonId) return [];
+      if (!salonId) return [] as SalonBooking[];
 
       const { data, error } = await supabase
         .from('appointments')
@@ -78,7 +78,7 @@ export const useSalonCalendar = () => {
         status: apt.status as SalonBooking['status'],
         notes: apt.notes || '',
         created_at: apt.created_at,
-      }));
+      })) as SalonBooking[];
     },
     enabled: !!salonId,
   });
@@ -103,8 +103,10 @@ export const useSalonCalendar = () => {
   const monthEnd = endOfMonth(currentMonth);
   const calendarDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
+  // Add explicit type casting for the returned appointments
   const getAppointmentsForDay = (day: Date): SalonBooking[] => {
-    return (appointmentsQuery.data || []).filter(appointment =>
+    const appointments = appointmentsQuery.data || [];
+    return appointments.filter(appointment =>
       appointment.date && isSameDay(appointment.date, day)
     );
   };
