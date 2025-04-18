@@ -4,16 +4,8 @@ import { subDays, format } from "date-fns";
 import { useSalon } from "@/context/salon";
 import { supabase } from "@/integrations/supabase/client";
 import { BookingStatsItem } from "@/types/BookingStatsItem";
-import { useTypedQuery } from "@/hooks/useTypedQuery";
 
 type StatsPeriod = '7' | '30' | '90';
-
-// Define the raw database response type
-type BookingStatsDbRecord = {
-  date: string;
-  status: string; 
-  count: string;
-}
 
 export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
   const { currentSalon } = useSalon();
@@ -27,31 +19,27 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
   const formattedStartDate = format(startDate, 'yyyy-MM-dd');
   const formattedEndDate = format(new Date(), 'yyyy-MM-dd');
 
-  return useTypedQuery<BookingStatsItem[]>({
+  return useQuery({
     queryKey: ['salon-booking-stats', salonId, period],
     queryFn: async () => {
       if (!salonId) return [];
 
-      // Fetch the booking data from Supabase
-      // Use a simpler approach without .group() to avoid type errors
-      const { data, error } = await supabase
+      // Fetch the booking data from Supabase using start_time
+      const { data: bookings, error } = await supabase
         .from('bookings')
-        .select('date, status')
+        .select('start_time, status')
         .eq('salon_id', salonId)
-        .gte('date', formattedStartDate)
-        .lte('date', formattedEndDate)
-        .order('date', { ascending: true });
+        .gte('start_time', formattedStartDate)
+        .lte('start_time', formattedEndDate);
 
       if (error) throw error;
 
       // Transform the data into BookingStatsItem format
       const statsMap = new Map<string, BookingStatsItem>();
       
-      // Process data if it exists
-      if (data && Array.isArray(data)) {
-        // Create a map of dates with initialized stats
-        for (const record of data) {
-          const dateStr = record.date as string;
+      if (bookings && Array.isArray(bookings)) {
+        for (const booking of bookings) {
+          const dateStr = format(new Date(booking.start_time), 'yyyy-MM-dd');
           
           if (!statsMap.has(dateStr)) {
             statsMap.set(dateStr, {
@@ -63,13 +51,11 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
           }
           
           const item = statsMap.get(dateStr)!;
-          
-          // Update the stats based on the status
           item.totalBookings += 1;
           
-          if (record.status === 'completed') {
+          if (booking.status === 'completed') {
             item.completed += 1;
-          } else if (record.status === 'cancelled') {
+          } else if (booking.status === 'cancelled') {
             item.canceled += 1;
           }
         }

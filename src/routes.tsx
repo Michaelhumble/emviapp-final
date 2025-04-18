@@ -54,7 +54,13 @@ import Terms from './pages/legal/Terms';
 import Privacy from './pages/legal/Privacy';
 import Cookies from './pages/legal/Cookies';
 
+import { AuthRedirect } from './components/auth/AuthRedirect';
+
 const routes = [
+  {
+    path: '/auth/redirect',
+    element: <AuthRedirect />,
+  },
   {
     path: '/',
     element: <Index />,

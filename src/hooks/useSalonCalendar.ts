@@ -1,6 +1,5 @@
-
 import { useState } from 'react';
-import { useTypedQuery } from './useTypedQuery';
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from 'date-fns';
@@ -52,51 +51,33 @@ export const useSalonCalendar = () => {
   const formattedStartDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Use explicit typing for the query result
-  const appointmentsQuery = useTypedQuery<SalonBooking[]>({
+  const appointmentsQuery = useQuery({
     queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
     queryFn: async () => {
       if (!salonId) return [];
 
-      // Use 'appointments' table instead of 'salon_bookings'
       const { data, error } = await supabase
         .from('appointments')
-        .select('*, services:service_id(title, price, duration_minutes)')
+        .select('*, services:service_id(*)')
         .eq('salon_id', salonId)
         .gte('start_time', formattedStartDate)
-        .lte('end_time', formattedEndDate)
-        .order('start_time', { ascending: true });
+        .lte('end_time', formattedEndDate);
 
       if (error) throw error;
       
-      // Map the appointments data to SalonBooking format
-      if (!data) return [];
-      
-      const transformedData: SalonBooking[] = [];
-      
-      for (const apt of data) {
-        // Safely access nested service properties
-        const serviceName = apt.services?.title || 'Unknown Service';
-        const servicePrice = apt.services?.price || 0;
-        
-        transformedData.push({
-          id: apt.id,
-          client_name: apt.customer_name || '',
-          client_email: apt.customer_email,
-          client_phone: apt.customer_phone,
-          service_name: serviceName,
-          service_price: servicePrice,
-          date: apt.start_time ? new Date(apt.start_time) : null,
-          time: apt.start_time ? format(new Date(apt.start_time), 'HH:mm') : '',
-          status: (apt.status || 'pending') as SalonBooking['status'],
-          assigned_staff_id: apt.assigned_staff_id || undefined,
-          assigned_staff_name: apt.assigned_staff_name || undefined,
-          notes: apt.notes || '',
-          created_at: apt.created_at || new Date().toISOString(),
-        });
-      }
-      
-      return transformedData;
+      return data?.map(apt => ({
+        id: apt.id,
+        client_name: apt.customer_name || '',
+        client_email: apt.customer_email,
+        client_phone: apt.customer_phone,
+        service_name: apt.services?.title || 'Unknown Service',
+        service_price: apt.services?.price || 0,
+        date: apt.start_time ? new Date(apt.start_time) : null,
+        time: apt.start_time ? format(new Date(apt.start_time), 'HH:mm') : '',
+        status: apt.status as SalonBooking['status'],
+        notes: apt.notes || '',
+        created_at: apt.created_at,
+      })) || [];
     },
     enabled: !!salonId,
   });
