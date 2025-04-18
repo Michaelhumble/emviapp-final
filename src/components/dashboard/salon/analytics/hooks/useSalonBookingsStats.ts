@@ -24,6 +24,7 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
     queryFn: async () => {
       if (!salonId) return [];
 
+      // Fetch the booking data from Supabase
       const { data, error } = await supabase
         .from('bookings')
         .select('date, status, count(*)')
@@ -34,12 +35,34 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
 
       if (error) throw error;
 
-      return (data || []).map(row => ({
-        date: row.date,
-        totalBookings: parseInt(row.count),
-        completed: row.status === 'completed' ? parseInt(row.count) : 0,
-        canceled: row.status === 'cancelled' ? parseInt(row.count) : 0
-      }));
+      // Transform the data into BookingStatsItem format
+      const statsMap = new Map<string, BookingStatsItem>();
+      
+      // Initialize the map with all dates in the range
+      for (const d of data || []) {
+        if (!statsMap.has(d.date)) {
+          statsMap.set(d.date, {
+            date: d.date,
+            totalBookings: 0,
+            completed: 0,
+            canceled: 0
+          });
+        }
+        
+        const item = statsMap.get(d.date)!;
+        const count = parseInt(d.count, 10);
+        
+        // Update the stats based on the status
+        item.totalBookings += count;
+        
+        if (d.status === 'completed') {
+          item.completed += count;
+        } else if (d.status === 'cancelled') {
+          item.canceled += count;
+        }
+      }
+      
+      return Array.from(statsMap.values());
     },
     enabled: !!salonId
   });

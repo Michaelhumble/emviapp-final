@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
@@ -17,8 +18,8 @@ export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) =>
   const { user } = useAuth();
   const { currentSalon } = useSalon();
 
-  useEffect(() => {
-    const fetchMessages = async () => {
+  const fetchMessages = async () => {
+    try {
       if (!currentSalon?.id) return;
 
       const { data, error } = await supabase
@@ -30,7 +31,9 @@ export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) =>
         .eq('salon_id', currentSalon.id)
         .order('created_at', { ascending: true });
 
-      if (!error && data) {
+      if (error) throw error;
+
+      if (data) {
         const transformedMessages: SalonMessage[] = data.map(msg => ({
           id: msg.id,
           senderId: msg.sender_id,
@@ -40,8 +43,13 @@ export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) =>
         }));
         setMessages(transformedMessages);
       }
-    };
+    } catch (e: any) {
+      console.error("Error fetching messages:", e);
+      setError(e.message);
+    }
+  };
 
+  useEffect(() => {
     fetchMessages();
 
     const channel = supabase
@@ -65,22 +73,26 @@ export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) =>
   const sendMessage = async (content: string, sender: MessageSender) => {
     if (!currentSalon?.id) return;
 
-    const { data, error } = await supabase
-      .from('messages')
-      .insert([
-        {
+    try {
+      const { error } = await supabase
+        .from('messages')
+        .insert({
           salon_id: currentSalon.id,
           sender_id: sender.id,
           message_body: content,
           recipient_id: recipientId,
-        },
-      ]);
+          message_type: 'text' // Add this required field
+        });
 
-    if (error) {
-      setError(error.message);
-    } else {
-      setNewMessage('');
-      fetchMessages();
+      if (error) {
+        throw error;
+      } else {
+        setNewMessage('');
+        fetchMessages();
+      }
+    } catch (e: any) {
+      console.error("Error sending message:", e);
+      setError(e.message);
     }
   };
 

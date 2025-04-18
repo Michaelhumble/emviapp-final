@@ -1,9 +1,26 @@
+
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
-import { SalonBooking } from '@/components/dashboard/salon/types';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from 'date-fns';
+
+// Define the SalonBooking interface if not already defined
+interface SalonBooking {
+  id: string;
+  client_name: string;
+  client_email?: string | null;
+  client_phone?: string | null;
+  service_name: string;
+  service_price: number;
+  date: Date | null;
+  time: string;
+  status: 'pending' | 'accepted' | 'completed' | 'cancelled' | 'declined';
+  assigned_staff_id?: string;
+  assigned_staff_name?: string;
+  notes?: string;
+  created_at: string;
+}
 
 export const useSalonCalendar = () => {
   const { currentSalon } = useSalon();
@@ -13,8 +30,8 @@ export const useSalonCalendar = () => {
   const formattedStartDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Fix the type instantiation issue by an explicit type annotation
-  const appointmentsQuery = useQuery<SalonBooking[]>({
+  // Use explicit typing for the query
+  const appointmentsQuery = useQuery<any[], Error, SalonBooking[]>({
     queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
     queryFn: async () => {
       if (!salonId) return [];
@@ -30,6 +47,30 @@ export const useSalonCalendar = () => {
 
       if (error) throw error;
       return data || [];
+    },
+    select: (data) => {
+      // Map the appointments data to SalonBooking format
+      return data.map(apt => {
+        // Safely access nested service properties
+        const serviceName = apt.services?.title || 'Unknown Service';
+        const servicePrice = apt.services?.price || 0;
+        
+        return {
+          id: apt.id,
+          client_name: apt.customer_name || '',
+          client_email: apt.customer_email,
+          client_phone: apt.customer_phone,
+          service_name: serviceName,
+          service_price: servicePrice,
+          date: apt.start_time ? new Date(apt.start_time) : null,
+          time: apt.start_time ? format(new Date(apt.start_time), 'HH:mm') : '',
+          status: apt.status || 'pending',
+          assigned_staff_id: apt.assigned_staff_id,
+          assigned_staff_name: apt.assigned_staff_name,
+          notes: apt.notes || '',
+          created_at: apt.created_at || new Date().toISOString(),
+        };
+      });
     },
     enabled: !!salonId,
   });
@@ -54,31 +95,9 @@ export const useSalonCalendar = () => {
   const monthEnd = endOfMonth(currentMonth);
   const calendarDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
-  // Fixed type safety for appointment mapping with explicit type assertions
-  const mappedAppointments: SalonBooking[] = appointmentsQuery.data?.map(apt => {
-    // Use optional chaining and type assertions to safely access properties
-    const serviceName = apt.services?.title || 'Unknown Service';
-    const servicePrice = apt.services?.price || 0;
-    
-    return {
-      id: apt.id,
-      client_name: apt.customer_name || '',
-      client_email: apt.customer_email,
-      client_phone: apt.customer_phone,
-      service_name: serviceName,
-      service_price: servicePrice,
-      date: apt.start_time ? new Date(apt.start_time) : null,
-      time: apt.start_time ? format(new Date(apt.start_time), 'HH:mm') : '',
-      status: apt.status || 'pending',
-      assigned_staff_id: apt.assigned_staff_id,
-      assigned_staff_name: apt.assigned_staff_name,
-      notes: apt.notes || '',
-      created_at: apt.created_at || new Date().toISOString(),
-    };
-  }) || [];
-
+  // Get appointments for a specific day
   const getAppointmentsForDay = (day: Date): SalonBooking[] => {
-    return mappedAppointments.filter(appointment =>
+    return (appointmentsQuery.data || []).filter(appointment =>
       appointment.date && isSameDay(appointment.date, day)
     );
   };
@@ -86,7 +105,7 @@ export const useSalonCalendar = () => {
   return {
     currentMonth,
     calendarDays,
-    appointments: mappedAppointments,
+    appointments: appointmentsQuery.data || [],
     isLoading: appointmentsQuery.isLoading,
     error: appointmentsQuery.error,
     goToPreviousMonth,
