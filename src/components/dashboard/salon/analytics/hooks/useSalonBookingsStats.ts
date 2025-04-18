@@ -8,7 +8,7 @@ import { BookingStatsItem } from "@/types/BookingStatsItem";
 type StatsPeriod = '7' | '30' | '90';
 
 // Define a type for the booking data returned from Supabase
-interface BookingData {
+interface AppointmentData {
   start_time: string;
   status: string;
 }
@@ -25,26 +25,27 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
   const formattedStartDate = format(startDate, 'yyyy-MM-dd');
   const formattedEndDate = format(new Date(), 'yyyy-MM-dd');
 
+  // Using a more explicit type declaration to avoid deep type instantiation
   const query = useTypedQuery<BookingStatsItem[]>({
     queryKey: ['salon-booking-stats', salonId, period],
     queryFn: async () => {
       if (!salonId) return [];
 
-      // Fetch the booking data from Supabase using start_time
+      // Specify the return type explicitly to avoid deep inference
       const { data: bookings, error } = await supabase
-        .from('appointments')  // Changed from 'bookings' to 'appointments' based on database schema
+        .from('appointments')
         .select('start_time, status')
         .eq('salon_id', salonId)
         .gte('start_time', formattedStartDate)
         .lte('start_time', formattedEndDate);
 
       if (error) throw error;
-
+      
       // Transform the data into BookingStatsItem format
       const statsMap = new Map<string, BookingStatsItem>();
       
       if (bookings && Array.isArray(bookings)) {
-        for (const booking of bookings as BookingData[]) {
+        for (const booking of bookings as AppointmentData[]) {
           const dateStr = format(new Date(booking.start_time), 'yyyy-MM-dd');
           
           if (!statsMap.has(dateStr)) {
