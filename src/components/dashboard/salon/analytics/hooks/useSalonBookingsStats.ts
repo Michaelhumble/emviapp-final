@@ -38,8 +38,8 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
         
       if (error) throw error;
       
-      // Convert to a simpler type to avoid deep type instantiation
-      const appointments = data as AppointmentData[] || [];
+      // Fix: Create a properly typed array to avoid deep type instantiation
+      const appointments: AppointmentData[] = data || [];
       const statsMap = new Map<string, BookingStatsItem>();
 
       appointments.forEach(booking => {
