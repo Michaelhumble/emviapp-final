@@ -1,6 +1,5 @@
 
 import React from "react";
-import EmviLogo from "@/components/branding/EmviLogo";
 import { motion } from "framer-motion";
 
 interface SalonDashboardBannerProps {
@@ -19,19 +18,14 @@ const SalonDashboardBanner: React.FC<SalonDashboardBannerProps> = ({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="bg-gradient-to-r from-primary-50 to-blue-50 rounded-lg p-3 border border-blue-100"
+      className="mt-8 text-center md:text-left"
     >
-      <div className="flex items-center gap-2">
-        <EmviLogo size="small" className="h-6 w-6" />
-        <div>
-          <h1 className="text-base font-semibold text-gray-900">
-            Hello, {displayName}
-          </h1>
-          <p className="text-xs text-gray-600">
-            Manage bookings, clients, and grow your business
-          </p>
-        </div>
-      </div>
+      <h1 className="text-xl md:text-2xl font-serif font-semibold text-gray-900">
+        Welcome back, {displayName} {businessName && "☀️"}
+      </h1>
+      <p className="text-sm text-gray-600 font-medium max-w-lg mt-1">
+        Your salon is live. Let's keep building something beautiful.
+      </p>
     </motion.div>
   );
 };

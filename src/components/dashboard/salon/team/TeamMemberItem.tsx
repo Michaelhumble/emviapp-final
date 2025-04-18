@@ -1,84 +1,155 @@
 
+import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Mail, Check, X, UserMinus } from "lucide-react";
-import { TeamMember } from "./types";
+import { SalonTeamMember } from "../types";
+import { 
+  MoreHorizontal, 
+  Mail, 
+  UserCheck, 
+  UserMinus, 
+  Edit, 
+  Trash2 
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface TeamMemberItemProps {
-  member: TeamMember;
-  onRemove: (id: string, name: string) => void;
-  onToggleStatus: (id: string, currentStatus: 'active' | 'inactive' | undefined) => void;
+  member: SalonTeamMember;
+  onRemove: (id: string, name?: string) => void;
+  onToggleStatus: (id: string, currentStatus?: 'active' | 'inactive' | 'pending') => void;
+  onEdit?: (member: SalonTeamMember) => void;
 }
 
-const TeamMemberItem = ({ member, onRemove, onToggleStatus }: TeamMemberItemProps) => {
+const TeamMemberItem = ({ member, onRemove, onToggleStatus, onEdit }: TeamMemberItemProps) => {
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  // Helper function to get status badge color
+  const getStatusBadge = (status?: string) => {
+    switch (status) {
+      case 'active':
+        return <Badge className="bg-green-50 text-green-700 border-green-200">Active</Badge>;
+      case 'inactive':
+        return <Badge className="bg-gray-50 text-gray-700 border-gray-200">Inactive</Badge>;
+      case 'pending':
+        return <Badge className="bg-yellow-50 text-yellow-700 border-yellow-200">Pending</Badge>;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="py-3 flex items-center justify-between">
-      <div className="flex items-center">
-        <Avatar className="h-10 w-10 mr-3">
-          <AvatarImage src={member.avatar_url || ''} alt={member.full_name} />
-          <AvatarFallback>
-            {member.full_name.substring(0, 2).toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
-        <div>
-          <div className="flex items-center">
-            <p className="font-medium">{member.full_name}</p>
-            {member.status && (
-              <span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${
-                member.status === 'active' 
-                  ? 'bg-green-100 text-green-700' 
-                  : 'bg-gray-100 text-gray-700'
-              }`}>
-                {member.status.charAt(0).toUpperCase() + member.status.slice(1)}
-              </span>
-            )}
-          </div>
-          <div className="flex items-center text-sm text-gray-500">
-            <Mail className="h-3 w-3 mr-1" />
-            <span>{member.email}</span>
-          </div>
-          <div className="flex items-center mt-1">
-            {member.role && (
-              <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full mr-2">
-                {member.role}
-              </span>
-            )}
-            {member.specialty && (
-              <span className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">
-                {member.specialty}
-              </span>
-            )}
+    <>
+      <div className="flex items-center justify-between py-4">
+        <div className="flex items-center">
+          <Avatar className="h-10 w-10 mr-3">
+            <AvatarImage src={member.avatar_url || ''} alt={member.full_name} />
+            <AvatarFallback className="bg-primary/10">
+              {member.full_name.substring(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          
+          <div>
+            <div className="font-medium">{member.full_name}</div>
+            <div className="text-sm text-gray-500 flex items-center space-x-2">
+              <span>{member.email}</span>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="flex items-center gap-2">
-        <Button 
-          variant="ghost" 
-          size="sm"
-          className={`h-8 w-8 p-0 ${
-            member.status === 'active' 
-              ? 'text-green-500 hover:text-green-700 hover:bg-green-50' 
-              : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-          }`}
-          onClick={() => onToggleStatus(member.id, member.status)}
-          title={member.status === 'active' ? 'Set as Inactive' : 'Set as Active'}
-        >
-          {member.status === 'active' ? (
-            <Check className="h-4 w-4" />
-          ) : (
-            <X className="h-4 w-4" />
+        
+        <div className="hidden md:flex items-center space-x-4 text-sm text-gray-600">
+          <div>{member.role}</div>
+          {member.commission_rate && (
+            <div>{member.commission_rate}% commission</div>
           )}
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="sm"
-          className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-          onClick={() => onRemove(member.id, member.full_name)}
-        >
-          <UserMinus className="h-4 w-4" />
-        </Button>
+          {member.specialty && (
+            <div>{member.specialty}</div>
+          )}
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          {getStatusBadge(member.status)}
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {onEdit && (
+                <DropdownMenuItem onClick={() => onEdit(member)}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem onClick={() => window.open(`mailto:${member.email}`)}>
+                <Mail className="h-4 w-4 mr-2" />
+                Contact
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onToggleStatus(member.id, member.status)}>
+                {member.status === 'active' ? (
+                  <>
+                    <UserMinus className="h-4 w-4 mr-2" />
+                    Deactivate
+                  </>
+                ) : (
+                  <>
+                    <UserCheck className="h-4 w-4 mr-2" />
+                    Activate
+                  </>
+                )}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                className="text-red-600"
+                onClick={() => setShowDeleteConfirm(true)}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Remove
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
-    </div>
+
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently remove {member.full_name} from your salon team.
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => onRemove(member.id, member.full_name)}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
 

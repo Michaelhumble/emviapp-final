@@ -1,157 +1,102 @@
 
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle2, Circle, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { useAuth } from '@/context/auth';
-import { useTranslation } from '@/hooks/useTranslation';
-import { toTranslatableText } from './TranslationHelper';
-import { UserProfile } from '@/context/auth/types';
-import FallbackBoundary from '@/components/error-handling/FallbackBoundary';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { ArrowRight, Check, Target } from "lucide-react";
 
 export interface ProfileCompletionCardProps {
-  percentage?: number;
-  userProfile?: UserProfile | null;
-  loading?: boolean;
+  completionPercentage: number;
+  incompleteFields: string[];
+  isComplete: boolean;
 }
 
-const ProfileCompletionCard = ({ percentage = 0, userProfile = null, loading = false }: ProfileCompletionCardProps) => {
-  const { t } = useTranslation();
-  
-  // Use passed percentage or calculate from profile if not provided
-  const displayPercentage = percentage || 0;
-  
-  // Default tasks if no profile data is available
-  const completedTasks = userProfile?.completed_profile_tasks || [];
-  
-  // Profile completion tasks
-  const tasks = [
-    {
-      id: 'add-profile-picture',
-      label: t(toTranslatableText('Add profile picture')),
-      completed: Boolean(userProfile?.avatar_url),
-    },
-    {
-      id: 'add-bio',
-      label: t(toTranslatableText('Add your bio')),
-      completed: Boolean(userProfile?.bio),
-    },
-    {
-      id: 'add-services',
-      label: t(toTranslatableText('Add services')),
-      completed: completedTasks.includes('add-services'),
-    },
-    {
-      id: 'add-portfolio',
-      label: t(toTranslatableText('Add portfolio items')),
-      completed: Array.isArray(userProfile?.portfolio_urls) && 
-                userProfile?.portfolio_urls.length > 0,
-    },
-    {
-      id: 'set-availability',
-      label: t(toTranslatableText('Set your availability')),
-      completed: completedTasks.includes('set-availability'),
-    },
-    {
-      id: 'enable-bookings',
-      label: t(toTranslatableText('Enable bookings')),
-      completed: Boolean(userProfile?.accepts_bookings),
-    },
-    {
-      id: 'add-location',
-      label: t(toTranslatableText('Add your location')),
-      completed: Boolean(userProfile?.location),
-    },
-    {
-      id: 'add-specialties',
-      label: t(toTranslatableText('Add specialties')),
-      completed: Boolean(userProfile?.specialty),
-    },
-    {
-      id: 'connect-socials',
-      label: t(toTranslatableText('Connect social media')),
-      completed: completedTasks.includes('connect-socials'),
-    },
-  ];
-  
-  // Calculate completed tasks count
-  const completedCount = tasks.filter(task => task.completed).length;
-  const completionPercentage = Math.round((completedCount / tasks.length) * 100);
-  
-  if (loading) {
+export const ProfileCompletionCard = ({ 
+  completionPercentage, 
+  incompleteFields, 
+  isComplete 
+}: ProfileCompletionCardProps) => {
+  if (isComplete) {
     return (
-      <Card className="border-purple-100 shadow-sm">
-        <CardHeader className="pb-2 animate-pulse">
-          <div className="h-6 bg-gray-200 rounded w-1/2 mb-2"></div>
-          <div className="h-2 bg-gray-200 rounded w-full"></div>
+      <Card className="border-green-100 bg-gradient-to-r from-green-50 to-emerald-50">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Check className="h-5 w-5 text-green-600" />
+            Profile Complete!
+          </CardTitle>
+          <CardDescription>
+            Your profile is looking great and is fully visible to others
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-2 bg-gray-200 rounded w-full mb-6"></div>
-          <div className="space-y-4">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="h-5 w-5 bg-gray-200 rounded-full mr-2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-32"></div>
-                </div>
-                <div className="h-7 bg-gray-200 rounded w-20"></div>
-              </div>
-            ))}
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span>Profile completion</span>
+              <span className="font-medium text-green-700">100%</span>
+            </div>
+            <Progress value={100} className="h-2 bg-green-100" indicatorClassName="bg-green-500" />
           </div>
         </CardContent>
       </Card>
     );
   }
-  
+
   return (
-    <FallbackBoundary>
-      <Card className="border-purple-100 shadow-sm">
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg text-purple-700">
-              {t(toTranslatableText('Profile Completion'))}
-            </CardTitle>
-            <span className="text-sm font-medium">
-              {completionPercentage}%
-            </span>
+    <Card className="border-amber-100">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Target className="h-5 w-5 text-amber-600" />
+          Complete Your Profile
+        </CardTitle>
+        <CardDescription>
+          {completionPercentage < 50 
+            ? "Your profile needs more information to be fully visible" 
+            : "You're making great progress! Just a few more steps"}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <span>Profile completion</span>
+            <span className="font-medium">{completionPercentage}%</span>
           </div>
-        </CardHeader>
-        <CardContent>
-          <Progress value={completionPercentage} className="h-2 mb-6" />
+          <Progress value={completionPercentage} className="h-2" />
           
-          <div className="space-y-2">
-            {tasks.map((task) => (
-              <div key={task.id} className="flex items-center justify-between">
-                <div className="flex items-center">
-                  {task.completed ? (
-                    <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                  ) : (
-                    <Circle className="h-5 w-5 text-gray-300 mr-2" />
-                  )}
-                  <span className={`text-sm ${task.completed ? 'text-gray-700' : 'text-gray-500'}`}>
-                    {task.label}
-                  </span>
-                </div>
-                {!task.completed && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-xs text-purple-600 hover:text-purple-700 hover:bg-purple-50 h-7 px-2"
-                    asChild
+          {incompleteFields.length > 0 && (
+            <div className="mt-4">
+              <h4 className="text-sm font-medium mb-2">Missing information:</h4>
+              <ul className="text-xs text-muted-foreground space-y-1">
+                {incompleteFields.slice(0, 3).map((field, index) => (
+                  <motion.li 
+                    key={index}
+                    initial={{ opacity: 0, x: -5 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex items-center gap-1"
                   >
-                    <a href={`/profile/edit?task=${task.id}`}>
-                      {t(toTranslatableText('Complete'))}
-                    </a>
-                  </Button>
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                    <span>{field}</span>
+                  </motion.li>
+                ))}
+                {incompleteFields.length > 3 && (
+                  <li className="text-xs text-muted-foreground">
+                    +{incompleteFields.length - 3} more...
+                  </li>
                 )}
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </FallbackBoundary>
+              </ul>
+            </div>
+          )}
+        </div>
+      </CardContent>
+      <CardFooter>
+        <Button size="sm" variant="outline" className="w-full" asChild>
+          <Link to="/profile/edit">
+            Complete Profile
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Link>
+        </Button>
+      </CardFooter>
+    </Card>
   );
 };
-
-export default ProfileCompletionCard;

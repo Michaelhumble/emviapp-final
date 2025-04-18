@@ -1203,6 +1203,57 @@ export type Database = {
         }
         Relationships: []
       }
+      salon_services: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration_min: number
+          id: string
+          image_url: string | null
+          name: string
+          price: number
+          salon_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration_min: number
+          id?: string
+          image_url?: string | null
+          name: string
+          price: number
+          salon_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration_min?: number
+          id?: string
+          image_url?: string | null
+          name?: string
+          price?: number
+          salon_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "salon_services_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "salons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "salon_services_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "user_salon_access"
+            referencedColumns: ["salon_id"]
+          },
+        ]
+      }
       salon_staff: {
         Row: {
           avatar_url: string | null
@@ -1266,6 +1317,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      salon_views: {
+        Row: {
+          id: string
+          salon_id: string
+          session_id: string | null
+          source: string | null
+          viewed_at: string | null
+          viewer_id: string | null
+        }
+        Insert: {
+          id?: string
+          salon_id: string
+          session_id?: string | null
+          source?: string | null
+          viewed_at?: string | null
+          viewer_id?: string | null
+        }
+        Update: {
+          id?: string
+          salon_id?: string
+          session_id?: string | null
+          source?: string | null
+          viewed_at?: string | null
+          viewer_id?: string | null
+        }
+        Relationships: []
       }
       salons: {
         Row: {
@@ -1390,6 +1468,42 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      staff_service_assignments: {
+        Row: {
+          created_at: string | null
+          id: string
+          service_id: string | null
+          staff_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          service_id?: string | null
+          staff_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          service_id?: string | null
+          staff_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_service_assignments_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_service_assignments_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "salon_staff"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       support_logs: {
         Row: {
@@ -1777,6 +1891,10 @@ export type Database = {
           p_review_text: string
         }
         Returns: boolean
+      }
+      track_salon_view: {
+        Args: { p_salon_id: string; p_viewer_id?: string; p_source?: string }
+        Returns: undefined
       }
       user_has_salon_access: {
         Args: {

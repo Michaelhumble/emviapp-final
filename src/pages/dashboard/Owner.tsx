@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
@@ -26,7 +25,7 @@ import SalonTeamManager from "@/components/dashboard/salon/team/SalonTeamManager
 import SalonManagersSection from "@/components/dashboard/salon/team/SalonManagersSection";
 import SalonServiceManager from "@/components/dashboard/salon/SalonServiceManager";
 import SalonBoostCreditPanel from "@/components/dashboard/salon/SalonBoostCreditPanel";
-import SalonProfileCompletionMeter from "@/components/dashboard/salon/SalonProfileCompletionMeter";
+import { SalonProfileCompletionCard } from "@/components/salon/SalonProfileCompletionCard";
 import SalonBookingCalendar from "@/components/dashboard/salon/SalonBookingCalendar";
 import SalonClientManagement from "@/components/dashboard/salon/SalonClientManagement";
 import SalonAnalytics from "@/components/dashboard/salon/SalonAnalytics";
@@ -101,17 +100,17 @@ const OwnerDashboard = () => {
                 
                 <Tabs value={activeTab} onValueChange={handleTabChange}>
                   <TabsList className="grid grid-cols-7 mb-8">
-                    <TabsTrigger value="overview">Overview</TabsTrigger>
-                    <TabsTrigger value="bookings">Bookings</TabsTrigger>
-                    <TabsTrigger value="clients">Clients</TabsTrigger>
-                    <TabsTrigger value="team">Team</TabsTrigger>
-                    <TabsTrigger value="services">Services</TabsTrigger>
-                    <TabsTrigger value="analytics">Analytics</TabsTrigger>
-                    <TabsTrigger value="messages">Messages</TabsTrigger>
+                    <TabsTrigger value="overview" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Overview</TabsTrigger>
+                    <TabsTrigger value="bookings" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Bookings</TabsTrigger>
+                    <TabsTrigger value="clients" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Clients</TabsTrigger>
+                    <TabsTrigger value="team" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Team</TabsTrigger>
+                    <TabsTrigger value="services" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Services</TabsTrigger>
+                    <TabsTrigger value="analytics" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Analytics</TabsTrigger>
+                    <TabsTrigger value="messages" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Messages</TabsTrigger>
                   </TabsList>
                   
-                  <TabsContent value="overview" className="space-y-8">
-                    <SalonProfileCompletionMeter />
+                  <TabsContent value="overview" className="space-y-8 pt-4">
+                    <SalonProfileCompletionCard />
                     
                     <SalonQuickStats />
                     

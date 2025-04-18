@@ -1,26 +1,30 @@
+// First, keep any existing types in this file
 
+// Add the SalonService type for our applications
+export interface SalonService {
+  id: string;
+  salon_id: string;
+  name: string;
+  description?: string;
+  price: number;
+  duration_min: number;
+  image_url?: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+// Add the SalonTeamMember type 
 export interface SalonTeamMember {
   id: string;
   full_name: string;
-  specialty: string;
-  role: string;
-  joined_at: string;
   email: string;
-  avatar_url?: string;
+  role: string;
+  specialty: string;
   status: 'active' | 'inactive' | 'pending';
-}
-
-export interface SalonService {
-  id: string;
-  title: string;
-  duration_minutes: number;
-  price: number;
-  description?: string;
-  is_visible: boolean;
-  created_at: string;
-  updated_at?: string;
-  user_id: string;
-  image_url?: string;
+  joined_at: string;
+  avatar_url?: string;
+  commission_rate?: number;
+  salon_id: string;
 }
 
 export interface SalonBooking {
