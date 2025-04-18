@@ -23,50 +23,53 @@ export const useSalonBookingsStats = () => {
       try {
         setIsLoading(true);
         
-        // Get counts by status
-        const { data: statusCounts, error: countError } = await supabase
+        // Get counts by status using counts aggregation
+        const { data: bookingsData, error: bookingsError } = await supabase
           .from('bookings')
-          .select('status, count')
-          .eq('salon_id', currentSalon.id)
-          .groupBy('status');
+          .select('status')
+          .eq('salon_id', currentSalon.id);
           
-        if (countError) throw countError;
+        if (bookingsError) throw bookingsError;
         
-        // Get weekly bookings for chart
-        const { data: weeklyData, error: weeklyError } = await supabase
-          .from('bookings')
-          .select('created_at, status')
-          .eq('salon_id', currentSalon.id)
-          .order('created_at', { ascending: false });
-          
-        if (weeklyError) throw weeklyError;
-        
-        // Process the data
+        // Process the data manually
         const counts = {
           total: 0,
           pending: 0,
           accepted: 0,
           completed: 0,
-          cancelled: 0
+          cancelled: 0,
+          chartData: []
         };
         
-        if (statusCounts) {
-          statusCounts.forEach((item: any) => {
-            const status = item.status as keyof typeof counts;
-            if (status in counts) {
-              counts[status] = item.count;
-              counts.total += item.count;
-            }
+        if (bookingsData) {
+          // Count statuses manually
+          bookingsData.forEach((booking: any) => {
+            const status = booking.status as string;
+            
+            // Increment total
+            counts.total += 1;
+            
+            // Increment specific status
+            if (status === 'pending') counts.pending += 1;
+            else if (status === 'accepted') counts.accepted += 1;
+            else if (status === 'completed') counts.completed += 1;
+            else if (status === 'cancelled') counts.cancelled += 1;
           });
+          
+          // Get weekly data for chart
+          const { data: weeklyData, error: weeklyError } = await supabase
+            .from('bookings')
+            .select('created_at, status')
+            .eq('salon_id', currentSalon.id)
+            .order('created_at', { ascending: false });
+            
+          if (weeklyError) throw weeklyError;
+          
+          // Process weekly data for chart
+          counts.chartData = processWeeklyData(weeklyData || []);
         }
         
-        // Process weekly data for chart
-        const chartData = processWeeklyData(weeklyData || []);
-        
-        setStats({
-          ...counts,
-          chartData
-        });
+        setStats(counts);
         
       } catch (err) {
         console.error('Error fetching salon booking stats:', err);
@@ -84,7 +87,39 @@ export const useSalonBookingsStats = () => {
 
 // Helper function to process weekly data
 const processWeeklyData = (data: any[]) => {
-  // Implementation of weekly data processing
-  // This is simplified to avoid the deep instantiation issue
-  return [];
+  // This is a simplified implementation to avoid deep instantiation issues
+  // Group bookings by week
+  const weeks: Record<string, number> = {};
+  
+  // Get bookings from the last 12 weeks
+  const now = new Date();
+  const twelveWeeksAgo = new Date();
+  twelveWeeksAgo.setDate(now.getDate() - 12 * 7);
+  
+  // Initialize the last 12 weeks with 0 counts
+  for (let i = 0; i < 12; i++) {
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - (i * 7));
+    const weekLabel = `Week ${12-i}`;
+    weeks[weekLabel] = 0;
+  }
+  
+  // Count bookings per week
+  data.forEach((booking: any) => {
+    const bookingDate = new Date(booking.created_at);
+    if (bookingDate >= twelveWeeksAgo) {
+      // Find which week this belongs to
+      const weeksAgo = Math.floor((now.getTime() - bookingDate.getTime()) / (7 * 24 * 60 * 60 * 1000));
+      const weekLabel = `Week ${12-weeksAgo}`;
+      if (weeks[weekLabel] !== undefined) {
+        weeks[weekLabel]++;
+      }
+    }
+  });
+  
+  // Convert to array format for the chart
+  return Object.entries(weeks).map(([weekLabel, count]) => ({
+    weekLabel,
+    count
+  })).reverse();
 };

@@ -33,18 +33,24 @@ export function useSalonMessages() {
         .from('messages')
         .select(`
           *,
-          sender:sender_id(full_name, avatar_url)
+          sender:users!sender_id(full_name, avatar_url)
         `)
         .eq('salon_id', currentSalon.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       
-      // Explicitly cast the data to ensure type compatibility
-      const typedMessages = (data || []).map(msg => ({
-        ...msg,
-        message_type: msg.message_type as 'client' | 'artist' | 'applicant'
-      })) as Message[];
+      // Transform data to match Message type
+      const typedMessages: Message[] = (data || []).map(msg => ({
+        id: msg.id,
+        sender_id: msg.sender_id,
+        recipient_id: msg.recipient_id,
+        message_body: msg.message_body,
+        read: msg.read || false,
+        created_at: msg.created_at,
+        message_type: msg.message_type as 'client' | 'artist' | 'applicant',
+        sender: msg.sender as { full_name: string; avatar_url?: string }
+      }));
       
       setMessages(typedMessages);
     } catch (error) {
@@ -62,13 +68,15 @@ export function useSalonMessages() {
     if (!currentSalon?.id) return false;
     
     try {
-      const user = await supabase.auth.getUser();
-      if (!user.data.user) return false;
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError || !userData.user) {
+        throw userError || new Error('User not authenticated');
+      }
       
       const { error } = await supabase
         .from('messages')
         .insert({
-          sender_id: user.data.user.id,
+          sender_id: userData.user.id,
           recipient_id: recipientId,
           message_body: messageBody,
           message_type: messageType,

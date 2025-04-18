@@ -6,11 +6,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useTheme } from "next-themes";
 
 interface BookingsPerWeekChartProps {
-  timeRange: "30days" | "60days" | "90days";
+  timeRange?: "30days" | "60days" | "90days";
 }
 
-export const BookingsPerWeekChart: React.FC<BookingsPerWeekChartProps> = ({ timeRange }) => {
-  const { data, isLoading, error } = useSalonBookingsStats(timeRange);
+export const BookingsPerWeekChart: React.FC<BookingsPerWeekChartProps> = ({ timeRange = "30days" }) => {
+  const { stats, isLoading, error } = useSalonBookingsStats();
   const { resolvedTheme } = useTheme();
   
   const isDark = resolvedTheme === "dark";
@@ -25,7 +25,7 @@ export const BookingsPerWeekChart: React.FC<BookingsPerWeekChartProps> = ({ time
     return <div className="text-red-500 h-[300px] flex items-center justify-center">Error loading booking data</div>;
   }
 
-  if (!data || data.bookingsByWeek.length === 0) {
+  if (!stats || stats.chartData.length === 0) {
     return (
       <div className="h-[300px] flex items-center justify-center text-muted-foreground">
         No booking data available for this period
@@ -37,7 +37,7 @@ export const BookingsPerWeekChart: React.FC<BookingsPerWeekChartProps> = ({ time
     <div className="w-full h-[300px]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
-          data={data.bookingsByWeek}
+          data={stats.chartData}
           margin={{ top: 10, right: 10, left: 10, bottom: 20 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
