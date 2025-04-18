@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
@@ -37,6 +38,7 @@ export interface Service {
   description?: string;
 }
 
+// Define clear types for database records
 interface SalonServiceRecord {
   id: string;
   name: string;
@@ -54,17 +56,17 @@ interface StaffRecord {
 
 interface AppointmentRecord {
   id: string;
-  customer_name: string;
-  customer_email?: string;
-  customer_phone?: string;
+  customer_name: string | null;
+  customer_email?: string | null;
+  customer_phone?: string | null;
   start_time: string;
   end_time: string;
   status: string;
-  notes?: string;
+  notes?: string | null;
   artist_id: string;
   created_at: string;
-  services?: SalonServiceRecord;
-  assigned_staff?: StaffRecord;
+  services?: SalonServiceRecord | null;
+  assigned_staff?: StaffRecord | null;
 }
 
 export function useSalonCalendar(initialDate = new Date()) {
@@ -165,7 +167,7 @@ export function useSalonCalendar(initialDate = new Date()) {
         .from('appointments')
         .select(`
           *,
-          services(name, price, duration_min),
+          services(id, name, price, duration_min),
           assigned_staff:artist_id(id, full_name, avatar_url)
         `)
         .eq('salon_id', currentSalon.id)
@@ -174,38 +176,42 @@ export function useSalonCalendar(initialDate = new Date()) {
           
       if (error) throw error;
       
-      const formattedAppointments: CalendarAppointment[] = data?.map((apt: AppointmentRecord) => {
-        const serviceData = apt.services || {
-          id: '',
-          name: 'Unknown Service',
-          price: 0,
-          duration_min: 60
-        };
-        
-        const staffData = apt.assigned_staff || {
-          id: apt.artist_id,
-          full_name: 'Unassigned',
-          avatar_url: undefined
-        };
-        
-        return {
-          id: apt.id,
-          clientName: apt.customer_name || 'Client',
-          clientEmail: apt.customer_email,
-          clientPhone: apt.customer_phone,
-          serviceName: serviceData.name,
-          servicePrice: serviceData.price,
-          serviceDuration: serviceData.duration_min,
-          startTime: new Date(apt.start_time),
-          endTime: new Date(apt.end_time),
-          status: apt.status as 'pending' | 'accepted' | 'completed' | 'cancelled',
-          notes: apt.notes,
-          staffId: staffData.id,
-          staffName: staffData.full_name,
-          staffAvatar: staffData.avatar_url,
-          createdAt: apt.created_at
-        };
-      }) || [];
+      const formattedAppointments: CalendarAppointment[] = [];
+      
+      if (data) {
+        data.forEach((apt: AppointmentRecord) => {
+          const serviceData = apt.services || {
+            id: '',
+            name: 'Unknown Service',
+            price: 0,
+            duration_min: 60
+          };
+          
+          const staffData = apt.assigned_staff || {
+            id: apt.artist_id,
+            full_name: 'Unassigned',
+            avatar_url: undefined
+          };
+          
+          formattedAppointments.push({
+            id: apt.id,
+            clientName: apt.customer_name || 'Client',
+            clientEmail: apt.customer_email || undefined,
+            clientPhone: apt.customer_phone || undefined,
+            serviceName: serviceData.name,
+            servicePrice: serviceData.price,
+            serviceDuration: serviceData.duration_min,
+            startTime: new Date(apt.start_time),
+            endTime: new Date(apt.end_time),
+            status: apt.status as 'pending' | 'accepted' | 'completed' | 'cancelled',
+            notes: apt.notes || undefined,
+            staffId: staffData.id,
+            staffName: staffData.full_name,
+            staffAvatar: staffData.avatar_url,
+            createdAt: apt.created_at
+          });
+        });
+      }
       
       setAppointments(formattedAppointments);
       setError(null);

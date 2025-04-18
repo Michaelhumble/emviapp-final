@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
@@ -44,19 +45,20 @@ export function useSalonMessages() {
 
       if (error) throw error;
       
-      // Transform data to match Message type
+      // Define a default sender object
+      const defaultSender = { full_name: 'Unknown User', avatar_url: undefined };
+      
+      // Transform data to match Message type with proper null checks
       const typedMessages: Message[] = (data || []).map(msg => {
-        // Define a default sender object
-        const defaultSender = { full_name: 'Unknown User', avatar_url: undefined };
-        
         // Safely handle the sender object
         let senderObject = defaultSender;
         
         // Check if sender exists and is not an error object
         if (msg.sender && typeof msg.sender === 'object' && !('error' in msg.sender)) {
+          const senderData = msg.sender as SenderData;
           senderObject = {
-            full_name: (msg.sender as SenderData)?.full_name || defaultSender.full_name,
-            avatar_url: (msg.sender as SenderData)?.avatar_url
+            full_name: senderData?.full_name || defaultSender.full_name,
+            avatar_url: senderData?.avatar_url
           };
         }
         
@@ -72,17 +74,7 @@ export function useSalonMessages() {
         };
       });
       
-      // Add safe null checks for sender
-      const formattedMessages = typedMessages.map(msg => ({
-        ...msg,
-        sender: msg.sender || {
-          id: '',
-          name: 'Unknown',
-          avatar: ''
-        }
-      }));
-      
-      setMessages(formattedMessages);
+      setMessages(typedMessages);
     } catch (error) {
       console.error('Error fetching messages:', error);
       toast({
