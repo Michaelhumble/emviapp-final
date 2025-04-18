@@ -1,4 +1,3 @@
-
 export interface SalonTeamMember {
   id: string;
   full_name: string;
@@ -39,7 +38,6 @@ export interface SalonBooking {
   created_at: string;
 }
 
-// Adding the missing type definitions
 export interface BookingStatsItem {
   id: string;
   date: string;
