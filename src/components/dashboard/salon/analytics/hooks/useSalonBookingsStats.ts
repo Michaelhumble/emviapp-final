@@ -3,11 +3,23 @@ import { useState, useEffect } from 'react';
 import { useSalon } from '@/context/salon';
 import { supabase } from '@/integrations/supabase/client';
 
+interface BookingsStats {
+  total: number;
+  pending: number;
+  accepted: number;
+  completed: number;
+  cancelled: number;
+  chartData: Array<{
+    weekLabel: string;
+    count: number;
+  }>;
+}
+
 export const useSalonBookingsStats = () => {
   const { currentSalon } = useSalon();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [stats, setStats] = useState<any>({
+  const [stats, setStats] = useState<BookingsStats>({
     total: 0,
     pending: 0,
     accepted: 0,
