@@ -38,3 +38,27 @@ export interface SalonBooking {
   notes?: string;
   created_at: string;
 }
+
+// Add a specific interface for booking statistics
+export interface BookingStatsItem {
+  week: string;
+  count: number;
+}
+
+// Add a message sender interface
+export interface MessageSender {
+  id: string;
+  name: string;
+  avatar?: string;
+  type: 'customer' | 'artist' | 'staff';
+}
+
+// Add a salon message interface
+export interface SalonMessage {
+  id: string;
+  content: string;
+  timestamp: Date;
+  isRead: boolean;
+  isReplied: boolean;
+  sender: MessageSender | null;
+}

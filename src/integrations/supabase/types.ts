@@ -682,6 +682,54 @@ export type Database = {
         }
         Relationships: []
       }
+      messages: {
+        Row: {
+          created_at: string
+          id: string
+          message_body: string
+          message_type: string
+          read: boolean | null
+          recipient_id: string
+          salon_id: string
+          sender_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message_body: string
+          message_type: string
+          read?: boolean | null
+          recipient_id: string
+          salon_id: string
+          sender_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message_body?: string
+          message_type?: string
+          read?: boolean | null
+          recipient_id?: string
+          salon_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "salons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "user_salon_access"
+            referencedColumns: ["salon_id"]
+          },
+        ]
+      }
       motivational_messages: {
         Row: {
           category: string | null
