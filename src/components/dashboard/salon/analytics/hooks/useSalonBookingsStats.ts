@@ -25,7 +25,7 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
   const formattedStartDate = format(startDate, 'yyyy-MM-dd');
   const formattedEndDate = format(new Date(), 'yyyy-MM-dd');
 
-  return useTypedQuery<BookingStatsItem[]>({
+  const query = useTypedQuery<BookingStatsItem[]>({
     queryKey: ['salon-booking-stats', salonId, period],
     queryFn: async () => {
       if (!salonId) return [];
@@ -71,4 +71,6 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
     },
     enabled: !!salonId
   });
+
+  return query;
 };
