@@ -25,7 +25,7 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
   const formattedStartDate = format(startDate, 'yyyy-MM-dd');
   const formattedEndDate = format(new Date(), 'yyyy-MM-dd');
 
-  // Using a more explicit type declaration to avoid deep type instantiation
+  // Fixed type declaration to avoid deep instantiation issues
   const query = useTypedQuery<BookingStatsItem[]>({
     queryKey: ['salon-booking-stats', salonId, period],
     queryFn: async () => {
