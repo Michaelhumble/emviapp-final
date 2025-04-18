@@ -290,6 +290,10 @@ const routes = [
     element: <BoothDetail />,
   },
   {
+    path: '/admin-dashboard',
+    element: <AdminDashboard />,
+  },
+  {
     path: '*',
     element: <NotFound />,
   },
