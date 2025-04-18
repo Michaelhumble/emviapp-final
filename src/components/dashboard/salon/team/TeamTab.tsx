@@ -4,9 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 import TeamMembersList from "./TeamMembersList";
-import TeamMemberForm from "./TeamMemberForm";
 import { useTeamMembers } from "./useTeamMembers";
 import { SalonTeamMember } from "../types";
+import TeamMemberForm from "./TeamMemberForm";
 
 export default function TeamTab() {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -21,6 +21,12 @@ export default function TeamTab() {
   const handleCloseForm = () => {
     setIsFormOpen(false);
     setEditingMember(null);
+  };
+
+  const handleSubmitMember = async (data: Partial<SalonTeamMember>) => {
+    const result = await sendInvite(data);
+    // We're ignoring the return value since the function signature requires Promise<void>
+    return;
   };
 
   return (
@@ -42,6 +48,7 @@ export default function TeamTab() {
             teamMembers={teamMembers}
             onRemoveTeamMember={removeTeamMember}
             onToggleMemberStatus={toggleMemberStatus}
+            onEdit={handleEditMember}
           />
         </CardContent>
       </Card>
@@ -49,7 +56,7 @@ export default function TeamTab() {
       <TeamMemberForm 
         open={isFormOpen}
         onClose={handleCloseForm}
-        onSubmit={sendInvite}
+        onSubmit={handleSubmitMember}
         initialData={editingMember}
       />
     </div>

@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,7 +15,7 @@ const mockMessages = [
       id: "u1",
       name: "Jessica Lee",
       avatar: null,
-      type: "customer"
+      type: "customer" as const
     },
     content: "Hi, I would like to know if you have any appointments available for next Friday?",
     timestamp: new Date(2025, 3, 8, 15, 21), // April 8, 2025, 3:21 PM
@@ -27,7 +28,7 @@ const mockMessages = [
       id: "u2",
       name: "Tina Stylist",
       avatar: null,
-      type: "artist"
+      type: "artist" as const
     },
     content: "I won't be available tomorrow for my appointments, can you reschedule my clients?",
     timestamp: new Date(2025, 3, 9, 9, 15), // April 9, 2025, 9:15 AM
@@ -40,7 +41,7 @@ const mockMessages = [
       id: "u3",
       name: "Michael Brown",
       avatar: null,
-      type: "customer"
+      type: "customer" as const
     },
     content: "I need to cancel my appointment for today at 2:30 PM. Sorry for the late notice.",
     timestamp: new Date(2025, 3, 10, 8, 42), // April 10, 2025, 8:42 AM
@@ -53,7 +54,7 @@ const mockMessages = [
       id: "u4",
       name: "Sarah Wilson",
       avatar: null,
-      type: "customer"
+      type: "customer" as const
     },
     content: "Do you carry any vegan nail polish options? I'm looking for something eco-friendly.",
     timestamp: new Date(2025, 3, 9, 14, 10), // April 9, 2025, 2:10 PM
@@ -66,7 +67,7 @@ const mockMessages = [
       id: "u5",
       name: "Laura Nail Tech",
       avatar: null,
-      type: "staff"
+      type: "staff" as const
     },
     content: "Just to let you know I'm fully booked for Friday already. Can you update the schedule?",
     timestamp: new Date(2025, 3, 10, 10, 30), // April 10, 2025, 10:30 AM

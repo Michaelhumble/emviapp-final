@@ -258,7 +258,7 @@ const SalonServiceManagement = () => {
       </CardContent>
 
       <ServiceForm 
-        isOpen={showForm}
+        open={showForm}
         onClose={() => setShowForm(false)}
         onSubmit={handleFormSubmit}
         initialData={selectedService}

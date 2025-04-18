@@ -1,150 +1,123 @@
 
-import React, { useState } from "react";
-import { 
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription
-} from "@/components/ui/dialog";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { UserPlus } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface InviteMemberModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSendInvite: (email: string, name: string, role: string) => Promise<void>;
+  onSendInvite: (data: any) => Promise<void>;
 }
 
-const roleOptions = [
-  { value: "artist", label: "Artist" },
-  { value: "manager", label: "Manager" },
-  { value: "receptionist", label: "Receptionist" },
-  { value: "assistant", label: "Assistant" }
-];
-
-const InviteMemberModal: React.FC<InviteMemberModalProps> = ({
-  isOpen,
-  onClose,
-  onSendInvite
-}) => {
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [role, setRole] = useState("artist");
+const InviteMemberModal = ({ isOpen, onClose, onSendInvite }: InviteMemberModalProps) => {
+  const [formData, setFormData] = useState({
+    full_name: "",
+    email: "",
+    role: "artist",
+    specialty: ""
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
 
-  const validateForm = () => {
-    const newErrors: {[key: string]: string} = {};
-    
-    if (!email) newErrors.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Email is invalid";
-    
-    if (!name) newErrors.name = "Name is required";
-    if (!role) newErrors.role = "Role is required";
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) return;
-    
+    if (!formData.email || !formData.full_name) {
+      return;
+    }
+
     try {
       setIsSubmitting(true);
-      await onSendInvite(email, name, role);
-      resetForm();
+      await onSendInvite(formData);
+      setFormData({
+        full_name: "",
+        email: "",
+        role: "artist",
+        specialty: ""
+      });
       onClose();
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error("Error sending invite:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const resetForm = () => {
-    setEmail("");
-    setName("");
-    setRole("artist");
-    setErrors({});
-  };
-
-  const handleClose = () => {
-    resetForm();
-    onClose();
-  };
-
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <UserPlus className="h-5 w-5 text-purple-500" />
-            Invite Team Member
-          </DialogTitle>
-          <DialogDescription>
-            Invite a new team member to join your salon.
-          </DialogDescription>
+          <DialogTitle>Invite Team Member</DialogTitle>
         </DialogHeader>
-        
-        <div className="space-y-4 py-2">
-          <div className="space-y-2">
-            <Label htmlFor="name">Full Name</Label>
+
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor="full_name">Full Name</Label>
             <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter team member's name"
-              className={errors.name ? "border-red-300" : ""}
+              id="full_name"
+              name="full_name"
+              value={formData.full_name}
+              onChange={handleChange}
+              placeholder="Enter name"
             />
-            {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
           </div>
-          
-          <div className="space-y-2">
+
+          <div className="grid gap-2">
             <Label htmlFor="email">Email Address</Label>
             <Input
               id="email"
+              name="email"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="email@example.com"
-              className={errors.email ? "border-red-300" : ""}
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="name@example.com"
             />
-            {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
           </div>
-          
-          <div className="space-y-2">
+
+          <div className="grid gap-2">
             <Label htmlFor="role">Role</Label>
-            <Select value={role} onValueChange={setRole}>
-              <SelectTrigger id="role" className={errors.role ? "border-red-300" : ""}>
-                <SelectValue placeholder="Select a role" />
+            <Select
+              value={formData.role}
+              onValueChange={(value) => handleSelectChange("role", value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select role" />
               </SelectTrigger>
               <SelectContent>
-                {roleOptions.map(option => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
+                <SelectItem value="artist">Artist</SelectItem>
+                <SelectItem value="manager">Manager</SelectItem>
+                <SelectItem value="receptionist">Receptionist</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
-            {errors.role && <p className="text-sm text-red-500">{errors.role}</p>}
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="specialty">Specialty (Optional)</Label>
+            <Input
+              id="specialty"
+              name="specialty"
+              value={formData.specialty}
+              onChange={handleChange}
+              placeholder="e.g. Nail Art, Hair Coloring"
+            />
           </div>
         </div>
-        
+
         <DialogFooter>
-          <Button variant="outline" onClick={handleClose}>
+          <Button variant="outline" onClick={onClose} disabled={isSubmitting}>
             Cancel
           </Button>
-          <Button 
-            onClick={handleSubmit} 
-            disabled={isSubmitting}
-            className="bg-purple-600 hover:bg-purple-700"
-          >
+          <Button onClick={handleSubmit} disabled={isSubmitting || !formData.email || !formData.full_name}>
             {isSubmitting ? "Sending..." : "Send Invite"}
           </Button>
         </DialogFooter>

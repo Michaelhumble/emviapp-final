@@ -5,19 +5,21 @@ import { SalonTeamMember } from "../types";
 import TeamMemberItem from "./TeamMemberItem";
 
 interface TeamMembersListProps {
+  teamMembers: SalonTeamMember[];
   loading: boolean;
   error: Error | null;
-  teamMembers: SalonTeamMember[];
-  onRemoveTeamMember: (memberId: string, name: string) => void;
-  onToggleMemberStatus: (memberId: string, currentStatus: 'active' | 'inactive' | 'pending' | undefined) => void;
+  onRemoveTeamMember: (memberId: string, name?: string) => void;
+  onToggleMemberStatus: (memberId: string, currentStatus?: 'active' | 'inactive' | 'pending') => void;
+  onEdit?: (member: SalonTeamMember) => void;
 }
 
 const TeamMembersList = ({ 
+  teamMembers, 
   loading, 
   error, 
-  teamMembers, 
   onRemoveTeamMember, 
-  onToggleMemberStatus 
+  onToggleMemberStatus,
+  onEdit
 }: TeamMembersListProps) => {
   if (error) {
     return (
@@ -53,6 +55,7 @@ const TeamMembersList = ({
           member={member} 
           onRemove={onRemoveTeamMember}
           onToggleStatus={onToggleMemberStatus}
+          onEdit={onEdit}
         />
       ))}
     </div>

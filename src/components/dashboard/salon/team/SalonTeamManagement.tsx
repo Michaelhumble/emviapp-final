@@ -17,11 +17,10 @@ const SalonTeamManagement = () => {
     sendInvite, 
     removeTeamMember,
     toggleMemberStatus,
-    resendInvite
   } = useTeamMembers();
 
-  const handleSendInvite = async (email: string, name: string, role: string) => {
-    await sendInvite(email, name, role);
+  const handleSendInvite = async (memberData: Partial<any>) => {
+    await sendInvite(memberData);
   };
 
   return (
@@ -69,7 +68,6 @@ const SalonTeamManagement = () => {
             loading={loading}
             onRemoveTeamMember={removeTeamMember}
             onToggleStatus={toggleMemberStatus}
-            onResendInvite={resendInvite}
           />
         )}
       </CardContent>

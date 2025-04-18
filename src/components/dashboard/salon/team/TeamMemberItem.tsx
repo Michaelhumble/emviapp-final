@@ -1,8 +1,16 @@
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MoreHorizontal, Edit, Trash2, XCircle, CheckCircle, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { SalonTeamMember } from "../types";
+import { 
+  MoreHorizontal, 
+  Mail, 
+  UserCheck, 
+  UserMinus, 
+  Edit, 
+  Trash2 
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +18,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
+import { Badge } from "@/components/ui/badge";
+import { 
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -20,75 +29,59 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
-import { SalonTeamMember } from "../types";
 
 interface TeamMemberItemProps {
   member: SalonTeamMember;
-  onRemove: (id: string, name: string) => void;
-  onToggleStatus: (id: string, currentStatus: 'active' | 'inactive' | 'pending' | undefined) => void;
+  onRemove: (id: string, name?: string) => void;
+  onToggleStatus: (id: string, currentStatus?: 'active' | 'inactive' | 'pending') => void;
+  onEdit?: (member: SalonTeamMember) => void;
 }
 
-export default function TeamMemberItem({ member, onRemove, onToggleStatus }: TeamMemberItemProps) {
-  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+const TeamMemberItem = ({ member, onRemove, onToggleStatus, onEdit }: TeamMemberItemProps) => {
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const getStatusColor = (status: string | undefined) => {
+  // Helper function to get status badge color
+  const getStatusBadge = (status?: string) => {
     switch (status) {
       case 'active':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return <Badge className="bg-green-50 text-green-700 border-green-200">Active</Badge>;
       case 'inactive':
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return <Badge className="bg-gray-50 text-gray-700 border-gray-200">Inactive</Badge>;
       case 'pending':
-        return 'bg-amber-100 text-amber-800 border-amber-200';
+        return <Badge className="bg-yellow-50 text-yellow-700 border-yellow-200">Pending</Badge>;
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return null;
     }
-  };
-
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(part => part[0])
-      .join('')
-      .toUpperCase();
-  };
-
-  const handleToggleStatus = () => {
-    const newStatus = member.status === 'active' ? 'inactive' : 'active';
-    onToggleStatus(member.id, member.status);
-  };
-
-  const handleRemove = () => {
-    onRemove(member.id, member.full_name);
-    setIsDeleteConfirmOpen(false);
   };
 
   return (
     <>
-      <div className="py-4 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Avatar>
-            <AvatarImage src={member.avatar_url} />
-            <AvatarFallback>{getInitials(member.full_name)}</AvatarFallback>
+      <div className="flex items-center justify-between py-4">
+        <div className="flex items-center">
+          <Avatar className="h-10 w-10 mr-3">
+            <AvatarImage src={member.avatar_url || ''} alt={member.full_name} />
+            <AvatarFallback className="bg-primary/10">
+              {member.full_name.substring(0, 2).toUpperCase()}
+            </AvatarFallback>
           </Avatar>
+          
           <div>
             <div className="font-medium">{member.full_name}</div>
-            <div className="text-sm text-muted-foreground">{member.email}</div>
-            <div className="flex items-center mt-1 space-x-2">
-              <div className="text-xs capitalize text-muted-foreground">{member.role}</div>
+            <div className="text-sm text-gray-500 flex items-center space-x-2">
+              <span>{member.role}</span>
               {member.specialty && (
                 <>
                   <span className="text-gray-300">•</span>
-                  <div className="text-xs text-muted-foreground">{member.specialty}</div>
+                  <span>{member.specialty}</span>
                 </>
               )}
             </div>
           </div>
         </div>
+        
         <div className="flex items-center space-x-2">
-          <Badge className={`${getStatusColor(member.status)}`}>
-            {member.status === 'active' ? 'Active' : member.status === 'inactive' ? 'Inactive' : 'Pending'}
-          </Badge>
+          {getStatusBadge(member.status)}
+          
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -96,44 +89,55 @@ export default function TeamMemberItem({ member, onRemove, onToggleStatus }: Tea
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={handleToggleStatus}>
+              {onEdit && (
+                <DropdownMenuItem onClick={() => onEdit(member)}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem onClick={() => window.open(`mailto:${member.email}`)}>
+                <Mail className="h-4 w-4 mr-2" />
+                Contact
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onToggleStatus(member.id, member.status)}>
                 {member.status === 'active' ? (
                   <>
-                    <XCircle className="mr-2 h-4 w-4" />
-                    <span>Set as Inactive</span>
+                    <UserMinus className="h-4 w-4 mr-2" />
+                    Deactivate
                   </>
                 ) : (
                   <>
-                    <CheckCircle className="mr-2 h-4 w-4" />
-                    <span>Set as Active</span>
+                    <UserCheck className="h-4 w-4 mr-2" />
+                    Activate
                   </>
                 )}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
+              <DropdownMenuItem 
                 className="text-red-600"
-                onClick={() => setIsDeleteConfirmOpen(true)}
+                onClick={() => setShowDeleteConfirm(true)}
               >
-                <Trash2 className="mr-2 h-4 w-4" />
-                <span>Remove</span>
+                <Trash2 className="h-4 w-4 mr-2" />
+                Remove
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>
 
-      <AlertDialog open={isDeleteConfirmOpen} onOpenChange={setIsDeleteConfirmOpen}>
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action will remove {member.full_name} from your salon's team.
+              This will permanently remove {member.full_name} from your salon team.
+              This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleRemove}
+            <AlertDialogAction 
+              onClick={() => onRemove(member.id, member.full_name)}
               className="bg-red-600 hover:bg-red-700"
             >
               Remove
@@ -143,4 +147,6 @@ export default function TeamMemberItem({ member, onRemove, onToggleStatus }: Tea
       </AlertDialog>
     </>
   );
-}
+};
+
+export default TeamMemberItem;
