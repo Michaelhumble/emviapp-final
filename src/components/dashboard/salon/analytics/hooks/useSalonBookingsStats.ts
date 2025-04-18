@@ -25,13 +25,13 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
   const formattedStartDate = format(startDate, 'yyyy-MM-dd');
   const formattedEndDate = format(new Date(), 'yyyy-MM-dd');
 
-  // Fixed type declaration to avoid deep instantiation issues
+  // Break the type inference chain to avoid deep instantiation
   const query = useTypedQuery<BookingStatsItem[]>({
     queryKey: ['salon-booking-stats', salonId, period],
     queryFn: async () => {
       if (!salonId) return [];
 
-      // Specify the return type explicitly to avoid deep inference
+      // Use the explicitly typed interface for appointments data
       const { data: bookings, error } = await supabase
         .from('appointments')
         .select('start_time, status')
