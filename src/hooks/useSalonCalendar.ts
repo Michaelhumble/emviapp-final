@@ -51,11 +51,11 @@ export const useSalonCalendar = () => {
   const formattedStartDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Use our custom useTypedQuery hook to avoid type recursion issues
+  // Fixed TypeScript error by properly implementing useTypedQuery with explicit type definition
   const appointmentsQuery = useTypedQuery<SalonBooking[]>({
     queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
     queryFn: async () => {
-      if (!salonId) return [] as SalonBooking[];
+      if (!salonId) return [];
 
       const { data, error } = await supabase
         .from('appointments')
