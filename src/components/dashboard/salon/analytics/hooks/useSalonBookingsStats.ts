@@ -29,12 +29,15 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
     queryFn: async () => {
       if (!salonId) return [];
 
-      const { data, error } = await supabase
+      // Break the type inference chain by using type assertions with 'as any'
+      const result = await (supabase
         .from('appointments')
         .select('start_time, status')
         .eq('salon_id', salonId)
         .gte('start_time', formattedStartDate)
-        .lte('start_time', formattedEndDate);
+        .lte('start_time', formattedEndDate) as any);
+      
+      const { data, error } = result;
 
       if (error) throw error;
       if (!data) return [];
@@ -69,4 +72,3 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
     enabled: !!salonId
   });
 };
-
