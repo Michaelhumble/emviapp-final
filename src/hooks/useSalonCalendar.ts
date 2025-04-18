@@ -43,7 +43,20 @@ interface AppointmentData {
   } | null;
 }
 
-export const useSalonCalendar = () => {
+// Define the return type to break the deep type inference chain
+interface SalonCalendarReturn {
+  currentMonth: Date;
+  calendarDays: Date[];
+  appointments: SalonBooking[];
+  isLoading: boolean;
+  error: Error | null;
+  goToPreviousMonth: () => void;
+  goToNextMonth: () => void;
+  goToToday: () => void;
+  getAppointmentsForDay: (day: Date) => SalonBooking[];
+}
+
+export const useSalonCalendar = (): SalonCalendarReturn => {
   const { currentSalon } = useSalon();
   const salonId = currentSalon?.id;
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -51,10 +64,10 @@ export const useSalonCalendar = () => {
   const formattedStartDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Fix: Break the type inference chain by explicitly typing both the generic parameter and the query function return type
+  // Break the type inference chain completely by using an explicit interface for the return value
   const appointmentsQuery = useTypedQuery<SalonBooking[]>({
     queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
-    queryFn: async (): Promise<SalonBooking[]> => {
+    queryFn: async () => {
       if (!salonId) return [];
 
       const { data, error } = await supabase
@@ -66,20 +79,24 @@ export const useSalonCalendar = () => {
 
       if (error) throw error;
       
-      // Explicitly map the raw data to SalonBooking objects to avoid deep type inference
-      return (data || []).map((apt: AppointmentData): SalonBooking => ({
-        id: apt.id,
-        client_name: apt.customer_name || '',
-        client_email: apt.customer_email,
-        client_phone: apt.customer_phone,
-        service_name: apt.services?.title || 'Unknown Service',
-        service_price: apt.services?.price || 0,
-        date: apt.start_time ? new Date(apt.start_time) : null,
-        time: apt.start_time ? format(new Date(apt.start_time), 'HH:mm') : '',
-        status: apt.status as SalonBooking['status'],
-        notes: apt.notes || '',
-        created_at: apt.created_at,
-      }));
+      // Map the raw data to our SalonBooking interface with type annotations
+      const mappedData: SalonBooking[] = (data || []).map((apt: AppointmentData) => {
+        return {
+          id: apt.id,
+          client_name: apt.customer_name || '',
+          client_email: apt.customer_email,
+          client_phone: apt.customer_phone,
+          service_name: apt.services?.title || 'Unknown Service',
+          service_price: apt.services?.price || 0,
+          date: apt.start_time ? new Date(apt.start_time) : null,
+          time: apt.start_time ? format(new Date(apt.start_time), 'HH:mm') : '',
+          status: apt.status as SalonBooking['status'],
+          notes: apt.notes || '',
+          created_at: apt.created_at,
+        };
+      });
+      
+      return mappedData;
     },
     enabled: !!salonId,
   });
