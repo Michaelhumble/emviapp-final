@@ -1,19 +1,66 @@
-
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { SalonMessage } from '@/types/SalonMessage';
 import { useAuth } from '@/context/auth';
+
+const AI_RESPONSES = {
+  help: "Hi there! I'm your EmviApp Assistant. How can I help you today?",
+  booking: "I can help you with booking appointments! What type of service are you looking for?",
+  price: "Our pricing varies by service and artist. Would you like me to show you some options?",
+  default: "I'm here to help! Feel free to ask me about bookings, services, or any other questions you have."
+};
 
 export const useMessages = (recipientId: string) => {
   const [messages, setMessages] = useState<SalonMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
+  const addMessage = (message: SalonMessage) => {
+    setMessages(prev => [...prev, message]);
+  };
+
+  const simulateAIResponse = (userMessage: string) => {
+    const lowerMessage = userMessage.toLowerCase();
+    let responseContent = AI_RESPONSES.default;
+
+    if (lowerMessage.includes('help')) {
+      responseContent = AI_RESPONSES.help;
+    } else if (lowerMessage.includes('book') || lowerMessage.includes('appointment')) {
+      responseContent = AI_RESPONSES.booking;
+    } else if (lowerMessage.includes('price') || lowerMessage.includes('cost')) {
+      responseContent = AI_RESPONSES.price;
+    }
+
+    const aiResponse: SalonMessage = {
+      id: crypto.randomUUID(),
+      senderId: 'support-agent',
+      senderName: 'EmviApp Assistant',
+      message: responseContent,
+      timestamp: new Date().toISOString()
+    };
+
+    setTimeout(() => {
+      addMessage(aiResponse);
+    }, 1200);
+  };
+
   useEffect(() => {
     if (!user || !recipientId) return;
 
-    // Fetch existing messages
     const fetchMessages = async () => {
+      if (recipientId === 'support-agent') {
+        const welcomeMessage: SalonMessage = {
+          id: crypto.randomUUID(),
+          senderId: 'support-agent',
+          senderName: 'EmviApp Assistant',
+          message: "👋 Hello! I'm the EmviApp Assistant. How can I help you today?",
+          timestamp: new Date().toISOString()
+        };
+        setMessages([welcomeMessage]);
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('messages')
         .select('*')
@@ -26,7 +73,6 @@ export const useMessages = (recipientId: string) => {
         return;
       }
 
-      // Transform the data to match SalonMessage type
       const transformedMessages: SalonMessage[] = (data || []).map(msg => ({
         id: msg.id,
         senderId: msg.sender_id,
@@ -41,7 +87,6 @@ export const useMessages = (recipientId: string) => {
 
     fetchMessages();
 
-    // Subscribe to new messages
     const channel = supabase
       .channel('messages')
       .on(
@@ -70,6 +115,15 @@ export const useMessages = (recipientId: string) => {
       supabase.removeChannel(channel);
     };
   }, [user, recipientId]);
+
+  useEffect(() => {
+    if (recipientId === 'support-agent' && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage.senderId !== 'support-agent') {
+        simulateAIResponse(lastMessage.message);
+      }
+    }
+  }, [messages, recipientId]);
 
   return { messages, loading };
 };

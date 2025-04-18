@@ -1,9 +1,8 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useMessages } from '@/hooks/chat/useMessages';
 import { useSendMessage } from '@/hooks/chat/useSendMessage';
 import { useAuth } from '@/context/auth';
-import { Button } from '@/components/ui/button';
 import { ChatHeader } from '@/components/chat/ChatHeader';
 import { ChatInput } from '@/components/chat/ChatInput';
 
@@ -17,6 +16,20 @@ export const MessageCenter = ({ recipientId }: MessageCenterProps) => {
   const { isSignedIn } = useAuth();
   
   const handleSendMessage = async (content: string) => {
+    if (recipientId === 'support-agent') {
+      // For support agent, just add the message locally
+      const userMessage = {
+        id: crypto.randomUUID(),
+        senderId: 'user',
+        senderName: 'You',
+        message: content,
+        timestamp: new Date().toISOString()
+      };
+      messages.push(userMessage);
+      return;
+    }
+    
+    // For real users, use the normal send logic
     await sendMessage(recipientId, content);
   };
 
@@ -30,7 +43,10 @@ export const MessageCenter = ({ recipientId }: MessageCenterProps) => {
 
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-lg border border-gray-200 shadow-sm">
-      <ChatHeader onClose={() => {}} />
+      <ChatHeader 
+        onClose={() => {}} 
+        isSupport={recipientId === 'support-agent'}
+      />
       
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {loading ? (

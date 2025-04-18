@@ -24,61 +24,47 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
   const formattedStartDate = format(startDate, 'yyyy-MM-dd');
   const formattedEndDate = format(new Date(), 'yyyy-MM-dd');
 
-  const queryResult = useQuery({
+  return useQuery({
     queryKey: ['salon-booking-stats', salonId, period],
     queryFn: async () => {
       if (!salonId) return [] as BookingStatsItem[];
       
-      try {
-        const response = await supabase
-          .from('appointments')
-          .select('start_time, status')
-          .eq('salon_id', salonId)
-          .gte('start_time', formattedStartDate)
-          .lte('start_time', formattedEndDate);
-          
-        if (response.error) throw response.error;
+      const { data, error } = await supabase
+        .from('appointments')
+        .select('start_time, status')
+        .eq('salon_id', salonId)
+        .gte('start_time', formattedStartDate)
+        .lte('start_time', formattedEndDate);
         
-        const appointments = (response.data || []) as AppointmentData[];
-        
-        const statsMap = new Map<string, BookingStatsItem>();
+      if (error) throw error;
+      
+      const appointments = (data || []) as AppointmentData[];
+      const statsMap = new Map<string, BookingStatsItem>();
 
-        appointments.forEach(booking => {
-          const dateStr = format(new Date(booking.start_time), 'yyyy-MM-dd');
+      appointments.forEach(booking => {
+        const dateStr = format(new Date(booking.start_time), 'yyyy-MM-dd');
 
-          if (!statsMap.has(dateStr)) {
-            statsMap.set(dateStr, {
-              date: dateStr,
-              totalBookings: 0,
-              completed: 0,
-              canceled: 0
-            });
-          }
+        if (!statsMap.has(dateStr)) {
+          statsMap.set(dateStr, {
+            date: dateStr,
+            totalBookings: 0,
+            completed: 0,
+            canceled: 0
+          });
+        }
 
-          const item = statsMap.get(dateStr)!;
-          item.totalBookings += 1;
+        const item = statsMap.get(dateStr)!;
+        item.totalBookings += 1;
 
-          if (booking.status === 'completed') {
-            item.completed += 1;
-          } else if (booking.status === 'cancelled') {
-            item.canceled += 1;
-          }
-        });
+        if (booking.status === 'completed') {
+          item.completed += 1;
+        } else if (booking.status === 'cancelled') {
+          item.canceled += 1;
+        }
+      });
 
-        return Array.from(statsMap.values());
-      } catch (error) {
-        console.error("Error fetching booking stats:", error);
-        return [];
-      }
+      return Array.from(statsMap.values());
     },
     enabled: !!salonId
   });
-
-  return {
-    data: queryResult.data || [],
-    isLoading: queryResult.isLoading,
-    error: queryResult.error,
-    refetch: queryResult.refetch,
-    isFetching: queryResult.isFetching
-  };
 };
