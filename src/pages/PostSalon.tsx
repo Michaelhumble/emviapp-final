@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,8 +20,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
+import { usePostPayment } from '@/hooks/payments/usePostPayment';
 
-// Define form schema with zod
 const salonFormSchema = z.object({
   salonName: z.string().min(2, "Salon name must be at least 2 characters."),
   city: z.string().min(2, "City is required."),
@@ -40,6 +39,7 @@ type SalonFormValues = z.infer<typeof salonFormSchema>;
 const PostSalon = () => {
   const [submitted, setSubmitted] = useState(false);
   const { toast } = useToast();
+  const { initiatePayment, isLoading: paymentLoading } = usePostPayment();
 
   const defaultValues: Partial<SalonFormValues> = {
     willTrain: false,

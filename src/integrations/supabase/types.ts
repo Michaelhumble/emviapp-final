@@ -896,6 +896,39 @@ export type Database = {
         }
         Relationships: []
       }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          metadata: Json | null
+          payment_type: string
+          status: string
+          stripe_session_id: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          payment_type: string
+          status?: string
+          stripe_session_id?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          payment_type?: string
+          status?: string
+          stripe_session_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       portfolio_items: {
         Row: {
           created_at: string
@@ -1789,6 +1822,15 @@ export type Database = {
         }
         Relationships: []
       }
+      post_payments: {
+        Row: {
+          last_purchase_date: string | null
+          payment_type: string | null
+          purchase_count: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
       post_status_view: {
         Row: {
           contact_info: Json | null
@@ -1892,6 +1934,10 @@ export type Database = {
       }
       can_review_booking: {
         Args: { booking_id: string; user_id: string }
+        Returns: boolean
+      }
+      can_user_post: {
+        Args: { p_user_id: string; p_post_type: string }
         Returns: boolean
       }
       create_notification: {
