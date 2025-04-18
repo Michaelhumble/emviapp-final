@@ -40,12 +40,19 @@ export const useSalonMessages = () => {
           
           // Check if sender exists and has the expected properties
           if (msg.sender && typeof msg.sender === 'object') {
+            const typedSender = msg.sender as {
+              id?: string;
+              full_name?: string;
+              avatar_url?: string;
+              role?: string;
+            };
+            
             sender = {
-              id: msg.sender.id || 'unknown-id',
-              name: msg.sender.full_name || 'Unknown',
-              avatar: msg.sender.avatar_url,
-              type: (msg.sender.role === 'artist' ? 'artist' : 
-                    msg.sender.role === 'customer' ? 'customer' : 'staff') as 'customer' | 'artist' | 'staff'
+              id: typedSender.id || 'unknown-id',
+              name: typedSender.full_name || 'Unknown',
+              avatar: typedSender.avatar_url,
+              type: (typedSender.role === 'artist' ? 'artist' : 
+                    typedSender.role === 'customer' ? 'customer' : 'staff') as 'customer' | 'artist' | 'staff'
             };
           }
 

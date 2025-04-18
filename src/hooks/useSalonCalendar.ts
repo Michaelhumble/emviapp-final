@@ -153,31 +153,51 @@ export const useSalonCalendar = () => {
         
         if (data) {
           for (const apt of data) {
+            // Use type assertion to ensure TypeScript recognizes the properties
+            const typedApt = apt as unknown as {
+              id: string;
+              artist_id: string;
+              customer_id?: string;
+              customer_name?: string;
+              customer_email?: string;
+              customer_phone?: string;
+              service_id?: string;
+              start_time: string;
+              end_time: string;
+              notes?: string;
+              status: string;
+              created_at: string;
+              updated_at: string;
+              services?: SalonServiceRecord | null;
+              assigned_staff_id?: string;
+              assigned_staff_name?: string;
+            };
+            
             const appointment: AppointmentRecord = {
-              id: apt.id,
-              artist_id: apt.artist_id,
-              customer_id: apt.customer_id,
-              customer_name: apt.customer_name,
-              customer_email: apt.customer_email,
-              customer_phone: apt.customer_phone,
-              service_id: apt.service_id,
-              start_time: apt.start_time,
-              end_time: apt.end_time,
-              notes: apt.notes,
-              status: apt.status,
-              created_at: apt.created_at,
-              updated_at: apt.updated_at,
-              assigned_staff_id: apt.assigned_staff_id || undefined,
-              assigned_staff_name: apt.assigned_staff_name || undefined
+              id: typedApt.id,
+              artist_id: typedApt.artist_id,
+              customer_id: typedApt.customer_id,
+              customer_name: typedApt.customer_name,
+              customer_email: typedApt.customer_email,
+              customer_phone: typedApt.customer_phone,
+              service_id: typedApt.service_id,
+              start_time: typedApt.start_time,
+              end_time: typedApt.end_time,
+              notes: typedApt.notes,
+              status: typedApt.status,
+              created_at: typedApt.created_at,
+              updated_at: typedApt.updated_at,
+              assigned_staff_id: typedApt.assigned_staff_id,
+              assigned_staff_name: typedApt.assigned_staff_name
             };
             
             // Only add services if they exist and have the expected shape
-            if (apt.services && typeof apt.services === 'object' && apt.services !== null && 'id' in apt.services) {
+            if (typedApt.services && typeof typedApt.services === 'object' && typedApt.services !== null && 'id' in typedApt.services) {
               appointment.services = {
-                id: apt.services.id,
-                name: apt.services.name,
-                price: apt.services.price,
-                duration_min: apt.services.duration_min
+                id: typedApt.services.id,
+                name: typedApt.services.name,
+                price: typedApt.services.price,
+                duration_min: typedApt.services.duration_min
               };
             } else {
               appointment.services = null;
