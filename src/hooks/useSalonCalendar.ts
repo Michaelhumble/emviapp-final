@@ -93,6 +93,8 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
     date: item.start_time ? new Date(item.start_time) : null,
     time: item.start_time ? format(new Date(item.start_time), 'HH:mm') : '',
     status: (item.status || 'pending') as SalonBooking['status'],
+    assigned_staff_id: item.assigned_staff_id || undefined,
+    assigned_staff_name: item.assigned_staff_name || undefined,
     notes: item.notes || '',
     created_at: item.created_at
   }));
