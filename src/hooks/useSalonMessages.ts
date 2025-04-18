@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
@@ -24,8 +25,9 @@ export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) =>
       setError(null);
 
       try {
+        // Use 'messages' table instead of 'salon_messages'
         let query = supabase
-          .from('salon_messages')
+          .from('messages')
           .select('*')
           .eq('salon_id', currentSalon.id)
           .order('created_at', { ascending: true });
@@ -53,10 +55,10 @@ export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) =>
 
     // Set up a real-time subscription to listen for new messages
     const channel = supabase
-      .channel('salon_messages')
+      .channel('messages')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'salon_messages' },
+        { event: '*', schema: 'public', table: 'messages' },
         (payload) => {
           if (payload.new) {
             // Optimistically update the messages array with the new message
@@ -82,8 +84,9 @@ export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) =>
     setError(null);
 
     try {
+      // Use 'messages' table instead of 'salon_messages'
       const { data, error } = await supabase
-        .from('salon_messages')
+        .from('messages')
         .insert([
           {
             sender_id: user.id,

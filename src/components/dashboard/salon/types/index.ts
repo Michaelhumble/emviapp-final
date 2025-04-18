@@ -39,7 +39,7 @@ export interface SalonBooking {
   created_at: string;
 }
 
-// Add missing BookingStatsItem type
+// Adding the missing type definitions
 export interface BookingStatsItem {
   id: string;
   date: string;
@@ -47,7 +47,6 @@ export interface BookingStatsItem {
   status: string;
 }
 
-// Add missing SalonMessage type
 export interface SalonMessage {
   id: string;
   sender_id: string;
@@ -59,5 +58,4 @@ export interface SalonMessage {
   salon_id: string;
 }
 
-// Add missing MessageSender type
 export type MessageSender = 'owner' | 'staff' | 'client' | 'system';

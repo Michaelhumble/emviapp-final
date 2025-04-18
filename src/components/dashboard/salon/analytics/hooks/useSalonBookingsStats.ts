@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { subDays, format } from "date-fns";
 import { useSalon } from "@/context/salon";
@@ -19,19 +20,19 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
   const formattedStartDate = format(startDate, 'yyyy-MM-dd');
   const formattedEndDate = format(new Date(), 'yyyy-MM-dd');
 
-  // Fix the infinite type instantiation by being more specific with the type
-  const { data: bookingStats = [], isLoading, error } = useQuery({
+  // Fixed the type instantiation issue by being more specific
+  const { data: bookingStats = [], isLoading, error } = useQuery<BookingStatsItem[]>({
     queryKey: ['salon-booking-stats', salonId, period],
-    queryFn: async (): Promise<BookingStatsItem[]> => {
+    queryFn: async () => {
       if (!salonId) return [];
 
+      // Use 'bookings' table instead of 'salon_bookings'
       const { data, error } = await supabase
-        .from('salon_bookings')
+        .from('bookings')
         .select('date, status, count(*)')
         .eq('salon_id', salonId)
         .gte('date', formattedStartDate)
         .lte('date', formattedEndDate)
-        .groupBy('date, status')
         .order('date', { ascending: true });
 
       if (error) {
