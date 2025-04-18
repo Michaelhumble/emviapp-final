@@ -13,12 +13,6 @@ interface AppointmentData {
   status: string;
 }
 
-// Define a type for the raw Supabase response to completely break the inference chain
-type SupabaseResponse = {
-  data: any;
-  error: any;
-}
-
 export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
   const { currentSalon } = useSalon();
   const salonId = currentSalon?.id;
@@ -36,13 +30,17 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
     queryFn: async (): Promise<BookingStatsItem[]> => {
       if (!salonId) return [];
 
-      // Completely break the type inference chain by using `any` and then casting
-      const response = await supabase
+      // Completely break the type inference chain using any
+      // First cast to any to avoid TypeScript attempting to infer types
+      const supabaseQuery: any = supabase
         .from('appointments')
         .select('start_time, status')
         .eq('salon_id', salonId)
         .gte('start_time', formattedStartDate)
-        .lte('start_time', formattedEndDate) as unknown as SupabaseResponse;
+        .lte('start_time', formattedEndDate);
+      
+      // Execute query with type safety broken
+      const response = await supabaseQuery;
       
       if (response.error) throw response.error;
       if (!response.data) return [];
