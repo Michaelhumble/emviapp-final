@@ -1,9 +1,9 @@
-
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
-import { UserRole } from "@/context/auth/types"; // Import the UserRole type from auth/types
+import { ArrowRight, X } from "lucide-react";
+import { UserRole } from "@/context/auth/types";
+import { useState } from "react";
 
 interface WelcomeHeroProps {
   userRole?: UserRole;
@@ -16,7 +16,8 @@ const WelcomeHero = ({
   onContinue,
   onSkip
 }: WelcomeHeroProps) => {
-  // Get role display name
+  const [isVisible, setIsVisible] = useState(true);
+
   const getRoleDisplayName = () => {
     switch(userRole) {
       case 'artist':
@@ -42,7 +43,6 @@ const WelcomeHero = ({
     }
   };
 
-  // Get role-specific welcome message
   const getWelcomeMessage = () => {
     switch(userRole) {
       case 'artist':
@@ -65,7 +65,6 @@ const WelcomeHero = ({
     }
   };
 
-  // Get role-specific image URL
   const getWelcomeImage = () => {
     switch(userRole) {
       case 'artist':
@@ -82,12 +81,17 @@ const WelcomeHero = ({
       case 'freelancer':
         return "/lovable-uploads/1763ca30-ecb0-409f-8bb0-11b851ea743f.png";
       case 'customer':
-        // Changed this line to use a different image instead of 70c8662a-4525-4854-a529-62616b5b6c81.png
         return "/lovable-uploads/f6bb9656-c400-4f28-ba97-69d71c651a97.png";
       default:
         return "/lovable-uploads/8c7d4688-5f67-42e1-952b-1e4eb4bd4679.png";
     }
   };
+
+  const handleClose = () => {
+    setIsVisible(false);
+  };
+
+  if (!isVisible) return null;
 
   return (
     <div className="py-10">
@@ -95,8 +99,16 @@ const WelcomeHero = ({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="max-w-3xl mx-auto text-center"
+        className="max-w-3xl mx-auto text-center relative"
       >
+        <button 
+          onClick={handleClose}
+          aria-label="Close welcome message" 
+          className="absolute top-0 right-0 p-2 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary rounded-full"
+        >
+          <X className="h-6 w-6" />
+        </button>
+
         <div className="mb-6">
           <Badge className="px-4 py-1 text-sm font-medium bg-primary/10 text-primary border-primary/30 mb-4">
             {getRoleDisplayName()}
