@@ -13,6 +13,12 @@ interface AppointmentData {
   status: string;
 }
 
+// Define a type for the raw Supabase response to completely break the inference chain
+type SupabaseResponse = {
+  data: any;
+  error: any;
+}
+
 export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
   const { currentSalon } = useSalon();
   const salonId = currentSalon?.id;
@@ -30,19 +36,19 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
     queryFn: async (): Promise<BookingStatsItem[]> => {
       if (!salonId) return [];
 
-      // Break the type inference chain by using explicit typing
-      const { data, error } = await supabase
+      // Completely break the type inference chain by using `any` and then casting
+      const response = await supabase
         .from('appointments')
         .select('start_time, status')
         .eq('salon_id', salonId)
         .gte('start_time', formattedStartDate)
-        .lte('start_time', formattedEndDate);
+        .lte('start_time', formattedEndDate) as unknown as SupabaseResponse;
       
-      if (error) throw error;
-      if (!data) return [];
+      if (response.error) throw response.error;
+      if (!response.data) return [];
       
-      // Explicitly type the data
-      const appointments = data as AppointmentData[];
+      // Safely cast the data after breaking the inference chain
+      const appointments = response.data as AppointmentData[];
       
       const statsMap = new Map<string, BookingStatsItem>();
       
