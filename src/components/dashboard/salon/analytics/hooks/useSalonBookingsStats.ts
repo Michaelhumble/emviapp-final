@@ -26,7 +26,7 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
 
   return useQuery({
     queryKey: ['salon-booking-stats', salonId, period],
-    queryFn: async () => {
+    queryFn: async (): Promise<BookingStatsItem[]> => {
       if (!salonId) return [] as BookingStatsItem[];
       
       const { data, error } = await supabase
@@ -38,8 +38,8 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
         
       if (error) throw error;
       
-      // Fix: Create a properly typed array with explicit typing to avoid deep type instantiation
-      const appointments = (data || []) as AppointmentData[];
+      // Fix: Create a properly typed array with explicit typing
+      const appointments: AppointmentData[] = data || [];
       const statsMap = new Map<string, BookingStatsItem>();
 
       appointments.forEach(booking => {
