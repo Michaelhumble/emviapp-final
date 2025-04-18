@@ -25,3 +25,19 @@ export interface SalonTeamMember {
   joined_at: string;
   avatar_url?: string;
 }
+
+export interface SalonBooking {
+  id: string;
+  client_name: string;
+  client_email?: string | null;
+  client_phone?: string | null;
+  service_name: string;
+  service_price: number;
+  date: Date | null;
+  time: string;
+  status: 'pending' | 'accepted' | 'completed' | 'cancelled' | 'declined';
+  assigned_staff_name: string | null;
+  assigned_staff_id: string | null;
+  notes?: string;
+  created_at: string;
+}

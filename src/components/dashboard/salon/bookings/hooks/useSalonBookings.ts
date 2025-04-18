@@ -42,9 +42,6 @@ export const useSalonBookings = () => {
       setLoading(true);
       setError(null);
 
-      // This is a simplified query. In a real implementation, we'd need to:
-      // 1. Get all artists associated with this salon
-      // 2. Fetch all bookings for these artists
       const { data: staffData, error: staffError } = await supabase
         .from('salon_staff')
         .select('id')
@@ -60,7 +57,6 @@ export const useSalonBookings = () => {
       
       const staffIds = staffData.map(staff => staff.id);
       
-      // Now fetch bookings for these staff members
       const { data, error } = await supabase
         .from('bookings')
         .select(`
@@ -74,14 +70,11 @@ export const useSalonBookings = () => {
 
       if (error) throw error;
 
-      // Transform the data to match our SalonBooking type
       const formattedBookings = (data || []).map(booking => {
-        // Type assertion to help TypeScript understand these are objects with properties
         const senderData = booking.sender as { full_name?: string; email?: string; phone?: string } | null;
         const serviceData = booking.service as { title?: string; price?: number; duration_minutes?: number } | null;
         const recipientData = booking.recipient as { full_name?: string } | null;
         
-        // Safely access nested properties with fallbacks
         const clientName = senderData?.full_name || "Unknown Client";
         const clientEmail = senderData?.email || null;
         const clientPhone = senderData?.phone || null;
@@ -90,7 +83,6 @@ export const useSalonBookings = () => {
         const staffName = recipientData?.full_name || null;
         
         const bookingStatus = booking.status || 'pending';
-        // Ensure the status is one of the allowed values
         const validStatus = ['pending', 'accepted', 'completed', 'cancelled', 'declined'].includes(bookingStatus) 
           ? bookingStatus as SalonBooking['status']
           : 'pending';
@@ -152,16 +144,6 @@ export const useSalonBookings = () => {
     try {
       setLoading(true);
       
-      // In a real application, we would update the booking's recipient_id
-      // Here we'll just update the state to demonstrate the UI
-      // const { error } = await supabase
-      //   .from('bookings')
-      //   .update({ recipient_id: artistId })
-      //   .eq('id', bookingId);
-        
-      // if (error) throw error;
-      
-      // For demo, just update the state
       setBookings(prev => 
         prev.map(booking => 
           booking.id === bookingId 
