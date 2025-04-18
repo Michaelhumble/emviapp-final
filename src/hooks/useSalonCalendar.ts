@@ -51,10 +51,10 @@ export const useSalonCalendar = () => {
   const formattedStartDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Fixed TypeScript error by properly implementing useTypedQuery with explicit type definition
+  // Fix: Break the type inference chain by explicitly typing both the generic parameter and the query function return type
   const appointmentsQuery = useTypedQuery<SalonBooking[]>({
     queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
-    queryFn: async () => {
+    queryFn: async (): Promise<SalonBooking[]> => {
       if (!salonId) return [];
 
       const { data, error } = await supabase
@@ -66,7 +66,8 @@ export const useSalonCalendar = () => {
 
       if (error) throw error;
       
-      return (data || []).map((apt: AppointmentData) => ({
+      // Explicitly map the raw data to SalonBooking objects to avoid deep type inference
+      return (data || []).map((apt: AppointmentData): SalonBooking => ({
         id: apt.id,
         client_name: apt.customer_name || '',
         client_email: apt.customer_email,
