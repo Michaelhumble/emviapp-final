@@ -64,11 +64,11 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
   const formattedStartDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Create a non-generic query that doesn't rely on TypeScript inference
+  // Use the hook without generic type parameters, and manually handle types
   const appointmentsQuery = useTypedQuery({
     queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
-    queryFn: async () => {
-      if (!salonId) return [] as SalonBooking[];
+    queryFn: async (): Promise<SalonBooking[]> => {
+      if (!salonId) return [];
 
       const { data, error } = await supabase
         .from('appointments')
@@ -79,28 +79,30 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
 
       if (error) throw error;
       
-      // Convert raw data to SalonBooking objects with explicit type
-      const bookings: SalonBooking[] = [];
+      // Explicitly build the array with manual type casting
+      const result: SalonBooking[] = [];
       
-      for (const apt of data || []) {
-        const booking: SalonBooking = {
-          id: apt.id,
-          client_name: apt.customer_name || '',
-          client_email: apt.customer_email,
-          client_phone: apt.customer_phone,
-          service_name: apt.services?.title || 'Unknown Service',
-          service_price: apt.services?.price || 0,
-          date: apt.start_time ? new Date(apt.start_time) : null,
-          time: apt.start_time ? format(new Date(apt.start_time), 'HH:mm') : '',
-          status: (apt.status || 'pending') as SalonBooking['status'],
-          notes: apt.notes || '',
-          created_at: apt.created_at,
-        };
-        
-        bookings.push(booking);
+      if (data) {
+        for (const item of data) {
+          const appointment: SalonBooking = {
+            id: item.id,
+            client_name: item.customer_name || '',
+            client_email: item.customer_email,
+            client_phone: item.customer_phone,
+            service_name: item.services?.title || 'Unknown Service',
+            service_price: item.services?.price || 0,
+            date: item.start_time ? new Date(item.start_time) : null,
+            time: item.start_time ? format(new Date(item.start_time), 'HH:mm') : '',
+            status: (item.status || 'pending') as SalonBooking['status'],
+            notes: item.notes || '',
+            created_at: item.created_at,
+          };
+          
+          result.push(appointment);
+        }
       }
       
-      return bookings;
+      return result;
     },
     enabled: !!salonId,
   });
