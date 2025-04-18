@@ -256,9 +256,23 @@ export const useSalonCalendar = () => {
     isLoading: state.isLoading,
     error: state.error,
     staffMembers: state.staffMembers,
-    goToNextWeek,
-    goToPreviousWeek,
-    goToToday,
+    goToNextWeek: () => {
+      setState(prevState => {
+        const newDate = new Date(prevState.currentDate);
+        newDate.setDate(newDate.getDate() + 7);
+        return { ...prevState, currentDate: newDate };
+      });
+    },
+    goToPreviousWeek: () => {
+      setState(prevState => {
+        const newDate = new Date(prevState.currentDate);
+        newDate.setDate(newDate.getDate() - 7);
+        return { ...prevState, currentDate: newDate };
+      });
+    },
+    goToToday: () => {
+      setState(prevState => ({ ...prevState, currentDate: new Date() }));
+    },
     formatAppointmentForDate
   };
 };
