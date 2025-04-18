@@ -1,3 +1,4 @@
+
 export type Salon = {
   id: string;
   owner_id?: string;

@@ -39,7 +39,14 @@ export function useSalonMessages() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setMessages(data || []);
+      
+      // Explicitly cast the data to ensure type compatibility
+      const typedMessages = (data || []).map(msg => ({
+        ...msg,
+        message_type: msg.message_type as 'client' | 'artist' | 'applicant'
+      })) as Message[];
+      
+      setMessages(typedMessages);
     } catch (error) {
       console.error('Error fetching messages:', error);
       toast({
@@ -49,16 +56,19 @@ export function useSalonMessages() {
     } finally {
       setLoading(false);
     }
-  }, [currentSalon?.id]);
+  }, [currentSalon?.id, toast]);
 
   const sendMessage = async (recipientId: string, messageBody: string, messageType: Message['message_type']) => {
     if (!currentSalon?.id) return false;
     
     try {
+      const user = await supabase.auth.getUser();
+      if (!user.data.user) return false;
+      
       const { error } = await supabase
         .from('messages')
         .insert({
-          sender_id: supabase.auth.getUser()?.data?.user?.id,
+          sender_id: user.data.user.id,
           recipient_id: recipientId,
           message_body: messageBody,
           message_type: messageType,
