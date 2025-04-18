@@ -43,6 +43,7 @@ import SalonReferralPanel from "@/components/dashboard/salon/referral/SalonRefer
 import SalonAvailabilityManager from "@/components/dashboard/salon/SalonAvailabilityManager";
 import SalonBookingsOverview from "@/components/dashboard/salon/bookings/SalonBookingsOverview";
 import SalonServiceManagement from "@/components/dashboard/salon/services/SalonServiceManagement";
+import SalonAnalyticsTab from "@/components/dashboard/salon/analytics/SalonAnalyticsTab";
 
 const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -108,6 +109,11 @@ const OwnerDashboard = () => {
                     <TabsTrigger value="analytics" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Analytics</TabsTrigger>
                     <TabsTrigger value="messages" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Messages</TabsTrigger>
                   </TabsList>
+                  
+                  
+                  
+                  
+                  
                   
                   <TabsContent value="overview" className="space-y-8 pt-4">
                     <SalonProfileCompletionCard />
@@ -185,19 +191,11 @@ const OwnerDashboard = () => {
                   </TabsContent>
                   
                   <TabsContent value="analytics" className="space-y-8">
+                    <SalonAnalyticsTab />
+                    
                     <SalonAnalytics />
                     
                     <BookingAnalyticsCard />
-                    
-                    <CreditUsageHistory />
-                    
-                    <MonthlyReportDownload />
-                    
-                    <SalonAnalyticsCards />
-                    
-                    <SalonListingsManagement />
-                    
-                    <SalonPostedJobsSection />
                   </TabsContent>
                   
                   <TabsContent value="messages" className="space-y-8">
