@@ -41,16 +41,23 @@ export function useSalonMessages() {
       if (error) throw error;
       
       // Transform data to match Message type
-      const typedMessages: Message[] = (data || []).map(msg => ({
-        id: msg.id,
-        sender_id: msg.sender_id,
-        recipient_id: msg.recipient_id,
-        message_body: msg.message_body,
-        read: msg.read || false,
-        created_at: msg.created_at,
-        message_type: msg.message_type as 'client' | 'artist' | 'applicant',
-        sender: msg.sender as { full_name: string; avatar_url?: string }
-      }));
+      const typedMessages: Message[] = (data || []).map(msg => {
+        // Safely handle the sender object
+        const senderObject = msg.sender && typeof msg.sender === 'object' && !('error' in msg.sender)
+          ? msg.sender
+          : { full_name: 'Unknown User', avatar_url: undefined };
+        
+        return {
+          id: msg.id,
+          sender_id: msg.sender_id,
+          recipient_id: msg.recipient_id,
+          message_body: msg.message_body,
+          read: msg.read || false,
+          created_at: msg.created_at,
+          message_type: (msg.message_type || 'client') as 'client' | 'artist' | 'applicant',
+          sender: senderObject
+        };
+      });
       
       setMessages(typedMessages);
     } catch (error) {

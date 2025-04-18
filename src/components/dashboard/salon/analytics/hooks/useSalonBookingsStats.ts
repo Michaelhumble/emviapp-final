@@ -26,7 +26,7 @@ export const useSalonBookingsStats = () => {
         // Get counts by status using counts aggregation
         const { data: bookingsData, error: bookingsError } = await supabase
           .from('bookings')
-          .select('status')
+          .select('status, created_at')
           .eq('salon_id', currentSalon.id);
           
         if (bookingsError) throw bookingsError;
@@ -56,17 +56,8 @@ export const useSalonBookingsStats = () => {
             else if (status === 'cancelled') counts.cancelled += 1;
           });
           
-          // Get weekly data for chart
-          const { data: weeklyData, error: weeklyError } = await supabase
-            .from('bookings')
-            .select('created_at, status')
-            .eq('salon_id', currentSalon.id)
-            .order('created_at', { ascending: false });
-            
-          if (weeklyError) throw weeklyError;
-          
           // Process weekly data for chart
-          counts.chartData = processWeeklyData(weeklyData || []);
+          counts.chartData = processWeeklyData(bookingsData);
         }
         
         setStats(counts);
@@ -87,7 +78,6 @@ export const useSalonBookingsStats = () => {
 
 // Helper function to process weekly data
 const processWeeklyData = (data: any[]) => {
-  // This is a simplified implementation to avoid deep instantiation issues
   // Group bookings by week
   const weeks: Record<string, number> = {};
   
