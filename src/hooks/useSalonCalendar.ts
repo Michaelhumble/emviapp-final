@@ -64,11 +64,11 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
   const formattedStartDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Break the type inference chain completely by using an explicit interface for the return value
-  const appointmentsQuery = useTypedQuery<SalonBooking[]>({
+  // Create a non-generic query that doesn't rely on TypeScript inference
+  const appointmentsQuery = useTypedQuery({
     queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
     queryFn: async () => {
-      if (!salonId) return [];
+      if (!salonId) return [] as SalonBooking[];
 
       const { data, error } = await supabase
         .from('appointments')
@@ -79,9 +79,11 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
 
       if (error) throw error;
       
-      // Map the raw data to our SalonBooking interface with type annotations
-      const mappedData: SalonBooking[] = (data || []).map((apt: AppointmentData) => {
-        return {
+      // Convert raw data to SalonBooking objects with explicit type
+      const bookings: SalonBooking[] = [];
+      
+      for (const apt of data || []) {
+        const booking: SalonBooking = {
           id: apt.id,
           client_name: apt.customer_name || '',
           client_email: apt.customer_email,
@@ -90,13 +92,15 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
           service_price: apt.services?.price || 0,
           date: apt.start_time ? new Date(apt.start_time) : null,
           time: apt.start_time ? format(new Date(apt.start_time), 'HH:mm') : '',
-          status: apt.status as SalonBooking['status'],
+          status: (apt.status || 'pending') as SalonBooking['status'],
           notes: apt.notes || '',
           created_at: apt.created_at,
         };
-      });
+        
+        bookings.push(booking);
+      }
       
-      return mappedData;
+      return bookings;
     },
     enabled: !!salonId,
   });
