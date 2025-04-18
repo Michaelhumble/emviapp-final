@@ -1,4 +1,3 @@
-
 // Core Salon Types
 export interface Salon {
   id: string;
@@ -62,10 +61,7 @@ export interface BookingsStats {
   accepted: number;
   completed: number;
   cancelled: number;
-  chartData: Array<{
-    weekLabel: string;
-    count: number;
-  }>;
+  chartData: ChartBookingData[];
 }
 
 export interface SalonService {

@@ -44,7 +44,7 @@ export function useSalonMessages() {
         // Create a default sender object if sender is null or invalid
         const defaultSender = { full_name: 'Unknown User', avatar_url: undefined };
         
-        // Safely handle the sender object
+        // Safely handle the sender object - ensure it's not null before accessing it
         const senderObject = msg.sender && 
                             typeof msg.sender === 'object' && 
                             msg.sender !== null && 

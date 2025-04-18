@@ -4,6 +4,7 @@ import { useSalon } from '@/context/salon';
 import { supabase } from '@/integrations/supabase/client';
 import { BookingsStats, ChartBookingData } from '@/types/salon';
 
+// Define a simpler BookingData type that doesn't reference itself
 interface BookingData {
   status: string;
   created_at: string;
