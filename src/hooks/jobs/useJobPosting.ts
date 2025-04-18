@@ -1,6 +1,7 @@
 
 import { useUserTags } from '@/hooks/useUserTags';
 import { useAuth } from '@/context/auth';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useJobPosting = () => {
   const { user } = useAuth();
