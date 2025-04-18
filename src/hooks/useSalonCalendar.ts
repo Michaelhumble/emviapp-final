@@ -5,39 +5,25 @@ import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 
-// Define explicit interface for the raw data from Supabase
-interface AppointmentData {
+// Raw data interface from Supabase
+export interface AppointmentData {
   id: string;
-  start_time: string;
-  end_time: string;
-  customer_name: string | null;
-  customer_email: string | null;
-  customer_phone: string | null;
-  service_id: string;
-  status: string;
-  notes: string | null;
-  services: {
-    title?: string;
-    price?: number;
-  } | null;
+  date: string;
+  time: string;
+  customer_name: string;
+  service: string;
+  status: "booked" | "cancelled" | "completed";
 }
 
-// Interface for the processed booking slot
+// Processed booking slot interface
 export interface BookingSlot {
-  id: string;
-  start: string;
-  end: string;
-  clientName: string;
-  clientEmail?: string | null;
-  clientPhone?: string | null;
-  serviceId: string;
-  serviceName: string;
-  servicePrice: number;
-  status: 'pending' | 'accepted' | 'completed' | 'cancelled' | 'declined';
-  notes?: string;
+  time: string;
+  customer: string;
+  service: string;
+  status: "booked" | "cancelled" | "completed";
 }
 
-// Define calendar type explicitly
+// Simple calendar type
 export type SalonCalendar = Record<string, Record<string, BookingSlot[]>>;
 
 export interface SalonCalendarReturn {
@@ -58,56 +44,42 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
   const startDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const endDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Use explicit typing for the query result
-  const { data: appointmentsData = [], isLoading, error } = useQuery<AppointmentData[], Error>({
+  const { data: appointmentsData = [], isLoading, error } = useQuery<AppointmentData[]>({
     queryKey: ['salon-appointments', currentSalon?.id, startDate, endDate],
     queryFn: async () => {
       if (!currentSalon?.id) return [];
 
       const { data, error } = await supabase
         .from('appointments')
-        .select('*, services(*)')
+        .select('*')
         .eq('salon_id', currentSalon.id)
-        .gte('start_time', startDate)
-        .lte('end_time', endDate);
+        .gte('date', startDate)
+        .lte('date', endDate);
 
       if (error) throw error;
-      return (data || []) as AppointmentData[];
+      return data || [];
     },
     enabled: !!currentSalon?.id
   });
 
-  // Build calendar data structure
+  // Build simple calendar structure
   const calendar: SalonCalendar = {};
   
-  appointmentsData.forEach(app => {
-    const date = format(new Date(app.start_time), 'yyyy-MM-dd');
-    const time = format(new Date(app.start_time), 'HH:mm');
-    
-    if (!calendar[date]) {
-      calendar[date] = {};
+  appointmentsData.forEach(appt => {
+    if (!calendar[appt.date]) {
+      calendar[appt.date] = {};
     }
     
-    if (!calendar[date][time]) {
-      calendar[date][time] = [];
+    if (!calendar[appt.date][appt.time]) {
+      calendar[appt.date][appt.time] = [];
     }
 
-    // Create a BookingSlot with explicit construction
-    const bookingSlot: BookingSlot = {
-      id: app.id,
-      start: app.start_time,
-      end: app.end_time,
-      clientName: app.customer_name || 'Unknown',
-      clientEmail: app.customer_email,
-      clientPhone: app.customer_phone,
-      serviceId: app.service_id || '',
-      serviceName: app.services?.title || 'Unknown Service',
-      servicePrice: app.services?.price || 0,
-      status: app.status as BookingSlot['status'],
-      notes: app.notes || undefined
-    };
-
-    calendar[date][time].push(bookingSlot);
+    calendar[appt.date][appt.time].push({
+      time: appt.time,
+      customer: appt.customer_name,
+      service: appt.service,
+      status: appt.status
+    });
   });
 
   const calendarDays = eachDayOfInterval({
