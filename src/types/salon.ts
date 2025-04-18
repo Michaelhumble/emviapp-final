@@ -1,3 +1,4 @@
+
 // Core Salon Types
 export interface Salon {
   id: string;

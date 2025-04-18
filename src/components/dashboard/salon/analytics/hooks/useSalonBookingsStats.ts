@@ -4,11 +4,11 @@ import { useSalon } from '@/context/salon';
 import { supabase } from '@/integrations/supabase/client';
 import { BookingsStats, ChartBookingData } from '@/types/salon';
 
-// Define a simple, standalone type for booking data from the database
-interface BookingDataRecord {
+// Define a plain type with no self-reference to avoid excessive type instantiation
+type DatabaseBookingRecord = {
   status: string;
   created_at: string;
-}
+};
 
 export const useSalonBookingsStats = () => {
   const { currentSalon } = useSalon();
@@ -50,7 +50,7 @@ export const useSalonBookingsStats = () => {
         
         if (bookingsData && bookingsData.length > 0) {
           // Count statuses manually
-          bookingsData.forEach((booking: BookingDataRecord) => {
+          (bookingsData as DatabaseBookingRecord[]).forEach(booking => {
             const status = booking.status as string;
             
             // Increment total
@@ -64,7 +64,7 @@ export const useSalonBookingsStats = () => {
           });
           
           // Process weekly data for chart
-          counts.chartData = processWeeklyData(bookingsData);
+          counts.chartData = processWeeklyData(bookingsData as DatabaseBookingRecord[]);
         }
         
         setStats(counts);
@@ -83,7 +83,7 @@ export const useSalonBookingsStats = () => {
 };
 
 // Helper function to process weekly data
-const processWeeklyData = (data: BookingDataRecord[]): ChartBookingData[] => {
+const processWeeklyData = (data: DatabaseBookingRecord[]): ChartBookingData[] => {
   // Group bookings by week
   const weeks: Record<string, number> = {};
   
@@ -101,7 +101,7 @@ const processWeeklyData = (data: BookingDataRecord[]): ChartBookingData[] => {
   }
   
   // Count bookings per week
-  data.forEach((booking: BookingDataRecord) => {
+  data.forEach(booking => {
     const bookingDate = new Date(booking.created_at);
     if (bookingDate >= twelveWeeksAgo) {
       // Find which week this belongs to

@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
@@ -16,6 +17,11 @@ export interface Message {
     avatar_url?: string;
   };
 }
+
+type SenderData = {
+  full_name: string;
+  avatar_url?: string;
+} | null;
 
 export function useSalonMessages() {
   const { currentSalon } = useSalon();
@@ -44,16 +50,11 @@ export function useSalonMessages() {
         // Define a default sender object
         const defaultSender = { full_name: 'Unknown User', avatar_url: undefined };
         
-        // Create a safe sender object
-        let senderObject = defaultSender;
-        
-        // Only try to use the msg.sender if it exists and is valid
-        if (msg.sender && 
-            typeof msg.sender === 'object' && 
-            msg.sender !== null && 
-            !('error' in msg.sender)) {
-          senderObject = msg.sender as typeof defaultSender;
-        }
+        // Safely handle the sender object using type assertion
+        const senderData = msg.sender as SenderData;
+        const senderObject = senderData && typeof senderData === 'object' && !('error' in senderData)
+          ? senderData
+          : defaultSender;
         
         return {
           id: msg.id,
