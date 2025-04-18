@@ -1,26 +1,31 @@
 
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import ServicesList from "./ServicesList";
-import ServiceForm from "./ServiceForm";
-import { useSalonServices } from "./useSalonServices";
-import type { SalonService } from "../types";
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import { useSalonServices } from './useSalonServices';
+import SalonServicesList from './SalonServicesList';
+import SalonServiceForm from './SalonServiceForm';
+import { SalonService } from '../types';
 
 export default function ServicesTab() {
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingService, setEditingService] = useState<SalonService | null>(null);
   const { services, loading, error, addService, updateService, deleteService } = useSalonServices();
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingService, setEditingService] = useState<SalonService | undefined>(undefined);
 
-  const handleEditService = (service: SalonService) => {
+  const handleOpenAddForm = () => {
+    setEditingService(undefined);
+    setIsFormOpen(true);
+  };
+
+  const handleOpenEditForm = (service: SalonService) => {
     setEditingService(service);
     setIsFormOpen(true);
   };
 
   const handleCloseForm = () => {
     setIsFormOpen(false);
-    setEditingService(null);
+    setEditingService(undefined);
   };
 
   const handleSubmit = async (serviceData: Omit<SalonService, 'id' | 'created_at' | 'updated_at'>) => {
@@ -33,34 +38,28 @@ export default function ServicesTab() {
   };
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle className="text-xl font-serif">Salon Services</CardTitle>
-          </div>
-          <Button onClick={() => setIsFormOpen(true)} size="sm">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Service
-          </Button>
-        </CardHeader>
-        <CardContent>
-          <ServicesList 
-            services={services}
-            loading={loading}
-            error={error}
-            onEdit={handleEditService}
-            onDelete={deleteService}
-          />
-        </CardContent>
-      </Card>
+    <Card className="border-purple-100">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle className="text-xl font-serif text-purple-900">Salon Services</CardTitle>
+        <Button onClick={handleOpenAddForm} size="sm" className="bg-purple-600 hover:bg-purple-700">
+          <Plus className="h-4 w-4 mr-2" />
+          Add Service
+        </Button>
+      </CardHeader>
+      <CardContent>
+        <SalonServicesList 
+          services={services} 
+          onEdit={handleOpenEditForm}
+          onDelete={deleteService}
+        />
+      </CardContent>
 
-      <ServiceForm 
+      <SalonServiceForm
         open={isFormOpen}
         onClose={handleCloseForm}
         onSubmit={handleSubmit}
         initialData={editingService}
       />
-    </div>
+    </Card>
   );
 }

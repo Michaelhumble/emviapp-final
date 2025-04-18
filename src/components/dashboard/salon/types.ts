@@ -3,13 +3,12 @@
 // Add the SalonService type for our applications
 export interface SalonService {
   id: string;
-  title: string;
-  price: number;
-  duration_minutes: number;
+  salon_id: string;
+  name: string;
   description?: string;
-  is_visible?: boolean;
+  price: number;
+  duration_min: number;
   image_url?: string;
-  user_id: string;
   created_at: string;
   updated_at?: string;
 }
