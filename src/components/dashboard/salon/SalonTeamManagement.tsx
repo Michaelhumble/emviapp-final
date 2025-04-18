@@ -18,8 +18,8 @@ const SalonTeamManagement = () => {
     toggleMemberStatus,
   } = useTeamMembers();
 
-  const handleSendInvite = async (email: string, name: string, role: string) => {
-    await sendInvite(email, name, role);
+  const handleSendInvite = async (memberData: any) => {
+    await sendInvite(memberData);
   };
 
   return (

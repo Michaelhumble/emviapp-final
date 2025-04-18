@@ -25,7 +25,7 @@ const SalonServiceManagement = () => {
     services, 
     loading, 
     error, 
-    fetchServices,
+    refreshServices,
     addService, 
     updateService, 
     deleteService,
@@ -114,7 +114,7 @@ const SalonServiceManagement = () => {
             variant="outline" 
             size="sm"
             className="text-purple-600"
-            onClick={fetchServices}
+            onClick={refreshServices}
           >
             <RefreshCcw className="h-4 w-4 mr-2" />
             Refresh

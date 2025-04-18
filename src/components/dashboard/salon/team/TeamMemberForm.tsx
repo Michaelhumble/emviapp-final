@@ -1,11 +1,25 @@
 
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { SalonTeamMember } from "../types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SalonTeamMember } from "../types";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 interface TeamMemberFormProps {
   open: boolean;
@@ -14,15 +28,15 @@ interface TeamMemberFormProps {
   initialData: SalonTeamMember | null;
 }
 
-export default function TeamMemberForm({ open, onClose, onSubmit, initialData }: TeamMemberFormProps) {
+const TeamMemberForm = ({ open, onClose, onSubmit, initialData }: TeamMemberFormProps) => {
   const [formData, setFormData] = useState<Partial<SalonTeamMember>>({
-    full_name: "",
-    email: "",
-    role: "artist",
-    specialty: "",
-    status: "active"
+    full_name: '',
+    email: '',
+    role: 'artist',
+    specialty: '',
+    status: 'active',
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (initialData) {
@@ -30,43 +44,33 @@ export default function TeamMemberForm({ open, onClose, onSubmit, initialData }:
         full_name: initialData.full_name,
         email: initialData.email,
         role: initialData.role,
-        specialty: initialData.specialty || "",
-        status: initialData.status || "active",
+        specialty: initialData.specialty,
+        status: initialData.status,
       });
     } else {
       setFormData({
-        full_name: "",
-        email: "",
-        role: "artist",
-        specialty: "",
-        status: "active"
+        full_name: '',
+        email: '',
+        role: 'artist',
+        specialty: '',
+        status: 'active',
       });
     }
   }, [initialData, open]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleChange = (field: keyof Partial<SalonTeamMember>, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async () => {
-    if (!formData.full_name || !formData.email) {
-      // Show validation error
-      return;
-    }
-
     try {
-      setIsSubmitting(true);
+      setLoading(true);
       await onSubmit(formData);
       onClose();
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error("Failed to save team member:", error);
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
@@ -74,72 +78,74 @@ export default function TeamMemberForm({ open, onClose, onSubmit, initialData }:
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>
-            {initialData ? "Edit Team Member" : "Add Team Member"}
-          </DialogTitle>
+          <DialogTitle>{initialData ? 'Edit Team Member' : 'Add Team Member'}</DialogTitle>
+          <DialogDescription>
+            {initialData 
+              ? 'Update the team member details below.' 
+              : 'Add a new team member to your salon.'}
+          </DialogDescription>
         </DialogHeader>
-
+        
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="full_name">Full Name</Label>
+            <Label htmlFor="name">Full Name</Label>
             <Input
-              id="full_name"
-              name="full_name"
+              id="name"
               value={formData.full_name}
-              onChange={handleChange}
-              placeholder="Enter full name"
+              onChange={(e) => handleChange('full_name', e.target.value)}
+              placeholder="John Doe"
             />
           </div>
-
+          
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
-              name="email"
               type="email"
               value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter email address"
+              onChange={(e) => handleChange('email', e.target.value)}
+              placeholder="john@example.com"
             />
           </div>
-
+          
           <div className="grid gap-2">
             <Label htmlFor="role">Role</Label>
             <Select
               value={formData.role}
-              onValueChange={(value) => handleSelectChange("role", value)}
+              onValueChange={(value) => handleChange('role', value)}
             >
-              <SelectTrigger>
+              <SelectTrigger id="role">
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="artist">Artist</SelectItem>
                 <SelectItem value="manager">Manager</SelectItem>
                 <SelectItem value="receptionist">Receptionist</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
+                <SelectItem value="assistant">Assistant</SelectItem>
               </SelectContent>
             </Select>
           </div>
-
+          
           <div className="grid gap-2">
             <Label htmlFor="specialty">Specialty</Label>
             <Input
               id="specialty"
-              name="specialty"
               value={formData.specialty}
-              onChange={handleChange}
-              placeholder="Enter specialty (optional)"
+              onChange={(e) => handleChange('specialty', e.target.value)}
+              placeholder="e.g., Nail Art, Pedicure, Manicure"
             />
           </div>
-
+          
           {initialData && (
             <div className="grid gap-2">
               <Label htmlFor="status">Status</Label>
               <Select
                 value={formData.status}
-                onValueChange={(value) => handleSelectChange("status", value as "active" | "inactive" | "pending")}
+                onValueChange={(value: 'active' | 'inactive' | 'pending') => 
+                  handleChange('status', value)
+                }
               >
-                <SelectTrigger>
+                <SelectTrigger id="status">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -151,16 +157,19 @@ export default function TeamMemberForm({ open, onClose, onSubmit, initialData }:
             </div>
           )}
         </div>
-
+        
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : "Save"}
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button 
+            onClick={handleSubmit} 
+            disabled={loading || !formData.full_name || !formData.email}
+          >
+            {loading ? 'Saving...' : initialData ? 'Update' : 'Add Member'}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
-}
+};
+
+export default TeamMemberForm;

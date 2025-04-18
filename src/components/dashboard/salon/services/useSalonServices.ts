@@ -25,7 +25,7 @@ export function useSalonServices() {
       const { data, error } = await supabase
         .from('services')
         .select('*')
-        .eq('salon_id', currentSalon?.id)
+        .eq('user_id', currentSalon?.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -41,9 +41,10 @@ export function useSalonServices() {
 
   const addService = async (serviceData: Partial<SalonService>) => {
     try {
+      // Fix: use a single object instead of an array
       const { data, error } = await supabase
         .from('services')
-        .insert([{ ...serviceData, salon_id: currentSalon?.id }])
+        .insert({ ...serviceData, user_id: currentSalon?.id })
         .select()
         .single();
 
@@ -64,7 +65,7 @@ export function useSalonServices() {
         .from('services')
         .update(serviceData)
         .eq('id', id)
-        .eq('salon_id', currentSalon?.id)
+        .eq('user_id', currentSalon?.id)
         .select()
         .single();
 
@@ -87,10 +88,10 @@ export function useSalonServices() {
         .from('services')
         .delete()
         .eq('id', id)
-        .eq('salon_id', currentSalon?.id);
+        .eq('user_id', currentSalon?.id);
 
       if (error) throw error;
-      setServices(services.filter(service => service.id !== id));
+      setServices(prev => prev.filter(s => s.id !== id));
       toast.success('Service deleted successfully');
     } catch (err) {
       console.error('Error deleting service:', err);
@@ -105,7 +106,7 @@ export function useSalonServices() {
         .from('services')
         .update({ is_visible: isVisible })
         .eq('id', id)
-        .eq('salon_id', currentSalon?.id)
+        .eq('user_id', currentSalon?.id)
         .select()
         .single();
 
