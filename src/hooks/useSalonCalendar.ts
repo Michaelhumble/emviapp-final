@@ -1,28 +1,10 @@
-
 import { useState } from 'react';
 import { useTypedQuery } from "@/hooks/useTypedQuery";
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from 'date-fns';
 
-// Define the SalonBooking interface to match the component expectations
-interface SalonBooking {
-  id: string;
-  client_name: string;
-  client_email?: string | null;
-  client_phone?: string | null;
-  service_name: string;
-  service_price: number;
-  date: Date | null;
-  time: string;
-  status: 'pending' | 'accepted' | 'completed' | 'cancelled' | 'declined';
-  assigned_staff_id?: string;
-  assigned_staff_name?: string;
-  notes?: string;
-  created_at: string;
-}
-
-// Define the raw appointment data from Supabase
+// Explicitly define interfaces to prevent deep type inference
 interface AppointmentData {
   id: string;
   artist_id: string;
@@ -43,7 +25,22 @@ interface AppointmentData {
   } | null;
 }
 
-// Define the return type to break the deep type inference chain
+interface SalonBooking {
+  id: string;
+  client_name: string;
+  client_email?: string | null;
+  client_phone?: string | null;
+  service_name: string;
+  service_price: number;
+  date: Date | null;
+  time: string;
+  status: 'pending' | 'accepted' | 'completed' | 'cancelled' | 'declined';
+  assigned_staff_id?: string;
+  assigned_staff_name?: string;
+  notes?: string;
+  created_at: string;
+}
+
 interface SalonCalendarReturn {
   currentMonth: Date;
   calendarDays: Date[];
@@ -64,10 +61,9 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
   const formattedStartDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Use the hook without generic type parameters, and manually handle types
-  const appointmentsQuery = useTypedQuery({
+  const appointmentsQuery = useTypedQuery<AppointmentData[], Error>({
     queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
-    queryFn: async (): Promise<SalonBooking[]> => {
+    queryFn: async () => {
       if (!salonId) return [];
 
       const { data, error } = await supabase
@@ -79,32 +75,22 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
 
       if (error) throw error;
       
-      // Explicitly build the array with manual type casting
-      const result: SalonBooking[] = [];
-      
-      if (data) {
-        for (const item of data) {
-          const appointment: SalonBooking = {
-            id: item.id,
-            client_name: item.customer_name || '',
-            client_email: item.customer_email,
-            client_phone: item.customer_phone,
-            service_name: item.services?.title || 'Unknown Service',
-            service_price: item.services?.price || 0,
-            date: item.start_time ? new Date(item.start_time) : null,
-            time: item.start_time ? format(new Date(item.start_time), 'HH:mm') : '',
-            status: (item.status || 'pending') as SalonBooking['status'],
-            notes: item.notes || '',
-            created_at: item.created_at,
-          };
-          
-          result.push(appointment);
-        }
-      }
-      
-      return result;
+      return data || [];
     },
     enabled: !!salonId,
+    select: (data) => data.map(item => ({
+      id: item.id,
+      client_name: item.customer_name || '',
+      client_email: item.customer_email,
+      client_phone: item.customer_phone,
+      service_name: item.services?.title || 'Unknown Service',
+      service_price: item.services?.price || 0,
+      date: item.start_time ? new Date(item.start_time) : null,
+      time: item.start_time ? format(new Date(item.start_time), 'HH:mm') : '',
+      status: (item.status || 'pending') as SalonBooking['status'],
+      notes: item.notes || '',
+      created_at: item.created_at,
+    }))
   });
 
   const goToPreviousMonth = () => {
