@@ -62,27 +62,34 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
   const formattedStartDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Explicitly type the query to avoid deep type inference
-  const { data: appointmentsData = [], isLoading, error } = useTypedQuery<AppointmentData[], Error>({
+  // Create a completely separate query with explicit return types
+  const fetchAppointments = async (): Promise<AppointmentData[]> => {
+    if (!salonId) return [];
+
+    const { data, error } = await supabase
+      .from('appointments')
+      .select('*, services:service_id(*)')
+      .eq('salon_id', salonId)
+      .gte('start_time', formattedStartDate)
+      .lte('end_time', formattedEndDate);
+
+    if (error) throw error;
+    
+    return data || [];
+  };
+
+  // Use a simplified query with explicit typing
+  const { 
+    data: appointmentsData = [], 
+    isLoading, 
+    error 
+  } = useTypedQuery<AppointmentData[], Error>({
     queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
-    queryFn: async () => {
-      if (!salonId) return [];
-
-      const { data, error } = await supabase
-        .from('appointments')
-        .select('*, services:service_id(*)')
-        .eq('salon_id', salonId)
-        .gte('start_time', formattedStartDate)
-        .lte('end_time', formattedEndDate);
-
-      if (error) throw error;
-      
-      return data || [];
-    },
+    queryFn: fetchAppointments,
     enabled: !!salonId
   });
 
-  // Transform AppointmentData to SalonBooking outside of the query
+  // Transform data after fetching - outside of the query to break the type inference chain
   const appointments: SalonBooking[] = appointmentsData.map(item => ({
     id: item.id,
     client_name: item.customer_name || '',
