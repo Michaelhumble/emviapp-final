@@ -1,5 +1,5 @@
 
-import { useQuery } from "@tanstack/react-query";
+import { useTypedQuery } from "@/hooks/useTypedQuery";
 import { subDays, format } from "date-fns";
 import { useSalon } from "@/context/salon";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,7 +25,7 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
   const formattedStartDate = format(startDate, 'yyyy-MM-dd');
   const formattedEndDate = format(new Date(), 'yyyy-MM-dd');
 
-  return useQuery({
+  return useTypedQuery<BookingStatsItem[]>({
     queryKey: ['salon-booking-stats', salonId, period],
     queryFn: async () => {
       if (!salonId) return [];
