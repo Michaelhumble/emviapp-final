@@ -1,7 +1,6 @@
-import { useState } from "react";
+import React, { useState } from 'react';
 import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -64,8 +63,8 @@ const PostJob = () => {
     return null;
   }
   
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (values: FormValues) => {
+    setIsSubmitting(true);
     
     if (!user) {
       navigate('/auth/signin');
@@ -96,7 +95,7 @@ const PostJob = () => {
             </CardHeader>
             
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)}>
+              <form onSubmit={form.handleSubmit(handleSubmit)}>
                 <CardContent className="space-y-6">
                   <FormField
                     control={form.control}
@@ -265,7 +264,6 @@ const PostJob = () => {
                     type="button" 
                     variant="outline" 
                     onClick={() => {
-                      // Preview logic would go here
                       toast.info("Preview functionality coming soon!");
                     }}
                   >
