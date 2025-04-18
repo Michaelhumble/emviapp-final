@@ -7,13 +7,10 @@ import { BookingStatsItem } from "@/types/BookingStatsItem";
 
 type StatsPeriod = '7' | '30' | '90';
 
-// Define an explicit interface for the query result to break the deep type instantiation
-interface AppointmentQueryResult {
-  data: Array<{
-    start_time: string;
-    status: string;
-  }> | null;
-  error: Error | null;
+// Define a simple interface for the raw appointment data we receive
+interface AppointmentData {
+  start_time: string;
+  status: string;
 }
 
 export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
@@ -33,20 +30,22 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
     queryFn: async (): Promise<BookingStatsItem[]> => {
       if (!salonId) return [];
 
-      // Explicitly cast the result to our defined interface
-      const { data, error } = (await supabase
+      // Use type assertion without nesting complex generics
+      const result = await supabase
         .from('appointments')
         .select('start_time, status')
         .eq('salon_id', salonId)
         .gte('start_time', formattedStartDate)
-        .lte('start_time', formattedEndDate)) as AppointmentQueryResult;
+        .lte('start_time', formattedEndDate);
+      
+      const { data, error } = result;
 
       if (error) throw error;
       if (!data) return [];
       
       const statsMap = new Map<string, BookingStatsItem>();
       
-      data.forEach(booking => {
+      (data as AppointmentData[]).forEach(booking => {
         const dateStr = format(new Date(booking.start_time), 'yyyy-MM-dd');
         
         if (!statsMap.has(dateStr)) {
