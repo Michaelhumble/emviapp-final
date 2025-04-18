@@ -40,7 +40,8 @@ export const useSalonMessages = () => {
           
           // Check if sender exists and has the expected properties
           if (msg.sender && typeof msg.sender === 'object') {
-            const typedSender = msg.sender as {
+            // Type assertion to ensure TypeScript recognizes the properties
+            const senderData = msg.sender as {
               id?: string;
               full_name?: string;
               avatar_url?: string;
@@ -48,11 +49,11 @@ export const useSalonMessages = () => {
             };
             
             sender = {
-              id: typedSender.id || 'unknown-id',
-              name: typedSender.full_name || 'Unknown',
-              avatar: typedSender.avatar_url,
-              type: (typedSender.role === 'artist' ? 'artist' : 
-                    typedSender.role === 'customer' ? 'customer' : 'staff') as 'customer' | 'artist' | 'staff'
+              id: senderData.id || 'unknown-id',
+              name: senderData.full_name || 'Unknown',
+              avatar: senderData.avatar_url,
+              type: (senderData.role === 'artist' ? 'artist' : 
+                    senderData.role === 'customer' ? 'customer' : 'staff') as 'customer' | 'artist' | 'staff'
             };
           }
 

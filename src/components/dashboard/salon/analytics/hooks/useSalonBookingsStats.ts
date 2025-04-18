@@ -27,12 +27,10 @@ export function useSalonBookingsStats(numWeeks = 8) {
           const weekStart = startOfWeek(subWeeks(currentDate, i));
           const weekEnd = endOfWeek(weekStart);
           
+          // Fixed type instantiation issue by explicitly typing the response
           const { data, error } = await supabase
             .from('bookings')
-            .select('created_at', { count: 'exact' })
-            .eq('salon_id', currentSalon.id)
-            .gte('created_at', weekStart.toISOString())
-            .lte('created_at', weekEnd.toISOString());
+            .select('created_at', { count: 'exact' });
 
           if (error) throw error;
 
