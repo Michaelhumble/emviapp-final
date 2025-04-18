@@ -1,52 +1,89 @@
 
-// Salon type definition
+// Core Salon Types
 export interface Salon {
   id: string;
-  name: string;
-  image: string;
-  logo?: string;
-  specialty: string;
-  city: string;
-  neighborhood?: string;
-  hours: {
-    monday: string;
-    tuesday: string;
-    wednesday: string;
-    thursday: string;
-    friday: string;
-    saturday: string;
-    sunday: string;
-  };
-  bio: string;
-  shortBio?: string;
-  rating: number;
-  reviewCount: number;
-  priceRange: string;
-  established: number;
-  services: string[];
-  amenities: string[];
-  socialMedia?: {
-    instagram?: string;
-    facebook?: string;
-    tiktok?: string;
-    twitter?: string;
-    pinterest?: string;
-    youtube?: string;
-  };
-  bookingLink?: string;
-  isHiring?: boolean;
-  featured?: boolean;
-  // Additional properties for salon listings
-  owner?: string;
-  email?: string;
-  phone?: string;
+  owner_id?: string;
+  salon_name: string;
+  logo_url?: string;
+  location?: string;
+  about?: string;
   website?: string;
-  teamSize?: number;
-  certifications?: string[];
-  awards?: string[];
-  paymentMethods?: string[];
-  languages?: string[];
-  accessibilityFeatures?: string[];
-  virtualTours?: string[];
-  beforeAfterGallery?: string[];
+  instagram?: string;
+  phone?: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface SalonContextType {
+  salons: Salon[];
+  currentSalon: Salon | null;
+  isLoadingSalons: boolean;
+  createSalon: (salonData: Partial<Salon>) => Promise<boolean>;
+  selectSalon: (salonId: string) => void;
+  refreshSalons: () => Promise<void>;
+  updateSalon: (salonId: string, data: Partial<Salon>) => Promise<boolean>;
+  deleteSalon: (salonId: string) => Promise<boolean>;
+}
+
+// Analytics Types
+export interface BookingsStats {
+  total: number;
+  pending: number;
+  accepted: number;
+  completed: number;
+  cancelled: number;
+  chartData: Array<{
+    weekLabel: string;
+    count: number;
+  }>;
+}
+
+export interface SalonService {
+  id: string;
+  salon_id: string;
+  name: string;
+  description?: string;
+  price: number;
+  duration_min: number;
+  image_url?: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface SalonTeamMember {
+  id: string;
+  full_name: string;
+  specialty: string;
+  role: string;
+  status: 'active' | 'inactive' | 'pending';
+  joined_at: string;
+  email: string;
+  avatar_url?: string;
+}
+
+export interface SalonBooking {
+  id: string;
+  client_name: string;
+  client_email?: string | null;
+  client_phone?: string | null;
+  service_name: string;
+  service_price: number;
+  date: Date | null;
+  time: string;
+  status: 'pending' | 'accepted' | 'completed' | 'cancelled' | 'declined';
+  assigned_staff_name: string | null;
+  assigned_staff_id: string | null;
+  notes?: string;
+  created_at: string;
+}
+
+// Stats & Analytics
+export interface SalonStats {
+  applicantsThisMonth: number;
+  activeJobPosts: number;
+  creditsRemaining: number;
+  profileCompletion: {
+    percentage: number;
+    incompleteFields: string[];
+  };
 }

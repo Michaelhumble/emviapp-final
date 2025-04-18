@@ -1,19 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { useSalon } from '@/context/salon';
 import { supabase } from '@/integrations/supabase/client';
-
-interface BookingsStats {
-  total: number;
-  pending: number;
-  accepted: number;
-  completed: number;
-  cancelled: number;
-  chartData: Array<{
-    weekLabel: string;
-    count: number;
-  }>;
-}
+import { BookingsStats } from '@/types/salon';
 
 export const useSalonBookingsStats = () => {
   const { currentSalon } = useSalon();

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSalon } from "@/context/salon";
+import { Salon } from "@/types/salon";
 import { 
   Select, 
   SelectContent, 
@@ -18,7 +19,6 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-import { Salon } from "@/context/salon";
 
 const SalonSwitcher = () => {
   const { salons, currentSalon, selectSalon, createSalon, isLoadingSalons, deleteSalon } = useSalon();
