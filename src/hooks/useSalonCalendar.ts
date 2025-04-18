@@ -62,7 +62,7 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
   const formattedStartDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Break the deep type inference chain by explicitly typing everything
+  // Explicitly type the query to avoid deep type inference
   const { data: appointmentsData = [], isLoading, error } = useTypedQuery<AppointmentData[], Error>({
     queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
     queryFn: async () => {
