@@ -1,6 +1,6 @@
 
-import ArtistMessageCenter from "../ArtistMessageCenter";
 import { useTestRecipient } from "@/hooks/chat/useTestRecipient";
+import ArtistMessageCenter from "../ArtistMessageCenter";
 
 const MessagesTab = () => {
   const { testRecipient, loading } = useTestRecipient();

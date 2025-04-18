@@ -7,7 +7,6 @@ import { BookingStatsItem } from "@/types/BookingStatsItem";
 
 type StatsPeriod = '7' | '30' | '90';
 
-// Simple interface that just defines what we need
 interface AppointmentData {
   start_time: string;
   status: string;
@@ -31,7 +30,6 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
       if (!salonId) return [] as BookingStatsItem[];
       
       try {
-        // Use a simple approach without complex type inference
         const response = await supabase
           .from('appointments')
           .select('start_time, status')
@@ -41,10 +39,8 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
           
         if (response.error) throw response.error;
         
-        // Cast to our simple interface after the fact
         const appointments = (response.data || []) as AppointmentData[];
         
-        // Process the data into our stats format
         const statsMap = new Map<string, BookingStatsItem>();
 
         appointments.forEach(booking => {
@@ -77,7 +73,7 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
     },
     enabled: !!salonId
   });
-  
+
   return {
     data: queryResult.data || [],
     isLoading: queryResult.isLoading,
