@@ -184,11 +184,11 @@ const routes = [
   },
   {
     path: '/profile/artist/setup',
-    element: <ArtistSetup />,
+    element: <ArtistProfileSetup />,
   },
   {
     path: '/profile/salon/setup',
-    element: <SalonOwnerSetup />,
+    element: <SalonProfileSetup />,
   },
   {
     path: '/profile/freelancer/setup',
@@ -200,23 +200,23 @@ const routes = [
   },
   {
     path: '/profile/other/setup',
-    element: <OtherProfileSetup />,
+    element: <OtherRoleSetup />,
   },
   {
     path: '/profile/renter/setup',
-    element: <RenterProfileSetup />,
+    element: <BoothRenterSetup />,
   },
   {
     path: '/profile/supplier/setup',
-    element: <SupplierProfileSetup />,
+    element: <SupplierSetup />,
   },
   {
     path: '/setup/artist',
-    element: <ArtistSetup />,
+    element: <ArtistProfileSetup />,
   },
   {
     path: '/setup/salon',
-    element: <SalonOwnerSetup />,
+    element: <SalonProfileSetup />,
   },
   {
     path: '/setup/freelancer',
@@ -228,7 +228,7 @@ const routes = [
   },
   {
     path: '/setup/other',
-    element: <OtherProfileSetup />,
+    element: <OtherRoleSetup />,
   },
   {
     path: '/a/:username',
