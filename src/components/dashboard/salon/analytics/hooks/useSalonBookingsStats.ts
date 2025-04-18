@@ -7,8 +7,8 @@ import { BookingStatsItem } from "@/types/BookingStatsItem";
 
 type StatsPeriod = '7' | '30' | '90';
 
-// Define a simple type that matches the exact structure we get from Supabase
-type RawAppointment = {
+// Simple interface that just defines what we need
+interface AppointmentData {
   start_time: string;
   status: string;
 }
@@ -30,49 +30,50 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
     queryFn: async () => {
       if (!salonId) return [] as BookingStatsItem[];
       
-      // Use a generic Promise type to avoid TypeScript's deep type inference
-      const fetchData = async (): Promise<RawAppointment[]> => {
-        // Execute the query without type propagation
-        const { data, error } = await supabase
+      try {
+        // Use a simple approach without complex type inference
+        const response = await supabase
           .from('appointments')
           .select('start_time, status')
           .eq('salon_id', salonId)
           .gte('start_time', formattedStartDate)
           .lte('start_time', formattedEndDate);
           
-        if (error) throw error;
-        return (data || []) as RawAppointment[];
-      };
-      
-      // Get the raw data
-      const appointments = await fetchData();
-      
-      // Process the data into our stats format
-      const statsMap = new Map<string, BookingStatsItem>();
+        if (response.error) throw response.error;
+        
+        // Cast to our simple interface after the fact
+        const appointments = (response.data || []) as AppointmentData[];
+        
+        // Process the data into our stats format
+        const statsMap = new Map<string, BookingStatsItem>();
 
-      appointments.forEach(booking => {
-        const dateStr = format(new Date(booking.start_time), 'yyyy-MM-dd');
+        appointments.forEach(booking => {
+          const dateStr = format(new Date(booking.start_time), 'yyyy-MM-dd');
 
-        if (!statsMap.has(dateStr)) {
-          statsMap.set(dateStr, {
-            date: dateStr,
-            totalBookings: 0,
-            completed: 0,
-            canceled: 0
-          });
-        }
+          if (!statsMap.has(dateStr)) {
+            statsMap.set(dateStr, {
+              date: dateStr,
+              totalBookings: 0,
+              completed: 0,
+              canceled: 0
+            });
+          }
 
-        const item = statsMap.get(dateStr)!;
-        item.totalBookings += 1;
+          const item = statsMap.get(dateStr)!;
+          item.totalBookings += 1;
 
-        if (booking.status === 'completed') {
-          item.completed += 1;
-        } else if (booking.status === 'cancelled') {
-          item.canceled += 1;
-        }
-      });
+          if (booking.status === 'completed') {
+            item.completed += 1;
+          } else if (booking.status === 'cancelled') {
+            item.canceled += 1;
+          }
+        });
 
-      return Array.from(statsMap.values());
+        return Array.from(statsMap.values());
+      } catch (error) {
+        console.error("Error fetching booking stats:", error);
+        return [];
+      }
     },
     enabled: !!salonId
   });
