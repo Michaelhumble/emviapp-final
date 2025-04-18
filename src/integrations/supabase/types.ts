@@ -682,6 +682,54 @@ export type Database = {
         }
         Relationships: []
       }
+      messages: {
+        Row: {
+          created_at: string
+          id: string
+          message_body: string
+          message_type: string
+          read: boolean | null
+          recipient_id: string
+          salon_id: string
+          sender_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message_body: string
+          message_type: string
+          read?: boolean | null
+          recipient_id: string
+          salon_id: string
+          sender_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message_body?: string
+          message_type?: string
+          read?: boolean | null
+          recipient_id?: string
+          salon_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "salons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "user_salon_access"
+            referencedColumns: ["salon_id"]
+          },
+        ]
+      }
       motivational_messages: {
         Row: {
           category: string | null
@@ -1202,6 +1250,57 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      salon_services: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration_min: number
+          id: string
+          image_url: string | null
+          name: string
+          price: number
+          salon_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration_min: number
+          id?: string
+          image_url?: string | null
+          name: string
+          price: number
+          salon_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration_min?: number
+          id?: string
+          image_url?: string | null
+          name?: string
+          price?: number
+          salon_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "salon_services_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "salons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "salon_services_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "user_salon_access"
+            referencedColumns: ["salon_id"]
+          },
+        ]
       }
       salon_staff: {
         Row: {

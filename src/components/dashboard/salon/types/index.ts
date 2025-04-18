@@ -38,3 +38,26 @@ export interface SalonBooking {
   notes?: string;
   created_at: string;
 }
+
+// Add missing BookingStatsItem type
+export interface BookingStatsItem {
+  id: string;
+  date: string;
+  count: number;
+  status: string;
+}
+
+// Add missing SalonMessage type
+export interface SalonMessage {
+  id: string;
+  sender_id: string;
+  sender_name: string;
+  recipient_id: string;
+  content: string;
+  created_at: string;
+  read: boolean;
+  salon_id: string;
+}
+
+// Add missing MessageSender type
+export type MessageSender = 'owner' | 'staff' | 'client' | 'system';
