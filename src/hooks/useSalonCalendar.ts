@@ -5,24 +5,28 @@ import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from 'date-fns';
 
-// Simple flat types to avoid complex inference
+// Refined interface to match actual database schema
 export interface AppointmentData {
   id: string;
   artist_id: string;
+  customer_id?: string;
   customer_name: string | null;
   customer_email: string | null;
   customer_phone: string | null;
   start_time: string;
   end_time: string;
   status: string;
-  assigned_staff_id: string | null;
-  assigned_staff_name: string | null;
+  updated_at: string;
   notes: string | null;
   created_at: string;
-  services: {
-    title: string | undefined;
-    price: number | undefined;
-    duration_minutes: number | undefined;
+  service_id?: string;
+  // Make assigned fields optional since they aren't in the database results
+  assigned_staff_id?: string | null;
+  assigned_staff_name?: string | null;
+  services?: {
+    title?: string;
+    price?: number;
+    duration_minutes?: number;
   } | null;
 }
 
@@ -62,36 +66,32 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
   const formattedStartDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Simple fetch function with explicit return type
-  const fetchAppointments = async (): Promise<AppointmentData[]> => {
-    if (!salonId) return [];
-
-    const { data, error } = await supabase
-      .from('appointments')
-      .select('*, services:service_id(*)')
-      .eq('salon_id', salonId)
-      .gte('start_time', formattedStartDate)
-      .lte('end_time', formattedEndDate);
-
-    if (error) throw error;
-    
-    return data as AppointmentData[] || [];
-  };
-
-  // Direct query with no type inference complexity
-  const queryResult = useQuery({
+  // Define the query without complex type inference
+  const {
+    data: rawAppointmentsData,
+    isLoading,
+    error
+  } = useQuery({
     queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
-    queryFn: fetchAppointments,
+    queryFn: async () => {
+      if (!salonId) return [];
+
+      const { data, error } = await supabase
+        .from('appointments')
+        .select('*, services:service_id(*)')
+        .eq('salon_id', salonId)
+        .gte('start_time', formattedStartDate)
+        .lte('end_time', formattedEndDate);
+
+      if (error) throw error;
+      
+      return data || [];
+    },
     enabled: !!salonId
   });
   
-  // Extract data, loading and error states with explicit typing
-  const isLoading = queryResult.isLoading;
-  const error = queryResult.error as Error | null;
-  const appointmentsData = (queryResult.data || []) as AppointmentData[];
-
   // Transform data with explicit typing after fetching
-  const appointments: SalonBooking[] = appointmentsData.map(item => ({
+  const appointments: SalonBooking[] = (rawAppointmentsData || []).map(item => ({
     id: item.id,
     client_name: item.customer_name || '',
     client_email: item.customer_email,
@@ -133,13 +133,13 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
     );
   };
 
-  // Explicitly return with the defined interface type
+  // Return explicitly typed result
   return {
     currentMonth,
     calendarDays,
     appointments,
     isLoading,
-    error,
+    error: error as Error | null,
     goToPreviousMonth,
     goToNextMonth,
     goToToday,
