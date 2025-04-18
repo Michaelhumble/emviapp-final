@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { useQuery } from "@tanstack/react-query";
+import { useTypedQuery } from "@/hooks/useTypedQuery";
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from 'date-fns';
@@ -51,8 +51,8 @@ export const useSalonCalendar = () => {
   const formattedStartDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Break the type inference chain completely by using any
-  const appointmentsQuery = useQuery<any, Error>({
+  // Use our custom useTypedQuery hook to avoid type recursion issues
+  const appointmentsQuery = useTypedQuery<SalonBooking[]>({
     queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
     queryFn: async () => {
       if (!salonId) return [] as SalonBooking[];
@@ -103,7 +103,6 @@ export const useSalonCalendar = () => {
   const monthEnd = endOfMonth(currentMonth);
   const calendarDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
-  // Add explicit type casting for the returned appointments
   const getAppointmentsForDay = (day: Date): SalonBooking[] => {
     const appointments = appointmentsQuery.data || [];
     return appointments.filter(appointment =>
