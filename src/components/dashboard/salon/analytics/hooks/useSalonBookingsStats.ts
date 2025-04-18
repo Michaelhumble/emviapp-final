@@ -25,27 +25,30 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
   const formattedStartDate = format(startDate, 'yyyy-MM-dd');
   const formattedEndDate = format(new Date(), 'yyyy-MM-dd');
 
-  // Use a more direct approach with explicit types to avoid deep type instantiation
+  // Break type recursion by using explicit type parameter and return type
   const query = useTypedQuery<BookingStatsItem[]>({
     queryKey: ['salon-booking-stats', salonId, period],
     queryFn: async (): Promise<BookingStatsItem[]> => {
       if (!salonId) return [];
 
-      // Use any to completely break the type inference chain
-      const { data, error } = await supabase
+      // Break the type inference chain using type assertion
+      const response = await supabase
         .from('appointments')
         .select('start_time, status')
         .eq('salon_id', salonId)
         .gte('start_time', formattedStartDate)
-        .lte('start_time', formattedEndDate) as any;
+        .lte('start_time', formattedEndDate);
+        
+      // Simple type assertion to avoid deep inference
+      const { data, error } = response as any;
 
       if (error) throw error;
       
       // Transform the data into BookingStatsItem format
       const statsMap = new Map<string, BookingStatsItem>();
       
-      // Completely bypass TypeScript's inference by using any
-      const bookings = data as any[];
+      // Use type assertion to break inference chain
+      const bookings = data as Array<{start_time: string, status: string}>;
       
       if (bookings && Array.isArray(bookings)) {
         for (const booking of bookings) {
