@@ -35,7 +35,7 @@ export const useSalonBookingsStats = () => {
       try {
         setIsLoading(true);
         
-        // Get counts by status using counts aggregation
+        // Get bookings data
         const { data: bookingsData, error: bookingsError } = await supabase
           .from('bookings')
           .select('status, created_at')
@@ -43,8 +43,8 @@ export const useSalonBookingsStats = () => {
           
         if (bookingsError) throw bookingsError;
         
-        // Process the data manually
-        const counts = {
+        // Define stats object with initial values
+        const counts: BookingsStats = {
           total: 0,
           pending: 0,
           accepted: 0,
@@ -53,7 +53,7 @@ export const useSalonBookingsStats = () => {
           chartData: []
         };
         
-        if (bookingsData) {
+        if (bookingsData && bookingsData.length > 0) {
           // Count statuses manually
           bookingsData.forEach((booking: any) => {
             const status = booking.status as string;
@@ -73,7 +73,6 @@ export const useSalonBookingsStats = () => {
         }
         
         setStats(counts);
-        
       } catch (err) {
         console.error('Error fetching salon booking stats:', err);
         setError(err instanceof Error ? err : new Error(String(err)));
@@ -89,7 +88,7 @@ export const useSalonBookingsStats = () => {
 };
 
 // Helper function to process weekly data
-const processWeeklyData = (data: any[]) => {
+const processWeeklyData = (data: any[]): BookingsStats['chartData'] => {
   // Group bookings by week
   const weeks: Record<string, number> = {};
   

@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
@@ -41,10 +42,16 @@ export function useSalonMessages() {
       
       // Transform data to match Message type
       const typedMessages: Message[] = (data || []).map(msg => {
+        // Create a default sender object if sender is null or invalid
+        const defaultSender = { full_name: 'Unknown User', avatar_url: undefined };
+        
         // Safely handle the sender object
-        const senderObject = msg.sender && typeof msg.sender === 'object' && !('error' in msg.sender)
+        const senderObject = msg.sender && 
+                            typeof msg.sender === 'object' && 
+                            msg.sender !== null && 
+                            !('error' in msg.sender)
           ? msg.sender
-          : { full_name: 'Unknown User', avatar_url: undefined };
+          : defaultSender;
         
         return {
           id: msg.id,
