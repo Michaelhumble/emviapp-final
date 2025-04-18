@@ -90,9 +90,9 @@ export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) =>
         .insert([
           {
             sender_id: user.id,
-            sender_name: user.user_metadata.full_name,
+            message_body: content,
+            message_type: sender,
             recipient_id: recipientId,
-            content: content,
             salon_id: currentSalon.id,
             read: false,
           },
