@@ -4,8 +4,16 @@ import { subDays, format } from "date-fns";
 import { useSalon } from "@/context/salon";
 import { supabase } from "@/integrations/supabase/client";
 import { BookingStatsItem } from "@/types/BookingStatsItem";
+import { useTypedQuery } from "@/hooks/useTypedQuery";
 
 type StatsPeriod = '7' | '30' | '90';
+
+// Define the raw database response type
+type BookingStatsDbRecord = {
+  date: string;
+  status: string; 
+  count: string;
+}
 
 export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
   const { currentSalon } = useSalon();
@@ -19,7 +27,7 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
   const formattedStartDate = format(startDate, 'yyyy-MM-dd');
   const formattedEndDate = format(new Date(), 'yyyy-MM-dd');
 
-  return useQuery<BookingStatsItem[]>({
+  return useTypedQuery<BookingStatsItem[]>({
     queryKey: ['salon-booking-stats', salonId, period],
     queryFn: async () => {
       if (!salonId) return [];
@@ -31,34 +39,40 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
         .eq('salon_id', salonId)
         .gte('date', formattedStartDate)
         .lte('date', formattedEndDate)
-        .order('date', { ascending: true });
+        .order('date', { ascending: true })
+        .group('date, status');
 
       if (error) throw error;
 
       // Transform the data into BookingStatsItem format
       const statsMap = new Map<string, BookingStatsItem>();
       
-      // Initialize the map with all dates in the range
-      for (const d of data || []) {
-        if (!statsMap.has(d.date)) {
-          statsMap.set(d.date, {
-            date: d.date,
-            totalBookings: 0,
-            completed: 0,
-            canceled: 0
-          });
-        }
-        
-        const item = statsMap.get(d.date)!;
-        const count = parseInt(d.count, 10);
-        
-        // Update the stats based on the status
-        item.totalBookings += count;
-        
-        if (d.status === 'completed') {
-          item.completed += count;
-        } else if (d.status === 'cancelled') {
-          item.canceled += count;
+      // Process data if it exists
+      if (data && Array.isArray(data)) {
+        // Initialize the map with all dates in the range
+        for (const record of data) {
+          const dateStr = record.date as string;
+          
+          if (!statsMap.has(dateStr)) {
+            statsMap.set(dateStr, {
+              date: dateStr,
+              totalBookings: 0,
+              completed: 0,
+              canceled: 0
+            });
+          }
+          
+          const item = statsMap.get(dateStr)!;
+          const count = parseInt(record.count as string, 10);
+          
+          // Update the stats based on the status
+          item.totalBookings += count;
+          
+          if (record.status === 'completed') {
+            item.completed += count;
+          } else if (record.status === 'cancelled') {
+            item.canceled += count;
+          }
         }
       }
       

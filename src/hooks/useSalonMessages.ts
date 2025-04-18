@@ -10,6 +10,18 @@ interface UseSalonMessagesProps {
   recipientId?: string;
 }
 
+interface DbMessage {
+  id: string;
+  sender_id: string;
+  message_body: string;
+  created_at: string;
+  sender?: {
+    id: string;
+    full_name?: string;
+    avatar_url?: string;
+  } | null;
+}
+
 export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) => {
   const [messages, setMessages] = useState<SalonMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -21,11 +33,15 @@ export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) =>
   const fetchMessages = async () => {
     try {
       if (!currentSalon?.id) return;
+      setLoading(true);
 
       const { data, error } = await supabase
         .from('messages')
         .select(`
-          *,
+          id,
+          sender_id,
+          message_body,
+          created_at,
           sender:sender_id(id, full_name, avatar_url)
         `)
         .eq('salon_id', currentSalon.id)
@@ -34,7 +50,7 @@ export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) =>
       if (error) throw error;
 
       if (data) {
-        const transformedMessages: SalonMessage[] = data.map(msg => ({
+        const transformedMessages: SalonMessage[] = data.map((msg: DbMessage) => ({
           id: msg.id,
           senderId: msg.sender_id,
           senderName: msg.sender?.full_name || 'Unknown',
@@ -46,6 +62,8 @@ export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) =>
     } catch (e: any) {
       console.error("Error fetching messages:", e);
       setError(e.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -80,7 +98,7 @@ export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) =>
           salon_id: currentSalon.id,
           sender_id: sender.id,
           message_body: content,
-          recipient_id: recipientId,
+          recipient_id: recipientId || null,
           message_type: 'text' // Add this required field
         });
 

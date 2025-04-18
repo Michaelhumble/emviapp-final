@@ -1,11 +1,11 @@
 
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useTypedQuery } from './useTypedQuery';
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from 'date-fns';
 
-// Define the SalonBooking interface if not already defined
+// Define the SalonBooking interface to match the component expectations
 interface SalonBooking {
   id: string;
   client_name: string;
@@ -22,6 +22,27 @@ interface SalonBooking {
   created_at: string;
 }
 
+// Define the raw appointment data from Supabase
+interface AppointmentData {
+  id: string;
+  artist_id: string;
+  customer_name?: string | null;
+  customer_email?: string | null;
+  customer_phone?: string | null;
+  start_time: string;
+  end_time: string;
+  status: string;
+  assigned_staff_id?: string | null;
+  assigned_staff_name?: string | null;
+  notes?: string | null;
+  created_at: string;
+  services?: {
+    title?: string;
+    price?: number;
+    duration_minutes?: number;
+  } | null;
+}
+
 export const useSalonCalendar = () => {
   const { currentSalon } = useSalon();
   const salonId = currentSalon?.id;
@@ -31,7 +52,7 @@ export const useSalonCalendar = () => {
   const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
   // Use explicit typing for the query
-  const appointmentsQuery = useQuery<any[], Error, SalonBooking[]>({
+  const appointmentsQuery = useTypedQuery<SalonBooking[]>({
     queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
     queryFn: async () => {
       if (!salonId) return [];
@@ -46,11 +67,9 @@ export const useSalonCalendar = () => {
         .order('start_time', { ascending: true });
 
       if (error) throw error;
-      return data || [];
-    },
-    select: (data) => {
+      
       // Map the appointments data to SalonBooking format
-      return data.map(apt => {
+      return (data || []).map((apt: AppointmentData) => {
         // Safely access nested service properties
         const serviceName = apt.services?.title || 'Unknown Service';
         const servicePrice = apt.services?.price || 0;
@@ -64,9 +83,9 @@ export const useSalonCalendar = () => {
           service_price: servicePrice,
           date: apt.start_time ? new Date(apt.start_time) : null,
           time: apt.start_time ? format(new Date(apt.start_time), 'HH:mm') : '',
-          status: apt.status || 'pending',
-          assigned_staff_id: apt.assigned_staff_id,
-          assigned_staff_name: apt.assigned_staff_name,
+          status: (apt.status || 'pending') as SalonBooking['status'],
+          assigned_staff_id: apt.assigned_staff_id || undefined,
+          assigned_staff_name: apt.assigned_staff_name || undefined,
           notes: apt.notes || '',
           created_at: apt.created_at || new Date().toISOString(),
         };
