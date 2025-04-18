@@ -47,7 +47,7 @@ export default function ServicesList({ services, loading, error, onEdit, onDelet
         <Card key={service.id} className="p-4 hover:shadow-md transition-shadow">
           <div className="flex justify-between items-start">
             <div>
-              <h3 className="font-medium">{service.title}</h3>
+              <h3 className="font-medium">{service.name}</h3>
               {service.description && (
                 <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{service.description}</p>
               )}
@@ -58,7 +58,7 @@ export default function ServicesList({ services, loading, error, onEdit, onDelet
                 </span>
                 <span className="flex items-center text-purple-600">
                   <Clock className="h-4 w-4 mr-1" />
-                  {service.duration_minutes}min
+                  {service.duration_min}min
                 </span>
               </div>
             </div>

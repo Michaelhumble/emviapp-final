@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { SalonService } from "../types";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import ServiceForm from "./ServiceForm";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,7 +40,7 @@ const SalonServiceManagement = () => {
   const [serviceToDelete, setServiceToDelete] = useState<string | null>(null);
 
   const filteredServices = services.filter(service => 
-    service.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    service.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     service.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -99,6 +101,11 @@ const SalonServiceManagement = () => {
         ? `${hours} hr ${remainingMinutes} min` 
         : `${hours} hr`;
     }
+  };
+
+  // This is a dummy function since our model doesn't have visibility
+  const handleToggleVisibility = (id: string, currentVisibility: boolean) => {
+    toast.info(`This would toggle visibility if implemented in the database.`);
   };
 
   return (
@@ -181,12 +188,7 @@ const SalonServiceManagement = () => {
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="font-medium text-lg flex items-center">
-                      {service.title}
-                      {!service.is_visible && (
-                        <Badge variant="outline" className="ml-2 text-gray-500">
-                          Hidden
-                        </Badge>
-                      )}
+                      {service.name}
                     </h3>
                     <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
                       <div className="flex items-center">
@@ -195,7 +197,7 @@ const SalonServiceManagement = () => {
                       </div>
                       <div className="flex items-center">
                         <Clock className="h-3.5 w-3.5 mr-1" />
-                        {formatDuration(service.duration_minutes)}
+                        {formatDuration(service.duration_min)}
                       </div>
                     </div>
                   </div>
@@ -203,16 +205,12 @@ const SalonServiceManagement = () => {
                     <Button 
                       variant="ghost" 
                       size="sm"
-                      onClick={() => toggleServiceVisibility(service.id, !service.is_visible)}
+                      onClick={() => handleToggleVisibility(service.id, true)}
                       className="h-8 w-8 p-0"
                     >
-                      {service.is_visible ? (
-                        <EyeOff className="h-4 w-4 text-gray-500" />
-                      ) : (
-                        <Eye className="h-4 w-4 text-gray-500" />
-                      )}
+                      <Eye className="h-4 w-4 text-gray-500" />
                       <span className="sr-only">
-                        {service.is_visible ? "Hide" : "Show"}
+                        Show Service
                       </span>
                     </Button>
                     <Button 

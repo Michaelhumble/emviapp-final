@@ -4,7 +4,6 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2, Clock, DollarSign } from 'lucide-react';
 import { SalonService } from '../types';
-import Image from 'next/image';
 
 interface SalonServicesListProps {
   services: SalonService[];
@@ -39,11 +38,10 @@ const SalonServicesList: React.FC<SalonServicesListProps> = ({
         <Card key={service.id} className="p-4 flex flex-col">
           {service.image_url && (
             <div className="w-full h-48 relative mb-4">
-              <Image 
+              <img 
                 src={service.image_url} 
                 alt={service.name} 
-                fill 
-                className="object-cover rounded-lg"
+                className="object-cover rounded-lg w-full h-full"
               />
             </div>
           )}

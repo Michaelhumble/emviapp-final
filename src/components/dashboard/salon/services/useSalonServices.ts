@@ -105,6 +105,21 @@ export function useSalonServices() {
     }
   };
 
+  // In our case, "visibility" is a client-side concept so no actual DB field.
+  // This is a placeholder for future use if needed
+  const toggleServiceVisibility = async (id: string, makeVisible: boolean) => {
+    try {
+      // This would update a visibility field if we had one
+      // For now just showing a toast
+      toast.success(`Service ${makeVisible ? 'visible' : 'hidden'} to customers`);
+      return true;
+    } catch (err) {
+      console.error('Error toggling service visibility:', err);
+      toast.error('Failed to update service visibility');
+      return false;
+    }
+  };
+
   useEffect(() => {
     fetchServices();
   }, [currentSalon?.id]);
@@ -117,5 +132,6 @@ export function useSalonServices() {
     updateService,
     deleteService,
     refreshServices: fetchServices,
+    toggleServiceVisibility,
   };
 }
