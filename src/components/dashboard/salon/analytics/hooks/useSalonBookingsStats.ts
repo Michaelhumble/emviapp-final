@@ -7,6 +7,7 @@ import { BookingStatsItem } from "@/types/BookingStatsItem";
 
 type StatsPeriod = '7' | '30' | '90';
 
+// Define an explicit interface for the query result to break the deep type instantiation
 interface AppointmentQueryResult {
   data: Array<{
     start_time: string;
@@ -32,6 +33,7 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
     queryFn: async (): Promise<BookingStatsItem[]> => {
       if (!salonId) return [];
 
+      // Explicitly cast the result to our defined interface
       const { data, error } = (await supabase
         .from('appointments')
         .select('start_time, status')
