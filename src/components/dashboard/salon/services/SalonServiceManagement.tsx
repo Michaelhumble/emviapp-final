@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -151,7 +150,7 @@ const SalonServiceManagement = () => {
             <p className="text-red-500 mb-2">{error.message}</p>
             <Button 
               variant="outline" 
-              onClick={fetchServices}
+              onClick={refreshServices}
               className="mt-2"
             >
               Try Again

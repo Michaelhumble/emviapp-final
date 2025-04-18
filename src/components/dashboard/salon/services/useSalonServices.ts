@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
-import { SalonService } from '@/components/dashboard/salon/types';
+import { SalonService } from '../types';
 
 export function useSalonServices() {
   const { currentSalon } = useSalon();
@@ -41,10 +41,20 @@ export function useSalonServices() {
 
   const addService = async (serviceData: Partial<SalonService>) => {
     try {
-      // Fix: use a single object instead of an array
+      // Fix: Make sure required fields are present and create a proper service object
+      const newService = {
+        title: serviceData.title || '',
+        price: serviceData.price || 0,
+        duration_minutes: serviceData.duration_minutes || 0,
+        user_id: currentSalon?.id || '',
+        description: serviceData.description,
+        is_visible: serviceData.is_visible !== undefined ? serviceData.is_visible : true,
+        image_url: serviceData.image_url
+      };
+
       const { data, error } = await supabase
         .from('services')
-        .insert({ ...serviceData, user_id: currentSalon?.id })
+        .insert(newService)
         .select()
         .single();
 

@@ -19,13 +19,15 @@ export interface SalonService {
   is_visible: boolean;
   created_at: string;
   updated_at?: string;
+  user_id: string;
+  image_url?: string;
 }
 
 export interface SalonBooking {
   id: string;
   client_name: string;
-  client_email?: string;
-  client_phone?: string;
+  client_email?: string | null;
+  client_phone?: string | null;
   service_name: string;
   service_price: number;
   date: Date | null;
