@@ -1,8 +1,7 @@
 
-import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSafeQuery } from "@/hooks/useSafeQuery";
-import { useSalonContext } from "@/context/salon";
+import { useSalon } from "@/context/salon";
 import { format, subDays, startOfWeek, endOfWeek, eachWeekOfInterval } from "date-fns";
 
 export interface WeeklyBookingData {
@@ -18,7 +17,7 @@ export interface BookingsStatsData {
 }
 
 export function useSalonBookingsStats(timeRange: "30days" | "60days" | "90days") {
-  const { currentSalonId } = useSalonContext();
+  const { currentSalonId } = useSalon();
   const daysToGoBack = timeRange === "30days" ? 30 : timeRange === "60days" ? 60 : 90;
 
   const fetchBookingStats = async (): Promise<BookingsStatsData> => {
@@ -45,28 +44,28 @@ export function useSalonBookingsStats(timeRange: "30days" | "60days" | "90days")
     );
     
     // Create weekly data structure
-    const weeklyData: WeeklyBookingData[] = await Promise.all(
-      weeks.map(async (weekStart) => {
-        const weekStartDate = startOfWeek(weekStart, { weekStartsOn: 1 });
-        const weekEndDate = endOfWeek(weekStart, { weekStartsOn: 1 });
+    let weeklyData: WeeklyBookingData[] = [];
+    
+    for (const weekStart of weeks) {
+      const weekStartDate = startOfWeek(weekStart, { weekStartsOn: 1 });
+      const weekEndDate = endOfWeek(weekStart, { weekStartsOn: 1 });
+      
+      const { data, error } = await supabase
+        .from('bookings')
+        .select('id', { count: 'exact' })
+        .eq('salon_id', currentSalonId)
+        .gte('created_at', weekStartDate.toISOString())
+        .lte('created_at', weekEndDate.toISOString());
         
-        const { data, error } = await supabase
-          .from('bookings')
-          .select('id', { count: 'exact' })
-          .eq('salon_id', currentSalonId)
-          .gte('created_at', weekStartDate.toISOString())
-          .lte('created_at', weekEndDate.toISOString());
-          
-        if (error) throw error;
-        
-        return {
-          weekLabel: `${format(weekStartDate, 'MMM d')} - ${format(weekEndDate, 'MMM d')}`,
-          weekStart: weekStartDate.toISOString(),
-          weekEnd: weekEndDate.toISOString(),
-          count: data?.length || 0
-        };
-      })
-    );
+      if (error) throw error;
+      
+      weeklyData.push({
+        weekLabel: `${format(weekStartDate, 'MMM d')} - ${format(weekEndDate, 'MMM d')}`,
+        weekStart: weekStartDate.toISOString(),
+        weekEnd: weekEndDate.toISOString(),
+        count: data?.length || 0
+      });
+    }
     
     return {
       totalBookings: totalData?.length || 0,

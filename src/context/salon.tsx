@@ -21,6 +21,9 @@ const SalonContext = createContext<SalonContextType>({
 
 export const useSalonContext = () => useContext(SalonContext);
 
+// To make imports cleaner/more consistent, we'll export an alias
+export const useSalon = useSalonContext;
+
 interface SalonProviderProps {
   children: ReactNode;
 }
