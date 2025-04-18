@@ -50,11 +50,16 @@ export function useSalonMessages() {
         // Define a default sender object
         const defaultSender = { full_name: 'Unknown User', avatar_url: undefined };
         
-        // Safely handle the sender object using type assertion
-        const senderData = msg.sender as SenderData;
-        const senderObject = senderData && typeof senderData === 'object' && !('error' in senderData)
-          ? senderData
-          : defaultSender;
+        // Safely handle the sender object
+        let senderObject = defaultSender;
+        
+        // Check if sender exists and is not an error object
+        if (msg.sender && typeof msg.sender === 'object' && !('error' in msg.sender)) {
+          senderObject = {
+            full_name: (msg.sender as SenderData)?.full_name || defaultSender.full_name,
+            avatar_url: (msg.sender as SenderData)?.avatar_url
+          };
+        }
         
         return {
           id: msg.id,

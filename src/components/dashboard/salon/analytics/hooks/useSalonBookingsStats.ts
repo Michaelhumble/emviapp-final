@@ -5,10 +5,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { BookingsStats, ChartBookingData } from '@/types/salon';
 
 // Define a plain type with no self-reference to avoid excessive type instantiation
-type DatabaseBookingRecord = {
+interface DatabaseBookingRecord {
   status: string;
   created_at: string;
-};
+}
 
 export const useSalonBookingsStats = () => {
   const { currentSalon } = useSalon();

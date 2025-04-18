@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import SalonStatsGrid from './components/SalonStatsGrid';
 import SalonBoostBanner from './components/SalonBoostBanner';
 import SalonAnalyticsCharts from './components/SalonAnalyticsCharts';
+import SalonBookingCalendar from './calendar/SalonBookingCalendar';
 import { useSalonInsights } from '@/hooks/useSalonInsights';
 
 const SalonDashboard = () => {
@@ -34,6 +35,12 @@ const SalonDashboard = () => {
             Overview
           </TabsTrigger>
           <TabsTrigger 
+            value="calendar" 
+            className="rounded-md py-2.5 data-[state=active]:bg-white data-[state=active]:text-purple-700 data-[state=active]:shadow-sm"
+          >
+            Calendar
+          </TabsTrigger>
+          <TabsTrigger 
             value="listings" 
             className="rounded-md py-2.5 data-[state=active]:bg-white data-[state=active]:text-purple-700 data-[state=active]:shadow-sm"
           >
@@ -59,6 +66,10 @@ const SalonDashboard = () => {
               <p>Welcome to your enhanced salon dashboard! Check out the new analytics above.</p>
             </CardContent>
           </Card>
+        </TabsContent>
+        
+        <TabsContent value="calendar" className="pt-4">
+          <SalonBookingCalendar />
         </TabsContent>
         
         <TabsContent value="listings" className="pt-4">

@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
 import { format, startOfWeek, endOfWeek, addDays, isSameDay, parseISO } from 'date-fns';
@@ -36,6 +36,37 @@ export interface Service {
   price: number;
   durationMinutes: number;
   description?: string;
+}
+
+// Define interfaces for database responses to handle errors correctly
+interface SalonServiceRecord {
+  id: string;
+  name: string;
+  price: number;
+  duration_min: number;
+  description?: string;
+}
+
+interface StaffRecord {
+  id: string;
+  full_name: string;
+  specialty?: string;
+  avatar_url?: string;
+}
+
+interface AppointmentRecord {
+  id: string;
+  customer_name: string;
+  customer_email?: string;
+  customer_phone?: string;
+  start_time: string;
+  end_time: string;
+  status: string;
+  notes?: string;
+  artist_id: string;
+  created_at: string;
+  services?: SalonServiceRecord;
+  assigned_staff?: StaffRecord;
 }
 
 export function useSalonCalendar(initialDate = new Date()) {
@@ -78,12 +109,14 @@ export function useSalonCalendar(initialDate = new Date()) {
           
         if (error) throw error;
         
-        setTeamMembers(data.map(staff => ({
-          id: staff.id,
-          name: staff.full_name,
-          specialty: staff.specialty,
-          avatarUrl: staff.avatar_url
-        })));
+        if (data) {
+          setTeamMembers(data.map(staff => ({
+            id: staff.id,
+            name: staff.full_name,
+            specialty: staff.specialty,
+            avatarUrl: staff.avatar_url
+          })));
+        }
       } catch (err) {
         console.error("Error fetching staff:", err);
         setError("Failed to load staff members");
@@ -106,13 +139,15 @@ export function useSalonCalendar(initialDate = new Date()) {
           
         if (error) throw error;
         
-        setServices(data.map(service => ({
-          id: service.id,
-          name: service.name,
-          price: service.price,
-          durationMinutes: service.duration_min,
-          description: service.description
-        })));
+        if (data) {
+          setServices(data.map(service => ({
+            id: service.id,
+            name: service.name,
+            price: service.price,
+            durationMinutes: service.duration_min,
+            description: service.description
+          })));
+        }
       } catch (err) {
         console.error("Error fetching services:", err);
         setError("Failed to load services");
@@ -123,7 +158,7 @@ export function useSalonCalendar(initialDate = new Date()) {
   }, [currentSalon?.id]);
 
   // Fetch appointments
-  const fetchAppointments = async () => {
+  const fetchAppointments = useCallback(async () => {
     if (!currentSalon?.id || weekDates.length === 0) return;
     
     setIsLoading(true);
@@ -145,28 +180,38 @@ export function useSalonCalendar(initialDate = new Date()) {
           
       if (error) throw error;
       
-      const formattedAppointments: CalendarAppointment[] = (data || []).map(apt => {
-        const service = apt.services || { name: 'Unknown Service', price: 0, duration_min: 60 };
-        const staff = apt.assigned_staff || { id: apt.artist_id, full_name: 'Unassigned', avatar_url: null };
-        
-        return {
-          id: apt.id,
-          clientName: apt.customer_name || 'Client',
-          clientEmail: apt.customer_email,
-          clientPhone: apt.customer_phone,
-          serviceName: service.name,
-          servicePrice: service.price,
-          serviceDuration: service.duration_min,
-          startTime: new Date(apt.start_time),
-          endTime: new Date(apt.end_time),
-          status: apt.status as 'pending' | 'accepted' | 'completed' | 'cancelled',
-          notes: apt.notes,
-          staffId: staff.id,
-          staffName: staff.full_name,
-          staffAvatar: staff.avatar_url,
-          createdAt: apt.created_at
-        };
-      });
+      // Transform data to match CalendarAppointment type
+      const formattedAppointments: CalendarAppointment[] = [];
+      
+      if (data && data.length > 0) {
+        data.forEach((apt: AppointmentRecord) => {
+          // Define default values
+          const defaultService = { name: 'Unknown Service', price: 0, duration_min: 60 };
+          const defaultStaff = { id: apt.artist_id, full_name: 'Unassigned', avatar_url: undefined };
+          
+          // Safely handle service and staff data
+          const serviceData = apt.services || defaultService;
+          const staffData = apt.assigned_staff || defaultStaff;
+          
+          formattedAppointments.push({
+            id: apt.id,
+            clientName: apt.customer_name || 'Client',
+            clientEmail: apt.customer_email,
+            clientPhone: apt.customer_phone,
+            serviceName: serviceData.name,
+            servicePrice: serviceData.price,
+            serviceDuration: serviceData.duration_min,
+            startTime: new Date(apt.start_time),
+            endTime: new Date(apt.end_time),
+            status: (apt.status as 'pending' | 'accepted' | 'completed' | 'cancelled'),
+            notes: apt.notes,
+            staffId: staffData.id,
+            staffName: staffData.full_name,
+            staffAvatar: staffData.avatar_url,
+            createdAt: apt.created_at
+          });
+        });
+      }
       
       setAppointments(formattedAppointments);
       setError(null);
@@ -176,7 +221,7 @@ export function useSalonCalendar(initialDate = new Date()) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentSalon?.id, weekDates]);
 
   // Create or update appointment
   const saveAppointment = async (appointment: Omit<CalendarAppointment, 'id' | 'createdAt'> & { id?: string }) => {
@@ -304,7 +349,7 @@ export function useSalonCalendar(initialDate = new Date()) {
     if (currentSalon?.id && weekDates.length > 0) {
       fetchAppointments();
     }
-  }, [currentSalon?.id, weekDates]);
+  }, [currentSalon?.id, weekDates, fetchAppointments]);
 
   return {
     selectedDate,
