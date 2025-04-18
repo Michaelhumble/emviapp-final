@@ -55,8 +55,8 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
   const startDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const endDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Using a more generic "unknown" type for the raw data, and properly casting afterward
-  const { data: appointmentsData, isLoading, error } = useTypedQuery<unknown[]>({
+  // Use any to avoid TypeScript deep instantiation error
+  const { data: appointmentsData, isLoading, error } = useTypedQuery({
     queryKey: ['salon-appointments', currentSalon?.id, startDate, endDate],
     queryFn: async () => {
       if (!currentSalon?.id) return [];
