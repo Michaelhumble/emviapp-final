@@ -32,7 +32,7 @@ function App() {
               />
             ))}
             {/* Add PricingPage route */}
-            <Route path="/pricing-page" element={<PricingPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
           </Routes>
         </SubscriptionProvider>
       </SalonProvider>
