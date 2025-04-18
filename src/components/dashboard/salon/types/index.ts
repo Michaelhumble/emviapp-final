@@ -38,27 +38,3 @@ export interface SalonBooking {
   notes?: string;
   created_at: string;
 }
-
-// Add the missing BookingStatsItem interface
-export interface BookingStatsItem {
-  week: string;
-  count: number;
-}
-
-// Add the missing MessageSender interface
-export interface MessageSender {
-  id: string;
-  name: string;
-  avatar?: string;
-  type: 'customer' | 'artist' | 'staff';
-}
-
-// Add the missing SalonMessage interface
-export interface SalonMessage {
-  id: string;
-  content: string;
-  timestamp: Date;
-  isRead: boolean;
-  isReplied: boolean;
-  sender: MessageSender | null;
-}

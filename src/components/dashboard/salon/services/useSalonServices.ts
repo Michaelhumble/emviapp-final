@@ -1,9 +1,9 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { SalonService } from '../types';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
+import { SalonService } from '../types';
 
 export function useSalonServices() {
   const { currentSalon } = useSalon();
@@ -11,118 +11,127 @@ export function useSalonServices() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
+  useEffect(() => {
+    if (currentSalon?.id) {
+      fetchServices();
+    }
+  }, [currentSalon?.id]);
+
   const fetchServices = async () => {
-    if (!currentSalon?.id) return;
-
-    setLoading(true);
-    setError(null);
-
     try {
+      setLoading(true);
+      setError(null);
+
       const { data, error } = await supabase
-        .from('salon_services')
+        .from('services')
         .select('*')
-        .eq('salon_id', currentSalon.id)
+        .eq('user_id', currentSalon?.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setServices(data || []);
+      setServices(data);
     } catch (err) {
       console.error('Error fetching services:', err);
       setError(err instanceof Error ? err : new Error('Failed to fetch services'));
-      toast.error('Could not load salon services');
+      toast.error('Could not load services');
     } finally {
       setLoading(false);
     }
   };
 
-  const addService = async (serviceData: Omit<SalonService, 'id' | 'created_at' | 'updated_at'>) => {
-    if (!currentSalon?.id) {
-      toast.error('No salon selected');
-      return null;
-    }
-
+  const addService = async (serviceData: Partial<SalonService>) => {
     try {
+      // Fix: Make sure required fields are present and create a proper service object
+      const newService = {
+        title: serviceData.title || '',
+        price: serviceData.price || 0,
+        duration_minutes: serviceData.duration_minutes || 0,
+        user_id: currentSalon?.id || '',
+        description: serviceData.description,
+        is_visible: serviceData.is_visible !== undefined ? serviceData.is_visible : true,
+        image_url: serviceData.image_url
+      };
+
       const { data, error } = await supabase
-        .from('salon_services')
-        .insert({
-          ...serviceData,
-          salon_id: currentSalon.id,
-        })
+        .from('services')
+        .insert(newService)
         .select()
         .single();
 
       if (error) throw error;
-
-      setServices(prev => [data, ...prev]);
+      setServices([data, ...services]);
       toast.success('Service added successfully');
       return data;
     } catch (err) {
       console.error('Error adding service:', err);
       toast.error('Failed to add service');
-      return null;
+      throw err;
     }
   };
 
-  const updateService = async (id: string, updates: Partial<SalonService>) => {
+  const updateService = async (id: string, serviceData: Partial<SalonService>) => {
     try {
       const { data, error } = await supabase
-        .from('salon_services')
-        .update(updates)
+        .from('services')
+        .update(serviceData)
         .eq('id', id)
+        .eq('user_id', currentSalon?.id)
         .select()
         .single();
 
       if (error) throw error;
-
-      setServices(prev => 
-        prev.map(service => 
-          service.id === id ? { ...service, ...data } : service
-        )
-      );
+      setServices(services.map(service => 
+        service.id === id ? { ...service, ...data } : service
+      ));
       toast.success('Service updated successfully');
       return data;
     } catch (err) {
       console.error('Error updating service:', err);
       toast.error('Failed to update service');
-      return null;
+      throw err;
     }
   };
 
   const deleteService = async (id: string) => {
     try {
       const { error } = await supabase
-        .from('salon_services')
+        .from('services')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .eq('user_id', currentSalon?.id);
 
       if (error) throw error;
-
-      setServices(prev => prev.filter(service => service.id !== id));
+      setServices(prev => prev.filter(s => s.id !== id));
       toast.success('Service deleted successfully');
     } catch (err) {
       console.error('Error deleting service:', err);
       toast.error('Failed to delete service');
+      throw err;
     }
   };
 
-  // In our case, "visibility" is a client-side concept so no actual DB field.
-  // This is a placeholder for future use if needed
-  const toggleServiceVisibility = async (id: string, makeVisible: boolean) => {
+  const toggleServiceVisibility = async (id: string, isVisible: boolean) => {
     try {
-      // This would update a visibility field if we had one
-      // For now just showing a toast
-      toast.success(`Service ${makeVisible ? 'visible' : 'hidden'} to customers`);
-      return true;
+      const { data, error } = await supabase
+        .from('services')
+        .update({ is_visible: isVisible })
+        .eq('id', id)
+        .eq('user_id', currentSalon?.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      setServices(services.map(service => 
+        service.id === id ? { ...service, is_visible: isVisible } : service
+      ));
+      toast.success(`Service ${isVisible ? 'shown' : 'hidden'} successfully`);
+      return data;
     } catch (err) {
       console.error('Error toggling service visibility:', err);
       toast.error('Failed to update service visibility');
-      return false;
+      throw err;
     }
   };
-
-  useEffect(() => {
-    fetchServices();
-  }, [currentSalon?.id]);
 
   return {
     services,
@@ -131,7 +140,7 @@ export function useSalonServices() {
     addService,
     updateService,
     deleteService,
-    refreshServices: fetchServices,
     toggleServiceVisibility,
+    refreshServices: fetchServices,
   };
 }

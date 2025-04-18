@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -7,8 +8,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { SalonService } from "../types";
-import { FileUpload } from "@/components/ui/file-upload";
-import { toast } from "sonner";
 
 export interface ServiceFormProps {
   open: boolean;
@@ -26,30 +25,30 @@ const ServiceForm: React.FC<ServiceFormProps> = ({
   title = initialData ? "Edit Service" : "Add Service" 
 }) => {
   const [formData, setFormData] = useState<Partial<SalonService>>({
-    name: "",
+    title: "",
     description: "",
     price: 0,
-    duration_min: 60,
-    image_url: ""
+    duration_minutes: 60,
+    is_visible: true
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (initialData) {
       setFormData({
-        name: initialData.name,
+        title: initialData.title,
         description: initialData.description || "",
         price: initialData.price,
-        duration_min: initialData.duration_min,
-        image_url: initialData.image_url
+        duration_minutes: initialData.duration_minutes,
+        is_visible: initialData.is_visible
       });
     } else {
       setFormData({
-        name: "",
+        title: "",
         description: "",
         price: 0,
-        duration_min: 60,
-        image_url: ""
+        duration_minutes: 60,
+        is_visible: true
       });
     }
   }, [initialData, open]);
@@ -68,13 +67,13 @@ const ServiceForm: React.FC<ServiceFormProps> = ({
     setFormData(prev => ({ ...prev, [name]: parseInt(value, 10) }));
   };
 
-  const handleFileUpload = (url: string) => {
-    setFormData(prev => ({ ...prev, image_url: url }));
+  const handleVisibilityChange = (checked: boolean) => {
+    setFormData(prev => ({ ...prev, is_visible: checked }));
   };
 
   const handleSubmit = async () => {
-    if (!formData.name || typeof formData.price !== 'number' || !formData.duration_min) {
-      toast.error("Please fill out all required fields");
+    if (!formData.title || typeof formData.price !== 'number' || !formData.duration_minutes) {
+      // Validation error
       return;
     }
 
@@ -111,11 +110,11 @@ const ServiceForm: React.FC<ServiceFormProps> = ({
 
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="name">Service Name</Label>
+            <Label htmlFor="title">Service Name</Label>
             <Input
-              id="name"
-              name="name"
-              value={formData.name || ""}
+              id="title"
+              name="title"
+              value={formData.title || ""}
               onChange={handleChange}
               placeholder="e.g. Gel Manicure"
             />
@@ -136,10 +135,10 @@ const ServiceForm: React.FC<ServiceFormProps> = ({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="duration_min">Duration</Label>
+              <Label htmlFor="duration_minutes">Duration</Label>
               <Select
-                value={String(formData.duration_min || 60)}
-                onValueChange={(value) => handleSelectChange("duration_min", value)}
+                value={String(formData.duration_minutes || 60)}
+                onValueChange={(value) => handleSelectChange("duration_minutes", value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select duration" />
@@ -167,13 +166,13 @@ const ServiceForm: React.FC<ServiceFormProps> = ({
             />
           </div>
 
-          <div className="grid gap-2">
-            <Label>Service Image (Optional)</Label>
-            <FileUpload
-              onUploadComplete={handleFileUpload}
-              initialUrl={formData.image_url}
-              bucket="salon_photos"
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="is_visible"
+              checked={formData.is_visible !== false}
+              onCheckedChange={handleVisibilityChange}
             />
+            <Label htmlFor="is_visible">Visible to customers</Label>
           </div>
         </div>
 
