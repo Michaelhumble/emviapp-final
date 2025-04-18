@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { subDays, format } from "date-fns";
 import { useSalon } from "@/context/salon";

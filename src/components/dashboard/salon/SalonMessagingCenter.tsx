@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,8 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { useSupport } from '@/hooks/chat/useSupport';
 
-// Mock data for messages
 const mockMessages = [
   {
     id: "1",
@@ -81,6 +80,8 @@ const mockMessages = [
 ];
 
 const SalonMessagingCenter = () => {
+  useSupport();
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMessage, setSelectedMessage] = useState<typeof mockMessages[0] | null>(null);
   const [isReplyDialogOpen, setIsReplyDialogOpen] = useState(false);

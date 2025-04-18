@@ -1610,6 +1610,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_tags: {
+        Row: {
+          created_at: string
+          id: string
+          tag: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          tag: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          tag?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           accepts_bookings: boolean | null
@@ -1938,6 +1959,18 @@ export type Database = {
           p_rating: number
           p_review_text: string
         }
+        Returns: boolean
+      }
+      tag_inactive_users: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      tag_top_referrers: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      tag_user: {
+        Args: { p_user_id: string; p_tag: string }
         Returns: boolean
       }
       track_salon_view: {
