@@ -167,12 +167,12 @@ export const useSalonCalendar = () => {
               status: apt.status,
               created_at: apt.created_at,
               updated_at: apt.updated_at,
-              assigned_staff_id: apt.assigned_staff_id,
-              assigned_staff_name: apt.assigned_staff_name
+              assigned_staff_id: apt.assigned_staff_id || undefined,
+              assigned_staff_name: apt.assigned_staff_name || undefined
             };
             
             // Only add services if they exist and have the expected shape
-            if (apt.services && typeof apt.services === 'object' && 'id' in apt.services) {
+            if (apt.services && typeof apt.services === 'object' && apt.services !== null && 'id' in apt.services) {
               appointment.services = {
                 id: apt.services.id,
                 name: apt.services.name,
