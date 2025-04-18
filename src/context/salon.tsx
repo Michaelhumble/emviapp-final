@@ -2,6 +2,7 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './auth';
+import { Salon } from './salon/types';
 
 type SalonContextType = {
   currentSalonId: string | null;
@@ -9,6 +10,14 @@ type SalonContextType = {
   salonName: string | null;
   userSalons: any[] | null;
   loading: boolean;
+  salons?: Salon[];
+  currentSalon?: Salon | null;
+  isLoadingSalons?: boolean;
+  createSalon?: (salonData: Partial<Salon>) => Promise<boolean>;
+  selectSalon?: (salonId: string) => void;
+  refreshSalons?: () => Promise<void>;
+  updateSalon?: (salonId: string, data: Partial<Salon>) => Promise<boolean>;
+  deleteSalon?: (salonId: string) => Promise<boolean>;
 };
 
 const SalonContext = createContext<SalonContextType>({
