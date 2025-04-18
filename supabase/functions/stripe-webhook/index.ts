@@ -9,7 +9,6 @@ serve(async (req) => {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   };
 
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -22,14 +21,12 @@ serve(async (req) => {
     const body = await req.text();
     const signature = req.headers.get('stripe-signature') || '';
 
-    // Verify webhook signature
     const event = stripe.webhooks.constructEvent(
       body, 
       signature, 
       Deno.env.get("STRIPE_WEBHOOK_SECRET") || ""
     );
 
-    // Initialize Supabase client with service role to bypass RLS
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") || "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || ""
