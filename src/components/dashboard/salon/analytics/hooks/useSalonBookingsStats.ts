@@ -1,7 +1,13 @@
+
 import { useState, useEffect } from 'react';
 import { useSalon } from '@/context/salon';
 import { supabase } from '@/integrations/supabase/client';
-import { BookingsStats } from '@/types/salon';
+import { BookingsStats, ChartBookingData } from '@/types/salon';
+
+interface BookingData {
+  status: string;
+  created_at: string;
+}
 
 export const useSalonBookingsStats = () => {
   const { currentSalon } = useSalon();
@@ -43,7 +49,7 @@ export const useSalonBookingsStats = () => {
         
         if (bookingsData && bookingsData.length > 0) {
           // Count statuses manually
-          bookingsData.forEach((booking: any) => {
+          bookingsData.forEach((booking: BookingData) => {
             const status = booking.status as string;
             
             // Increment total
@@ -76,7 +82,7 @@ export const useSalonBookingsStats = () => {
 };
 
 // Helper function to process weekly data
-const processWeeklyData = (data: any[]): BookingsStats['chartData'] => {
+const processWeeklyData = (data: BookingData[]): ChartBookingData[] => {
   // Group bookings by week
   const weeks: Record<string, number> = {};
   
@@ -94,7 +100,7 @@ const processWeeklyData = (data: any[]): BookingsStats['chartData'] => {
   }
   
   // Count bookings per week
-  data.forEach((booking: any) => {
+  data.forEach((booking: BookingData) => {
     const bookingDate = new Date(booking.created_at);
     if (bookingDate >= twelveWeeksAgo) {
       // Find which week this belongs to

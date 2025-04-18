@@ -12,6 +12,32 @@ export interface Salon {
   phone?: string;
   created_at: string;
   updated_at?: string;
+  
+  // Frontend display properties
+  name?: string;
+  image?: string;
+  rating?: number;
+  reviewCount?: number;
+  city?: string;
+  neighborhood?: string;
+  isHiring?: boolean;
+  specialty?: string;
+  featured?: boolean;
+  logo?: string;
+  bio?: string;
+  shortBio?: string;
+  services?: string[];
+  established?: string;
+  email?: string;
+  bookingLink?: string;
+  hours?: Record<string, string>;
+  amenities?: string[];
+  paymentMethods?: string[];
+  beforeAfterGallery?: string[];
+  socialMedia?: {
+    instagram?: string;
+    facebook?: string;
+  };
 }
 
 export interface SalonContextType {
@@ -87,3 +113,10 @@ export interface SalonStats {
     incompleteFields: string[];
   };
 }
+
+// Interface for booking stats charting data
+export interface ChartBookingData {
+  weekLabel: string;
+  count: number;
+}
+
