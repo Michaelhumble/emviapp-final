@@ -17,7 +17,7 @@ interface AppointmentDataFromDB {
   status: string;
   notes: string | null;
   artist_id: string;
-  salon_id: string;
+  salon_id?: string; // Make this optional since it might not be returned in all queries
   created_at: string;
   updated_at: string;
   service?: {
@@ -55,7 +55,7 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
   const startDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const endDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Use any to avoid TypeScript deep instantiation error
+  // Avoid type parameters altogether to prevent the deep instantiation error
   const { data: appointmentsData, isLoading, error } = useTypedQuery({
     queryKey: ['salon-appointments', currentSalon?.id, startDate, endDate],
     queryFn: async () => {
@@ -78,10 +78,13 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
   const calendar: SalonCalendar = {};
   
   if (appointmentsData && Array.isArray(appointmentsData)) {
-    // Safely cast the data now that we've checked it's an array
-    const appointments = appointmentsData as AppointmentDataFromDB[];
-    
-    appointments.forEach(appt => {
+    // Instead of explicitly casting, use a runtime check to validate and transform the data
+    appointmentsData.forEach(appt => {
+      if (!appt || typeof appt !== 'object') return;
+      
+      // Make sure start_time exists before trying to use it
+      if (!appt.start_time) return;
+      
       // Format date from start_time
       const date = format(new Date(appt.start_time), 'yyyy-MM-dd');
       // Format time from start_time
@@ -95,10 +98,15 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
         calendar[date][time] = [];
       }
 
+      // Get service title safely
+      const serviceTitle = appt.service && typeof appt.service === 'object' 
+        ? (appt.service as any).title || 'Unknown Service'
+        : 'Unknown Service';
+
       calendar[date][time].push({
         time: time,
         customer: appt.customer_name || 'Unknown',
-        service: appt.service?.title || 'Unknown Service',
+        service: serviceTitle,
         status: (appt.status === 'completed' || appt.status === 'cancelled' ? 
                 appt.status : 'booked') as "booked" | "cancelled" | "completed"
       });
