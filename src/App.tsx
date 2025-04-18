@@ -1,95 +1,65 @@
-
-import { Routes, Route, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
-import { ProfileProvider } from '@/context/profile';
-import { ProfileCompletionProvider } from '@/context/profile/ProfileCompletionProvider';
-import { NotificationProvider } from '@/context/notification';
+import { PostProvider } from '@/context/post';
+import { LayoutProvider } from '@/context/layout';
+import { DashboardProvider } from '@/context/dashboard';
+import { SalonProvider } from '@/context/salon';
 import { SubscriptionProvider } from '@/context/subscription';
-import { GoogleMapsProvider } from '@/context/maps/GoogleMapsContext';
-import { Toaster } from 'sonner';
-import AppModifier from './App-Modifier';
-import routes from './routes';
-import '@/App.css';
-import './components/chat/chat.css';
-import { supabase } from '@/integrations/supabase/client';
-import AuthGuard from './components/auth/AuthGuard';
-import { ChatSystem } from './components/chat/ChatSystem';
-import { BookingNotificationProvider } from './components/BookingNotificationProvider';
-
-// Function to determine if a route should be protected
-const isProtectedRoute = (path: string): boolean => {
-  return path.startsWith('/dashboard') || 
-         path.startsWith('/profile') || 
-         path.startsWith('/settings') ||
-         path === '/command-center';
-};
+import Home from '@/pages/Home';
+import Salons from '@/pages/Salons';
+import SalonDetails from '@/pages/SalonDetails';
+import Jobs from '@/pages/Jobs';
+import JobDetails from '@/pages/JobDetails';
+import Profile from '@/pages/Profile';
+import EditProfile from '@/pages/EditProfile';
+import Dashboard from '@/pages/dashboard';
+import CustomerDashboard from '@/pages/dashboard/CustomerDashboard';
+import SalonDashboard from '@/pages/dashboard/SalonDashboard';
+import ArtistDashboard from '@/pages/dashboard/ArtistDashboard';
+import Auth from '@/pages/Auth';
+import Pricing from '@/pages/Pricing';
+import Checkout from '@/pages/Checkout';
+import Post from '@/pages/Post';
+import Explore from '@/pages/Explore';
+import { VisibilityUpgrade, VisibilityStats } from '@/pages/visibility';
+import PricingPage from './pages/pricing/PricingPage';
 
 function App() {
   const location = useLocation();
 
-  // Handle referral codes in URL
   useEffect(() => {
-    const handleReferral = async () => {
-      const params = new URLSearchParams(window.location.search);
-      const refCode = params.get('ref');
-      
-      if (refCode) {
-        // Store referral code in localStorage for later attribution
-        localStorage.setItem('emvi_referral_code', refCode);
-        
-        // Get current user
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        // If user is signed in and has a referral code, attribute the referral
-        if (user) {
-          const { error } = await supabase.rpc('process_referral', {
-            referral_code: refCode,
-            new_user_id: user.id
-          });
-          
-          if (error) {
-            console.error('Error processing referral:', error);
-          }
-        }
-      }
-    };
-    
-    handleReferral();
-  }, [location]);
+    // Scroll to top on route change
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
-    <AuthProvider>
-      <ProfileProvider>
-        <ProfileCompletionProvider>
-          <SubscriptionProvider>
-            <NotificationProvider>
-              <GoogleMapsProvider>
-                <BookingNotificationProvider />
-                <AppModifier />
-                <Routes>
-                  {routes.map((route) => (
-                    <Route
-                      key={route.path}
-                      path={route.path}
-                      element={
-                        isProtectedRoute(route.path) ? (
-                          <AuthGuard>{route.element}</AuthGuard>
-                        ) : (
-                          route.element
-                        )
-                      }
-                    />
-                  ))}
-                </Routes>
-                <Toaster position="top-right" />
-                <ChatSystem />
-              </GoogleMapsProvider>
-            </NotificationProvider>
-          </SubscriptionProvider>
-        </ProfileCompletionProvider>
-      </ProfileProvider>
-    </AuthProvider>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/salons" element={<Salons />} />
+      <Route path="/salons/:id" element={<SalonDetails />} />
+      <Route path="/jobs" element={<Jobs />} />
+      <Route path="/jobs/:id" element={<JobDetails />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/profile/edit" element={<EditProfile />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/dashboard/customer" element={<CustomerDashboard />} />
+      <Route path="/dashboard/salon" element={<SalonDashboard />} />
+      <Route path="/dashboard/artist" element={<ArtistDashboard />} />
+      <Route path="/auth/:type" element={<Auth />} />
+      <Route path="/pricing" element={<Pricing />} />
+      <Route path="/checkout" element={<Checkout />} />
+      <Route path="/post/:type" element={<Post />} />
+      <Route path="/explore" element={<Explore />} />
+      <Route path="/visibility/upgrade" element={<VisibilityUpgrade />} />
+      <Route path="/visibility/stats" element={<VisibilityStats />} />
+      <Route path="/pricing" element={<PricingPage />} />
+    </Routes>
   );
 }
 
