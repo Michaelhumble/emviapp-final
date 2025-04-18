@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { subDays, format } from "date-fns";
 import { useSalon } from "@/context/salon";
 import { supabase } from "@/integrations/supabase/client";
-import { BookingStatsItem } from "@/components/dashboard/salon/types";
+import { BookingStatsItem } from "@/types/BookingStatsItem";
 
 type StatsPeriod = '7' | '30' | '90';
 
@@ -12,21 +12,18 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
   const salonId = currentSalon?.id;
 
   const getStartDate = (period: StatsPeriod) => {
-    const days = parseInt(period, 10);
-    return subDays(new Date(), days);
+    return subDays(new Date(), parseInt(period, 10));
   };
 
   const startDate = getStartDate(period);
   const formattedStartDate = format(startDate, 'yyyy-MM-dd');
   const formattedEndDate = format(new Date(), 'yyyy-MM-dd');
 
-  // Fix the type instantiation issue by using a more specific type definition
-  const { data: bookingStats = [], isLoading, error } = useQuery<BookingStatsItem[]>({
+  return useQuery<BookingStatsItem[]>({
     queryKey: ['salon-booking-stats', salonId, period],
     queryFn: async () => {
       if (!salonId) return [];
 
-      // Use 'bookings' table instead of 'salon_bookings'
       const { data, error } = await supabase
         .from('bookings')
         .select('date, status, count(*)')
@@ -35,19 +32,15 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
         .lte('date', formattedEndDate)
         .order('date', { ascending: true });
 
-      if (error) {
-        console.error("Error fetching booking stats:", error);
-        throw new Error(error.message);
-      }
+      if (error) throw error;
 
-      return data as BookingStatsItem[] || [];
+      return (data || []).map(row => ({
+        date: row.date,
+        totalBookings: parseInt(row.count),
+        completed: row.status === 'completed' ? parseInt(row.count) : 0,
+        canceled: row.status === 'cancelled' ? parseInt(row.count) : 0
+      }));
     },
     enabled: !!salonId
   });
-
-  return {
-    bookingStats,
-    isLoading,
-    error,
-  };
 };

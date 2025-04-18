@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -14,13 +13,13 @@ export const useSalonCalendar = () => {
   const formattedStartDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Fix the type instantiation issue by using an explicit type annotation
+  // Fix the type instantiation issue by an explicit type annotation
   const appointmentsQuery = useQuery<SalonBooking[]>({
     queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
     queryFn: async () => {
       if (!salonId) return [];
 
-      // Use 'appointments' table instead of 'salon_appointments'
+      // Use 'appointments' table instead of 'salon_bookings'
       const { data, error } = await supabase
         .from('appointments')
         .select('*, services:service_id(title, price, duration_minutes)')
