@@ -17,7 +17,8 @@ export const useSendMessage = () => {
         sender_id: user.id,
         recipient_id: recipientId,
         message_body: message,
-        message_type: 'chat'
+        message_type: 'chat',
+        salon_id: user.id // Using user.id as a temporary placeholder for salon_id
       });
 
       if (error) throw error;

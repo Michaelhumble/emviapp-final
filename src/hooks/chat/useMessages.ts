@@ -26,7 +26,16 @@ export const useMessages = (recipientId: string) => {
         return;
       }
 
-      setMessages(data || []);
+      // Transform the data to match SalonMessage type
+      const transformedMessages: SalonMessage[] = (data || []).map(msg => ({
+        id: msg.id,
+        senderId: msg.sender_id,
+        senderName: '', // This would need to be fetched separately
+        message: msg.message_body,
+        timestamp: msg.created_at
+      }));
+
+      setMessages(transformedMessages);
       setLoading(false);
     };
 
@@ -44,7 +53,15 @@ export const useMessages = (recipientId: string) => {
           filter: `sender_id=eq.${user.id},recipient_id=eq.${recipientId}`
         },
         (payload) => {
-          setMessages(prev => [...prev, payload.new as SalonMessage]);
+          const newMsg = payload.new as any;
+          const salonMessage: SalonMessage = {
+            id: newMsg.id,
+            senderId: newMsg.sender_id,
+            senderName: '', // Would need to be populated in a real app
+            message: newMsg.message_body,
+            timestamp: newMsg.created_at
+          };
+          setMessages(prev => [...prev, salonMessage]);
         }
       )
       .subscribe();
