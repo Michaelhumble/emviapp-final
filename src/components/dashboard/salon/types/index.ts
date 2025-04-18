@@ -39,13 +39,13 @@ export interface SalonBooking {
   created_at: string;
 }
 
-// Add a specific interface for booking statistics
+// Add the missing BookingStatsItem interface
 export interface BookingStatsItem {
   week: string;
   count: number;
 }
 
-// Add a message sender interface
+// Add the missing MessageSender interface
 export interface MessageSender {
   id: string;
   name: string;
@@ -53,7 +53,7 @@ export interface MessageSender {
   type: 'customer' | 'artist' | 'staff';
 }
 
-// Add a salon message interface
+// Add the missing SalonMessage interface
 export interface SalonMessage {
   id: string;
   content: string;

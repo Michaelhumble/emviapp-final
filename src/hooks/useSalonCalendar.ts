@@ -61,26 +61,6 @@ export const useSalonCalendar = () => {
     staffMembers: []
   });
 
-  const goToNextWeek = () => {
-    setState(prevState => {
-      const newDate = new Date(prevState.currentDate);
-      newDate.setDate(newDate.getDate() + 7);
-      return { ...prevState, currentDate: newDate };
-    });
-  };
-
-  const goToPreviousWeek = () => {
-    setState(prevState => {
-      const newDate = new Date(prevState.currentDate);
-      newDate.setDate(newDate.getDate() - 7);
-      return { ...prevState, currentDate: newDate };
-    });
-  };
-
-  const goToToday = () => {
-    setState(prevState => ({ ...prevState, currentDate: new Date() }));
-  };
-
   useEffect(() => {
     if (!currentSalon?.id) return;
 
