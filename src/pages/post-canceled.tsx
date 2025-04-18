@@ -11,9 +11,7 @@ const PostCanceled = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    toast({
-      variant: "destructive",
-      title: "Payment Canceled",
+    toast.error("Payment Canceled", {
       description: "Your payment was canceled. No charges were made."
     });
   }, []);

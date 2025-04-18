@@ -1,11 +1,10 @@
 
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 export const usePostPayment = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
 
   const initiatePayment = async (postType: 'job' | 'salon') => {
     setIsLoading(true);
@@ -20,10 +19,8 @@ export const usePostPayment = () => {
       }
     } catch (error) {
       console.error('Payment initiation error:', error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to initiate payment. Please try again."
+      toast.error("Failed to initiate payment", {
+        description: "Please try again."
       });
     } finally {
       setIsLoading(false);

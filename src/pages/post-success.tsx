@@ -6,6 +6,7 @@ import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { toast } from "sonner";
+import { supabase } from '@/integrations/supabase/client';
 
 const PostSuccess = () => {
   const [searchParams] = useSearchParams();
@@ -19,15 +20,38 @@ const PostSuccess = () => {
       return;
     }
 
-    // Show success message and redirect after delay
-    toast.success("Payment successful!");
-    const timer = setTimeout(() => {
-      navigate('/dashboard');
-    }, 5000);
+    // Verify the payment and redirect
+    const verifyPayment = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('payments')
+          .select('*')
+          .eq('stripe_session_id', sessionId)
+          .single();
 
-    setLoading(false);
-    return () => clearTimeout(timer);
-  }, []);
+        if (error || !data) {
+          throw new Error('Payment verification failed');
+        }
+
+        toast.success("Payment successful!", {
+          description: "You can now create your post."
+        });
+
+        // Redirect to appropriate post creation page
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 3000);
+      } catch (error) {
+        console.error('Payment verification error:', error);
+        toast.error("Payment verification failed");
+        navigate('/');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verifyPayment();
+  }, [navigate, searchParams]);
 
   return (
     <Layout>
@@ -36,7 +60,7 @@ const PostSuccess = () => {
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold mb-4">Payment Successful!</h1>
           <p className="text-gray-600 mb-6">
-            Your payment has been processed successfully. You can now proceed with creating your post.
+            Your payment has been processed. You can now create your post.
           </p>
           <Button onClick={() => navigate('/dashboard')}>
             Go to Dashboard

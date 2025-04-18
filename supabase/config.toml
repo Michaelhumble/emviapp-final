@@ -1,14 +1,6 @@
 
-project_id = "wwhqbjrhbajpabfdwnip"
-
-[functions.handle-user-tag]
-verify_jwt = false
-
-[functions.webhook-credit-purchase]
-verify_jwt = false
-
-[functions.create-credit-checkout]
+[functions.create-checkout]
 verify_jwt = true
 
-[functions.send-booking-reminders]
-verify_jwt = true
+[functions.stripe-webhook]
+verify_jwt = false
