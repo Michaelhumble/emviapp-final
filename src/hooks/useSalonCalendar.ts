@@ -78,7 +78,7 @@ export const useSalonCalendar = () => {
         status: apt.status as SalonBooking['status'],
         notes: apt.notes || '',
         created_at: apt.created_at,
-      })) as SalonBooking[];
+      }));
     },
     enabled: !!salonId,
   });
