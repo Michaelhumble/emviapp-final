@@ -42,7 +42,19 @@ export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) =>
         if (error) {
           setError(error.message);
         } else {
-          setMessages(data || []);
+          // Transform the data to match our SalonMessage interface
+          const transformedMessages: SalonMessage[] = (data || []).map(msg => ({
+            id: msg.id,
+            sender_id: msg.sender_id,
+            sender_name: msg.sender_name || "Unknown",
+            recipient_id: msg.recipient_id,
+            content: msg.message_body,  // Map message_body to content
+            created_at: msg.created_at,
+            read: msg.read || false,
+            salon_id: msg.salon_id
+          }));
+          
+          setMessages(transformedMessages);
         }
       } catch (err: any) {
         setError(err.message);
@@ -61,8 +73,21 @@ export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) =>
         { event: '*', schema: 'public', table: 'messages' },
         (payload) => {
           if (payload.new) {
+            // Transform the new message to match our SalonMessage interface
+            const newMsg = payload.new as any;
+            const transformedMessage: SalonMessage = {
+              id: newMsg.id,
+              sender_id: newMsg.sender_id,
+              sender_name: newMsg.sender_name || "Unknown",
+              recipient_id: newMsg.recipient_id,
+              content: newMsg.message_body,
+              created_at: newMsg.created_at,
+              read: newMsg.read || false,
+              salon_id: newMsg.salon_id
+            };
+            
             // Optimistically update the messages array with the new message
-            setMessages((prevMessages) => [...prevMessages, payload.new as SalonMessage]);
+            setMessages((prevMessages) => [...prevMessages, transformedMessage]);
           }
         }
       )
@@ -84,7 +109,7 @@ export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) =>
     setError(null);
 
     try {
-      // Use 'messages' table instead of 'salon_messages'
+      // Use 'messages' table and match the column names in the database
       const { data, error } = await supabase
         .from('messages')
         .insert([
@@ -101,9 +126,21 @@ export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) =>
 
       if (error) {
         setError(error.message);
-      } else {
+      } else if (data && data.length > 0) {
+        // Transform the returned message to match our SalonMessage interface
+        const transformedMessage: SalonMessage = {
+          id: data[0].id,
+          sender_id: data[0].sender_id,
+          sender_name: data[0].sender_name || user.id,
+          recipient_id: data[0].recipient_id,
+          content: data[0].message_body,
+          created_at: data[0].created_at,
+          read: data[0].read || false,
+          salon_id: data[0].salon_id
+        };
+        
         // Optimistically update the messages array with the sent message
-        setMessages((prevMessages) => [...prevMessages, data[0]]);
+        setMessages((prevMessages) => [...prevMessages, transformedMessage]);
         setNewMessage(''); // Clear the input field after successful send
       }
     } catch (err: any) {

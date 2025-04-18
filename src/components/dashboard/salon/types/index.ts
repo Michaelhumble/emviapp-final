@@ -1,3 +1,4 @@
+
 export interface SalonTeamMember {
   id: string;
   full_name: string;
@@ -38,6 +39,7 @@ export interface SalonBooking {
   created_at: string;
 }
 
+// Add the BookingStatsItem interface that was missing
 export interface BookingStatsItem {
   id: string;
   date: string;
@@ -45,6 +47,7 @@ export interface BookingStatsItem {
   status: string;
 }
 
+// Add the SalonMessage interface that was missing
 export interface SalonMessage {
   id: string;
   sender_id: string;
@@ -56,4 +59,5 @@ export interface SalonMessage {
   salon_id: string;
 }
 
+// Add the MessageSender type that was missing
 export type MessageSender = 'owner' | 'staff' | 'client' | 'system';

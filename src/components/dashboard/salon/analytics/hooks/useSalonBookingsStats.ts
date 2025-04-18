@@ -20,7 +20,7 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
   const formattedStartDate = format(startDate, 'yyyy-MM-dd');
   const formattedEndDate = format(new Date(), 'yyyy-MM-dd');
 
-  // Fixed the type instantiation issue by being more specific
+  // Fix the type instantiation issue by using a more specific type definition
   const { data: bookingStats = [], isLoading, error } = useQuery<BookingStatsItem[]>({
     queryKey: ['salon-booking-stats', salonId, period],
     queryFn: async () => {

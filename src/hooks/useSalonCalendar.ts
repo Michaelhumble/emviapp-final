@@ -14,8 +14,8 @@ export const useSalonCalendar = () => {
   const formattedStartDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Fixed the type instantiation issue using explicit typing
-  const appointmentsQuery = useQuery<any[]>({
+  // Fix the type instantiation issue by using an explicit type annotation
+  const appointmentsQuery = useQuery<SalonBooking[]>({
     queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
     queryFn: async () => {
       if (!salonId) return [];
