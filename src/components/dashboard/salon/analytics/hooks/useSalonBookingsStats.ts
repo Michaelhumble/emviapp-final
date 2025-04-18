@@ -30,22 +30,24 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
     queryFn: async (): Promise<BookingStatsItem[]> => {
       if (!salonId) return [];
 
-      // Use type assertion without nesting complex generics
-      const result = await supabase
+      // Fetch the data using a more direct approach to avoid deep type instantiation
+      const response = await supabase
         .from('appointments')
         .select('start_time, status')
         .eq('salon_id', salonId)
         .gte('start_time', formattedStartDate)
         .lte('start_time', formattedEndDate);
       
-      const { data, error } = result;
-
-      if (error) throw error;
-      if (!data) return [];
+      // Manually handle the response without relying on type inference
+      if (response.error) throw response.error;
+      if (!response.data) return [];
+      
+      // Cast the data to our known simple interface
+      const appointmentData = response.data as AppointmentData[];
       
       const statsMap = new Map<string, BookingStatsItem>();
       
-      (data as AppointmentData[]).forEach(booking => {
+      appointmentData.forEach(booking => {
         const dateStr = format(new Date(booking.start_time), 'yyyy-MM-dd');
         
         if (!statsMap.has(dateStr)) {
