@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from '@/integrations/supabase/client';
@@ -50,7 +51,8 @@ export const useSalonCalendar = () => {
   const formattedStartDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  const appointmentsQuery = useQuery({
+  // Fixed the recursive type error by explicitly typing the return value
+  const appointmentsQuery = useQuery<SalonBooking[], Error>({
     queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
     queryFn: async () => {
       if (!salonId) return [];
