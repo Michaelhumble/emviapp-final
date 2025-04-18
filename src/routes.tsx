@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Index from './pages/Index';
 import Welcome from './pages/Welcome';
@@ -57,6 +56,8 @@ import Privacy from './pages/Privacy';
 import Cookies from './pages/Cookies';
 
 import { AuthRedirect } from './components/auth/AuthRedirect';
+
+import PricingPage from './pages/pricing/PricingPage';
 
 const routes = [
   {
@@ -294,6 +295,10 @@ const routes = [
   {
     path: '/admin-dashboard',
     element: <AdminDashboard />,
+  },
+  {
+    path: '/pricing-page',
+    element: <PricingPage />,
   },
   {
     path: '*',
