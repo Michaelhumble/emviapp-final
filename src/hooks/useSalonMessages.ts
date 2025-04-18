@@ -41,8 +41,7 @@ export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) =>
           id,
           sender_id,
           message_body,
-          created_at,
-          sender:sender_id(id, full_name, avatar_url)
+          created_at
         `)
         .eq('salon_id', currentSalon.id)
         .order('created_at', { ascending: true });
@@ -50,13 +49,26 @@ export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) =>
       if (error) throw error;
 
       if (data) {
-        const transformedMessages: SalonMessage[] = data.map((msg: DbMessage) => ({
-          id: msg.id,
-          senderId: msg.sender_id,
-          senderName: msg.sender?.full_name || 'Unknown',
-          message: msg.message_body,
-          timestamp: msg.created_at
-        }));
+        // Get user details separately to avoid the join errors
+        const transformedMessages: SalonMessage[] = await Promise.all(
+          data.map(async (msg) => {
+            // Fetch sender info
+            const { data: userData } = await supabase
+              .from('users')
+              .select('full_name')
+              .eq('id', msg.sender_id)
+              .single();
+            
+            return {
+              id: msg.id,
+              senderId: msg.sender_id,
+              senderName: userData?.full_name || 'Unknown',
+              message: msg.message_body,
+              timestamp: msg.created_at
+            };
+          })
+        );
+        
         setMessages(transformedMessages);
       }
     } catch (e: any) {

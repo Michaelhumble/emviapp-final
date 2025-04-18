@@ -33,14 +33,14 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
       if (!salonId) return [];
 
       // Fetch the booking data from Supabase
+      // Use a simpler approach without .group() to avoid type errors
       const { data, error } = await supabase
         .from('bookings')
-        .select('date, status, count(*)')
+        .select('date, status')
         .eq('salon_id', salonId)
         .gte('date', formattedStartDate)
         .lte('date', formattedEndDate)
-        .order('date', { ascending: true })
-        .group('date, status');
+        .order('date', { ascending: true });
 
       if (error) throw error;
 
@@ -49,7 +49,7 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
       
       // Process data if it exists
       if (data && Array.isArray(data)) {
-        // Initialize the map with all dates in the range
+        // Create a map of dates with initialized stats
         for (const record of data) {
           const dateStr = record.date as string;
           
@@ -63,15 +63,14 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
           }
           
           const item = statsMap.get(dateStr)!;
-          const count = parseInt(record.count as string, 10);
           
           // Update the stats based on the status
-          item.totalBookings += count;
+          item.totalBookings += 1;
           
           if (record.status === 'completed') {
-            item.completed += count;
+            item.completed += 1;
           } else if (record.status === 'cancelled') {
-            item.canceled += count;
+            item.canceled += 1;
           }
         }
       }

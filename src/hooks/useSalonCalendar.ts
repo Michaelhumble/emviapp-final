@@ -1,9 +1,10 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTypedQuery } from './useTypedQuery';
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from 'date-fns';
+import { endOfWeek } from 'date-fns';
 
 // Define the SalonBooking interface to match the component expectations
 interface SalonBooking {
@@ -51,7 +52,7 @@ export const useSalonCalendar = () => {
   const formattedStartDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Use explicit typing for the query
+  // Use explicit typing for the query result
   const appointmentsQuery = useTypedQuery<SalonBooking[]>({
     queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
     queryFn: async () => {
@@ -69,12 +70,16 @@ export const useSalonCalendar = () => {
       if (error) throw error;
       
       // Map the appointments data to SalonBooking format
-      return (data || []).map((apt: AppointmentData) => {
+      if (!data) return [];
+      
+      const transformedData: SalonBooking[] = [];
+      
+      for (const apt of data) {
         // Safely access nested service properties
         const serviceName = apt.services?.title || 'Unknown Service';
         const servicePrice = apt.services?.price || 0;
         
-        return {
+        transformedData.push({
           id: apt.id,
           client_name: apt.customer_name || '',
           client_email: apt.customer_email,
@@ -88,8 +93,10 @@ export const useSalonCalendar = () => {
           assigned_staff_name: apt.assigned_staff_name || undefined,
           notes: apt.notes || '',
           created_at: apt.created_at || new Date().toISOString(),
-        };
-      });
+        });
+      }
+      
+      return transformedData;
     },
     enabled: !!salonId,
   });
