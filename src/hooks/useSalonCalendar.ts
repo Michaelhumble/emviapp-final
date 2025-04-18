@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useTypedQuery } from "@/hooks/useTypedQuery";
 import { supabase } from '@/integrations/supabase/client';
@@ -61,7 +62,8 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
   const formattedStartDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  const appointmentsQuery = useTypedQuery<AppointmentData[], Error>({
+  // Break the deep type inference chain by explicitly typing everything
+  const { data: appointmentsData = [], isLoading, error } = useTypedQuery<AppointmentData[], Error>({
     queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
     queryFn: async () => {
       if (!salonId) return [];
@@ -77,21 +79,23 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
       
       return data || [];
     },
-    enabled: !!salonId,
-    select: (data) => data.map(item => ({
-      id: item.id,
-      client_name: item.customer_name || '',
-      client_email: item.customer_email,
-      client_phone: item.customer_phone,
-      service_name: item.services?.title || 'Unknown Service',
-      service_price: item.services?.price || 0,
-      date: item.start_time ? new Date(item.start_time) : null,
-      time: item.start_time ? format(new Date(item.start_time), 'HH:mm') : '',
-      status: (item.status || 'pending') as SalonBooking['status'],
-      notes: item.notes || '',
-      created_at: item.created_at,
-    }))
+    enabled: !!salonId
   });
+
+  // Transform AppointmentData to SalonBooking outside of the query
+  const appointments: SalonBooking[] = appointmentsData.map(item => ({
+    id: item.id,
+    client_name: item.customer_name || '',
+    client_email: item.customer_email,
+    client_phone: item.customer_phone,
+    service_name: item.services?.title || 'Unknown Service',
+    service_price: item.services?.price || 0,
+    date: item.start_time ? new Date(item.start_time) : null,
+    time: item.start_time ? format(new Date(item.start_time), 'HH:mm') : '',
+    status: (item.status || 'pending') as SalonBooking['status'],
+    notes: item.notes || '',
+    created_at: item.created_at
+  }));
 
   const goToPreviousMonth = () => {
     setCurrentMonth(prevMonth => {
@@ -114,7 +118,6 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
   const calendarDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
   const getAppointmentsForDay = (day: Date): SalonBooking[] => {
-    const appointments = appointmentsQuery.data || [];
     return appointments.filter(appointment =>
       appointment.date && isSameDay(appointment.date, day)
     );
@@ -123,9 +126,9 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
   return {
     currentMonth,
     calendarDays,
-    appointments: appointmentsQuery.data || [],
-    isLoading: appointmentsQuery.isLoading,
-    error: appointmentsQuery.error,
+    appointments,
+    isLoading,
+    error,
     goToPreviousMonth,
     goToNextMonth,
     goToToday,
