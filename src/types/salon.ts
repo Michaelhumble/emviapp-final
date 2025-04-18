@@ -54,6 +54,12 @@ export interface SalonContextType {
   deleteSalon: (salonId: string) => Promise<boolean>;
 }
 
+// Define chart data interface before using it
+export interface ChartBookingData {
+  weekLabel: string;
+  count: number;
+}
+
 // Analytics Types
 export interface BookingsStats {
   total: number;
@@ -112,10 +118,4 @@ export interface SalonStats {
     percentage: number;
     incompleteFields: string[];
   };
-}
-
-// Interface for booking stats charting data
-export interface ChartBookingData {
-  weekLabel: string;
-  count: number;
 }

@@ -41,16 +41,19 @@ export function useSalonMessages() {
       
       // Transform data to match Message type
       const typedMessages: Message[] = (data || []).map(msg => {
-        // Create a default sender object if sender is null or invalid
+        // Define a default sender object
         const defaultSender = { full_name: 'Unknown User', avatar_url: undefined };
         
-        // Safely handle the sender object - ensure it's not null before accessing it
-        const senderObject = msg.sender && 
-                            typeof msg.sender === 'object' && 
-                            msg.sender !== null && 
-                            !('error' in msg.sender)
-          ? msg.sender
-          : defaultSender;
+        // Create a safe sender object
+        let senderObject = defaultSender;
+        
+        // Only try to use the msg.sender if it exists and is valid
+        if (msg.sender && 
+            typeof msg.sender === 'object' && 
+            msg.sender !== null && 
+            !('error' in msg.sender)) {
+          senderObject = msg.sender as typeof defaultSender;
+        }
         
         return {
           id: msg.id,

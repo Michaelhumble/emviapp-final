@@ -4,8 +4,8 @@ import { useSalon } from '@/context/salon';
 import { supabase } from '@/integrations/supabase/client';
 import { BookingsStats, ChartBookingData } from '@/types/salon';
 
-// Define a simpler BookingData type that doesn't reference itself
-interface BookingData {
+// Define a simple, standalone type for booking data from the database
+interface BookingDataRecord {
   status: string;
   created_at: string;
 }
@@ -50,7 +50,7 @@ export const useSalonBookingsStats = () => {
         
         if (bookingsData && bookingsData.length > 0) {
           // Count statuses manually
-          bookingsData.forEach((booking: BookingData) => {
+          bookingsData.forEach((booking: BookingDataRecord) => {
             const status = booking.status as string;
             
             // Increment total
@@ -83,7 +83,7 @@ export const useSalonBookingsStats = () => {
 };
 
 // Helper function to process weekly data
-const processWeeklyData = (data: BookingData[]): ChartBookingData[] => {
+const processWeeklyData = (data: BookingDataRecord[]): ChartBookingData[] => {
   // Group bookings by week
   const weeks: Record<string, number> = {};
   
@@ -101,7 +101,7 @@ const processWeeklyData = (data: BookingData[]): ChartBookingData[] => {
   }
   
   // Count bookings per week
-  data.forEach((booking: BookingData) => {
+  data.forEach((booking: BookingDataRecord) => {
     const bookingDate = new Date(booking.created_at);
     if (bookingDate >= twelveWeeksAgo) {
       // Find which week this belongs to
