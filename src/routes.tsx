@@ -37,22 +37,7 @@ import BookingPage from './pages/BookingPage';
 import MyBookingsPage from './pages/MyBookingsPage';
 import BoothDetail from './pages/booths/BoothDetail';
 import BoothsIndex from './pages/booths/BoothsIndex';
-
-// Import profile setup pages
-import ArtistSetup from './pages/profile/artist/setup';
-import SalonOwnerSetup from './pages/profile/salon/setup';
-import FreelancerSetup from './pages/profile/freelancer/setup';
-import CustomerSetup from './pages/profile/customer/setup';
-import OtherProfileSetup from './pages/profile/other/OtherProfileSetup';
-import RenterProfileSetup from './pages/profile/renter/RenterProfileSetup';
-import SupplierProfileSetup from './pages/profile/supplier/SupplierProfileSetup';
-import EarlyAccess from './pages/EarlyAccess';
-
-// Import legal and contact pages
-import Contact from './pages/Contact';
-import Terms from './pages/legal/Terms';
-import Privacy from './pages/legal/Privacy';
-import Cookies from './pages/legal/Cookies';
+import AdminDashboard from './pages/admin/AdminDashboard';
 
 import { AuthRedirect } from './components/auth/AuthRedirect';
 
