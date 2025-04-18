@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from 'date-fns';
-import { endOfWeek } from 'date-fns';
 
 // Define the SalonBooking interface to match the component expectations
 interface SalonBooking {
@@ -65,7 +64,7 @@ export const useSalonCalendar = () => {
 
       if (error) throw error;
       
-      return data?.map(apt => ({
+      return (data || []).map((apt: AppointmentData) => ({
         id: apt.id,
         client_name: apt.customer_name || '',
         client_email: apt.customer_email,
@@ -77,7 +76,7 @@ export const useSalonCalendar = () => {
         status: apt.status as SalonBooking['status'],
         notes: apt.notes || '',
         created_at: apt.created_at,
-      })) || [];
+      }));
     },
     enabled: !!salonId,
   });
@@ -102,7 +101,6 @@ export const useSalonCalendar = () => {
   const monthEnd = endOfMonth(currentMonth);
   const calendarDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
-  // Get appointments for a specific day
   const getAppointmentsForDay = (day: Date): SalonBooking[] => {
     return (appointmentsQuery.data || []).filter(appointment =>
       appointment.date && isSameDay(appointment.date, day)

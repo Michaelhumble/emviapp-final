@@ -7,6 +7,12 @@ import { BookingStatsItem } from "@/types/BookingStatsItem";
 
 type StatsPeriod = '7' | '30' | '90';
 
+// Define a type for the booking data returned from Supabase
+interface BookingData {
+  start_time: string;
+  status: string;
+}
+
 export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
   const { currentSalon } = useSalon();
   const salonId = currentSalon?.id;
@@ -26,7 +32,7 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
 
       // Fetch the booking data from Supabase using start_time
       const { data: bookings, error } = await supabase
-        .from('bookings')
+        .from('appointments')  // Changed from 'bookings' to 'appointments' based on database schema
         .select('start_time, status')
         .eq('salon_id', salonId)
         .gte('start_time', formattedStartDate)
@@ -38,7 +44,7 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
       const statsMap = new Map<string, BookingStatsItem>();
       
       if (bookings && Array.isArray(bookings)) {
-        for (const booking of bookings) {
+        for (const booking of bookings as BookingData[]) {
           const dateStr = format(new Date(booking.start_time), 'yyyy-MM-dd');
           
           if (!statsMap.has(dateStr)) {

@@ -1,13 +1,18 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/auth';
 import { useSalon } from '@/context/salon';
-import { SalonMessage } from '@/types/SalonMessage';
-import { MessageSender } from '@/types/MessageSender';
 
 interface UseSalonMessagesProps {
   recipientId?: string;
+}
+
+interface SalonMessage {
+  id: string;
+  senderId: string;
+  senderName: string;
+  message: string;
+  timestamp: string;
 }
 
 interface DbMessage {
@@ -15,12 +20,12 @@ interface DbMessage {
   sender_id: string;
   message_body: string;
   created_at: string;
-  sender?: {
-    id: string;
-    full_name?: string;
-    avatar_url?: string;
-  } | null;
 }
+
+type MessageSender = {
+  id: string;
+  // Other properties as needed
+};
 
 export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) => {
   const [messages, setMessages] = useState<SalonMessage[]>([]);
@@ -49,10 +54,8 @@ export const useSalonMessages = ({ recipientId }: UseSalonMessagesProps = {}) =>
       if (error) throw error;
 
       if (data) {
-        // Get user details separately to avoid the join errors
         const transformedMessages: SalonMessage[] = await Promise.all(
-          data.map(async (msg) => {
-            // Fetch sender info
+          data.map(async (msg: DbMessage) => {
             const { data: userData } = await supabase
               .from('users')
               .select('full_name')
