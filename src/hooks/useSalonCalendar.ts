@@ -3,163 +3,116 @@ import { useState } from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 
-// Define raw data interface that matches exactly what comes from the database
-interface RawAppointmentData {
+// Interfaces
+interface BookingSlot {
   id: string;
-  artist_id: string;
-  customer_id?: string;
-  customer_name: string | null;
-  customer_email: string | null;
-  customer_phone: string | null;
-  start_time: string;
-  end_time: string;
-  status: string;
-  updated_at: string;
-  notes: string | null;
-  created_at: string;
-  service_id?: string;
-  services?: {
-    title?: string;
-    price?: number;
-    duration_minutes?: number;
-  } | null;
-}
-
-// Refined interface for appointment data
-export interface AppointmentData {
-  id: string;
-  artist_id: string;
-  customer_id?: string;
-  customer_name: string | null;
-  customer_email: string | null;
-  customer_phone: string | null;
-  start_time: string;
-  end_time: string;
-  status: string;
-  updated_at: string;
-  notes: string | null;
-  created_at: string;
-  service_id?: string;
-  services?: {
-    title?: string;
-    price?: number;
-    duration_minutes?: number;
-  } | null;
-}
-
-export interface SalonBooking {
-  id: string;
-  client_name: string;
-  client_email: string | null;
-  client_phone: string | null;
-  service_name: string;
-  service_price: number;
-  date: Date | null;
-  time: string;
+  start: string;
+  end: string;
+  clientName: string;
+  clientEmail?: string | null;
+  clientPhone?: string | null;
+  serviceId: string;
+  serviceName: string;
+  servicePrice: number;
   status: 'pending' | 'accepted' | 'completed' | 'cancelled' | 'declined';
-  assigned_staff_id?: string;
-  assigned_staff_name?: string;
   notes?: string;
-  created_at: string;
 }
+
+export type SalonCalendar = Record<string, Record<string, BookingSlot[]>>;
 
 export interface SalonCalendarReturn {
+  calendar: SalonCalendar;
   currentMonth: Date;
   calendarDays: Date[];
-  appointments: SalonBooking[];
   isLoading: boolean;
   error: Error | null;
   goToPreviousMonth: () => void;
   goToNextMonth: () => void;
   goToToday: () => void;
-  getAppointmentsForDay: (day: Date) => SalonBooking[];
 }
 
 export const useSalonCalendar = (): SalonCalendarReturn => {
   const { currentSalon } = useSalon();
-  const salonId = currentSalon?.id;
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  const formattedStartDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
-  const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
+  const startDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
+  const endDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Define the query with explicit typing
-  const {
-    data: rawAppointmentsData,
-    isLoading,
-    error
-  } = useQuery({
-    queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
+  const { data: appointments = [], isLoading, error } = useQuery({
+    queryKey: ['salon-appointments', currentSalon?.id, startDate, endDate],
     queryFn: async () => {
-      if (!salonId) return [] as RawAppointmentData[];
+      if (!currentSalon?.id) return [];
 
       const { data, error } = await supabase
         .from('appointments')
-        .select('*, services:service_id(*)')
-        .eq('salon_id', salonId)
-        .gte('start_time', formattedStartDate)
-        .lte('end_time', formattedEndDate);
+        .select('*, services(*)')
+        .eq('salon_id', currentSalon.id)
+        .gte('start_time', startDate)
+        .lte('end_time', endDate);
 
       if (error) throw error;
-      
-      return (data || []) as RawAppointmentData[];
+      return data || [];
     },
-    enabled: !!salonId
+    enabled: !!currentSalon?.id
   });
+
+  // Build calendar data structure
+  const calendar: SalonCalendar = {};
   
-  // Transform data with explicit typing
-  const appointments: SalonBooking[] = (rawAppointmentsData || []).map((item: RawAppointmentData) => ({
-    id: item.id,
-    client_name: item.customer_name || '',
-    client_email: item.customer_email,
-    client_phone: item.customer_phone,
-    service_name: item.services?.title || 'Unknown Service',
-    service_price: item.services?.price || 0,
-    date: item.start_time ? new Date(item.start_time) : null,
-    time: item.start_time ? format(new Date(item.start_time), 'HH:mm') : '',
-    status: (item.status || 'pending') as SalonBooking['status'],
-    notes: item.notes || '',
-    created_at: item.created_at
-  }));
+  appointments.forEach(app => {
+    const date = format(new Date(app.start_time), 'yyyy-MM-dd');
+    const time = format(new Date(app.start_time), 'HH:mm');
+    
+    if (!calendar[date]) {
+      calendar[date] = {};
+    }
+    
+    if (!calendar[date][time]) {
+      calendar[date][time] = [];
+    }
+
+    calendar[date][time].push({
+      id: app.id,
+      start: app.start_time,
+      end: app.end_time,
+      clientName: app.customer_name || 'Unknown',
+      clientEmail: app.customer_email,
+      clientPhone: app.customer_phone,
+      serviceId: app.service_id || '',
+      serviceName: app.services?.title || 'Unknown Service',
+      servicePrice: app.services?.price || 0,
+      status: app.status as BookingSlot['status'],
+      notes: app.notes || undefined
+    });
+  });
+
+  const calendarDays = eachDayOfInterval({
+    start: startOfMonth(currentMonth),
+    end: endOfMonth(currentMonth)
+  });
 
   const goToPreviousMonth = () => {
-    setCurrentMonth(prevMonth => {
-      return new Date(prevMonth.getFullYear(), prevMonth.getMonth() - 1, 1);
-    });
+    setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
   };
 
   const goToNextMonth = () => {
-    setCurrentMonth(prevMonth => {
-      return new Date(prevMonth.getFullYear(), prevMonth.getMonth() + 1, 1);
-    });
+    setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
   };
 
   const goToToday = () => {
     setCurrentMonth(new Date());
   };
 
-  const monthStart = startOfMonth(currentMonth);
-  const monthEnd = endOfMonth(currentMonth);
-  const calendarDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
-
-  const getAppointmentsForDay = (day: Date): SalonBooking[] => {
-    return appointments.filter(appointment =>
-      appointment.date && isSameDay(appointment.date, day)
-    );
-  };
-
-  // Return with explicit typing
   return {
+    calendar,
     currentMonth,
     calendarDays,
-    appointments,
     isLoading,
     error: error as Error | null,
     goToPreviousMonth,
     goToNextMonth,
-    goToToday,
-    getAppointmentsForDay,
+    goToToday
   };
 };
