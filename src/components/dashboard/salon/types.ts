@@ -24,6 +24,8 @@ export interface SalonTeamMember {
   status: 'active' | 'inactive' | 'pending';
   joined_at: string;
   avatar_url?: string;
+  commission_rate?: number;
+  salon_id: string;
 }
 
 export interface SalonBooking {

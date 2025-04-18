@@ -68,15 +68,19 @@ const TeamMemberItem = ({ member, onRemove, onToggleStatus, onEdit }: TeamMember
           <div>
             <div className="font-medium">{member.full_name}</div>
             <div className="text-sm text-gray-500 flex items-center space-x-2">
-              <span>{member.role}</span>
-              {member.specialty && (
-                <>
-                  <span className="text-gray-300">•</span>
-                  <span>{member.specialty}</span>
-                </>
-              )}
+              <span>{member.email}</span>
             </div>
           </div>
+        </div>
+        
+        <div className="hidden md:flex items-center space-x-4 text-sm text-gray-600">
+          <div>{member.role}</div>
+          {member.commission_rate && (
+            <div>{member.commission_rate}% commission</div>
+          )}
+          {member.specialty && (
+            <div>{member.specialty}</div>
+          )}
         </div>
         
         <div className="flex items-center space-x-2">

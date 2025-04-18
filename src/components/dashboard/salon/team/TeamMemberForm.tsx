@@ -35,8 +35,10 @@ const TeamMemberForm = ({ open, onClose, onSubmit, initialData }: TeamMemberForm
     role: 'artist',
     specialty: '',
     status: 'active',
+    commission_rate: 50, // Default commission rate
   });
   const [loading, setLoading] = useState(false);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (initialData) {
@@ -46,6 +48,7 @@ const TeamMemberForm = ({ open, onClose, onSubmit, initialData }: TeamMemberForm
         role: initialData.role,
         specialty: initialData.specialty,
         status: initialData.status,
+        commission_rate: initialData.commission_rate || 50,
       });
     } else {
       setFormData({
@@ -54,15 +57,46 @@ const TeamMemberForm = ({ open, onClose, onSubmit, initialData }: TeamMemberForm
         role: 'artist',
         specialty: '',
         status: 'active',
+        commission_rate: 50,
       });
     }
+    setFormErrors({});
   }, [initialData, open]);
 
-  const handleChange = (field: keyof Partial<SalonTeamMember>, value: string) => {
+  const handleChange = (field: keyof Partial<SalonTeamMember>, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear error when field is edited
+    if (formErrors[field]) {
+      setFormErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {};
+    
+    if (!formData.full_name?.trim()) {
+      errors.full_name = 'Name is required';
+    }
+    
+    if (!formData.email?.trim()) {
+      errors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = 'Email is invalid';
+    }
+    
+    if (formData.commission_rate !== undefined) {
+      if (formData.commission_rate < 0 || formData.commission_rate > 100) {
+        errors.commission_rate = 'Commission must be between 0-100%';
+      }
+    }
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async () => {
+    if (!validateForm()) return;
+    
     try {
       setLoading(true);
       await onSubmit(formData);
@@ -88,28 +122,36 @@ const TeamMemberForm = ({ open, onClose, onSubmit, initialData }: TeamMemberForm
         
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="name">Full Name</Label>
+            <Label htmlFor="name">Full Name <span className="text-red-500">*</span></Label>
             <Input
               id="name"
-              value={formData.full_name}
+              value={formData.full_name || ''}
               onChange={(e) => handleChange('full_name', e.target.value)}
               placeholder="John Doe"
+              className={formErrors.full_name ? "border-red-500" : ""}
             />
+            {formErrors.full_name && (
+              <p className="text-red-500 text-xs">{formErrors.full_name}</p>
+            )}
           </div>
           
           <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">Email <span className="text-red-500">*</span></Label>
             <Input
               id="email"
               type="email"
-              value={formData.email}
+              value={formData.email || ''}
               onChange={(e) => handleChange('email', e.target.value)}
               placeholder="john@example.com"
+              className={formErrors.email ? "border-red-500" : ""}
             />
+            {formErrors.email && (
+              <p className="text-red-500 text-xs">{formErrors.email}</p>
+            )}
           </div>
           
           <div className="grid gap-2">
-            <Label htmlFor="role">Role</Label>
+            <Label htmlFor="role">Role <span className="text-red-500">*</span></Label>
             <Select
               value={formData.role}
               onValueChange={(value) => handleChange('role', value)}
@@ -127,10 +169,27 @@ const TeamMemberForm = ({ open, onClose, onSubmit, initialData }: TeamMemberForm
           </div>
           
           <div className="grid gap-2">
+            <Label htmlFor="commission">Commission Rate (%)</Label>
+            <Input
+              id="commission"
+              type="number"
+              min="0"
+              max="100"
+              value={formData.commission_rate || ''}
+              onChange={(e) => handleChange('commission_rate', parseFloat(e.target.value))}
+              placeholder="50"
+              className={formErrors.commission_rate ? "border-red-500" : ""}
+            />
+            {formErrors.commission_rate && (
+              <p className="text-red-500 text-xs">{formErrors.commission_rate}</p>
+            )}
+          </div>
+          
+          <div className="grid gap-2">
             <Label htmlFor="specialty">Specialty</Label>
             <Input
               id="specialty"
-              value={formData.specialty}
+              value={formData.specialty || ''}
               onChange={(e) => handleChange('specialty', e.target.value)}
               placeholder="e.g., Nail Art, Pedicure, Manicure"
             />
@@ -162,7 +221,7 @@ const TeamMemberForm = ({ open, onClose, onSubmit, initialData }: TeamMemberForm
           <Button variant="outline" onClick={onClose}>Cancel</Button>
           <Button 
             onClick={handleSubmit} 
-            disabled={loading || !formData.full_name || !formData.email}
+            disabled={loading}
           >
             {loading ? 'Saving...' : initialData ? 'Update' : 'Add Member'}
           </Button>
