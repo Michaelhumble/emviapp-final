@@ -55,14 +55,15 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
   const startDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const endDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  const { data: appointmentsData, isLoading, error } = useTypedQuery<AppointmentDataFromDB[]>({
+  // Using a more generic "unknown" type for the raw data, and properly casting afterward
+  const { data: appointmentsData, isLoading, error } = useTypedQuery<unknown[]>({
     queryKey: ['salon-appointments', currentSalon?.id, startDate, endDate],
     queryFn: async () => {
       if (!currentSalon?.id) return [];
 
       const { data, error } = await supabase
         .from('appointments')
-        .select('*')
+        .select('*, service:services(title, price)')
         .eq('salon_id', currentSalon.id)
         .gte('start_time', startDate)
         .lte('end_time', endDate);
@@ -76,8 +77,11 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
   // Build simple calendar structure
   const calendar: SalonCalendar = {};
   
-  if (appointmentsData) {
-    appointmentsData.forEach(appt => {
+  if (appointmentsData && Array.isArray(appointmentsData)) {
+    // Safely cast the data now that we've checked it's an array
+    const appointments = appointmentsData as AppointmentDataFromDB[];
+    
+    appointments.forEach(appt => {
       // Format date from start_time
       const date = format(new Date(appt.start_time), 'yyyy-MM-dd');
       // Format time from start_time
