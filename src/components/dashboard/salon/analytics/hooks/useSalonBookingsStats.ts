@@ -13,6 +13,12 @@ interface AppointmentData {
   status: string;
 }
 
+// Define a simplified interface for the query result to avoid deep type instantiation
+interface SupabaseQueryResult {
+  data: AppointmentData[] | null;
+  error: Error | null;
+}
+
 export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
   const { currentSalon } = useSalon();
   const salonId = currentSalon?.id;
@@ -30,24 +36,20 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
     queryFn: async (): Promise<BookingStatsItem[]> => {
       if (!salonId) return [];
 
-      // Fetch the data using a more direct approach to avoid deep type instantiation
-      const response = await supabase
+      // Use `any` type temporarily to break the deep type instantiation chain
+      const result = await supabase
         .from('appointments')
         .select('start_time, status')
         .eq('salon_id', salonId)
         .gte('start_time', formattedStartDate)
-        .lte('start_time', formattedEndDate);
+        .lte('start_time', formattedEndDate) as unknown as SupabaseQueryResult;
       
-      // Manually handle the response without relying on type inference
-      if (response.error) throw response.error;
-      if (!response.data) return [];
-      
-      // Cast the data to our known simple interface
-      const appointmentData = response.data as AppointmentData[];
+      if (result.error) throw result.error;
+      if (!result.data) return [];
       
       const statsMap = new Map<string, BookingStatsItem>();
       
-      appointmentData.forEach(booking => {
+      result.data.forEach(booking => {
         const dateStr = format(new Date(booking.start_time), 'yyyy-MM-dd');
         
         if (!statsMap.has(dateStr)) {
