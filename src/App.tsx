@@ -9,6 +9,7 @@ import { AuthProvider } from '@/context/auth';
 import { SalonProvider } from '@/context/salon';
 import { SubscriptionProvider } from '@/context/subscription';
 import routes from './routes';
+import PricingPage from './pages/pricing/PricingPage';
 
 function App() {
   const location = useLocation();
