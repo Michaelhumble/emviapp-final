@@ -5,7 +5,29 @@ import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from 'date-fns';
 
-// Refined interface to match actual database schema
+// Define raw data interface that matches exactly what comes from the database
+interface RawAppointmentData {
+  id: string;
+  artist_id: string;
+  customer_id?: string;
+  customer_name: string | null;
+  customer_email: string | null;
+  customer_phone: string | null;
+  start_time: string;
+  end_time: string;
+  status: string;
+  updated_at: string;
+  notes: string | null;
+  created_at: string;
+  service_id?: string;
+  services?: {
+    title?: string;
+    price?: number;
+    duration_minutes?: number;
+  } | null;
+}
+
+// Refined interface for appointment data
 export interface AppointmentData {
   id: string;
   artist_id: string;
@@ -20,9 +42,6 @@ export interface AppointmentData {
   notes: string | null;
   created_at: string;
   service_id?: string;
-  // Make assigned fields optional since they aren't in the database results
-  assigned_staff_id?: string | null;
-  assigned_staff_name?: string | null;
   services?: {
     title?: string;
     price?: number;
@@ -66,7 +85,7 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
   const formattedStartDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const formattedEndDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  // Define the query without complex type inference
+  // Define the query with explicit typing
   const {
     data: rawAppointmentsData,
     isLoading,
@@ -74,7 +93,7 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
   } = useQuery({
     queryKey: ['salon-appointments', salonId, formattedStartDate, formattedEndDate],
     queryFn: async () => {
-      if (!salonId) return [];
+      if (!salonId) return [] as RawAppointmentData[];
 
       const { data, error } = await supabase
         .from('appointments')
@@ -85,13 +104,13 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
 
       if (error) throw error;
       
-      return data || [];
+      return (data || []) as RawAppointmentData[];
     },
     enabled: !!salonId
   });
   
-  // Transform data with explicit typing after fetching
-  const appointments: SalonBooking[] = (rawAppointmentsData || []).map(item => ({
+  // Transform data with explicit typing
+  const appointments: SalonBooking[] = (rawAppointmentsData || []).map((item: RawAppointmentData) => ({
     id: item.id,
     client_name: item.customer_name || '',
     client_email: item.customer_email,
@@ -131,7 +150,7 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
     );
   };
 
-  // Return explicitly typed result
+  // Return with explicit typing
   return {
     currentMonth,
     calendarDays,
