@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Index from './pages/Index';
 import Welcome from './pages/Welcome';
@@ -38,6 +39,22 @@ import MyBookingsPage from './pages/MyBookingsPage';
 import BoothDetail from './pages/booths/BoothDetail';
 import BoothsIndex from './pages/booths/BoothsIndex';
 import AdminDashboard from './pages/admin/AdminDashboard';
+
+// Import the setup pages
+import ArtistProfileSetup from './pages/profile/artist/setup';
+import SalonProfileSetup from './pages/profile/salon/setup';
+import FreelancerSetup from './pages/profile/freelancer/setup';
+import CustomerSetup from './pages/profile/customer/setup';
+import OtherRoleSetup from './pages/profile/other/setup';
+import BoothRenterSetup from './pages/profile/renter/setup';
+import SupplierSetup from './pages/profile/supplier/setup';
+
+// Import static pages
+import EarlyAccess from './pages/EarlyAccess';
+import Contact from './pages/Contact';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
+import Cookies from './pages/Cookies';
 
 import { AuthRedirect } from './components/auth/AuthRedirect';
 
