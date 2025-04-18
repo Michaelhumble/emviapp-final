@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
@@ -25,7 +26,7 @@ import SalonTeamManager from "@/components/dashboard/salon/team/SalonTeamManager
 import SalonManagersSection from "@/components/dashboard/salon/team/SalonManagersSection";
 import SalonServiceManager from "@/components/dashboard/salon/SalonServiceManager";
 import SalonBoostCreditPanel from "@/components/dashboard/salon/SalonBoostCreditPanel";
-import SalonProfileCompletionCard from "@/components/salon/SalonProfileCompletionCard";
+import { SalonProfileCompletionCard } from "@/components/salon/SalonProfileCompletionCard";
 import SalonBookingCalendar from "@/components/dashboard/salon/SalonBookingCalendar";
 import SalonClientManagement from "@/components/dashboard/salon/SalonClientManagement";
 import SalonAnalytics from "@/components/dashboard/salon/SalonAnalytics";

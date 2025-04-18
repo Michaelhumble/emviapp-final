@@ -4,7 +4,7 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { ProfileCompletionCard } from "./ProfileCompletionCard";
+import { ProfileCompletionCard } from "../profile/ProfileCompletionCard";
 
 interface ProgressTrackerProps {
   completionPercentage: number;
