@@ -1,18 +1,29 @@
 
 import { useState } from 'react';
-import { useQuery } from "@tanstack/react-query";
+import { useTypedQuery } from "@/hooks/useTypedQuery";
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 
-// Raw data interface from Supabase
-export interface AppointmentData {
+// This interface matches the actual database schema for appointments
+interface AppointmentDataFromDB {
   id: string;
-  date: string;
-  time: string;
-  customer_name: string;
-  service: string;
-  status: "booked" | "cancelled" | "completed";
+  start_time: string;
+  end_time: string;
+  customer_name: string | null;
+  customer_email: string | null;
+  customer_phone: string | null;
+  service_id: string | null;
+  status: string;
+  notes: string | null;
+  artist_id: string;
+  salon_id: string;
+  created_at: string;
+  updated_at: string;
+  service?: {
+    title: string;
+    price: number;
+  } | null;
 }
 
 // Processed booking slot interface
@@ -44,7 +55,7 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
   const startDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
   const endDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-  const { data: appointmentsData = [], isLoading, error } = useQuery<AppointmentData[]>({
+  const { data: appointmentsData, isLoading, error } = useTypedQuery<AppointmentDataFromDB[]>({
     queryKey: ['salon-appointments', currentSalon?.id, startDate, endDate],
     queryFn: async () => {
       if (!currentSalon?.id) return [];
@@ -53,8 +64,8 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
         .from('appointments')
         .select('*')
         .eq('salon_id', currentSalon.id)
-        .gte('date', startDate)
-        .lte('date', endDate);
+        .gte('start_time', startDate)
+        .lte('end_time', endDate);
 
       if (error) throw error;
       return data || [];
@@ -65,22 +76,30 @@ export const useSalonCalendar = (): SalonCalendarReturn => {
   // Build simple calendar structure
   const calendar: SalonCalendar = {};
   
-  appointmentsData.forEach(appt => {
-    if (!calendar[appt.date]) {
-      calendar[appt.date] = {};
-    }
-    
-    if (!calendar[appt.date][appt.time]) {
-      calendar[appt.date][appt.time] = [];
-    }
+  if (appointmentsData) {
+    appointmentsData.forEach(appt => {
+      // Format date from start_time
+      const date = format(new Date(appt.start_time), 'yyyy-MM-dd');
+      // Format time from start_time
+      const time = format(new Date(appt.start_time), 'HH:mm');
+      
+      if (!calendar[date]) {
+        calendar[date] = {};
+      }
+      
+      if (!calendar[date][time]) {
+        calendar[date][time] = [];
+      }
 
-    calendar[appt.date][appt.time].push({
-      time: appt.time,
-      customer: appt.customer_name,
-      service: appt.service,
-      status: appt.status
+      calendar[date][time].push({
+        time: time,
+        customer: appt.customer_name || 'Unknown',
+        service: appt.service?.title || 'Unknown Service',
+        status: (appt.status === 'completed' || appt.status === 'cancelled' ? 
+                appt.status : 'booked') as "booked" | "cancelled" | "completed"
+      });
     });
-  });
+  }
 
   const calendarDays = eachDayOfInterval({
     start: startOfMonth(currentMonth),
