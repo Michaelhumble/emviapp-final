@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
@@ -73,7 +72,17 @@ export function useSalonMessages() {
         };
       });
       
-      setMessages(typedMessages);
+      // Add safe null checks for sender
+      const formattedMessages = typedMessages.map(msg => ({
+        ...msg,
+        sender: msg.sender || {
+          id: '',
+          name: 'Unknown',
+          avatar: ''
+        }
+      }));
+      
+      setMessages(formattedMessages);
     } catch (error) {
       console.error('Error fetching messages:', error);
       toast({

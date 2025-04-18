@@ -1,121 +1,60 @@
 
-import { useState, useEffect } from 'react';
-import { useSalon } from '@/context/salon';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { BookingsStats, ChartBookingData } from '@/types/salon';
+import { BookingsStats } from '@/types/salon';
+import { startOfWeek, endOfWeek, format, subWeeks } from 'date-fns';
 
-// Define a plain type with no self-reference to avoid excessive type instantiation
-interface DatabaseBookingRecord {
-  status: string;
-  created_at: string;
-}
-
-export const useSalonBookingsStats = () => {
-  const { currentSalon } = useSalon();
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  const [stats, setStats] = useState<BookingsStats>({
-    total: 0,
-    pending: 0,
-    accepted: 0,
-    completed: 0,
-    cancelled: 0,
-    chartData: []
-  });
-
-  useEffect(() => {
-    const fetchBookingStats = async () => {
-      if (!currentSalon) return;
+export const useSalonBookingsStats = (salonId?: string) => {
+  const {
+    data: stats,
+    isLoading,
+    error
+  } = useQuery({
+    queryKey: ['salon-booking-stats', salonId],
+    queryFn: async (): Promise<BookingsStats> => {
+      if (!salonId) throw new Error('No salon ID provided');
       
-      try {
-        setIsLoading(true);
+      // Get booking counts by status
+      const { data: statusCounts, error: statusError } = await supabase
+        .from('bookings')
+        .select('status, count')
+        .eq('salon_id', salonId)
+        .count();
         
-        // Get bookings data
-        const { data: bookingsData, error: bookingsError } = await supabase
+      if (statusError) throw statusError;
+      
+      // Get weekly data for the chart (last 12 weeks)
+      const chartData = [];
+      let currentDate = new Date();
+      
+      for (let i = 0; i < 12; i++) {
+        const weekStart = startOfWeek(subWeeks(currentDate, i));
+        const weekEnd = endOfWeek(weekStart);
+        
+        const { count } = await supabase
           .from('bookings')
-          .select('status, created_at')
-          .eq('salon_id', currentSalon.id);
+          .select('*', { count: 'exact' })
+          .eq('salon_id', salonId)
+          .gte('created_at', weekStart.toISOString())
+          .lt('created_at', weekEnd.toISOString());
           
-        if (bookingsError) throw bookingsError;
-        
-        // Define stats object with initial values
-        const counts: BookingsStats = {
-          total: 0,
-          pending: 0,
-          accepted: 0,
-          completed: 0,
-          cancelled: 0,
-          chartData: []
-        };
-        
-        if (bookingsData && bookingsData.length > 0) {
-          // Count statuses manually
-          (bookingsData as DatabaseBookingRecord[]).forEach(booking => {
-            const status = booking.status as string;
-            
-            // Increment total
-            counts.total += 1;
-            
-            // Increment specific status
-            if (status === 'pending') counts.pending += 1;
-            else if (status === 'accepted') counts.accepted += 1;
-            else if (status === 'completed') counts.completed += 1;
-            else if (status === 'cancelled') counts.cancelled += 1;
-          });
-          
-          // Process weekly data for chart
-          counts.chartData = processWeeklyData(bookingsData as DatabaseBookingRecord[]);
-        }
-        
-        setStats(counts);
-      } catch (err) {
-        console.error('Error fetching salon booking stats:', err);
-        setError(err instanceof Error ? err : new Error(String(err)));
-      } finally {
-        setIsLoading(false);
+        chartData.unshift({
+          weekLabel: format(weekStart, 'MMM d'),
+          count: count || 0
+        });
       }
-    };
-    
-    fetchBookingStats();
-  }, [currentSalon]);
+      
+      return {
+        total: statusCounts?.reduce((sum, item) => sum + (item.count || 0), 0) || 0,
+        pending: statusCounts?.find(s => s.status === 'pending')?.count || 0,
+        accepted: statusCounts?.find(s => s.status === 'accepted')?.count || 0,
+        completed: statusCounts?.find(s => s.status === 'completed')?.count || 0,
+        cancelled: statusCounts?.find(s => s.status === 'cancelled')?.count || 0,
+        chartData
+      };
+    },
+    enabled: !!salonId
+  });
   
   return { stats, isLoading, error };
-};
-
-// Helper function to process weekly data
-const processWeeklyData = (data: DatabaseBookingRecord[]): ChartBookingData[] => {
-  // Group bookings by week
-  const weeks: Record<string, number> = {};
-  
-  // Get bookings from the last 12 weeks
-  const now = new Date();
-  const twelveWeeksAgo = new Date();
-  twelveWeeksAgo.setDate(now.getDate() - 12 * 7);
-  
-  // Initialize the last 12 weeks with 0 counts
-  for (let i = 0; i < 12; i++) {
-    const weekStart = new Date(now);
-    weekStart.setDate(now.getDate() - (i * 7));
-    const weekLabel = `Week ${12-i}`;
-    weeks[weekLabel] = 0;
-  }
-  
-  // Count bookings per week
-  data.forEach(booking => {
-    const bookingDate = new Date(booking.created_at);
-    if (bookingDate >= twelveWeeksAgo) {
-      // Find which week this belongs to
-      const weeksAgo = Math.floor((now.getTime() - bookingDate.getTime()) / (7 * 24 * 60 * 60 * 1000));
-      const weekLabel = `Week ${12-weeksAgo}`;
-      if (weeks[weekLabel] !== undefined) {
-        weeks[weekLabel]++;
-      }
-    }
-  });
-  
-  // Convert to array format for the chart
-  return Object.entries(weeks).map(([weekLabel, count]) => ({
-    weekLabel,
-    count
-  })).reverse();
 };

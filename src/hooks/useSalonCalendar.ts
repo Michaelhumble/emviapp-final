@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
@@ -38,7 +37,6 @@ export interface Service {
   description?: string;
 }
 
-// Define interfaces for database responses to handle errors correctly
 interface SalonServiceRecord {
   id: string;
   name: string;
@@ -79,9 +77,8 @@ export function useSalonCalendar(initialDate = new Date()) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Initialize week dates when selected date changes
   useEffect(() => {
-    const startDate = startOfWeek(selectedDate, { weekStartsOn: 1 }); // Monday as start of week
+    const startDate = startOfWeek(selectedDate, { weekStartsOn: 1 });
     const endDate = endOfWeek(selectedDate, { weekStartsOn: 1 });
     
     const dates: Date[] = [];
@@ -95,7 +92,6 @@ export function useSalonCalendar(initialDate = new Date()) {
     setWeekDates(dates);
   }, [selectedDate]);
 
-  // Fetch team members (staff)
   useEffect(() => {
     const fetchStaff = async () => {
       if (!currentSalon?.id) return;
@@ -126,7 +122,6 @@ export function useSalonCalendar(initialDate = new Date()) {
     fetchStaff();
   }, [currentSalon?.id]);
 
-  // Fetch services
   useEffect(() => {
     const fetchServices = async () => {
       if (!currentSalon?.id) return;
@@ -157,7 +152,6 @@ export function useSalonCalendar(initialDate = new Date()) {
     fetchServices();
   }, [currentSalon?.id]);
 
-  // Fetch appointments
   const fetchAppointments = useCallback(async () => {
     if (!currentSalon?.id || weekDates.length === 0) return;
     
@@ -180,38 +174,38 @@ export function useSalonCalendar(initialDate = new Date()) {
           
       if (error) throw error;
       
-      // Transform data to match CalendarAppointment type
-      const formattedAppointments: CalendarAppointment[] = [];
-      
-      if (data && data.length > 0) {
-        data.forEach((apt: AppointmentRecord) => {
-          // Define default values
-          const defaultService = { name: 'Unknown Service', price: 0, duration_min: 60 };
-          const defaultStaff = { id: apt.artist_id, full_name: 'Unassigned', avatar_url: undefined };
-          
-          // Safely handle service and staff data
-          const serviceData = apt.services || defaultService;
-          const staffData = apt.assigned_staff || defaultStaff;
-          
-          formattedAppointments.push({
-            id: apt.id,
-            clientName: apt.customer_name || 'Client',
-            clientEmail: apt.customer_email,
-            clientPhone: apt.customer_phone,
-            serviceName: serviceData.name,
-            servicePrice: serviceData.price,
-            serviceDuration: serviceData.duration_min,
-            startTime: new Date(apt.start_time),
-            endTime: new Date(apt.end_time),
-            status: (apt.status as 'pending' | 'accepted' | 'completed' | 'cancelled'),
-            notes: apt.notes,
-            staffId: staffData.id,
-            staffName: staffData.full_name,
-            staffAvatar: staffData.avatar_url,
-            createdAt: apt.created_at
-          });
-        });
-      }
+      const formattedAppointments: CalendarAppointment[] = data?.map((apt: AppointmentRecord) => {
+        const serviceData = apt.services || {
+          id: '',
+          name: 'Unknown Service',
+          price: 0,
+          duration_min: 60
+        };
+        
+        const staffData = apt.assigned_staff || {
+          id: apt.artist_id,
+          full_name: 'Unassigned',
+          avatar_url: undefined
+        };
+        
+        return {
+          id: apt.id,
+          clientName: apt.customer_name || 'Client',
+          clientEmail: apt.customer_email,
+          clientPhone: apt.customer_phone,
+          serviceName: serviceData.name,
+          servicePrice: serviceData.price,
+          serviceDuration: serviceData.duration_min,
+          startTime: new Date(apt.start_time),
+          endTime: new Date(apt.end_time),
+          status: apt.status as 'pending' | 'accepted' | 'completed' | 'cancelled',
+          notes: apt.notes,
+          staffId: staffData.id,
+          staffName: staffData.full_name,
+          staffAvatar: staffData.avatar_url,
+          createdAt: apt.created_at
+        };
+      }) || [];
       
       setAppointments(formattedAppointments);
       setError(null);
@@ -223,19 +217,17 @@ export function useSalonCalendar(initialDate = new Date()) {
     }
   }, [currentSalon?.id, weekDates]);
 
-  // Create or update appointment
   const saveAppointment = async (appointment: Omit<CalendarAppointment, 'id' | 'createdAt'> & { id?: string }) => {
     if (!currentSalon?.id) return false;
     
     try {
-      // Format the data for Supabase
       const appointmentData = {
         salon_id: currentSalon.id,
         customer_name: appointment.clientName,
         customer_email: appointment.clientEmail,
         customer_phone: appointment.clientPhone,
         artist_id: appointment.staffId,
-        service_id: appointment.serviceName, // This should be the service ID, not name
+        service_id: appointment.serviceName,
         start_time: appointment.startTime.toISOString(),
         end_time: appointment.endTime.toISOString(),
         status: appointment.status,
@@ -243,7 +235,6 @@ export function useSalonCalendar(initialDate = new Date()) {
       };
       
       if (appointment.id) {
-        // Update existing appointment
         const { error } = await supabase
           .from('appointments')
           .update(appointmentData)
@@ -253,7 +244,6 @@ export function useSalonCalendar(initialDate = new Date()) {
         
         toast.success("Appointment updated successfully");
       } else {
-        // Create new appointment
         const { error } = await supabase
           .from('appointments')
           .insert(appointmentData);
@@ -272,7 +262,6 @@ export function useSalonCalendar(initialDate = new Date()) {
     }
   };
 
-  // Update appointment status
   const updateAppointmentStatus = async (appointmentId: string, status: CalendarAppointment['status']) => {
     if (!currentSalon?.id) return false;
     
@@ -285,7 +274,6 @@ export function useSalonCalendar(initialDate = new Date()) {
         
       if (error) throw error;
       
-      // Update local state
       setAppointments(prev => 
         prev.map(apt => 
           apt.id === appointmentId ? { ...apt, status } : apt
@@ -301,7 +289,6 @@ export function useSalonCalendar(initialDate = new Date()) {
     }
   };
 
-  // Delete appointment
   const deleteAppointment = async (appointmentId: string) => {
     if (!currentSalon?.id) return false;
     
@@ -314,7 +301,6 @@ export function useSalonCalendar(initialDate = new Date()) {
         
       if (error) throw error;
       
-      // Update local state
       setAppointments(prev => prev.filter(apt => apt.id !== appointmentId));
       
       toast.success("Appointment deleted successfully");
@@ -326,12 +312,10 @@ export function useSalonCalendar(initialDate = new Date()) {
     }
   };
 
-  // Get appointments for a specific day
   const getAppointmentsForDay = (day: Date) => {
     return appointments.filter(apt => isSameDay(apt.startTime, day));
   };
 
-  // Navigation functions
   const goToPreviousWeek = () => {
     setSelectedDate(prev => addDays(prev, -7));
   };
@@ -344,7 +328,6 @@ export function useSalonCalendar(initialDate = new Date()) {
     setSelectedDate(new Date());
   };
 
-  // Refresh data
   useEffect(() => {
     if (currentSalon?.id && weekDates.length > 0) {
       fetchAppointments();
