@@ -1,3 +1,3 @@
 
-export { useSalon } from './SalonProvider';
-export { SalonProvider } from './SalonProvider';
+export { SalonProvider, useSalon } from './SalonProvider';
+export type { Salon } from './types';

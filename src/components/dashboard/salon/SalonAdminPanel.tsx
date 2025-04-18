@@ -1,6 +1,6 @@
+
 import { useState } from "react";
-import { useSalon } from "@/context/salon";
-import { Salon } from "@/types/salon";
+import { useSalon, Salon } from "@/context/salon";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Store, Edit, Trash2, ExternalLink } from "lucide-react";
@@ -16,6 +16,7 @@ const SalonAdminPanel = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedSalon, setSelectedSalon] = useState<Salon | null>(null);
   
+  // Form state
   const [formData, setFormData] = useState({
     salon_name: "",
     location: "",
@@ -161,6 +162,7 @@ const SalonAdminPanel = () => {
         </div>
       )}
       
+      {/* Create Salon Modal */}
       <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -242,6 +244,7 @@ const SalonAdminPanel = () => {
         </DialogContent>
       </Dialog>
       
+      {/* Edit Salon Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>

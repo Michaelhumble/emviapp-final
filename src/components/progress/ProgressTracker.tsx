@@ -1,63 +1,193 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { useAuth } from "@/context/auth";
+import { useTranslation } from "@/hooks/useTranslation";
+import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import CreditStatusCard from "./CreditStatusCard";
+import ReferralProgressCard from "./ReferralProgressCard";
+import BoostVisibilityCard from "./BoostVisibilityCard";
+import ProfileCompletionCard from "./ProfileCompletionCard";
+import { useProfileBoost } from "@/components/dashboard/artist/credits/useProfileBoost";
+import { toTranslatableText } from "./TranslationHelper";
 
-interface ProgressTrackerProps {
-  completionPercentage: number;
-  incompleteFields: string[];
-  title?: string;
-  ctaText?: string;
-  ctaLink?: string;
-}
+const ProgressTracker = () => {
+  const { user, userProfile, userRole } = useAuth();
+  const { t } = useTranslation();
+  const [credits, setCredits] = useState<number>(0);
+  const [referralStats, setReferralStats] = useState<any>({
+    totalReferrals: 0,
+    pendingReferrals: 0,
+    completedReferrals: 0,
+    targetMilestone: 5
+  });
+  const [loading, setLoading] = useState(true);
+  const { boostStatus } = useProfileBoost();
 
-export const ProgressTracker = ({
-  completionPercentage,
-  incompleteFields,
-  title = "Profile Completion",
-  ctaText = "Complete Profile",
-  ctaLink = "/profile/edit"
-}: ProgressTrackerProps) => {
-  const isComplete = completionPercentage >= 100;
+  // Calculate profile completion percentage
+  const calculateProfileCompletion = () => {
+    if (!userProfile) return 0;
+    
+    let totalFields = 0;
+    let completedFields = 0;
+    
+    // Common fields for all users
+    const commonFields = [
+      'full_name', 
+      'email', 
+      'avatar_url', 
+      'bio', 
+      'location'
+    ];
+    
+    totalFields += commonFields.length;
+    commonFields.forEach(field => {
+      if (userProfile[field as keyof typeof userProfile]) completedFields++;
+    });
+    
+    // Role-specific fields
+    if (userRole === 'artist' || userRole === 'nail technician/artist') {
+      const artistFields = ['portfolio_urls', 'specialty', 'booking_url', 'website', 'instagram'];
+      totalFields += artistFields.length;
+      artistFields.forEach(field => {
+        const value = userProfile[field as keyof typeof userProfile];
+        if (Array.isArray(value) ? value.length > 0 : !!value) completedFields++;
+      });
+    } else if (userRole === 'salon' || userRole === 'owner') {
+      const salonFields = ['salon_name', 'website', 'instagram', 'phone'];
+      totalFields += salonFields.length;
+      salonFields.forEach(field => {
+        if (userProfile[field as keyof typeof userProfile]) completedFields++;
+      });
+    }
+    
+    return Math.round((completedFields / totalFields) * 100);
+  };
   
+  // Fetch user data
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user?.id) return;
+      
+      setLoading(true);
+      try {
+        // Simulate fetching credits
+        setCredits(userProfile?.credits || 0);
+        
+        // Simulate fetching referral stats
+        setReferralStats({
+          totalReferrals: userProfile?.referral_count || 0,
+          completedReferrals: userProfile?.referral_count || 0,
+          pendingReferrals: 0,
+          targetMilestone: 5
+        });
+        
+      } catch (error) {
+        console.error("Error fetching user progress data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchUserData();
+  }, [user?.id, userProfile]);
+  
+  const profileCompletionPercentage = calculateProfileCompletion();
+  
+  // Container animation
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+  
+  // Card animation
+  const item = {
+    hidden: { y: 20, opacity: 0 },
+    show: { y: 0, opacity: 1 }
+  };
+  
+  // Generate tip messages based on user data
+  const getTipMessage = () => {
+    if (!userProfile) return null;
+    
+    if (profileCompletionPercentage < 80) {
+      return {
+        icon: '🔍',
+        message: t(toTranslatableText('Complete your profile to show up in search results'))
+      };
+    }
+    
+    if (referralStats && referralStats.total < 3) {
+      return {
+        icon: '💎',
+        message: t(toTranslatableText('Invite one more friend to unlock 50 bonus credits'))
+      };
+    }
+    
+    if (!boostStatus.isActive && userRole === 'artist') {
+      return {
+        icon: '🔥',
+        message: t(toTranslatableText('Boost now – 8 salons nearby are hiring'))
+      };
+    }
+    
+    return null;
+  };
+  
+  const tipMessage = getTipMessage();
+
   return (
-    <Card className="border-gray-100">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-medium">{title}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span>Profile Completion</span>
-            <span className="font-medium">{completionPercentage}%</span>
-          </div>
-          <Progress value={completionPercentage} className="h-2" />
-        </div>
+    <div className="w-full mb-8">
+      <h2 className="text-2xl font-semibold mb-4">
+        {t(toTranslatableText('Your Progress Tracker'))}
+      </h2>
+      
+      {tipMessage && (
+        <motion.div 
+          className="bg-gradient-to-r from-amber-50 to-yellow-50 p-3 rounded-lg mb-4 border border-amber-100 shadow-sm"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <p className="text-sm flex items-center text-amber-800">
+            <span className="mr-2 text-lg">{tipMessage.icon}</span>
+            {tipMessage.message}
+          </p>
+        </motion.div>
+      )}
+      
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+        variants={container}
+        initial="hidden"
+        animate="show"
+      >
+        {/* Credit Status Card */}
+        <motion.div variants={item}>
+          <CreditStatusCard credits={credits} />
+        </motion.div>
         
-        {!isComplete && incompleteFields.length > 0 && (
-          <div className="space-y-2">
-            <p className="text-sm text-gray-500">Missing information:</p>
-            <ul className="text-sm text-gray-600 space-y-1 pl-5 list-disc">
-              {incompleteFields.map((field, i) => (
-                <li key={i}>{field}</li>
-              ))}
-            </ul>
-            <Button asChild variant="link" className="px-0 h-auto" size="sm">
-              <Link to={ctaLink} className="flex items-center text-purple-600">
-                {ctaText} <ArrowRight className="ml-1 h-3 w-3" />
-              </Link>
-            </Button>
-          </div>
-        )}
+        {/* Referral Progress Card */}
+        <motion.div variants={item}>
+          <ReferralProgressCard referralStats={referralStats} />
+        </motion.div>
         
-        {isComplete && (
-          <div className="text-center py-2">
-            <p className="text-green-600 font-medium">Your profile is complete!</p>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+        {/* Boost & Visibility Card */}
+        <motion.div variants={item}>
+          <BoostVisibilityCard boostStatus={boostStatus} credits={credits} />
+        </motion.div>
+        
+        {/* Profile Completion Card */}
+        <motion.div variants={item}>
+          <ProfileCompletionCard percentage={profileCompletionPercentage} userProfile={userProfile} />
+        </motion.div>
+      </motion.div>
+    </div>
   );
 };
+
+export default ProgressTracker;

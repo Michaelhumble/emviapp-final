@@ -35,8 +35,6 @@ export const getFeaturedSalons = (count: number = 3): Salon[] => {
   // Convert to Salon type
   const featuredSalons: Salon[] = notForSale.slice(0, count).map((job, index) => ({
     id: job.id,
-    salon_name: job.company || `Premium Salon ${index + 1}`,
-    created_at: job.created_at || new Date().toISOString(),
     name: job.company || `Premium Salon ${index + 1}`,
     image: job.image || 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60',
     logo: job.image || `https://via.placeholder.com/64x64?text=${job.company?.charAt(0) || 'S'}`,
@@ -54,6 +52,8 @@ export const getFeaturedSalons = (count: number = 3): Salon[] => {
     bio: job.description || 'Premier beauty salon offering exceptional services.',
     rating: 4.5 + (Math.random() * 0.5),
     reviewCount: Math.floor(Math.random() * 50) + 10,
+    priceRange: '$$ - $$$',
+    established: 2015 - Math.floor(Math.random() * 10),
     services: job.salon_features?.slice(0, 5) || ['Premium Services'],
     amenities: ['Free WiFi', 'Complimentary Drinks', 'Comfortable Seating'],
     socialMedia: {

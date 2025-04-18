@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSalon } from "@/context/salon";
@@ -42,6 +43,9 @@ export const useSalonBookings = () => {
       setLoading(true);
       setError(null);
 
+      // This is a simplified query. In a real implementation, we'd need to:
+      // 1. Get all artists associated with this salon
+      // 2. Fetch all bookings for these artists
       const { data: staffData, error: staffError } = await supabase
         .from('salon_staff')
         .select('id')
@@ -57,6 +61,7 @@ export const useSalonBookings = () => {
       
       const staffIds = staffData.map(staff => staff.id);
       
+      // Now fetch bookings for these staff members
       const { data, error } = await supabase
         .from('bookings')
         .select(`
@@ -70,34 +75,30 @@ export const useSalonBookings = () => {
 
       if (error) throw error;
 
+      // Transform the data to match our SalonBooking type
       const formattedBookings = (data || []).map(booking => {
-        const senderData = booking.sender as { full_name?: string; email?: string; phone?: string } | null;
-        const serviceData = booking.service as { title?: string; price?: number; duration_minutes?: number } | null;
-        const recipientData = booking.recipient as { full_name?: string } | null;
-        
-        const clientName = senderData?.full_name || "Unknown Client";
-        const clientEmail = senderData?.email || null;
-        const clientPhone = senderData?.phone || null;
-        const serviceName = serviceData?.title || "General Service";
-        const servicePrice = serviceData?.price || 0;
-        const staffName = recipientData?.full_name || null;
+        // Extract values with proper type checking
+        const senderData = booking.sender || {};
+        const serviceData = booking.service || {};
+        const recipientData = booking.recipient || {};
         
         const bookingStatus = booking.status || 'pending';
+        // Ensure the status is one of the allowed values
         const validStatus = ['pending', 'accepted', 'completed', 'cancelled', 'declined'].includes(bookingStatus) 
           ? bookingStatus as SalonBooking['status']
           : 'pending';
         
         return {
           id: booking.id,
-          client_name: clientName,
-          client_email: clientEmail,
-          client_phone: clientPhone,
-          service_name: serviceName,
-          service_price: servicePrice,
+          client_name: senderData.full_name || "Unknown Client",
+          client_email: senderData.email,
+          client_phone: senderData.phone,
+          service_name: serviceData.title || "General Service",
+          service_price: serviceData.price || 0,
           date: booking.date_requested ? new Date(booking.date_requested) : null,
           time: booking.time_requested || "",
           status: validStatus,
-          assigned_staff_name: staffName,
+          assigned_staff_name: recipientData.full_name || null,
           assigned_staff_id: booking.recipient_id,
           notes: booking.note,
           created_at: booking.created_at
@@ -144,6 +145,16 @@ export const useSalonBookings = () => {
     try {
       setLoading(true);
       
+      // In a real application, we would update the booking's recipient_id
+      // Here we'll just update the state to demonstrate the UI
+      // const { error } = await supabase
+      //   .from('bookings')
+      //   .update({ recipient_id: artistId })
+      //   .eq('id', bookingId);
+        
+      // if (error) throw error;
+      
+      // For demo, just update the state
       setBookings(prev => 
         prev.map(booking => 
           booking.id === bookingId 
