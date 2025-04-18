@@ -37,6 +37,10 @@ export interface Salon {
   socialMedia?: {
     instagram?: string;
     facebook?: string;
+    twitter?: string;
+    tiktok?: string;
+    pinterest?: string;
+    youtube?: string;
   };
 }
 
@@ -119,4 +123,3 @@ export interface ChartBookingData {
   weekLabel: string;
   count: number;
 }
-
