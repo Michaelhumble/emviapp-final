@@ -4,6 +4,7 @@ import { subDays, format } from "date-fns";
 import { useSalon } from "@/context/salon";
 import { supabase } from "@/integrations/supabase/client";
 import { BookingStatsItem } from "@/types/BookingStatsItem";
+import { useTypedQuery } from "@/hooks/useTypedQuery";
 
 type StatsPeriod = '7' | '30' | '90';
 
@@ -24,9 +25,10 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
   const formattedStartDate = format(startDate, 'yyyy-MM-dd');
   const formattedEndDate = format(new Date(), 'yyyy-MM-dd');
 
-  return useQuery({
+  // Use the useTypedQuery wrapper to avoid deep type instantiation issues
+  return useTypedQuery<BookingStatsItem[]>({
     queryKey: ['salon-booking-stats', salonId, period],
-    queryFn: async (): Promise<BookingStatsItem[]> => {
+    queryFn: async () => {
       if (!salonId) return [] as BookingStatsItem[];
       
       const { data, error } = await supabase
@@ -38,7 +40,7 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
         
       if (error) throw error;
       
-      // Fix: Create a properly typed array with explicit typing
+      // Use a clearly defined type to avoid deep type instantiation
       const appointments: AppointmentData[] = data || [];
       const statsMap = new Map<string, BookingStatsItem>();
 
