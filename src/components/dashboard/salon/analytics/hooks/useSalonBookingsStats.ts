@@ -7,8 +7,7 @@ import { BookingStatsItem } from "@/types/BookingStatsItem";
 
 type StatsPeriod = '7' | '30' | '90';
 
-// Define a simple interface for the raw appointment data
-interface AppointmentData {
+type RawAppointment = {
   start_time: string;
   status: string;
 }
@@ -27,32 +26,25 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
 
   return useTypedQuery<BookingStatsItem[]>({
     queryKey: ['salon-booking-stats', salonId, period],
-    queryFn: async (): Promise<BookingStatsItem[]> => {
+    queryFn: async () => {
       if (!salonId) return [];
 
-      // Completely break the type inference chain using any
-      // First cast to any to avoid TypeScript attempting to infer types
-      const supabaseQuery: any = supabase
+      const { data, error } = await supabase
         .from('appointments')
         .select('start_time, status')
         .eq('salon_id', salonId)
         .gte('start_time', formattedStartDate)
         .lte('start_time', formattedEndDate);
-      
-      // Execute query with type safety broken
-      const response = await supabaseQuery;
-      
-      if (response.error) throw response.error;
-      if (!response.data) return [];
-      
-      // Safely cast the data after breaking the inference chain
-      const appointments = response.data as AppointmentData[];
-      
+
+      if (error) throw error;
+      if (!data) return [];
+
+      const appointments = data as RawAppointment[];
       const statsMap = new Map<string, BookingStatsItem>();
-      
+
       appointments.forEach(booking => {
         const dateStr = format(new Date(booking.start_time), 'yyyy-MM-dd');
-        
+
         if (!statsMap.has(dateStr)) {
           statsMap.set(dateStr, {
             date: dateStr,
@@ -61,19 +53,20 @@ export const useSalonBookingsStats = (period: StatsPeriod = '7') => {
             canceled: 0
           });
         }
-        
+
         const item = statsMap.get(dateStr)!;
         item.totalBookings += 1;
-        
+
         if (booking.status === 'completed') {
           item.completed += 1;
         } else if (booking.status === 'cancelled') {
           item.canceled += 1;
         }
       });
-      
+
       return Array.from(statsMap.values());
     },
     enabled: !!salonId
   });
 };
+
