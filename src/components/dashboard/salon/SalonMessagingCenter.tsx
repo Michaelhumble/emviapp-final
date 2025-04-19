@@ -10,6 +10,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useSupport } from '@/hooks/chat/useSupport';
+import PremiumFeatureGate from '@/components/upgrade/PremiumFeatureGate';
+import { useSubscription } from '@/context/subscription';
 
 const mockMessages = [
   {
@@ -81,6 +83,7 @@ const mockMessages = [
 
 const SalonMessagingCenter = () => {
   useSupport();
+  const { hasActiveSubscription } = useSubscription();
   
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMessage, setSelectedMessage] = useState<typeof mockMessages[0] | null>(null);
@@ -128,6 +131,33 @@ const SalonMessagingCenter = () => {
     setReplyText("");
     // In a real implementation, this would send the reply to Supabase
   };
+
+  if (!hasActiveSubscription) {
+    return (
+      <Card className="border-blue-100">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-lg flex items-center">
+            <MessageSquare className="h-5 w-5 text-blue-500 mr-2" />
+            Messaging Center
+          </CardTitle>
+        </CardHeader>
+        
+        <CardContent>
+          <div className="py-8 text-center">
+            <MessageSquare className="h-16 w-16 mx-auto mb-4 text-primary/30" />
+            <h3 className="text-lg font-semibold mb-2">Unlock Premium Messaging</h3>
+            <p className="text-muted-foreground max-w-md mx-auto mb-6">
+              Connect with artists and customers instantly with our premium messaging system.
+              Pro users respond 3x faster to inquiries.
+            </p>
+            <PremiumFeatureGate feature="messaging">
+              <Button>Unlock Messaging</Button>
+            </PremiumFeatureGate>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="border-blue-100">

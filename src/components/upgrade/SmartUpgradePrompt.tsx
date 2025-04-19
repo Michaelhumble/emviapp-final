@@ -17,6 +17,7 @@ export type UpgradeFeature =
 interface FeatureContent {
   title: string;
   description: string;
+  cta: string;
   benefit: string;
   statistic: string;
   testimonial?: {
@@ -29,7 +30,8 @@ interface FeatureContent {
 const featureContent: Record<UpgradeFeature, FeatureContent> = {
   "messaging": {
     title: "Unlock Direct Messaging",
-    description: "Connect instantly with clients and professionals",
+    description: "Instantly message salons and top beauty artists directly with Emvi Premium. Connect faster, book more.",
+    cta: "Explore Premium",
     benefit: "Faster responses lead to more bookings",
     statistic: "Pro users get 3x more client responses",
     testimonial: {
@@ -40,7 +42,8 @@ const featureContent: Record<UpgradeFeature, FeatureContent> = {
   },
   "multiple-posts": {
     title: "Post Multiple Listings",
-    description: "Expand your reach with unlimited posts",
+    description: "Posting multiple listings? Emvi Pro helps your posts stand out, attracting more artists and customers faster.",
+    cta: "Boost Your Listings",
     benefit: "Find the perfect match faster",
     statistic: "Pro users fill positions 4x faster",
     testimonial: {
@@ -51,7 +54,8 @@ const featureContent: Record<UpgradeFeature, FeatureContent> = {
   },
   "analytics": {
     title: "Unlock Detailed Analytics",
-    description: "Gain powerful insights into your business performance",
+    description: "Curious who's checking out your profile? See detailed analytics and insights with Emvi Pro.",
+    cta: "Unlock Analytics",
     benefit: "Make data-driven decisions that grow your business",
     statistic: "Pro users increase revenue by 32% on average",
     testimonial: {
@@ -62,7 +66,8 @@ const featureContent: Record<UpgradeFeature, FeatureContent> = {
   },
   "profile-promotion": {
     title: "Boost Your Profile Visibility",
-    description: "Stand out from the crowd with premium placement",
+    description: "Want more visibility? Featured profiles get 4X more views every month. Upgrade now and get seen first.",
+    cta: "Feature My Profile",
     benefit: "Get seen by more potential clients",
     statistic: "Pro profiles receive 5x more views",
     testimonial: {
@@ -74,6 +79,7 @@ const featureContent: Record<UpgradeFeature, FeatureContent> = {
   "salon-visibility": {
     title: "Premium Salon Visibility",
     description: "Put your salon in the spotlight",
+    cta: "Enhance Visibility",
     benefit: "Attract more high-quality clients to your business",
     statistic: "Featured salons see 4x client growth",
     testimonial: {
@@ -85,6 +91,7 @@ const featureContent: Record<UpgradeFeature, FeatureContent> = {
   "artist-contact": {
     title: "Connect With Top Artists",
     description: "Direct access to the best talent in your area",
+    cta: "Connect With Artists",
     benefit: "Build your dream team faster",
     statistic: "Pro salons fill positions 3x quicker",
     testimonial: {
@@ -165,7 +172,7 @@ const SmartUpgradePrompt: React.FC<SmartUpgradePromptProps> = ({
                 className="w-full" 
                 onClick={handleLearnMore}
               >
-                Learn About Pro Features
+                {content.cta}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </motion.div>

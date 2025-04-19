@@ -2,17 +2,11 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Globe } from 'lucide-react';
-import SmartUpgradePrompt from '@/components/upgrade/SmartUpgradePrompt';
-import { useUpgradePrompt } from '@/hooks/useUpgradePrompt';
 import { useSubscription } from '@/context/subscription';
+import PremiumFeatureGate from '@/components/upgrade/PremiumFeatureGate';
 
 const SalonVisibilityUpgrade = () => {
   const { hasActiveSubscription } = useSubscription();
-  const { isPromptOpen, setIsPromptOpen, checkAndTriggerUpgrade } = useUpgradePrompt("salon-visibility");
-  
-  const handleUpgradeClick = () => {
-    checkAndTriggerUpgrade();
-  };
   
   return (
     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-100">
@@ -24,21 +18,16 @@ const SalonVisibilityUpgrade = () => {
       </p>
       
       {!hasActiveSubscription && (
-        <Button 
-          onClick={handleUpgradeClick}
-          variant="outline" 
-          className="bg-white border-blue-200 text-blue-700 hover:bg-blue-50"
-        >
-          <Globe className="mr-2 h-4 w-4" />
-          Enhance Visibility
-        </Button>
+        <PremiumFeatureGate feature="salon-visibility">
+          <Button 
+            variant="outline" 
+            className="bg-white border-blue-200 text-blue-700 hover:bg-blue-50"
+          >
+            <Globe className="mr-2 h-4 w-4" />
+            Enhance Visibility
+          </Button>
+        </PremiumFeatureGate>
       )}
-      
-      <SmartUpgradePrompt 
-        feature="salon-visibility" 
-        open={isPromptOpen} 
-        onOpenChange={setIsPromptOpen}
-      />
     </div>
   );
 };

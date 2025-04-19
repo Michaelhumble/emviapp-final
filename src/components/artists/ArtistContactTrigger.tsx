@@ -1,10 +1,9 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { User, Mail, Phone } from 'lucide-react';
-import SmartUpgradePrompt from '@/components/upgrade/SmartUpgradePrompt';
-import { useUpgradePrompt } from '@/hooks/useUpgradePrompt';
+import { User, Mail } from 'lucide-react';
 import { useSubscription } from '@/context/subscription';
+import PremiumFeatureGate from '@/components/upgrade/PremiumFeatureGate';
 
 interface ArtistContactTriggerProps {
   artistName: string;
@@ -12,40 +11,33 @@ interface ArtistContactTriggerProps {
 
 const ArtistContactTrigger: React.FC<ArtistContactTriggerProps> = ({ artistName }) => {
   const { hasActiveSubscription } = useSubscription();
-  const { isPromptOpen, setIsPromptOpen, checkAndTriggerUpgrade } = useUpgradePrompt("artist-contact");
   
-  const handleContactClick = () => {
-    if (checkAndTriggerUpgrade()) {
-      // Show contact info or initiate contact flow
-      console.log("Show contact info for", artistName);
-    }
+  const handleShowContact = () => {
+    // This will only be called if the user has a subscription
+    console.log("Show contact info for", artistName);
   };
   
   return (
     <div className="mt-4">
-      <Button 
-        onClick={handleContactClick}
-        className="w-full"
-        variant={hasActiveSubscription ? "default" : "outline"}
-      >
-        {hasActiveSubscription ? (
-          <>
-            <Mail className="mr-2 h-4 w-4" />
-            Contact {artistName}
-          </>
-        ) : (
-          <>
-            <User className="mr-2 h-4 w-4" />
-            View Contact Info
-          </>
-        )}
-      </Button>
-      
-      <SmartUpgradePrompt 
-        feature="artist-contact" 
-        open={isPromptOpen} 
-        onOpenChange={setIsPromptOpen}
-      />
+      <PremiumFeatureGate feature="artist-contact">
+        <Button 
+          onClick={handleShowContact}
+          className="w-full"
+          variant={hasActiveSubscription ? "default" : "outline"}
+        >
+          {hasActiveSubscription ? (
+            <>
+              <Mail className="mr-2 h-4 w-4" />
+              Contact {artistName}
+            </>
+          ) : (
+            <>
+              <User className="mr-2 h-4 w-4" />
+              View Contact Info
+            </>
+          )}
+        </Button>
+      </PremiumFeatureGate>
     </div>
   );
 };

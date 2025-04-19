@@ -1,4 +1,3 @@
-
 import { useAuth } from "@/context/auth";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { toast } from "sonner";
@@ -16,6 +15,9 @@ import PremiumArtistProfile from "@/components/artist-profile/PremiumArtistProfi
 const CACHE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
 let lastLoadedTime = 0;
 let cachedProfileData: UserProfileType | null = null;
+
+import PremiumFeatureGate from '@/components/upgrade/PremiumFeatureGate';
+import { useSubscription } from '@/context/subscription';
 
 const UserProfile = () => {
   const { userProfile, userRole, loading, refreshUserProfile, isError } = useAuth();
@@ -191,12 +193,20 @@ const UserProfile = () => {
     />;
   }
 
+  const { hasActiveSubscription } = useSubscription();
+
   // Normal display when everything is loaded - select the appropriate profile view based on user role
   console.log("Rendering normal profile view with data");
   return (
     <div className="min-h-screen bg-[#FDFDFD]">
       {isArtistRole ? (
-        <PremiumArtistProfile userProfile={userProfile as UserProfileType} />
+        hasActiveSubscription ? (
+          <PremiumArtistProfile userProfile={userProfile as UserProfileType} />
+        ) : (
+          <PremiumFeatureGate feature="profile-promotion">
+            <PremiumArtistProfile userProfile={userProfile as UserProfileType} />
+          </PremiumFeatureGate>
+        )
       ) : (
         <>
           <UserProfileBanner />

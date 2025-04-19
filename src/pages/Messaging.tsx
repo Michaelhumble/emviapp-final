@@ -6,8 +6,7 @@ import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, User } from "lucide-react";
-import SmartUpgradePrompt from "@/components/upgrade/SmartUpgradePrompt";
-import { useUpgradePrompt } from "@/hooks/useUpgradePrompt";
+import PremiumFeatureGate from "@/components/upgrade/PremiumFeatureGate";
 import { useSubscription } from "@/context/subscription";
 
 interface Message {
@@ -22,7 +21,6 @@ const Messaging = () => {
   const { user } = useAuth();
   const { hasActiveSubscription } = useSubscription();
   const [message, setMessage] = useState("");
-  const { isPromptOpen, setIsPromptOpen, checkAndTriggerUpgrade } = useUpgradePrompt("messaging");
   
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -56,10 +54,8 @@ const Messaging = () => {
     e.preventDefault();
     if (!message.trim()) return;
     
-    // Check if user can send message (has subscription)
-    if (!checkAndTriggerUpgrade()) {
-      return;
-    }
+    // Free users can't send messages (handled by PremiumFeatureGate)
+    if (!hasActiveSubscription) return;
 
     const newMessage: Message = {
       id: Date.now(),
@@ -97,29 +93,28 @@ const Messaging = () => {
               />
               <div className="space-y-2">
                 {contacts.map((contact) => (
-                  <div 
-                    key={contact.id}
-                    className={`p-3 rounded-lg flex items-center cursor-pointer ${
-                      contact.id === 1 ? 'bg-primary/10' : 'hover:bg-gray-100'
-                    }`}
-                    onClick={() => {
-                      if (!hasActiveSubscription) {
-                        setIsPromptOpen(true);
-                      }
-                    }}
+                  <PremiumFeatureGate 
+                    key={contact.id} 
+                    feature="messaging"
                   >
-                    <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center mr-3">
-                      <User className="h-5 w-5 text-gray-500" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between">
-                        <p className={`${contact.unread ? 'font-semibold' : ''}`}>{contact.name}</p>
+                    <div 
+                      className={`p-3 rounded-lg flex items-center cursor-pointer ${
+                        contact.id === 1 ? 'bg-primary/10' : 'hover:bg-gray-100'
+                      }`}
+                    >
+                      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center mr-3">
+                        <User className="h-5 w-5 text-gray-500" />
                       </div>
-                      {contact.unread && (
-                        <span className="w-2 h-2 bg-primary rounded-full inline-block"></span>
-                      )}
+                      <div className="flex-1">
+                        <div className="flex justify-between">
+                          <p className={`${contact.unread ? 'font-semibold' : ''}`}>{contact.name}</p>
+                        </div>
+                        {contact.unread && (
+                          <span className="w-2 h-2 bg-primary rounded-full inline-block"></span>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  </PremiumFeatureGate>
                 ))}
               </div>
             </div>
@@ -171,21 +166,17 @@ const Messaging = () => {
                     onChange={(e) => setMessage(e.target.value)}
                     className="flex-1"
                   />
-                  <Button type="submit" size="icon">
-                    <Send className="h-4 w-4" />
-                  </Button>
+                  <PremiumFeatureGate feature="messaging">
+                    <Button type="submit" size="icon">
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </PremiumFeatureGate>
                 </form>
               </div>
             </div>
           </div>
         </div>
       </div>
-      
-      <SmartUpgradePrompt
-        feature="messaging"
-        open={isPromptOpen}
-        onOpenChange={setIsPromptOpen}
-      />
     </Layout>
   );
 };
