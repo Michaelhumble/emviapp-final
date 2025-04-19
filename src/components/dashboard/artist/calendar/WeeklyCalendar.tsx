@@ -38,6 +38,27 @@ export const WeeklyCalendar = () => {
   
   const loading = isLoadingAppointments || isLoadingBlockedTimes;
 
+  // Fixed event handlers for button clicks
+  const handleAddBookingClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    openAddBookingDialog();
+  };
+
+  const handlePreviousWeekClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    goToPreviousWeek();
+  };
+
+  const handleTodayClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    goToToday();
+  };
+
+  const handleNextWeekClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    goToNextWeek();
+  };
+
+  const handleBlockTimeClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    openBlockTimeDialog();
+  };
+
   const getBookingsForDay = (day: Date) => {
     return appointments.filter((booking) => {
       if (booking.start_time) {
@@ -75,21 +96,21 @@ export const WeeklyCalendar = () => {
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={goToPreviousWeek}
+              onClick={handlePreviousWeekClick}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={goToToday}
+              onClick={handleTodayClick}
             >
               Today
             </Button>
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={goToNextWeek}
+              onClick={handleNextWeekClick}
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -104,11 +125,11 @@ export const WeeklyCalendar = () => {
           </div>
           
           <div className="flex space-x-2">
-            <Button size="sm" onClick={openAddBookingDialog}>
+            <Button size="sm" onClick={handleAddBookingClick}>
               <Plus className="h-4 w-4 mr-1.5" />
               Add Booking
             </Button>
-            <Button size="sm" variant="outline" onClick={openBlockTimeDialog}>
+            <Button size="sm" variant="outline" onClick={handleBlockTimeClick}>
               <Clock className="h-4 w-4 mr-1.5" />
               Block Time
             </Button>

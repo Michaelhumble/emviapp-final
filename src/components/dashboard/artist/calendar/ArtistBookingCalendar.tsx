@@ -62,6 +62,27 @@ const ArtistBookingCalendar = () => {
     }
   };
 
+  // Fixed event handlers for button clicks
+  const handleAddBookingClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    openAddBookingDialog();
+  };
+
+  const handlePreviousWeekClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    goToPreviousWeek();
+  };
+
+  const handleTodayClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    goToToday();
+  };
+
+  const handleNextWeekClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    goToNextWeek();
+  };
+
+  const handleBlockTimeClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    openBlockTimeDialog();
+  };
+
   return (
     <Card className="overflow-hidden">
       <CardHeader>
@@ -72,13 +93,13 @@ const ArtistBookingCalendar = () => {
           </div>
           
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={goToPreviousWeek}>
+            <Button variant="outline" size="sm" onClick={handlePreviousWeekClick}>
               <ChevronLeft className="h-4 w-4 mr-1" /> Previous
             </Button>
-            <Button variant="outline" size="sm" onClick={goToToday}>
+            <Button variant="outline" size="sm" onClick={handleTodayClick}>
               Today
             </Button>
-            <Button variant="outline" size="sm" onClick={goToNextWeek}>
+            <Button variant="outline" size="sm" onClick={handleNextWeekClick}>
               Next <ChevronRight className="h-4 w-4 ml-1" />
             </Button>
           </div>
@@ -88,10 +109,10 @@ const ArtistBookingCalendar = () => {
       <CardContent>
         <div className="mb-4 flex flex-col sm:flex-row justify-between gap-2">
           <div className="flex gap-2">
-            <Button size="sm" onClick={openAddBookingDialog}>
+            <Button size="sm" onClick={handleAddBookingClick}>
               <Plus className="h-4 w-4 mr-1" /> Add Booking
             </Button>
-            <Button size="sm" variant="outline" onClick={openBlockTimeDialog}>
+            <Button size="sm" variant="outline" onClick={handleBlockTimeClick}>
               Block Time
             </Button>
           </div>

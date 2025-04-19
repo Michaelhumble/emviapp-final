@@ -12,7 +12,9 @@ export const useSalonAvailability = (salonId?: string) => {
   const [staffAvailability, setStaffAvailability] = useState<Record<string, AvailabilityDay[]>>({});
   
   // Get salon ID from context or props
-  const effectiveSalonId = salonId || (user?.manager_for_salon_id || "");
+  // Use a type assertion to access extended user properties
+  const userAny = user as any; // Type assertion
+  const effectiveSalonId = salonId || (userAny?.manager_for_salon_id || "");
 
   useEffect(() => {
     if (effectiveSalonId) {
@@ -56,7 +58,7 @@ export const useSalonAvailability = (salonId?: string) => {
       // Get all staff IDs for this salon
       const { data: staffData, error: staffError } = await supabase
         .from('salon_staff')
-        .select('id, user_id')
+        .select('id, email')
         .eq('salon_id', effectiveSalonId)
         .eq('status', 'active');
       
@@ -65,13 +67,25 @@ export const useSalonAvailability = (salonId?: string) => {
       // Create a map to hold availability for each staff member
       const staffAvailabilityMap: Record<string, AvailabilityDay[]> = {};
       
-      // For each staff member with a user_id, get their availability
+      // For each staff member, get their availability
+      // Modified to use id instead of user_id, which doesn't exist on salon_staff
       for (const staff of staffData || []) {
-        if (staff.user_id) {
+        if (staff.id) {
+          // Query users table to get user_id by email
+          const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('id')
+            .eq('email', staff.email)
+            .single();
+            
+          if (userError || !userData) continue;
+          
+          const userId = userData.id;
+          
           const { data: availData, error: availError } = await supabase
             .from('artist_availability')
             .select('*')
-            .eq('artist_id', staff.user_id);
+            .eq('artist_id', userId);
             
           if (availError) continue;
           
@@ -85,7 +99,7 @@ export const useSalonAvailability = (salonId?: string) => {
               active: day.is_available
             }));
             
-            staffAvailabilityMap[staff.user_id] = mappedDays;
+            staffAvailabilityMap[userId] = mappedDays;
           }
         }
       }
