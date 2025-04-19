@@ -1,9 +1,11 @@
 
+export type SalonStaffRole = 'owner' | 'manager' | 'technician';
+
 export interface SalonTeamMember {
   id: string;
   full_name: string;
   email: string;
-  role: string;
+  role: SalonStaffRole;
   specialty?: string;
   status: 'active' | 'inactive' | 'pending';
   avatar_url?: string;
@@ -16,7 +18,7 @@ export interface SalonTeamMember {
 export interface TeamMemberFormData {
   full_name: string;
   email: string;
-  role: string;
+  role: SalonStaffRole;
   specialty?: string;
   commission_rate?: number;
 }

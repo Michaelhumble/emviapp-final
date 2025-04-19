@@ -1,26 +1,33 @@
 
-import { AlertCircle, RefreshCw, UserPlus, Users } from "lucide-react";
+import { AlertCircle, RefreshCw, Users } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { SalonTeamMember } from "./types";
+import { SalonTeamMember, SalonStaffRole } from "./types";
 import TeamMemberItem from "./TeamMemberItem";
 import { Button } from "@/components/ui/button";
+import { UserPlus } from "lucide-react";
 
 interface TeamMembersListProps {
   teamMembers: SalonTeamMember[];
   loading: boolean;
   error: Error | null;
   onEdit?: (member: SalonTeamMember) => void;
+  onRemoveTeamMember?: (id: string, name?: string) => Promise<void>;
+  onToggleMemberStatus?: (id: string, currentStatus?: 'active' | 'inactive' | 'pending') => Promise<void>;
+  userRole?: SalonStaffRole | null;
 }
 
 const TeamMembersList = ({ 
   teamMembers, 
   loading, 
   error,
-  onEdit
+  onEdit,
+  onRemoveTeamMember,
+  onToggleMemberStatus,
+  userRole
 }: TeamMembersListProps) => {
   if (error) {
     return (
-      <Alert variant="destructive" className="mb-4">
+      <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>{error.message}</AlertDescription>
       </Alert>
@@ -61,6 +68,9 @@ const TeamMembersList = ({
           key={member.id} 
           member={member}
           onEdit={onEdit}
+          onRemove={onRemoveTeamMember}
+          onToggleStatus={onToggleMemberStatus}
+          userRole={userRole}
         />
       ))}
     </div>

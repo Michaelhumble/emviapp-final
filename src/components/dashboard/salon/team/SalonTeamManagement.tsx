@@ -1,10 +1,13 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 import TeamMembersList from "./TeamMembersList";
-import { useTeamMembers } from "./useTeamMembers";
+import { useTeamMembers } from "./hooks/useTeamMembers";
 import { InviteTeamMemberDialog } from "./InviteTeamMemberDialog";
+import { useSalonRolePermissions } from "@/hooks/useSalonRolePermissions";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const SalonTeamManagement = () => {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
@@ -16,6 +19,12 @@ const SalonTeamManagement = () => {
     removeTeamMember,
     toggleMemberStatus,
   } = useTeamMembers();
+  
+  const { 
+    canInviteTeamMembers, 
+    canEditTeam, 
+    userRole 
+  } = useSalonRolePermissions();
 
   const handleSendInvite = async (memberData: any) => {
     await sendInvite(memberData);
@@ -28,15 +37,35 @@ const SalonTeamManagement = () => {
           <CardTitle>Team Management</CardTitle>
           <CardDescription>Manage your salon team members</CardDescription>
         </div>
-        <InviteTeamMemberDialog onInvite={sendInvite} />
+        {canInviteTeamMembers ? (
+          <InviteTeamMemberDialog 
+            onInvite={handleSendInvite} 
+            disabled={!canInviteTeamMembers}
+          />
+        ) : (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button disabled size="sm">
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Invite Member
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Only owners and managers can invite team members</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
       </CardHeader>
       <CardContent>
         <TeamMembersList 
           teamMembers={teamMembers}
           loading={loading}
           error={error}
-          onRemoveTeamMember={removeTeamMember}
-          onToggleMemberStatus={toggleMemberStatus}
+          onRemoveTeamMember={canEditTeam ? removeTeamMember : undefined}
+          onToggleMemberStatus={canEditTeam ? toggleMemberStatus : undefined}
+          userRole={userRole}
         />
       </CardContent>
     </Card>
