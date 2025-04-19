@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
-import { Layout } from "@/components/layout/Layout";
+import { Layout } from "@/components/layout";
 import { 
   Award, 
   BadgeDollarSign, 
