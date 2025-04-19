@@ -4,10 +4,9 @@ import { TeamMemberCard } from "./TeamMemberCard";
 
 interface TeamListProps {
   members: SalonTeamMember[];
-  bookingCounts: Record<string, number>;
 }
 
-export const TeamList = ({ members, bookingCounts }: TeamListProps) => {
+export const TeamList = ({ members }: TeamListProps) => {
   if (members.length === 0) {
     return (
       <div className="text-center py-12 bg-gray-50 rounded-lg">
@@ -21,8 +20,7 @@ export const TeamList = ({ members, bookingCounts }: TeamListProps) => {
       {members.map((member) => (
         <TeamMemberCard 
           key={member.id} 
-          member={member} 
-          bookingsCount={bookingCounts[member.id] || 0}
+          member={member}
         />
       ))}
     </div>

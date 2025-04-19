@@ -3,14 +3,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { SalonTeamMember } from "./types";
-import { Calendar } from "lucide-react";
+import { Calendar, DollarSign } from "lucide-react";
+import { useTeamMemberStats } from "./hooks/useTeamMemberStats";
+import { formatCurrency } from "@/lib/utils";
 
 interface TeamMemberCardProps {
   member: SalonTeamMember;
-  bookingsCount?: number;
 }
 
-export const TeamMemberCard = ({ member, bookingsCount = 0 }: TeamMemberCardProps) => {
+export const TeamMemberCard = ({ member }: TeamMemberCardProps) => {
+  const { data: stats } = useTeamMemberStats(member.id);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
@@ -44,12 +47,18 @@ export const TeamMemberCard = ({ member, bookingsCount = 0 }: TeamMemberCardProp
                   variant="outline" 
                   className={getStatusColor(member.status)}
                 >
-                  {member.status === 'active' ? 'Available' : 'Off Today'}
+                  {member.status === 'active' ? 'Available' : member.status === 'pending' ? 'Pending' : 'Off Today'}
                 </Badge>
                 <Badge variant="outline" className="bg-purple-50 text-purple-800 border-purple-200">
                   <Calendar className="h-3 w-3 mr-1" />
-                  {bookingsCount} bookings this week
+                  {stats?.bookingsCount ? `${stats.bookingsCount} bookings this week` : 'No bookings yet'}
                 </Badge>
+                {stats?.totalEarnings > 0 && (
+                  <Badge variant="outline" className="bg-emerald-50 text-emerald-800 border-emerald-200">
+                    <DollarSign className="h-3 w-3 mr-1" />
+                    {formatCurrency(stats.totalEarnings)} this week
+                  </Badge>
+                )}
               </div>
             </div>
           </div>
