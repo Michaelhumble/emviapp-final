@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, Briefcase, BadgeDollarSign, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,7 +13,6 @@ const SalonQuickStats = () => {
   const { t } = useTranslation();
   const { stats, loading, lastFetched, refresh, error } = useSalonStats();
   
-  // Improved error handling to properly display error message
   const getErrorMessage = () => {
     if (!error) return "Something went wrong, please try again later.";
     
@@ -23,7 +21,6 @@ const SalonQuickStats = () => {
     if (error instanceof Error) return error.message;
     
     try {
-      // Attempt to stringify the error safely
       return JSON.stringify(error, null, 2);
     } catch (e) {
       console.error("Failed to stringify error:", e);
@@ -31,7 +28,6 @@ const SalonQuickStats = () => {
     }
   };
   
-  // If there's an error, display the error state with improved message
   if (error) {
     return (
       <div className="space-y-2">
@@ -68,7 +64,6 @@ const SalonQuickStats = () => {
         )}
       </div>
       
-      {/* Main Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="border-blue-100 hover:shadow-md transition-shadow">
           <CardContent className="p-6 flex flex-col items-center justify-center">
@@ -113,12 +108,13 @@ const SalonQuickStats = () => {
         </Card>
       </div>
       
-      {/* Profile Completion Card */}
-      <SalonProfileCompletionCard 
-        completionPercentage={stats.profileCompletion.percentage}
-        incompleteFields={stats.profileCompletion.incompleteFields}
-        loading={loading}
-      />
+      {stats.profileCompletion.percentage === 100 && (
+        <SalonProfileCompletionCard 
+          completionPercentage={stats.profileCompletion.percentage}
+          incompleteFields={stats.profileCompletion.incompleteFields}
+          loading={loading}
+        />
+      )}
     </div>
   );
 };
