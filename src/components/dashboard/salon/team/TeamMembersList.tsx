@@ -1,7 +1,7 @@
 
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { SalonTeamMember } from "../types";
+import { SalonTeamMember } from "./types";
 import TeamMemberItem from "./TeamMemberItem";
 
 interface TeamMembersListProps {
@@ -42,7 +42,7 @@ const TeamMembersList = ({
   if (teamMembers.length === 0) {
     return (
       <div className="py-12 text-center text-gray-500 bg-gray-50 rounded-lg">
-        <p>No team members yet. Invite artists to join your salon!</p>
+        <p>You haven't added any team members yet.</p>
       </div>
     );
   }
