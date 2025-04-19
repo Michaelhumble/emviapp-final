@@ -36,13 +36,21 @@ export const useSalonProfileCompletion = () => {
     const requiredFields = SALON_PROFILE_FIELDS.filter(field => field.required);
     const optionalFields = SALON_PROFILE_FIELDS.filter(field => !field.required);
     
-    const missingRequired = requiredFields.filter(
-      field => !userProfile[field.property]
-    );
+    // Check for both salon_name and salonName to be backward compatible
+    const checkFieldValue = (field: ProfileField) => {
+      const value = userProfile[field.property];
+      
+      // Handle special case for salon_name to also check for full_name if salon_name is empty
+      if (field.property === 'salon_name' && (!value || value === '')) {
+        const fullNameValue = userProfile.full_name;
+        return fullNameValue !== undefined && fullNameValue !== null && fullNameValue !== '';
+      }
+      
+      return value !== undefined && value !== null && value !== '';
+    };
     
-    const missingOptional = optionalFields.filter(
-      field => !userProfile[field.property]
-    );
+    const missingRequired = requiredFields.filter(field => !checkFieldValue(field));
+    const missingOptional = optionalFields.filter(field => !checkFieldValue(field));
 
     // Required fields are weighted more heavily (80% of total)
     const requiredWeight = 0.8;

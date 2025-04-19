@@ -4,21 +4,22 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertCircle, Check, ChevronRight, ArrowRight } from "lucide-react";
+import { AlertCircle, Check, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
-
-interface SalonProfileCompletionCardProps {
-  completionPercentage: number;
-  incompleteFields: string[];
-  loading: boolean;
-}
+import { useSalonProfileCompletion } from "@/hooks/useSalonProfileCompletion";
+import { useAuth } from "@/context/auth";
 
 const SalonProfileCompletionCard = ({
   completionPercentage,
   incompleteFields,
   loading
-}: SalonProfileCompletionCardProps) => {
+}: {
+  completionPercentage: number;
+  incompleteFields: string[];
+  loading: boolean;
+}) => {
   const [expanded, setExpanded] = useState(completionPercentage < 100);
+  const { userProfile } = useAuth();
   
   // Generate color based on completion percentage
   const getProgressColor = () => {
@@ -40,19 +41,19 @@ const SalonProfileCompletionCard = ({
     }
   };
   
-  // Get next incomplete field to highlight
+  // Get next incomplete field to highlight, with improved detection for salon name
   const getNextAction = () => {
-    if (incompleteFields.includes('Logo/Photo')) {
-      return "Add your salon logo";
-    } else if (incompleteFields.includes('Business Name')) {
-      return "Add your business name";
-    } else if (incompleteFields.includes('Salon Name')) {
+    const hasSalonName = userProfile?.salon_name || userProfile?.full_name;
+    
+    if (incompleteFields.includes('Salon Name') && !hasSalonName) {
       return "Add your salon name";
+    } else if (incompleteFields.includes('Salon Logo')) {
+      return "Add your salon logo";
     } else if (incompleteFields.includes('Location')) {
       return "Add your salon location";
-    } else if (incompleteFields.includes('Bio')) {
+    } else if (incompleteFields.includes('Description')) {
       return "Add your salon description";
-    } else if (incompleteFields.includes('Phone')) {
+    } else if (incompleteFields.includes('Phone Number')) {
       return "Add contact information";
     } else if (incompleteFields.includes('Instagram')) {
       return "Add your Instagram";

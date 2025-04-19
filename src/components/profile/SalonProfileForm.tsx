@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,7 +20,8 @@ const SalonProfileForm = () => {
     specialty: "", // This will be used for services offered
     instagram: "",
     website: "",
-    avatar_url: "" // This will be used as the logo/cover
+    avatar_url: "", // This will be used as the logo/cover
+    phone: ""
   });
   
   // Load initial data
@@ -35,7 +35,8 @@ const SalonProfileForm = () => {
         specialty: userProfile.specialty || "",
         instagram: userProfile.instagram || "",
         website: userProfile.website || "",
-        avatar_url: userProfile.avatar_url || ""
+        avatar_url: userProfile.avatar_url || "",
+        phone: userProfile.phone || ""
       });
     }
   }, [userProfile]);
@@ -56,18 +57,43 @@ const SalonProfileForm = () => {
         .from('users')
         .update({
           full_name: formData.full_name,
-          salon_name: formData.salon_name,
+          salon_name: formData.salon_name, // Ensure salon_name is explicitly updated
           location: formData.location,
           bio: formData.bio,
           specialty: formData.specialty, // Services offered
           instagram: formData.instagram,
           website: formData.website,
           avatar_url: formData.avatar_url,
+          phone: formData.phone,
           updated_at: new Date().toISOString()
         })
         .eq('id', user.id);
       
       if (error) throw error;
+      
+      // Also update salon record if it exists
+      const { data: salonData } = await supabase
+        .from('salons')
+        .select('id')
+        .eq('owner_id', user.id)
+        .single();
+        
+      if (salonData?.id) {
+        // Update the salon record to keep data in sync
+        await supabase
+          .from('salons')
+          .update({
+            salon_name: formData.salon_name || formData.full_name, // Use salon_name or fall back to full_name
+            location: formData.location,
+            about: formData.bio,
+            instagram: formData.instagram,
+            website: formData.website,
+            logo_url: formData.avatar_url,
+            phone: formData.phone,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', salonData.id);
+      }
       
       await refreshUserProfile();
       toast.success("Your business profile has been updated.");
@@ -186,6 +212,20 @@ const SalonProfileForm = () => {
           onChange={handleChange}
           placeholder="If different from business name"
           className="mt-1"
+        />
+      </div>
+      
+      {/* Phone Number */}
+      <div>
+        <Label htmlFor="phone">Phone Number</Label>
+        <Input
+          id="phone"
+          name="phone"
+          value={formData.phone || ""}
+          onChange={handleChange}
+          placeholder="Business phone number"
+          className="mt-1"
+          required
         />
       </div>
       
