@@ -9,7 +9,7 @@ import { InviteArtistDialog } from "./InviteArtistDialog";
 
 export const SalonTeamSection = () => {
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
-  const { teamMembers, bookingCounts, loading, error } = useTeamData();
+  const { teamMembers, loading, error } = useTeamData();
 
   if (error) {
     return (
@@ -37,7 +37,7 @@ export const SalonTeamSection = () => {
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
           </div>
         ) : (
-          <TeamList members={teamMembers} bookingCounts={bookingCounts} />
+          <TeamList members={teamMembers} />
         )}
       </CardContent>
 
