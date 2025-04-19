@@ -110,7 +110,7 @@ const OwnerDashboard = () => {
                   </TabsList>
                   
                   <TabsContent value="overview" className="space-y-8 pt-4">
-                    <SalonProfileCompletionCard />
+                    {/* Remove the duplicate SalonProfileCompletionCard */}
                     
                     <SalonQuickStats />
                     
