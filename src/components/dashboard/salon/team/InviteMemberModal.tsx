@@ -33,7 +33,7 @@ const InviteMemberModal = ({
   const [memberData, setMemberData] = useState({
     full_name: '',
     email: '',
-    role: 'artist'
+    role: 'technician'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -45,7 +45,7 @@ const InviteMemberModal = ({
     try {
       setIsSubmitting(true);
       await onSendInvite(memberData);
-      setMemberData({ full_name: '', email: '', role: 'artist' });
+      setMemberData({ full_name: '', email: '', role: 'technician' });
       onClose();
     } catch (err) {
       console.error('Error sending invite:', err);
@@ -93,10 +93,9 @@ const InviteMemberModal = ({
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="artist">Artist</SelectItem>
+                <SelectItem value="technician">Artist / Technician</SelectItem>
                 <SelectItem value="manager">Manager</SelectItem>
-                <SelectItem value="receptionist">Receptionist</SelectItem>
-                <SelectItem value="assistant">Assistant</SelectItem>
+                <SelectItem value="receptionist">Front Desk / Receptionist</SelectItem>
               </SelectContent>
             </Select>
           </div>

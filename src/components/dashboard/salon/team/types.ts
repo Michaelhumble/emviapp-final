@@ -1,5 +1,4 @@
-
-export type SalonStaffRole = 'owner' | 'manager' | 'technician';
+export type SalonStaffRole = 'owner' | 'manager' | 'technician' | 'receptionist';
 
 export interface SalonTeamMember {
   id: string;
