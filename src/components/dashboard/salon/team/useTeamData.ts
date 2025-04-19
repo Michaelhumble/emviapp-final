@@ -50,7 +50,8 @@ export const useTeamData = () => {
         });
 
         // Transform staff data to match SalonTeamMember interface
-        const transformedStaffData: SalonTeamMember[] = staffData?.map(staff => ({
+        // Using explicit mapping to avoid deep type inference
+        const transformedStaffData: SalonTeamMember[] = staffData ? staffData.map(staff => ({
           id: staff.id,
           salon_id: staff.salon_id,
           full_name: staff.full_name,
@@ -63,7 +64,7 @@ export const useTeamData = () => {
           commission_rate: staff.commission_rate,
           invitation_sent_at: staff.invitation_sent_at,
           invitation_email: staff.invitation_email
-        })) || [];
+        })) : [];
 
         setTeamMembers(transformedStaffData);
         setBookingCounts(counts);
