@@ -9,11 +9,16 @@ export interface TeamInviteData {
   role: string;
 }
 
+export interface TeamInviteResponse {
+  invite_code: string;
+  expires_at: string;
+}
+
 export const useTeamInvites = () => {
   const { currentSalon } = useSalon();
   const [isLoading, setIsLoading] = useState(false);
 
-  const createInvite = async (data: TeamInviteData) => {
+  const createInvite = async (data: TeamInviteData): Promise<TeamInviteResponse | null> => {
     if (!currentSalon?.id) {
       toast.error("No salon selected");
       return null;
@@ -33,7 +38,7 @@ export const useTeamInvites = () => {
 
       if (error) throw error;
       
-      return invite;
+      return invite as TeamInviteResponse;
     } catch (error) {
       console.error('Error creating team invite:', error);
       toast.error("Failed to create invite");
