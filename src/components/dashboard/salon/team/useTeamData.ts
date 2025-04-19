@@ -5,6 +5,27 @@ import { useSalon } from '@/context/salon';
 import { startOfWeek, endOfWeek } from 'date-fns';
 import { SalonTeamMember } from './types';
 
+// Define types for raw database responses to avoid deep inference
+type RawStaffData = {
+  id: string;
+  salon_id: string;
+  full_name: string;
+  email: string;
+  role: string;
+  specialty?: string;
+  status: 'active' | 'inactive' | 'pending';
+  created_at: string;
+  avatar_url?: string;
+  commission_rate?: number;
+  invitation_sent_at?: string;
+  invitation_email?: string;
+}
+
+type RawBookingData = {
+  artist_id?: string;
+  id: string;
+}
+
 export const useTeamData = () => {
   const { currentSalon } = useSalon();
   const [loading, setLoading] = useState(true);
@@ -20,11 +41,11 @@ export const useTeamData = () => {
         setLoading(true);
         setError(null);
 
-        // Get salon staff - explicitly type the response to avoid deep inference
+        // Get salon staff with explicit typing
         const { data: staffData, error: staffError } = await supabase
           .from('salon_staff')
           .select('*')
-          .eq('salon_id', currentSalon.id);
+          .eq('salon_id', currentSalon.id) as { data: RawStaffData[] | null, error: any };
 
         if (staffError) throw staffError;
 
@@ -37,7 +58,7 @@ export const useTeamData = () => {
           .select('artist_id, id')
           .eq('salon_id', currentSalon.id)
           .gte('start_time', startDate.toISOString())
-          .lte('start_time', endDate.toISOString());
+          .lte('start_time', endDate.toISOString()) as { data: RawBookingData[] | null, error: any };
 
         if (bookingsError) throw bookingsError;
 
