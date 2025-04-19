@@ -562,12 +562,46 @@ export type Database = {
         }
         Relationships: []
       }
+      credit_transfers: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          message: string | null
+          recipient_id: string
+          salon_id: string
+          sender_id: string
+          status: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          message?: string | null
+          recipient_id: string
+          salon_id: string
+          sender_id: string
+          status?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          message?: string | null
+          recipient_id?: string
+          salon_id?: string
+          sender_id?: string
+          status?: string
+        }
+        Relationships: []
+      }
       customer_credits: {
         Row: {
           action_type: string
           created_at: string | null
           description: string | null
           id: string
+          transaction_type: string | null
           user_id: string
           value: number
         }
@@ -576,6 +610,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
+          transaction_type?: string | null
           user_id: string
           value: number
         }
@@ -584,6 +619,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
+          transaction_type?: string | null
           user_id?: string
           value?: number
         }
@@ -1241,6 +1277,45 @@ export type Database = {
             referencedColumns: ["salon_id"]
           },
         ]
+      }
+      salon_promotions: {
+        Row: {
+          created_at: string
+          created_by_id: string
+          credits_spent: number
+          expires_at: string | null
+          id: string
+          message: string | null
+          promotion_type: string
+          salon_id: string
+          status: string
+          target_count: number | null
+        }
+        Insert: {
+          created_at?: string
+          created_by_id: string
+          credits_spent: number
+          expires_at?: string | null
+          id?: string
+          message?: string | null
+          promotion_type: string
+          salon_id: string
+          status?: string
+          target_count?: number | null
+        }
+        Update: {
+          created_at?: string
+          created_by_id?: string
+          credits_spent?: number
+          expires_at?: string | null
+          id?: string
+          message?: string | null
+          promotion_type?: string
+          salon_id?: string
+          status?: string
+          target_count?: number | null
+        }
+        Relationships: []
       }
       salon_sale_photos: {
         Row: {
