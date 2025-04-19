@@ -1624,6 +1624,8 @@ export type Database = {
       }
       team_invites: {
         Row: {
+          accepted_at: string | null
+          accepted_by_user_id: string | null
           created_at: string | null
           expires_at: string | null
           id: string
@@ -1635,6 +1637,8 @@ export type Database = {
           status: string
         }
         Insert: {
+          accepted_at?: string | null
+          accepted_by_user_id?: string | null
           created_at?: string | null
           expires_at?: string | null
           id?: string
@@ -1646,6 +1650,8 @@ export type Database = {
           status?: string
         }
         Update: {
+          accepted_at?: string | null
+          accepted_by_user_id?: string | null
           created_at?: string | null
           expires_at?: string | null
           id?: string
@@ -2034,6 +2040,10 @@ export type Database = {
       }
     }
     Functions: {
+      accept_team_invite: {
+        Args: { p_invite_code: string; p_user_id: string }
+        Returns: boolean
+      }
       array_append_unique: {
         Args: { arr: string[]; item: string }
         Returns: string[]
@@ -2216,6 +2226,10 @@ export type Database = {
           p_access_types?: string[]
         }
         Returns: boolean
+      }
+      validate_team_invite: {
+        Args: { p_invite_code: string; p_phone_number: string }
+        Returns: Json
       }
     }
     Enums: {

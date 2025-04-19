@@ -58,6 +58,7 @@ import Cookies from './pages/Cookies';
 import { AuthRedirect } from './components/auth/AuthRedirect';
 
 import PricingPage from './pages/pricing/PricingPage';
+import InvitePage from './pages/invite/InvitePage';
 
 const routes = [
   {
@@ -303,6 +304,10 @@ const routes = [
   {
     path: '/pricing',
     element: <PricingPage />,
+  },
+  {
+    path: '/invite/:token',
+    element: <InvitePage />,
   },
   {
     path: '*',
