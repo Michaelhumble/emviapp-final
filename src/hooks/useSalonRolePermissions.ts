@@ -19,11 +19,12 @@ export const useSalonRolePermissions = () => {
       try {
         const { data, error } = await supabase
           .rpc('get_user_salon_role', {
-            p_user_id: supabase.auth.getUser()?.data.user?.id,
+            p_user_id: (await supabase.auth.getUser()).data.user?.id,
             p_salon_id: currentSalon.id
           });
 
         if (error) throw error;
+        
         setUserRole(data);
       } catch (error) {
         console.error('Error fetching user role:', error);
