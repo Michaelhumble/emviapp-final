@@ -172,10 +172,7 @@ const OwnerDashboard = () => {
                   </TabsContent>
                   
                   <TabsContent value="team" className="space-y-8">
-                    <SalonTeamManagement />
-                    <SalonManagersSection />
-                    <SalonTeamManager />
-                    <SalonReferralPanel />
+                    <SalonTeamSection />
                   </TabsContent>
                   
                   <TabsContent value="services" className="space-y-8">
