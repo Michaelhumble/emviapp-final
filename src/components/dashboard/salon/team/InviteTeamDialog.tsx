@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -95,6 +94,7 @@ export function InviteTeamDialog({ open, onOpenChange }: InviteTeamDialogProps) 
               <SelectContent>
                 <SelectItem value="technician">Technician</SelectItem>
                 <SelectItem value="manager">Manager</SelectItem>
+                <SelectItem value="front_desk">Front Desk</SelectItem>
               </SelectContent>
             </Select>
           </div>
