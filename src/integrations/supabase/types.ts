@@ -1924,6 +1924,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      award_referral_upgrade_bonus: {
+        Args: { referred_user_id: string }
+        Returns: boolean
+      }
       award_tip_credits: {
         Args: { p_user_id: string; p_amount: number; p_transaction_id: string }
         Returns: boolean

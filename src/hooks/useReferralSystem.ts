@@ -55,36 +55,24 @@ export const useReferralSystem = () => {
         return;
       }
 
-      // Get next milestone
+      // Get next milestone safely
       const { data: milestoneData } = await supabase
         .rpc('get_next_referral_milestone', { 
-          current_count: (userData && 'referral_count' in userData) ? userData.referral_count as number || 0 : 0 
+          current_count: userData?.referral_count ?? 0 
         });
 
       setNextMilestone(milestoneData);
       
-      // Handle userData safely by checking if properties exist
-      let referralCount = 0;
-      let credits = 0;
-      
-      if (userData && typeof userData === 'object') {
-        // Check if referral_count exists in userData and is a number
-        if ('referral_count' in userData && typeof userData.referral_count === 'number') {
-          referralCount = userData.referral_count;
-        }
-        
-        // Check if credits exists in userData and is a number
-        if ('credits' in userData && typeof userData.credits === 'number') {
-          credits = userData.credits;
-        }
-      }
+      // Safely extract referral count and credits with fallback
+      const referralCount = userData?.referral_count ?? 0;
+      const credits = userData?.credits ?? 0;
       
       // Calculate completed and pending referrals (for demo)
       const completedReferrals = referralCount;
       const pendingReferrals = Math.max(0, Math.floor(referralCount * 0.2)); // Simulated value
       
       setReferralStats({
-        completedReferrals: referralCount,
+        completedReferrals,
         pendingReferrals,
         totalReferrals: completedReferrals + pendingReferrals,
         credits,
