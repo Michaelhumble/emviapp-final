@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 import TeamMembersList from "./TeamMembersList";
 import { useTeamMembers } from "./hooks/useTeamMembers";
-import { SalonTeamMember, TeamMemberFormData } from "./types";
+import { TeamMemberFormData } from "./types";
+// Import SalonTeamMember from the same place we're importing TeamMemberFormData
+import { SalonTeamMember } from "./types";
 import TeamMemberForm from "./TeamMemberForm";
 import { InviteTeamDialog } from "./InviteTeamDialog";
 
