@@ -48,8 +48,8 @@ const ReferralSystem = () => {
   const nextMilestoneIn = referralProgress?.nextMilestoneIn || 0;
   
   const referralMessage = userProfile?.preferred_language 
-    ? getMotivationalMessage(userProfile.preferred_language) 
-    : getMotivationalMessage();
+    ? getMotivationalMessage(referralStats?.completedReferrals || 0, nextMilestoneIn, userProfile.preferred_language) 
+    : getMotivationalMessage(referralStats?.completedReferrals || 0, nextMilestoneIn);
 
   const toggleShareOptions = () => {
     setShowShareOptions(!showShareOptions);

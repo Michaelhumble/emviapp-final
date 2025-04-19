@@ -10,15 +10,11 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 
 const ReferralWidget = () => {
-  const { referralStats, referralProgress, referralLink, copyReferralLink } = useReferralSystem();
-  const [copied, setCopied] = useState(false);
+  const { referralStats, referralProgress, referralLink, copyReferralLink, copied } = useReferralSystem();
 
   // Handle copy
   const handleCopy = () => {
     copyReferralLink();
-    setCopied(true);
-    toast.success("Referral link copied to clipboard!");
-    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -40,7 +36,7 @@ const ReferralWidget = () => {
               whileTap={{ scale: 0.95 }}
             >
               <Badge variant="secondary" className="bg-white/20 text-white border-none">
-                {referralStats.earnedCredits} credits
+                {referralStats.credits} credits
               </Badge>
             </motion.div>
           </div>
@@ -48,14 +44,14 @@ const ReferralWidget = () => {
           <div className="mt-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-white/90">Referral Progress</span>
-              <span className="text-sm font-medium">{referralStats.completedReferrals}/{referralProgress.nextMilestone}</span>
+              <span className="text-sm font-medium">{referralStats.completedReferrals}/{referralProgress?.nextMilestone || 5}</span>
             </div>
             <Progress 
-              value={(referralStats.completedReferrals / referralProgress.nextMilestone) * 100} 
+              value={(referralProgress?.percentage || 0)} 
               className="h-2 bg-white/20" 
             />
             <p className="mt-2 text-sm text-white/80">
-              {referralProgress.nextMilestoneIn > 0 
+              {referralProgress?.nextMilestoneIn > 0 
                 ? `${referralProgress.nextMilestoneIn} more to reach the next reward`
                 : "You've reached a milestone! Claim your reward."}
             </p>

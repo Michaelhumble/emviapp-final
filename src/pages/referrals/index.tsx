@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+
+import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,7 +17,7 @@ const ReferralsPage = () => {
   const { 
     referralStats, 
     referralProgress, 
-    referrals: fetchedReferrals,
+    referrals, 
     loading 
   } = useReferralSystem();
 
@@ -142,7 +143,7 @@ const ReferralsPage = () => {
                   <CardContent>
                     <ReferralMilestones 
                       referralStats={referralStats || { completedReferrals: 0, totalReferrals: 0 }}
-                      referralProgress={referralProgress || { percentage: 0, nextMilestoneIn: 5, currentTier: 0, nextTier: 1 }}
+                      referralProgress={referralProgress || { percentage: 0, nextMilestoneIn: 5, nextMilestone: 5, level: 0 }}
                     />
                   </CardContent>
                 </Card>
@@ -157,7 +158,7 @@ const ReferralsPage = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ReferralList referrals={fetchedReferrals as Referral[] || sampleReferrals} />
+                    <ReferralList referrals={referrals as Referral[] || sampleReferrals} />
                   </CardContent>
                 </Card>
               </div>
