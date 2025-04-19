@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
 import { startOfWeek, endOfWeek } from 'date-fns';
-import { SalonTeamMember } from '../types';
+import { SalonTeamMember } from './types';
 
 export const useTeamData = () => {
   const { currentSalon } = useSalon();
