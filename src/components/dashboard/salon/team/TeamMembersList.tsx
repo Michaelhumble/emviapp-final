@@ -1,8 +1,9 @@
 
-import { AlertCircle, RefreshCw } from "lucide-react";
+import { AlertCircle, RefreshCw, UserPlus, Users } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { SalonTeamMember } from "./types";
 import TeamMemberItem from "./TeamMemberItem";
+import { Button } from "@/components/ui/button";
 
 interface TeamMembersListProps {
   teamMembers: SalonTeamMember[];
@@ -41,8 +42,18 @@ const TeamMembersList = ({
 
   if (teamMembers.length === 0) {
     return (
-      <div className="py-12 text-center text-gray-500 bg-gray-50 rounded-lg">
-        <p>You haven't added any team members yet.</p>
+      <div className="py-16 flex flex-col items-center justify-center rounded-lg bg-purple-50/50 border border-purple-100">
+        <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+          <Users className="h-8 w-8 text-purple-600" />
+        </div>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">No team members yet</h3>
+        <p className="text-gray-500 mb-6 text-center max-w-sm">
+          Start building your dream team by inviting your first artist
+        </p>
+        <Button className="bg-purple-600 hover:bg-purple-700">
+          <UserPlus className="mr-2 h-4 w-4" />
+          Invite Your First Artist
+        </Button>
       </div>
     );
   }
