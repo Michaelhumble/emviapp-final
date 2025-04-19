@@ -4,12 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 import TeamMembersList from "./TeamMembersList";
-import { useTeamMembers } from "./useTeamMembers";
+import { useTeamMembers } from "./hooks/useTeamMembers";
 import { SalonTeamMember, TeamMemberFormData } from "./types";
 import TeamMemberForm from "./TeamMemberForm";
+import { InviteTeamDialog } from "./InviteTeamDialog";
 
 export default function TeamTab() {
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<SalonTeamMember | null>(null);
   const { teamMembers, loading, error, sendInvite, removeTeamMember, toggleMemberStatus } = useTeamMembers();
 
@@ -23,7 +25,6 @@ export default function TeamTab() {
     setEditingMember(null);
   };
 
-  // Fix: convert to TeamMemberFormData before passing to sendInvite
   const handleSubmitMember = async (data: Partial<SalonTeamMember>): Promise<void> => {
     // Make sure required fields from TeamMemberFormData are present
     if (data.full_name && data.email && data.role) {
@@ -47,7 +48,7 @@ export default function TeamTab() {
           <div>
             <CardTitle className="text-xl font-serif">Team Members</CardTitle>
           </div>
-          <Button onClick={() => setIsFormOpen(true)} size="sm">
+          <Button onClick={() => setIsInviteOpen(true)} size="sm">
             <UserPlus className="h-4 w-4 mr-2" />
             Add Team Member
           </Button>
@@ -69,6 +70,11 @@ export default function TeamTab() {
         onClose={handleCloseForm}
         onSubmit={handleSubmitMember}
         initialData={editingMember}
+      />
+
+      <InviteTeamDialog
+        open={isInviteOpen}
+        onOpenChange={setIsInviteOpen}
       />
     </div>
   );

@@ -38,6 +38,11 @@ export const useTeamInvites = () => {
 
       if (error) throw error;
       
+      // The response could be an array or a single object, handle both cases
+      if (Array.isArray(invite) && invite.length > 0) {
+        return invite[0] as TeamInviteResponse;
+      }
+      
       return invite as TeamInviteResponse;
     } catch (error) {
       console.error('Error creating team invite:', error);
