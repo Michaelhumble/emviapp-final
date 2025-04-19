@@ -28,6 +28,9 @@ export const useTeamInvites = () => {
     try {
       setIsLoading(true);
       
+      // Call the create_team_invite function which should accept full_name parameter
+      // If the database function doesn't accept p_full_name, we need to update it
+      // For now, we'll handle this by providing a default in the backend function
       const { data: invite, error } = await supabase.rpc(
         'create_team_invite',
         {
@@ -40,9 +43,12 @@ export const useTeamInvites = () => {
 
       if (error) throw error;
 
+      // Handle the response properly based on its structure
       if (Array.isArray(invite) && invite.length > 0) {
+        // If it's an array, take the first element
         return invite[0] as TeamInviteResponse;
       } else if (invite && typeof invite === 'object') {
+        // If it's already a single object
         return invite as TeamInviteResponse;
       }
       
