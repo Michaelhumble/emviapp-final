@@ -8,6 +8,7 @@ import {
 import { AuthProvider } from '@/context/auth';
 import { SalonProvider } from '@/context/salon';
 import { SubscriptionProvider } from '@/context/subscription';
+import { NotificationProvider } from '@/context/notification';
 import routes from './routes';
 import PricingPage from './pages/pricing/PricingPage';
 
@@ -23,17 +24,19 @@ function App() {
     <AuthProvider>
       <SalonProvider>
         <SubscriptionProvider>
-          <Routes>
-            {routes.map((route, index) => (
-              <Route 
-                key={index}
-                path={route.path}
-                element={route.element}
-              />
-            ))}
-            {/* Add PricingPage route */}
-            <Route path="/pricing" element={<PricingPage />} />
-          </Routes>
+          <NotificationProvider>
+            <Routes>
+              {routes.map((route, index) => (
+                <Route 
+                  key={index}
+                  path={route.path}
+                  element={route.element}
+                />
+              ))}
+              {/* Add PricingPage route */}
+              <Route path="/pricing" element={<PricingPage />} />
+            </Routes>
+          </NotificationProvider>
         </SubscriptionProvider>
       </SalonProvider>
     </AuthProvider>
