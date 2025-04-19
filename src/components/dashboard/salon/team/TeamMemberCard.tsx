@@ -3,12 +3,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { SalonTeamMember } from "./types";
-import { Calendar, DollarSign, Star, Trophy } from "lucide-react";
+import { Calendar, Copy, Check, DollarSign, Star, Trophy } from "lucide-react";
 import { useTeamMemberStats } from "./hooks/useTeamMemberStats";
 import { formatCurrency } from "@/lib/utils";
 import { useArtistPromotions } from "./hooks/useArtistPromotions";
 import { format } from "date-fns";
 import { Progress } from "@/components/ui/progress";
+import { useTeamMemberBadges } from "./hooks/useTeamMemberBadges";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,8 +28,13 @@ interface TeamMemberCardProps {
 
 export const TeamMemberCard = ({ member }: TeamMemberCardProps) => {
   const [showPromoteDialog, setShowPromoteDialog] = useState(false);
+  const [showReferralCode, setShowReferralCode] = useState(false);
+  const [copied, setCopied] = useState(false);
   const { data: stats } = useTeamMemberStats(member.id);
   const { data: promotionStats } = useArtistPromotions(member.id);
+  const { data: badges } = useTeamMemberBadges(member.id);
+
+  const referralLink = `https://emvi.app/invite/${member.id.substring(0, 8)}`;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -54,6 +60,17 @@ export const TeamMemberCard = ({ member }: TeamMemberCardProps) => {
     }
   };
 
+  const handleCopyReferralLink = async () => {
+    try {
+      await navigator.clipboard.writeText(referralLink);
+      setCopied(true);
+      toast.success('Referral link copied to clipboard!');
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      toast.error('Failed to copy link');
+    }
+  };
+
   const handlePromote = async () => {
     try {
       toast.success(`🎉 ${member.full_name} promoted to ${promotionStats?.nextLevel}!`);
@@ -61,6 +78,43 @@ export const TeamMemberCard = ({ member }: TeamMemberCardProps) => {
     } catch (error) {
       toast.error("Failed to promote team member");
     }
+  };
+
+  const renderBadges = () => {
+    if (!badges) return null;
+
+    return (
+      <div className="flex flex-wrap gap-2 mt-3">
+        {badges.map((badge) => {
+          const badgeConfig = {
+            top_performer: {
+              label: "Top Performer",
+              className: "bg-purple-100 text-purple-800 border-purple-200"
+            },
+            great_feedback: {
+              label: "Great Feedback",
+              className: "bg-green-100 text-green-800 border-green-200"
+            },
+            goal_crusher: {
+              label: "Goal Crusher",
+              className: "bg-blue-100 text-blue-800 border-blue-200"
+            }
+          }[badge.badge_type];
+
+          if (!badgeConfig) return null;
+
+          return (
+            <Badge 
+              key={badge.badge_type}
+              variant="outline" 
+              className={badgeConfig.className}
+            >
+              {badgeConfig.label}
+            </Badge>
+          );
+        })}
+      </div>
+    );
   };
 
   const joinedDate = member.invitation_sent_at || member.joined_at;
@@ -104,6 +158,8 @@ export const TeamMemberCard = ({ member }: TeamMemberCardProps) => {
             </div>
           </div>
 
+          {renderBadges()}
+
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="h-4 w-4" />
@@ -132,6 +188,23 @@ export const TeamMemberCard = ({ member }: TeamMemberCardProps) => {
                 {formatCurrency(stats.totalEarnings)} this week
               </Badge>
             )}
+
+            <div 
+              className="mt-4 p-3 bg-gray-50 rounded-md cursor-pointer hover:bg-gray-100 transition-colors"
+              onClick={handleCopyReferralLink}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Referral Link</span>
+                {copied ? (
+                  <Check className="h-4 w-4 text-green-600" />
+                ) : (
+                  <Copy className="h-4 w-4 text-gray-400" />
+                )}
+              </div>
+              <div className="text-xs text-gray-500 mt-1 truncate">
+                {referralLink}
+              </div>
+            </div>
 
             {promotionStats?.nextLevel && promotionStats.progress >= 100 && (
               <button

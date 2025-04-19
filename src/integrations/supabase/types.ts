@@ -1622,6 +1622,38 @@ export type Database = {
         }
         Relationships: []
       }
+      team_member_badges: {
+        Row: {
+          badge_type: string
+          earned_at: string | null
+          id: string
+          member_id: string
+          metadata: Json | null
+        }
+        Insert: {
+          badge_type: string
+          earned_at?: string | null
+          id?: string
+          member_id: string
+          metadata?: Json | null
+        }
+        Update: {
+          badge_type?: string
+          earned_at?: string | null
+          id?: string
+          member_id?: string
+          metadata?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_member_badges_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "salon_staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       translation_strings: {
         Row: {
           context: string | null
@@ -1968,6 +2000,10 @@ export type Database = {
         Args: { referred_user_id: string }
         Returns: boolean
       }
+      award_team_badge: {
+        Args: { p_member_id: string; p_badge_type: string; p_metadata?: Json }
+        Returns: boolean
+      }
       award_tip_credits: {
         Args: { p_user_id: string; p_amount: number; p_transaction_id: string }
         Returns: boolean
@@ -2026,6 +2062,10 @@ export type Database = {
           referral_count: number
         }[]
       }
+      has_great_feedback: {
+        Args: { p_artist_id: string }
+        Returns: boolean
+      }
       is_artist_available: {
         Args: {
           p_artist_id: string
@@ -2039,6 +2079,10 @@ export type Database = {
         Args: { expires_at: string }
         Returns: boolean
       }
+      is_top_performer: {
+        Args: { p_artist_id: string }
+        Returns: boolean
+      }
       is_user_invited: {
         Args: { user_id: string }
         Returns: boolean
@@ -2049,6 +2093,14 @@ export type Database = {
       }
       process_referral_credits: {
         Args: { p_referrer_code: string; p_new_user_id: string }
+        Returns: boolean
+      }
+      process_team_referral: {
+        Args: {
+          p_referrer_id: string
+          p_referred_id: string
+          p_is_artist: boolean
+        }
         Returns: boolean
       }
       redeem_credits: {
