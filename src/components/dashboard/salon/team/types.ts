@@ -10,4 +10,5 @@ export interface SalonTeamMember {
   invitation_sent_at?: string;
   avatar_url?: string;
   commission_rate?: number;
+  salon_id?: string;  // Adding the missing salon_id property
 }
