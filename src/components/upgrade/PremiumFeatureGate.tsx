@@ -27,11 +27,14 @@ const PremiumFeatureGate: React.FC<PremiumFeatureGateProps> = ({
   const childrenWithProps = React.Children.map(children, child => {
     if (React.isValidElement(child)) {
       return React.cloneElement(child, { 
+        // Explicitly type the props to avoid TypeScript errors
+        ...child.props,
         onClick: (e: React.MouseEvent) => {
+          // Call the original onClick if it exists
           if (child.props.onClick) child.props.onClick(e);
           handleAction(e);
         }
-      });
+      } as React.HTMLAttributes<HTMLElement>);
     }
     return child;
   });
