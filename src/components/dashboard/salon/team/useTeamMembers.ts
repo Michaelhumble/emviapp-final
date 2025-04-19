@@ -1,8 +1,7 @@
-
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSalon } from "@/context/salon";
-import { SalonTeamMember } from "./types";
+import { SalonTeamMember, TeamMemberFormData } from "./types";
 import { toast } from "sonner";
 
 export const useTeamMembers = () => {
@@ -49,7 +48,7 @@ export const useTeamMembers = () => {
     }
   }, [currentSalon?.id]);
 
-  const sendInvite = async (memberData: Partial<SalonTeamMember>) => {
+  const sendInvite = async (memberData: TeamMemberFormData) => {
     if (!currentSalon?.id) {
       toast.error("No salon selected");
       return;
@@ -58,7 +57,6 @@ export const useTeamMembers = () => {
     try {
       setLoading(true);
       
-      // Insert new team member into salon_staff table
       const { data, error } = await supabase
         .from('salon_staff')
         .insert({
@@ -69,6 +67,7 @@ export const useTeamMembers = () => {
           specialty: memberData.specialty,
           status: 'pending',
           invitation_sent_at: new Date().toISOString(),
+          invitation_email: memberData.email,
           commission_rate: memberData.commission_rate
         })
         .select();
@@ -77,27 +76,20 @@ export const useTeamMembers = () => {
       
       toast.success(`Invitation sent to ${memberData.full_name}`);
       
-      // Add the new team member to the list
       if (data && data.length > 0) {
         setTeamMembers(prev => [
           ...prev, 
           {
-            id: data[0].id,
-            full_name: data[0].full_name,
-            email: data[0].email || '',
-            role: data[0].role,
-            specialty: data[0].specialty || '',
-            status: data[0].status as 'active' | 'inactive' | 'pending',
-            avatar_url: data[0].avatar_url,
-            joined_at: data[0].created_at,
-            invitation_sent_at: data[0].invitation_sent_at,
-            commission_rate: data[0].commission_rate
-          }
+            ...data[0],
+            status: 'pending',
+            joined_at: new Date().toISOString(),
+          } as SalonTeamMember
         ]);
       }
     } catch (err: any) {
       console.error("Error sending invite:", err);
       toast.error("Failed to send invitation");
+      throw err;
     } finally {
       setLoading(false);
     }
