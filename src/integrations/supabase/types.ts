@@ -1901,6 +1901,40 @@ export type Database = {
         }
         Relationships: []
       }
+      salon_earnings_view: {
+        Row: {
+          artist_earnings: number | null
+          artist_id: string | null
+          artist_name: string | null
+          booking_count: number | null
+          month: string | null
+          salon_id: string | null
+          total_revenue: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "salon_staff_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "profile_completion_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "salon_staff_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "user_salon_access"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "salon_staff_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_salon_access: {
         Row: {
           access_type: string | null
@@ -1936,6 +1970,10 @@ export type Database = {
         Args: { user_profile: Json; user_role: string }
         Returns: number
       }
+      can_access_salon_earnings: {
+        Args: { p_salon_id: string }
+        Returns: boolean
+      }
       can_review_booking: {
         Args: { booking_id: string; user_id: string }
         Returns: boolean
@@ -1964,6 +2002,17 @@ export type Database = {
       get_next_referral_milestone: {
         Args: { current_count: number }
         Returns: number
+      }
+      get_salon_earnings: {
+        Args: { p_salon_id: string }
+        Returns: {
+          artist_id: string
+          artist_name: string
+          month: string
+          booking_count: number
+          total_revenue: number
+          artist_earnings: number
+        }[]
       }
       get_user_referral_stats: {
         Args: { user_id: string }

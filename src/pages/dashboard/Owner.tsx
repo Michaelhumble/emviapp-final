@@ -44,6 +44,7 @@ import SalonAvailabilityManager from "@/components/dashboard/salon/SalonAvailabi
 import SalonBookingsOverview from "@/components/dashboard/salon/bookings/SalonBookingsOverview";
 import SalonServiceManagement from "@/components/dashboard/salon/services/SalonServiceManagement";
 import { SalonTeamSection } from "@/components/dashboard/salon/team/SalonTeamSection";
+import { SalonEarningsSection } from "@/components/dashboard/salon/earnings/SalonEarningsSection";
 
 const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -108,6 +109,7 @@ const OwnerDashboard = () => {
                     <TabsTrigger value="services" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Services</TabsTrigger>
                     <TabsTrigger value="analytics" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Analytics</TabsTrigger>
                     <TabsTrigger value="messages" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Messages</TabsTrigger>
+                    <TabsTrigger value="earnings" className="data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700">Earnings</TabsTrigger>
                   </TabsList>
                   
                   <TabsContent value="overview" className="space-y-8 pt-4">
@@ -202,6 +204,9 @@ const OwnerDashboard = () => {
                     <SalonMessagingCenter />
                     
                     <SalonNotificationCenter />
+                  </TabsContent>
+                  <TabsContent value="earnings" className="space-y-8">
+                    <SalonEarningsSection />
                   </TabsContent>
                 </Tabs>
                 
