@@ -47,15 +47,14 @@ export const useTeamInvites = () => {
 
       // Handle the response properly based on its structure
       if (Array.isArray(invite) && invite.length > 0) {
-        // If it's an array, take the first element and cast properly
-        const firstInvite = invite[0] as { invite_code: string; expires_at: string };
+        // If it's an array, take the first element
         return {
-          invite_code: firstInvite.invite_code,
-          expires_at: firstInvite.expires_at
+          invite_code: invite[0].invite_code,
+          expires_at: invite[0].expires_at
         };
       } else if (invite && typeof invite === 'object') {
-        // If it's already a single object, ensure it matches our interface
-        const typedInvite = invite as { invite_code: string; expires_at: string };
+        // If it's already a single object
+        const typedInvite = invite as unknown as { invite_code: string; expires_at: string };
         return {
           invite_code: typedInvite.invite_code,
           expires_at: typedInvite.expires_at
