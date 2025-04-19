@@ -1622,6 +1622,57 @@ export type Database = {
         }
         Relationships: []
       }
+      team_invites: {
+        Row: {
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          invite_code: string
+          metadata: Json | null
+          phone_number: string
+          role: string
+          salon_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          invite_code: string
+          metadata?: Json | null
+          phone_number: string
+          role: string
+          salon_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          invite_code?: string
+          metadata?: Json | null
+          phone_number?: string
+          role?: string
+          salon_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_invites_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "salons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_invites_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "user_salon_access"
+            referencedColumns: ["salon_id"]
+          },
+        ]
+      }
       team_member_badges: {
         Row: {
           badge_type: string
@@ -2032,6 +2083,17 @@ export type Database = {
           p_link?: string
           p_metadata?: Json
         }
+        Returns: string
+      }
+      create_team_invite: {
+        Args: { p_salon_id: string; p_phone_number: string; p_role: string }
+        Returns: {
+          invite_code: string
+          expires_at: string
+        }[]
+      }
+      generate_team_invite_code: {
+        Args: Record<PropertyKey, never>
         Returns: string
       }
       get_artist_rating: {

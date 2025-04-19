@@ -1,50 +1,48 @@
 
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
-import { useTeamData } from "./useMockTeamData";
-import { TeamList } from "./TeamList";
-import { InviteArtistDialog } from "./InviteArtistDialog";
+import { InviteTeamDialog } from "./InviteTeamDialog";
+import { TeamMemberCard } from "./TeamMemberCard";
+import { useTeamMembers } from "./hooks/useTeamMembers";
 
-export const SalonTeamSection = () => {
-  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
-  const { teamMembers, loading, error } = useTeamData();
-
-  if (error) {
-    return (
-      <div className="text-center py-8 text-red-600">
-        <p>Failed to load team members. Please try again.</p>
-      </div>
-    );
-  }
+export function SalonTeamSection() {
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
+  const { teamMembers, loading, error } = useTeamMembers();
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
-        <div>
-          <CardTitle className="text-2xl">Team Members</CardTitle>
-          <CardDescription>Manage your salon's artists and staff</CardDescription>
-        </div>
-        <Button onClick={() => setInviteDialogOpen(true)}>
-          <UserPlus className="h-4 w-4 mr-2" />
-          Invite Artist
-        </Button>
-      </CardHeader>
-      <CardContent>
-        {loading ? (
-          <div className="flex justify-center py-8">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-          </div>
-        ) : (
-          <TeamList members={teamMembers} />
-        )}
-      </CardContent>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-xl font-serif">Team Members</CardTitle>
+          <Button onClick={() => setIsInviteOpen(true)} size="sm">
+            <UserPlus className="h-4 w-4 mr-2" />
+            Invite Member
+          </Button>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="text-center py-8">Loading team members...</div>
+          ) : error ? (
+            <div className="text-center py-8 text-red-500">Failed to load team members</div>
+          ) : teamMembers.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              No team members yet. Invite someone to get started!
+            </div>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {teamMembers.map((member) => (
+                <TeamMemberCard key={member.id} member={member} />
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
-      <InviteArtistDialog 
-        open={inviteDialogOpen} 
-        onOpenChange={setInviteDialogOpen} 
+      <InviteTeamDialog
+        open={isInviteOpen}
+        onOpenChange={setIsInviteOpen}
       />
-    </Card>
-  );
-};
+    </div>
+  </form>
