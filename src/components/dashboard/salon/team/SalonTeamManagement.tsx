@@ -8,9 +8,9 @@ import { useTeamMembers } from "./hooks/useTeamMembers";
 import { InviteTeamMemberDialog } from "./InviteTeamMemberDialog";
 import { useSalonRolePermissions } from "@/hooks/useSalonRolePermissions";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { TeamMemberFormData } from "./types";
 
 const SalonTeamManagement = () => {
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const { 
     teamMembers, 
     loading, 
@@ -26,7 +26,7 @@ const SalonTeamManagement = () => {
     userRole 
   } = useSalonRolePermissions();
 
-  const handleSendInvite = async (memberData: any) => {
+  const handleSendInvite = async (memberData: TeamMemberFormData) => {
     await sendInvite(memberData);
   };
 

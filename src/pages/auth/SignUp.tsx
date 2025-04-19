@@ -68,11 +68,13 @@ const SignUp = () => {
         
         // Make sure data is properly typed
         if (typeof data === 'object') {
-          setInviteDetails(data as InviteDetails);
+          // Cast as unknown first to avoid type errors
+          const typedData = data as unknown as InviteDetails;
+          setInviteDetails(typedData);
           
           // Pre-fill role if invite specifies one
-          if (data.role) {
-            setRole(data.role as UserRole);
+          if (typedData.role) {
+            setRole(typedData.role as UserRole);
           }
         }
       } catch (error) {

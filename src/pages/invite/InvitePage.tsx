@@ -37,7 +37,8 @@ const InvitePage: React.FC = () => {
         
         // Ensure data is properly typed
         if (typeof data === 'object') {
-          setInviteDetails(data as InviteDetails);
+          // Cast as unknown first then as InviteDetails
+          setInviteDetails(data as unknown as InviteDetails);
         } else {
           throw new Error('Invalid response format');
         }

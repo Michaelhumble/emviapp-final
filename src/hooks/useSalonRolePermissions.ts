@@ -17,15 +17,22 @@ export const useSalonRolePermissions = () => {
       }
 
       try {
+        // We need to use a direct query instead of RPC since get_user_salon_role isn't in the allowed list
+        const { data: user } = await supabase.auth.getUser();
         const { data, error } = await supabase
-          .rpc('get_user_salon_role', {
-            p_user_id: (await supabase.auth.getUser()).data.user?.id,
-            p_salon_id: currentSalon.id
-          });
+          .from('salon_staff')
+          .select('role')
+          .eq('salon_id', currentSalon.id)
+          .eq('email', user.user?.email)
+          .single();
 
-        if (error) throw error;
-        
-        setUserRole(data);
+        if (error) {
+          console.error('Error fetching user role:', error);
+          setUserRole(null);
+        } else if (data) {
+          // Cast the role to SalonStaffRole to ensure type safety
+          setUserRole(data.role as SalonStaffRole);
+        }
       } catch (error) {
         console.error('Error fetching user role:', error);
       } finally {

@@ -1,7 +1,7 @@
 
-import { SalonTeamMember } from "./types";
+import { SalonTeamMember, SalonStaffRole } from "./types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MoreHorizontal, Pencil } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, PowerOff } from "lucide-react";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -14,11 +14,17 @@ import { formatDistance } from "date-fns";
 interface TeamMemberItemProps {
   member: SalonTeamMember;
   onEdit?: (member: SalonTeamMember) => void;
+  onRemove?: (id: string, name?: string) => Promise<void>;
+  onToggleStatus?: (id: string, currentStatus?: 'active' | 'inactive' | 'pending') => Promise<void>;
+  userRole?: SalonStaffRole | null;
 }
 
 const TeamMemberItem = ({ 
   member,
-  onEdit
+  onEdit,
+  onRemove,
+  onToggleStatus,
+  userRole
 }: TeamMemberItemProps) => {
   const getInitials = (name: string) => {
     return name
@@ -73,6 +79,21 @@ const TeamMemberItem = ({
               <DropdownMenuItem onClick={() => onEdit(member)}>
                 <Pencil className="h-4 w-4 mr-2" />
                 Edit
+              </DropdownMenuItem>
+            )}
+            {onToggleStatus && (
+              <DropdownMenuItem onClick={() => onToggleStatus(member.id, member.status)}>
+                <PowerOff className="h-4 w-4 mr-2" />
+                {member.status === 'active' ? 'Deactivate' : 'Activate'}
+              </DropdownMenuItem>
+            )}
+            {onRemove && (
+              <DropdownMenuItem 
+                onClick={() => onRemove(member.id, member.full_name)}
+                className="text-red-600"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Remove
               </DropdownMenuItem>
             )}
           </DropdownMenuContent>

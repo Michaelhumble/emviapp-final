@@ -23,9 +23,10 @@ import { TeamMemberFormData, SalonStaffRole } from "./types";
 
 interface InviteTeamMemberDialogProps {
   onInvite: (data: TeamMemberFormData) => Promise<void>;
+  disabled?: boolean;
 }
 
-export function InviteTeamMemberDialog({ onInvite }: InviteTeamMemberDialogProps) {
+export function InviteTeamMemberDialog({ onInvite, disabled = false }: InviteTeamMemberDialogProps) {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<TeamMemberFormData>({
     full_name: '',
@@ -50,7 +51,7 @@ export function InviteTeamMemberDialog({ onInvite }: InviteTeamMemberDialogProps
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Invite Team Member</Button>
+        <Button disabled={disabled}>Invite Team Member</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

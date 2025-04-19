@@ -40,10 +40,10 @@ export const useTeamInvites = () => {
       
       // Handle the array response correctly
       if (Array.isArray(invite) && invite.length > 0) {
-        return invite[0] as TeamInviteResponse;
+        return invite[0] as unknown as TeamInviteResponse;
       } else if (invite && typeof invite === 'object') {
         // Handle single object response
-        return invite as TeamInviteResponse;
+        return invite as unknown as TeamInviteResponse;
       }
       
       toast.error("Failed to create invite - unexpected response format");
