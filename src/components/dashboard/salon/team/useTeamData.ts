@@ -20,7 +20,7 @@ export const useTeamData = () => {
         setLoading(true);
         setError(null);
 
-        // Get salon staff
+        // Get salon staff - explicitly type the response to avoid deep inference
         const { data: staffData, error: staffError } = await supabase
           .from('salon_staff')
           .select('*')
@@ -43,14 +43,15 @@ export const useTeamData = () => {
 
         // Calculate booking counts
         const counts: Record<string, number> = {};
-        bookingsData?.forEach(booking => {
-          if (booking.artist_id) {
-            counts[booking.artist_id] = (counts[booking.artist_id] || 0) + 1;
-          }
-        });
+        if (bookingsData) {
+          bookingsData.forEach(booking => {
+            if (booking.artist_id) {
+              counts[booking.artist_id] = (counts[booking.artist_id] || 0) + 1;
+            }
+          });
+        }
 
-        // Transform staff data to match SalonTeamMember interface
-        // Using explicit mapping to avoid deep type inference
+        // Transform staff data using explicit mapping to avoid deep type inference issues
         const transformedStaffData: SalonTeamMember[] = staffData ? staffData.map(staff => ({
           id: staff.id,
           salon_id: staff.salon_id,

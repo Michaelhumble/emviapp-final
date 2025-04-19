@@ -47,7 +47,7 @@ const TeamMembersList = ({
           <Users className="h-8 w-8 text-purple-600" />
         </div>
         <h3 className="text-lg font-medium text-gray-900 mb-2">No team members yet</h3>
-        <p className="text-gray-500 mb-6 text-center max-w-sm">
+        <p className="text-sm text-gray-500 mb-6 text-center max-w-sm">
           Start building your dream team by inviting your first artist
         </p>
         <Button className="bg-purple-600 hover:bg-purple-700">
