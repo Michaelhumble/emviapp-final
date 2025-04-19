@@ -3,12 +3,13 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
 import { startOfWeek, endOfWeek } from 'date-fns';
+import { SalonTeamMember } from '../types';
 
 export const useTeamData = () => {
   const { currentSalon } = useSalon();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [teamMembers, setTeamMembers] = useState<any[]>([]);
+  const [teamMembers, setTeamMembers] = useState<SalonTeamMember[]>([]);
   const [bookingCounts, setBookingCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {

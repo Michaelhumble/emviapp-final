@@ -43,6 +43,7 @@ import SalonReferralPanel from "@/components/dashboard/salon/referral/SalonRefer
 import SalonAvailabilityManager from "@/components/dashboard/salon/SalonAvailabilityManager";
 import SalonBookingsOverview from "@/components/dashboard/salon/bookings/SalonBookingsOverview";
 import SalonServiceManagement from "@/components/dashboard/salon/services/SalonServiceManagement";
+import { SalonTeamSection } from "@/components/dashboard/salon/team/SalonTeamSection";
 
 const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
