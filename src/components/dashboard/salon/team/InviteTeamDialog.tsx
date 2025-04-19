@@ -29,7 +29,7 @@ export function InviteTeamDialog({ open, onOpenChange }: InviteTeamDialogProps) 
       role
     });
 
-    if (invite) {
+    if (invite && invite.invite_code) {
       const message = `Hey! Join our salon on EmviApp: https://emvi.app/invite/${invite.invite_code}`;
       setInviteMessage(message);
       toast.success("Invite created successfully!");

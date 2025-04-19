@@ -4,19 +4,19 @@ export interface SalonTeamMember {
   full_name: string;
   email: string;
   role: string;
-  specialty: string;
+  specialty?: string;
   status: 'active' | 'inactive' | 'pending';
-  joined_at: string;  // Making this required to match the types
-  invitation_sent_at?: string;
   avatar_url?: string;
+  joined_at: string;
+  invitation_sent_at?: string;
   commission_rate?: number;
-  salon_id: string;  // Making this required to match the types
+  salon_id: string;
 }
 
-export type TeamMemberFormData = {
+export interface TeamMemberFormData {
   full_name: string;
   email: string;
   role: string;
   specialty?: string;
   commission_rate?: number;
-};
+}
