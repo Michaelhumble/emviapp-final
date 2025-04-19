@@ -6,15 +6,14 @@ import { toast } from "sonner";
 import { deductCredits } from "@/utils/credits";
 import { useAuth } from "@/context/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTranslation } from "@/hooks/useTranslation";
 import { 
   Rocket, 
   Star, 
   Send, 
-  UserPlus, 
-  ArrowRight, 
-  Check, 
-  X 
+  UserPlus
 } from "lucide-react";
+import { createTranslation } from "@/components/dashboard/salon/SalonTranslationHelper";
 
 interface SalonCreditUsageModalProps {
   isOpen: boolean;
@@ -30,13 +29,20 @@ const SalonCreditUsageModal: React.FC<SalonCreditUsageModalProps> = ({
   refreshCredits
 }) => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const creditOptions = [
     {
       id: 'visibility_boost',
-      title: 'Boost Salon Visibility',
-      description: 'Get featured on homepage and artist feed',
+      title: createTranslation(
+        "Boost Salon Visibility",
+        "Tăng độ nhận diện của salon"
+      ),
+      description: createTranslation(
+        "Get featured on homepage and artist feed",
+        "Được giới thiệu trên trang chủ và nguồn cấp dữ liệu nghệ sĩ"
+      ),
       credits: 25,
       icon: <Rocket className="h-6 w-6 text-blue-500" />,
       action: async () => {
@@ -49,15 +55,24 @@ const SalonCreditUsageModal: React.FC<SalonCreditUsageModalProps> = ({
         });
 
         if (success) {
-          toast.success("Your salon is now boosted for 7 days!");
+          toast.success(t(createTranslation(
+            "Your salon is now boosted for 7 days!",
+            "Salon của bạn đã được tăng cường trong 7 ngày!"
+          )));
           await refreshCredits();
         }
       }
     },
     {
       id: 'local_offer',
-      title: 'Send Local Customer Offer',
-      description: 'Reach nearby professionals',
+      title: createTranslation(
+        "Send Local Customer Offer",
+        "Gửi ưu đãi cho khách hàng địa phương"
+      ),
+      description: createTranslation(
+        "Reach nearby professionals",
+        "Tiếp cận các chuyên gia gần đó"
+      ),
       credits: 20,
       icon: <Send className="h-6 w-6 text-green-500" />,
       action: async () => {
@@ -70,15 +85,24 @@ const SalonCreditUsageModal: React.FC<SalonCreditUsageModalProps> = ({
         });
 
         if (success) {
-          toast.success("Promotion created and targeted!");
+          toast.success(t(createTranslation(
+            "Promotion created and targeted!",
+            "Chương trình khuyến mãi đã được tạo và nhắm mục tiêu!"
+          )));
           await refreshCredits();
         }
       }
     },
     {
       id: 'referral_boost',
-      title: 'Referral Boost',
-      description: 'System invites 10 nearby professionals',
+      title: createTranslation(
+        "Referral Boost",
+        "Tăng cường giới thiệu"
+      ),
+      description: createTranslation(
+        "System invites 10 nearby professionals",
+        "Hệ thống mời 10 chuyên gia gần đó"
+      ),
       credits: 15,
       icon: <UserPlus className="h-6 w-6 text-purple-500" />,
       action: async () => {
@@ -91,7 +115,10 @@ const SalonCreditUsageModal: React.FC<SalonCreditUsageModalProps> = ({
         });
 
         if (success) {
-          toast.success("Referral boost initiated!");
+          toast.success(t(createTranslation(
+            "Referral boost initiated!",
+            "Đã bắt đầu tăng cường giới thiệu!"
+          )));
           await refreshCredits();
         }
       }
@@ -102,9 +129,15 @@ const SalonCreditUsageModal: React.FC<SalonCreditUsageModalProps> = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Smart Credit Usage</DialogTitle>
+          <DialogTitle>{t(createTranslation(
+            "Smart Credit Usage",
+            "Sử dụng Credit thông minh"
+          ))}</DialogTitle>
           <DialogDescription>
-            You have {credits} credits. Choose how to spend them strategically!
+            {t(createTranslation(
+              `You have ${credits} credits. Choose how to spend them strategically!`,
+              `Bạn có ${credits} credit. Hãy chọn cách sử dụng chúng một cách chiến lược!`
+            ))}
           </DialogDescription>
         </DialogHeader>
         
@@ -120,25 +153,28 @@ const SalonCreditUsageModal: React.FC<SalonCreditUsageModalProps> = ({
                   setSelectedOption(option.id);
                   option.action();
                 } else {
-                  toast.error(`Not enough credits. You need ${option.credits} credits.`);
+                  toast.error(t(createTranslation(
+                    `Not enough credits. You need ${option.credits} credits.`,
+                    `Không đủ credit. Bạn cần ${option.credits} credit.`
+                  )));
                 }
               }}
             >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{option.title}</CardTitle>
+                <CardTitle className="text-sm font-medium">{t(option.title)}</CardTitle>
                 {option.icon}
               </CardHeader>
               <CardContent>
                 <div className="text-sm text-muted-foreground">
-                  {option.description}
+                  {t(option.description)}
                 </div>
                 <div className="mt-2 flex items-center justify-between">
-                  <span className="font-bold text-primary">{option.credits} credits</span>
-                  {credits >= option.credits ? (
-                    <Check className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <X className="h-4 w-4 text-red-500" />
-                  )}
+                  <span className="font-bold text-primary">
+                    {t(createTranslation(
+                      `${option.credits} credits`,
+                      `${option.credits} credit`
+                    ))}
+                  </span>
                 </div>
               </CardContent>
             </Card>

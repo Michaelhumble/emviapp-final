@@ -2,7 +2,7 @@
 import { BadgeDollarSign, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/hooks/useTranslation";
-import { toTranslatableText } from "../SalonTranslationHelper";
+import { createTranslation } from "../SalonTranslationHelper";
 
 interface CreditBalanceProps {
   credits: number;
@@ -18,7 +18,10 @@ const CreditBalance = ({ credits, handleBuyCredits, loading }: CreditBalanceProp
       <div className="flex justify-between items-center">
         <div>
           <p className="text-sm text-purple-700 font-medium">
-            {t(toTranslatableText("Your Credit Balance"))}
+            {t(createTranslation(
+              "Your Credit Balance",
+              "Số Dư Credit Của Bạn"
+            ))}
           </p>
           <div className="flex items-center space-x-1">
             <BadgeDollarSign className="h-5 w-5 text-purple-600" />
@@ -30,7 +33,10 @@ const CreditBalance = ({ credits, handleBuyCredits, loading }: CreditBalanceProp
               )}
             </span>
             <span className="text-sm text-purple-700">
-              {t(toTranslatableText("credits"))}
+              {t(createTranslation(
+                "credits",
+                "credit"
+              ))}
             </span>
           </div>
         </div>
@@ -39,7 +45,10 @@ const CreditBalance = ({ credits, handleBuyCredits, loading }: CreditBalanceProp
           className="bg-white hover:bg-blue-50 text-blue-600 border border-blue-200"
           disabled={loading}
         >
-          {t(toTranslatableText("Buy Credits"))}
+          {t(createTranslation(
+            "Buy Credits",
+            "Mua Credit"
+          ))}
         </Button>
       </div>
     </div>
