@@ -40,7 +40,7 @@ export const useTeamInvites = () => {
       
       // Handle the array response correctly
       if (Array.isArray(invite) && invite.length > 0) {
-        // Convert to the expected response type
+        // Return the first item in the array
         return {
           invite_code: invite[0].invite_code,
           expires_at: invite[0].expires_at

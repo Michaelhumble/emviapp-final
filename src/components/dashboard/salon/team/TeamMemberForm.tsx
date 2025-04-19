@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { SalonTeamMember } from "../types";
 import { Button } from "@/components/ui/button";
@@ -32,7 +31,7 @@ const TeamMemberForm = ({ open, onClose, onSubmit, initialData }: TeamMemberForm
   const [formData, setFormData] = useState<Partial<SalonTeamMember>>({
     full_name: '',
     email: '',
-    role: 'artist',
+    role: 'technician',
     specialty: '',
     status: 'active',
     commission_rate: 50, // Default commission rate
@@ -54,7 +53,7 @@ const TeamMemberForm = ({ open, onClose, onSubmit, initialData }: TeamMemberForm
       setFormData({
         full_name: '',
         email: '',
-        role: 'artist',
+        role: 'technician',
         specialty: '',
         status: 'active',
         commission_rate: 50,
@@ -65,7 +64,6 @@ const TeamMemberForm = ({ open, onClose, onSubmit, initialData }: TeamMemberForm
 
   const handleChange = (field: keyof Partial<SalonTeamMember>, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error when field is edited
     if (formErrors[field]) {
       setFormErrors(prev => ({ ...prev, [field]: '' }));
     }
@@ -154,16 +152,15 @@ const TeamMemberForm = ({ open, onClose, onSubmit, initialData }: TeamMemberForm
             <Label htmlFor="role">Role <span className="text-red-500">*</span></Label>
             <Select
               value={formData.role}
-              onValueChange={(value) => handleChange('role', value)}
+              onValueChange={(value: 'owner' | 'manager' | 'technician') => handleChange('role', value)}
             >
               <SelectTrigger id="role">
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="artist">Artist</SelectItem>
+                <SelectItem value="technician">Technician</SelectItem>
                 <SelectItem value="manager">Manager</SelectItem>
-                <SelectItem value="receptionist">Receptionist</SelectItem>
-                <SelectItem value="assistant">Assistant</SelectItem>
+                <SelectItem value="owner">Owner</SelectItem>
               </SelectContent>
             </Select>
           </div>
