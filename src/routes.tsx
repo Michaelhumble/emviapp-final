@@ -301,6 +301,10 @@ const routes = [
     element: <PricingPage />,
   },
   {
+    path: '/pricing',
+    element: <PricingPage />,
+  },
+  {
     path: '*',
     element: <NotFound />,
   },

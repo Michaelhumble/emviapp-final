@@ -1,80 +1,112 @@
 
-import React from "react";
+import React, { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Timer, Star, Sparkles } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CheckCircle2, Timer, Star, Sparkles, Gift, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
 
-const plans = [
-  {
-    name: "Solo Freelancer",
-    originalPrice: 49,
-    discountPrice: 24,
-    features: [
-      "Perfect for independent artists",
-      "Full booking calendar",
-      "Client management tools",
-      "Portfolio showcase",
-      "Direct messaging",
-    ],
-    limit: "1 artist",
-    recommended: false
-  },
-  {
-    name: "Small Salon",
-    originalPrice: 99,
-    discountPrice: 49,
-    features: [
-      "Up to 5 artists",
-      "Team management",
-      "Advanced analytics",
-      "Priority support",
-      "Custom branding",
-    ],
-    limit: "1-5 artists",
-    recommended: true
-  },
-  {
-    name: "Growing Salon",
-    originalPrice: 175,
-    discountPrice: 89,
-    features: [
-      "Up to 15 artists",
-      "Advanced reports",
-      "Multi-location support",
-      "Training resources",
-      "API access",
-    ],
-    limit: "6-15 artists",
-    recommended: false
-  },
-  {
-    name: "Large Salon",
-    originalPrice: 249,
-    discountPrice: 125,
-    features: [
-      "Unlimited artists",
-      "Enterprise support",
-      "Custom integrations",
-      "White-label options",
-      "Dedicated account manager",
-    ],
-    limit: "Unlimited artists",
-    recommended: false
-  }
+const soloFeatures = [
+  "Perfect for independent artists",
+  "Full booking calendar",
+  "Client management tools",
+  "Portfolio showcase",
+  "Direct messaging",
+  "AI matching with clients",
+  "Visibility in search results",
+  "Referral dashboard"
 ];
+
+const smallSalonFeatures = [
+  "Up to 5 artists",
+  "Team management",
+  "Advanced analytics",
+  "Priority support",
+  "Custom branding",
+  "Advanced reports",
+  "AI matching with clients",
+  "Visibility in search results",
+  "Referral dashboard"
+];
+
+const mediumSalonFeatures = [
+  "Up to 10 artists",
+  "Advanced reports",
+  "Multi-location support",
+  "Training resources",
+  "API access",
+  "Premium search placement",
+  "AI matching with clients",
+  "Visibility in search results",
+  "Referral dashboard"
+];
+
+const unlimitedSalonFeatures = [
+  "Unlimited artists",
+  "Enterprise support",
+  "Custom integrations",
+  "White-label options",
+  "Dedicated account manager",
+  "Premium search placement",
+  "AI matching with clients",
+  "Visibility in search results",
+  "Referral dashboard"
+];
+
+// Calculate yearly pricing with 15% discount
+const getYearlyPrice = (monthlyPrice: number) => {
+  const yearlyDiscount = 0.15;
+  const yearlyPrice = monthlyPrice * 12 * (1 - yearlyDiscount);
+  return yearlyPrice.toFixed(2);
+};
 
 const PricingPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
 
-  const calculateDiscount = (original: number, discounted: number) => {
-    return Math.round(((original - discounted) / original) * 100);
+  const handleSubscribe = (plan: string) => {
+    if (user) {
+      navigate(`/checkout?plan=${plan}&cycle=${billingCycle}`);
+    } else {
+      navigate(`/auth/signin?redirect=/pricing&plan=${plan}&cycle=${billingCycle}`);
+    }
   };
+
+  const pricingPlans = [
+    {
+      name: "Solo Artist",
+      monthlyPrice: 49.95,
+      features: soloFeatures,
+      recommended: false,
+      limit: "1 artist"
+    },
+    {
+      name: "Small Salon",
+      monthlyPrice: 99,
+      features: smallSalonFeatures,
+      recommended: true,
+      limit: "Up to 5 artists"
+    },
+    {
+      name: "Medium Salon",
+      monthlyPrice: 175,
+      features: mediumSalonFeatures,
+      recommended: false,
+      limit: "Up to 10 artists"
+    },
+    {
+      name: "Unlimited Salon",
+      monthlyPrice: 199.95,
+      features: unlimitedSalonFeatures,
+      recommended: false,
+      limit: "Unlimited artists"
+    }
+  ];
 
   return (
     <Layout>
@@ -83,12 +115,30 @@ const PricingPage = () => {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Choose Your Perfect Plan</h1>
           <p className="text-xl text-muted-foreground mb-6">
-            Start with 50% OFF your first 3 months—limited time only
+            Exclusive early access pricing — Join now and lock in these rates
           </p>
           <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-800 px-4 py-2 rounded-full">
             <Timer className="h-5 w-5" />
-            <span className="font-medium">Early-bird pricing ends soon!</span>
+            <span className="font-medium">Early-access pricing ends soon!</span>
           </div>
+        </div>
+
+        {/* Billing Cycle Toggle */}
+        <div className="flex justify-center mb-10">
+          <Tabs
+            defaultValue="monthly"
+            value={billingCycle}
+            onValueChange={(value) => setBillingCycle(value as "monthly" | "yearly")}
+            className="w-full max-w-md"
+          >
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="monthly">Monthly</TabsTrigger>
+              <TabsTrigger value="yearly">
+                Yearly
+                <Badge className="ml-2 bg-green-100 text-green-800 hover:bg-green-200">Save 15%</Badge>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
 
         {/* Pricing Grid */}
@@ -98,7 +148,7 @@ const PricingPage = () => {
           transition={{ duration: 0.5 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12"
         >
-          {plans.map((plan) => (
+          {pricingPlans.map((plan) => (
             <Card key={plan.name} className={`relative flex flex-col ${
               plan.recommended ? 'border-primary shadow-lg' : ''
             }`}>
@@ -114,17 +164,17 @@ const PricingPage = () => {
               <CardHeader>
                 <CardTitle className="flex flex-col items-center">
                   <span className="text-xl mb-2">{plan.name}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-3xl font-bold">${plan.discountPrice}</span>
-                    <div className="flex flex-col items-start">
-                      <span className="text-sm line-through text-muted-foreground">
-                        ${plan.originalPrice}
-                      </span>
-                      <Badge variant="secondary" className="text-xs">
-                        Save {calculateDiscount(plan.originalPrice, plan.discountPrice)}%
-                      </Badge>
-                    </div>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-bold">
+                      ${billingCycle === "monthly" ? plan.monthlyPrice : (parseFloat(getYearlyPrice(plan.monthlyPrice)) / 12).toFixed(2)}
+                    </span>
+                    <span className="text-sm text-muted-foreground">/mo</span>
                   </div>
+                  {billingCycle === "yearly" && (
+                    <span className="text-xs text-green-600 mt-1">
+                      Billed ${getYearlyPrice(plan.monthlyPrice)}/year
+                    </span>
+                  )}
                   <span className="text-sm text-muted-foreground mt-2">{plan.limit}</span>
                 </CardTitle>
               </CardHeader>
@@ -144,23 +194,38 @@ const PricingPage = () => {
                 <Button 
                   className="w-full"
                   variant={plan.recommended ? "default" : "outline"}
-                  onClick={() => {
-                    if (user) {
-                      navigate("/checkout?plan=" + encodeURIComponent(plan.name));
-                    } else {
-                      navigate("/auth/signin?redirect=/pricing");
-                    }
-                  }}
+                  onClick={() => handleSubscribe(plan.name)}
                 >
-                  Get Started
+                  {user ? "Subscribe Now" : "Get Started"}
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
-                  First 3 months at ${plan.discountPrice}/mo
+                  Join now, cancel anytime
                 </p>
               </CardFooter>
             </Card>
           ))}
         </motion.div>
+
+        {/* Referral Credits Banner */}
+        <div className="max-w-3xl mx-auto bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-8 mb-12">
+          <div className="flex flex-col sm:flex-row items-center">
+            <div className="mb-6 sm:mb-0 sm:mr-8">
+              <Gift className="h-12 w-12 text-primary" />
+            </div>
+            <div className="text-center sm:text-left">
+              <h3 className="text-xl font-bold mb-2">
+                Free Credits When You Refer Friends
+              </h3>
+              <p className="text-muted-foreground mb-4">
+                Earn 100 credits for each friend who joins EmviApp. Credits can be used for premium features, 
+                profile boosts, and more!
+              </p>
+              <Button variant="outline" onClick={() => navigate("/referrals")}>
+                View Referral Program
+              </Button>
+            </div>
+          </div>
+        </div>
 
         {/* Trust Banner */}
         <div className="max-w-3xl mx-auto text-center bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg p-8">
@@ -174,6 +239,16 @@ const PricingPage = () => {
             Join thousands of successful salons and artists who trust us with their business.
             Start your journey today with our special early-bird pricing.
           </p>
+          <div className="flex flex-wrap justify-center gap-4 mt-6">
+            <div className="flex items-center">
+              <Users className="h-5 w-5 mr-2 text-primary" />
+              <span className="text-sm">2,500+ happy customers</span>
+            </div>
+            <div className="flex items-center">
+              <CheckCircle2 className="h-5 w-5 mr-2 text-primary" />
+              <span className="text-sm">30-day satisfaction guarantee</span>
+            </div>
+          </div>
         </div>
       </div>
     </Layout>
