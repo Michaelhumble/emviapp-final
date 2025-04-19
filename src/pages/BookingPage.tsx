@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
@@ -26,17 +27,14 @@ import { Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
-
-// Time slots for booking
-const TIME_SLOTS = [
-  '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
-  '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM',
-  '5:00 PM', '6:00 PM', '7:00 PM'
-];
+import { useAvailableTimeSlots } from '@/hooks/useAvailableTimeSlots';
+import { BookingStateWrapper } from '@/components/booking/BookingStateWrapper';
+import { useBookingErrorHandler } from '@/hooks/useBookingErrorHandler';
 
 const BookingPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { handleBookingError } = useBookingErrorHandler();
 
   const [providerId, setProviderId] = useState('');
   const [serviceType, setServiceType] = useState('');
@@ -44,6 +42,10 @@ const BookingPage = () => {
   const [bookingTime, setBookingTime] = useState('');
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  // Use our new availability hook
+  const { availableTimeSlots, isDateAvailable } = useAvailableTimeSlots(providerId, bookingDate);
 
   // Fetch providers (artists and salons) for selection
   const { data: providers, isLoading: loadingProviders } = useQuery({
@@ -53,6 +55,7 @@ const BookingPage = () => {
         .from('users')
         .select('id, full_name, role')
         .in('role', ['artist', 'salon', 'owner'])
+        .eq('accepts_bookings', true)
         .order('full_name');
       
       if (error) throw error;
@@ -62,16 +65,21 @@ const BookingPage = () => {
 
   // Fetch services for selection
   const { data: services, isLoading: loadingServices } = useQuery({
-    queryKey: ['services'],
+    queryKey: ['services', providerId],
     queryFn: async () => {
+      if (!providerId) return [];
+
       const { data, error } = await supabase
         .from('services')
         .select('id, title')
+        .eq('user_id', providerId)
+        .eq('is_visible', true)
         .order('title');
       
       if (error) throw error;
       return data || [];
-    }
+    },
+    enabled: !!providerId
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -89,6 +97,7 @@ const BookingPage = () => {
     }
 
     setSubmitting(true);
+    setError(null);
 
     try {
       // Format the date for database storage
@@ -100,7 +109,7 @@ const BookingPage = () => {
         .insert({
           customer_id: user.id,
           provider_id: providerId,
-          service_type: serviceType,
+          service_id: serviceType,
           date: formattedDate,
           time: bookingTime,
           notes: notes,
@@ -117,9 +126,9 @@ const BookingPage = () => {
 
       toast.success('Booking request submitted successfully!');
       navigate('/my-bookings');
-    } catch (error: any) {
-      console.error('Error creating booking:', error);
-      toast.error(`Failed to submit booking: ${error.message}`);
+    } catch (err) {
+      handleBookingError(err);
+      setError(err instanceof Error ? err : new Error('Failed to submit booking'));
     } finally {
       setSubmitting(false);
     }
@@ -136,104 +145,134 @@ const BookingPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="provider">Select Artist or Salon</Label>
-                <Select
-                  value={providerId}
-                  onValueChange={setProviderId}
-                  disabled={loadingProviders}
-                >
-                  <SelectTrigger id="provider">
-                    <SelectValue placeholder="Select provider" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {providers?.map((provider) => (
-                      <SelectItem key={provider.id} value={provider.id}>
-                        {provider.full_name} ({provider.role})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <BookingStateWrapper 
+              loading={submitting} 
+              error={error}
+              loadingComponent={<div className="p-8 text-center">Processing your booking...</div>}
+            >
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="provider">Select Artist or Salon</Label>
+                  <Select
+                    value={providerId}
+                    onValueChange={(value) => {
+                      setProviderId(value);
+                      setServiceType(''); // Reset service when provider changes
+                      setBookingDate(undefined); // Reset date
+                      setBookingTime(''); // Reset time
+                    }}
+                    disabled={loadingProviders}
+                  >
+                    <SelectTrigger id="provider">
+                      <SelectValue placeholder="Select provider" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {providers?.map((provider) => (
+                        <SelectItem key={provider.id} value={provider.id}>
+                          {provider.full_name} ({provider.role})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="service">Service Type</Label>
-                <Select
-                  value={serviceType}
-                  onValueChange={setServiceType}
-                  disabled={loadingServices}
-                >
-                  <SelectTrigger id="service">
-                    <SelectValue placeholder="Select service" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {services?.map((service) => (
-                      <SelectItem key={service.id} value={service.title}>
-                        {service.title}
-                      </SelectItem>
-                    ))}
-                    <SelectItem value="manicure">Manicure</SelectItem>
-                    <SelectItem value="pedicure">Pedicure</SelectItem>
-                    <SelectItem value="gel-nails">Gel Nails</SelectItem>
-                    <SelectItem value="nail-art">Nail Art</SelectItem>
-                    <SelectItem value="acrylic-nails">Acrylic Nails</SelectItem>
-                    <SelectItem value="nail-repair">Nail Repair</SelectItem>
-                    <SelectItem value="custom">Custom Service</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Select Date</Label>
-                <Calendar
-                  mode="single"
-                  selected={bookingDate}
-                  onSelect={setBookingDate}
-                  disabled={(date) => date < new Date()}
-                  className="border rounded-md p-3"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="time">Select Time</Label>
-                <Select value={bookingTime} onValueChange={setBookingTime}>
-                  <SelectTrigger id="time">
-                    <SelectValue placeholder="Select time" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TIME_SLOTS.map((time) => (
-                      <SelectItem key={time} value={time}>
-                        {time}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="notes">Additional Notes</Label>
-                <Textarea
-                  id="notes"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Any special requests or information"
-                  className="resize-none"
-                  rows={4}
-                />
-              </div>
-
-              <Button type="submit" className="w-full" disabled={submitting}>
-                {submitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Submitting...
-                  </>
-                ) : (
-                  'Request Booking'
+                {providerId && (
+                  <div className="space-y-2">
+                    <Label htmlFor="service">Service Type</Label>
+                    <Select
+                      value={serviceType}
+                      onValueChange={setServiceType}
+                      disabled={loadingServices}
+                    >
+                      <SelectTrigger id="service">
+                        <SelectValue placeholder="Select service" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {services?.map((service) => (
+                          <SelectItem key={service.id} value={service.id}>
+                            {service.title}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 )}
-              </Button>
-            </form>
+
+                {providerId && serviceType && (
+                  <div className="space-y-2">
+                    <Label>Select Date</Label>
+                    <Calendar
+                      mode="single"
+                      selected={bookingDate}
+                      onSelect={(date) => {
+                        setBookingDate(date);
+                        setBookingTime(''); // Reset time when date changes
+                      }}
+                      disabled={(date) => {
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        return date < today || !isDateAvailable(date);
+                      }}
+                      className="border rounded-md p-3"
+                    />
+                  </div>
+                )}
+
+                {providerId && serviceType && bookingDate && (
+                  <div className="space-y-2">
+                    <Label htmlFor="time">Select Time</Label>
+                    {availableTimeSlots.length > 0 ? (
+                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                        {availableTimeSlots.map((time) => (
+                          <Button
+                            key={time}
+                            type="button"
+                            variant={bookingTime === time ? "default" : "outline"}
+                            className={bookingTime === time ? "bg-primary-600" : ""}
+                            onClick={() => setBookingTime(time)}
+                          >
+                            {time}
+                          </Button>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="p-4 border rounded-md bg-yellow-50 text-yellow-800">
+                        No availability for this day. Please select another date.
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {providerId && serviceType && bookingDate && bookingTime && (
+                  <div className="space-y-2">
+                    <Label htmlFor="notes">Additional Notes</Label>
+                    <Textarea
+                      id="notes"
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="Any special requests or information"
+                      className="resize-none"
+                      rows={4}
+                    />
+                  </div>
+                )}
+
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={submitting || !providerId || !serviceType || !bookingDate || !bookingTime}
+                >
+                  {submitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    'Request Booking'
+                  )}
+                </Button>
+              </form>
+            </BookingStateWrapper>
           </CardContent>
         </Card>
       </div>

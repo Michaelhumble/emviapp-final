@@ -1,24 +1,30 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, ChevronLeft, ChevronRight, Clock, Plus } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { format, addWeeks, subWeeks } from 'date-fns';
 import { useArtistCalendar } from "@/hooks/useArtistCalendar";
-import { format, parseISO } from 'date-fns';
+import { BookingStateWrapper } from "@/components/booking/BookingStateWrapper";
+import WeeklyCalendarView from './WeeklyCalendarView';
 import ArtistBookingDialog from './ArtistBookingDialog';
 import BlockTimeDialog from './BlockTimeDialog';
 
 const ArtistBookingCalendar = () => {
   const {
     currentDate,
-    weekDays,
     appointments,
     blockedTimes,
     isLoadingAppointments,
     isLoadingBlockedTimes,
-    selectedBooking,
-    selectedBlockedTime,
+    appointmentsError,
+    blockedTimesError,
     isBookingDialogOpen,
     isBlockTimeDialogOpen,
+    selectedBooking,
+    selectedBlockedTime,
+    setIsBookingDialogOpen,
+    setIsBlockTimeDialogOpen,
     goToPreviousWeek,
     goToNextWeek,
     goToToday,
@@ -26,23 +32,46 @@ const ArtistBookingCalendar = () => {
     openEditBookingDialog,
     openBlockTimeDialog,
     openEditBlockedTimeDialog,
-    setIsBookingDialogOpen,
-    setIsBlockTimeDialogOpen,
     saveAppointment,
     saveBlockedTime,
     deleteAppointment,
     deleteBlockedTime
   } = useArtistCalendar();
 
+  // Combine errors if any exist
+  const error = appointmentsError || blockedTimesError || null;
+  
+  // Handle selecting a time slot on the calendar
+  const handleSelectTimeSlot = (date: Date, hour: number) => {
+    // Create a date object with the selected hour
+    const selectedDate = new Date(date);
+    selectedDate.setHours(hour, 0, 0, 0);
+    
+    // Check if this time is already booked or blocked
+    const isBooked = appointments.some(apt => 
+      format(new Date(apt.start_time), "yyyy-MM-dd HH:00") === format(selectedDate, "yyyy-MM-dd HH:00")
+    );
+    
+    const isBlocked = blockedTimes.some(block =>
+      format(new Date(block.start_time), "yyyy-MM-dd HH:00") === format(selectedDate, "yyyy-MM-dd HH:00")
+    );
+    
+    if (!isBooked && !isBlocked) {
+      // Open booking dialog with this time slot
+      openAddBookingDialog(selectedDate);
+    }
+  };
+
   return (
     <Card className="overflow-hidden">
       <CardHeader>
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <CardTitle className="text-xl font-serif">Booking Calendar</CardTitle>
             <CardDescription>Manage your schedule and client appointments</CardDescription>
           </div>
-          <div className="flex gap-2 mt-2 sm:mt-0">
+          
+          <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={goToPreviousWeek}>
               <ChevronLeft className="h-4 w-4 mr-1" /> Previous
             </Button>
@@ -55,6 +84,7 @@ const ArtistBookingCalendar = () => {
           </div>
         </div>
       </CardHeader>
+      
       <CardContent>
         <div className="mb-4 flex flex-col sm:flex-row justify-between gap-2">
           <div className="flex gap-2">
@@ -62,101 +92,45 @@ const ArtistBookingCalendar = () => {
               <Plus className="h-4 w-4 mr-1" /> Add Booking
             </Button>
             <Button size="sm" variant="outline" onClick={openBlockTimeDialog}>
-              <Clock className="h-4 w-4 mr-1" /> Block Time
+              Block Time
             </Button>
           </div>
+          
+          <div className="text-sm text-muted-foreground">
+            <CalendarDays className="h-4 w-4 inline mr-1" />
+            {format(currentDate, "MMMM d, yyyy")}
+          </div>
         </div>
-
-        {/* Week view header */}
-        <div className="grid grid-cols-7 gap-1 mb-1">
-          {weekDays.map((day, index) => (
-            <div 
-              key={index} 
-              className={`text-center py-1 font-medium ${
-                format(day, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') 
-                  ? 'bg-primary/10 text-primary rounded-md'
-                  : ''
-              }`}
-            >
-              <div>{format(day, 'E')}</div>
-              <div className="text-sm">{format(day, 'MMM d')}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Week view grid */}
-        <div className="grid grid-cols-7 gap-1 h-[500px] overflow-auto">
-          {weekDays.map((day, dayIndex) => (
-            <div 
-              key={dayIndex} 
-              className={`border rounded-md overflow-auto ${
-                format(day, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') 
-                  ? 'border-primary/30 bg-primary/5'
-                  : 'border-gray-200'
-              }`}
-            >
-              {/* Appointments for the day */}
-              <div className="p-1">
-                {appointments
-                  .filter(appointment => format(parseISO(appointment.start_time), 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd'))
-                  .map((appointment) => (
-                    <div 
-                      key={appointment.id}
-                      onClick={() => openEditBookingDialog(appointment)}
-                      className="mb-1 p-1 bg-blue-100 border border-blue-200 rounded cursor-pointer hover:bg-blue-200 transition-colors text-xs"
-                    >
-                      <div className="font-medium">
-                        {format(parseISO(appointment.start_time), 'h:mm a')} - {format(parseISO(appointment.end_time), 'h:mm a')}
-                      </div>
-                      <div className="truncate">{appointment.customer_name || 'No name'}</div>
-                      <div className="truncate text-blue-700">{appointment.status}</div>
-                    </div>
-                  ))
-                }
-                
-                {/* Blocked times for the day */}
-                {blockedTimes
-                  .filter(blocked => format(parseISO(blocked.start_time), 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd'))
-                  .map((blocked) => (
-                    <div 
-                      key={blocked.id}
-                      onClick={() => openEditBlockedTimeDialog(blocked)}
-                      className="mb-1 p-1 bg-gray-100 border border-gray-200 rounded cursor-pointer hover:bg-gray-200 transition-colors text-xs"
-                    >
-                      <div className="font-medium">
-                        {format(parseISO(blocked.start_time), 'h:mm a')} - {format(parseISO(blocked.end_time), 'h:mm a')}
-                      </div>
-                      <div className="truncate text-gray-600">Blocked{blocked.reason ? `: ${blocked.reason}` : ''}</div>
-                    </div>
-                  ))
-                }
-              </div>
-            </div>
-          ))}
-        </div>
+        
+        <BookingStateWrapper
+          loading={isLoadingAppointments || isLoadingBlockedTimes}
+          error={error ? new Error(error.message) : null}
+          loadingComponent={<div className="min-h-[500px] flex items-center justify-center">Loading calendar data...</div>}
+        >
+          <WeeklyCalendarView
+            currentDate={currentDate}
+            bookings={appointments}
+            blockedTimes={blockedTimes}
+            onSelectTimeSlot={handleSelectTimeSlot}
+          />
+        </BookingStateWrapper>
       </CardContent>
-
-      {/* Booking Dialog */}
+      
+      {/* Dialogs */}
       <ArtistBookingDialog
         isOpen={isBookingDialogOpen}
         onClose={() => setIsBookingDialogOpen(false)}
-        onSave={async (bookingData) => {
-          await saveAppointment(bookingData);
-        }}
-        onDelete={async (id) => {
-          await deleteAppointment(id);
-        }}
+        onSave={saveAppointment}
+        onDelete={deleteAppointment}
         booking={selectedBooking}
         isEditing={!!selectedBooking}
       />
-
-      {/* Block Time Dialog */}
+      
       <BlockTimeDialog
         isOpen={isBlockTimeDialogOpen}
         onClose={() => setIsBlockTimeDialogOpen(false)}
-        onSave={async (data) => {
-          await saveBlockedTime(data);
-        }}
+        onSave={saveBlockedTime}
+        onDelete={deleteBlockedTime}
         blockedTime={selectedBlockedTime}
         isEditing={!!selectedBlockedTime}
       />

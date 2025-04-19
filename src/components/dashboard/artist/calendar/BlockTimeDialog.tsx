@@ -1,24 +1,22 @@
 
-import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { toast } from "sonner";
-import { BlockedTime } from "@/hooks/calendar/useBlockedTimes";
-import { TimePicker } from "@/components/ui/time-picker";
+import { format, addHours, parseISO } from 'date-fns';
+import { Clock, Trash2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { BookingStateWrapper } from '@/components/booking/BookingStateWrapper';
+import { useBookingErrorHandler } from '@/hooks/useBookingErrorHandler';
 
 interface BlockTimeDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (blockedTimeData: Partial<BlockedTime>) => Promise<void>;
+  onSave: (data: any) => Promise<void>;
   onDelete?: (id: string) => Promise<void>;
-  blockedTime?: BlockedTime | null;
+  blockedTime?: any;
   isEditing?: boolean;
 }
 
@@ -30,183 +28,212 @@ const BlockTimeDialog: React.FC<BlockTimeDialogProps> = ({
   blockedTime,
   isEditing = false
 }) => {
-  const [date, setDate] = useState<Date | undefined>(
-    blockedTime ? new Date(blockedTime.start_time) : new Date()
-  );
-  const [startTime, setStartTime] = useState<Date | undefined>(
-    blockedTime ? new Date(blockedTime.start_time) : undefined
-  );
-  const [endTime, setEndTime] = useState<Date | undefined>(
-    blockedTime ? new Date(blockedTime.end_time) : undefined
-  );
-  const [reason, setReason] = useState(blockedTime?.reason || "");
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [startTime, setStartTime] = useState<string>("09:00");
+  const [endTime, setEndTime] = useState<string>("10:00");
+  const [reason, setReason] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Reset form when blockedTime changes
+  const [error, setError] = useState<Error | null>(null);
+  const { handleBookingError } = useBookingErrorHandler();
+
   useEffect(() => {
     if (blockedTime) {
-      setDate(new Date(blockedTime.start_time));
-      setStartTime(new Date(blockedTime.start_time));
-      setEndTime(new Date(blockedTime.end_time));
-      setReason(blockedTime.reason || "");
+      const startDate = new Date(blockedTime.start_time);
+      const endDate = new Date(blockedTime.end_time);
+      
+      setDate(startDate);
+      setStartTime(format(startDate, 'HH:mm'));
+      setEndTime(format(endDate, 'HH:mm'));
+      setReason(blockedTime.reason || '');
     } else {
+      // Reset form for new block
       setDate(new Date());
-      setStartTime(undefined);
-      setEndTime(undefined);
+      setStartTime("09:00");
+      setEndTime("10:00");
       setReason("");
     }
   }, [blockedTime, isOpen]);
-  
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!date || !startTime || !endTime) {
-      toast.error("Please select date and times");
+
+  const generateTimeOptions = () => {
+    const options = [];
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute += 30) {
+        const formattedHour = hour.toString().padStart(2, '0');
+        const formattedMinute = minute.toString().padStart(2, '0');
+        options.push(`${formattedHour}:${formattedMinute}`);
+      }
+    }
+    return options;
+  };
+
+  const timeOptions = generateTimeOptions();
+
+  const handleSubmit = async () => {
+    if (!date) {
+      setError(new Error("Please select a date"));
       return;
     }
-    
-    // Validate time range
-    if (startTime >= endTime) {
-      toast.error("End time must be after start time");
-      return;
-    }
-    
+
+    setIsSubmitting(true);
+    setError(null);
+
     try {
-      setIsSubmitting(true);
+      const [startHour, startMinute] = startTime.split(':').map(Number);
+      const [endHour, endMinute] = endTime.split(':').map(Number);
       
-      // Create full datetime by combining date with times
-      const startDateTime = new Date(date);
-      startDateTime.setHours(startTime.getHours(), startTime.getMinutes(), 0);
+      const startDate = new Date(date);
+      startDate.setHours(startHour, startMinute, 0, 0);
       
-      const endDateTime = new Date(date);
-      endDateTime.setHours(endTime.getHours(), endTime.getMinutes(), 0);
+      const endDate = new Date(date);
+      endDate.setHours(endHour, endMinute, 0, 0);
       
-      const blockedTimeData: Partial<BlockedTime> = {
-        id: blockedTime?.id,
-        start_time: startDateTime.toISOString(),
-        end_time: endDateTime.toISOString(),
-        reason: reason.trim() || null
+      if (endDate <= startDate) {
+        throw new Error("End time must be after start time");
+      }
+
+      const data = {
+        ...(blockedTime?.id ? { id: blockedTime.id } : {}),
+        start_time: startDate.toISOString(),
+        end_time: endDate.toISOString(),
+        reason
       };
-      
-      await onSave(blockedTimeData);
+
+      await onSave(data);
       onClose();
-    } catch (error: any) {
-      toast.error(`Error saving time block: ${error.message}`);
+    } catch (err) {
+      handleBookingError(err);
+      setError(err instanceof Error ? err : new Error("Failed to save blocked time"));
     } finally {
       setIsSubmitting(false);
     }
   };
-  
-  // Handle deletion
+
   const handleDelete = async () => {
-    if (blockedTime?.id && onDelete) {
-      try {
-        setIsSubmitting(true);
+    if (!blockedTime?.id) return;
+    
+    setIsSubmitting(true);
+    setError(null);
+    
+    try {
+      if (onDelete) {
         await onDelete(blockedTime.id);
         onClose();
-      } catch (error: any) {
-        toast.error(`Error deleting time block: ${error.message}`);
-      } finally {
-        setIsSubmitting(false);
       }
+    } catch (err) {
+      handleBookingError(err);
+      setError(err instanceof Error ? err : new Error("Failed to delete blocked time"));
+    } finally {
+      setIsSubmitting(false);
     }
   };
-  
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+    <Dialog open={isOpen} onOpenChange={() => !isSubmitting && onClose()}>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{isEditing ? "Edit Blocked Time" : "Block Time Slot"}</DialogTitle>
+          <DialogTitle>
+            {isEditing ? 'Edit Blocked Time' : 'Block Time Off'}
+          </DialogTitle>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit}>
+        <BookingStateWrapper
+          loading={isSubmitting}
+          error={error}
+          loadingComponent={<div className="p-4 text-center">Processing...</div>}
+        >
           <div className="grid gap-4 py-4">
-            {/* Date Picker */}
             <div className="grid gap-2">
               <Label htmlFor="date">Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : "Select date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate as (date: Date | undefined) => void}
+                disabled={(date) => {
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  return date < today;
+                }}
+                className="border rounded-md"
+              />
             </div>
             
-            {/* Time Selection */}
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="startTime">Start Time</Label>
-                <TimePicker 
-                  date={startTime}
-                  setDate={setStartTime}
-                  granularity="30minutes" 
-                />
+                <Label htmlFor="start-time">Start Time</Label>
+                <Select value={startTime} onValueChange={setStartTime}>
+                  <SelectTrigger id="start-time" className="w-full">
+                    <Clock className="mr-2 h-4 w-4" />
+                    <SelectValue placeholder="Start Time" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {timeOptions.map(time => (
+                      <SelectItem key={`start-${time}`} value={time}>
+                        {time}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               
               <div className="grid gap-2">
-                <Label htmlFor="endTime">End Time</Label>
-                <TimePicker 
-                  date={endTime}
-                  setDate={setEndTime}
-                  granularity="30minutes" 
-                />
+                <Label htmlFor="end-time">End Time</Label>
+                <Select value={endTime} onValueChange={setEndTime}>
+                  <SelectTrigger id="end-time" className="w-full">
+                    <Clock className="mr-2 h-4 w-4" />
+                    <SelectValue placeholder="End Time" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {timeOptions.map(time => (
+                      <SelectItem key={`end-${time}`} value={time}>
+                        {time}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             
-            {/* Reason */}
             <div className="grid gap-2">
               <Label htmlFor="reason">Reason (Optional)</Label>
               <Textarea
                 id="reason"
+                placeholder="Why are you blocking this time?"
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                rows={3}
-                placeholder="e.g., Personal appointment, Out of office, etc."
               />
             </div>
           </div>
-          
-          <DialogFooter className="flex justify-between">
+        </BookingStateWrapper>
+        
+        <DialogFooter className="flex justify-between">
+          <div>
             {isEditing && onDelete && (
-              <Button type="button" variant="destructive" onClick={handleDelete} disabled={isSubmitting}>
-                {isSubmitting ? "Deleting..." : "Delete Block"}
+              <Button 
+                variant="destructive" 
+                onClick={handleDelete}
+                disabled={isSubmitting}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete
               </Button>
             )}
-            <div className="flex gap-2">
-              <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <span className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Saving...
-                  </span>
-                ) : isEditing ? "Update Block" : "Block Time"}
-              </Button>
-            </div>
-          </DialogFooter>
-        </form>
+          </div>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Saving...' : 'Save'}
+            </Button>
+          </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
