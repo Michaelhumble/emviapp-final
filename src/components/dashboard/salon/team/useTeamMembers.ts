@@ -1,4 +1,5 @@
-import { useState, useCallback } from "react";
+
+import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSalon } from "@/context/salon";
 import { SalonTeamMember, TeamMemberFormData } from "./types";
@@ -38,7 +39,8 @@ export const useTeamMembers = () => {
         avatar_url: staff.avatar_url,
         joined_at: staff.created_at,
         invitation_sent_at: staff.invitation_sent_at,
-        commission_rate: staff.commission_rate
+        commission_rate: staff.commission_rate,
+        salon_id: staff.salon_id
       })));
     } catch (err: any) {
       console.error("Error fetching team members:", err);
@@ -83,6 +85,7 @@ export const useTeamMembers = () => {
             ...data[0],
             status: 'pending',
             joined_at: new Date().toISOString(),
+            salon_id: currentSalon.id
           } as SalonTeamMember
         ]);
       }

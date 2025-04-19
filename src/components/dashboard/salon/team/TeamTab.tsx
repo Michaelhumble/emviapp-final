@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 import TeamMembersList from "./TeamMembersList";
 import { useTeamMembers } from "./useTeamMembers";
-import { SalonTeamMember } from "../types";
+import { SalonTeamMember, TeamMemberFormData } from "./types";
 import TeamMemberForm from "./TeamMemberForm";
 
 export default function TeamTab() {
@@ -23,10 +23,21 @@ export default function TeamTab() {
     setEditingMember(null);
   };
 
-  // Fix: convert return type to void, discarding the result
+  // Fix: convert to TeamMemberFormData before passing to sendInvite
   const handleSubmitMember = async (data: Partial<SalonTeamMember>): Promise<void> => {
-    await sendInvite(data);
-    // Promise resolved, no return value needed
+    // Make sure required fields from TeamMemberFormData are present
+    if (data.full_name && data.email && data.role) {
+      const formData: TeamMemberFormData = {
+        full_name: data.full_name,
+        email: data.email,
+        role: data.role,
+        specialty: data.specialty,
+        commission_rate: data.commission_rate
+      };
+      await sendInvite(formData);
+    } else {
+      console.error("Missing required fields for team member");
+    }
   };
 
   return (
