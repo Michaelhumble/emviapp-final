@@ -8,17 +8,20 @@ import { Button } from '@/components/ui/button';
 import Layout from '@/components/layout/Layout';
 import { useAuth } from '@/context/auth';
 
+// Define the invite details type for type safety
+interface InviteDetails {
+  valid: boolean;
+  salon_name?: string;
+  role?: string;
+  phone_match?: boolean;
+  message?: string;
+}
+
 const InvitePage: React.FC = () => {
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [inviteDetails, setInviteDetails] = useState<{
-    valid: boolean;
-    salon_name?: string;
-    role?: string;
-    phone_match?: boolean;
-    message?: string;
-  } | null>(null);
+  const [inviteDetails, setInviteDetails] = useState<InviteDetails | null>(null);
 
   useEffect(() => {
     const validateInvite = async () => {
@@ -31,7 +34,13 @@ const InvitePage: React.FC = () => {
         });
 
         if (error) throw error;
-        setInviteDetails(data);
+        
+        // Ensure data is properly typed
+        if (typeof data === 'object') {
+          setInviteDetails(data as InviteDetails);
+        } else {
+          throw new Error('Invalid response format');
+        }
       } catch (error) {
         console.error('Error validating invite:', error);
         toast.error('Failed to validate invite');

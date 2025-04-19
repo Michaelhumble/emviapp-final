@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/context/auth";
@@ -21,6 +22,15 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { signUpWithEmail } from "@/services/auth";
 import { supabase } from "@/integrations/supabase/client";
 
+// Define invite details type for clarity
+interface InviteDetails {
+  valid: boolean;
+  salon_name?: string;
+  role?: string;
+  phone_match?: boolean;
+  message?: string;
+}
+
 const SignUp = () => {
   const [searchParams] = useSearchParams();
   const inviteToken = searchParams.get('invite');
@@ -34,12 +44,7 @@ const SignUp = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [signupSuccess, setSignupSuccess] = useState(false);
-  const [inviteDetails, setInviteDetails] = useState<{
-    valid: boolean;
-    salon_name?: string;
-    role?: string;
-    phone_match?: boolean;
-  } | null>(null);
+  const [inviteDetails, setInviteDetails] = useState<InviteDetails | null>(null);
 
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -60,11 +65,15 @@ const SignUp = () => {
         });
 
         if (error) throw error;
-        setInviteDetails(data);
-
-        // Pre-fill role if invite specifies one
-        if (data.role) {
-          setRole(data.role as UserRole);
+        
+        // Make sure data is properly typed
+        if (typeof data === 'object') {
+          setInviteDetails(data as InviteDetails);
+          
+          // Pre-fill role if invite specifies one
+          if (data.role) {
+            setRole(data.role as UserRole);
+          }
         }
       } catch (error) {
         console.error('Error validating invite:', error);

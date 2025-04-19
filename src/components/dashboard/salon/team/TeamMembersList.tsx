@@ -9,17 +9,13 @@ interface TeamMembersListProps {
   teamMembers: SalonTeamMember[];
   loading: boolean;
   error: Error | null;
-  onRemoveTeamMember: (memberId: string, name?: string) => void;
-  onToggleMemberStatus: (memberId: string, currentStatus?: 'active' | 'inactive' | 'pending') => void;
   onEdit?: (member: SalonTeamMember) => void;
 }
 
 const TeamMembersList = ({ 
   teamMembers, 
   loading, 
-  error, 
-  onRemoveTeamMember, 
-  onToggleMemberStatus,
+  error,
   onEdit
 }: TeamMembersListProps) => {
   if (error) {
@@ -63,9 +59,7 @@ const TeamMembersList = ({
       {teamMembers.map((member) => (
         <TeamMemberItem 
           key={member.id} 
-          member={member} 
-          onRemove={onRemoveTeamMember}
-          onToggleStatus={onToggleMemberStatus}
+          member={member}
           onEdit={onEdit}
         />
       ))}

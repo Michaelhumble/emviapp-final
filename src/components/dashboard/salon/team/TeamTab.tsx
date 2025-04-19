@@ -13,7 +13,7 @@ export default function TeamTab() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<SalonTeamMember | null>(null);
-  const { teamMembers, loading, error, sendInvite, removeTeamMember, toggleMemberStatus } = useTeamMembers();
+  const { teamMembers, loading, error, fetchTeamMembers } = useTeamMembers();
 
   const handleEditMember = (member: SalonTeamMember) => {
     setEditingMember(member);
@@ -35,7 +35,9 @@ export default function TeamTab() {
         specialty: data.specialty,
         commission_rate: data.commission_rate
       };
-      await sendInvite(formData);
+      // We'll handle this in the InviteTeamDialog component
+      console.log("Form submitted:", formData);
+      setIsFormOpen(false);
     } else {
       console.error("Missing required fields for team member");
     }
@@ -58,8 +60,6 @@ export default function TeamTab() {
             teamMembers={teamMembers}
             loading={loading}
             error={error}
-            onRemoveTeamMember={removeTeamMember}
-            onToggleMemberStatus={toggleMemberStatus}
             onEdit={handleEditMember}
           />
         </CardContent>
