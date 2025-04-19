@@ -1957,6 +1957,10 @@ export type Database = {
           review_count: number
         }[]
       }
+      get_next_referral_milestone: {
+        Args: { current_count: number }
+        Returns: number
+      }
       get_user_referral_stats: {
         Args: { user_id: string }
         Returns: {

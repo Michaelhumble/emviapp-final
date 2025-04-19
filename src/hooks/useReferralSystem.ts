@@ -1,81 +1,78 @@
 
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/context/auth';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
-// Define the types for our referral system
 interface ReferralStats {
   completedReferrals: number;
-  pendingReferrals: number;
-  earnedCredits: number;
-  credits?: number;
-  estimatedEarnings?: number;
-  totalReferrals?: number;
-}
-
-interface ReferralProgress {
-  percentage: number;
-  nextMilestone: number;
-  nextMilestoneIn: number;
-  level: number;
+  credits: number;
 }
 
 export const useReferralSystem = () => {
-  const [referralStats, setReferralStats] = useState<ReferralStats>({
-    completedReferrals: 3,
-    pendingReferrals: 2,
-    earnedCredits: 45,
-    credits: 45,
-    estimatedEarnings: 150
-  });
-
-  const [referralProgress, setReferralProgress] = useState<ReferralProgress>({
-    percentage: 60,
-    nextMilestone: 5,
-    nextMilestoneIn: 2,
-    level: 1
-  });
-
+  const { user, userProfile } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [referralCode] = useState('EMVI123');
-  const [referralLink] = useState('https://emvi.app/join?ref=EMVI123');
-  const [copied, setCopied] = useState(false);
+  const [referralStats, setReferralStats] = useState<ReferralStats>({
+    completedReferrals: 0,
+    credits: 0
+  });
+  const [nextMilestone, setNextMilestone] = useState<number | null>(null);
 
-  // In a real app, we would fetch this data from an API
+  // Generate referral link using user's referral code
+  const referralLink = userProfile?.referral_code 
+    ? `${window.location.origin}/signup?ref=${userProfile.referral_code}`
+    : '';
+
   useEffect(() => {
-    const fetchReferralData = () => {
-      console.log('Fetching referral data...');
-      // Mock API call completed
+    if (!user) return;
+    fetchReferralStats();
+  }, [user]);
+
+  const fetchReferralStats = async () => {
+    try {
+      setLoading(true);
+      const { data: userData, error } = await supabase
+        .from('users')
+        .select('referral_count, credits')
+        .eq('id', user?.id)
+        .single();
+
+      if (error) throw error;
+
+      // Get next milestone
+      const { data: milestoneData } = await supabase
+        .rpc('get_next_referral_milestone', { 
+          current_count: userData?.referral_count || 0 
+        });
+
+      setNextMilestone(milestoneData);
+      setReferralStats({
+        completedReferrals: userData?.referral_count || 0,
+        credits: userData?.credits || 0
+      });
+    } catch (err) {
+      console.error('Error fetching referral stats:', err);
+    } finally {
       setLoading(false);
-    };
-
-    fetchReferralData();
-  }, []);
-
-  const getMotivationalMessage = (language = 'English') => {
-    const isVietnamese = language.toLowerCase() === 'vietnamese';
-    return isVietnamese 
-      ? 'Tiếp tục giới thiệu để nhận thêm phần thưởng!'
-      : 'Keep referring to earn more rewards!';
+    }
   };
 
-  const copyReferralLink = () => {
-    navigator.clipboard.writeText(referralLink);
-    setCopied(true);
+  const copyReferralLink = async () => {
+    if (!referralLink) return;
     
-    // Reset copied state after 2 seconds
-    setTimeout(() => {
-      setCopied(false);
-    }, 2000);
+    try {
+      await navigator.clipboard.writeText(referralLink);
+      toast.success('Referral link copied to clipboard!');
+    } catch (err) {
+      toast.error('Failed to copy link');
+    }
   };
 
   return {
     loading,
-    referralCode,
-    referralLink,
     referralStats,
-    referralProgress,
-    getMotivationalMessage,
-    referrals: [], // Empty array to satisfy type requirements
-    copied,
+    referralLink,
+    nextMilestone,
     copyReferralLink
   };
 };
