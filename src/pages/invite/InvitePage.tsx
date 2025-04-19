@@ -112,7 +112,7 @@ const InvitePage: React.FC = () => {
             <CardTitle>
               {inviteDetails.salon_name 
                 ? `Join ${inviteDetails.salon_name}` 
-                : 'You've been invited to join a team on EmviApp!'}
+                : "You've been invited to join a team on EmviApp!"}
             </CardTitle>
             <CardDescription>
               {inviteDetails.role && `Invited as a ${inviteDetails.role}`}
