@@ -1,4 +1,5 @@
 
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useSalon } from '@/context/salon';
@@ -36,11 +37,11 @@ export const useSalonTeamMessages = () => {
 
       if (error) throw error;
 
-      // Then, for each message, fetch the sender details
+      // Then, for each message, fetch the sender details separately
       const messagesWithSenders = await Promise.all(
         data.map(async (message) => {
           // Get sender info
-          const { data: senderData } = await supabase
+          const { data: senderData, error: senderError } = await supabase
             .from('users')
             .select('full_name, avatar_url')
             .eq('id', message.sender_id)
@@ -48,8 +49,8 @@ export const useSalonTeamMessages = () => {
 
           return {
             ...message,
-            sender_name: senderData?.full_name,
-            sender_avatar: senderData?.avatar_url
+            sender_name: senderError ? undefined : senderData?.full_name,
+            sender_avatar: senderError ? undefined : senderData?.avatar_url
           } as SalonTeamMessage;
         })
       );
@@ -114,3 +115,4 @@ export const useSalonTeamMessages = () => {
     fetchMessages
   };
 };
+

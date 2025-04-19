@@ -1,9 +1,10 @@
 
+
 export type SalonTeamMember = {
   id: string;
   full_name: string;
   email: string;
-  role: 'owner' | 'manager' | 'technician' | 'receptionist';
+  role: 'owner' | 'manager' | 'technician' | 'receptionist' | 'front_desk';
   specialty?: string; // Made optional to match the other definition
   status: 'active' | 'inactive' | 'pending';
   avatar_url?: string;
@@ -41,3 +42,4 @@ export interface SalonBooking {
   notes?: string;
   created_at: string;
 }
+

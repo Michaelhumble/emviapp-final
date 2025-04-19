@@ -1,4 +1,5 @@
 
+
 export interface SalonTeamMember {
   id: string;
   full_name: string;
@@ -61,3 +62,4 @@ export interface SalonMessage {
 
 // Add the MessageSender type that was missing
 export type MessageSender = 'owner' | 'staff' | 'client' | 'system';
+
