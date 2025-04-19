@@ -3,8 +3,9 @@ import { ReactNode } from "react";
 import { PlanTier } from "@/context/subscription/types";
 import { useSubscription } from "@/context/subscription";
 import { Lock } from "lucide-react";
-import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { UpgradeFeature } from "@/components/upgrade/SmartUpgradePrompt";
+import { useUpgradePrompt } from "@/hooks/useUpgradePrompt";
 
 interface FeatureGateProps {
   children: ReactNode;
@@ -12,6 +13,7 @@ interface FeatureGateProps {
   fallback?: ReactNode;
   showUpgradeModal?: boolean;
   disableOverlay?: boolean;
+  upgradeFeature?: UpgradeFeature;
 }
 
 const FeatureGate = ({
@@ -19,10 +21,13 @@ const FeatureGate = ({
   requiredPlan,
   fallback,
   showUpgradeModal = false,
-  disableOverlay = false
+  disableOverlay = false,
+  upgradeFeature = "analytics"
 }: FeatureGateProps) => {
   const { currentPlan, hasActiveSubscription } = useSubscription();
   const navigate = useNavigate();
+  const { isPromptOpen, setIsPromptOpen, checkAndTriggerUpgrade } = 
+    useUpgradePrompt(upgradeFeature);
   
   // Helper to determine tier level
   const getTierLevel = (tier: PlanTier): number => {
@@ -47,17 +52,8 @@ const FeatureGate = ({
   };
   
   const handleUpgradeClick = () => {
-    if (showUpgradeModal) {
-      navigate("/checkout");
-    } else {
-      toast.info("Premium Feature", {
-        description: `This feature requires the ${requiredPlan} plan or higher.`,
-        action: {
-          label: "Upgrade",
-          onClick: () => navigate("/checkout"),
-        },
-      });
-    }
+    // Instead of immediately navigating to checkout, show smart upgrade prompt
+    checkAndTriggerUpgrade();
   };
   
   if (hasAccess()) {
@@ -69,21 +65,23 @@ const FeatureGate = ({
   }
   
   return (
-    <div className="relative">
-      <div className="opacity-50 pointer-events-none filter grayscale">
-        {children}
-      </div>
-      <div 
-        className="absolute inset-0 flex flex-col items-center justify-center bg-black/20 backdrop-blur-[2px] cursor-pointer z-10"
-        onClick={handleUpgradeClick}
-      >
-        <div className="bg-white/90 rounded-lg p-3 shadow-lg text-center">
-          <Lock className="h-5 w-5 mx-auto mb-2 text-amber-500" />
-          <p className="text-sm font-medium">Premium Feature</p>
-          <p className="text-xs text-gray-500">Upgrade to {requiredPlan} plan</p>
+    <>
+      <div className="relative">
+        <div className="opacity-50 pointer-events-none filter grayscale">
+          {children}
+        </div>
+        <div 
+          className="absolute inset-0 flex flex-col items-center justify-center bg-black/20 backdrop-blur-[2px] cursor-pointer z-10"
+          onClick={handleUpgradeClick}
+        >
+          <div className="bg-white/90 rounded-lg p-3 shadow-lg text-center">
+            <Lock className="h-5 w-5 mx-auto mb-2 text-amber-500" />
+            <p className="text-sm font-medium">Premium Feature</p>
+            <p className="text-xs text-gray-500">Upgrade to {requiredPlan} plan</p>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

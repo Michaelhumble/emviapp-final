@@ -6,6 +6,9 @@ import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, User } from "lucide-react";
+import SmartUpgradePrompt from "@/components/upgrade/SmartUpgradePrompt";
+import { useUpgradePrompt } from "@/hooks/useUpgradePrompt";
+import { useSubscription } from "@/context/subscription";
 
 interface Message {
   id: number;
@@ -17,7 +20,10 @@ interface Message {
 
 const Messaging = () => {
   const { user } = useAuth();
+  const { hasActiveSubscription } = useSubscription();
   const [message, setMessage] = useState("");
+  const { isPromptOpen, setIsPromptOpen, checkAndTriggerUpgrade } = useUpgradePrompt("messaging");
+  
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
@@ -49,6 +55,11 @@ const Messaging = () => {
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
+    
+    // Check if user can send message (has subscription)
+    if (!checkAndTriggerUpgrade()) {
+      return;
+    }
 
     const newMessage: Message = {
       id: Date.now(),
@@ -91,6 +102,11 @@ const Messaging = () => {
                     className={`p-3 rounded-lg flex items-center cursor-pointer ${
                       contact.id === 1 ? 'bg-primary/10' : 'hover:bg-gray-100'
                     }`}
+                    onClick={() => {
+                      if (!hasActiveSubscription) {
+                        setIsPromptOpen(true);
+                      }
+                    }}
                   >
                     <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center mr-3">
                       <User className="h-5 w-5 text-gray-500" />
@@ -164,6 +180,12 @@ const Messaging = () => {
           </div>
         </div>
       </div>
+      
+      <SmartUpgradePrompt
+        feature="messaging"
+        open={isPromptOpen}
+        onOpenChange={setIsPromptOpen}
+      />
     </Layout>
   );
 };

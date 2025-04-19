@@ -10,7 +10,6 @@ import { SalonProvider } from '@/context/salon';
 import { SubscriptionProvider } from '@/context/subscription';
 import { NotificationProvider } from '@/context/notification';
 import routes from './routes';
-import PricingPage from './pages/pricing/PricingPage';
 
 function App() {
   const location = useLocation();
@@ -33,8 +32,6 @@ function App() {
                   element={route.element}
                 />
               ))}
-              {/* Add PricingPage route */}
-              <Route path="/pricing" element={<PricingPage />} />
             </Routes>
           </NotificationProvider>
         </SubscriptionProvider>
