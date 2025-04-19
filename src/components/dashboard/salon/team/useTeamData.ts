@@ -52,15 +52,17 @@ export const useTeamData = () => {
         // Transform staff data to match SalonTeamMember interface
         const transformedStaffData: SalonTeamMember[] = staffData?.map(staff => ({
           id: staff.id,
+          salon_id: staff.salon_id,
           full_name: staff.full_name,
           email: staff.email,
           role: staff.role,
           specialty: staff.specialty || '',
           status: staff.status as 'active' | 'inactive' | 'pending',
-          joined_at: staff.created_at, // Use created_at as joined_at
+          joined_at: staff.created_at,
           avatar_url: staff.avatar_url,
           commission_rate: staff.commission_rate,
-          salon_id: staff.salon_id
+          invitation_sent_at: staff.invitation_sent_at,
+          invitation_email: staff.invitation_email
         })) || [];
 
         setTeamMembers(transformedStaffData);

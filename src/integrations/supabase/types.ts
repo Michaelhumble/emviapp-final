@@ -1343,6 +1343,8 @@ export type Database = {
           email: string
           full_name: string
           id: string
+          invitation_email: string | null
+          invitation_sent_at: string | null
           role: string
           salon_id: string
           specialty: string | null
@@ -1356,6 +1358,8 @@ export type Database = {
           email: string
           full_name: string
           id?: string
+          invitation_email?: string | null
+          invitation_sent_at?: string | null
           role: string
           salon_id: string
           specialty?: string | null
@@ -1369,6 +1373,8 @@ export type Database = {
           email?: string
           full_name?: string
           id?: string
+          invitation_email?: string | null
+          invitation_sent_at?: string | null
           role?: string
           salon_id?: string
           specialty?: string | null
@@ -2053,6 +2059,15 @@ export type Database = {
           p_target_id?: string
         }
         Returns: boolean
+      }
+      send_team_invite: {
+        Args: {
+          p_salon_id: string
+          p_email: string
+          p_role: string
+          p_full_name: string
+        }
+        Returns: string
       }
       submit_review_with_credits: {
         Args: {

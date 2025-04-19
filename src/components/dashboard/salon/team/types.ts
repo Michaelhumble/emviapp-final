@@ -1,6 +1,7 @@
 
 export type SalonTeamMember = {
   id: string;
+  salon_id: string;
   full_name: string;
   email: string;
   role: string;
@@ -9,5 +10,6 @@ export type SalonTeamMember = {
   joined_at: string;
   avatar_url?: string;
   commission_rate?: number;
-  salon_id: string;
+  invitation_sent_at?: string;
+  invitation_email?: string;
 };
