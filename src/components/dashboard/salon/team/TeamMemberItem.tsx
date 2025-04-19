@@ -34,7 +34,9 @@ const TeamMemberItem = ({ member, onRemove, onToggleStatus, onEdit }: TeamMember
     }
   };
 
-  const formatJoinedDate = (dateString: string) => {
+  const formatJoinedDate = (dateString: string | undefined) => {
+    if (!dateString) return "Recently";
+    
     try {
       return formatDistanceToNow(new Date(dateString), { addSuffix: true });
     } catch (error) {
