@@ -1,5 +1,5 @@
 
-import { SalonTeamMember } from "../types";
+import { SalonTeamMember } from "./types";
 import { TeamMemberCard } from "./TeamMemberCard";
 
 interface TeamListProps {
