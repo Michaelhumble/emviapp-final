@@ -19,7 +19,7 @@ export const useSalonRolePermissions = () => {
       try {
         const { data, error } = await supabase
           .rpc('get_user_salon_role', {
-            p_user_id: supabase.auth.user()?.id,
+            p_user_id: supabase.auth.getUser()?.data.user?.id,
             p_salon_id: currentSalon.id
           });
 

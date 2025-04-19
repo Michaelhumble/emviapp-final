@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TeamMemberFormData } from "./types";
+import { TeamMemberFormData, SalonStaffRole } from "./types";
 
 interface InviteTeamMemberDialogProps {
   onInvite: (data: TeamMemberFormData) => Promise<void>;
@@ -30,7 +30,7 @@ export function InviteTeamMemberDialog({ onInvite }: InviteTeamMemberDialogProps
   const [formData, setFormData] = useState<TeamMemberFormData>({
     full_name: '',
     email: '',
-    role: '',
+    role: 'technician',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -39,7 +39,7 @@ export function InviteTeamMemberDialog({ onInvite }: InviteTeamMemberDialogProps
       setIsSubmitting(true);
       await onInvite(formData);
       setOpen(false);
-      setFormData({ full_name: '', email: '', role: '' });
+      setFormData({ full_name: '', email: '', role: 'technician' });
     } catch (error) {
       console.error('Error inviting team member:', error);
     } finally {
@@ -83,15 +83,14 @@ export function InviteTeamMemberDialog({ onInvite }: InviteTeamMemberDialogProps
             <Label htmlFor="role">Role</Label>
             <Select 
               value={formData.role} 
-              onValueChange={(value) => setFormData({ ...formData, role: value })}
+              onValueChange={(value: SalonStaffRole) => setFormData({ ...formData, role: value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="manager">Manager</SelectItem>
                 <SelectItem value="technician">Technician</SelectItem>
-                <SelectItem value="support">Support</SelectItem>
+                <SelectItem value="manager">Manager</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -102,7 +101,7 @@ export function InviteTeamMemberDialog({ onInvite }: InviteTeamMemberDialogProps
           </Button>
           <Button 
             onClick={handleSubmit}
-            disabled={!formData.email || !formData.full_name || !formData.role || isSubmitting}
+            disabled={!formData.email || !formData.full_name || isSubmitting}
           >
             {isSubmitting ? 'Sending...' : 'Send Invite'}
           </Button>
