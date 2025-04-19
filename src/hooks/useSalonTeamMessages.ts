@@ -31,7 +31,7 @@ export const useSalonTeamMessages = () => {
         .from('salon_team_messages')
         .select(`
           *,
-          users!inner(full_name, avatar_url)
+          sender:users(full_name, avatar_url)
         `)
         .eq('salon_id', currentSalon.id)
         .order('created_at', { ascending: true });
@@ -40,8 +40,8 @@ export const useSalonTeamMessages = () => {
 
       const transformedMessages: SalonTeamMessage[] = data.map(msg => ({
         ...msg,
-        sender_name: msg.users.full_name,
-        sender_avatar: msg.users.avatar_url
+        sender_name: msg.sender?.full_name,
+        sender_avatar: msg.sender?.avatar_url
       }));
 
       setMessages(transformedMessages);
