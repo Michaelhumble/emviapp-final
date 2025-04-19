@@ -2,8 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSalon } from "@/context/salon";
-import { SalonTeamMember } from "../types";
-import { toast } from "sonner";
+import { SalonTeamMember } from "./types";
 
 export const useTeamMembers = () => {
   const { currentSalon } = useSalon();
@@ -31,165 +30,19 @@ export const useTeamMembers = () => {
 
       setTeamMembers(data.map(staff => ({
         id: staff.id,
-        salon_id: staff.salon_id,
         full_name: staff.full_name,
-        email: staff.email,
         role: staff.role,
         specialty: staff.specialty || '',
         status: staff.status as 'active' | 'inactive' | 'pending',
-        joined_at: staff.created_at,
-        avatar_url: staff.avatar_url,
-        commission_rate: staff.commission_rate
+        avatar_url: staff.avatar_url
       })));
     } catch (err: any) {
       console.error("Error fetching team members:", err);
       setError(new Error("Failed to load team members"));
-      toast.error("Could not load team members");
     } finally {
       setLoading(false);
     }
   }, [currentSalon?.id]);
-
-  const sendInvite = async (memberData: Partial<SalonTeamMember>): Promise<void> => {
-    if (!currentSalon?.id) {
-      toast.error("No salon selected");
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      const newStaffMember = {
-        salon_id: currentSalon.id,
-        full_name: memberData.full_name,
-        email: memberData.email,
-        role: memberData.role || 'artist',
-        specialty: memberData.specialty,
-        status: memberData.status || 'active',
-        commission_rate: memberData.commission_rate
-      };
-
-      const { data, error } = await supabase
-        .from('salon_staff')
-        .insert(newStaffMember)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      const newMember: SalonTeamMember = {
-        id: data.id,
-        salon_id: data.salon_id,
-        full_name: data.full_name,
-        email: data.email,
-        role: data.role,
-        specialty: data.specialty || '',
-        status: data.status as 'active' | 'inactive' | 'pending',
-        joined_at: data.created_at,
-        avatar_url: data.avatar_url,
-        commission_rate: data.commission_rate
-      };
-      
-      setTeamMembers(prev => [...prev, newMember]);
-      toast.success(`${data.full_name} added to your team`);
-    } catch (err: any) {
-      console.error("Error sending invite:", err);
-      toast.error("Failed to add team member");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateTeamMember = async (id: string, updates: Partial<SalonTeamMember>): Promise<void> => {
-    if (!currentSalon?.id) return;
-
-    try {
-      setLoading(true);
-
-      const { error } = await supabase
-        .from('salon_staff')
-        .update({
-          full_name: updates.full_name,
-          email: updates.email,
-          role: updates.role,
-          specialty: updates.specialty,
-          status: updates.status,
-          commission_rate: updates.commission_rate
-        })
-        .eq('id', id)
-        .eq('salon_id', currentSalon.id);
-
-      if (error) throw error;
-
-      setTeamMembers(prev => 
-        prev.map(member => 
-          member.id === id ? { ...member, ...updates } : member
-        )
-      );
-      
-      toast.success("Team member updated successfully");
-    } catch (err: any) {
-      console.error("Error updating team member:", err);
-      toast.error("Failed to update team member");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const removeTeamMember = async (id: string, name?: string): Promise<void> => {
-    if (!currentSalon?.id) return;
-
-    try {
-      setLoading(true);
-
-      const { error } = await supabase
-        .from('salon_staff')
-        .delete()
-        .eq('id', id)
-        .eq('salon_id', currentSalon.id);
-
-      if (error) throw error;
-
-      setTeamMembers(prev => prev.filter(member => member.id !== id));
-      toast.success(`${name || 'Team member'} has been removed`);
-    } catch (err: any) {
-      console.error("Error removing team member:", err);
-      toast.error("Failed to remove team member");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const toggleMemberStatus = async (id: string, currentStatus?: 'active' | 'inactive' | 'pending'): Promise<void> => {
-    if (!currentSalon?.id) return;
-
-    try {
-      const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
-      
-      const { error } = await supabase
-        .from('salon_staff')
-        .update({ status: newStatus })
-        .eq('id', id)
-        .eq('salon_id', currentSalon.id);
-
-      if (error) throw error;
-
-      setTeamMembers(prev => 
-        prev.map(member => 
-          member.id === id ? { ...member, status: newStatus as any } : member
-        )
-      );
-      
-      toast.success(`Team member status updated to ${newStatus}`);
-    } catch (err: any) {
-      console.error("Error updating team member status:", err);
-      toast.error("Failed to update team member status");
-      throw err;
-    }
-  };
 
   useEffect(() => {
     fetchTeamMembers();
@@ -199,10 +52,6 @@ export const useTeamMembers = () => {
     teamMembers,
     loading,
     error,
-    fetchTeamMembers,
-    sendInvite,
-    updateTeamMember,
-    removeTeamMember,
-    toggleMemberStatus
+    fetchTeamMembers
   };
 };
