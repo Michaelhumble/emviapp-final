@@ -1,9 +1,9 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useArtistDashboardData } from './hooks/useArtistDashboardData';
+import WelcomeGreeting from './components/WelcomeGreeting';
 import { BarChart3, Calendar, Palette, DollarSign, Sparkles, Clock, Users } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { AvailabilitySettings } from './availability/AvailabilitySettings';
@@ -55,6 +55,10 @@ const ArtistDashboard = () => {
       animate="visible"
       className="space-y-6"
     >
+      <motion.div variants={itemVariants}>
+        <WelcomeGreeting />
+      </motion.div>
+
       <motion.div variants={itemVariants}>
         <Card className="overflow-hidden border-purple-100 shadow-sm">
           <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100 pb-2">
