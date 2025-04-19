@@ -11,7 +11,6 @@ export interface ReferralProgress {
   percentage: number;
   nextMilestone: number;
   nextMilestoneIn: number;
-  level: number;
 }
 
 export interface Referral {
@@ -21,11 +20,12 @@ export interface Referral {
   status: 'pending' | 'completed';
   createdAt: string;
   completedAt?: string;
-  reward?: number;
 }
 
-export interface ReferralData {
-  referralCode: string | null;
-  referralLink: string;
-  referrals: Referral[];
+export interface ReferralTransactionHistory {
+  id: string;
+  amount: number;
+  type: 'earned' | 'used';
+  description: string;
+  date: string;
 }

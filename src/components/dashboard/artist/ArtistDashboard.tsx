@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -14,6 +15,7 @@ import ClientsTab from './components/tabs/ClientsTab';
 import ReferralWidget from './components/ReferralWidget';
 import { WeeklyCalendar } from './calendar/WeeklyCalendar';
 import BookingsTab from './components/tabs/BookingsTab';
+import ArtistReferralRewards from './ArtistReferralRewards';
 
 const hasErrors = (errors: any[]) => errors.some(error => error !== null && error !== undefined);
 
@@ -57,6 +59,11 @@ const ArtistDashboard = () => {
     >
       <motion.div variants={itemVariants}>
         <WelcomeGreeting />
+      </motion.div>
+
+      {/* Add the Referral Rewards component here */}
+      <motion.div variants={itemVariants}>
+        <ArtistReferralRewards />
       </motion.div>
 
       <motion.div variants={itemVariants}>
