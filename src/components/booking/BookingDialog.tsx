@@ -4,9 +4,10 @@ import { useState } from "react";
 import { UserProfile } from "@/types/profile";
 import { Service } from "@/pages/u/artist-profile/types";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import BookingForm from "./BookingForm";
 import BookingConfirmation from "./BookingConfirmation";
+import { useBookingErrorHandler } from "@/hooks/useBookingErrorHandler";
+import { BookingStateWrapper } from "./BookingStateWrapper";
 
 interface BookingDialogProps {
   isOpen: boolean;
@@ -24,15 +25,31 @@ export const BookingDialog = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [bookingDetails, setBookingDetails] = useState<any>(null);
+  const [error, setError] = useState<Error | null>(null);
+  const { handleBookingError } = useBookingErrorHandler();
 
   const handleSubmit = async (formData: any) => {
     setIsSubmitting(true);
+    setError(null);
+    
     try {
+      // Validate availability before proceeding
+      const { data: availability, error: availabilityError } = await supabase
+        .from('artist_availability')
+        .select('*')
+        .eq('artist_id', profile.id)
+        .eq('day_of_week', new Date(formData.date).toLocaleDateString('en-US', { weekday: 'long' }))
+        .single();
+
+      if (availabilityError || !availability) {
+        throw new Error("Selected time slot is not available");
+      }
+
       const { data, error } = await supabase
         .from('bookings')
         .insert({
           recipient_id: profile.id,
-          sender_id: null, // Since we're not requiring login
+          sender_id: null,
           service_id: formData.service,
           date_requested: formData.date,
           time_requested: formData.time,
@@ -49,8 +66,9 @@ export const BookingDialog = ({
       
       setBookingDetails(data);
       setShowConfirmation(true);
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (err) {
+      handleBookingError(err);
+      setError(err instanceof Error ? err : new Error("Failed to submit booking"));
     } finally {
       setIsSubmitting(false);
     }
@@ -65,20 +83,26 @@ export const BookingDialog = ({
           </DialogTitle>
         </DialogHeader>
 
-        {showConfirmation ? (
-          <BookingConfirmation
-            profile={profile}
-            bookingDetails={bookingDetails}
-            onClose={() => onOpenChange(false)}
-          />
-        ) : (
-          <BookingForm
-            profile={profile}
-            services={services}
-            onSubmit={handleSubmit}
-            isSubmitting={isSubmitting}
-          />
-        )}
+        <BookingStateWrapper 
+          error={error}
+          loading={isSubmitting}
+          loadingComponent={<div className="p-8 text-center">Processing your booking...</div>}
+        >
+          {showConfirmation ? (
+            <BookingConfirmation
+              profile={profile}
+              bookingDetails={bookingDetails}
+              onClose={() => onOpenChange(false)}
+            />
+          ) : (
+            <BookingForm
+              profile={profile}
+              services={services}
+              onSubmit={handleSubmit}
+              isSubmitting={isSubmitting}
+            />
+          )}
+        </BookingStateWrapper>
       </DialogContent>
     </Dialog>
   );

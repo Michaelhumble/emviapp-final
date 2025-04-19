@@ -346,6 +346,50 @@ export type Database = {
           },
         ]
       }
+      booking_audit_log: {
+        Row: {
+          action_type: string
+          booking_id: string
+          created_at: string | null
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          new_state: Json | null
+          previous_state: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          action_type: string
+          booking_id: string
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          new_state?: Json | null
+          previous_state?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          action_type?: string
+          booking_id?: string
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          new_state?: Json | null
+          previous_state?: Json | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_audit_log_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bookings: {
         Row: {
           created_at: string | null
