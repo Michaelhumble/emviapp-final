@@ -36,8 +36,7 @@ const ReferralsPage = () => {
       referredName: "Alex Wong", 
       status: "completed", 
       createdAt: "2023-11-28",
-      completedAt: "2023-11-30",
-      reward: 20
+      completedAt: "2023-11-30"
     },
     { 
       id: "3", 
@@ -52,8 +51,7 @@ const ReferralsPage = () => {
       referredName: "David Park", 
       status: "completed", 
       createdAt: "2023-11-20",
-      completedAt: "2023-11-22",
-      reward: 20
+      completedAt: "2023-11-22"
     }
   ];
   
@@ -143,7 +141,7 @@ const ReferralsPage = () => {
                   <CardContent>
                     <ReferralMilestones 
                       referralStats={referralStats || { completedReferrals: 0, totalReferrals: 0 }}
-                      referralProgress={referralProgress || { percentage: 0, nextMilestoneIn: 5, nextMilestone: 5, level: 0 }}
+                      referralProgress={referralProgress || { percentage: 0, nextMilestoneIn: 5, nextMilestone: 5 }}
                     />
                   </CardContent>
                 </Card>

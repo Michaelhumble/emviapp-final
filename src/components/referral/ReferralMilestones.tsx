@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Trophy, Gift, Crown, Star, Lock, Unlock } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
 import { toTranslatableText } from '@/components/dashboard/salon/SalonTranslationHelper';
+import { ReferralProgress } from '@/components/referral/types';
 
 export interface ReferralMilestonesProps {
   referralStats: {
@@ -13,14 +14,13 @@ export interface ReferralMilestonesProps {
   referralProgress: {
     percentage?: number;
     nextMilestoneIn?: number;
-    currentTier?: number;
-    nextTier?: number;
+    nextMilestone?: number;
   };
 }
 
 const ReferralMilestones = ({ 
   referralStats = { completedReferrals: 0, totalReferrals: 0 }, 
-  referralProgress = { percentage: 0, nextMilestoneIn: 0, currentTier: 0, nextTier: 1 } 
+  referralProgress = { percentage: 0, nextMilestoneIn: 0, nextMilestone: 5 } 
 }: ReferralMilestonesProps) => {
   const { t } = useTranslation();
   
