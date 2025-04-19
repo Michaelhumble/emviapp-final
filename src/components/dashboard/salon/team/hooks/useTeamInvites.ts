@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useSalon } from "@/context/salon";
 
 export interface TeamInviteData {
+  full_name: string;
   phone_number: string;
   role: string;
 }
@@ -32,21 +33,16 @@ export const useTeamInvites = () => {
         {
           p_salon_id: currentSalon.id,
           p_phone_number: data.phone_number,
-          p_role: data.role
+          p_role: data.role,
+          p_full_name: data.full_name || "Unnamed Member"
         }
       );
 
       if (error) throw error;
-      
-      // Handle the array response correctly
+
       if (Array.isArray(invite) && invite.length > 0) {
-        // Return the first item in the array
-        return {
-          invite_code: invite[0].invite_code,
-          expires_at: invite[0].expires_at
-        };
+        return invite[0] as TeamInviteResponse;
       } else if (invite && typeof invite === 'object') {
-        // Handle single object response
         return invite as TeamInviteResponse;
       }
       
