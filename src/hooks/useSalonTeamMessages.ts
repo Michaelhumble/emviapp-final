@@ -27,24 +27,34 @@ export const useSalonTeamMessages = () => {
 
     setLoading(true);
     try {
+      // First, fetch the messages
       const { data, error } = await supabase
         .from('salon_team_messages')
-        .select(`
-          *,
-          sender:users(full_name, avatar_url)
-        `)
+        .select('*')
         .eq('salon_id', currentSalon.id)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
 
-      const transformedMessages: SalonTeamMessage[] = data.map(msg => ({
-        ...msg,
-        sender_name: msg.sender?.full_name,
-        sender_avatar: msg.sender?.avatar_url
-      }));
+      // Then, for each message, fetch the sender details
+      const messagesWithSenders = await Promise.all(
+        data.map(async (message) => {
+          // Get sender info
+          const { data: senderData } = await supabase
+            .from('users')
+            .select('full_name, avatar_url')
+            .eq('id', message.sender_id)
+            .single();
 
-      setMessages(transformedMessages);
+          return {
+            ...message,
+            sender_name: senderData?.full_name,
+            sender_avatar: senderData?.avatar_url
+          } as SalonTeamMessage;
+        })
+      );
+
+      setMessages(messagesWithSenders);
     } catch (error) {
       console.error('Error fetching team messages:', error);
       toast.error('Failed to load team messages');
