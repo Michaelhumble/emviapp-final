@@ -45,6 +45,7 @@ import SalonBookingsOverview from "@/components/dashboard/salon/bookings/SalonBo
 import SalonServiceManagement from "@/components/dashboard/salon/services/SalonServiceManagement";
 import { SalonTeamSection } from "@/components/dashboard/salon/team/SalonTeamSection";
 import { SalonEarningsSection } from "@/components/dashboard/salon/earnings/SalonEarningsSection";
+import SalonTeamChat from '@/components/dashboard/salon/team/SalonTeamChat';
 
 const OwnerDashboard = () => {
   const [showNotification, setShowNotification] = useState(true);
@@ -86,11 +87,7 @@ const OwnerDashboard = () => {
     <SalonProvider>
       <Layout>
         <div className="container px-4 mx-auto py-12">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          <motion.div>
             <RoleDashboardLayout>
               <div className="space-y-6">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -176,6 +173,7 @@ const OwnerDashboard = () => {
                   
                   <TabsContent value="team" className="space-y-8">
                     <SalonTeamSection />
+                    <SalonTeamChat />
                   </TabsContent>
                   
                   <TabsContent value="services" className="space-y-8">

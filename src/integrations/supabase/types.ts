@@ -1405,6 +1405,48 @@ export type Database = {
           },
         ]
       }
+      salon_team_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_announcement: boolean
+          salon_id: string
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_announcement?: boolean
+          salon_id: string
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_announcement?: boolean
+          salon_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "salon_team_messages_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "salons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "salon_team_messages_salon_id_fkey"
+            columns: ["salon_id"]
+            isOneToOne: false
+            referencedRelation: "user_salon_access"
+            referencedColumns: ["salon_id"]
+          },
+        ]
+      }
       salon_views: {
         Row: {
           id: string
