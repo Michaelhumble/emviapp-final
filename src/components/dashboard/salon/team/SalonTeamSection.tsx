@@ -45,4 +45,5 @@ export function SalonTeamSection() {
         onOpenChange={setIsInviteOpen}
       />
     </div>
-  </form>
+  );
+}

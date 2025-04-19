@@ -127,4 +127,5 @@ export function InviteTeamDialog({ open, onOpenChange }: InviteTeamDialogProps) 
         )}
       </DialogContent>
     </Dialog>
-  </form>
+  );
+}
