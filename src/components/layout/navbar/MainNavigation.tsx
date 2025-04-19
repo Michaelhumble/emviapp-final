@@ -1,42 +1,32 @@
 
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const MainNavigation = () => {
-  const location = useLocation();
-  
-  const isActive = (path: string) => {
-    return location.pathname === path || location.pathname.startsWith(`${path}/`);
-  };
-  
-  const linkClasses = "px-3 py-2 transition-colors hover:text-primary";
-  const activeLinkClasses = "text-primary font-medium";
-
   return (
-    <nav className="flex items-center space-x-1">
-      <Link 
-        to="/artists" 
-        className={`${linkClasses} ${isActive('/artists') ? activeLinkClasses : ''}`}
-      >
-        Artists
-      </Link>
+    <nav className="flex items-center gap-6">
       <Link 
         to="/salons" 
-        className={`${linkClasses} ${isActive('/salons') ? activeLinkClasses : ''}`}
+        className="text-sm font-medium text-gray-700 hover:text-primary"
       >
         Salons
       </Link>
       <Link 
+        to="/artists" 
+        className="text-sm font-medium text-gray-700 hover:text-primary"
+      >
+        Artists
+      </Link>
+      <Link 
         to="/jobs" 
-        className={`${linkClasses} ${isActive('/jobs') ? activeLinkClasses : ''}`}
+        className="text-sm font-medium text-gray-700 hover:text-primary"
       >
         Jobs
       </Link>
       <Link 
-        to="/booths" 
-        className={`${linkClasses} ${isActive('/booths') ? activeLinkClasses : ''}`}
+        to="/pricing" 
+        className="text-sm font-medium text-primary hover:text-primary/80"
       >
-        Booths
+        Pricing
       </Link>
     </nav>
   );
