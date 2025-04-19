@@ -28,28 +28,37 @@ export const useTeamInvites = () => {
     try {
       setIsLoading(true);
       
-      // Call the create_team_invite function which should accept full_name parameter
-      // If the database function doesn't accept p_full_name, we need to update it
-      // For now, we'll handle this by providing a default in the backend function
+      // Call the create_team_invite function
+      // Using destructuring for clarity to only include parameters the function accepts
+      const params = {
+        p_salon_id: currentSalon.id,
+        p_phone_number: data.phone_number,
+        p_role: data.role
+      };
+      
+      // Add comment to clarify that we're not using full_name in the RPC call yet
+      // We'll need to update the Supabase function to accept this parameter
       const { data: invite, error } = await supabase.rpc(
         'create_team_invite',
-        {
-          p_salon_id: currentSalon.id,
-          p_phone_number: data.phone_number,
-          p_role: data.role,
-          p_full_name: data.full_name || "Unnamed Member"
-        }
+        params
       );
 
       if (error) throw error;
 
       // Handle the response properly based on its structure
       if (Array.isArray(invite) && invite.length > 0) {
-        // If it's an array, take the first element
-        return invite[0] as TeamInviteResponse;
+        // If it's an array, take the first element and cast properly
+        const firstInvite = invite[0];
+        return {
+          invite_code: firstInvite.invite_code,
+          expires_at: firstInvite.expires_at
+        };
       } else if (invite && typeof invite === 'object') {
-        // If it's already a single object
-        return invite as TeamInviteResponse;
+        // If it's already a single object, ensure it matches our interface
+        return {
+          invite_code: invite.invite_code,
+          expires_at: invite.expires_at
+        };
       }
       
       toast.error("Failed to create invite - unexpected response format");
