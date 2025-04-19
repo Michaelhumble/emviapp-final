@@ -2,7 +2,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSalon } from "@/context/salon";
-import { SalonTeamMember, TeamMemberFormData } from "./types";
+import { SalonTeamMember, SalonStaffRole, TeamMemberFormData } from "./types";
 import { toast } from "sonner";
 
 export const useTeamMembers = () => {
@@ -33,7 +33,7 @@ export const useTeamMembers = () => {
         id: staff.id,
         full_name: staff.full_name,
         email: staff.email || '',
-        role: staff.role,
+        role: staff.role as SalonStaffRole,
         specialty: staff.specialty || '',
         status: staff.status as 'active' | 'inactive' | 'pending',
         avatar_url: staff.avatar_url,
@@ -82,11 +82,18 @@ export const useTeamMembers = () => {
         setTeamMembers(prev => [
           ...prev, 
           {
-            ...data[0],
-            status: 'pending',
+            id: data[0].id,
+            full_name: data[0].full_name,
+            email: data[0].email || '',
+            role: data[0].role as SalonStaffRole,
+            specialty: data[0].specialty || '',
+            status: 'pending' as const,
             joined_at: new Date().toISOString(),
+            invitation_sent_at: data[0].invitation_sent_at,
+            commission_rate: data[0].commission_rate,
+            avatar_url: data[0].avatar_url,
             salon_id: currentSalon.id
-          } as SalonTeamMember
+          }
         ]);
       }
     } catch (err: any) {
