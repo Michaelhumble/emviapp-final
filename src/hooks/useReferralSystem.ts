@@ -63,8 +63,9 @@ export const useReferralSystem = () => {
 
       setNextMilestone(milestoneData);
       
-      const referralCount = userData?.referral_count || 0;
-      const credits = userData?.credits || 0;
+      // Handle userData safely with type checking
+      const referralCount = userData ? (userData.referral_count as number || 0) : 0;
+      const credits = userData ? (userData.credits as number || 0) : 0;
       
       // Calculate completed and pending referrals (for demo)
       const completedReferrals = referralCount;
@@ -99,8 +100,8 @@ export const useReferralSystem = () => {
         return;
       }
       
-      // Transform data into Referral type
-      const formattedReferrals = data.map(item => ({
+      // Transform data into Referral type with explicit type casting for status
+      const formattedReferrals: Referral[] = data.map(item => ({
         id: item.id,
         referredId: item.referred_id,
         referredName: `User ${item.referred_id.substring(0, 4)}`, // Placeholder name
