@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -95,7 +94,7 @@ const InviteMemberModal = ({
               <SelectContent>
                 <SelectItem value="technician">Artist / Technician</SelectItem>
                 <SelectItem value="manager">Manager</SelectItem>
-                <SelectItem value="receptionist">Front Desk / Receptionist</SelectItem>
+                <SelectItem value="front_desk">Front Desk</SelectItem>
               </SelectContent>
             </Select>
           </div>

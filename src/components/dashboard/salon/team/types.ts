@@ -1,4 +1,4 @@
-export type SalonStaffRole = 'owner' | 'manager' | 'technician' | 'receptionist';
+export type SalonStaffRole = 'owner' | 'manager' | 'technician' | 'receptionist' | 'front_desk';
 
 export interface SalonTeamMember {
   id: string;
@@ -21,3 +21,4 @@ export interface TeamMemberFormData {
   specialty?: string;
   commission_rate?: number;
 }
+
