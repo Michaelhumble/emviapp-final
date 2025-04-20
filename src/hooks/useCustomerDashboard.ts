@@ -60,7 +60,7 @@ export const useCustomerDashboard = () => {
                 .from('users')
                 .select('id, full_name, avatar_url')
                 .eq('id', booking.recipient_id)
-                .single();
+                .maybeSingle();
                 
               if (!artistError && artist) {
                 artistData = artist;
@@ -87,32 +87,37 @@ export const useCustomerDashboard = () => {
         const formattedFavorites: CustomerFavorite[] = [];
         
         // If we have saved artists, fetch their details
-        if (savedArtistsData && savedArtistsData.length > 0) {
-          const artistIds = savedArtistsData.map(item => item.artist_id);
-          
-          // Get artist details in a separate query
-          const { data: artistsData, error: artistsError } = await supabase
-            .from('users')
-            .select('id, full_name, avatar_url, specialty, location')
-            .in('id', artistIds);
-            
-          if (artistsError) {
-            console.error('Error fetching artist details:', artistsError);
-          } else if (artistsData) {
-            // Match saved artists with their details
-            savedArtistsData.forEach(savedArtist => {
-              const artistDetail = artistsData.find(artist => artist.id === savedArtist.artist_id);
-              if (artistDetail) {
-                formattedFavorites.push({
-                  id: savedArtist.id,
-                  name: artistDetail.full_name,
-                  avatar_url: artistDetail.avatar_url,
-                  type: 'artist',
-                  specialty: artistDetail.specialty,
-                  location: artistDetail.location
-                });
-              }
-            });
+        if (savedArtistsData && Array.isArray(savedArtistsData) && savedArtistsData.length > 0) {
+          const artistIds = savedArtistsData
+            .map(item => item.artist_id)
+            .filter(Boolean);
+
+          if (artistIds.length > 0) {
+            const { data: artistsData, error: artistsError } = await supabase
+              .from('users')
+              .select('id, full_name, avatar_url, specialty, location')
+              .in('id', artistIds);
+
+            if (artistsError) {
+              console.error('Error fetching artist details:', artistsError);
+            } else if (artistsData && Array.isArray(artistsData)) {
+              savedArtistsData.forEach(savedArtist => {
+                const artistDetail = artistsData.find(artist => artist.id === savedArtist.artist_id);
+                if (
+                  artistDetail &&
+                  typeof artistDetail.full_name === 'string'
+                ) {
+                  formattedFavorites.push({
+                    id: savedArtist.id,
+                    name: artistDetail.full_name,
+                    avatar_url: artistDetail.avatar_url,
+                    type: 'artist',
+                    specialty: artistDetail.specialty,
+                    location: artistDetail.location
+                  });
+                }
+              });
+            }
           }
         }
         
