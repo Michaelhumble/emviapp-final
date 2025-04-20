@@ -9,6 +9,7 @@ import AISmartReminder from "@/components/ai/AISmartReminder";
 import React from "react";
 import NearbyOffersSection from "./offers/NearbyOffersSection";
 import SuggestedServicesSection from "./services/SuggestedServicesSection";
+import CustomerInbox from "./messages/CustomerInbox";
 
 const CustomerDashboard = () => {
   const { user } = useAuth();
@@ -75,6 +76,14 @@ const CustomerDashboard = () => {
           </div>
         )}
         {/* ==== SUGGESTED SERVICES SECTION END ==== */}
+
+        {/* ==== MESSAGES SECTION ==== */}
+        {isLoggedIn && (
+          <div className="mb-12">
+            <h2 className="text-xl font-bold font-serif mb-2">Your Messages</h2>
+            <CustomerInbox />
+          </div>
+        )}
 
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
