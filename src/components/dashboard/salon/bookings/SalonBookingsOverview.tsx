@@ -15,14 +15,14 @@ interface SalonBookingsOverviewProps {
 }
 
 const SalonBookingsOverview: React.FC<SalonBookingsOverviewProps> = ({ className = '' }) => {
-  const { bookings, loading, error, refetch } = useSalonBookings();
+  const { bookings, loading, error, fetchBookings } = useSalonBookings();
 
   if (loading) {
     return <BookingLoadingState />;
   }
 
   if (error) {
-    return <BookingErrorState error={error} onRetry={refetch} />;
+    return <BookingErrorState error={error.message} onRetry={fetchBookings} />;
   }
 
   if (!bookings || bookings.length === 0) {
@@ -47,8 +47,8 @@ const SalonBookingsOverview: React.FC<SalonBookingsOverviewProps> = ({ className
               <TableRow key={booking.id || index}>
                 <TableCell className="font-medium">{booking.client_name}</TableCell>
                 <TableCell>{booking.service_name}</TableCell>
-                <TableCell>{format(new Date(booking.booking_date), 'MMM d, yyyy')}</TableCell>
-                <TableCell>{format(new Date(booking.booking_date), 'h:mm a')}</TableCell>
+                <TableCell>{booking.date ? format(new Date(booking.date), 'MMM d, yyyy') : 'N/A'}</TableCell>
+                <TableCell>{booking.time || 'N/A'}</TableCell>
                 <TableCell>
                   <BookingStatusBadge status={booking.status} />
                 </TableCell>
