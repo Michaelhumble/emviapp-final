@@ -1464,6 +1464,8 @@ export type Database = {
           id: string
           invitation_email: string | null
           invitation_sent_at: string | null
+          job_title: string | null
+          profile_photo_url: string | null
           role: string
           salon_id: string
           specialty: string | null
@@ -1479,6 +1481,8 @@ export type Database = {
           id?: string
           invitation_email?: string | null
           invitation_sent_at?: string | null
+          job_title?: string | null
+          profile_photo_url?: string | null
           role: string
           salon_id: string
           specialty?: string | null
@@ -1494,6 +1498,8 @@ export type Database = {
           id?: string
           invitation_email?: string | null
           invitation_sent_at?: string | null
+          job_title?: string | null
+          profile_photo_url?: string | null
           role?: string
           salon_id?: string
           specialty?: string | null
