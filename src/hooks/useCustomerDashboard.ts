@@ -74,14 +74,10 @@ export const useCustomerDashboard = () => {
           }));
         }
         
-        // Try to fetch favorites (saved artists)
-        const { data: favoritesData, error: favoritesError } = await supabase
+        // Fetch saved artists (favorites)
+        const { data: savedArtistsData, error: favoritesError } = await supabase
           .from('saved_artists')
-          .select(`
-            id,
-            artist:artist_id (id, full_name, avatar_url, specialty, location)
-          `)
-          .eq('viewer_id', user.id);
+          .select('id, artist_id, viewer_id');
           
         if (favoritesError) {
           console.error('Error fetching favorites:', favoritesError);
@@ -90,19 +86,34 @@ export const useCustomerDashboard = () => {
         
         const formattedFavorites: CustomerFavorite[] = [];
         
-        if (favoritesData && favoritesData.length > 0) {
-          favoritesData.forEach(item => {
-            if (item.artist) {
-              formattedFavorites.push({
-                id: item.id,
-                name: item.artist.full_name,
-                avatar_url: item.artist.avatar_url,
-                type: 'artist',
-                specialty: item.artist.specialty,
-                location: item.artist.location
-              });
-            }
-          });
+        // If we have saved artists, fetch their details
+        if (savedArtistsData && savedArtistsData.length > 0) {
+          const artistIds = savedArtistsData.map(item => item.artist_id);
+          
+          // Get artist details in a separate query
+          const { data: artistsData, error: artistsError } = await supabase
+            .from('users')
+            .select('id, full_name, avatar_url, specialty, location')
+            .in('id', artistIds);
+            
+          if (artistsError) {
+            console.error('Error fetching artist details:', artistsError);
+          } else if (artistsData) {
+            // Match saved artists with their details
+            savedArtistsData.forEach(savedArtist => {
+              const artistDetail = artistsData.find(artist => artist.id === savedArtist.artist_id);
+              if (artistDetail) {
+                formattedFavorites.push({
+                  id: savedArtist.id,
+                  name: artistDetail.full_name,
+                  avatar_url: artistDetail.avatar_url,
+                  type: 'artist',
+                  specialty: artistDetail.specialty,
+                  location: artistDetail.location
+                });
+              }
+            });
+          }
         }
         
         setBookings(enhancedBookings);
