@@ -197,7 +197,7 @@ const SalonBookingsOverview = () => {
           />
           {isModalOpen && (
             <ManualBookingModal 
-              open={isModalOpen} 
+              isOpen={isModalOpen} 
               onClose={handleModalClose}
               onBookingCreated={handleBookingCreated}
             />
@@ -256,7 +256,7 @@ const SalonBookingsOverview = () => {
         
         {isModalOpen && (
           <ManualBookingModal 
-            open={isModalOpen} 
+            isOpen={isModalOpen} 
             onClose={handleModalClose}
             onBookingCreated={handleBookingCreated}
           />
