@@ -1,9 +1,8 @@
-
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
-  CalendarClock, RefreshCcw, UserCheck, CheckCircle, XCircle, AlertCircle, Calendar
+  CalendarClock, RefreshCcw, UserCheck, CheckCircle, XCircle, AlertCircle, Calendar, PlusCircle
 } from "lucide-react";
 import { useSalonBookingsFixed } from "./hooks/useSalonBookingsFixed";
 import { format } from "date-fns";
@@ -32,6 +31,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useTranslation } from "@/hooks/useTranslation";
 import { createTranslation } from "../SalonTranslationHelper";
+import { useSalonRolePermissions } from "@/hooks/useSalonRolePermissions";
+import { ManualBookingModal } from "./ManualBookingModal";
 
 const SalonBookingsOverview = () => {
   const { t } = useTranslation();
@@ -49,6 +50,8 @@ const SalonBookingsOverview = () => {
   const [artistFilter, setArtistFilter] = useState<string>("all");
   const [dateFilter, setDateFilter] = useState<string>("all");
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showManualBookingModal, setShowManualBookingModal] = useState(false);
+  const { userRole } = useSalonRolePermissions();
 
   // Handle manual refresh with loading indicator
   const handleRefresh = () => {
@@ -143,6 +146,8 @@ const SalonBookingsOverview = () => {
     }
   };
 
+  const canCreateManualBooking = ['owner', 'manager'].includes(userRole || '');
+
   return (
     <Card className="border-purple-100">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -155,18 +160,31 @@ const SalonBookingsOverview = () => {
             {t(createTranslation("View and manage all client bookings", "Xem và quản lý tất cả các lịch hẹn của khách"))}
           </CardDescription>
         </div>
-        <Button 
-          variant="outline" 
-          size="sm"
-          className="text-purple-600"
-          onClick={handleRefresh}
-          disabled={isRefreshing}
-        >
-          <RefreshCcw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-          {isRefreshing 
-            ? t(createTranslation("Refreshing...", "Đang làm mới...")) 
-            : t(createTranslation("Refresh", "Làm mới"))}
-        </Button>
+        <div className="flex gap-2">
+          {canCreateManualBooking && (
+            <Button 
+              onClick={() => setShowManualBookingModal(true)}
+              variant="outline"
+              size="sm"
+              className="text-purple-600"
+            >
+              <PlusCircle className="h-4 w-4 mr-2" />
+              {t(createTranslation("Manual Booking", "Đặt lịch thủ công"))}
+            </Button>
+          )}
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="text-purple-600"
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+          >
+            <RefreshCcw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+            {isRefreshing 
+              ? t(createTranslation("Refreshing...", "Đang làm mới...")) 
+              : t(createTranslation("Refresh", "Làm mới"))}
+          </Button>
+        </div>
       </CardHeader>
       
       <CardContent>
@@ -396,6 +414,14 @@ const SalonBookingsOverview = () => {
           </div>
         )}
       </CardContent>
+
+      <ManualBookingModal 
+        isOpen={showManualBookingModal}
+        onClose={() => setShowManualBookingModal(false)}
+        services={artists.map(artist => ({ id: artist.id, title: artist.name }))}
+        teamMembers={artists}
+        onBookingCreated={fetchBookings}
+      />
     </Card>
   );
 };
