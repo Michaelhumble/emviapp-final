@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { MapPin, Scissors } from "lucide-react";
+import { MapPin, Scissors, Calendar } from "lucide-react";
 import { CustomerFavorite } from "@/hooks/useCustomerDashboard";
 
 interface FavoriteCardProps {
@@ -19,6 +19,10 @@ const FavoriteCard = ({ favorite }: FavoriteCardProps) => {
     } else {
       navigate(`/salons/${favorite.id}`);
     }
+  };
+  
+  const handleBooking = () => {
+    navigate(`/booking?provider=${favorite.id}`);
   };
   
   return (
@@ -53,7 +57,7 @@ const FavoriteCard = ({ favorite }: FavoriteCardProps) => {
           </div>
         </div>
         
-        <div className="mt-auto pt-3">
+        <div className="mt-auto pt-3 grid grid-cols-2 gap-2">
           <Button 
             variant="outline" 
             size="sm" 
@@ -61,6 +65,15 @@ const FavoriteCard = ({ favorite }: FavoriteCardProps) => {
             onClick={handleViewProfile}
           >
             View Profile
+          </Button>
+          
+          <Button
+            size="sm"
+            className="w-full"
+            onClick={handleBooking}
+          >
+            <Calendar className="h-3 w-3 mr-1" />
+            Book
           </Button>
         </div>
       </CardContent>
