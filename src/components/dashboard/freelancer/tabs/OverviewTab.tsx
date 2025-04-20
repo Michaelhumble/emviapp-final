@@ -73,18 +73,26 @@ const OverviewTab = () => {
 
         // Process the data to ensure sender has the correct shape
         const processedBookings = (bData || []).map(booking => {
-          // If sender is an error object or missing properties, create a default sender object
+          // Create a default sender object if sender data is invalid
           const defaultSender = {
-            id: booking.sender_id || "",
+            id: "",
             full_name: "Unknown Client",
             avatar_url: ""
           };
           
+          // Check if sender exists and is a valid object (not an array or error)
+          let validSender = defaultSender;
+          
+          if (booking.sender && !Array.isArray(booking.sender)) {
+            // Check if it has the expected properties
+            if (typeof booking.sender === 'object' && 'id' in booking.sender && 'full_name' in booking.sender) {
+              validSender = booking.sender;
+            }
+          }
+          
           return {
             ...booking,
-            sender: booking.sender && typeof booking.sender === 'object' && !('error' in booking.sender)
-              ? booking.sender
-              : defaultSender
+            sender: validSender
           };
         });
 
