@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
@@ -55,13 +56,7 @@ const formSchema = z.object({
   notes: z.string().optional(),
 });
 
-export function ManualBookingModal({ 
-  isOpen, 
-  onClose,
-  services,
-  teamMembers,
-  onBookingCreated 
-}: ManualBookingModalProps) {
+export function ManualBookingModal({ isOpen, onClose, services, teamMembers, onBookingCreated }: ManualBookingModalProps) {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
@@ -78,12 +73,42 @@ export function ManualBookingModal({
   });
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!user?.id) {
+      toast.error(t(createTranslation(
+        "You must be logged in to create bookings",
+        "Bạn phải đăng nhập để tạo lịch hẹn"
+      )));
+      return;
+    }
+
     setIsSubmitting(true);
     try {
+      // Check for time slot availability first
+      const { data: existingBookings, error: conflictError } = await supabase
+        .from('bookings')
+        .select('id')
+        .eq('recipient_id', values.artist_id)
+        .eq('date_requested', format(values.date, 'yyyy-MM-dd'))
+        .eq('time_requested', values.time)
+        .not('status', 'in', '("cancelled","declined")')
+        .maybeSingle();
+
+      if (conflictError) {
+        throw conflictError;
+      }
+
+      if (existingBookings) {
+        toast.error(t(createTranslation(
+          "This time slot is already booked. Please select another time.",
+          "Khung giờ này đã được đặt. Vui lòng chọn thời gian khác."
+        )));
+        return;
+      }
+
       const { data: booking, error } = await supabase
         .from('bookings')
         .insert({
-          sender_id: user?.id,
+          sender_id: user.id,
           recipient_id: values.artist_id,
           service_id: values.service_id,
           date_requested: format(values.date, 'yyyy-MM-dd'),
@@ -101,16 +126,27 @@ export function ManualBookingModal({
 
       if (error) throw error;
 
-      toast.success(t(createTranslation("Booking created successfully", "Đặt lịch thành công")));
+      toast.success(t(createTranslation(
+        "Booking created successfully",
+        "Đặt lịch thành công"
+      )));
+      
       onBookingCreated();
       form.reset();
       onClose();
     } catch (error: any) {
       console.error('Error creating booking:', error);
-      if (error.message?.includes('not available') || error.message?.includes('already booked')) {
+      
+      // Handle specific error cases
+      if (error.code === '23503') { // Foreign key violation
         toast.error(t(createTranslation(
-          "This time slot is not available. Please select another time.",
-          "Khung giờ này không khả dụng. Vui lòng chọn thời gian khác."
+          "Invalid service or artist selected",
+          "Dịch vụ hoặc nghệ sĩ không hợp lệ"
+        )));
+      } else if (error.code === '23514') { // Check constraint violation
+        toast.error(t(createTranslation(
+          "The selected date or time is invalid",
+          "Ngày hoặc giờ được chọn không hợp lệ"
         )));
       } else {
         toast.error(t(createTranslation(

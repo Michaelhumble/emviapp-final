@@ -62,6 +62,17 @@ const SalonBookingsOverview = () => {
       });
   };
 
+  const handleBookingCreated = () => {
+    setIsRefreshing(true);
+    fetchBookings().finally(() => {
+      setTimeout(() => {
+        setIsRefreshing(false);
+        setStatusFilter("accepted");
+        setDateFilter("today");
+      }, 1000);
+    });
+  };
+
   const filteredBookings = bookings.filter(booking => {
     if (statusFilter !== "all" && booking.status !== statusFilter) {
       return false;
@@ -415,8 +426,8 @@ const SalonBookingsOverview = () => {
         isOpen={showManualBookingModal}
         onClose={() => setShowManualBookingModal(false)}
         services={artists.map(artist => ({ id: artist.id, title: artist.name }))}
-        teamMembers={artists.map(artist => ({ id: artist.id, full_name: artist.name }))} // Map to the expected format
-        onBookingCreated={fetchBookings}
+        teamMembers={artists.map(artist => ({ id: artist.id, full_name: artist.name }))}
+        onBookingCreated={handleBookingCreated}
       />
     </Card>
   );
