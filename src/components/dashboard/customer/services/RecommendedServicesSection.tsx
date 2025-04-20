@@ -51,6 +51,7 @@ const popularServices: Service[] = [
   // ...add more as fallback
 ];
 
+// Modified to have a more specific type for its parameter
 const getCategory = (service: { title: string; category?: string; }) => {
   // Very basic, normally would use backend field or heuristics
   if (service.category) return service.category;
@@ -67,16 +68,23 @@ const RecommendedServicesSection: React.FC = () => {
   // Gather sorted categories based on user data
   const topCategories = useMemo(() => {
     const categoryCount: Record<string, number> = {};
+    
+    // Fixed: Ensure bookings with service data are properly processed
     bookings.forEach(b => {
-      const cat = getCategory(b.service || {});
-      if (cat) categoryCount[cat] = (categoryCount[cat] || 0) + 1;
+      if (b.service && b.service.title) {
+        const cat = getCategory(b.service);
+        if (cat) categoryCount[cat] = (categoryCount[cat] || 0) + 1;
+      }
     });
+    
+    // Fixed: Ensure favorites with specialty data are properly processed
     favorites.forEach(f => {
       if (f.specialty) {
         const cat = getCategory({ title: f.specialty, category: f.specialty });
         if (cat) categoryCount[cat] = (categoryCount[cat] || 0) + 1;
       }
     });
+    
     const sorted = Object.entries(categoryCount).sort((a,b) => b[1]-a[1]);
     return sorted.map(([cat]) => cat);
   }, [bookings, favorites]);
@@ -136,7 +144,7 @@ const RecommendedServicesSection: React.FC = () => {
         {recommended.map((service, idx) => (
           <Card
             key={service.id}
-            className={`min-w-[260px] max-w-xs SNAP-START animate-fade-in relative group hover:shadow-lg transition-shadow`}
+            className={`min-w-[260px] max-w-xs snap-start animate-fade-in relative group hover:shadow-lg transition-shadow`}
             style={{ animationDelay: `${idx * 70}ms` }}
             tabIndex={0}
           >
