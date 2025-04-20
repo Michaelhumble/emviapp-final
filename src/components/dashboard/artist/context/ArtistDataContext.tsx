@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,10 +5,8 @@ import { toast } from "sonner";
 import { ArtistDataContextType, ArtistProfileState, PortfolioImage } from '../types/ArtistDashboardTypes';
 import { UserProfile } from '@/context/auth/types';
 
-// Create the context with a default value
 const ArtistDataContext = createContext<ArtistDataContextType | undefined>(undefined);
 
-// Provider component
 export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { user, refreshUserProfile } = useAuth();
   const [state, setState] = useState<{
@@ -25,12 +22,10 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
   const [portfolioImages, setPortfolioImages] = useState<PortfolioImage[]>([]);
   const [loadingPortfolio, setLoadingPortfolio] = useState(true);
   
-  // Fetch user profile data from Supabase
   useEffect(() => {
     fetchArtistProfile();
   }, [user]);
   
-  // Process portfolio URLs into proper format when artist profile changes
   useEffect(() => {
     if (state.artistProfile) {
       processPortfolioImages();
@@ -42,7 +37,6 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
     
     const urls = state.artistProfile?.portfolio_urls || [];
     const formattedImages: PortfolioImage[] = urls.map((url, index) => {
-      // Extract file name from URL
       const fileName = url.split('/').pop() || `image-${index + 1}`;
       return {
         id: `portfolio-${index}`,
@@ -81,7 +75,6 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
         }));
         toast.error('Could not load profile data');
       } else if (data) {
-        // Transform data to match ArtistProfileState
         const profileData: ArtistProfileState = {
           ...data,
           id: data.id,
@@ -91,6 +84,9 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
           portfolio_urls: data.portfolio_urls || [],
           referral_count: data.credits || 0,
           affiliate_code: data.referral_code || '',
+          avatar_url: data.avatar_url || '',
+          profile_completion: data.profile_completion || 0,
+          independent: data.independent || false,
         };
         
         setState(prev => ({ ...prev, artistProfile: profileData }));
@@ -107,7 +103,6 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
     }
   };
   
-  // Copy referral link
   const handleCopyReferralLink = () => {
     const referralCode = state.artistProfile?.affiliate_code || `EMVI${Math.floor(1000 + Math.random() * 9000)}`;
     const referralLink = `https://emviapp.com/join?ref=${referralCode}`;
@@ -121,10 +116,8 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
     }, 3000);
   };
 
-  // Format first name for greeting
   const firstName = state.artistProfile?.full_name ? state.artistProfile.full_name.split(' ')[0] : "Artist";
   
-  // Get credits from the user profile data
   const userCredits = state.artistProfile?.credits !== undefined 
     ? state.artistProfile.credits 
     : (state.artistProfile?.referral_count || 0);
@@ -138,7 +131,6 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
     fetchArtistProfile();
   };
   
-  // Update profile function
   const updateProfile = async (data: Partial<ArtistProfileState>) => {
     if (!user?.id) return;
     
@@ -164,7 +156,6 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
     }
   };
   
-  // Create the value object with all required properties from ArtistDataContextType
   const value: ArtistDataContextType = {
     artistProfile: state.artistProfile,
     loading: state.loading,
@@ -183,7 +174,6 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
   return <ArtistDataContext.Provider value={value}>{children}</ArtistDataContext.Provider>;
 };
 
-// Hook to use the context
 export const useArtistData = () => {
   const context = useContext(ArtistDataContext);
   if (context === undefined) {

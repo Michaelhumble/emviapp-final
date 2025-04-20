@@ -63,6 +63,7 @@ export interface UserProfile {
   preferences?: string[];
   profile_completion?: number;
   gender?: string; // Added the gender property
+  independent?: boolean; // Add the independent property
 
   // Add the missing salon-related properties
   salon_type?: string;

@@ -87,6 +87,8 @@ export interface UserProfile {
   referral_count?: number;
   credits?: number;
   google_review_link?: string;
+  independent?: boolean;
+  profile_completion?: number;
 }
 
 // Helper function to safely get location as a string for display

@@ -87,6 +87,9 @@ export interface ArtistProfileState {
   preferred_language?: string;
   accepts_bookings?: boolean;
   preferences?: string[];
+  avatar_url?: string; // Add the avatar_url property
+  profile_completion?: number; // Add the profile_completion property
+  independent?: boolean; // Add the independent property
 }
 
 export interface ArtistDataContextType {
