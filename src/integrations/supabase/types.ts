@@ -1596,6 +1596,7 @@ export type Database = {
       salons: {
         Row: {
           about: string | null
+          address: string | null
           created_at: string | null
           id: string
           instagram: string | null
@@ -1604,11 +1605,13 @@ export type Database = {
           owner_id: string | null
           phone: string | null
           salon_name: string | null
+          services: Json | null
           updated_at: string | null
           website: string | null
         }
         Insert: {
           about?: string | null
+          address?: string | null
           created_at?: string | null
           id: string
           instagram?: string | null
@@ -1617,11 +1620,13 @@ export type Database = {
           owner_id?: string | null
           phone?: string | null
           salon_name?: string | null
+          services?: Json | null
           updated_at?: string | null
           website?: string | null
         }
         Update: {
           about?: string | null
+          address?: string | null
           created_at?: string | null
           id?: string
           instagram?: string | null
@@ -1630,6 +1635,7 @@ export type Database = {
           owner_id?: string | null
           phone?: string | null
           salon_name?: string | null
+          services?: Json | null
           updated_at?: string | null
           website?: string | null
         }
@@ -2232,6 +2238,10 @@ export type Database = {
       }
       calculate_profile_completion: {
         Args: { user_profile: Json; user_role: string }
+        Returns: number
+      }
+      calculate_salon_completion: {
+        Args: { p_salon: Json }
         Returns: number
       }
       can_access_salon_earnings: {
