@@ -62,6 +62,7 @@ export interface UserProfile {
   company_name?: string;
   preferences?: string[];
   profile_completion?: number;
+  gender?: string; // Added the gender property
 
   // Add the missing salon-related properties
   salon_type?: string;
