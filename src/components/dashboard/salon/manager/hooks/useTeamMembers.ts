@@ -2,7 +2,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSalon } from "@/context/salon";
-import { SalonTeamMember, SalonStaffRole } from "../../types";
+import { SalonTeamMember, SalonStaffRole } from "../../../team/types";
 import { toast } from "sonner";
 
 export const useTeamMembers = () => {
