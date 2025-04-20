@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -86,7 +87,8 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
           affiliate_code: data.referral_code || '',
           avatar_url: data.avatar_url || '',
           profile_completion: data.profile_completion || 0,
-          independent: data.independent || false,
+          // Handle the independent property safely with a fallback
+          independent: data.independent !== undefined ? data.independent : false,
         };
         
         setState(prev => ({ ...prev, artistProfile: profileData }));
