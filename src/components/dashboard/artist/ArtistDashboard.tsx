@@ -1,171 +1,236 @@
-
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { useArtistDashboardData } from './hooks/useArtistDashboardData';
-import WelcomeGreeting from './components/WelcomeGreeting';
-import { BarChart3, Calendar, Palette, DollarSign, Sparkles, Clock, Users } from 'lucide-react';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { AvailabilitySettings } from './availability/AvailabilitySettings';
-import { EarningsSection } from './earnings/EarningsSection';
-import MainGrid from './components/MainGrid';
-import ServicesManager from './services/ServicesManager';
-import ClientsTab from './components/tabs/ClientsTab';
-import ReferralWidget from './components/ReferralWidget';
-import { WeeklyCalendar } from './calendar/WeeklyCalendar';
-import BookingsTab from './components/tabs/BookingsTab';
-import ArtistReferralRewards from './ArtistReferralRewards';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import React from 'react';
+import { Card } from "@/components/ui/card";
+import { useArtistData } from './context/ArtistDataContext';
+import { BadgePlus, Users, Coins, Link, CopyCheck, TrendingUp, PackageCheck, Store } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
+import IndependentBanner from "@/components/artist/IndependentBanner";
+import { useAuth } from "@/context/auth";
 
 const ArtistDashboard = () => {
-  const [activeTab, setActiveTab] = useState('overview');
-  
-  const {
-    stats,
-    isLoadingStats,
-    recentBookings,
-    isLoadingBookings,
-    earningsData,
-    isLoadingEarnings
-  } = useArtistDashboardData(activeTab);
+  const { artistProfile, loading, handleCopyReferralLink, copied, firstName, userCredits, refreshArtistProfile } = useArtistData();
+  const { userProfile } = useAuth();
+  const navigate = useNavigate();
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { 
-        staggerChildren: 0.1 
-      }
-    }
+  const handleProfileEdit = () => {
+    navigate('/profile/artist/setup');
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.3 }
-    }
+  const handlePortfolioEdit = () => {
+    navigate('/artist/portfolio');
   };
+
+  const handleServicesEdit = () => {
+    toast.info("Services feature coming soon!");
+  };
+
+  const handleAnalyticsView = () => {
+    toast.info("Analytics feature coming soon!");
+  };
+
+  const handleCustomerManagement = () => {
+    toast.info("Customer management feature coming soon!");
+  };
+
+  const handlePosAccess = () => {
+    toast.info("Point of Sale (POS) feature coming soon!");
+  };
+
+  const handleEarningsView = () => {
+    toast.info("Earnings tracking feature coming soon!");
+  };
+
+  const handleSubscriptionSettings = () => {
+    toast.info("Subscription settings feature coming soon!");
+  };
+
+  const referralLink = `https://emviapp.com/join?ref=${artistProfile?.affiliate_code || `EMVI${Math.floor(1000 + Math.random() * 9000)}`}`;
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="space-y-6 px-4 md:px-6 py-6"
-    >
-      <motion.div variants={itemVariants}>
-        <WelcomeGreeting />
-      </motion.div>
-
-      <motion.div variants={itemVariants}>
-        <ArtistReferralRewards />
-      </motion.div>
-
-      <motion.div variants={itemVariants}>
-        <Card className="overflow-hidden border-purple-100 shadow-sm">
-          <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100">
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-              <div>
-                <CardTitle className="text-xl font-serif">Your Dashboard</CardTitle>
-                <CardDescription>
-                  Manage your services, bookings, and earnings
-                </CardDescription>
-              </div>
+    <div className="space-y-6">
+      {userProfile?.independent && <IndependentBanner />}
+      <Card className="bg-white border-0 shadow-sm">
+        <div className="p-6 flex items-center space-x-4">
+          {loading ? (
+            <Skeleton className="h-12 w-12 rounded-full" />
+          ) : (
+            <Avatar>
+              <AvatarImage src={artistProfile?.avatar_url} />
+              <AvatarFallback>{firstName?.charAt(0)}</AvatarFallback>
+            </Avatar>
+          )}
+          <div className="space-y-1 font-medium">
+            {loading ? (
+              <Skeleton className="h-4 w-[200px]" />
+            ) : (
+              <p className="text-lg">Welcome back, {firstName}!</p>
+            )}
+            {loading ? (
+              <Skeleton className="h-4 w-[150px]" />
+            ) : (
+              <p className="text-sm text-gray-500">
+                {artistProfile?.specialty || 'Beauty Professional'}
+              </p>
+            )}
+          </div>
+        </div>
+      </Card>
+      
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Card className="bg-white border-0 shadow-sm">
+          <div className="p-5 space-y-3">
+            <div className="flex items-center space-x-2">
+              <TrendingUp className="h-4 w-4 text-blue-500" />
+              <h3 className="text-sm font-semibold">Profile Completion</h3>
             </div>
-          </CardHeader>
-          
-          <CardContent className="p-0">
-            <Tabs 
-              defaultValue="overview" 
-              onValueChange={setActiveTab}
-              className="w-full"
-            >
-              <div className="border-b">
-                <ScrollArea className="w-full">
-                  <TabsList className="h-auto bg-transparent w-full justify-start gap-2 p-4">
-                    <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                      <BarChart3 className="h-4 w-4 mr-2" />
-                      <span className="hidden sm:inline">Overview</span>
-                      <span className="sm:hidden">Overview</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="calendar" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      <span className="hidden sm:inline">Calendar</span>
-                      <span className="sm:hidden">Calendar</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="clients" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                      <Users className="h-4 w-4 mr-2" />
-                      <span className="hidden sm:inline">Clients</span>
-                      <span className="sm:hidden">Clients</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="services" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                      <Palette className="h-4 w-4 mr-2" />
-                      <span className="hidden sm:inline">Services</span>
-                      <span className="sm:hidden">Services</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="earnings" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                      <DollarSign className="h-4 w-4 mr-2" />
-                      <span className="hidden sm:inline">Earnings</span>
-                      <span className="sm:hidden">Earnings</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="availability" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                      <Clock className="h-4 w-4 mr-2" />
-                      <span className="hidden sm:inline">Availability</span>
-                      <span className="sm:hidden">Hours</span>
-                    </TabsTrigger>
-                  </TabsList>
-                </ScrollArea>
-              </div>
-              
-              <div className="p-4 md:p-6">
-                <TabsContent value="overview" className="mt-0 space-y-6">
-                  <MainGrid 
-                    bookings={recentBookings}
-                    isLoadingBookings={isLoadingBookings}
-                    stats={stats}
-                  />
-                  
-                  <motion.div
-                    variants={itemVariants}
-                    className="bg-gradient-to-r from-purple-100 to-pink-100 p-4 rounded-lg"
-                  >
-                    <div className="flex items-center space-x-3 text-purple-700">
-                      <Sparkles className="h-5 w-5 text-purple-600 flex-shrink-0" />
-                      <span className="font-medium">Pro Tip: Complete your profile to attract 70% more clients</span>
-                    </div>
-                  </motion.div>
-                  
-                  <ReferralWidget />
-                </TabsContent>
-                
-                <TabsContent value="calendar" className="mt-0">
-                  <WeeklyCalendar />
-                </TabsContent>
-                
-                <TabsContent value="services" className="mt-0">
-                  <ServicesManager />
-                </TabsContent>
-                
-                <TabsContent value="earnings" className="mt-0">
-                  <EarningsSection />
-                </TabsContent>
-                
-                <TabsContent value="availability" className="mt-0">
-                  <AvailabilitySettings />
-                </TabsContent>
-                
-                <TabsContent value="clients" className="mt-0">
-                  <ClientsTab />
-                </TabsContent>
-              </div>
-            </Tabs>
-          </CardContent>
+            {loading ? (
+              <Skeleton className="h-4 w-full" />
+            ) : (
+              <p className="text-3xl font-medium">{artistProfile?.profile_completion || 0}%</p>
+            )}
+            <Progress value={artistProfile?.profile_completion || 0} className="h-2" />
+            <Button variant="secondary" size="sm" onClick={handleProfileEdit}>
+              Complete Profile
+            </Button>
+          </div>
         </Card>
-      </motion.div>
-    </motion.div>
+        
+        <Card className="bg-white border-0 shadow-sm">
+          <div className="p-5 space-y-3">
+            <div className="flex items-center space-x-2">
+              <Users className="h-4 w-4 text-orange-500" />
+              <h3 className="text-sm font-semibold">Referral Credits</h3>
+            </div>
+            {loading ? (
+              <Skeleton className="h-4 w-full" />
+            ) : (
+              <p className="text-3xl font-medium">{userCredits}</p>
+            )}
+            <p className="text-sm text-gray-500">Share your referral link and earn credits!</p>
+            <div className="flex items-center space-x-2">
+              <input
+                type="text"
+                value={referralLink}
+                readOnly
+                className="flex-1 p-2 border rounded-md text-sm text-gray-700 bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCopyReferralLink}
+                disabled={copied}
+              >
+                {copied ? (
+                  <>
+                    <CopyCheck className="w-4 h-4 mr-2" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Link className="w-4 h-4 mr-2" />
+                    Copy Link
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </Card>
+        
+        <Card className="bg-white border-0 shadow-sm">
+          <div className="p-5 space-y-3">
+            <div className="flex items-center space-x-2">
+              <PackageCheck className="h-4 w-4 text-green-500" />
+              <h3 className="text-sm font-semibold">Subscription Status</h3>
+            </div>
+            {loading ? (
+              <Skeleton className="h-4 w-full" />
+            ) : (
+              <p className="text-3xl font-medium">Free</p>
+            )}
+            <p className="text-sm text-gray-500">Upgrade to unlock premium features.</p>
+            <Button variant="secondary" size="sm" onClick={handleSubscriptionSettings}>
+              View Subscription
+            </Button>
+          </div>
+        </Card>
+      </div>
+      
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Card className="bg-white border-0 shadow-sm">
+          <div className="p-5 space-y-3">
+            <div className="flex items-center space-x-2">
+              <Store className="h-4 w-4 text-purple-500" />
+              <h3 className="text-sm font-semibold">Manage Portfolio</h3>
+            </div>
+            <p className="text-sm text-gray-500">Showcase your best work.</p>
+            <Button variant="secondary" size="sm" onClick={handlePortfolioEdit}>
+              Edit Portfolio
+            </Button>
+          </div>
+        </Card>
+        
+        <Card className="bg-white border-0 shadow-sm">
+          <div className="p-5 space-y-3">
+            <div className="flex items-center space-x-2">
+              <Coins className="h-4 w-4 text-yellow-500" />
+              <h3 className="text-sm font-semibold">Manage Services</h3>
+            </div>
+            <p className="text-sm text-gray-500">List the services you offer.</p>
+            <Button variant="secondary" size="sm" onClick={handleServicesEdit}>
+              Edit Services
+            </Button>
+          </div>
+        </Card>
+        
+        <Card className="bg-white border-0 shadow-sm">
+          <div className="p-5 space-y-3">
+            <div className="flex items-center space-x-2">
+              <Users className="h-4 w-4 text-indigo-500" />
+              <h3 className="text-sm font-semibold">Customer Management</h3>
+            </div>
+            <p className="text-sm text-gray-500">Manage your customer base.</p>
+            <Button variant="secondary" size="sm" onClick={handleCustomerManagement}>
+              View Customers
+            </Button>
+          </div>
+        </Card>
+      </div>
+      
+      {userProfile?.independent && (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Card className="bg-white border-0 shadow-sm">
+            <div className="p-5 space-y-3">
+              <div className="flex items-center space-x-2">
+                <BadgePlus className="h-4 w-4 text-pink-500" />
+                <h3 className="text-sm font-semibold">Access POS</h3>
+              </div>
+              <p className="text-sm text-gray-500">Manage your transactions.</p>
+              <Button variant="secondary" size="sm" onClick={handlePosAccess}>
+                Access POS
+              </Button>
+            </div>
+          </Card>
+          
+          <Card className="bg-white border-0 shadow-sm">
+            <div className="p-5 space-y-3">
+              <div className="flex items-center space-x-2">
+                <TrendingUp className="h-4 w-4 text-teal-500" />
+                <h3 className="text-sm font-semibold">View Earnings</h3>
+              </div>
+              <p className="text-sm text-gray-500">Track your revenue.</p>
+              <Button variant="secondary" size="sm" onClick={handleEarningsView}>
+                View Earnings
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
+    </div>
   );
 };
 

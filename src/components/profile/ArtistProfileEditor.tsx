@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { 
   Card, 
@@ -12,9 +11,12 @@ import ArtistProfilePhotoUpload from "./artist/ArtistProfilePhotoUpload";
 import ProfileProgressTracker from "./artist/ProfileProgressTracker";
 import { Palette, Image, User, AwardIcon } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import IndependentBanner from "../artist/IndependentBanner";
+import { useAuth } from "@/context/auth";
 
 const ArtistProfileEditor = () => {
   const isMobile = useIsMobile();
+  const { userProfile } = useAuth();
   
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -42,6 +44,8 @@ const ArtistProfileEditor = () => {
       initial="hidden"
       animate="visible"
     >
+      {userProfile?.independent && <IndependentBanner />}
+      
       <motion.div variants={itemVariants}>
         <ProfileProgressTracker />
       </motion.div>

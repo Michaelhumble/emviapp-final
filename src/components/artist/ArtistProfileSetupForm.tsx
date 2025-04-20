@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useArtistProfileValidation } from "@/hooks/useArtistProfileValidation";
 import { Button } from "@/components/ui/button";
@@ -16,6 +15,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Upload } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import IndependentBanner from "./IndependentBanner";
 
 const SPECIALTIES = [
   "Nail Technician",
@@ -41,7 +42,8 @@ export const ArtistProfileSetupForm = () => {
     bio: userProfile?.bio || "",
     instagram: userProfile?.instagram || "",
     website: userProfile?.website || "",
-    avatar_url: userProfile?.avatar_url || ""
+    avatar_url: userProfile?.avatar_url || "",
+    independent: !!userProfile?.independent,
   });
 
   const handleChange = (
@@ -86,6 +88,10 @@ export const ArtistProfileSetupForm = () => {
     }
   };
 
+  const handleIndependentToggle = (checked: boolean) => {
+    setFormData((prev) => ({ ...prev, independent: checked }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -95,7 +101,7 @@ export const ArtistProfileSetupForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto p-4">
-      {/* Profile Photo */}
+      {formData.independent && <IndependentBanner />}
       <div className="flex flex-col items-center space-y-4">
         <Avatar className="w-24 h-24 border-2">
           <AvatarImage src={formData.avatar_url} />
@@ -132,7 +138,6 @@ export const ArtistProfileSetupForm = () => {
         />
       </div>
 
-      {/* Basic Info */}
       <div className="grid gap-6">
         <div className="grid gap-2">
           <Label htmlFor="full_name">Full Name *</Label>
@@ -212,9 +217,20 @@ export const ArtistProfileSetupForm = () => {
             type="url"
           />
         </div>
+
+        <div className="flex gap-2 items-center bg-vivid-purple/5 rounded-lg py-3 px-4 mt-2">
+          <Switch
+            id="independent"
+            checked={formData.independent}
+            onCheckedChange={handleIndependentToggle}
+            className="data-[state=checked]:bg-vivid-purple"
+          />
+          <Label htmlFor="independent" className="flex-1 cursor-pointer">
+            I work independently (booth renter or private studio)
+          </Label>
+        </div>
       </div>
 
-      {/* Submit Button - Fixed at bottom on mobile */}
       <div className="sticky bottom-0 left-0 right-0 py-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t sm:relative sm:border-0 sm:bg-transparent">
         <Button 
           type="submit" 

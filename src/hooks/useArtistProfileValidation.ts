@@ -12,6 +12,7 @@ const artistProfileSchema = z.object({
   instagram: z.string().optional(),
   website: z.string().url().optional().or(z.literal("")),
   avatar_url: z.string().min(1, "Profile photo is required"),
+  independent: z.boolean().optional().default(false),
 });
 
 type ArtistProfileData = z.infer<typeof artistProfileSchema>;
@@ -21,7 +22,7 @@ export const useArtistProfileValidation = () => {
   
   const validateAndSave = async (data: ArtistProfileData): Promise<boolean> => {
     try {
-      // Validate using zod schema
+      // Validate using zod schema (independent allowed!)
       const validatedData = artistProfileSchema.parse(data);
       
       // Save to Supabase
@@ -30,6 +31,7 @@ export const useArtistProfileValidation = () => {
         .update({
           ...validatedData,
           role: 'artist',
+          independent: validatedData.independent || false,
           updated_at: new Date().toISOString()
         })
         .eq('id', user?.id);
@@ -41,7 +43,6 @@ export const useArtistProfileValidation = () => {
       
       toast.success("Your profile is now visible to salons!");
       return true;
-      
     } catch (err) {
       if (err instanceof z.ZodError) {
         toast.error(err.errors[0].message);
