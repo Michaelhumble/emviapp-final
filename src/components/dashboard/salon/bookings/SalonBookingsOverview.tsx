@@ -34,7 +34,7 @@ import { createTranslation } from "../SalonTranslationHelper";
 import { useSalonRolePermissions } from "@/hooks/useSalonRolePermissions";
 import { ManualBookingModal } from "./ManualBookingModal";
 
-const SalonBookingsOverview = () => {
+export function SalonBookingsOverview() {
   const { t } = useTranslation();
   const {
     bookings,
@@ -69,6 +69,10 @@ const SalonBookingsOverview = () => {
         setIsRefreshing(false);
         setStatusFilter("accepted");
         setDateFilter("today");
+        toast.success(t(createTranslation(
+          "Bookings list updated",
+          "Danh sách lịch hẹn đã được cập nhật"
+        )));
       }, 1000);
     });
   };
@@ -156,7 +160,7 @@ const SalonBookingsOverview = () => {
   const canCreateManualBooking = ['owner', 'manager'].includes(userRole || '');
 
   return (
-    <Card className="border-purple-100">
+    <Card className="flex-1">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div>
           <CardTitle className="text-xl font-serif text-purple-900 flex items-center">
@@ -431,6 +435,6 @@ const SalonBookingsOverview = () => {
       />
     </Card>
   );
-};
+}
 
 export default SalonBookingsOverview;

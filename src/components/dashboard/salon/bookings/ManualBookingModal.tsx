@@ -72,6 +72,13 @@ export function ManualBookingModal({ isOpen, onClose, services, teamMembers, onB
     },
   });
 
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      form.reset();
+    }
+  }, [isOpen, form]);
+
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!user?.id) {
       toast.error(t(createTranslation(
@@ -102,6 +109,7 @@ export function ManualBookingModal({ isOpen, onClose, services, teamMembers, onB
           "This time slot is already booked. Please select another time.",
           "Khung giờ này đã được đặt. Vui lòng chọn thời gian khác."
         )));
+        setIsSubmitting(false);
         return;
       }
 
@@ -137,13 +145,13 @@ export function ManualBookingModal({ isOpen, onClose, services, teamMembers, onB
     } catch (error: any) {
       console.error('Error creating booking:', error);
       
-      // Handle specific error cases
-      if (error.code === '23503') { // Foreign key violation
+      // Enhanced error handling
+      if (error.code === '23503') {
         toast.error(t(createTranslation(
           "Invalid service or artist selected",
           "Dịch vụ hoặc nghệ sĩ không hợp lệ"
         )));
-      } else if (error.code === '23514') { // Check constraint violation
+      } else if (error.code === '23514') {
         toast.error(t(createTranslation(
           "The selected date or time is invalid",
           "Ngày hoặc giờ được chọn không hợp lệ"
