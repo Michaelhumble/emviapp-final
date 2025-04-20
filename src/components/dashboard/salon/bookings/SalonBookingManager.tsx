@@ -74,25 +74,27 @@ const SalonBookingManager = () => {
             </TabsList>
             
             <TabsContent value="list">
-              {error ? (
-                <BookingErrorState error={error} onRetry={refresh} />
-              ) : loading ? (
-                <BookingLoadingState />
-              ) : filteredBookings.length === 0 ? (
-                <EmptyBookingState
-                  message="No bookings match your filters"
-                  showReset={true}
-                  onReset={resetFilters}
-                />
-              ) : (
-                <BookingTable 
-                  bookings={filteredBookings}
-                  staffMembers={staffMembers}
-                  onStatusUpdate={updateBookingStatus}
-                  onStaffAssign={assignStaffToBooking}
-                  onBookingUpdate={updateBookingDetails}
-                />
-              )}
+              <div className="overflow-x-auto rounded-lg">
+                {error ? (
+                  <BookingErrorState error={error} onRetry={refresh} />
+                ) : loading ? (
+                  <BookingLoadingState />
+                ) : filteredBookings.length === 0 ? (
+                  <EmptyBookingState
+                    message="No bookings match your filters"
+                    showReset={true}
+                    onReset={resetFilters}
+                  />
+                ) : (
+                  <BookingTable 
+                    bookings={filteredBookings}
+                    staffMembers={staffMembers}
+                    onStatusUpdate={updateBookingStatus}
+                    onStaffAssign={assignStaffToBooking}
+                    onBookingUpdate={updateBookingDetails}
+                  />
+                )}
+              </div>
             </TabsContent>
             
             <TabsContent value="calendar">

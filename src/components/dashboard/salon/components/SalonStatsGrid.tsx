@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { BarChart3, Eye, Users, Percent } from 'lucide-react';
@@ -25,7 +24,7 @@ const SalonStatsGrid: React.FC = () => {
   
   return (
     <motion.div 
-      className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"
+      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4"
       variants={container}
       initial="hidden"
       animate="show"
@@ -38,7 +37,6 @@ const SalonStatsGrid: React.FC = () => {
           loading={loading}
         />
       </motion.div>
-      
       <motion.div variants={item}>
         <SalonStatCard
           title="Profile Views"
@@ -48,7 +46,6 @@ const SalonStatsGrid: React.FC = () => {
           loading={loading}
         />
       </motion.div>
-      
       <motion.div variants={item}>
         <SalonStatCard
           title="Repeat Client Rate"
@@ -57,7 +54,6 @@ const SalonStatsGrid: React.FC = () => {
           loading={loading}
         />
       </motion.div>
-      
       <motion.div variants={item}>
         <SalonStatCard
           title="Service Conversion"
