@@ -9,19 +9,8 @@ export type Salon = {
   website?: string;
   instagram?: string;
   phone?: string;
-  address?: string;
-  services?: string[];
+  address?: string;  // Add this line
+  services?: string[];  // Add this line with the correct type
   created_at: string;
   updated_at?: string;
-};
-
-export type SalonContextType = {
-  salons: Salon[];
-  currentSalon: Salon | null;
-  isLoadingSalons: boolean;
-  createSalon: (salonData: Partial<Salon>) => Promise<boolean>;
-  selectSalon: (salonId: string) => void;
-  refreshSalons: () => Promise<void>;
-  updateSalon: (salonId: string, data: Partial<Salon>) => Promise<boolean>;
-  deleteSalon: (salonId: string) => Promise<boolean>;
 };
