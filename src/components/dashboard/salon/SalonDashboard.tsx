@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,10 +8,23 @@ import SalonBoostBanner from './components/SalonBoostBanner';
 import SalonAnalyticsCharts from './components/SalonAnalyticsCharts';
 import { useSalonInsights } from '@/hooks/useSalonInsights';
 import ReferralTracker from '@/components/referral/ReferralTracker';
+import SalonBookingsOverview from './bookings/SalonBookingsOverview';
 
 const SalonDashboard = () => {
   const { loading } = useSalonInsights();
   const [activeTab, setActiveTab] = useState("overview");
+  const [dataLoaded, setDataLoaded] = useState(false);
+
+  // Set a timeout to ensure loading state doesn't get stuck forever
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!dataLoaded) {
+        setDataLoaded(true);
+      }
+    }, 5000); // 5 second timeout as a fallback
+
+    return () => clearTimeout(timer);
+  }, [dataLoaded]);
 
   const handleBoostClick = () => {
     toast.success("Redirecting to salon boost options...");
@@ -21,6 +34,11 @@ const SalonDashboard = () => {
   const handleTabChange = (value: string) => {
     setActiveTab(value);
   };
+
+  // Mark data as loaded when we change tabs
+  useEffect(() => {
+    setDataLoaded(true);
+  }, [activeTab]);
 
   return (
     <div className="space-y-6">
@@ -54,9 +72,11 @@ const SalonDashboard = () => {
         
         <TabsContent value="overview" className="pt-4">
           <SalonStatsGrid />
-          <SalonAnalyticsCharts loading={loading} />
+          <SalonAnalyticsCharts loading={loading && !dataLoaded} />
           
           <ReferralTracker />
+
+          <SalonBookingsOverview />
           
           <Card>
             <CardHeader>

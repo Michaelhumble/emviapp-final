@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -38,6 +38,7 @@ const SalonBookingsOverview = () => {
   const {
     bookings,
     loading,
+    loadingTimedOut,
     artists,
     fetchBookings,
     updateBookingStatus,
@@ -47,6 +48,17 @@ const SalonBookingsOverview = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [artistFilter, setArtistFilter] = useState<string>("all");
   const [dateFilter, setDateFilter] = useState<string>("all");
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Handle manual refresh with loading indicator
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    fetchBookings()
+      .finally(() => {
+        setTimeout(() => setIsRefreshing(false),
+        1000); // Ensure we see the loading state for a moment
+      });
+  };
 
   const filteredBookings = bookings.filter(booking => {
     // Filter by status
@@ -147,10 +159,13 @@ const SalonBookingsOverview = () => {
           variant="outline" 
           size="sm"
           className="text-purple-600"
-          onClick={fetchBookings}
+          onClick={handleRefresh}
+          disabled={isRefreshing}
         >
-          <RefreshCcw className="h-4 w-4 mr-2" />
-          {t(createTranslation("Refresh", "Làm mới"))}
+          <RefreshCcw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+          {isRefreshing 
+            ? t(createTranslation("Refreshing...", "Đang làm mới...")) 
+            : t(createTranslation("Refresh", "Làm mới"))}
         </Button>
       </CardHeader>
       
@@ -211,9 +226,24 @@ const SalonBookingsOverview = () => {
           </div>
         </div>
         
-        {loading ? (
+        {loading && !loadingTimedOut ? (
           <div className="flex justify-center items-center h-40">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-700"></div>
+          </div>
+        ) : loadingTimedOut ? (
+          <div className="text-center py-10 border rounded-md bg-gray-50">
+            <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500 mb-2">
+              {t(createTranslation("Loading bookings is taking longer than expected.", "Việc tải đặt chỗ đang mất nhiều thời gian hơn dự kiến."))}
+            </p>
+            <Button 
+              variant="outline" 
+              onClick={handleRefresh}
+              className="mt-2"
+            >
+              <RefreshCcw className="h-4 w-4 mr-2" />
+              {t(createTranslation("Try Again", "Thử lại"))}
+            </Button>
           </div>
         ) : filteredBookings.length === 0 ? (
           <div className="text-center py-10 border rounded-md bg-gray-50">

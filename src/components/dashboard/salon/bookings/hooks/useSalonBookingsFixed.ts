@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSalon } from "@/context/salon";
 import { SalonBooking } from "../../types";
@@ -11,6 +11,20 @@ export const useSalonBookingsFixed = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [artists, setArtists] = useState<Array<{id: string, name: string}>>([]);
+  const [loadingTimedOut, setLoadingTimedOut] = useState(false);
+
+  // Setup a timeout to prevent infinite loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (loading) {
+        setLoadingTimedOut(true);
+        setLoading(false);
+        console.warn("Booking data fetch timed out");
+      }
+    }, 10000); // 10 second timeout
+
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   const fetchArtists = useCallback(async () => {
     if (!currentSalon?.id) return;
@@ -46,6 +60,7 @@ export const useSalonBookingsFixed = () => {
     try {
       setLoading(true);
       setError(null);
+      setLoadingTimedOut(false);
 
       // First get all staff IDs for the salon
       const { data: staffData, error: staffError } = await supabase
@@ -133,6 +148,12 @@ export const useSalonBookingsFixed = () => {
       setLoading(false);
     }
   }, [currentSalon?.id]);
+
+  // Call fetchBookings and fetchArtists on initial render
+  useEffect(() => {
+    fetchArtists();
+    fetchBookings();
+  }, [fetchArtists, fetchBookings]);
   
   const updateBookingStatus = async (bookingId: string, newStatus: SalonBooking['status']) => {
     try {
@@ -217,6 +238,7 @@ export const useSalonBookingsFixed = () => {
     artists,
     fetchBookings,
     updateBookingStatus,
-    assignArtistToBooking
+    assignArtistToBooking,
+    loadingTimedOut
   };
 };
