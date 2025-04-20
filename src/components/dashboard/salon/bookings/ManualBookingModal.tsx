@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
@@ -35,7 +34,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "@/hooks/useTranslation";
 import { createTranslation } from "../SalonTranslationHelper";
 import { format } from "date-fns";
-import { useAuth } from "@/context/auth"; // Add useAuth import
+import { useAuth } from "@/context/auth";
+import { Loader } from "lucide-react";
 
 interface ManualBookingModalProps {
   isOpen: boolean;
@@ -64,7 +64,7 @@ export function ManualBookingModal({
 }: ManualBookingModalProps) {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { user } = useAuth(); // Get the current user for sender_id
+  const { user } = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -80,11 +80,10 @@ export function ManualBookingModal({
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
     try {
-      // Insert new booking (adding sender_id as the current user)
       const { data: booking, error } = await supabase
         .from('bookings')
         .insert({
-          sender_id: user?.id, // Add the sender_id from current user
+          sender_id: user?.id,
           recipient_id: values.artist_id,
           service_id: values.service_id,
           date_requested: format(values.date, 'yyyy-MM-dd'),
@@ -104,11 +103,21 @@ export function ManualBookingModal({
 
       toast.success(t(createTranslation("Booking created successfully", "Đặt lịch thành công")));
       onBookingCreated();
-      onClose();
       form.reset();
-    } catch (error) {
+      onClose();
+    } catch (error: any) {
       console.error('Error creating booking:', error);
-      toast.error(t(createTranslation("Failed to create booking", "Không thể tạo lịch hẹn")));
+      if (error.message?.includes('not available') || error.message?.includes('already booked')) {
+        toast.error(t(createTranslation(
+          "This time slot is not available. Please select another time.",
+          "Khung giờ này không khả dụng. Vui lòng chọn thời gian khác."
+        )));
+      } else {
+        toast.error(t(createTranslation(
+          "Failed to create booking. Please try again.",
+          "Không thể tạo lịch hẹn. Vui lòng thử lại."
+        )));
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -282,13 +291,19 @@ export function ManualBookingModal({
                 variant="outline"
                 onClick={onClose}
                 type="button"
+                disabled={isSubmitting}
               >
                 {t(createTranslation("Cancel", "Hủy"))}
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 
-                  t(createTranslation("Creating...", "Đang tạo...")) : 
-                  t(createTranslation("Create Booking", "Tạo lịch hẹn"))}
+                {isSubmitting ? (
+                  <>
+                    <Loader className="mr-2 h-4 w-4 animate-spin" />
+                    {t(createTranslation("Creating...", "Đang tạo..."))}
+                  </>
+                ) : (
+                  t(createTranslation("Create Booking", "Tạo lịch hẹn"))
+                )}
               </Button>
             </DialogFooter>
           </form>
