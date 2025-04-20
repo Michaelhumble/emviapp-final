@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useSalon } from "@/context/salon";
 import { toast } from "sonner";
-import ManualBookingModal from "./ManualBookingModal";
+import { ManualBookingModal } from "./ManualBookingModal";  // Changed from default import to named import
 import EmptyBookingState from "../bookings/EmptyBookingState";
 import { SalonBooking } from "../types";
 
