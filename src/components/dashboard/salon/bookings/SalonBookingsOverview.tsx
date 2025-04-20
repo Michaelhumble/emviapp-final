@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
@@ -6,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useSalon } from "@/context/salon";
 import { toast } from "sonner";
-import { ManualBookingModal } from "./ManualBookingModal";  // Changed from default import to named import
+import { ManualBookingModal } from "./ManualBookingModal";
 import EmptyBookingState from "../bookings/EmptyBookingState";
 import { SalonBooking } from "../types";
+import { SalonService, SalonTeamMember } from "../types/index";
 
 const SalonBookingsOverview = () => {
   const { currentSalon } = useSalon();
@@ -16,8 +16,9 @@ const SalonBookingsOverview = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingTimedOut, setLoadingTimedOut] = useState(false);
+  const [services, setServices] = useState<Array<{ id: string; title: string }>>([]);
+  const [teamMembers, setTeamMembers] = useState<Array<{ id: string; full_name: string }>>([]);
 
-  // Setup a timeout to prevent infinite loading
   useEffect(() => {
     const timer = setTimeout(() => {
       if (loading) {
@@ -25,10 +26,51 @@ const SalonBookingsOverview = () => {
         setLoading(false);
         console.warn("Booking data fetch timed out");
       }
-    }, 10000); // 10 second timeout
+    }, 10000);
 
     return () => clearTimeout(timer);
   }, [loading]);
+
+  const fetchServices = async () => {
+    if (!currentSalon?.id) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('services')
+        .select('id, title')
+        .eq('user_id', currentSalon.id);
+
+      if (error) {
+        console.error('Error fetching services:', error);
+        return;
+      }
+
+      setServices(data || []);
+    } catch (err) {
+      console.error('Error in fetchServices:', err);
+    }
+  };
+
+  const fetchTeamMembers = async () => {
+    if (!currentSalon?.id) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('salon_staff')
+        .select('id, full_name')
+        .eq('salon_id', currentSalon.id)
+        .eq('status', 'active');
+
+      if (error) {
+        console.error('Error fetching team members:', error);
+        return;
+      }
+
+      setTeamMembers(data || []);
+    } catch (err) {
+      console.error('Error in fetchTeamMembers:', err);
+    }
+  };
 
   const fetchBookings = async () => {
     if (!currentSalon?.id) return;
@@ -37,7 +79,6 @@ const SalonBookingsOverview = () => {
     setLoadingTimedOut(false);
 
     try {
-      // First get all staff IDs for the salon
       const { data: staffData, error: staffError } = await supabase
         .from('salon_staff')
         .select('id')
@@ -50,7 +91,6 @@ const SalonBookingsOverview = () => {
         return;
       }
       
-      // If no staff, return empty array but don't treat as error
       if (!staffData || staffData.length === 0) {
         setBookings([]);
         setLoading(false);
@@ -59,7 +99,6 @@ const SalonBookingsOverview = () => {
       
       const staffIds = staffData.map(staff => staff.id);
       
-      // Fetch the bookings
       const { data, error } = await supabase
         .from('bookings')
         .select(`
@@ -129,6 +168,8 @@ const SalonBookingsOverview = () => {
   useEffect(() => {
     if (!currentSalon?.id) return;
     fetchBookings();
+    fetchServices();
+    fetchTeamMembers();
   }, [currentSalon?.id]);
 
   const handleAddBooking = async () => {
@@ -200,6 +241,8 @@ const SalonBookingsOverview = () => {
               isOpen={isModalOpen} 
               onClose={handleModalClose}
               onBookingCreated={handleBookingCreated}
+              services={services}
+              teamMembers={teamMembers}
             />
           )}
         </CardContent>
@@ -259,6 +302,8 @@ const SalonBookingsOverview = () => {
             isOpen={isModalOpen} 
             onClose={handleModalClose}
             onBookingCreated={handleBookingCreated}
+            services={services}
+            teamMembers={teamMembers}
           />
         )}
       </CardContent>
