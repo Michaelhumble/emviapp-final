@@ -25,9 +25,23 @@ export const ArtistProfileCompletionTracker = () => {
     
     const completedFields = requiredFields.filter(field => {
       const value = userProfile[field as keyof typeof userProfile];
-      if (field === 'bio') return value && value.length >= 10;
-      if (field === 'full_name') return value && value.length >= 2;
-      return value && value.length > 0;
+      
+      // Check for specific field validation rules
+      if (field === 'bio') {
+        return typeof value === 'string' && value.trim().length >= 10;
+      }
+      if (field === 'full_name') {
+        return typeof value === 'string' && value.trim().length >= 2;
+      }
+      
+      // For other fields, just check if they exist and aren't empty
+      if (typeof value === 'string') {
+        return value.trim().length > 0;
+      }
+      if (Array.isArray(value)) {
+        return value.length > 0;
+      }
+      return !!value; // Handle other types like boolean, number, etc.
     });
     
     setCompletion(Math.floor((completedFields.length / requiredFields.length) * 100));
@@ -63,7 +77,7 @@ export const ArtistProfileCompletionTracker = () => {
               { field: 'location', label: 'Add your location' },
               { field: 'bio', label: 'Write your bio' }
             ].map(({ field, label }) => {
-              const isComplete = userProfile?.[field as keyof typeof userProfile];
+              const isComplete = !!userProfile?.[field as keyof typeof userProfile];
               return (
                 <div key={field} className="flex items-center gap-2 text-sm">
                   {isComplete ? (
