@@ -16,8 +16,7 @@ import ReferralWidget from './components/ReferralWidget';
 import { WeeklyCalendar } from './calendar/WeeklyCalendar';
 import BookingsTab from './components/tabs/BookingsTab';
 import ArtistReferralRewards from './ArtistReferralRewards';
-
-const hasErrors = (errors: any[]) => errors.some(error => error !== null && error !== undefined);
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const ArtistDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -55,20 +54,19 @@ const ArtistDashboard = () => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-6"
+      className="space-y-6 px-4 md:px-6 py-6"
     >
       <motion.div variants={itemVariants}>
         <WelcomeGreeting />
       </motion.div>
 
-      {/* Add the Referral Rewards component here */}
       <motion.div variants={itemVariants}>
         <ArtistReferralRewards />
       </motion.div>
 
       <motion.div variants={itemVariants}>
         <Card className="overflow-hidden border-purple-100 shadow-sm">
-          <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100 pb-2">
+          <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
               <div>
                 <CardTitle className="text-xl font-serif">Your Dashboard</CardTitle>
@@ -78,84 +76,91 @@ const ArtistDashboard = () => {
               </div>
             </div>
           </CardHeader>
-          <CardContent className="p-4 md:p-6">
+          
+          <CardContent className="p-0">
             <Tabs 
               defaultValue="overview" 
               onValueChange={setActiveTab}
-              className="space-y-6"
+              className="w-full"
             >
-              <TabsList className="grid grid-cols-2 sm:grid-cols-6 h-auto bg-slate-100/50 w-full">
-                <TabsTrigger value="overview" className="py-3 data-[state=active]:bg-white data-[state=active]:text-purple-600">
-                  <BarChart3 className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Overview</span>
-                  <span className="sm:hidden">Overview</span>
-                </TabsTrigger>
-                <TabsTrigger value="calendar" className="py-3 data-[state=active]:bg-white data-[state=active]:text-purple-600">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Calendar</span>
-                  <span className="sm:hidden">Calendar</span>
-                </TabsTrigger>
-                <TabsTrigger value="clients" className="py-3 data-[state=active]:bg-white data-[state=active]:text-purple-600">
-                  <Users className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Clients</span>
-                  <span className="sm:hidden">Clients</span>
-                </TabsTrigger>
-                <TabsTrigger value="services" className="py-3 data-[state=active]:bg-white data-[state=active]:text-purple-600">
-                  <Palette className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Services</span>
-                  <span className="sm:hidden">Services</span>
-                </TabsTrigger>
-                <TabsTrigger value="earnings" className="py-3 data-[state=active]:bg-white data-[state=active]:text-purple-600">
-                  <DollarSign className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Earnings</span>
-                  <span className="sm:hidden">Earnings</span>
-                </TabsTrigger>
-                <TabsTrigger value="availability" className="py-3 data-[state=active]:bg-white data-[state=active]:text-purple-600">
-                  <Clock className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Availability</span>
-                  <span className="sm:hidden">Hours</span>
-                </TabsTrigger>
-              </TabsList>
+              <div className="border-b">
+                <ScrollArea className="w-full">
+                  <TabsList className="h-auto bg-transparent w-full justify-start gap-2 p-4">
+                    <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                      <BarChart3 className="h-4 w-4 mr-2" />
+                      <span className="hidden sm:inline">Overview</span>
+                      <span className="sm:hidden">Overview</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="calendar" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      <span className="hidden sm:inline">Calendar</span>
+                      <span className="sm:hidden">Calendar</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="clients" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                      <Users className="h-4 w-4 mr-2" />
+                      <span className="hidden sm:inline">Clients</span>
+                      <span className="sm:hidden">Clients</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="services" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                      <Palette className="h-4 w-4 mr-2" />
+                      <span className="hidden sm:inline">Services</span>
+                      <span className="sm:hidden">Services</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="earnings" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                      <DollarSign className="h-4 w-4 mr-2" />
+                      <span className="hidden sm:inline">Earnings</span>
+                      <span className="sm:hidden">Earnings</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="availability" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                      <Clock className="h-4 w-4 mr-2" />
+                      <span className="hidden sm:inline">Availability</span>
+                      <span className="sm:hidden">Hours</span>
+                    </TabsTrigger>
+                  </TabsList>
+                </ScrollArea>
+              </div>
               
-              <TabsContent value="overview" className="space-y-6 mt-6 p-0">
-                <MainGrid 
-                  bookings={recentBookings}
-                  isLoadingBookings={isLoadingBookings}
-                  stats={stats}
-                />
+              <div className="p-4 md:p-6">
+                <TabsContent value="overview" className="mt-0 space-y-6">
+                  <MainGrid 
+                    bookings={recentBookings}
+                    isLoadingBookings={isLoadingBookings}
+                    stats={stats}
+                  />
+                  
+                  <motion.div
+                    variants={itemVariants}
+                    className="bg-gradient-to-r from-purple-100 to-pink-100 p-4 rounded-lg"
+                  >
+                    <div className="flex items-center space-x-3 text-purple-700">
+                      <Sparkles className="h-5 w-5 text-purple-600 flex-shrink-0" />
+                      <span className="font-medium">Pro Tip: Complete your profile to attract 70% more clients</span>
+                    </div>
+                  </motion.div>
+                  
+                  <ReferralWidget />
+                </TabsContent>
                 
-                <motion.div
-                  variants={itemVariants}
-                  className="bg-gradient-to-r from-purple-100 to-pink-100 p-4 rounded-lg"
-                >
-                  <div className="flex items-center space-x-3 text-purple-700">
-                    <Sparkles className="h-5 w-5 text-purple-600 flex-shrink-0" />
-                    <span className="font-medium">Pro Tip: Complete your profile to attract 70% more clients</span>
-                  </div>
-                </motion.div>
+                <TabsContent value="calendar" className="mt-0">
+                  <WeeklyCalendar />
+                </TabsContent>
                 
-                <ReferralWidget />
-              </TabsContent>
-              
-              <TabsContent value="calendar" className="space-y-6 mt-6 p-0">
-                <WeeklyCalendar />
-              </TabsContent>
-              
-              <TabsContent value="services" className="space-y-6 mt-6 p-0">
-                <ServicesManager />
-              </TabsContent>
-              
-              <TabsContent value="earnings" className="space-y-6 mt-6 p-0">
-                <EarningsSection />
-              </TabsContent>
-              
-              <TabsContent value="availability" className="space-y-6 mt-6 p-0">
-                <AvailabilitySettings />
-              </TabsContent>
-              
-              <TabsContent value="clients" className="space-y-6 mt-6 p-0">
-                <ClientsTab />
-              </TabsContent>
+                <TabsContent value="services" className="mt-0">
+                  <ServicesManager />
+                </TabsContent>
+                
+                <TabsContent value="earnings" className="mt-0">
+                  <EarningsSection />
+                </TabsContent>
+                
+                <TabsContent value="availability" className="mt-0">
+                  <AvailabilitySettings />
+                </TabsContent>
+                
+                <TabsContent value="clients" className="mt-0">
+                  <ClientsTab />
+                </TabsContent>
+              </div>
             </Tabs>
           </CardContent>
         </Card>
