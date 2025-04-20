@@ -56,7 +56,7 @@ export function useCustomerBookingHistory() {
           if (booking.recipient_id) {
             const { data: artist, error: artistError } = await supabase
               .from("users")
-              .select("id, full_name, avatar_url, salon_name")
+              .select("id, full_name, avatar_url")
               .eq("id", booking.recipient_id)
               .maybeSingle();
             if (!artistError && artist) {

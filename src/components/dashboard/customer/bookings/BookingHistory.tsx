@@ -67,7 +67,7 @@ const BookingHistory = () => {
       {bookings.map((booking) => {
         const serviceName = booking.service?.title || "Service";
         const artistName = booking.artist?.full_name || "Artist";
-        const salonName = booking.artist?.salon_name || "";
+        // Remove the salon_name reference since it's not available in the artist object
         const dateStr = booking.date_requested
           ? format(new Date(booking.date_requested), "MMM d, yyyy")
           : "";
@@ -101,7 +101,6 @@ const BookingHistory = () => {
               <p className="text-sm text-gray-500 flex items-center gap-2 mt-1">
                 <MapPin className="h-4 w-4" />
                 {artistName}
-                {salonName ? <span className="ml-1 text-xs text-gray-400">({salonName})</span> : null}
               </p>
               <div className="flex gap-4 items-center text-xs text-gray-500 mt-2">
                 <span className="flex items-center gap-1">
