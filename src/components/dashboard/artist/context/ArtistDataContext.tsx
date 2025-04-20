@@ -76,6 +76,9 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
         }));
         toast.error('Could not load profile data');
       } else if (data) {
+        // Use a type assertion to access the independent property
+        const userData = data as any;
+        
         const profileData: ArtistProfileState = {
           ...data,
           id: data.id,
@@ -87,8 +90,8 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
           affiliate_code: data.referral_code || '',
           avatar_url: data.avatar_url || '',
           profile_completion: data.profile_completion || 0,
-          // Handle the independent property safely with a fallback
-          independent: data.independent !== undefined ? data.independent : false,
+          // Use the type-asserted userData to safely access independent
+          independent: userData.independent !== undefined ? userData.independent : false,
         };
         
         setState(prev => ({ ...prev, artistProfile: profileData }));
