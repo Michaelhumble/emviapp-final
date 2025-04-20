@@ -12,6 +12,7 @@ import SuggestedServicesSection from "./services/SuggestedServicesSection";
 import CustomerInbox from "./messages/CustomerInbox";
 import CustomerWallet from "@/components/customer/CustomerWallet";
 import RecommendedServicesSection from "./services/RecommendedServicesSection";
+import BookAgainSection from "./services/BookAgainSection";
 
 const CustomerDashboard = () => {
   const { user } = useAuth();
@@ -52,6 +53,13 @@ const CustomerDashboard = () => {
           </p>
         </motion.div>
         
+        {/* Book Again (Favorites) Section */}
+        {isLoggedIn && (
+          <div className="max-w-5xl mx-auto mb-10">
+            <BookAgainSection />
+          </div>
+        )}
+
         {/* Recommended Services Section */}
         {isLoggedIn && (
           <div className="max-w-5xl mx-auto mb-10">
