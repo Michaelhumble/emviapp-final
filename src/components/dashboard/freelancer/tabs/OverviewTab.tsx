@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -9,8 +8,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
 import UpcomingAppointmentList from "../UpcomingAppointmentList";
 import ServicesList from "../ServicesList";
+import FreelancerEarningsStats from "../widgets/FreelancerEarningsStats";
 
-// Format helpers
 function formatDate(dateStr: string) {
   if (!dateStr) return "";
   const d = new Date(dateStr);
@@ -22,7 +21,6 @@ function formatTime(timeStr: string) {
   return timeStr;
 }
 
-// Types
 interface BookingStats {
   upcoming: number;
   completed: number;
@@ -50,7 +48,6 @@ const OverviewTab = () => {
       try {
         if (!user?.id) return;
 
-        // Bookings assigned to this freelancer
         const { data: bData, error: bErr } = await supabase
           .from("bookings")
           .select(
@@ -63,7 +60,6 @@ const OverviewTab = () => {
         
         if (bErr) throw bErr;
         
-        // Services created by this freelancer
         const { data: sData, error: sErr } = await supabase
           .from("services")
           .select("*")
@@ -71,20 +67,16 @@ const OverviewTab = () => {
         
         if (sErr) throw sErr;
 
-        // Process the data to ensure sender has the correct shape
         const processedBookings = (bData || []).map(booking => {
-          // Create a default sender object if sender data is invalid
           const defaultSender = {
             id: "",
             full_name: "Unknown Client",
             avatar_url: ""
           };
           
-          // Check if sender exists and is a valid object (not an array or error)
           let validSender = defaultSender;
           
           if (booking.sender && !Array.isArray(booking.sender)) {
-            // Check if it has the expected properties
             if (typeof booking.sender === 'object' && 'id' in booking.sender && 'full_name' in booking.sender) {
               validSender = booking.sender;
             }
@@ -96,11 +88,9 @@ const OverviewTab = () => {
           };
         });
 
-        // Calculate stats
         const upcomingBookings = processedBookings?.filter(b => b.status !== "completed" && b.status !== "cancelled") || [];
         const completed = processedBookings?.filter(b => b.status === "completed" && b.service && b.service.price) || [];
         
-        // Get unique client IDs by safely accessing sender.id
         const clientIds = new Set(
           processedBookings
             ?.map(b => b.sender?.id)
@@ -134,8 +124,8 @@ const OverviewTab = () => {
   }, [user?.id]);
 
   return (
-    <div className="space-y-6">
-      {/* Quick Stats Grid */}
+    <div className="max-w-4xl mx-auto w-full">
+      <FreelancerEarningsStats />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card className="shadow-sm border border-amber-100 bg-white">
           <CardContent className="flex flex-col items-center py-5">
@@ -168,7 +158,6 @@ const OverviewTab = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Upcoming Appointments */}
         <Card className="shadow-sm border border-amber-100 bg-white">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg">Upcoming Appointments</CardTitle>
@@ -193,7 +182,6 @@ const OverviewTab = () => {
           </CardContent>
         </Card>
 
-        {/* Services */}
         <Card className="shadow-sm border border-amber-100 bg-white">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg">Your Services</CardTitle>
@@ -217,7 +205,6 @@ const OverviewTab = () => {
         </Card>
       </div>
 
-      {/* Availability (Link) */}
       <Card className="shadow-sm border border-amber-100 bg-white">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg">Availability Calendar</CardTitle>
