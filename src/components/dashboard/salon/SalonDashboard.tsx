@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -7,6 +6,7 @@ import SalonStatsGrid from './components/SalonStatsGrid';
 import SalonBoostBanner from './components/SalonBoostBanner';
 import SalonAnalyticsCharts from './components/SalonAnalyticsCharts';
 import { useSalonInsights } from '@/hooks/useSalonInsights';
+import ReferralTracker from '@/components/referral/ReferralTracker';
 
 const SalonDashboard = () => {
   const { loading } = useSalonInsights();
@@ -17,13 +17,17 @@ const SalonDashboard = () => {
     // In a real implementation, this would navigate to a boost page
   };
 
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+  };
+
   return (
     <div className="space-y-6">
       <SalonBoostBanner onBoostClick={handleBoostClick} />
       
       <Tabs 
         value={activeTab} 
-        onValueChange={setActiveTab}
+        onValueChange={handleTabChange}
         className="space-y-4"
       >
         <TabsList className="bg-gray-100/50 p-1 rounded-lg w-full">
@@ -50,6 +54,8 @@ const SalonDashboard = () => {
         <TabsContent value="overview" className="pt-4">
           <SalonStatsGrid />
           <SalonAnalyticsCharts loading={loading} />
+          
+          <ReferralTracker />
           
           <Card>
             <CardHeader>
