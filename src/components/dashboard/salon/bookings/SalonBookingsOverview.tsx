@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
-import { useBookings } from './hooks/useSalonBookings';
+import { useSalonBookings } from './hooks/useSalonBookings';
 import BookingStatusBadge from './components/BookingStatusBadge';
 import { Card } from '@/components/ui/card';
 import { format } from 'date-fns';
@@ -15,7 +15,7 @@ interface SalonBookingsOverviewProps {
 }
 
 const SalonBookingsOverview: React.FC<SalonBookingsOverviewProps> = ({ className = '' }) => {
-  const { bookings, loading, error, refetch } = useBookings();
+  const { bookings, loading, error, refetch } = useSalonBookings();
 
   if (loading) {
     return <BookingLoadingState />;
