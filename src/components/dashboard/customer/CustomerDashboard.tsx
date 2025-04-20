@@ -11,6 +11,7 @@ import NearbyOffersSection from "./offers/NearbyOffersSection";
 import SuggestedServicesSection from "./services/SuggestedServicesSection";
 import CustomerInbox from "./messages/CustomerInbox";
 import CustomerWallet from "@/components/customer/CustomerWallet";
+import RecommendedServicesSection from "./services/RecommendedServicesSection";
 
 const CustomerDashboard = () => {
   const { user } = useAuth();
@@ -51,6 +52,13 @@ const CustomerDashboard = () => {
           </p>
         </motion.div>
         
+        {/* Recommended Services Section */}
+        {isLoggedIn && (
+          <div className="max-w-5xl mx-auto mb-10">
+            <RecommendedServicesSection />
+          </div>
+        )}
+
         {/* AI Components for logged in users */}
         {isLoggedIn && (
           <div className="max-w-3xl mx-auto mb-10 space-y-4">
