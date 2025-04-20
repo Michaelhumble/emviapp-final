@@ -1,12 +1,18 @@
 
 import React from 'react';
-import { useCustomerBookings } from './useCustomerBookings';
+import { useCustomerDashboard } from '@/hooks/useCustomerDashboard';
 import BookingsLoadingState from './BookingsLoadingState';
 import BookingsErrorState from './BookingsErrorState';
 import BookingsList from './BookingsList';
 
-const CustomerBookingsSection = () => {
-  const { bookings, loading, error } = useCustomerBookings();
+interface CustomerBookingsSectionProps {
+  type: 'upcoming' | 'previous';
+}
+
+const CustomerBookingsSection = ({ type }: CustomerBookingsSectionProps) => {
+  const { upcomingBookings, previousBookings, loading, error } = useCustomerDashboard();
+
+  const bookings = type === 'upcoming' ? upcomingBookings : previousBookings;
 
   if (loading) {
     return <BookingsLoadingState />;

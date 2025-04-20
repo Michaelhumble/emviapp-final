@@ -1,22 +1,22 @@
 
-import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { XCircle } from 'lucide-react';
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle } from "lucide-react";
 
 const BookingsErrorState = () => {
   return (
     <Card className="w-full">
-      <CardContent className="flex flex-col items-center justify-center p-12">
-        <XCircle className="h-12 w-12 text-red-500 mb-4" />
-        <p className="text-gray-600 mb-6 text-center">
-          Unable to load your bookings
+      <CardContent className="flex flex-col items-center justify-center py-10">
+        <AlertTriangle className="h-10 w-10 text-amber-500 mb-3" />
+        <h3 className="font-medium text-lg mb-2">Unable to load bookings</h3>
+        <p className="text-muted-foreground text-center mb-4">
+          We couldn't load your bookings. Please try again later.
         </p>
         <Button 
           onClick={() => window.location.reload()}
-          className="h-11"
+          variant="outline"
         >
-          Try Again
+          Retry
         </Button>
       </CardContent>
     </Card>
