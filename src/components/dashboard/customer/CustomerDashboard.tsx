@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { Calendar, Heart, Star, Users, Wallet, TrendingUp, Search } from "lucide-react";
@@ -11,6 +10,7 @@ import CustomerBookingsSection from "./bookings/CustomerBookingsSection";
 import FavoritesSection from "./favorites/FavoritesSection";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import BookingHistory from "./bookings/BookingHistory";
 
 // Helper: returns category emoji by optional text label
 const getServiceEmoji = (title: string = "") => {
@@ -398,9 +398,16 @@ const CustomerDashboard = () => {
           </motion.div>
         </div>
       </div>
+
+      {/* Booking History Section */}
+      <div className="max-w-4xl mx-auto w-full my-12">
+        <h2 className="text-2xl md:text-3xl font-bold font-serif mb-4 text-primary">
+          Booking History
+        </h2>
+        <BookingHistory />
+      </div>
     </div>
   );
 };
 
 export default CustomerDashboard;
-
