@@ -54,7 +54,7 @@ export const useSalonBookingsFixed = () => {
   const fetchBookings = useCallback(async () => {
     if (!currentSalon?.id) {
       setLoading(false);
-      return;
+      return Promise.resolve(); // Return a resolved promise for chaining
     }
 
     try {
@@ -69,19 +69,18 @@ export const useSalonBookingsFixed = () => {
         .eq('salon_id', currentSalon.id);
         
       if (staffError) {
-        console.warn("Error fetching staff:", staffError);
-        // If we can't get staff, use an empty array rather than failing entirely
-        // This allows showing bookings that might be directly assigned to the salon
+        console.error("Error fetching staff:", staffError);
+        setError(new Error("Failed to fetch staff data"));
         setBookings([]);
         setLoading(false);
-        return;
+        return Promise.reject(staffError);
       }
       
       // If no staff, return empty array but don't treat as error
       if (!staffData || staffData.length === 0) {
         setBookings([]);
         setLoading(false);
-        return;
+        return Promise.resolve();
       }
       
       const staffIds = staffData.map(staff => staff.id);
@@ -100,9 +99,10 @@ export const useSalonBookingsFixed = () => {
 
       if (error) {
         console.error('Error fetching salon bookings:', error);
-        setBookings([]); // Set empty array instead of keeping previous state
+        setError(new Error("Failed to load bookings"));
+        setBookings([]); 
         setLoading(false);
-        return; // Return early but don't set error state - show empty state instead
+        return Promise.reject(error);
       }
 
       const formattedBookings = (data || []).map(booking => {
@@ -140,10 +140,12 @@ export const useSalonBookingsFixed = () => {
       });
 
       setBookings(formattedBookings);
+      return Promise.resolve();
     } catch (err: any) {
       console.error("Error in fetchBookings:", err);
-      // Don't set error - instead just set empty bookings for better UX
+      setError(new Error("Failed to load bookings"));
       setBookings([]);
+      return Promise.reject(err);
     } finally {
       setLoading(false);
     }
@@ -152,7 +154,9 @@ export const useSalonBookingsFixed = () => {
   // Call fetchBookings and fetchArtists on initial render
   useEffect(() => {
     fetchArtists();
-    fetchBookings();
+    fetchBookings().catch(err => {
+      console.error("Initial bookings fetch failed:", err);
+    });
   }, [fetchArtists, fetchBookings]);
   
   const updateBookingStatus = async (bookingId: string, newStatus: SalonBooking['status']) => {
@@ -234,7 +238,7 @@ export const useSalonBookingsFixed = () => {
   return {
     bookings,
     loading,
-    error: null, // Always return null error to prevent error UI
+    error,
     artists,
     fetchBookings,
     updateBookingStatus,

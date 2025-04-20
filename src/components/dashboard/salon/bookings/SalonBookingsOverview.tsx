@@ -34,13 +34,17 @@ import { createTranslation } from "../SalonTranslationHelper";
 import { useSalonRolePermissions } from "@/hooks/useSalonRolePermissions";
 import { ManualBookingModal } from "./ManualBookingModal";
 import { toast } from "sonner";
+import EmptyBookingState from "./EmptyBookingState";
+import { useAuth } from "@/context/auth";
 
 export function SalonBookingsOverview() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const {
     bookings,
     loading,
     loadingTimedOut,
+    error,
     artists,
     fetchBookings,
     updateBookingStatus,
@@ -54,28 +58,57 @@ export function SalonBookingsOverview() {
   const [showManualBookingModal, setShowManualBookingModal] = useState(false);
   const { userRole } = useSalonRolePermissions();
 
+  useEffect(() => {
+    if (!user?.id) return;
+    fetchBookings();
+  }, [user, fetchBookings]);
+
   const handleRefresh = () => {
+    if (!user?.id) {
+      toast.error(t(createTranslation(
+        "You must be logged in to view bookings",
+        "Bạn phải đăng nhập để xem lịch hẹn"
+      )));
+      return;
+    }
+    
     setIsRefreshing(true);
     fetchBookings()
+      .catch(err => {
+        console.error("Error refreshing bookings:", err);
+        toast.error(t(createTranslation(
+          "Failed to refresh bookings. Please try again.",
+          "Không thể làm mới lịch hẹn. Vui lòng thử lại."
+        )));
+      })
       .finally(() => {
-        setTimeout(() => setIsRefreshing(false),
-        1000); // Ensure we see the loading state for a moment
+        setTimeout(() => setIsRefreshing(false), 1000); // Ensure we see the loading state for a moment
       });
   };
 
   const handleBookingCreated = () => {
+    if (!user?.id) return;
+    
     setIsRefreshing(true);
-    fetchBookings().finally(() => {
-      setTimeout(() => {
-        setIsRefreshing(false);
-        setStatusFilter("accepted");
-        setDateFilter("today");
-        toast.success(t(createTranslation(
-          "Bookings list updated",
-          "Danh sách lịch hẹn đã được cập nhật"
+    fetchBookings()
+      .catch(err => {
+        console.error("Error fetching bookings after creation:", err);
+        toast.error(t(createTranslation(
+          "Failed to update bookings list. Please refresh manually.",
+          "Không thể cập nhật danh sách lịch hẹn. Vui lòng làm mới thủ công."
         )));
-      }, 1000);
-    });
+      })
+      .finally(() => {
+        setTimeout(() => {
+          setIsRefreshing(false);
+          setStatusFilter("accepted");
+          setDateFilter("today");
+          toast.success(t(createTranslation(
+            "Bookings list updated",
+            "Danh sách lịch hẹn đã được cập nhật"
+          )));
+        }, 1000);
+      });
   };
 
   const filteredBookings = bookings.filter(booking => {
@@ -159,6 +192,38 @@ export function SalonBookingsOverview() {
   };
 
   const canCreateManualBooking = ['owner', 'manager'].includes(userRole || '');
+
+  if (error) {
+    return (
+      <Card className="flex-1">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <div>
+            <CardTitle className="text-xl font-serif text-purple-900 flex items-center">
+              <CalendarClock className="mr-2 h-5 w-5 text-purple-700" />
+              {t(createTranslation("Bookings Overview", "Tổng quan đặt lịch"))}
+            </CardTitle>
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="text-purple-600"
+            onClick={handleRefresh}
+          >
+            <RefreshCcw className="h-4 w-4 mr-2" />
+            {t(createTranslation("Try Again", "Thử lại"))}
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-10 border rounded-md bg-red-50">
+            <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+            <p className="text-red-600 mb-2">
+              {t(createTranslation("Failed to load bookings. Please try again.", "Không thể tải lịch hẹn. Vui lòng thử lại."))}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="flex-1">
@@ -275,28 +340,18 @@ export function SalonBookingsOverview() {
               {t(createTranslation("Try Again", "Thử lại"))}
             </Button>
           </div>
-        ) : filteredBookings.length === 0 ? (
-          <div className="text-center py-10 border rounded-md bg-gray-50">
-            <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500 mb-2">
-              {statusFilter !== "all" || artistFilter !== "all" || dateFilter !== "all" 
-                ? t(createTranslation("No bookings match your filters", "Không có lịch hẹn nào phù hợp với bộ lọc của bạn")) 
-                : t(createTranslation("No bookings found", "Không tìm thấy lịch hẹn nào"))}
-            </p>
-            {(statusFilter !== "all" || artistFilter !== "all" || dateFilter !== "all") && (
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  setStatusFilter("all");
-                  setArtistFilter("all");
-                  setDateFilter("all");
-                }}
-                className="mt-2"
-              >
-                {t(createTranslation("Clear Filters", "Xóa bộ lọc"))}
-              </Button>
-            )}
-          </div>
+        ) : !filteredBookings.length ? (
+          <EmptyBookingState 
+            message={statusFilter !== "all" || artistFilter !== "all" || dateFilter !== "all" 
+              ? t(createTranslation("No bookings match your filters", "Không có lịch hẹn nào phù hợp với bộ lọc của bạn"))
+              : t(createTranslation("No bookings found. Create your first booking with the Manual Booking button above.", "Không tìm thấy lịch hẹn nào. Tạo lịch hẹn đầu tiên của bạn với nút Đặt lịch thủ công ở trên."))}
+            showReset={statusFilter !== "all" || artistFilter !== "all" || dateFilter !== "all"}
+            onReset={() => {
+              setStatusFilter("all");
+              setArtistFilter("all");
+              setDateFilter("all");
+            }}
+          />
         ) : (
           <div className="rounded-md border overflow-hidden">
             <Table>
