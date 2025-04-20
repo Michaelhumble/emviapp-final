@@ -33,6 +33,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { createTranslation } from "../SalonTranslationHelper";
 import { useSalonRolePermissions } from "@/hooks/useSalonRolePermissions";
 import { ManualBookingModal } from "./ManualBookingModal";
+import { toast } from "sonner";
 
 export function SalonBookingsOverview() {
   const { t } = useTranslation();
