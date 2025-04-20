@@ -1,10 +1,11 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
   CalendarClock, RefreshCcw, UserCheck, CheckCircle, XCircle, AlertCircle, Calendar
 } from "lucide-react";
-import { useSalonBookings } from "./hooks/useSalonBookings";
+import { useSalonBookingsFixed } from "./hooks/useSalonBookingsFixed";
 import { format } from "date-fns";
 import { 
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue 
@@ -29,17 +30,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTranslation } from "@/hooks/useTranslation";
+import { createTranslation } from "../SalonTranslationHelper";
 
 const SalonBookingsOverview = () => {
+  const { t } = useTranslation();
   const {
     bookings,
     loading,
-    error,
     artists,
     fetchBookings,
     updateBookingStatus,
     assignArtistToBooking
-  } = useSalonBookings();
+  } = useSalonBookingsFixed();
 
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [artistFilter, setArtistFilter] = useState<string>("all");
@@ -91,22 +94,22 @@ const SalonBookingsOverview = () => {
   };
 
   const formatDate = (date: Date | null): string => {
-    if (!date) return "Not scheduled";
+    if (!date) return t(createTranslation("Not scheduled", "Chưa lên lịch"));
     return format(date, "MMM d, yyyy");
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":
-        return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200">Pending</Badge>;
+        return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-200">{t(createTranslation("Pending", "Đang chờ"))}</Badge>;
       case "accepted":
-        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">Accepted</Badge>;
+        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">{t(createTranslation("Accepted", "Đã chấp nhận"))}</Badge>;
       case "completed":
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Completed</Badge>;
+        return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">{t(createTranslation("Completed", "Hoàn thành"))}</Badge>;
       case "cancelled":
-        return <Badge variant="outline" className="text-gray-500">Cancelled</Badge>;
+        return <Badge variant="outline" className="text-gray-500">{t(createTranslation("Cancelled", "Đã hủy"))}</Badge>;
       case "declined":
-        return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Declined</Badge>;
+        return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">{t(createTranslation("Declined", "Từ chối"))}</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -134,10 +137,10 @@ const SalonBookingsOverview = () => {
         <div>
           <CardTitle className="text-xl font-serif text-purple-900 flex items-center">
             <CalendarClock className="mr-2 h-5 w-5 text-purple-700" />
-            Bookings Overview
+            {t(createTranslation("Bookings Overview", "Tổng quan đặt lịch"))}
           </CardTitle>
           <CardDescription>
-            View and manage all client bookings
+            {t(createTranslation("View and manage all client bookings", "Xem và quản lý tất cả các lịch hẹn của khách"))}
           </CardDescription>
         </div>
         <Button 
@@ -147,7 +150,7 @@ const SalonBookingsOverview = () => {
           onClick={fetchBookings}
         >
           <RefreshCcw className="h-4 w-4 mr-2" />
-          Refresh
+          {t(createTranslation("Refresh", "Làm mới"))}
         </Button>
       </CardHeader>
       
@@ -157,15 +160,15 @@ const SalonBookingsOverview = () => {
             <div className="w-full sm:w-auto">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-full sm:w-[140px]">
-                  <SelectValue placeholder="Filter by status" />
+                  <SelectValue placeholder={t(createTranslation("Filter by status", "Lọc theo trạng thái"))} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="accepted">Accepted</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
-                  <SelectItem value="declined">Declined</SelectItem>
+                  <SelectItem value="all">{t(createTranslation("All Statuses", "Tất cả trạng thái"))}</SelectItem>
+                  <SelectItem value="pending">{t(createTranslation("Pending", "Đang chờ"))}</SelectItem>
+                  <SelectItem value="accepted">{t(createTranslation("Accepted", "Đã chấp nhận"))}</SelectItem>
+                  <SelectItem value="completed">{t(createTranslation("Completed", "Hoàn thành"))}</SelectItem>
+                  <SelectItem value="cancelled">{t(createTranslation("Cancelled", "Đã hủy"))}</SelectItem>
+                  <SelectItem value="declined">{t(createTranslation("Declined", "Từ chối"))}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -173,10 +176,10 @@ const SalonBookingsOverview = () => {
             <div className="w-full sm:w-auto">
               <Select value={artistFilter} onValueChange={setArtistFilter}>
                 <SelectTrigger className="w-full sm:w-[160px]">
-                  <SelectValue placeholder="Filter by artist" />
+                  <SelectValue placeholder={t(createTranslation("Filter by artist", "Lọc theo nghệ sĩ"))} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Artists</SelectItem>
+                  <SelectItem value="all">{t(createTranslation("All Artists", "Tất cả nghệ sĩ"))}</SelectItem>
                   {artists.map(artist => (
                     <SelectItem key={artist.id} value={artist.id}>
                       {artist.name}
@@ -189,20 +192,22 @@ const SalonBookingsOverview = () => {
             <div className="w-full sm:w-auto">
               <Select value={dateFilter} onValueChange={setDateFilter}>
                 <SelectTrigger className="w-full sm:w-[140px]">
-                  <SelectValue placeholder="Filter by date" />
+                  <SelectValue placeholder={t(createTranslation("Filter by date", "Lọc theo ngày"))} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Dates</SelectItem>
-                  <SelectItem value="today">Today</SelectItem>
-                  <SelectItem value="upcoming">Upcoming</SelectItem>
-                  <SelectItem value="past">Past</SelectItem>
+                  <SelectItem value="all">{t(createTranslation("All Dates", "Tất cả ngày"))}</SelectItem>
+                  <SelectItem value="today">{t(createTranslation("Today", "Hôm nay"))}</SelectItem>
+                  <SelectItem value="upcoming">{t(createTranslation("Upcoming", "Sắp tới"))}</SelectItem>
+                  <SelectItem value="past">{t(createTranslation("Past", "Đã qua"))}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           
           <div className="text-sm text-gray-500 flex items-center">
-            {filteredBookings.length} {filteredBookings.length === 1 ? 'booking' : 'bookings'} found
+            {filteredBookings.length} {filteredBookings.length === 1 
+              ? t(createTranslation('booking', 'lịch hẹn')) 
+              : t(createTranslation('bookings', 'lịch hẹn'))} {t(createTranslation('found', 'được tìm thấy'))}
           </div>
         </div>
         
@@ -210,24 +215,13 @@ const SalonBookingsOverview = () => {
           <div className="flex justify-center items-center h-40">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-700"></div>
           </div>
-        ) : error ? (
-          <div className="text-center py-10">
-            <p className="text-red-500 mb-2">{error.message}</p>
-            <Button 
-              variant="outline" 
-              onClick={fetchBookings}
-              className="mt-2"
-            >
-              Try Again
-            </Button>
-          </div>
         ) : filteredBookings.length === 0 ? (
           <div className="text-center py-10 border rounded-md bg-gray-50">
             <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-4" />
             <p className="text-gray-500 mb-2">
               {statusFilter !== "all" || artistFilter !== "all" || dateFilter !== "all" 
-                ? "No bookings match your filters" 
-                : "No bookings found"}
+                ? t(createTranslation("No bookings match your filters", "Không có lịch hẹn nào phù hợp với bộ lọc của bạn")) 
+                : t(createTranslation("No bookings found", "Không tìm thấy lịch hẹn nào"))}
             </p>
             {(statusFilter !== "all" || artistFilter !== "all" || dateFilter !== "all") && (
               <Button 
@@ -239,7 +233,7 @@ const SalonBookingsOverview = () => {
                 }}
                 className="mt-2"
               >
-                Clear Filters
+                {t(createTranslation("Clear Filters", "Xóa bộ lọc"))}
               </Button>
             )}
           </div>
@@ -248,12 +242,12 @@ const SalonBookingsOverview = () => {
             <Table>
               <TableHeader>
                 <TableRow className="bg-slate-50">
-                  <TableHead className="font-medium">Client</TableHead>
-                  <TableHead className="font-medium">Service</TableHead>
-                  <TableHead className="font-medium">Date/Time</TableHead>
-                  <TableHead className="font-medium">Artist</TableHead>
-                  <TableHead className="font-medium">Status</TableHead>
-                  <TableHead className="font-medium text-right">Actions</TableHead>
+                  <TableHead className="font-medium">{t(createTranslation("Client", "Khách hàng"))}</TableHead>
+                  <TableHead className="font-medium">{t(createTranslation("Service", "Dịch vụ"))}</TableHead>
+                  <TableHead className="font-medium">{t(createTranslation("Date/Time", "Ngày/Giờ"))}</TableHead>
+                  <TableHead className="font-medium">{t(createTranslation("Artist", "Nghệ sĩ"))}</TableHead>
+                  <TableHead className="font-medium">{t(createTranslation("Status", "Trạng thái"))}</TableHead>
+                  <TableHead className="font-medium text-right">{t(createTranslation("Actions", "Hành động"))}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -269,7 +263,7 @@ const SalonBookingsOverview = () => {
                         <div>
                           <div className="font-medium">{booking.client_name}</div>
                           <div className="text-xs text-gray-500">
-                            {booking.client_email || booking.client_phone || "No contact info"}
+                            {booking.client_email || booking.client_phone || t(createTranslation("No contact info", "Không có thông tin liên hệ"))}
                           </div>
                         </div>
                       </div>
@@ -282,7 +276,7 @@ const SalonBookingsOverview = () => {
                     </TableCell>
                     <TableCell>
                       <div>{formatDate(booking.date)}</div>
-                      <div className="text-xs text-gray-500">{booking.time || "No time set"}</div>
+                      <div className="text-xs text-gray-500">{booking.time || t(createTranslation("No time set", "Chưa đặt giờ"))}</div>
                     </TableCell>
                     <TableCell>
                       {booking.assigned_staff_name ? (
@@ -297,11 +291,11 @@ const SalonBookingsOverview = () => {
                       ) : (
                         <Popover>
                           <PopoverTrigger asChild>
-                            <Button variant="outline" size="sm">Assign Artist</Button>
+                            <Button variant="outline" size="sm">{t(createTranslation("Assign Artist", "Phân công nghệ sĩ"))}</Button>
                           </PopoverTrigger>
                           <PopoverContent className="w-52 p-0">
                             <div className="p-2 border-b">
-                              <p className="text-sm font-medium">Select Artist</p>
+                              <p className="text-sm font-medium">{t(createTranslation("Select Artist", "Chọn nghệ sĩ"))}</p>
                             </div>
                             <div className="max-h-60 overflow-auto">
                               {artists.map(artist => (
@@ -334,7 +328,7 @@ const SalonBookingsOverview = () => {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="sm">
-                            Actions
+                            {t(createTranslation("Actions", "Hành động"))}
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -342,24 +336,24 @@ const SalonBookingsOverview = () => {
                             <>
                               <DropdownMenuItem onClick={() => updateBookingStatus(booking.id, "accepted")}>
                                 <UserCheck className="h-4 w-4 mr-2 text-blue-500" />
-                                Accept Booking
+                                {t(createTranslation("Accept Booking", "Chấp nhận lịch hẹn"))}
                               </DropdownMenuItem>
                               <DropdownMenuItem onClick={() => updateBookingStatus(booking.id, "declined")}>
                                 <XCircle className="h-4 w-4 mr-2 text-red-500" />
-                                Decline Booking
+                                {t(createTranslation("Decline Booking", "Từ chối lịch hẹn"))}
                               </DropdownMenuItem>
                             </>
                           )}
                           {booking.status === "accepted" && (
                             <DropdownMenuItem onClick={() => updateBookingStatus(booking.id, "completed")}>
                               <CheckCircle className="h-4 w-4 mr-2 text-green-500" />
-                              Mark as Completed
+                              {t(createTranslation("Mark as Completed", "Đánh dấu là hoàn thành"))}
                             </DropdownMenuItem>
                           )}
                           {booking.status !== "completed" && booking.status !== "cancelled" && booking.status !== "declined" && (
                             <DropdownMenuItem onClick={() => updateBookingStatus(booking.id, "cancelled")}>
                               <XCircle className="h-4 w-4 mr-2 text-red-500" />
-                              Cancel Booking
+                              {t(createTranslation("Cancel Booking", "Hủy lịch hẹn"))}
                             </DropdownMenuItem>
                           )}
                         </DropdownMenuContent>
