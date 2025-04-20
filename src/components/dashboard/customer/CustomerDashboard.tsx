@@ -10,6 +10,7 @@ import React from "react";
 import NearbyOffersSection from "./offers/NearbyOffersSection";
 import SuggestedServicesSection from "./services/SuggestedServicesSection";
 import CustomerInbox from "./messages/CustomerInbox";
+import CustomerWallet from "@/components/customer/CustomerWallet";
 
 const CustomerDashboard = () => {
   const { user } = useAuth();
@@ -82,6 +83,13 @@ const CustomerDashboard = () => {
           <div className="mb-12">
             <h2 className="text-xl font-bold font-serif mb-2">Your Messages</h2>
             <CustomerInbox />
+          </div>
+        )}
+
+        {/* ==== EMVI WALLET SECTION ==== */}
+        {isLoggedIn && (
+          <div className="mb-8">
+            <CustomerWallet />
           </div>
         )}
 
