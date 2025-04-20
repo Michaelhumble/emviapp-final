@@ -55,7 +55,7 @@ const OverviewTab = () => {
           .from("bookings")
           .select(
             `id, created_at, date_requested, time_requested, status, note, service_id, 
-            sender:sender_id(id, full_name, avatar_url),
+            sender:users!sender_id(id, full_name, avatar_url),
             service:service_id(id, title, price)`
           )
           .eq("recipient_id", user.id)
@@ -71,14 +71,38 @@ const OverviewTab = () => {
         
         if (sErr) throw sErr;
 
+        // Process the data to ensure sender has the correct shape
+        const processedBookings = (bData || []).map(booking => {
+          // If sender is an error object or missing properties, create a default sender object
+          const defaultSender = {
+            id: booking.sender_id || "",
+            full_name: "Unknown Client",
+            avatar_url: ""
+          };
+          
+          return {
+            ...booking,
+            sender: booking.sender && typeof booking.sender === 'object' && !('error' in booking.sender)
+              ? booking.sender
+              : defaultSender
+          };
+        });
+
         // Calculate stats
-        const upcomingBookings = bData?.filter(b => b.status !== "completed" && b.status !== "cancelled") || [];
-        const completed = bData?.filter(b => b.status === "completed" && b.service && b.service.price) || [];
-        const clientIds = new Set(bData?.map(b => b.sender?.id).filter(Boolean));
+        const upcomingBookings = processedBookings?.filter(b => b.status !== "completed" && b.status !== "cancelled") || [];
+        const completed = processedBookings?.filter(b => b.status === "completed" && b.service && b.service.price) || [];
+        
+        // Get unique client IDs by safely accessing sender.id
+        const clientIds = new Set(
+          processedBookings
+            ?.map(b => b.sender?.id)
+            .filter(Boolean) || []
+        );
+        
         const revenue = completed.reduce((acc, curr) => acc + (curr.service?.price || 0), 0);
 
         if (!cancelled) {
-          setBookings(bData || []);
+          setBookings(processedBookings || []);
           setServices(sData || []);
           setStats({
             upcoming: upcomingBookings.length,

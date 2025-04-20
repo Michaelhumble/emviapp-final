@@ -2,11 +2,14 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/context/auth";
-import { toast } from "sonner";
-import { Calendar, Clock, Plus, X } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
@@ -14,19 +17,17 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import {
   Select,
   SelectContent,
@@ -34,160 +35,126 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { format, isAfter, parseISO } from "date-fns";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useAuth } from "@/context/auth";
+import { supabase } from "@/integrations/supabase/client";
+import { Loader2, Plus, Pencil, Trash, Calendar } from "lucide-react";
+import { toast } from "sonner";
+import { format, parse } from "date-fns";
 
-interface TimeOff {
-  id: string;
-  artist_id: string;
-  start_date: string;
-  end_date: string;
-  reason: string | null;
-}
-
-interface Availability {
-  id: string;
-  artist_id: string;
+interface AvailabilityDay {
+  id?: string;
   day_of_week: string;
   start_time: string;
   end_time: string;
   is_available: boolean;
 }
 
-const weekdays = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
-];
-
-// Form schemas
+// Validation schema for the availability form
 const availabilityFormSchema = z.object({
-  day_of_week: z.string(),
-  start_time: z.string(),
-  end_time: z.string().refine(
-    (val) => true, // Simplified validation
-    {
-      message: "End time must be after start time",
-    }
-  ),
+  day_of_week: z.string().min(1, { message: "Please select a day of the week" }),
+  start_time: z.string().min(1, { message: "Please select a start time" }),
+  end_time: z.string().min(1, { message: "Please select an end time" }),
   is_available: z.boolean().default(true),
-});
-
-const timeOffFormSchema = z.object({
-  start_date: z.string(),
-  end_date: z.string().refine(
-    (val, ctx) => {
-      if (!ctx.data.start_date) return true;
-      return isAfter(
-        parseISO(val),
-        parseISO(ctx.data.start_date)
-      );
-    },
-    {
-      message: "End date must be after start date",
-    }
-  ),
-  reason: z.string().optional(),
+}).refine((data) => {
+  // Convert times to compare them
+  const start = parse(data.start_time, "HH:mm", new Date());
+  const end = parse(data.end_time, "HH:mm", new Date());
+  
+  // Ensure end time is after start time
+  return end > start;
+}, {
+  message: "End time must be after start time",
+  path: ["end_time"]
 });
 
 type AvailabilityFormValues = z.infer<typeof availabilityFormSchema>;
-type TimeOffFormValues = z.infer<typeof timeOffFormSchema>;
 
 const AvailabilityTab = () => {
   const { user } = useAuth();
-  const [availability, setAvailability] = useState<Availability[]>([]);
-  const [timeOff, setTimeOff] = useState<TimeOff[]>([]);
+  const [availability, setAvailability] = useState<AvailabilityDay[]>([]);
   const [loading, setLoading] = useState(true);
-  const [availabilityDialogOpen, setAvailabilityDialogOpen] = useState(false);
-  const [timeOffDialogOpen, setTimeOffDialogOpen] = useState(false);
-  const [editingAvailability, setEditingAvailability] = useState<Availability | null>(null);
-  const [editingTimeOff, setEditingTimeOff] = useState<TimeOff | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentItem, setCurrentItem] = useState<AvailabilityDay | null>(null);
+  const [showDialog, setShowDialog] = useState(false);
 
-  const availabilityForm = useForm<AvailabilityFormValues>({
+  const form = useForm<AvailabilityFormValues>({
     resolver: zodResolver(availabilityFormSchema),
     defaultValues: {
-      day_of_week: "Monday",
+      day_of_week: "",
       start_time: "09:00",
       end_time: "17:00",
       is_available: true,
-    },
-  });
-
-  const timeOffForm = useForm<TimeOffFormValues>({
-    resolver: zodResolver(timeOffFormSchema),
-    defaultValues: {
-      start_date: format(new Date(), "yyyy-MM-dd"),
-      end_date: format(new Date(), "yyyy-MM-dd"),
-      reason: "",
     },
   });
 
   useEffect(() => {
-    const fetchAvailability = async () => {
-      if (!user?.id) return;
-
-      try {
-        setLoading(true);
-        // Fetch availability settings
-        const { data: availData, error: availError } = await supabase
-          .from("artist_availability")
-          .select("*")
-          .eq("artist_id", user.id)
-          .order("day_of_week", { ascending: true });
-
-        if (availError) throw availError;
-
-        // Fetch time off
-        const { data: timeOffData, error: timeOffError } = await supabase
-          .from("artist_time_off")
-          .select("*")
-          .eq("artist_id", user.id)
-          .order("start_date", { ascending: true });
-
-        if (timeOffError) throw timeOffError;
-
-        setAvailability(availData || []);
-        setTimeOff(timeOffData || []);
-      } catch (error) {
-        console.error("Error fetching availability:", error);
-        toast.error("Failed to load availability settings");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAvailability();
+    if (user?.id) {
+      fetchAvailability();
+    }
   }, [user?.id]);
 
+  const fetchAvailability = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("artist_availability")
+        .select("*")
+        .eq("artist_id", user?.id)
+        .order("day_of_week", { ascending: true });
+
+      if (error) throw error;
+      
+      // Sort days of week in the correct order
+      const daysOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+      const sortedData = data.sort((a, b) => 
+        daysOrder.indexOf(a.day_of_week) - daysOrder.indexOf(b.day_of_week)
+      );
+      
+      setAvailability(sortedData);
+    } catch (error) {
+      console.error("Error fetching availability:", error);
+      toast.error("Failed to load availability settings");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAddAvailability = () => {
-    setEditingAvailability(null);
-    availabilityForm.reset({
-      day_of_week: "Monday",
+    form.reset({
+      day_of_week: "",
       start_time: "09:00",
       end_time: "17:00",
       is_available: true,
     });
-    setAvailabilityDialogOpen(true);
+    setIsAdding(true);
+    setIsEditing(false);
+    setCurrentItem(null);
+    setShowDialog(true);
   };
 
-  const handleEditAvailability = (avail: Availability) => {
-    setEditingAvailability(avail);
-    availabilityForm.reset({
-      day_of_week: avail.day_of_week,
-      start_time: avail.start_time,
-      end_time: avail.end_time,
-      is_available: avail.is_available,
+  const handleEditAvailability = (item: AvailabilityDay) => {
+    form.reset({
+      day_of_week: item.day_of_week,
+      start_time: item.start_time,
+      end_time: item.end_time,
+      is_available: item.is_available,
     });
-    setAvailabilityDialogOpen(true);
+    setIsAdding(false);
+    setIsEditing(true);
+    setCurrentItem(item);
+    setShowDialog(true);
   };
 
   const handleDeleteAvailability = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this availability?")) return;
+    if (!confirm("Are you sure you want to delete this availability setting?")) {
+      return;
+    }
 
     try {
       const { error } = await supabase
@@ -196,75 +163,32 @@ const AvailabilityTab = () => {
         .eq("id", id);
 
       if (error) throw error;
-
-      // Update local state
-      setAvailability((prev) => prev.filter((a) => a.id !== id));
-      toast.success("Availability removed");
+      
+      toast.success("Availability setting deleted");
+      fetchAvailability();
     } catch (error) {
       console.error("Error deleting availability:", error);
-      toast.error("Failed to remove availability");
+      toast.error("Failed to delete availability setting");
     }
   };
 
-  const handleAddTimeOff = () => {
-    setEditingTimeOff(null);
-    timeOffForm.reset({
-      start_date: format(new Date(), "yyyy-MM-dd"),
-      end_date: format(new Date(), "yyyy-MM-dd"),
-      reason: "",
-    });
-    setTimeOffDialogOpen(true);
-  };
-
-  const handleEditTimeOff = (off: TimeOff) => {
-    setEditingTimeOff(off);
-    timeOffForm.reset({
-      start_date: off.start_date,
-      end_date: off.end_date,
-      reason: off.reason || "",
-    });
-    setTimeOffDialogOpen(true);
-  };
-
-  const handleDeleteTimeOff = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this time off?")) return;
-
+  const onSubmit = async (values: AvailabilityFormValues) => {
     try {
-      const { error } = await supabase
-        .from("artist_time_off")
-        .delete()
-        .eq("id", id);
+      if (isAdding) {
+        // Create new availability
+        const { error } = await supabase
+          .from("artist_availability")
+          .insert({
+            artist_id: user?.id,
+            day_of_week: values.day_of_week,
+            start_time: values.start_time,
+            end_time: values.end_time,
+            is_available: values.is_available,
+          });
 
-      if (error) throw error;
-
-      // Update local state
-      setTimeOff((prev) => prev.filter((t) => t.id !== id));
-      toast.success("Time off removed");
-    } catch (error) {
-      console.error("Error deleting time off:", error);
-      toast.error("Failed to remove time off");
-    }
-  };
-
-  const onAvailabilitySubmit = async (values: AvailabilityFormValues) => {
-    if (!user?.id) return;
-
-    try {
-      setIsSubmitting(true);
-
-      // Check for existing day
-      const existingDay = availability.find(
-        (a) => 
-          a.day_of_week === values.day_of_week && 
-          (!editingAvailability || a.id !== editingAvailability.id)
-      );
-
-      if (existingDay && !editingAvailability) {
-        toast.error(`You already have availability set for ${values.day_of_week}`);
-        return;
-      }
-
-      if (editingAvailability) {
+        if (error) throw error;
+        toast.success("Availability added successfully");
+      } else if (isEditing && currentItem?.id) {
         // Update existing availability
         const { error } = await supabase
           .from("artist_availability")
@@ -274,361 +198,245 @@ const AvailabilityTab = () => {
             end_time: values.end_time,
             is_available: values.is_available,
           })
-          .eq("id", editingAvailability.id);
+          .eq("id", currentItem.id);
 
         if (error) throw error;
-
-        // Update local state
-        setAvailability((prev) =>
-          prev.map((a) =>
-            a.id === editingAvailability.id
-              ? {
-                  ...a,
-                  day_of_week: values.day_of_week,
-                  start_time: values.start_time,
-                  end_time: values.end_time,
-                  is_available: values.is_available,
-                }
-              : a
-          )
-        );
-
-        toast.success("Availability updated");
-      } else {
-        // Create new availability
-        const { data, error } = await supabase
-          .from("artist_availability")
-          .insert({
-            artist_id: user.id,
-            day_of_week: values.day_of_week,
-            start_time: values.start_time,
-            end_time: values.end_time,
-            is_available: values.is_available,
-          })
-          .select("*")
-          .single();
-
-        if (error) throw error;
-
-        // Update local state
-        setAvailability((prev) => [...prev, data]);
-        toast.success("Availability added");
+        toast.success("Availability updated successfully");
       }
 
-      setAvailabilityDialogOpen(false);
+      // Close dialog and refresh
+      setShowDialog(false);
+      fetchAvailability();
     } catch (error) {
       console.error("Error saving availability:", error);
-      toast.error("Failed to save availability");
-    } finally {
-      setIsSubmitting(false);
+      toast.error("Failed to save availability settings");
     }
   };
 
-  const onTimeOffSubmit = async (values: TimeOffFormValues) => {
-    if (!user?.id) return;
-
-    try {
-      setIsSubmitting(true);
-
-      if (editingTimeOff) {
-        // Update existing time off
-        const { error } = await supabase
-          .from("artist_time_off")
-          .update({
-            start_date: values.start_date,
-            end_date: values.end_date,
-            reason: values.reason,
-          })
-          .eq("id", editingTimeOff.id);
-
-        if (error) throw error;
-
-        // Update local state
-        setTimeOff((prev) =>
-          prev.map((t) =>
-            t.id === editingTimeOff.id
-              ? {
-                  ...t,
-                  start_date: values.start_date,
-                  end_date: values.end_date,
-                  reason: values.reason || null,
-                }
-              : t
-          )
-        );
-
-        toast.success("Time off updated");
-      } else {
-        // Create new time off
-        const { data, error } = await supabase
-          .from("artist_time_off")
-          .insert({
-            artist_id: user.id,
-            start_date: values.start_date,
-            end_date: values.end_date,
-            reason: values.reason,
-          })
-          .select("*")
-          .single();
-
-        if (error) throw error;
-
-        // Update local state
-        setTimeOff((prev) => [...prev, data]);
-        toast.success("Time off added");
+  // Generate time slots for the select dropdowns
+  const generateTimeOptions = () => {
+    const options = [];
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute += 30) {
+        const hourStr = hour.toString().padStart(2, "0");
+        const minuteStr = minute.toString().padStart(2, "0");
+        options.push(`${hourStr}:${minuteStr}`);
       }
+    }
+    return options;
+  };
 
-      setTimeOffDialogOpen(false);
+  // Format time for display
+  const formatTime = (time: string) => {
+    try {
+      const [hours, minutes] = time.split(":");
+      const date = new Date();
+      date.setHours(parseInt(hours), parseInt(minutes));
+      return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
     } catch (error) {
-      console.error("Error saving time off:", error);
-      toast.error("Failed to save time off");
-    } finally {
-      setIsSubmitting(false);
+      return time;
     }
   };
 
   return (
     <div className="space-y-6">
-      {/* Weekly Availability */}
       <Card className="shadow-sm border border-amber-100 bg-white">
-        <CardHeader className="pb-3">
-          <div className="flex justify-between items-center">
+        <CardHeader className="flex flex-row items-center justify-between pb-3">
+          <div>
             <CardTitle className="text-lg">Weekly Availability</CardTitle>
-            <Button onClick={handleAddAvailability} size="sm">
-              <Plus className="h-4 w-4 mr-1" />
-              Add Hours
-            </Button>
           </div>
+          <Button 
+            onClick={handleAddAvailability}
+            size="sm" 
+            className="bg-amber-600 hover:bg-amber-700"
+          >
+            <Plus className="mr-1 h-4 w-4" /> Add Availability
+          </Button>
         </CardHeader>
+        
         <CardContent>
           {loading ? (
-            <div className="space-y-3">
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-16 w-full rounded-md" />
-              ))}
+            <div className="flex justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
           ) : availability.length === 0 ? (
             <div className="text-center py-8 bg-muted/20 rounded-lg">
-              <Clock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+              <Calendar className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
               <h3 className="text-lg font-medium">No availability set</h3>
               <p className="text-muted-foreground mt-1 mb-4">
-                Set your weekly working hours
+                Add your working hours to let clients know when you're available
               </p>
-              <Button onClick={handleAddAvailability}>
-                <Plus className="h-4 w-4 mr-1" />
-                Add Availability
+              <Button
+                onClick={handleAddAvailability}
+                className="bg-amber-600 hover:bg-amber-700"
+              >
+                <Plus className="mr-1 h-4 w-4" /> Set Your Availability
               </Button>
             </div>
           ) : (
-            <div className="space-y-3">
-              {availability.map((avail) => (
-                <Card
-                  key={avail.id}
-                  className={`hover:shadow-md transition-shadow ${
-                    avail.is_available
-                      ? "border-green-100 bg-green-50/50"
-                      : "border-red-100 bg-red-50/50"
-                  }`}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="flex items-center">
-                          <span className="font-medium">{avail.day_of_week}</span>
-                          {!avail.is_available && (
-                            <span className="ml-2 text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full">
-                              Unavailable
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex mt-1 text-sm space-x-1 items-center">
-                          <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-                          <span className="text-muted-foreground">
-                            {avail.start_time} - {avail.end_time}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEditAvailability(avail)}
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Day</TableHead>
+                    <TableHead>Start Time</TableHead>
+                    <TableHead>End Time</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {availability.map((day) => (
+                    <TableRow key={day.id}>
+                      <TableCell className="font-medium">{day.day_of_week}</TableCell>
+                      <TableCell>{formatTime(day.start_time)}</TableCell>
+                      <TableCell>{formatTime(day.end_time)}</TableCell>
+                      <TableCell>
+                        <span className={`px-2 py-1 rounded-md text-xs font-medium ${
+                          day.is_available 
+                            ? "bg-green-50 text-green-700" 
+                            : "bg-amber-50 text-amber-700"
+                        }`}>
+                          {day.is_available ? "Available" : "Unavailable"}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          onClick={() => handleEditAvailability(day)}
                         >
-                          <Edit className="h-4 w-4" />
+                          <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteAvailability(avail.id)}
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="text-red-500 hover:text-red-700"
+                          onClick={() => day.id && handleDeleteAvailability(day.id)}
                         >
-                          <X className="h-4 w-4 text-red-500" />
+                          <Trash className="h-4 w-4" />
                         </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Time Off */}
-      <Card className="shadow-sm border border-amber-100 bg-white">
-        <CardHeader className="pb-3">
-          <div className="flex justify-between items-center">
-            <CardTitle className="text-lg">Time Off</CardTitle>
-            <Button onClick={handleAddTimeOff} size="sm">
-              <Plus className="h-4 w-4 mr-1" />
-              Add Time Off
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="space-y-3">
-              {[1, 2].map((i) => (
-                <Skeleton key={i} className="h-16 w-full rounded-md" />
-              ))}
-            </div>
-          ) : timeOff.length === 0 ? (
-            <div className="text-center py-8 bg-muted/20 rounded-lg">
-              <Calendar className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-              <h3 className="text-lg font-medium">No time off scheduled</h3>
-              <p className="text-muted-foreground mt-1 mb-4">
-                Schedule vacations or days off
-              </p>
-              <Button onClick={handleAddTimeOff}>
-                <Plus className="h-4 w-4 mr-1" />
-                Schedule Time Off
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {timeOff.map((off) => (
-                <Card
-                  key={off.id}
-                  className="hover:shadow-md transition-shadow border-amber-100 bg-amber-50/50"
-                >
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="font-medium">
-                          {off.start_date === off.end_date
-                            ? format(parseISO(off.start_date), "MMMM d, yyyy")
-                            : `${format(parseISO(off.start_date), "MMM d")} - ${format(
-                                parseISO(off.end_date),
-                                "MMM d, yyyy"
-                              )}`}
-                        </div>
-                        {off.reason && (
-                          <div className="text-sm text-muted-foreground mt-1">
-                            {off.reason}
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEditTimeOff(off)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteTimeOff(off.id)}
-                        >
-                          <X className="h-4 w-4 text-red-500" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Availability Dialog */}
-      <Dialog open={availabilityDialogOpen} onOpenChange={setAvailabilityDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+      {/* Availability Form Dialog */}
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>
-              {editingAvailability ? "Edit Availability" : "Add Availability"}
+              {isAdding ? "Add Availability" : "Edit Availability"}
             </DialogTitle>
             <DialogDescription>
-              Set your working hours for a specific day of the week
+              Set your working hours for the specified day.
             </DialogDescription>
           </DialogHeader>
-
-          <Form {...availabilityForm}>
-            <form onSubmit={availabilityForm.handleSubmit(onAvailabilitySubmit)} className="space-y-4">
+          
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
-                control={availabilityForm.control}
+                control={form.control}
                 name="day_of_week"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Day of Week</FormLabel>
-                    <FormControl>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
+                    <Select
+                      disabled={isEditing}
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                    >
+                      <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a day" />
                         </SelectTrigger>
-                        <SelectContent>
-                          {weekdays.map((day) => (
-                            <SelectItem key={day} value={day}>
-                              {day}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Monday">Monday</SelectItem>
+                        <SelectItem value="Tuesday">Tuesday</SelectItem>
+                        <SelectItem value="Wednesday">Wednesday</SelectItem>
+                        <SelectItem value="Thursday">Thursday</SelectItem>
+                        <SelectItem value="Friday">Friday</SelectItem>
+                        <SelectItem value="Saturday">Saturday</SelectItem>
+                        <SelectItem value="Sunday">Sunday</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
+              
               <div className="grid grid-cols-2 gap-4">
                 <FormField
-                  control={availabilityForm.control}
+                  control={form.control}
                   name="start_time"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Start Time</FormLabel>
-                      <FormControl>
-                        <Input type="time" {...field} />
-                      </FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select start time" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {generateTimeOptions().map((time) => (
+                            <SelectItem key={time} value={time}>
+                              {formatTime(time)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
+                
                 <FormField
-                  control={availabilityForm.control}
+                  control={form.control}
                   name="end_time"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>End Time</FormLabel>
-                      <FormControl>
-                        <Input type="time" {...field} />
-                      </FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select end time" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {generateTimeOptions().map((time) => (
+                            <SelectItem key={time} value={time}>
+                              {formatTime(time)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
-
+              
               <FormField
-                control={availabilityForm.control}
+                control={form.control}
                 name="is_available"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 mt-2">
                     <FormControl>
                       <Checkbox
                         checked={field.value}
@@ -637,112 +445,31 @@ const AvailabilityTab = () => {
                     </FormControl>
                     <div className="space-y-1 leading-none">
                       <FormLabel>Available for bookings</FormLabel>
-                      <p className="text-sm text-muted-foreground">
-                        Uncheck this to block out this time slot
-                      </p>
+                      <FormDescription>
+                        Uncheck if you're not available during these hours
+                      </FormDescription>
                     </div>
                   </FormItem>
                 )}
               />
-
-              <DialogFooter className="mt-6">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setAvailabilityDialogOpen(false)}
-                  disabled={isSubmitting}
+              
+              <DialogFooter>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setShowDialog(false)}
                 >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting
-                    ? "Saving..."
-                    : editingAvailability
-                    ? "Update"
-                    : "Add"}
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Time Off Dialog */}
-      <Dialog open={timeOffDialogOpen} onOpenChange={setTimeOffDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>
-              {editingTimeOff ? "Edit Time Off" : "Schedule Time Off"}
-            </DialogTitle>
-            <DialogDescription>
-              Block off dates when you're not available
-            </DialogDescription>
-          </DialogHeader>
-
-          <Form {...timeOffForm}>
-            <form onSubmit={timeOffForm.handleSubmit(onTimeOffSubmit)} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={timeOffForm.control}
-                  name="start_date"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Start Date</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={timeOffForm.control}
-                  name="end_date"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>End Date</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <FormField
-                control={timeOffForm.control}
-                name="reason"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Reason (Optional)</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="e.g. Vacation, Personal day"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <DialogFooter className="mt-6">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setTimeOffDialogOpen(false)}
-                  disabled={isSubmitting}
+                <Button 
+                  type="submit"
+                  disabled={form.formState.isSubmitting}
+                  className="bg-amber-600 hover:bg-amber-700"
                 >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting
-                    ? "Saving..."
-                    : editingTimeOff
-                    ? "Update"
-                    : "Schedule"}
+                  {form.formState.isSubmitting && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  {isAdding ? "Add" : "Update"}
                 </Button>
               </DialogFooter>
             </form>
