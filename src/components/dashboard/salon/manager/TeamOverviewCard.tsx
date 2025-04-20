@@ -1,7 +1,7 @@
 
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Users } from "lucide-react";
-import { useTeamMembers } from "../../team/hooks/useTeamMembers";
+import { useTeamMembers } from "./hooks/useTeamMembers";
 
 export default function TeamOverviewCard() {
   const { teamMembers, loading } = useTeamMembers();

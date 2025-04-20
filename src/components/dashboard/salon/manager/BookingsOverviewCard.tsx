@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
-import { useSalonBookings } from "../../bookings/hooks/useSalonBookings";
+import { useSalonBookings } from "./hooks/useSalonBookings";
 
 function formatTimeString(time?: string) {
   if (!time) return "--";
@@ -11,7 +11,7 @@ function formatTimeString(time?: string) {
 export default function BookingsOverviewCard() {
   const { bookings, loading } = useSalonBookings();
 
-  // Only today’s bookings (by date)
+  // Only today's bookings (by date)
   const today = new Date();
   const todayStr = today.toISOString().slice(0, 10);
   const todaysBookings = bookings.filter(
