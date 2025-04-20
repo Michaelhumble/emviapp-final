@@ -1,21 +1,25 @@
 
 import React from 'react';
-import { XCircle } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { XCircle } from 'lucide-react';
 
 const BookingsErrorState = () => {
   return (
-    <div>
-      <p className="text-red-500">Unable to load your bookings. Please try again later.</p>
-      <Button 
-        variant="outline" 
-        size="sm" 
-        className="mt-2"
-        onClick={() => window.location.reload()}
-      >
-        Retry
-      </Button>
-    </div>
+    <Card className="w-full">
+      <CardContent className="flex flex-col items-center justify-center p-12">
+        <XCircle className="h-12 w-12 text-red-500 mb-4" />
+        <p className="text-gray-600 mb-6 text-center">
+          Unable to load your bookings
+        </p>
+        <Button 
+          onClick={() => window.location.reload()}
+          className="h-11"
+        >
+          Try Again
+        </Button>
+      </CardContent>
+    </Card>
   );
 };
 

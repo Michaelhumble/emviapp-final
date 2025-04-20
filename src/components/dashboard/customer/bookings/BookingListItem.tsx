@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { CalendarCheck, Clock } from 'lucide-react';
+import { CalendarCheck, Clock, MapPin } from 'lucide-react';
 import { format } from 'date-fns';
+import { Card, CardContent } from '@/components/ui/card';
 import { CustomerBooking } from './types';
 
 interface BookingListItemProps {
@@ -10,43 +11,46 @@ interface BookingListItemProps {
 
 const BookingListItem = ({ booking }: BookingListItemProps) => {
   return (
-    <div
-      className="flex justify-between items-center border rounded-lg p-4 hover:bg-gray-50 transition-colors"
-    >
-      <div>
-        <h3 className="font-medium">
-          {booking.service?.title || "Booking Request"}
-        </h3>
-        <p className="text-sm text-gray-600">
-          {booking.artist?.full_name || "Artist"}
-        </p>
-        <div className="flex items-center gap-2 mt-1">
-          {booking.date_requested && (
-            <span className="text-xs text-gray-500 flex items-center">
-              <CalendarCheck className="h-3 w-3 mr-1" />
-              {format(new Date(booking.date_requested), 'MMM d, yyyy')}
+    <Card className="w-full transition-all duration-200 hover:shadow-md">
+      <CardContent className="p-4 md:p-6">
+        <div className="flex flex-col space-y-3">
+          <div className="flex justify-between items-start">
+            <h3 className="font-medium text-lg">
+              {booking.service?.title || "Booking Request"}
+            </h3>
+            <span className={`
+              px-3 py-1.5 rounded-full text-xs font-medium
+              ${booking.status === 'confirmed' ? 'bg-green-100 text-green-800' : ''}
+              ${booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : ''}
+              ${booking.status === 'cancelled' ? 'bg-red-100 text-red-800' : ''}
+              ${booking.status === 'completed' ? 'bg-blue-100 text-blue-800' : ''}
+            `}>
+              {booking.status?.charAt(0).toUpperCase() + booking.status?.slice(1) || 'Pending'}
             </span>
-          )}
-          {booking.time_requested && (
-            <span className="text-xs text-gray-500 flex items-center">
-              <Clock className="h-3 w-3 mr-1" />
-              {booking.time_requested}
-            </span>
-          )}
+          </div>
+
+          <div className="text-base text-gray-600 flex items-center gap-2">
+            <MapPin className="h-4 w-4" />
+            <span>{booking.artist?.full_name || "Artist to be assigned"}</span>
+          </div>
+
+          <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+            {booking.date_requested && (
+              <span className="flex items-center gap-1.5">
+                <CalendarCheck className="h-4 w-4" />
+                {format(new Date(booking.date_requested), 'MMM d, yyyy')}
+              </span>
+            )}
+            {booking.time_requested && (
+              <span className="flex items-center gap-1.5">
+                <Clock className="h-4 w-4" />
+                {booking.time_requested}
+              </span>
+            )}
+          </div>
         </div>
-      </div>
-      <div>
-        <span className={`
-          px-2 py-1 rounded-full text-xs font-medium
-          ${booking.status === 'confirmed' ? 'bg-green-100 text-green-800' : ''}
-          ${booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : ''}
-          ${booking.status === 'cancelled' ? 'bg-red-100 text-red-800' : ''}
-          ${booking.status === 'completed' ? 'bg-blue-100 text-blue-800' : ''}
-        `}>
-          {booking.status?.charAt(0).toUpperCase() + booking.status?.slice(1) || 'Pending'}
-        </span>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 
