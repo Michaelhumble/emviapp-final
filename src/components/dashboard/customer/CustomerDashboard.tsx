@@ -8,6 +8,7 @@ import AIWelcomeAssistant from "@/components/ai/AIWelcomeAssistant";
 import AISmartReminder from "@/components/ai/AISmartReminder";
 import React from "react";
 import NearbyOffersSection from "./offers/NearbyOffersSection";
+import SuggestedServicesSection from "./services/SuggestedServicesSection";
 
 const CustomerDashboard = () => {
   const { user } = useAuth();
@@ -61,14 +62,20 @@ const CustomerDashboard = () => {
           <React.Suspense fallback={null}>
             {/* Place offers below AI banner but above primary cards */}
             <div className="mb-10">
-              {/* Dynamically import improves code splitting if needed */}
               <NearbyOffersSection />
             </div>
           </React.Suspense>
         )}
         {/* ==== NEARBY OFFERS SECTION END ==== */}
 
-        
+        {/* ==== SUGGESTED SERVICES SECTION START ==== */}
+        {isLoggedIn && (
+          <div className="mb-12">
+            <SuggestedServicesSection />
+          </div>
+        )}
+        {/* ==== SUGGESTED SERVICES SECTION END ==== */}
+
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
           variants={container}
