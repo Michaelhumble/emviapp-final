@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useCustomerDashboard } from "@/hooks/useCustomerDashboard";
 import { ArrowRight, User } from "lucide-react";
+import { toast } from "sonner";
 
 type BookAgainCardProps = {
   id: string;
@@ -15,6 +16,7 @@ type BookAgainCardProps = {
 };
 
 const BookAgainCard: React.FC<BookAgainCardProps> = ({
+  id,
   artistName,
   artistAvatar,
   serviceTitle,
@@ -68,7 +70,7 @@ const BookAgainSection: React.FC = () => {
   const handleBookAgain = (booking: typeof completed[0]) => {
     // TODO: open pre-filled booking modal
     // For now, just show a toast or log
-    window?.toast?.info?.("Booking flow coming soon!");
+    toast.info("Booking flow coming soon!");
     // Or use a custom booking modal here if you have one:
     // openBookingModal({ serviceId: booking.service_id, artistId: booking.artist?.id, ... })
   };
@@ -92,6 +94,7 @@ const BookAgainSection: React.FC = () => {
         {completed.map((booking) => (
           <BookAgainCard
             key={booking.id}
+            id={booking.id}
             artistName={booking.artist?.full_name}
             artistAvatar={booking.artist?.avatar_url}
             serviceTitle={booking.service?.title}
@@ -105,4 +108,3 @@ const BookAgainSection: React.FC = () => {
 };
 
 export default BookAgainSection;
-
