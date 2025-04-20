@@ -57,7 +57,20 @@ const ManagerDashboard = () => {
           
         if (salonError) throw salonError;
         
-        setManagedSalon(salonData);
+        // Convert services from JSON to string array if needed
+        const processedData: Salon = {
+          ...salonData,
+          // Ensure services is always a string array
+          services: Array.isArray(salonData.services) 
+            ? salonData.services 
+            : salonData.services 
+              ? (typeof salonData.services === 'string' 
+                 ? JSON.parse(salonData.services) 
+                 : Object.values(salonData.services))
+              : []
+        };
+        
+        setManagedSalon(processedData);
       } catch (err) {
         console.error('Error fetching managed salon:', err);
       } finally {
