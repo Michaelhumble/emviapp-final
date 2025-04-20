@@ -1,30 +1,16 @@
-
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
-import SalonDashboardBanner from "@/components/dashboard/salon/SalonDashboardBanner";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
-import SalonQuickStats from "@/components/dashboard/salon/SalonQuickStats";
-import SalonTeamManager from "@/components/dashboard/salon/team/SalonTeamManager";
-import SalonServiceManager from "@/components/dashboard/salon/SalonServiceManager";
-import SalonBookingManager from "@/components/dashboard/salon/bookings/SalonBookingManager";
-import SalonBookingFeed from "@/components/dashboard/salon/bookings/SalonBookingFeed";
-import BookingAnalyticsCard from "@/components/dashboard/salon/analytics/BookingAnalyticsCard";
-import SalonMessagingCenter from "@/components/dashboard/salon/SalonMessagingCenter";
-import SalonAvailabilityManager from "@/components/dashboard/salon/SalonAvailabilityManager";
-import SalonPostedJobsSection from "@/components/dashboard/salon/SalonPostedJobsSection";
-import SalonClientManagement from "@/components/dashboard/salon/SalonClientManagement";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Shield, Building2, Store } from "lucide-react";
-import { Salon } from "@/context/salon/types";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Building2, Store } from "lucide-react";
 
 const ManagerDashboard = () => {
   const { userProfile } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
-  const [managedSalon, setManagedSalon] = useState<Salon | null>(null);
+  const [managedSalon, setManagedSalon] = useState(null);
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
@@ -34,7 +20,6 @@ const ManagerDashboard = () => {
       if (!userProfile?.id) return;
       
       try {
-        // First get the manager_for_salon_id from the user profile
         const { data: userData, error: userError } = await supabase
           .from('users')
           .select('manager_for_salon_id')
@@ -48,7 +33,6 @@ const ManagerDashboard = () => {
           return;
         }
         
-        // Then fetch the salon details
         const { data: salonData, error: salonError } = await supabase
           .from('salons')
           .select('*')
@@ -57,10 +41,8 @@ const ManagerDashboard = () => {
           
         if (salonError) throw salonError;
         
-        // Convert services from JSON to string array if needed
         const processedData: Salon = {
           ...salonData,
-          // Ensure services is always a string array
           services: Array.isArray(salonData.services) 
             ? salonData.services 
             : salonData.services 
@@ -91,7 +73,6 @@ const ManagerDashboard = () => {
     localStorage.setItem('manager_dashboard_tab', value);
   };
   
-  // If not managing any salon, show a message
   if (!loading && !managedSalon) {
     return (
       <Layout>
@@ -127,7 +108,7 @@ const ManagerDashboard = () => {
   
   return (
     <Layout>
-      <div className="container px-4 mx-auto py-12">
+      <div className="container px-4 mx-auto py-6 lg:py-8">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -135,14 +116,14 @@ const ManagerDashboard = () => {
         >
           <RoleDashboardLayout>
             <div className="space-y-6">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div className="flex flex-col">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <Building2 className="h-5 w-5 text-blue-600" />
                     <span className="text-sm font-medium text-blue-600">Manager Dashboard</span>
                   </div>
                   <h1 className="text-2xl font-bold">
-                    {loading ? 'Loading...' : managedSalon?.salon_name || 'Salon Dashboard'}
+                    Welcome back, {userProfile?.full_name || 'Manager'}
                   </h1>
                 </div>
                 <div className="flex items-center px-4 py-2 bg-blue-50 rounded-lg border border-blue-200">
@@ -150,16 +131,16 @@ const ManagerDashboard = () => {
                   <span className="text-blue-800 font-medium">Salon Manager</span>
                 </div>
               </div>
-              
-              <Tabs value={activeTab} onValueChange={handleTabChange}>
-                <TabsList className="grid grid-cols-5 mb-8">
-                  <TabsTrigger value="overview">Overview</TabsTrigger>
-                  <TabsTrigger value="bookings">Bookings</TabsTrigger>
-                  <TabsTrigger value="team">Team</TabsTrigger>
-                  <TabsTrigger value="services">Services</TabsTrigger>
-                  <TabsTrigger value="messages">Messages</TabsTrigger>
-                </TabsList>
-                
+
+              <Tabs defaultValue="overview" className="w-full">
+                <ScrollArea className="w-full max-w-full pb-2">
+                  <TabsList className="w-full justify-start md:justify-center p-1 h-12 bg-muted/20">
+                    <TabsTrigger value="overview" className="flex-1 md:flex-none">Overview</TabsTrigger>
+                    <TabsTrigger value="bookings" className="flex-1 md:flex-none">Bookings</TabsTrigger>
+                    <TabsTrigger value="team" className="flex-1 md:flex-none">Team</TabsTrigger>
+                  </TabsList>
+                </ScrollArea>
+
                 <TabsContent value="overview" className="space-y-8">
                   <SalonQuickStats />
                   <SalonBookingFeed />
@@ -189,7 +170,6 @@ const ManagerDashboard = () => {
                 </TabsContent>
               </Tabs>
               
-              {/* Manager-specific note */}
               <Card className="border-blue-200 bg-blue-50/50">
                 <CardContent className="pt-6">
                   <div className="flex gap-2 items-start">

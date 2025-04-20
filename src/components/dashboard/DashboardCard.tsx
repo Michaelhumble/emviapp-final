@@ -1,15 +1,16 @@
 
-import React from 'react';
-import { LucideIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { LucideIcon } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface DashboardCardProps {
   title: string;
   description?: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
   onClick?: () => void;
-  variant?: 'default' | 'primary' | 'secondary' | 'outline';
+  variant?: "primary" | "secondary" | "outline";
   className?: string;
+  children?: React.ReactNode;
 }
 
 const DashboardCard = ({
@@ -17,37 +18,43 @@ const DashboardCard = ({
   description,
   icon: Icon,
   onClick,
-  variant = 'default',
+  variant = "primary",
   className,
+  children,
 }: DashboardCardProps) => {
-  // Define variant-specific styles
   const variantStyles = {
-    default: 'bg-white hover:bg-gray-50 border border-gray-200',
-    primary: 'bg-primary/10 hover:bg-primary/20 border border-primary/20 text-primary',
-    secondary: 'bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700',
-    outline: 'bg-transparent hover:bg-gray-50 border border-gray-200',
+    primary: "border-blue-100 hover:border-blue-200 bg-white hover:bg-blue-50/50",
+    secondary: "border-amber-100 hover:border-amber-200 bg-white hover:bg-amber-50/50",
+    outline: "border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50/50",
   };
 
   return (
-    <div
+    <Card
       onClick={onClick}
       className={cn(
-        'rounded-xl p-5 transition-all duration-200 shadow-sm',
-        'transform hover:scale-105 hover:shadow-md cursor-pointer',
+        "transition-all duration-200 p-6",
+        "cursor-pointer select-none",
         variantStyles[variant],
         className
       )}
     >
-      <div className="flex items-start">
-        <div className="mr-4 rounded-full p-2 bg-primary/10">
-          <Icon className="h-6 w-6 text-primary" />
+      <div className="space-y-2">
+        <div className="flex items-start gap-3">
+          {Icon && (
+            <div className="mt-0.5">
+              <Icon className="h-5 w-5 text-blue-500" />
+            </div>
+          )}
+          <div className="space-y-1 flex-1">
+            <h3 className="font-medium text-base">{title}</h3>
+            {description && (
+              <p className="text-sm text-muted-foreground">{description}</p>
+            )}
+          </div>
         </div>
-        <div>
-          <h3 className="font-semibold text-lg">{title}</h3>
-          {description && <p className="text-sm text-gray-500 mt-1">{description}</p>}
-        </div>
+        {children && <div className="pt-2">{children}</div>}
       </div>
-    </div>
+    </Card>
   );
 };
 
