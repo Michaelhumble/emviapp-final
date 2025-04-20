@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
@@ -5,12 +6,29 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RoleDashboardLayout from "@/components/dashboard/RoleDashboardLayout";
 import { useAuth } from "@/context/auth";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Building2, Store } from "lucide-react";
+import { Building2, Store, Shield } from "lucide-react";
+import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+import { Salon } from "@/context/salon/types";
+import { MobileButton } from "@/components/ui/mobile-button";
+
+// Import salon dashboard components
+// These would need to be properly implemented, but for now we'll just use placeholders
+import SalonQuickStats from "@/components/dashboard/salon/SalonQuickStats";
+import SalonBookingFeed from "@/components/dashboard/salon/bookings/SalonBookingFeed";
+import SalonAvailabilityManager from "@/components/dashboard/salon/SalonAvailabilityManager";
+import SalonTeamManager from "@/components/dashboard/salon/team/SalonTeamManager";
+import BookingAnalyticsCard from "@/components/dashboard/salon/analytics/BookingAnalyticsCard";
+import SalonBookingManager from "@/components/dashboard/salon/bookings/SalonBookingManager";
+import SalonClientManagement from "@/components/dashboard/salon/SalonClientManagement";
+import SalonServiceManager from "@/components/dashboard/salon/SalonServiceManager";
+import SalonPostedJobsSection from "@/components/dashboard/salon/SalonPostedJobsSection";
+import SalonMessagingCenter from "@/components/dashboard/salon/SalonMessagingCenter";
 
 const ManagerDashboard = () => {
   const { userProfile } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
-  const [managedSalon, setManagedSalon] = useState(null);
+  const [managedSalon, setManagedSalon] = useState<Salon | null>(null);
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
@@ -132,7 +150,7 @@ const ManagerDashboard = () => {
                 </div>
               </div>
 
-              <Tabs defaultValue="overview" className="w-full">
+              <Tabs defaultValue={activeTab} onValueChange={handleTabChange} className="w-full">
                 <ScrollArea className="w-full max-w-full pb-2">
                   <TabsList className="w-full justify-start md:justify-center p-1 h-12 bg-muted/20">
                     <TabsTrigger value="overview" className="flex-1 md:flex-none">Overview</TabsTrigger>
