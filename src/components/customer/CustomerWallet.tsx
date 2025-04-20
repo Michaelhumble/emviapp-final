@@ -91,59 +91,43 @@ const CustomerWallet: React.FC<CustomerWalletProps> = ({ onBalanceUpdate }) => {
 
     // Step 3: Add credits and log usage in a transaction
     let errorOccurred = false;
-    const { error: applyError } = await supabase.rpc("rpc_apply_promo_code_for_user", {
-      p_user_id: user?.id,
-      p_code: code.code,
+    
+    // Insert into promo_code_usages
+    const { error: insError } = await supabase.from("promo_code_usages").insert({
+      user_id: user?.id,
+      promo_code_id: code.id,
     });
-
-    if (applyError) {
+    if (insError) {
       errorOccurred = true;
       toast({
-        title: "Apply failed",
-        description: "Could not apply this code. Please try again.",
+        title: "Error",
+        description: "Failed to apply code. Please try again.",
         variant: "error",
       });
+      setLoading(false);
+      return;
     }
+    // Update used count on code
+    await supabase
+      .from("promo_codes")
+      .update({ used_count: code.used_count + 1 })
+      .eq("id", code.id);
 
-    // Fallback: if custom function not available, do it in code:
-    if (applyError || !applyError) {
-      // Insert into promo_code_usages
-      const { error: insError } = await supabase.from("promo_code_usages").insert({
-        user_id: user?.id,
-        promo_code_id: code.id,
+    // Add credits to user
+    const { error: upError } = await supabase
+      .from("users")
+      .update({ credits: currentCredits + code.value })
+      .eq("id", user?.id);
+
+    if (upError) {
+      errorOccurred = true;
+      toast({
+        title: "Error",
+        description: "Could not update credits. Please contact support.",
+        variant: "error",
       });
-      if (insError) {
-        errorOccurred = true;
-        toast({
-          title: "Error",
-          description: "Failed to apply code. Please try again.",
-          variant: "error",
-        });
-        setLoading(false);
-        return;
-      }
-      // Update used count on code
-      await supabase
-        .from("promo_codes")
-        .update({ used_count: code.used_count + 1 })
-        .eq("id", code.id);
-
-      // Add credits to user
-      const { error: upError } = await supabase
-        .from("users")
-        .update({ credits: currentCredits + code.value })
-        .eq("id", user?.id);
-
-      if (upError) {
-        errorOccurred = true;
-        toast({
-          title: "Error",
-          description: "Could not update credits. Please contact support.",
-          variant: "error",
-        });
-        setLoading(false);
-        return;
-      }
+      setLoading(false);
+      return;
     }
 
     // Success toast & UI update
