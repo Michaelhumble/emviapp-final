@@ -33,8 +33,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "@/hooks/useTranslation";
-import { createTranslation } from "../../SalonTranslationHelper";
+import { createTranslation } from "../SalonTranslationHelper";
 import { format } from "date-fns";
+import { useAuth } from "@/context/auth"; // Add useAuth import
 
 interface ManualBookingModalProps {
   isOpen: boolean;
@@ -63,6 +64,7 @@ export function ManualBookingModal({
 }: ManualBookingModalProps) {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth(); // Get the current user for sender_id
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -78,10 +80,11 @@ export function ManualBookingModal({
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
     try {
-      // Insert new booking
+      // Insert new booking (adding sender_id as the current user)
       const { data: booking, error } = await supabase
         .from('bookings')
         .insert({
+          sender_id: user?.id, // Add the sender_id from current user
           recipient_id: values.artist_id,
           service_id: values.service_id,
           date_requested: format(values.date, 'yyyy-MM-dd'),

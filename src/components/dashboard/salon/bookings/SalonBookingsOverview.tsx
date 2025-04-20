@@ -53,7 +53,6 @@ const SalonBookingsOverview = () => {
   const [showManualBookingModal, setShowManualBookingModal] = useState(false);
   const { userRole } = useSalonRolePermissions();
 
-  // Handle manual refresh with loading indicator
   const handleRefresh = () => {
     setIsRefreshing(true);
     fetchBookings()
@@ -64,17 +63,14 @@ const SalonBookingsOverview = () => {
   };
 
   const filteredBookings = bookings.filter(booking => {
-    // Filter by status
     if (statusFilter !== "all" && booking.status !== statusFilter) {
       return false;
     }
     
-    // Filter by artist
     if (artistFilter !== "all" && booking.assigned_staff_id !== artistFilter) {
       return false;
     }
     
-    // Filter by date
     if (dateFilter !== "all") {
       if (!booking.date) return false;
       
@@ -419,7 +415,7 @@ const SalonBookingsOverview = () => {
         isOpen={showManualBookingModal}
         onClose={() => setShowManualBookingModal(false)}
         services={artists.map(artist => ({ id: artist.id, title: artist.name }))}
-        teamMembers={artists}
+        teamMembers={artists.map(artist => ({ id: artist.id, full_name: artist.name }))} // Map to the expected format
         onBookingCreated={fetchBookings}
       />
     </Card>
