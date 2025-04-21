@@ -37,10 +37,11 @@ export const normalizeRole = (role: UserRole | string | null): UserRole => {
       return 'freelancer';
       
     case 'supplier':
+    case 'beauty supplier':
       return 'supplier';
     
-    case 'beauty supplier':
-      return 'beauty supplier';
+    case 'vendor':
+      return 'vendor';
       
     case 'nail technician/artist':
       return 'nail technician/artist';
@@ -50,16 +51,15 @@ export const normalizeRole = (role: UserRole | string | null): UserRole => {
     case 'chair renter':
       return 'renter';
       
-    case 'vendor':
-      return 'vendor';
-      
     default:
       // If it's already a valid UserRole, return it
       if (role === 'customer' || 
           role === 'artist' || 
           role === 'salon' || 
           role === 'owner' || 
-          role === 'freelancer' || 
+          role === 'freelancer' ||
+          role === 'manager' ||
+          role === 'admin' ||
           role === 'supplier' || 
           role === 'vendor' || 
           role === 'beauty supplier' || 
@@ -101,6 +101,10 @@ export const getRoleLabel = (role: UserRole | null): string => {
       return 'Nail Technician';
     case 'renter':
       return 'Booth Renter';
+    case 'manager':
+      return 'Manager';
+    case 'admin':
+      return 'Administrator';
     case 'other':
       return 'Other';
     default:

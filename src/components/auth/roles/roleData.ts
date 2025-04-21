@@ -36,7 +36,7 @@ export const roleOptions: RoleOption[] = [
     icon: React.createElement(Briefcase, { className: "h-5 w-5 text-primary" })
   },
   {
-    id: "vendor",
+    id: "supplier",
     label: "Vendor (Beauty Supplier)",
     description: "I sell products or tools for beauty salons and professionals.",
     icon: React.createElement(ShoppingBag, { className: "h-5 w-5 text-primary" })

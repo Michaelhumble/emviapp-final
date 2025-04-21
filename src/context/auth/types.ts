@@ -1,11 +1,11 @@
 
 import { User } from '@supabase/supabase-js';
 
-export type UserRole = 'customer' | 'artist' | 'salon' | 'owner' | 'manager' | 'admin' | 'freelancer' | 'nail technician/artist' | 'beauty supplier' | 'other';
+export type UserRole = 'customer' | 'artist' | 'salon' | 'owner' | 'manager' | 'admin' | 'freelancer' | 'nail technician/artist' | 'beauty supplier' | 'supplier' | 'vendor' | 'renter' | 'other';
 
 export interface UserProfile {
   id: string;
-  email?: string;
+  email: string; // Changed from optional to required to match other UserProfile definitions
   full_name?: string;
   role?: UserRole;
   avatar_url?: string;
