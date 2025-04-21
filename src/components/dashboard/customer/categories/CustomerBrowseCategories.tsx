@@ -4,23 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Badge } from "@/components/ui/badge";
 import {
-  // Choose from allowed Lucide icons per instructions:
-  // - "nail"
-  // - "scissors"
-  // - "eye"
-  // - "brush"
-  // - "massage"
-  // - "face"
-  // - "tattoo"
-  // - "barber"
-  Nail,
+  // Use available icons from Lucide instead of the ones that don't exist
   Scissors,
   Eye,
   Brush,
-  Massage,
-  Face,
-  Tattoo,
-  Barber
+  Sparkles,
+  Paintbrush,
+  HandMetal, // for tattoo
+  Comb // for barber
 } from "lucide-react";
 
 // Soft pastel gradient classes per category (tailwind custom colors + bg blur)
@@ -28,7 +19,7 @@ const categoryData = [
   {
     key: "nails",
     label: "Nails",
-    Icon: Nail,
+    Icon: Paintbrush, // Changed from Nail to Paintbrush
     gradient: "from-pink-200/70 to-rose-100/90",
     badge: "✨ Popular"
   },
@@ -53,25 +44,25 @@ const categoryData = [
   {
     key: "massage",
     label: "Massage",
-    Icon: Massage,
+    Icon: Sparkles, // Changed from Massage to Sparkles
     gradient: "from-mint-200/60 to-teal-100/80",
   },
   {
     key: "skin",
     label: "Facial",
-    Icon: Face,
+    Icon: Brush, // Changed from Face to Brush
     gradient: "from-blue-100/80 to-purple-100/80",
   },
   {
     key: "barber",
     label: "Barber",
-    Icon: Barber,
+    Icon: Comb, // Changed from Barber to Comb
     gradient: "from-gray-100/80 to-blue-200/80",
   },
   {
     key: "tattoo",
     label: "Tattoo",
-    Icon: Tattoo,
+    Icon: HandMetal, // Changed from Tattoo to HandMetal
     gradient: "from-purple-800/70 to-indigo-300/80",
     badge: "🔥 Trending"
   },
@@ -153,4 +144,3 @@ const CustomerBrowseCategories: React.FC = () => {
 };
 
 export default CustomerBrowseCategories;
-
