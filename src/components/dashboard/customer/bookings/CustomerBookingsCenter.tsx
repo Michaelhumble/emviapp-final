@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import BookingsTabs from "./BookingsTabs";
@@ -101,6 +102,14 @@ export const CustomerBookingsCenter: React.FC = () => {
     },
   ];
 
+  // Type safety handler function to convert between the types
+  const handleTabChange = (value: string) => {
+    // Only set the state if the value is one of the allowed types
+    if (value === "upcoming" || value === "past" || value === "needs") {
+      setActiveTab(value);
+    }
+  };
+
   return (
     <div className="w-full max-w-2xl mx-auto px-0 sm:px-0 md:px-0 pt-2 mb-6">
       <h2 className="font-bold text-[1.4rem] sm:text-2xl mb-3 text-primary flex items-center gap-2">
@@ -109,15 +118,13 @@ export const CustomerBookingsCenter: React.FC = () => {
       <Tabs
         defaultValue="upcoming"
         value={activeTab}
-        onValueChange={(tab) =>
-          setActiveTab(tab as "upcoming" | "past" | "needs")
-        }
+        onValueChange={handleTabChange}
         className="w-full"
       >
         <BookingsTabs
           tabs={tabs}
           value={activeTab}
-          onValueChange={setActiveTab}
+          onValueChange={handleTabChange}
         />
         <TabsContent value="upcoming">
           <CustomerBookingsTabContent
