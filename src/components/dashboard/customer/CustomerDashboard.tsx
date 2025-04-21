@@ -7,9 +7,7 @@ import CustomerFavoritesSection from "./favorites/CustomerFavoritesSection";
 import RecommendedServicesSection from "./services/RecommendedServicesSection";
 import SuggestedServicesSection from "./services/SuggestedServicesSection";
 import CustomerBrowseCategories from "./categories/CustomerBrowseCategories";
-import CustomerReferralPanel from "./CustomerReferralPanel";
 import CustomerGlamGoalsPanel from "./glam-goals/CustomerGlamGoalsPanel";
-import CustomerReferralTracker from "./CustomerReferralTracker";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 const CustomerDashboard: React.FC = () => {
@@ -18,13 +16,10 @@ const CustomerDashboard: React.FC = () => {
       {/* Premium Welcome Header */}
       <CustomerWelcomeHeader />
 
-      {/* Referral Credits Card */}
+      {/* Referral Credits Card - keep only this one */}
       <TooltipProvider>
         <CustomerReferralCard />
       </TooltipProvider>
-
-      {/* -- Add tracker below the card -- */}
-      <CustomerReferralTracker />
 
       <div className="space-y-8 md:space-y-12">
         {/* Bookings Panel with Tabs */}
@@ -40,7 +35,8 @@ const CustomerDashboard: React.FC = () => {
         <CustomerBrowseCategories />
 
         {/* NEW: Glam Goals panel (below referrals, above Favorites) */}
-        <CustomerReferralPanel />
+        {/* Removed CustomerReferralPanel and CustomerReferralTracker for deduplication */}
+
         <CustomerGlamGoalsPanel />
 
         {/* Favorites Section */}
