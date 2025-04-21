@@ -72,7 +72,6 @@ export const BookingCard: React.FC<BookingCardProps> = ({
         <div className="flex items-center gap-2 text-primary mt-1 text-[15px] font-medium">
           <span>
             {booking.artist?.full_name ||
-              booking.artist?.name ||
               "Artist/Salon"}
           </span>
         </div>
