@@ -10,7 +10,6 @@ import {
   Sparkles,
   Paintbrush,
   HandMetal, // for tattoo
-  Hairdryer, // for barber replacement
 } from "lucide-react";
 
 // Soft pastel gradient classes per category (tailwind custom colors + bg blur)
@@ -55,7 +54,7 @@ const categoryData = [
   {
     key: "barber",
     label: "Barber",
-    Icon: Hairdryer, // Replaced Comb with Hairdryer
+    Icon: Scissors, // Replacing non-existent Hairdryer with Scissors
     gradient: "from-gray-100/80 to-blue-200/80",
   },
   {
