@@ -2041,6 +2041,7 @@ export type Database = {
           preferred_language: string | null
           profile_completion: number | null
           referral_code: string | null
+          referral_count: number | null
           referred_by: string | null
           role: string | null
           specialty: string | null
@@ -2072,6 +2073,7 @@ export type Database = {
           preferred_language?: string | null
           profile_completion?: number | null
           referral_code?: string | null
+          referral_count?: number | null
           referred_by?: string | null
           role?: string | null
           specialty?: string | null
@@ -2103,6 +2105,7 @@ export type Database = {
           preferred_language?: string | null
           profile_completion?: number | null
           referral_code?: string | null
+          referral_count?: number | null
           referred_by?: string | null
           role?: string | null
           specialty?: string | null
