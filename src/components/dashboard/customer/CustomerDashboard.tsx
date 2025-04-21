@@ -1,4 +1,3 @@
-
 import React from "react";
 import CustomerWelcomeHeader from "./CustomerWelcomeHeader";
 import CustomerBookingsCenter from "./bookings/CustomerBookingsCenter";
@@ -8,6 +7,7 @@ import RecommendedServicesSection from "./services/RecommendedServicesSection";
 import SuggestedServicesSection from "./services/SuggestedServicesSection";
 import CustomerBrowseCategories from "./categories/CustomerBrowseCategories";
 import CustomerReferralPanel from "./CustomerReferralPanel";
+import CustomerGlamGoalsPanel from "./glam-goals/CustomerGlamGoalsPanel";
 
 const CustomerDashboard: React.FC = () => {
   return (
@@ -21,21 +21,19 @@ const CustomerDashboard: React.FC = () => {
         
         {/* Loyalty & Credits Section */}
         <CustomerLoyaltySection />
-        
+
         {/* INJECT: Smart Booking Suggestions */}
         <SuggestedServicesSection />
-        
-        {/* Suggested Services */}
-        <RecommendedServicesSection />
         
         {/* Browse Categories */}
         <CustomerBrowseCategories />
         
+        {/* NEW: Glam Goals panel (below referrals, above Favorites) */}
+        <CustomerReferralPanel />
+        <CustomerGlamGoalsPanel />
+
         {/* Favorites Section */}
         <CustomerFavoritesSection />
-
-        {/* NEW: Invite & Earn referral panel */}
-        <CustomerReferralPanel />
       </div>
     </div>
   );
