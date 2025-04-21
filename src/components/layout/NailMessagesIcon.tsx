@@ -2,8 +2,7 @@
 import React from "react";
 
 /**
- * Minimal, refined Messages icon for nav bar.
- * Style: envelope outline, brand purple, luxury white.
+ * Minimal luxury Messages icon — envelope with rounded lines.
  */
 const NailMessagesIcon: React.FC<React.SVGProps<SVGSVGElement> & { active?: boolean }> = ({
   active = false,
@@ -26,20 +25,20 @@ const NailMessagesIcon: React.FC<React.SVGProps<SVGSVGElement> & { active?: bool
   >
     <circle cx="30" cy="30" r="28" fill="#fff" />
     <rect
-      x="20"
-      y="23"
-      width="20"
-      height="15"
-      rx="4.8"
+      x="18"
+      y="22"
+      width="24"
+      height="16"
+      rx="4.6"
       fill={active ? "#eae5fb" : "#fff"}
       stroke="#9b87f5"
-      strokeWidth="2.2"
+      strokeWidth={2.1}
     />
     <polyline
-      points="22,25 30,34 38,25"
+      points="19.5,24 30,32 40.5,24"
       fill="none"
       stroke="#9b87f5"
-      strokeWidth="2.1"
+      strokeWidth={2}
       strokeLinejoin="round"
       strokeLinecap="round"
     />

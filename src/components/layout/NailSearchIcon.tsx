@@ -2,8 +2,7 @@
 import React from "react";
 
 /**
- * Minimal, high-end Search icon for mobile nav.
- * Style: outlined lens, brand purple, white circle bg, soft shadow.
+ * Minimal, modern Search icon – outlined circle lens & handle.
  */
 const NailSearchIcon: React.FC<React.SVGProps<SVGSVGElement> & { active?: boolean }> = ({
   active = false,
@@ -28,23 +27,19 @@ const NailSearchIcon: React.FC<React.SVGProps<SVGSVGElement> & { active?: boolea
     <circle
       cx="28"
       cy="28"
-      r="8.2"
+      r="8"
       stroke="#9b87f5"
-      strokeWidth="2.2"
+      strokeWidth="2.1"
       fill={active ? "#eae5fb" : "#fff"}
-      style={{
-        transition: "fill 0.3s",
-      }}
     />
-    <rect
-      x="34"
-      y="34"
-      width="8"
-      height="2.5"
-      rx="1.2"
-      transform="rotate(45 34 34)"
-      fill={active ? "#9b87f5" : "#eae5fb"}
-      style={{ transition: "fill 0.3s" }}
+    <line
+      x1="34.5"
+      y1="34.5"
+      x2="41"
+      y2="41"
+      stroke="#9b87f5"
+      strokeWidth={2.1}
+      strokeLinecap="round"
     />
   </svg>
 );

@@ -2,8 +2,7 @@
 import React from "react";
 
 /**
- * Minimal, luxury Bookings (Heart) icon for nav.
- * Style: stylized heart outline, brand purples.
+ * Minimal Bookings icon — check & circle for "confirmed".
  */
 const NailBookingsIcon: React.FC<React.SVGProps<SVGSVGElement> & { active?: boolean }> = ({
   active = false,
@@ -25,14 +24,21 @@ const NailBookingsIcon: React.FC<React.SVGProps<SVGSVGElement> & { active?: bool
     }}
   >
     <circle cx="30" cy="30" r="28" fill="#fff" />
-    <path
-      d="M30 42s-10-6.5-10-13.5a7 7 0 0 1 13.1-3.7A7 7 0 0 1 40 28.5C40 35.5 30 42 30 42Z"
-      fill={active ? "#eae5fb" : "#fff"}
+    <circle
+      cx="30"
+      cy="30"
+      r="8"
       stroke="#9b87f5"
-      strokeWidth="2.2"
-      style={{
-        transition: "fill 0.3s",
-      }}
+      strokeWidth={2.1}
+      fill={active ? "#eae5fb" : "#fff"}
+    />
+    <polyline
+      points="27.5,31.5 30,34 34,28.5"
+      fill="none"
+      stroke="#9b87f5"
+      strokeWidth={2.2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );

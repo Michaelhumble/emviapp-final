@@ -2,8 +2,7 @@
 import React from "react";
 
 /**
- * Minimal, luxury Profile icon for nav bar.
- * Style: simple outlined head, soft purple accent.
+ * Minimal Profile icon — modern single-line bust.
  */
 const NailProfileIcon: React.FC<React.SVGProps<SVGSVGElement> & { active?: boolean }> = ({
   active = false,
@@ -27,21 +26,18 @@ const NailProfileIcon: React.FC<React.SVGProps<SVGSVGElement> & { active?: boole
     <circle cx="30" cy="30" r="28" fill="#fff" />
     <circle
       cx="30"
-      cy="26"
-      r="7.2"
+      cy="25.7"
+      r="6.6"
       stroke="#9b87f5"
-      strokeWidth="2.2"
+      strokeWidth="2"
       fill={active ? "#eae5fb" : "#fff"}
     />
-    <rect
-      x="20.7"
-      y="37.3"
-      width="18.6"
-      height="6"
-      rx="3"
-      fill={active ? "#eae5fb" : "#fff"}
+    <path
+      d="M21.5 39.2c2.5-4 14.5-4 17 0"
       stroke="#9b87f5"
-      strokeWidth="2.1"
+      strokeWidth="2"
+      fill="none"
+      strokeLinecap="round"
     />
   </svg>
 );
