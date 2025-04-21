@@ -148,8 +148,7 @@ const CustomerPendingReviewsSection: React.FC = () => {
         .select(
           `
             id, created_at, status, recipient_id,
-            service:service_id (title),
-            artist:recipient_id (full_name, avatar_url)
+            service:service_id (title)
           `
         )
         .eq("sender_id", user.id)
@@ -179,12 +178,48 @@ const CustomerPendingReviewsSection: React.FC = () => {
         }
       }
 
-      // Only return bookings with NO review yet
-      setPending(
-        bookingsData.filter(b => !reviewedBookingIds.includes(b.id))
+      // Fetch artist details for each booking
+      const unreviewedBookings = bookingsData.filter(
+        b => !reviewedBookingIds.includes(b.id)
       );
+
+      // If no unreviewed bookings, return early
+      if (unreviewedBookings.length === 0) {
+        setPending([]);
+        setLoading(false);
+        return;
+      }
+
+      // Fetch artist details separately for each booking
+      const bookingsWithArtistDetails = await Promise.all(
+        unreviewedBookings.map(async (booking) => {
+          // Fetch artist details
+          if (booking.recipient_id) {
+            const { data: artistData, error: artistError } = await supabase
+              .from("users")
+              .select("full_name, avatar_url")
+              .eq("id", booking.recipient_id)
+              .maybeSingle();
+
+            // Structure the booking with artist data
+            return {
+              ...booking,
+              artist: artistError ? null : artistData
+            } as BookingForReview;
+          }
+          
+          // If no recipient_id, return booking without artist details
+          return {
+            ...booking,
+            artist: null
+          } as BookingForReview;
+        })
+      );
+
+      setPending(bookingsWithArtistDetails);
       setLoading(false);
     }
+
     fetchPendingReviews();
   }, [user]);
 
