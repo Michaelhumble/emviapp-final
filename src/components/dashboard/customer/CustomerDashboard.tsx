@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,7 +17,7 @@ import BookAgainSection from "./services/BookAgainSection";
 import CustomerPendingReviewsSection from "./reviews/CustomerPendingReviewsSection";
 
 const CustomerDashboard = () => {
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
   const isLoggedIn = !!user;
   
   const container = {
@@ -56,7 +55,7 @@ const CustomerDashboard = () => {
           </p>
         </motion.div>
         
-        {isLoggedIn && <CustomerLoyaltyTracker />}
+        {isLoggedIn && userRole === "customer" && <CustomerLoyaltyTracker />}
 
         {/* Book Again Section (Single row, stacked on mobile) */}
         {isLoggedIn && (

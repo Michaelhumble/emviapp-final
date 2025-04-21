@@ -1,176 +1,158 @@
 
-import React, { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import React from "react";
 import { useAuth } from "@/context/auth";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
-import { Wallet } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { BadgeDollarSign, Award, Star, Gift, FileText, Plus, Minus } from "lucide-react";
 
-interface CustomerWalletProps {
-  onBalanceUpdate?: (newBalance: number) => void;
+const DUMMY_TRANSACTIONS = [
+  {
+    id: "tx1",
+    date: "2025-04-20",
+    type: "Referral",
+    amount: 10,
+    icon: <Gift className="h-4 w-4 text-amber-400" />,
+  },
+  {
+    id: "tx2",
+    date: "2025-04-18",
+    type: "Promo Code",
+    amount: 5,
+    icon: <BadgeDollarSign className="h-4 w-4 text-primary" />,
+  },
+  {
+    id: "tx3",
+    date: "2025-04-15",
+    type: "Review Bonus",
+    amount: 5,
+    icon: <Star className="h-4 w-4 text-pink-500" />,
+  },
+  {
+    id: "tx4",
+    date: "2025-04-12",
+    type: "Booking Reward",
+    amount: 3,
+    icon: <Award className="h-4 w-4 text-green-500" />,
+  },
+  {
+    id: "tx5",
+    date: "2025-04-10",
+    type: "Booking Spent",
+    amount: -8,
+    icon: <Minus className="h-4 w-4 text-red-400" />,
+  },
+];
+
+function formatDate(dateStr: string) {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
-const CustomerWallet: React.FC<CustomerWalletProps> = ({ onBalanceUpdate }) => {
-  const { user, userProfile, refreshUserProfile } = useAuth();
-  const [promoCode, setPromoCode] = useState("");
-  const [loading, setLoading] = useState(false);
+const earnMoreTips = [
+  {
+    label: "Leave a review",
+    credits: 5,
+    btn: "Leave Review",
+    icon: <Star className="h-4 w-4 mr-1 text-pink-400" />,
+    onClick: () => window.scrollTo({ top: 0, behavior: "smooth" }), // Placeholder
+  },
+  {
+    label: "Invite a friend",
+    credits: 10,
+    btn: "Invite",
+    icon: <Gift className="h-4 w-4 mr-1 text-amber-400" />,
+    onClick: () => window.location.href = "/dashboard/customer", // Placeholder
+  },
+  {
+    label: "Complete your profile",
+    credits: 5,
+    btn: "Complete",
+    icon: <FileText className="h-4 w-4 mr-1 text-primary" />,
+    onClick: () => window.location.href = "/profile/edit",
+  },
+];
 
-  // Credits fallback
+const CustomerWallet: React.FC = () => {
+  const { userProfile, userRole } = useAuth();
+
+  if (userRole !== "customer") return null;
+
   const currentCredits = userProfile?.credits ?? 0;
 
-  // Handle promo code apply
-  const handleApplyPromoCode = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!promoCode.trim()) return;
-
-    setLoading(true);
-
-    // Step 1: Check promo code validity and availability
-    const { data: code, error: codeErr } = await supabase
-      .from("promo_codes")
-      .select("*")
-      .eq("code", promoCode.trim())
-      .single();
-
-    if (codeErr || !code) {
-      toast({
-        title: "Invalid code",
-        description: "This promo code does not exist.",
-        variant: "error",
-      });
-      setLoading(false);
-      return;
-    }
-    if (!code.is_active) {
-      toast({
-        title: "Code expired",
-        description: "This promo code is no longer active.",
-        variant: "error",
-      });
-      setLoading(false);
-      return;
-    }
-    // Check expiration (if set)
-    if (code.expires_at && new Date(code.expires_at) < new Date()) {
-      toast({
-        title: "Code expired",
-        description: "This promo code has expired.",
-        variant: "error",
-      });
-      setLoading(false);
-      return;
-    }
-    if (code.max_uses && code.used_count >= code.max_uses) {
-      toast({
-        title: "Code expired",
-        description: "This promo code is no longer available.",
-        variant: "error",
-      });
-      setLoading(false);
-      return;
-    }
-
-    // Step 2: Check if this user has used it already
-    const { data: rp, error: usageErr } = await supabase
-      .from("promo_code_usages")
-      .select("id")
-      .eq("user_id", user?.id)
-      .eq("promo_code_id", code.id)
-      .maybeSingle();
-
-    if (rp) {
-      toast({
-        title: "Code already used",
-        description: "You have already used this code.",
-        variant: "error",
-      });
-      setLoading(false);
-      return;
-    }
-
-    // Step 3: Add credits and log usage in a transaction
-    let errorOccurred = false;
-    
-    // Insert into promo_code_usages
-    const { error: insError } = await supabase.from("promo_code_usages").insert({
-      user_id: user?.id,
-      promo_code_id: code.id,
-    });
-    if (insError) {
-      errorOccurred = true;
-      toast({
-        title: "Error",
-        description: "Failed to apply code. Please try again.",
-        variant: "error",
-      });
-      setLoading(false);
-      return;
-    }
-    // Update used count on code
-    await supabase
-      .from("promo_codes")
-      .update({ used_count: code.used_count + 1 })
-      .eq("id", code.id);
-
-    // Add credits to user
-    const { error: upError } = await supabase
-      .from("users")
-      .update({ credits: currentCredits + code.value })
-      .eq("id", user?.id);
-
-    if (upError) {
-      errorOccurred = true;
-      toast({
-        title: "Error",
-        description: "Could not update credits. Please contact support.",
-        variant: "error",
-      });
-      setLoading(false);
-      return;
-    }
-
-    // Success toast & UI update
-    setPromoCode("");
-    setLoading(false);
-    toast({
-      title: "Promo applied!",
-      description: `Promo applied! ${code.value} credits added.`,
-      variant: "success",
-    });
-    // Refresh profile/balance
-    if (onBalanceUpdate) {
-      onBalanceUpdate(currentCredits + code.value);
-    }
-    if (refreshUserProfile) await refreshUserProfile();
-  };
-
   return (
-    <div className="mb-6">
-      <div className="flex items-center mb-3">
-        <Wallet className="h-6 w-6 text-primary mr-2" />
-        <h3 className="text-xl font-semibold">Wallet</h3>
-      </div>
-      <div className="mb-2 text-gray-700 text-base">Your Credit Balance: <span className="font-bold">{currentCredits} credits</span></div>
-      <form onSubmit={handleApplyPromoCode} className="flex flex-col sm:flex-row items-stretch gap-3 mt-4 max-w-md">
-        <Input
-          type="text"
-          placeholder="Enter a promo code"
-          className="text-base h-12 sm:w-64"
-          value={promoCode}
-          autoComplete="off"
-          onChange={(e) => setPromoCode(e.target.value)}
-          disabled={loading}
-        />
-        <Button 
-          type="submit"
-          className="h-12 text-base flex-shrink-0"
-          disabled={!promoCode.trim() || loading}
-        >
-          {loading ? "Applying..." : "Apply Code"}
-        </Button>
-      </form>
-    </div>
+    <Card className="mb-6">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+          <BadgeDollarSign className="h-5 w-5 text-primary" />
+          Your Wallet
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {/* Current Balance */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="text-base md:text-lg font-medium text-gray-700">Current Balance:</div>
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-bold text-green-600">{currentCredits}</span>
+            <span className="text-base text-gray-600">credits</span>
+          </div>
+        </div>
+        {/* Divider */}
+        <hr className="my-3" />
+        {/* Transaction History */}
+        <div>
+          <div className="font-semibold mb-2 text-base md:text-lg">Recent Transactions</div>
+          <div className="space-y-2">
+            {DUMMY_TRANSACTIONS.slice(0, 5).map(tx => (
+              <div key={tx.id} className="flex items-center justify-between p-2 rounded bg-gray-50">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span>{tx.icon}</span>
+                  <span className="text-sm truncate">{tx.type}</span>
+                  <span className="text-xs text-gray-400 ml-2">{formatDate(tx.date)}</span>
+                </div>
+                <span className={
+                  "text-sm font-semibold " +
+                  (tx.amount > 0
+                    ? "text-green-600"
+                    : "text-red-500")
+                }>
+                  {tx.amount > 0 ? "+" : ""}
+                  {tx.amount}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* Divider */}
+        <hr className="my-4" />
+        {/* Earn More Tips */}
+        <div>
+          <div className="font-semibold mb-2 text-base md:text-lg">Earn More Credits</div>
+          <div className="flex flex-col gap-3">
+            {earnMoreTips.map((tip, idx) => (
+              <div
+                key={idx}
+                className="flex items-center justify-between p-3 rounded-lg bg-pink-50 border border-pink-100"
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  {tip.icon}
+                  <span className="text-sm truncate font-medium">{tip.label}</span>
+                  <span className="ml-1 text-xs font-bold text-green-600">
+                    +{tip.credits}
+                  </span>
+                </div>
+                <button
+                  className="ml-2 bg-primary text-white rounded-lg px-3 py-1.5 text-xs font-medium min-h-[44px] hover:bg-primary/80 transition shadow"
+                  onClick={tip.onClick}
+                  tabIndex={0}
+                  style={{ minWidth: 90 }}
+                >
+                  {tip.btn}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
