@@ -47,7 +47,7 @@ export default function PastAppointments({
             onReschedule={onReschedule}
             emptyStateProps={{
               icon: "calendar-clock",
-              headline: friendlyEmpty.headline,
+              headline: <><span role="img" aria-label="clock" className="emoji emoji-pop">🕓</span> {friendlyEmpty.headline}</>,
               body: friendlyEmpty.body,
               cta: friendlyEmpty.cta,
               ctaHref: friendlyEmpty.ctaHref,

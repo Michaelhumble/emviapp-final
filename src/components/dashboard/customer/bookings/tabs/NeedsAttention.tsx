@@ -50,7 +50,7 @@ export default function NeedsAttention({
             onCancel={onCancel}
             emptyStateProps={{
               icon: "calendar-check",
-              headline: friendlyEmpty.headline,
+              headline: <><span role="img" aria-label="check mark" className="emoji emoji-pop">✅</span> {friendlyEmpty.headline}</>,
               body: friendlyEmpty.body,
               cta: friendlyEmpty.cta,
               ctaHref: friendlyEmpty.ctaHref,

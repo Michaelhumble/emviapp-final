@@ -44,7 +44,7 @@ export default function CancelledAppointments({
             onView={onView}
             emptyStateProps={{
               icon: "calendar-x",
-              headline: friendlyEmpty.headline,
+              headline: <><span role="img" aria-label="cross mark" className="emoji emoji-pop">❌</span> {friendlyEmpty.headline}</>,
               body: friendlyEmpty.body,
               cta: friendlyEmpty.cta,
               ctaHref: friendlyEmpty.ctaHref,
