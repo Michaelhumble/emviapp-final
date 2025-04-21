@@ -8,10 +8,14 @@ import { toast } from "sonner";
 import { hasRoleAccess } from "@/utils/navigation";
 import { UserRole } from "@/context/auth/types";
 import Layout from "@/components/layout/Layout";
+import { useReferralNotifications } from "@/hooks/useReferralNotifications";
 
 const CustomerDashboardPage = () => {
   const { userProfile, userRole, loading } = useAuth();
   const navigate = useNavigate();
+  
+  // Set up referral notifications listener
+  useReferralNotifications();
   
   useEffect(() => {
     document.title = "Customer Dashboard | EmviApp";

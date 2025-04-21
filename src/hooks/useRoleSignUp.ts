@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,7 +13,18 @@ export const useRoleSignUp = () => {
   const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [referrer, setReferrer] = useState("");
   const navigate = useNavigate();
+
+  // Extract referral code from URL on component mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get("ref");
+    if (ref) {
+      setReferrer(ref);
+      console.log("Referral code detected:", ref);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,6 +53,7 @@ export const useRoleSignUp = () => {
           data: {
             role: selectedRole, // Store role in user metadata
             user_type: selectedRole, // Also store as user_type for backward compatibility
+            ...(referrer ? { referred_by_referral_code: referrer } : {})
           },
         },
       });
@@ -66,6 +78,27 @@ export const useRoleSignUp = () => {
       if (updateError) {
         console.error("Error updating user role:", updateError);
         // Continue anyway as the auth metadata should have the role
+      }
+
+      // Process referral if code was provided
+      if (referrer && data.user) {
+        try {
+          const { data: referralData, error: referralError } = await supabase.rpc(
+            "process_referral",
+            {
+              referral_code: referrer,
+              new_user_id: data.user.id
+            }
+          );
+          
+          if (referralError) {
+            console.error("Referral processing error:", referralError);
+          } else if (referralData) {
+            console.log("Referral processed successfully!");
+          }
+        } catch (referralErr) {
+          console.error("Error processing referral:", referralErr);
+        }
       }
 
       // Save role to localStorage for redundancy
@@ -99,6 +132,7 @@ export const useRoleSignUp = () => {
     setSelectedRole,
     isSubmitting,
     error,
+    referrer,
     handleSubmit
   };
 };
