@@ -14,7 +14,7 @@ interface CustomerBookingsTabContentProps {
   onCancel?: (id: string) => void;
   emptyStateProps?: {
     icon: string;
-    headline: string;
+    headline: React.ReactNode;
     body: string;
     cta: string;
     ctaHref: string;
