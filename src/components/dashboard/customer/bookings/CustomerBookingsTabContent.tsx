@@ -13,7 +13,7 @@ interface CustomerBookingsTabContentProps {
   onReschedule?: (id: string) => void;
   onCancel?: (id: string) => void;
   emptyStateProps?: {
-    icon: string;
+    icon: React.ReactNode;
     headline: React.ReactNode;
     body: string;
     cta: string;
@@ -51,7 +51,6 @@ const CustomerBookingsTabContent: React.FC<CustomerBookingsTabContentProps> = ({
           key={booking.id}
           booking={booking}
           type={cardType}
-          // Only pass handlers if defined. TS supports undefined for optional props.
           {...(onView && { onView })}
           {...(onReschedule && { onReschedule })}
           {...(onCancel && { onCancel })}

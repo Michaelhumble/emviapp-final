@@ -12,6 +12,12 @@ interface CancelledAppointmentsProps {
   currentCredits?: number;
 }
 
+const emojiSpan = (label: string, emoji: string) => (
+  <span role="img" aria-label={label} className="emoji">
+    {emoji}
+  </span>
+);
+
 const friendlyEmpty = {
   headline: "No canceled appointments",
   body: "Your schedule is clear. Time to book something fun!",
@@ -43,8 +49,12 @@ export default function CancelledAppointments({
             cardType="canceled"
             onView={onView}
             emptyStateProps={{
-              icon: "calendar-x",
-              headline: <><span role="img" aria-label="cross mark" className="emoji emoji-pop">❌</span> {friendlyEmpty.headline}</>,
+              icon: emojiSpan("cross mark", "❌"),
+              headline: (
+                <>
+                  {emojiSpan("cross mark", "❌")} No canceled appointments
+                </>
+              ),
               body: friendlyEmpty.body,
               cta: friendlyEmpty.cta,
               ctaHref: friendlyEmpty.ctaHref,

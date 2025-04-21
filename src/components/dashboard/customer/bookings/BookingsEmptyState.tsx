@@ -6,7 +6,7 @@ import { Calendar, Sparkles } from "lucide-react";
 export type EmptyType = "upcoming" | "past" | "needsAttention" | "canceled";
 
 interface EmptyStateProps {
-  icon: string;
+  icon: React.ReactNode;
   headline: React.ReactNode;
   body: string;
   cta: string;
@@ -41,7 +41,7 @@ const friendlyEmpty = {
     cta: "Browse Services",
     ctaHref: "/explore/artists",
     icon: <Calendar className="h-12 w-12 text-purple-200" />,
-  }
+  },
 };
 
 interface BookingsEmptyStateProps {
@@ -56,26 +56,44 @@ const BookingsEmptyState: React.FC<BookingsEmptyStateProps> = ({
   customProps,
 }) => {
   const content = customProps || friendlyEmpty[type];
-  
+
   return (
-    <div className="flex flex-col items-center justify-center py-12 px-4 gap-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
-      {typeof content.icon === 'string' ? (
-        <span className="h-12 w-12 text-purple-200 mb-4">{content.icon}</span>
-      ) : (
-        content.icon || friendlyEmpty[type].icon
-      )}
-      <h3 className="font-serif font-semibold text-xl text-gray-700 mt-2 text-center">
-        {content.headline}
-      </h3>
-      <p className="text-gray-500 mb-4 text-center max-w-md">{content.body}</p>
-      <Button
-        asChild
-        size={isMobile ? "lg" : "default"}
-        className="rounded-full px-8 bg-purple-600 hover:bg-purple-700 shadow-sm"
-      >
-        <a href={content.ctaHref}>{content.cta}</a>
-      </Button>
-    </div>
+    <>
+      <style>
+        {`
+          .emoji {
+            font-size: 1.5rem;
+            line-height: 1;
+            vertical-align: middle;
+            display: inline-block;
+            animation: fadeIn 0.6s ease-in-out;
+          }
+
+          @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+          }
+        `}
+      </style>
+      <div className="flex flex-col items-center justify-center py-12 px-4 gap-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
+        {typeof content.icon === "string" ? (
+          <span className="h-12 w-12 text-purple-200 mb-4">{content.icon}</span>
+        ) : (
+          content.icon || friendlyEmpty[type].icon
+        )}
+        <h3 className="font-serif font-semibold text-xl text-gray-700 mt-2 text-center">
+          {content.headline}
+        </h3>
+        <p className="text-gray-500 mb-4 text-center max-w-md">{content.body}</p>
+        <Button
+          asChild
+          size={isMobile ? "lg" : "default"}
+          className="rounded-full px-8 bg-purple-600 hover:bg-purple-700 shadow-sm"
+        >
+          <a href={content.ctaHref}>{content.cta}</a>
+        </Button>
+      </div>
+    </>
   );
 };
 

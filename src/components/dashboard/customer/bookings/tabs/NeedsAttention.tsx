@@ -14,6 +14,12 @@ interface NeedsAttentionProps {
   currentCredits?: number;
 }
 
+const emojiSpan = (label: string, emoji: string) => (
+  <span role="img" aria-label={label} className="emoji">
+    {emoji}
+  </span>
+);
+
 const friendlyEmpty = {
   headline: "Everything's on track!",
   body: "No bookings need your attention right now.",
@@ -49,8 +55,12 @@ export default function NeedsAttention({
             onReschedule={onReschedule}
             onCancel={onCancel}
             emptyStateProps={{
-              icon: "calendar-check",
-              headline: <><span role="img" aria-label="check mark" className="emoji emoji-pop">✅</span> {friendlyEmpty.headline}</>,
+              icon: emojiSpan("check mark", "✅"),
+              headline: (
+                <>
+                  {emojiSpan("check mark", "✅")} Everything's on track!
+                </>
+              ),
               body: friendlyEmpty.body,
               cta: friendlyEmpty.cta,
               ctaHref: friendlyEmpty.ctaHref,

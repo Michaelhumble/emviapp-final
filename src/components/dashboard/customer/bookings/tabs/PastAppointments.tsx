@@ -13,6 +13,12 @@ interface PastAppointmentsProps {
   currentCredits?: number;
 }
 
+const emojiSpan = (label: string, emoji: string) => (
+  <span role="img" aria-label={label} className="emoji">
+    {emoji}
+  </span>
+);
+
 const friendlyEmpty = {
   headline: "No past appointments",
   body: "Your journey is just beginning.",
@@ -46,8 +52,12 @@ export default function PastAppointments({
             onView={onView}
             onReschedule={onReschedule}
             emptyStateProps={{
-              icon: "calendar-clock",
-              headline: <><span role="img" aria-label="clock" className="emoji emoji-pop">🕓</span> {friendlyEmpty.headline}</>,
+              icon: emojiSpan("clock", "🕓"),
+              headline: (
+                <>
+                  {emojiSpan("clock", "🕓")} No past appointments
+                </>
+              ),
               body: friendlyEmpty.body,
               cta: friendlyEmpty.cta,
               ctaHref: friendlyEmpty.ctaHref,
