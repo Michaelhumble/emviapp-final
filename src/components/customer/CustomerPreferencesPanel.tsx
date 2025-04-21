@@ -83,10 +83,11 @@ const CustomerPreferencesPanel: React.FC = () => {
     setForm(f => ({
       ...f,
       preferences: userProfile.preferences || [],
-      artistTypes: (userProfile.favorite_artist_types || userProfile.artistTypes) || [],
+      // Use favorite_artist_types if available, fallback to artistTypes property for backward compatibility
+      artistTypes: (userProfile.favorite_artist_types || []) as string[],
       preferred_language: userProfile.preferred_language || "en",
-      birthday: userProfile.birthday || "",
-      commPrefs: userProfile.communication_preferences || [],
+      birthday: userProfile.birthday as string || "",
+      commPrefs: (userProfile.communication_preferences || []) as string[],
       avatar_url: userProfile.avatar_url || "",
     }));
   }, [userProfile, user]);
@@ -97,8 +98,8 @@ const CustomerPreferencesPanel: React.FC = () => {
     PERCENT_FIELDS.forEach(field => {
       // At least one value for preference/artist/commPrefs, else count if present
       if (
-        (Array.isArray(form[field]) && form[field].length > 0) ||
-        (typeof form[field] === "string" && form[field])
+        (Array.isArray(form[field as keyof typeof form]) && (form[field as keyof typeof form] as string[]).length > 0) ||
+        (typeof form[field as keyof typeof form] === "string" && form[field as keyof typeof form])
       ) {
         complete += 1;
       }
@@ -119,7 +120,11 @@ const CustomerPreferencesPanel: React.FC = () => {
           upsert: true,
         });
         if (error) throw error;
-        const url = `${supabase.storageUrl}/object/public/avatars/${filePath}`;
+        
+        // Access the public URL for the uploaded file
+        const { data: publicUrlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
+        const url = publicUrlData.publicUrl;
+        
         setForm(f => ({ ...f, avatar_url: url, uploading: false }));
         toast.success("Avatar uploaded!");
       } catch (err) {
