@@ -237,3 +237,21 @@ textarea:focus {
   animation: emojiPop 0.55s cubic-bezier(0.32,0.65,0.48,1.2);
   /* Used on tab change for a little joyful sophisticated bounce */
 }
+
+/* --- Add this at the bottom for softer mobile nav shadow! --- */
+.shadow-mobile-navbar {
+  box-shadow: 0 1px 14px 0 rgba(155,135,245,0.10), 0 0.5px 1px 0 rgba(0,0,0,0.05);
+}
+
+.nav-bottom-glow {
+  /* Add extra soft "bloom" feel below nav bar */
+  box-shadow: 0 6px 36px 0 rgba(155,135,245,0.10), 0 0.5px 1px 0 rgba(0,0,0,0.03);
+}
+
+@media (min-width: 768px) {
+  /* Hide bottom nav on larger screens explicitly for safety */
+  .nav-bottom-glow,
+  .shadow-mobile-navbar {
+    display: none !important;
+  }
+}
