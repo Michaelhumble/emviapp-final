@@ -1,0 +1,127 @@
+
+import React from "react";
+import { useAuth } from "@/context/auth";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import DashboardQuickCard from "@/components/dashboard/customer/DashboardQuickCard";
+import { Users, Search, Calendar, Star, ArrowRight } from "lucide-react";
+import { toast } from "sonner";
+
+const accentColor = "#9b87f5";
+
+const CustomerDashboard: React.FC = () => {
+  const { userProfile } = useAuth();
+  const navigate = useNavigate();
+
+  // Safely get first name
+  const firstName = userProfile?.full_name?.split(" ")[0] || "Beautiful";
+
+  // Demo stats – replace with actual logic if available
+  const totalBookings = userProfile?.bookings_count ?? null;
+  const totalReviews = userProfile?.reviews_count ?? null;
+
+  // Referral link logic
+  const referralLink = userProfile?.referral_code
+    ? `https://emviapp.com/invite/${userProfile.referral_code}`
+    : "";
+
+  const handleCopyReferral = () => {
+    if (!referralLink) return;
+    navigator.clipboard.writeText(referralLink);
+    toast.success("Referral link copied!");
+  };
+
+  return (
+    <div className="min-h-[90vh] flex flex-col items-center bg-gradient-to-b from-white to-pink-50/40 px-2 pb-10">
+      {/* Motivational welcome */}
+      <div className="max-w-2xl w-full mx-auto text-center mt-8 mb-6">
+        <h1 className="font-serif text-2xl sm:text-3xl font-bold text-gray-800 mb-2 flex flex-col items-center">
+          Hey <span className="text-[1.5em] font-extrabold text-primary" style={{ color: accentColor }}>{firstName}</span>, your next beauty appointment is just a click away 💅
+        </h1>
+        <p className="text-gray-600 text-base">Jump into your dashboard to plan appointments, discover artists, and earn fabulous credits!</p>
+      </div>
+      {/* Stats cards */}
+      {(totalBookings !== null || totalReviews !== null) && (
+        <div className="flex flex-row gap-4 mb-6">
+          {totalBookings !== null && (
+            <Card className="rounded-2xl bg-white/70 shadow-inner px-5 py-2 min-w-[100px] flex flex-col items-center">
+              <Calendar className="h-5 w-5 text-primary mb-1" />
+              <div className="text-lg font-semibold">{totalBookings}</div>
+              <div className="text-xs text-gray-500 font-medium">Bookings</div>
+            </Card>
+          )}
+          {totalReviews !== null && (
+            <Card className="rounded-2xl bg-white/70 shadow-inner px-5 py-2 min-w-[100px] flex flex-col items-center">
+              <Star className="h-5 w-5 text-yellow-400 mb-1" />
+              <div className="text-lg font-semibold">{totalReviews}</div>
+              <div className="text-xs text-gray-500 font-medium">Reviews</div>
+            </Card>
+          )}
+        </div>
+      )}
+      {/* Dashboard navigation cards – grid for desktop, stack for mobile */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-2xl">
+        <DashboardQuickCard
+          icon={<Users className="h-6 w-6 text-primary" />}
+          title="Browse Salons"
+          description="Explore premium salons nearby."
+          buttonLabel="See Salons"
+          onClick={() => navigate("/salons")}
+          accentColor={accentColor}
+        />
+        <DashboardQuickCard
+          icon={<Search className="h-6 w-6 text-primary" />}
+          title="Find Artists"
+          description="Discover talented beauty pros."
+          buttonLabel="Find Artists"
+          onClick={() => navigate("/search")}
+          accentColor={accentColor}
+        />
+        <DashboardQuickCard
+          icon={<Calendar className="h-6 w-6 text-primary" />}
+          title="My Appointments"
+          description="View and manage your bookings."
+          buttonLabel="My Bookings"
+          onClick={() => navigate("/bookings")}
+          accentColor={accentColor}
+        />
+        <DashboardQuickCard
+          icon={<Star className="h-6 w-6 text-yellow-400" />}
+          title="My Reviews"
+          description="Manage your artist reviews."
+          buttonLabel="My Reviews"
+          onClick={() => navigate("/profile/reviews")}
+          accentColor={accentColor}
+        />
+        {/* Referral link panel */}
+        <Card className="rounded-2xl bg-white/80 shadow-xl py-6 px-5 col-span-1 sm:col-span-2 flex flex-col gap-2">
+          <div className="flex items-center gap-2 mb-2">
+            <ArrowRight className="h-5 w-5 text-emerald-500" />
+            <span className="font-semibold text-emerald-700 text-[1.08em]">
+              Invite Friends &amp; Earn
+            </span>
+          </div>
+          <div className="flex flex-col sm:flex-row items-center gap-2">
+            <div className="bg-gray-100 border border-gray-200 px-3 py-2 rounded-md text-sm truncate w-full sm:w-auto">
+              {referralLink || "No referral link available"}
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              className="mt-2 sm:mt-0"
+              style={{ color: accentColor, borderColor: accentColor }}
+              onClick={handleCopyReferral}
+              disabled={!referralLink}
+            >
+              Copy Link
+            </Button>
+          </div>
+          <div className="text-xs text-gray-600 mt-1">Share and earn free credits—let’s grow our beauty community together!</div>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default CustomerDashboard;
