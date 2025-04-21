@@ -1,3 +1,4 @@
+
 import React from "react";
 import CustomerWelcomeHeader from "./CustomerWelcomeHeader";
 import CustomerBookingsCenter from "./bookings/CustomerBookingsCenter";
@@ -6,6 +7,7 @@ import CustomerFavoritesSection from "./favorites/CustomerFavoritesSection";
 import RecommendedServicesSection from "./services/RecommendedServicesSection";
 import SuggestedServicesSection from "./services/SuggestedServicesSection";
 import CustomerBrowseCategories from "./categories/CustomerBrowseCategories";
+import CustomerReferralPanel from "./CustomerReferralPanel";
 
 const CustomerDashboard: React.FC = () => {
   return (
@@ -31,6 +33,9 @@ const CustomerDashboard: React.FC = () => {
         
         {/* Favorites Section */}
         <CustomerFavoritesSection />
+
+        {/* NEW: Invite & Earn referral panel */}
+        <CustomerReferralPanel />
       </div>
     </div>
   );
