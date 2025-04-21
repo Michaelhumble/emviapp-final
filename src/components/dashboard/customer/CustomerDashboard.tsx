@@ -1,10 +1,10 @@
-
 import React from "react";
 import CustomerWelcomeHeader from "./CustomerWelcomeHeader";
 import CustomerBookingsCenter from "./bookings/CustomerBookingsCenter";
 import CustomerLoyaltySection from "./loyalty/CustomerLoyaltySection";
 import CustomerFavoritesSection from "./favorites/CustomerFavoritesSection";
 import RecommendedServicesSection from "./services/RecommendedServicesSection";
+import SuggestedServicesSection from "./services/SuggestedServicesSection";
 import CustomerBrowseCategories from "./categories/CustomerBrowseCategories";
 
 const CustomerDashboard: React.FC = () => {
@@ -19,6 +19,9 @@ const CustomerDashboard: React.FC = () => {
         
         {/* Loyalty & Credits Section */}
         <CustomerLoyaltySection />
+        
+        {/* INJECT: Smart Booking Suggestions */}
+        <SuggestedServicesSection />
         
         {/* Suggested Services */}
         <RecommendedServicesSection />

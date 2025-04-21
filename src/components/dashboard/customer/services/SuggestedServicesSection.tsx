@@ -2,8 +2,7 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Star, TrendingUp, ArrowRight, Image as ImageIcon } from "lucide-react";
-import { useAuth } from "@/context/auth";
+import { Star, TrendingUp, ArrowRight } from "lucide-react";
 
 type Service = {
   id: string;
@@ -17,6 +16,7 @@ type Service = {
   description?: string;
 };
 
+// Mock/demo data; eventually this should come from Supabase!
 const mockServices: Service[] = [
   {
     id: "1",
@@ -53,6 +53,7 @@ const mockServices: Service[] = [
   },
 ];
 
+// Utility to prioritize trending/hot > booking count > recency
 function sortServices(services: Service[]) {
   return services
     .filter((s) => s.is_visible)
@@ -69,9 +70,10 @@ function sortServices(services: Service[]) {
 }
 
 const SuggestedServicesSection: React.FC = () => {
-  const { user } = useAuth();
+  // In a real version, fetch services using useQuery/useSafeQuery here.
   const services = sortServices(mockServices);
 
+  // Responsive checks
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 
   return (
@@ -85,8 +87,18 @@ const SuggestedServicesSection: React.FC = () => {
           <CardContent className="flex flex-col items-center justify-center py-10 text-center">
             <Star className="h-10 w-10 text-purple-300 mb-4 animate-bounce" />
             <p className="text-gray-500 mb-2 font-medium">
-              We’ll show you awesome services once you start exploring!
+              No suggestions available at the moment.
             </p>
+            <Button 
+              variant="outline" 
+              className="rounded-full flex items-center gap-1"
+              asChild
+            >
+              <a href="/explore/artists">
+                Browse Salons 
+                <ArrowRight className="ml-1 h-4 w-4" />
+              </a>
+            </Button>
           </CardContent>
         </Card>
       ) : (
@@ -112,7 +124,10 @@ const SuggestedServicesSection: React.FC = () => {
                     className="h-20 w-20 object-cover rounded-xl border border-gray-100"
                   />
                 ) : (
-                  <ImageIcon className="h-12 w-12 text-purple-200" aria-label="No service image" />
+                  // Use pretty emoji if image missing
+                  <span aria-label="Nails" className="text-4xl">
+                    💅
+                  </span>
                 )}
               </div>
               <CardContent className="pt-4 pb-2">
@@ -134,16 +149,20 @@ const SuggestedServicesSection: React.FC = () => {
               </CardContent>
               <div className="flex items-center px-4 sm:px-6 pb-4 pt-1">
                 <Button
-                  variant="outline"
+                  variant="default"
                   size="sm"
-                  className="w-full min-h-[44px] rounded font-medium"
+                  className="w-full min-h-[44px] rounded font-medium flex items-center justify-center group-hover:bg-purple-600 transition"
                   tabIndex={0}
                   onClick={() => {
+                    // Implement modal or booking redirect here
                   }}
                 >
-                  View <ArrowRight className="ml-1 h-4 w-4" />
+                  Book Now
+                  <ArrowRight className="ml-1 h-4 w-4" />
                 </Button>
               </div>
+              {/* Shadow + hover accent */}
+              <div className="absolute inset-0 pointer-events-none rounded-2xl ring-0 ring-purple-300 group-hover:ring-4 transition"></div>
             </Card>
           ))}
         </div>
