@@ -1,4 +1,3 @@
-
 import React from "react";
 import CustomerWelcomeHeader from "./CustomerWelcomeHeader";
 import CustomerReferralCard from "./CustomerReferralCard";
@@ -10,6 +9,7 @@ import SuggestedServicesSection from "./services/SuggestedServicesSection";
 import CustomerBrowseCategories from "./categories/CustomerBrowseCategories";
 import CustomerReferralPanel from "./CustomerReferralPanel";
 import CustomerGlamGoalsPanel from "./glam-goals/CustomerGlamGoalsPanel";
+import CustomerReferralTracker from "./CustomerReferralTracker";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 const CustomerDashboard: React.FC = () => {
@@ -22,6 +22,9 @@ const CustomerDashboard: React.FC = () => {
       <TooltipProvider>
         <CustomerReferralCard />
       </TooltipProvider>
+
+      {/* -- Add tracker below the card -- */}
+      <CustomerReferralTracker />
 
       <div className="space-y-8 md:space-y-12">
         {/* Bookings Panel with Tabs */}

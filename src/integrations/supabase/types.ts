@@ -1228,7 +1228,50 @@ export type Database = {
           status?: string | null
           verified_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_referred"
+            columns: ["referred_id"]
+            isOneToOne: true
+            referencedRelation: "profile_completion_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_referred"
+            columns: ["referred_id"]
+            isOneToOne: true
+            referencedRelation: "user_salon_access"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_referred"
+            columns: ["referred_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_referrer"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "profile_completion_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_referrer"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "user_salon_access"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_referrer"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reviews: {
         Row: {

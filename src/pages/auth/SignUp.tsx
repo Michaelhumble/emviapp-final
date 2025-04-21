@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/context/auth";
@@ -22,7 +21,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { signUpWithEmail } from "@/services/auth";
 import { supabase } from "@/integrations/supabase/client";
 
-// Define invite details type for clarity
 interface InviteDetails {
   valid: boolean;
   salon_name?: string;
@@ -45,11 +43,11 @@ const SignUp = () => {
   const [error, setError] = useState<string | null>(null);
   const [signupSuccess, setSignupSuccess] = useState(false);
   const [inviteDetails, setInviteDetails] = useState<InviteDetails | null>(null);
+  const [referrer, setReferrer] = useState("");
 
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if already logged in
   if (user) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -66,13 +64,10 @@ const SignUp = () => {
 
         if (error) throw error;
         
-        // Make sure data is properly typed
         if (typeof data === 'object') {
-          // Cast as unknown first to avoid type errors
           const typedData = data as unknown as InviteDetails;
           setInviteDetails(typedData);
           
-          // Pre-fill role if invite specifies one
           if (typedData.role) {
             setRole(typedData.role as UserRole);
           }
@@ -84,6 +79,14 @@ const SignUp = () => {
 
     validateInvite();
   }, [inviteToken, phone]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get("ref");
+    if (ref) {
+      setReferrer(ref);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,16 +100,20 @@ const SignUp = () => {
     }
 
     try {
-      const result = await signUpWithEmail(email, password, {
+      const signUpMetadata: any = {
         full_name: fullName,
         role: role,
         phone: phone,
         profile_completion: 10,
-        completed_profile_tasks: ['account_created']
-      });
-      
+        completed_profile_tasks: ['account_created'],
+      };
+      if (referrer) {
+        signUpMetadata.referred_by_referral_code = referrer;
+      }
+
+      const result = await signUpWithEmail(email, password, signUpMetadata);
+
       if (result.success) {
-        // If there's an invite token, try to accept it
         if (inviteToken) {
           try {
             const { data } = await supabase.rpc('accept_team_invite', {
@@ -119,6 +126,17 @@ const SignUp = () => {
             }
           } catch (inviteError) {
             console.error('Error accepting invite:', inviteError);
+          }
+        }
+
+        if (referrer && result.user?.id) {
+          try {
+            await supabase.rpc("process_referral", {
+              referral_code: referrer,
+              new_user_id: result.user.id
+            });
+          } catch (err) {
+            console.error("Referral processing failed:", err);
           }
         }
 
@@ -246,7 +264,6 @@ const SignUp = () => {
                 </div>
               </CardContent>
               
-              {/* New phone field for invite verification */}
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
                 <Input
@@ -259,7 +276,6 @@ const SignUp = () => {
                 />
               </div>
 
-              {/* Phone mismatch warning for invites */}
               {inviteDetails && !inviteDetails.phone_match && (
                 <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg mt-4">
                   <p className="text-yellow-800">
