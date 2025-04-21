@@ -1,39 +1,69 @@
 
 import { useLocation, useNavigate } from "react-router-dom";
-import { Home, Search, MessageSquare, Heart, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
-// If you have unread state in context, replace this with the actual check.
-const hasUnreadMessages = true; // Mock - TODO: wire up actual unread logic if available
+// --- Emoji icon component with animation ---
+const emojiIcons = {
+  home: { emoji: "🏠", label: "home" },
+  search: { emoji: "🔍", label: "search" },
+  messages: { emoji: "💬", label: "messages" },
+  bookings: { emoji: "❤️", label: "bookings" },
+  profile: { emoji: "👤", label: "profile" },
+};
 
+function AnimatedEmoji({ emoji, label, active }: { emoji: string, label: string, active: boolean }) {
+  return (
+    <motion.span
+      role="img"
+      aria-label={label}
+      className={cn("emoji", active ? "emoji-pop" : "")}
+      initial={{ scale: 0.9, opacity: 0 }}
+      animate={{ scale: active ? 1.15 : 1, opacity: 1 }}
+      exit={{ scale: 0.94, opacity: 0.7 }}
+      transition={{ type: "spring", stiffness: 340, damping: 17 }}
+      style={{
+        display: "inline-block"
+      }}
+    >
+      {emoji}
+    </motion.span>
+  );
+}
+
+// --- Nav Tab Data ---
 const navTabs = [
   {
+    key: "home",
     label: "Home",
-    icon: Home,
-    path: "/",
+    route: "/",
+    icon: emojiIcons.home,
   },
   {
+    key: "search",
     label: "Search",
-    icon: Search,
-    path: "/explore/artists",
+    route: "/search",
+    icon: emojiIcons.search,
   },
   {
+    key: "messages",
     label: "Messages",
-    icon: MessageSquare,
-    path: "/messages",
-    notificationDot: hasUnreadMessages,
+    route: "/messages",
+    icon: emojiIcons.messages,
+    notification: true, // set this true if unread
   },
   {
+    key: "bookings",
     label: "Bookings",
-    icon: Heart,
-    path: "/my-bookings",
+    route: "/bookings",
+    icon: emojiIcons.bookings,
   },
   {
+    key: "profile",
     label: "Profile",
-    icon: User,
-    path: "/profile",
+    route: "/profile",
+    icon: emojiIcons.profile,
   },
 ];
 
@@ -42,23 +72,26 @@ const MobileBottomNavBar = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
-  // Early exit (sr-only when not on mobile)
+  // Only show bar on mobile
   if (!isMobile) return null;
 
-  const matches = (tabPath: string) => {
-    if (tabPath === "/") return location.pathname === "/";
-    return location.pathname.startsWith(tabPath);
-  };
+  // Tab activation logic: exact for /, substring for others
+  const isActive = (path: string) =>
+    path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
+
+  // Simulate unread messages (if available, make this dynamic)
+  const hasUnreadMessages = true;
 
   return (
     <nav
       className={cn(
         "fixed bottom-0 left-0 right-0 z-40 md:hidden",
         "bg-emvi-offwhite border-t border-gray-200",
-        "shadow-[0_2px_24px_0_rgba(155,135,245,0.09)]",
+        "shadow-[0_2px_14px_0_rgba(155,135,245,0.10)]",
         "backdrop-blur-sm",
         "rounded-t-xl",
-        "px-2 pb-safe-area"
+        "px-2 pb-safe-area",
+        "animate-fade-in"
       )}
       style={{
         fontFamily: "Inter, sans-serif",
@@ -68,59 +101,54 @@ const MobileBottomNavBar = () => {
       aria-label="Bottom navigation"
     >
       <ul className="flex justify-between items-end h-16">
-        {navTabs.map((tab, idx) => {
-          const active = matches(tab.path);
-          const Icon = tab.icon;
-          const showDot = !!tab.notificationDot;
+        {navTabs.map((tab) => {
+          const active = isActive(tab.route);
+          const { icon } = tab;
+          const showDot = tab.key === "messages" && hasUnreadMessages;
           return (
             <li
-              key={tab.path}
+              key={tab.key}
               className="flex-1 flex justify-center"
               aria-current={active ? "page" : undefined}
             >
               <button
                 type="button"
-                tabIndex={0}
+                tabIndex={active ? -1 : 0}
                 className={cn(
-                  "relative flex flex-col items-center w-full py-2 px-0 focus:outline-none group transition-all duration-200",
-                  active ? "font-bold text-emvi-accent" : "text-gray-500"
+                  "relative flex flex-col items-center w-full py-2 px-0 group transition-all duration-200 font-semibold",
+                  active ? "text-emvi-accent font-bold" : "text-gray-500"
                 )}
                 onClick={() => {
-                  if (!active) navigate(tab.path);
+                  if (!active) navigate(tab.route);
                 }}
                 aria-label={tab.label}
+                style={{
+                  outline: "none"
+                }}
               >
-                <span className="relative flex items-center justify-center h-7 w-7">
-                  <AnimatePresence>
-                    {active ? (
-                      <motion.span
-                        key="active"
-                        initial={{ scale: 0.95, opacity: 0 }}
-                        animate={{ scale: 1.15, opacity: 1 }}
-                        exit={{ scale: 0.98, opacity: 0.7 }}
-                        transition={{ type: "spring", stiffness: 360, damping: 14 }}
-                        className="text-[1.55rem] text-emvi-accent"
-                      >
-                        <Icon />
-                      </motion.span>
-                    ) : (
-                      <span className="text-[1.4rem]">
-                        <Icon />
-                      </span>
-                    )}
+                <span className="relative flex items-center justify-center h-7 w-7 mb-1">
+                  <AnimatePresence mode="wait" initial={false}>
+                    <AnimatedEmoji
+                      key={active ? tab.key + "-active" : tab.key}
+                      emoji={icon.emoji}
+                      label={icon.label}
+                      active={active}
+                    />
                   </AnimatePresence>
-                  {/* Notification Dot for Messages only */}
-                  {tab.label === "Messages" && showDot && (
-                    <span className="absolute top-1 right-0 inline-block w-2.5 h-2.5 bg-primary rounded-full border-2 border-emvi-offwhite animate-pulse"></span>
+                  {/* Notification Dot for Messages */}
+                  {showDot && (
+                    <span className="absolute top-[2px] right-[-3px] w-2.5 h-2.5 bg-primary rounded-full border-2 border-emvi-offwhite animate-pulse"></span>
                   )}
                 </span>
                 <span
                   className={cn(
-                    "block text-xs mt-0.5",
+                    "block text-[.9rem]",
                     active ? "text-emvi-accent" : "text-gray-500"
                   )}
                   style={{
-                    fontFamily: "Playfair Display, serif"
+                    fontFamily: "Playfair Display, serif",
+                    letterSpacing: 0.2,
+                    fontSize: "0.92rem",
                   }}
                 >
                   {tab.label}
@@ -135,3 +163,4 @@ const MobileBottomNavBar = () => {
 };
 
 export default MobileBottomNavBar;
+

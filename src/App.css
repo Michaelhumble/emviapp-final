@@ -216,24 +216,24 @@ textarea:focus {
   line-height: 1;
   vertical-align: middle;
   display: inline-block;
-  margin-right: 0.25rem;
-  animation: fadeIn 0.5s ease-out;
+  margin-right: 0;
+  max-width: 2.2rem;
+  max-height: 2.2rem;
+  min-width: 1.3rem;
+  min-height: 1.3rem;
+  text-shadow: 0 1px 8px rgba(155,135,245,0.08);
+  filter: drop-shadow(0 1px 2px #8E919611);
+  transition: box-shadow 0.18s, filter 0.18s, transform 0.1s;
+  will-change: transform;
 }
 
+/* Bounce & fade for emoji */
 @keyframes emojiPop {
-  0% {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  70% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
+  0% { transform: scale(0.8) translateY(6px); opacity: 0; }
+  60% { transform: scale(1.18) translateY(-4px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
 }
-
 .emoji-pop {
-  animation: emojiPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation: emojiPop 0.55s cubic-bezier(0.32,0.65,0.48,1.2);
+  /* Used on tab change for a little joyful sophisticated bounce */
 }

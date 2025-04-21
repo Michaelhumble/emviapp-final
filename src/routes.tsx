@@ -313,6 +313,18 @@ const routes = [
     path: '*',
     element: <NotFound />,
   },
+  {
+    path: '/search',
+    element: <Artists />, // Using Artists page for search/browse
+  },
+  {
+    path: '/messages',
+    element: <React.lazy(() => import('./pages/messages/index')) />,
+  },
+  {
+    path: '/bookings',
+    element: <MyBookingsPage />,
+  },
 ];
 
 export default routes;
