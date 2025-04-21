@@ -16,6 +16,7 @@ import RecommendedServicesSection from "./services/RecommendedServicesSection";
 import BookAgainSection from "./services/BookAgainSection";
 import CustomerPendingReviewsSection from "./reviews/CustomerPendingReviewsSection";
 import CustomerBookingsCenter from "./bookings/CustomerBookingsCenter";
+import CustomerProfileCard from "@/components/customer/CustomerProfileCard";
 
 const CustomerDashboard = () => {
   const { user, userRole } = useAuth();
@@ -39,6 +40,8 @@ const CustomerDashboard = () => {
   return (
     <div className="py-8 md:py-12 bg-gradient-to-b from-white to-gray-50 min-h-screen">
       <div className="container px-2 sm:px-4 mx-auto">
+        {/* DYNAMIC CUSTOMER PROFILE CARD AT THE TOP */}
+        <CustomerProfileCard />
         
         <motion.div 
           className="text-center mb-6 md:mb-8"
