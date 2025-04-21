@@ -16,22 +16,23 @@ interface BookingsTabsProps {
   onValueChange: (v: string) => void;
 }
 
+// Note: All styling is tuned for premium look and crisp alignment on mobile/tablet.
 const BookingsTabs: React.FC<BookingsTabsProps> = ({ tabs, value, onValueChange }) => (
   <div className="w-full">
     <TabsList asChild>
       <div
         className={cn(
-          // Premium container: soft background, rounded, scrollable on mobile/tablet
+          // Premium container
           "flex w-full whitespace-nowrap overflow-x-auto scrollbar-hide",
           "rounded-xl bg-[#F9F9FC] px-2 py-1",
-          "justify-between gap-x-3"
+          "gap-x-3 justify-between items-center"
         )}
         style={{
           WebkitOverflowScrolling: "touch",
           minHeight: "44px",
         }}
       >
-        {tabs.map((tab, i) => {
+        {tabs.map((tab) => {
           const isActive = tab.value === value;
           return (
             <TabsTrigger
@@ -39,20 +40,21 @@ const BookingsTabs: React.FC<BookingsTabsProps> = ({ tabs, value, onValueChange 
               key={tab.value}
               onClick={() => onValueChange(tab.value)}
               className={cn(
-                "relative flex items-center justify-center font-serif font-medium text-base transition-all",
-                "rounded-full px-4 py-2 duration-200",
-                // Text & background based on state
+                "relative flex items-center justify-center font-serif text-base font-medium transition-all outline-none border-0 select-none",
+                "px-4 py-2 rounded-full flex-shrink-0",
+                // Premium highlight
                 isActive
                   ? "bg-white text-[#9A7B69] shadow-sm font-semibold z-10"
                   : "bg-transparent text-gray-600 hover:bg-white/70 hover:text-[#9A7B69]",
-                "focus:z-20 outline-none border-0 select-none",
-                // Prevent shrink
-                "flex-shrink-0"
+                "focus:z-20",
+                // Animation for font-weight/smooth interaction
+                "duration-200"
               )}
               style={{
                 minWidth: 90,
               }}
               tabIndex={0}
+              aria-current={isActive ? "page" : undefined}
             >
               <span className="relative z-20 flex items-center leading-none">
                 {tab.label}
@@ -73,7 +75,7 @@ const BookingsTabs: React.FC<BookingsTabsProps> = ({ tabs, value, onValueChange 
                   aria-hidden="true"
                 />
               )}
-              {/* Soft animated underline for selected tab */}
+              {/* Animated premium underline for active tab */}
               <AnimatePresence>
                 {isActive && (
                   <motion.span
@@ -95,4 +97,3 @@ const BookingsTabs: React.FC<BookingsTabsProps> = ({ tabs, value, onValueChange 
 );
 
 export default BookingsTabs;
-
