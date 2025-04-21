@@ -16,6 +16,7 @@ import RecommendedServicesSection from "./services/RecommendedServicesSection";
 import BookAgainSection from "./services/BookAgainSection";
 import CustomerPendingReviewsSection from "./reviews/CustomerPendingReviewsSection";
 import CustomerBookingsCenter from "./bookings/CustomerBookingsCenter";
+import CustomerBookingHistory from "./CustomerBookingHistory";
 
 const CustomerDashboard = () => {
   const { user, userRole } = useAuth();
@@ -119,8 +120,11 @@ const CustomerDashboard = () => {
           </div>
         )}
 
-        {/* ---- My Bookings Center: Primary Placement ---- */}
+        {/* ---- MY BOOKINGS CENTER: Primary Placement ---- */}
         <CustomerBookingsCenter />
+
+        {/* === NEW: MY BOOKINGS SECTION === */}
+        <CustomerBookingHistory />
 
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 mb-10 md:mb-12"
