@@ -18,6 +18,7 @@ import CustomerPendingReviewsSection from "./reviews/CustomerPendingReviewsSecti
 import CustomerBookingsCenter from "./bookings/CustomerBookingsCenter";
 import CustomerBookingHistory from "./CustomerBookingHistory";
 import CustomerFavoritesSection from "./favorites/CustomerFavoritesSection";
+import CustomerBrowseCategories from "./categories/CustomerBrowseCategories";
 
 const CustomerDashboard = () => {
   const { user, userRole } = useAuth();
@@ -79,6 +80,13 @@ const CustomerDashboard = () => {
           <div className="max-w-full md:max-w-3xl mx-auto mb-6 md:mb-10 space-y-4 px-0 sm:px-2">
             <AISmartReminder />
             <AIWelcomeAssistant />
+          </div>
+        )}
+
+        {/* Browse by Category - only show for customer role */}
+        {isLoggedIn && userRole === "customer" && (
+          <div className="mb-6">
+            <CustomerBrowseCategories />
           </div>
         )}
 
