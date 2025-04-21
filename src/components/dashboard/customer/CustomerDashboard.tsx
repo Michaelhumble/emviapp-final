@@ -3,7 +3,7 @@ import React from "react";
 import CustomerDashboardHeader from "./CustomerDashboardHeader";
 import CustomerBookingHistory from "./CustomerBookingHistory";
 import CustomerWallet from "../../customer/CustomerWallet";
-import { CustomerFavoritesSection } from "./favorites/CustomerFavoritesSection";
+import CustomerFavoritesSection from "./favorites/CustomerFavoritesSection";
 
 const CustomerDashboard: React.FC = () => {
   return (

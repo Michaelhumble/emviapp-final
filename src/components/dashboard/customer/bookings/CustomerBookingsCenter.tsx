@@ -1,7 +1,6 @@
-
 import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { BookingCard } from "./BookingCard";
+import BookingCard from "./BookingCard";
 import { useCustomerBookings } from "@/hooks/useCustomerBookings";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -41,7 +40,6 @@ export const CustomerBookingsCenter: React.FC = () => {
     "upcoming"
   );
 
-  // Categorize bookings
   const upcoming = bookings
     .filter(
       (b) =>
@@ -91,7 +89,6 @@ export const CustomerBookingsCenter: React.FC = () => {
     window.location.href = `/bookings/${id}/cancel`;
   }
 
-  // For mobile polish
   const isMobile = window.innerWidth < 768;
 
   return (

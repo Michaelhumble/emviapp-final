@@ -109,6 +109,7 @@ const CustomerBookingsSection: React.FC = () => {
     if (!lastCompletedService || !lastCompletedService.date_requested) return false;
     
     const lastServiceDate = new Date(lastCompletedService.date_requested);
+    const now = new Date();
     const fourWeeksAgo = addDays(now, -28);
     
     // Show reminder if last service was more than 4 weeks ago
