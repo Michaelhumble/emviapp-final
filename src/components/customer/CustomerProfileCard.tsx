@@ -1,9 +1,8 @@
-
 import React, { useMemo, useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { useProfileCompletion } from "@/hooks/useProfileCompletion";
+import { useProfileCompletion } from "@/context/profile/ProfileCompletionProvider";
 import { Link } from "react-router-dom";
 import { Sun, Moon, UserRound } from "lucide-react"; // Allowed lucide-react icons
 
