@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
-import { Sparkles, Lock, TrendingUp, Gift, Lightbulb } from "lucide-react";
+import { Sparkles, Lock, TrendingUp, Gift, Lightbulb, Heart } from "lucide-react";
 import AIWelcomeAssistant from "@/components/ai/AIWelcomeAssistant";
 import AISmartReminder from "@/components/ai/AISmartReminder";
 import React from "react";
@@ -17,6 +17,7 @@ import BookAgainSection from "./services/BookAgainSection";
 import CustomerPendingReviewsSection from "./reviews/CustomerPendingReviewsSection";
 import CustomerBookingsCenter from "./bookings/CustomerBookingsCenter";
 import CustomerBookingHistory from "./CustomerBookingHistory";
+import CustomerFavoritesSection from "./favorites/CustomerFavoritesSection";
 
 const CustomerDashboard = () => {
   const { user, userRole } = useAuth();
@@ -118,6 +119,16 @@ const CustomerDashboard = () => {
           <div className="max-w-full md:max-w-2xl mx-auto mb-6 md:mb-10 px-0 sm:px-2">
             <CustomerPendingReviewsSection />
           </div>
+        )}
+
+        {/* ==== YOUR FAVORITES SECTION ==== */}
+        {isLoggedIn && userRole === "customer" && (
+          <section className="mb-6">
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+              <Heart className="text-pink-400 h-6 w-6" /> Your Favorites
+            </h2>
+            <CustomerFavoritesSection />
+          </section>
         )}
 
         {/* ---- MY BOOKINGS CENTER: Primary Placement ---- */}

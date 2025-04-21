@@ -1,16 +1,17 @@
 
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 import { MapPin, Scissors, Calendar } from "lucide-react";
 import { CustomerFavorite } from "@/hooks/useCustomerDashboard";
-import React from "react";
+import { useNavigate } from "react-router-dom";
 
 interface FavoriteCardProps {
   favorite: CustomerFavorite;
   mobile?: boolean;
 }
+
 const getInitials = (name: string = "") =>
   name
     .split(" ")
@@ -21,8 +22,7 @@ const getInitials = (name: string = "") =>
 const FavoriteCard = ({ favorite, mobile = false }: FavoriteCardProps) => {
   const navigate = useNavigate();
 
-  const handleViewProfile = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleViewProfile = () => {
     if (favorite.type === "artist") {
       navigate(`/artists/${favorite.id}`);
     } else {
@@ -30,14 +30,10 @@ const FavoriteCard = ({ favorite, mobile = false }: FavoriteCardProps) => {
     }
   };
 
-  const handleBooking = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleBooking = () => {
     // /booking?provider works for both artist/salon for now
     navigate(`/booking?provider=${favorite.id}`);
   };
-
-  // Rebook if possible, else view profile
-  const showRebook = favorite.type === "artist" || favorite.type === "salon";
 
   // Responsive padding & size
   const cardPadding = mobile ? "p-4" : "p-5";
@@ -102,17 +98,15 @@ const FavoriteCard = ({ favorite, mobile = false }: FavoriteCardProps) => {
           >
             View Profile
           </Button>
-          {showRebook && (
-            <Button
-              size="sm"
-              className={`${btnClass} bg-pink-100 text-pink-700 hover:bg-pink-200`}
-              onClick={handleBooking}
-              aria-label={`Rebook with ${favorite.name}`}
-            >
-              <Calendar className="h-4 w-4 mr-1" />
-              Rebook
-            </Button>
-          )}
+          <Button
+            size="sm"
+            className={`${btnClass} bg-pink-100 text-pink-700 hover:bg-pink-200`}
+            onClick={handleBooking}
+            aria-label={`Book again with ${favorite.name}`}
+          >
+            <Calendar className="h-4 w-4 mr-1" />
+            Book Again
+          </Button>
         </div>
       </CardContent>
     </Card>
