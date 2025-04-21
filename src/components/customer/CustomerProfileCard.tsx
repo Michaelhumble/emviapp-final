@@ -10,7 +10,7 @@ import { Sun, Moon, UserRound } from "lucide-react"; // Allowed lucide-react ico
 interface CustomerProfileCardProps {}
 
 const quotes = [
-  "Self-care isn’t selfish—it’s necessary.",
+  "Self-care isn't selfish—it's necessary.",
   "Looking great starts with feeling great.",
   "Your beauty, your rules.",
   "Confidence is your best accessory.",
@@ -48,7 +48,8 @@ const getStatus = (profile?: any, completion?: number) => {
 
 const CustomerProfileCard: React.FC<CustomerProfileCardProps> = () => {
   const { userProfile } = useAuth();
-  const { profileCompletion, incompleteFields } = useProfileCompletion();
+  // Fix: Use correct properties from useProfileCompletion
+  const { completionPercentage, incompleteFields } = useProfileCompletion();
   const [quoteIdx, setQuoteIdx] = useState(0);
 
   useEffect(() => {
@@ -58,9 +59,10 @@ const CustomerProfileCard: React.FC<CustomerProfileCardProps> = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const name = userProfile?.full_name || userProfile?.firstName || "there";
+  // Fix: Use full_name instead of firstName
+  const name = userProfile?.full_name || "there";
   const greeting = getGreeting(name);
-  const status = getStatus(userProfile, profileCompletion);
+  const status = getStatus(userProfile, completionPercentage);
 
   // Determine if the profile is incomplete using incompleteFields array
   const isIncomplete = incompleteFields && incompleteFields.length > 0 && incompleteFields[0] !== "all";
