@@ -75,14 +75,14 @@ export const useSignUp = (): UseSignUpReturn => {
       }
 
       // Process referral if code was provided and signup was successful
-      if (result.success && result.user && referrerCode) {
+      if (result.success && referrerCode) {
         try {
-          // Call our new Supabase function to process the referral
+          // Call our Supabase function to process the referral
           const { data: referralData, error: referralError } = await supabase.rpc(
             "process_referral",
             {
               referral_code: referrerCode,
-              new_user_id: result.user.id
+              new_user_id: result.userId // Changed from result.user.id
             }
           );
           

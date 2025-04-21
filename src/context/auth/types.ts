@@ -1,110 +1,35 @@
-import { User } from "@supabase/supabase-js";
 
-export type UserRole = 
-  | "artist" 
-  | "owner" 
-  | "customer" 
-  | "supplier" 
-  | "freelancer" 
-  | "salon" 
-  | "nail technician/artist" 
-  | "renter"
-  | "vendor"
-  | "beauty supplier" 
-  | "other"
-  | null;
+import { User } from '@supabase/supabase-js';
+
+export type UserRole = 'customer' | 'artist' | 'salon' | 'owner' | 'manager' | 'admin' | 'freelancer' | 'nail technician/artist' | 'beauty supplier' | 'other';
 
 export interface UserProfile {
   id: string;
-  user_id?: string;
-  full_name: string;
-  email: string;
+  email?: string;
+  full_name?: string;
+  role?: UserRole;
   avatar_url?: string;
   bio?: string;
-  role?: UserRole;
-  custom_role?: string;
   specialty?: string;
   location?: string;
-  phone?: string;
-  website?: string;
-  instagram?: string;
-  created_at?: string;
-  updated_at?: string;
-  username?: string;
-  booking_url?: string;
-  contact_link?: string;
-  salon_id?: string;
-  is_salon_owner?: boolean;
-  job_title?: string;
-  accepts_bookings?: boolean;
-  portfolio_urls?: string[] | null;
-  skills?: string[] | null;
-  preferred_language?: string;
-  subscription_tier?: string;
-  subscription_expires?: string;
-  badges?: any[] | null;
-  completed_profile_tasks?: string[] | null;
-  
-  // Additional properties
-  credits?: number;
-  total_credits_earned?: number;
-  is_premium?: boolean;
-  profile_views?: number;
-  years_experience?: number;
-  professional_name?: string;
-  boosted_until?: string;
   referral_code?: string;
-  referral_count?: number;
-  affiliate_code?: string;
-  account_type?: string;
-  salon_name?: string;
-  company_name?: string;
-  preferences?: string[];
-  profile_completion?: number;
-  gender?: string; // Added the gender property
-  independent?: boolean; // Add the independent property
-
-  // Add the missing salon-related properties
-  salon_type?: string;
-  phone_number?: string;
-  website_url?: string;
-  instagram_url?: string;
-  description?: string;
-  accepts_walk_ins?: boolean;
-
-  // Add the missing properties that were causing the TypeScript errors
-  favorite_artist_types?: string[];
-  artistTypes?: string[];
-  birthday?: string;
-  communication_preferences?: string[];
+  portfolio_urls?: string[];
+  [key: string]: any;
 }
 
 export interface AuthContextType {
-  loading: boolean;
-  isSignedIn: boolean;
-  isError: boolean;
   user: User | null;
   userProfile: UserProfile | null;
   userRole: UserRole;
+  loading: boolean;
+  isSignedIn: boolean;
+  isError: boolean;
   isNewUser: boolean;
   clearIsNewUser: () => void;
-  signIn: (email: string, password: string) => Promise<{
-    success: boolean;
-    error?: Error;
-  }>;
+  signIn: (email: string, password: string) => Promise<{ success: boolean; error?: Error }>;
+  signUp: (email: string, password: string, userData?: any) => Promise<{ success: boolean; error?: Error; userId?: string }>;
   signOut: () => Promise<void>;
-  signUp: (
-    email: string,
-    password: string,
-    userData?: Partial<UserProfile>
-  ) => Promise<{
-    success: boolean;
-    error?: Error;
-  }>;
-  updateUserRole: (role: UserRole) => Promise<void>;
-  updateProfile: (data: Partial<UserProfile>) => Promise<{
-    success: boolean;
-    error?: Error;
-  }>;
   refreshUserProfile: () => Promise<boolean>;
+  updateUserRole: (role: UserRole) => Promise<void>;
+  updateProfile: (data: Partial<UserProfile>) => Promise<{ success: boolean; error?: Error }>;
 }

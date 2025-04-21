@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -16,7 +15,6 @@ export const useRoleSignUp = () => {
   const [referrer, setReferrer] = useState("");
   const navigate = useNavigate();
 
-  // Extract referral code from URL on component mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const ref = params.get("ref");
@@ -45,14 +43,13 @@ export const useRoleSignUp = () => {
     setIsSubmitting(true);
 
     try {
-      // Sign up with Supabase - IMPORTANT: Save role in user metadata
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            role: selectedRole, // Store role in user metadata
-            user_type: selectedRole, // Also store as user_type for backward compatibility
+            role: selectedRole,
+            user_type: selectedRole,
             ...(referrer ? { referred_by_referral_code: referrer } : {})
           },
         },
@@ -69,7 +66,6 @@ export const useRoleSignUp = () => {
         throw new Error("User creation failed");
       }
 
-      // Update the users table directly to ensure role is set
       const { error: updateError } = await supabase
         .from('users')
         .update({ role: selectedRole })
@@ -77,10 +73,8 @@ export const useRoleSignUp = () => {
 
       if (updateError) {
         console.error("Error updating user role:", updateError);
-        // Continue anyway as the auth metadata should have the role
       }
 
-      // Process referral if code was provided
       if (referrer && data.user) {
         try {
           const { data: referralData, error: referralError } = await supabase.rpc(
@@ -101,13 +95,10 @@ export const useRoleSignUp = () => {
         }
       }
 
-      // Save role to localStorage for redundancy
       localStorage.setItem('emviapp_user_role', selectedRole);
       
-      // Success!
       toast.success("Account created successfully! Redirecting to dashboard...");
       
-      // Redirect based on role
       setTimeout(() => {
         navigateToRoleDashboard(navigate, selectedRole);
       }, 1500);
