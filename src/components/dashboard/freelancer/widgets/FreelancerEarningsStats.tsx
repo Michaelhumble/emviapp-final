@@ -69,7 +69,7 @@ export default function FreelancerEarningsStats() {
           <Calendar className="h-10 w-10 text-amber-300 opacity-70 mb-2" />
           <div className="text-xl font-bold mb-1">Start booking clients to see your growth!</div>
           <div className="text-sm text-gray-500">
-            Once you get bookings, you’ll see your progress, estimated earnings, and more here.
+            Once you get bookings, you'll see your progress, estimated earnings, and more here.
           </div>
         </div>
       </Card>

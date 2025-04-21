@@ -1,4 +1,3 @@
-
 import { User } from "@supabase/supabase-js";
 
 export type UserRole = 
@@ -72,6 +71,12 @@ export interface UserProfile {
   instagram_url?: string;
   description?: string;
   accepts_walk_ins?: boolean;
+
+  // Add the missing properties that were causing the TypeScript errors
+  favorite_artist_types?: string[];
+  artistTypes?: string[];
+  birthday?: string;
+  communication_preferences?: string[];
 }
 
 export interface AuthContextType {

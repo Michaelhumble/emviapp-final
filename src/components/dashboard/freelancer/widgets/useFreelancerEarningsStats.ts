@@ -1,120 +1,97 @@
 
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth";
-import { startOfMonth, endOfMonth, isSameMonth, parseISO } from "date-fns";
+import { supabase } from "@/integrations/supabase/client";
 
-// Type for the metrics
-export interface FreelancerEarningsStatsData {
-  totalBookings: number;
-  estimatedEarnings: number;
-  newClients: number;
-  totalServices: number;
-  loading: boolean;
-}
-
-function onlyUnique<T>(value: T, index: number, self: T[]): boolean {
-  return self.indexOf(value) === index;
-}
-
-// Hook for data logic
 export function useFreelancerEarningsStats() {
   const { user } = useAuth();
-  const [stats, setStats] = useState<FreelancerEarningsStatsData>({
-    totalBookings: 0,
-    estimatedEarnings: 0,
-    newClients: 0,
-    totalServices: 0,
-    loading: true,
-  });
+  const [totalBookings, setTotalBookings] = useState(0);
+  const [estimatedEarnings, setEstimatedEarnings] = useState(0);
+  const [newClients, setNewClients] = useState(0);
+  const [totalServices, setTotalServices] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let cancelled = false;
     async function fetchStats() {
-      if (!user?.id) {
-        setStats((s) => ({ ...s, loading: false }));
-        return;
-      }
-      setStats((s) => ({ ...s, loading: true }));
-
-      const monthStart = startOfMonth(new Date());
-      const monthEnd = endOfMonth(new Date());
-
+      if (!user?.id) return;
+      
+      setLoading(true);
       try {
-        // Fetch bookings for this freelancer as artist
-        const { data: bookings, error: bookingError } = await supabase
+        // Get current month boundaries
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString();
+        
+        // Fetch all bookings for this freelancer
+        const { data: bookingsData, error: bookingsError } = await supabase
           .from("bookings")
           .select(`
-            id,
-            created_at,
-            sender_id,
-            status,
-            service_id,
-            recipient_id,
-            service:service_id(id, price)
+            id, created_at, date_requested, status,
+            service:service_id(price)
           `)
           .eq("recipient_id", user.id)
-          .gte("created_at", monthStart.toISOString())
-          .lte("created_at", monthEnd.toISOString());
-
-        if (bookingError) throw bookingError;
-
-        // Only count valid/accepted bookings for stats
-        const validBookings = (bookings || []).filter(
-          (b) =>
-            (b.status !== "cancelled" && b.status !== "declined") &&
-            b.status // exclude null/malformed
-        );
-
-        // Earnings: sum service prices for completed bookings this month
-        let estimatedEarnings = 0;
-        validBookings.forEach((b: any) => {
-          // Only count where price is defined
-          if (b.service && typeof b.service.price === "number" && (b.status === "completed" || b.status === "accepted")) {
-            estimatedEarnings += b.service.price;
-          }
-        });
-
-        // New clients: count distinct sender_ids in monthly bookings
-        const newClientIds = validBookings
-          .map((b: any) => b.sender_id)
-          .filter(Boolean)
-          .filter(onlyUnique);
-
-        // Fetch count of all offered services for freelancer
-        const { data: servicesData, error: serviceError } = await supabase
+          .gte("created_at", startOfMonth)
+          .lte("created_at", endOfMonth);
+          
+        if (bookingsError) throw bookingsError;
+        
+        // Fetch all unique client IDs from bookings
+        const { data: clientsData, error: clientsError } = await supabase
+          .from("bookings")
+          .select("sender_id")
+          .eq("recipient_id", user.id)
+          .gte("created_at", startOfMonth)
+          .lte("created_at", endOfMonth);
+          
+        if (clientsError) throw clientsError;
+        
+        // Fetch total services offered
+        const { data: servicesData, error: servicesError } = await supabase
           .from("services")
           .select("id")
           .eq("user_id", user.id);
-
-        if (serviceError) throw serviceError;
-
-        if (!cancelled) {
-          setStats({
-            totalBookings: validBookings.length,
-            estimatedEarnings,
-            newClients: newClientIds.length,
-            totalServices: (servicesData || []).length,
-            loading: false,
-          });
-        }
-      } catch (e) {
-        if (!cancelled) {
-          setStats({
-            totalBookings: 0,
-            estimatedEarnings: 0,
-            newClients: 0,
-            totalServices: 0,
-            loading: false,
-          });
-        }
+          
+        if (servicesError) throw servicesError;
+        
+        // Calculate metrics
+        const bookingCount = bookingsData?.length || 0;
+        
+        // Calculate earnings (sum of service prices for completed bookings)
+        let earnings = 0;
+        bookingsData?.forEach(booking => {
+          if (booking.service && booking.service.price) {
+            earnings += Number(booking.service.price);
+          }
+        });
+        
+        // Count unique clients
+        const uniqueClients = new Set();
+        clientsData?.forEach(client => {
+          if (client.sender_id) {
+            uniqueClients.add(client.sender_id);
+          }
+        });
+        
+        // Set state with calculated metrics
+        setTotalBookings(bookingCount);
+        setEstimatedEarnings(Math.round(earnings));
+        setNewClients(uniqueClients.size);
+        setTotalServices(servicesData?.length || 0);
+      } catch (error) {
+        console.error("Error fetching freelancer stats:", error);
+      } finally {
+        setLoading(false);
       }
     }
+    
     fetchStats();
-    return () => {
-      cancelled = true;
-    };
   }, [user?.id]);
-
-  return stats;
+  
+  return {
+    totalBookings,
+    estimatedEarnings,
+    newClients,
+    totalServices,
+    loading
+  };
 }

@@ -1,4 +1,3 @@
-
 import React, { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +6,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Calendar } from "lucide-react"; // Use for date picker icon
+import { Calendar } from "lucide-react";
 
 const SERVICE_OPTIONS = [
   { label: "Hair", value: "hair" },
@@ -32,7 +31,6 @@ const COMM_PREFS = [
   { label: "App Notifications", value: "app" },
 ];
 
-// Helper multi-select
 function MultiSelect({ options, selected, onChange, name }: {
   options: { label: string; value: string }[];
   selected: string[];
@@ -76,14 +74,12 @@ const CustomerPreferencesPanel: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  // Load current user preferences
   useEffect(() => {
     if (!userProfile || !user) return;
 
     setForm(f => ({
       ...f,
       preferences: userProfile.preferences || [],
-      // Use favorite_artist_types if available, fallback to artistTypes property for backward compatibility
       artistTypes: (userProfile.favorite_artist_types || []) as string[],
       preferred_language: userProfile.preferred_language || "en",
       birthday: userProfile.birthday as string || "",
@@ -92,11 +88,9 @@ const CustomerPreferencesPanel: React.FC = () => {
     }));
   }, [userProfile, user]);
 
-  // Completion percent calculation
   useEffect(() => {
     let complete = 0;
     PERCENT_FIELDS.forEach(field => {
-      // At least one value for preference/artist/commPrefs, else count if present
       if (
         (Array.isArray(form[field as keyof typeof form]) && (form[field as keyof typeof form] as string[]).length > 0) ||
         (typeof form[field as keyof typeof form] === "string" && form[field as keyof typeof form])
@@ -107,21 +101,18 @@ const CustomerPreferencesPanel: React.FC = () => {
     setProgress(Math.round((complete / PERCENT_FIELDS.length) * 100));
   }, [form]);
 
-  // File upload (avatar)
   const handleAvatarChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file || !user) return;
       setForm(f => ({ ...f, uploading: true }));
       try {
-        // Upload to Supabase Storage (public avatar bucket not enforced here for demo)
         const filePath = `avatars/${user.id}-${Date.now()}-${file.name}`;
         const { data, error } = await supabase.storage.from("avatars").upload(filePath, file, {
           upsert: true,
         });
         if (error) throw error;
         
-        // Access the public URL for the uploaded file
         const { data: publicUrlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
         const url = publicUrlData.publicUrl;
         
@@ -133,7 +124,6 @@ const CustomerPreferencesPanel: React.FC = () => {
       }
     }, [user]);
 
-  // Handle save
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     if (!user) return;
@@ -171,7 +161,6 @@ const CustomerPreferencesPanel: React.FC = () => {
         </div>
       )}
       <form autoComplete="off" onSubmit={handleSave} className="grid grid-cols-1 gap-5">
-        {/* Preferred Services */}
         <div>
           <label className="font-medium">Preferred Services</label>
           <MultiSelect
@@ -181,7 +170,6 @@ const CustomerPreferencesPanel: React.FC = () => {
             name="preferences"
           />
         </div>
-        {/* Favorite Artists / Salon Types */}
         <div>
           <label className="font-medium">Favorite Artist or Salon Types</label>
           <MultiSelect
@@ -191,7 +179,6 @@ const CustomerPreferencesPanel: React.FC = () => {
             name="artistTypes"
           />
         </div>
-        {/* Language Dropdown */}
         <div>
           <label className="font-medium" htmlFor="lang">Language</label>
           <Select
@@ -208,7 +195,6 @@ const CustomerPreferencesPanel: React.FC = () => {
             </SelectContent>
           </Select>
         </div>
-        {/* Birthday selector */}
         <div>
           <label className="font-medium" htmlFor="birthday">Birthday <span className="text-xs text-gray-400">(optional)</span></label>
           <div className="flex items-center gap-2">
@@ -223,7 +209,6 @@ const CustomerPreferencesPanel: React.FC = () => {
             <Calendar className="h-5 w-5 text-primary" />
           </div>
         </div>
-        {/* Communication Preferences */}
         <div>
           <label className="font-medium">Communication Preferences</label>
           <MultiSelect
@@ -233,7 +218,6 @@ const CustomerPreferencesPanel: React.FC = () => {
             name="commPrefs"
           />
         </div>
-        {/* Avatar Upload */}
         <div>
           <label className="font-medium">Avatar (Optional)</label>
           <div className="flex flex-row items-center gap-3">
