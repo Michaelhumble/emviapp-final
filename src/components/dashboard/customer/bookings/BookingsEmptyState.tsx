@@ -5,6 +5,14 @@ import { Calendar, Sparkles } from "lucide-react";
 
 export type EmptyType = "upcoming" | "past" | "needsAttention" | "canceled";
 
+interface EmptyStateProps {
+  icon: string;
+  headline: string;
+  body: string;
+  cta: string;
+  ctaHref: string;
+}
+
 const friendlyEmpty = {
   upcoming: {
     title: "No upcoming bookings yet",
@@ -36,15 +44,29 @@ const friendlyEmpty = {
   }
 };
 
-const BookingsEmptyState: React.FC<{ type: EmptyType; isMobile: boolean }> = ({
+interface BookingsEmptyStateProps {
+  type: EmptyType;
+  isMobile: boolean;
+  customProps?: EmptyStateProps;
+}
+
+const BookingsEmptyState: React.FC<BookingsEmptyStateProps> = ({
   type,
   isMobile,
+  customProps,
 }) => {
-  const content = friendlyEmpty[type];
+  const content = customProps || friendlyEmpty[type];
+  
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 gap-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
-      {content.icon}
-      <h3 className="font-serif font-semibold text-xl text-gray-700 mt-2 text-center">{content.title}</h3>
+      {typeof content.icon === 'string' ? (
+        <span className="h-12 w-12 text-purple-200 mb-4">{content.icon}</span>
+      ) : (
+        content.icon || friendlyEmpty[type].icon
+      )}
+      <h3 className="font-serif font-semibold text-xl text-gray-700 mt-2 text-center">
+        {content.headline || content.title}
+      </h3>
       <p className="text-gray-500 mb-4 text-center max-w-md">{content.body}</p>
       <Button
         asChild

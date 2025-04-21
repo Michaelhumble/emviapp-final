@@ -12,6 +12,13 @@ interface CustomerBookingsTabContentProps {
   onView?: (id: string) => void;
   onReschedule?: (id: string) => void;
   onCancel?: (id: string) => void;
+  emptyStateProps?: {
+    icon: string;
+    headline: string;
+    body: string;
+    cta: string;
+    ctaHref: string;
+  };
 }
 
 const CustomerBookingsTabContent: React.FC<CustomerBookingsTabContentProps> = ({
@@ -23,6 +30,7 @@ const CustomerBookingsTabContent: React.FC<CustomerBookingsTabContentProps> = ({
   onView,
   onReschedule,
   onCancel,
+  emptyStateProps,
 }) => {
   if (loading) {
     return (
@@ -33,7 +41,7 @@ const CustomerBookingsTabContent: React.FC<CustomerBookingsTabContentProps> = ({
   }
 
   if (!bookings || bookings.length === 0) {
-    return <BookingsEmptyState type={emptyType} isMobile={isMobile} />;
+    return <BookingsEmptyState type={emptyType} isMobile={isMobile} customProps={emptyStateProps} />;
   }
 
   return (
