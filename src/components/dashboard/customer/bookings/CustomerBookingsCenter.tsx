@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import BookingCard from "./BookingCard";
@@ -21,7 +22,7 @@ const friendlyEmpty = {
   },
   needsAttention: {
     title: "All clear!",
-    body: "You’re all set – no bookings need your action right now.",
+    body: "You're all set – no bookings need your action right now.",
     cta: "View Artists",
     ctaHref: "/explore/artists",
   },
@@ -133,8 +134,8 @@ export const CustomerBookingsCenter: React.FC = () => {
               {upcoming.map((booking) => (
                 <BookingCard
                   key={booking.id}
-                  booking={booking}
-                  mode={isMobile ? "mobile" : "desktop"}
+                  booking={booking} 
+                  type="upcoming"
                   onView={handleViewBooking}
                   onReschedule={handleRescheduleBooking}
                   onCancel={handleCancelBooking}
@@ -159,7 +160,7 @@ export const CustomerBookingsCenter: React.FC = () => {
                 <BookingCard
                   key={booking.id}
                   booking={booking}
-                  mode={isMobile ? "mobile" : "desktop"}
+                  type={booking.status === "cancelled" ? "canceled" : "upcoming"}
                   onView={handleViewBooking}
                   onReschedule={
                     booking.status === "pending"
@@ -189,7 +190,7 @@ export const CustomerBookingsCenter: React.FC = () => {
                 <BookingCard
                   key={booking.id}
                   booking={booking}
-                  mode={isMobile ? "mobile" : "desktop"}
+                  type="past"
                   onView={handleViewBooking}
                 />
               ))}
