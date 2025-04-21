@@ -1,11 +1,18 @@
+
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Home, Search, MessageCircle, Heart, User } from "lucide-react";
 import NailHomeIcon from "./NailHomeIcon";
+import NailSearchIcon from "./NailSearchIcon";
+import NailMessagesIcon from "./NailMessagesIcon";
+import NailBookingsIcon from "./NailBookingsIcon";
+import NailProfileIcon from "./NailProfileIcon";
 
+/**
+ * Brand matching, minimalist nav icons for a luxury feel.
+ */
 const NAV_TABS = [
   {
     key: "home",
@@ -17,30 +24,31 @@ const NAV_TABS = [
     key: "search",
     label: "Search",
     route: "/search",
-    icon: Search,
+    icon: (active: boolean) => <NailSearchIcon active={active} />,
   },
   {
     key: "messages",
     label: "Messages",
     route: "/messages",
-    icon: MessageCircle,
+    icon: (active: boolean) => <NailMessagesIcon active={active} />,
     notification: true,
   },
   {
     key: "bookings",
     label: "Bookings",
     route: "/bookings",
-    icon: Heart,
+    icon: (active: boolean) => <NailBookingsIcon active={active} />,
   },
   {
     key: "profile",
     label: "Profile",
     route: "/profile",
-    icon: User,
+    icon: (active: boolean) => <NailProfileIcon active={active} />,
   },
 ];
 
 function TabIcon({ Icon, isActive }: { Icon: any; isActive: boolean }) {
+  // Use our hand-crafted SVG or fallback
   if (Icon && typeof Icon === "function" && Icon.name === "") {
     return Icon(isActive);
   }
@@ -137,7 +145,6 @@ const SuperMobileBottomNavBar: React.FC = () => {
                 }}
                 onClick={() => {
                   if (!active) {
-                    // Animate ripple quickly (visual feedback)
                     const el = document.activeElement as HTMLElement;
                     if (el && el.blur) el.blur();
                     navigate(tab.route);
