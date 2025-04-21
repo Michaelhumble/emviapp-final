@@ -17,6 +17,7 @@ const BookingTimeline: React.FC<BookingTimelineProps> = ({
   pastBookings,
   canceledBookings
 }) => {
+  // Update the type to include "progress" as a valid value
   const [activeTab, setActiveTab] = useState<"upcoming" | "progress" | "past" | "canceled">("upcoming");
 
   const tabData = [
@@ -86,6 +87,7 @@ const BookingTimeline: React.FC<BookingTimelineProps> = ({
                 <BookingCard 
                   key={booking.id} 
                   booking={booking} 
+                  // Update the type cast here to include "progress"
                   type={tab.id as "upcoming" | "progress" | "past" | "canceled"}
                 />
               ))

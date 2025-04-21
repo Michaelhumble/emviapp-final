@@ -7,7 +7,8 @@ import { CustomerBooking } from "./types";
 
 interface BookingCardProps {
   booking: CustomerBooking;
-  type: "upcoming" | "past" | "canceled";
+  // Update the type to include "progress"
+  type: "upcoming" | "progress" | "past" | "canceled";
   onView?: (id: string) => void;
   onReschedule?: (id: string) => void;
   onCancel?: (id: string) => void;
@@ -147,7 +148,8 @@ const BookingCard: React.FC<BookingCardProps> = ({
             </Button>
           )}
           
-          {type === "upcoming" && onCancel && (
+          {/* For "progress" type, treat it like "upcoming" for cancellation options */}
+          {(type === "upcoming" || type === "progress") && onCancel && (
             <Button 
               variant="outline" 
               size="sm" 
