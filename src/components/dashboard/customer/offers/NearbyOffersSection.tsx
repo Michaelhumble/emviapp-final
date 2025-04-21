@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { BadgePercent, BadgeDollarSign, MapPin, Star, ArrowRight } from "lucide-react";
 
-// Mock offers data (to be replaced with Supabase-powered data later)
 const mockOffers = [
+  // ... same as before ...
   {
     id: "1",
     name: "Glow Beauty Salon",
@@ -42,12 +42,10 @@ const mockOffers = [
     badge: "HOT",
     thumbnail: null,
     boosts_until: "2025-12-31"
-  },
-  // ... Add more as needed
+  }
 ];
 
 function sortBoostedFirst(offers: typeof mockOffers) {
-  // Boosted first, then recent (mock), then fallback to all
   return offers.sort((a, b) => {
     if (a.isBoosted && !b.isBoosted) return -1;
     if (!a.isBoosted && b.isBoosted) return 1;
@@ -59,15 +57,14 @@ const NearbyOffersSection = () => {
   const isMobile = useIsMobile();
   const offers = sortBoostedFirst(mockOffers);
 
-  // Only include valid/unexpired (mock filtering)
   const filteredOffers = offers.filter(
     (offer) =>
       !offer.boosts_until || new Date(offer.boosts_until) > new Date()
   );
 
   return (
-    <section className="mb-10">
-      <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+    <section className="mb-7 md:mb-10">
+      <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 flex items-center gap-2" style={{ fontSize: 'clamp(1.15rem, 4vw, 1.7rem)' }}>
         <BadgePercent className="text-yellow-500 h-6 w-6" /> Offers Near You
       </h2>
       {filteredOffers.length === 0 ? (
@@ -80,17 +77,20 @@ const NearbyOffersSection = () => {
           </CardContent>
         </Card>
       ) : (
-        <div className={isMobile ? "flex flex-col gap-4" : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6"}>
+        <div className={isMobile 
+          ? "flex flex-col gap-4"
+          : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6"
+        }>
           {filteredOffers.map((offer, idx) => (
             <Card
               key={offer.id}
               className={`flex flex-col justify-between shadow-md hover:shadow-lg transition-shadow animate-fade-in relative`}
-              style={{ minHeight: isMobile ? 150 : 200, animationDelay: `${idx * 80}ms` }}
+              style={{ minHeight: isMobile ? 160 : 200, animationDelay: `${idx * 80}ms` }}
               tabIndex={0}
             >
               <CardHeader className="flex-row items-center gap-3 pb-2">
                 <div className="flex-1">
-                  <CardTitle className="flex items-center gap-1 text-lg">
+                  <CardTitle className="flex items-center gap-1 text-base sm:text-lg">
                     {offer.name}
                     {offer.badge && (
                       <span className="ml-2 inline-flex items-center text-yellow-600 bg-yellow-50 border border-yellow-200 rounded-full px-2 py-0.5 text-xs font-semibold">
@@ -119,7 +119,6 @@ const NearbyOffersSection = () => {
                   Book Now <ArrowRight className="ml-1 h-4 w-4"/>
                 </Button>
               </CardFooter>
-              {/* Future: Offer image/thumbnail slot */}
             </Card>
           ))}
         </div>

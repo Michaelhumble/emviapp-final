@@ -23,8 +23,8 @@ const BookAgainCard: React.FC<BookAgainCardProps> = ({
   completedAt,
   onBookAgain,
 }) => (
-  <Card className="min-w-[230px] max-w-xs snap-start relative group hover:shadow-lg transition-shadow">
-    <div className="flex items-center gap-2 px-5 pt-4">
+  <Card className="min-w-[240px] max-w-xs snap-start relative group hover:shadow-lg transition-shadow" style={{ minHeight: 200 }}>
+    <div className="flex items-center gap-2 px-5 pt-3">
       {artistAvatar
         ? <img src={artistAvatar} alt="" className="w-10 h-10 rounded-full object-cover border bg-white" />
         : <User className="h-9 w-9 text-gray-200" aria-label="Avatar" />}
@@ -39,7 +39,7 @@ const BookAgainCard: React.FC<BookAgainCardProps> = ({
       <Button
         variant="outline"
         size="sm"
-        className="w-full rounded font-medium mt-1"
+        className="w-full rounded font-medium mt-1 h-11 min-h-[44px]"
         onClick={onBookAgain}
         tabIndex={0}
       >
@@ -52,7 +52,6 @@ const BookAgainCard: React.FC<BookAgainCardProps> = ({
 const BookAgainSection: React.FC = () => {
   const { bookings } = useCustomerDashboard();
 
-  // Only show completed bookings (last 5, most recent first, exclude cancels)
   const completed = Array.isArray(bookings)
     ? bookings
         .filter(b => b.status === "completed" && b.service && b.artist)
@@ -63,24 +62,17 @@ const BookAgainSection: React.FC = () => {
         .slice(0, 5)
     : [];
 
-  // Only render if there are any to show
   if (!completed.length) return null;
 
-  // Placeholder for actual booking flow
   const handleBookAgain = (booking: typeof completed[0]) => {
-    // TODO: open pre-filled booking modal
-    // For now, just show a toast or log
     toast.info("Booking flow coming soon!");
-    // Or use a custom booking modal here if you have one:
-    // openBookingModal({ serviceId: booking.service_id, artistId: booking.artist?.id, ... })
   };
 
-  // Responsive scroll on mobile, grid on web
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 
   return (
-    <section className="mb-8 animate-fade-in">
-      <h2 className="text-xl sm:text-2xl font-bold mb-2 flex items-center gap-2">
+    <section className="mb-6 md:mb-8 animate-fade-in">
+      <h2 className="text-lg sm:text-xl font-bold mb-2 flex items-center gap-2" style={{ fontSize: 'clamp(1.125rem, 4vw, 1.4rem)' }}>
         Book Again
       </h2>
       <p className="text-gray-600 mb-3 text-sm font-medium flex items-center gap-2">
@@ -88,7 +80,7 @@ const BookAgainSection: React.FC = () => {
       </p>
       <div className={
         isMobile
-          ? "flex gap-4 overflow-x-auto snap-x scroll-px-4 pb-2 pt-1"
+          ? "flex gap-4 overflow-x-auto snap-x scroll-px-4 pb-2 pt-1 w-full"
           : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
       }>
         {completed.map((booking) => (

@@ -54,33 +54,29 @@ const mockServices: Service[] = [
 ];
 
 function sortServices(services: Service[]) {
-  // Boosted first, then by fake booking count, then fallback by id
   return services
-    .filter((s) => s.is_visible) // Only active/bookable
+    .filter((s) => s.is_visible)
     .sort((a, b) => {
       const isBoostedA = Boolean(a.boost_until && new Date(a.boost_until) > new Date());
       const isBoostedB = Boolean(b.boost_until && new Date(b.boost_until) > new Date());
       if (isBoostedA && !isBoostedB) return -1;
       if (!isBoostedA && isBoostedB) return 1;
-      // Ranking by booking volume descending
       const countA = a.booking_count || 0;
       const countB = b.booking_count || 0;
       if (countA !== countB) return countB - countA;
-      // Fallback sorting (could randomize)
       return a.id.localeCompare(b.id);
     });
 }
 
 const SuggestedServicesSection: React.FC = () => {
   const { user } = useAuth();
-  // TODO: Replace with Supabase fetch (filter by user preferences, trending, etc.)
   const services = sortServices(mockServices);
 
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 
   return (
-    <section className="mb-12">
-      <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+    <section className="mb-6 md:mb-12">
+      <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 flex items-center gap-2" style={{ fontSize: 'clamp(1.125rem, 4vw, 1.5rem)' }}>
         <TrendingUp className="text-purple-500 h-6 w-6" />
         Suggested for You
       </h2>
@@ -97,19 +93,18 @@ const SuggestedServicesSection: React.FC = () => {
         <div
           className={
             isMobile
-              ? "flex gap-4 overflow-x-auto snap-x scroll-px-4 py-1"
+              ? "flex gap-4 overflow-x-auto snap-x scroll-px-4 py-1 w-full"
               : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
           }
         >
           {services.map((service, idx) => (
             <Card
               key={service.id}
-              className={`min-w-[260px] max-w-xs animate-fade-in SNAP-START relative group hover:shadow-lg transition-shadow`}
+              className={`min-w-[240px] max-w-xs animate-fade-in SNAP-START relative group hover:shadow-lg transition-shadow`}
               style={{ animationDelay: `${idx * 80}ms` }}
               tabIndex={0}
             >
               <div className="rounded-t-lg w-full h-28 bg-gradient-to-tr from-purple-100 via-pink-50 to-purple-50 flex items-center justify-center">
-                {/* Service image or icon */}
                 {service.image_url ? (
                   <img
                     src={service.image_url}
@@ -122,7 +117,7 @@ const SuggestedServicesSection: React.FC = () => {
               </div>
               <CardContent className="pt-4 pb-2">
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-semibold text-lg leading-snug truncate">{service.title}</h3>
+                  <h3 className="font-semibold text-base leading-snug truncate">{service.title}</h3>
                   {Boolean(service.boost_until && new Date(service.boost_until) > new Date()) && (
                     <span className="ml-1 inline-flex items-center text-xs font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200 uppercase">
                       Trending
@@ -137,20 +132,18 @@ const SuggestedServicesSection: React.FC = () => {
                   </div>
                 </div>
               </CardContent>
-              <div className="flex items-center px-6 pb-4 pt-1">
+              <div className="flex items-center px-4 sm:px-6 pb-4 pt-1">
                 <Button
                   variant="outline"
                   size="sm"
                   className="w-full min-h-[44px] rounded font-medium"
                   tabIndex={0}
                   onClick={() => {
-                    // Replace with route or booking action
                   }}
                 >
                   View <ArrowRight className="ml-1 h-4 w-4" />
                 </Button>
               </div>
-              {/* Future badge slot: "Highly Rated" etc. */}
             </Card>
           ))}
         </div>
