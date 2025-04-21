@@ -13,6 +13,7 @@ import CustomerInbox from "./messages/CustomerInbox";
 import CustomerWallet from "@/components/customer/CustomerWallet";
 import RecommendedServicesSection from "./services/RecommendedServicesSection";
 import BookAgainSection from "./services/BookAgainSection";
+import CustomerPendingReviewsSection from "./reviews/CustomerPendingReviewsSection";
 
 const CustomerDashboard = () => {
   const { user } = useAuth();
@@ -106,6 +107,13 @@ const CustomerDashboard = () => {
         {isLoggedIn && (
           <div className="mb-8">
             <CustomerWallet />
+          </div>
+        )}
+
+        {/* New: Show Rate Your Experience section if logged in */}
+        {isLoggedIn && (
+          <div className="max-w-2xl mx-auto mb-10">
+            <CustomerPendingReviewsSection />
           </div>
         )}
 
