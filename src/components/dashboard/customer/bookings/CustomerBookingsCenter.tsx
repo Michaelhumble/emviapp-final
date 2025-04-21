@@ -122,57 +122,66 @@ export const CustomerBookingsCenter: React.FC = () => {
 
   return (
     <section className="w-full max-w-3xl mx-auto">
-      <div className="mb-1 flex flex-col items-center sm:items-start sm:flex-row gap-2 sm:gap-3">
-        <h2 className="font-playfair text-2xl sm:text-3xl font-bold text-emvi-dark flex items-center gap-2">
-          <Calendar className="h-7 w-7 text-purple-500" />
-          Your Beauty Calendar
-        </h2>
+      {/* Mobile card with rounded header and accent color */}
+      <div className="rounded-3xl overflow-hidden bg-gradient-to-tr from-purple-50 via-white to-pink-50 border border-purple-100 shadow-lg mb-6">
+        <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-5 sm:py-6 gap-2 bg-white/70 bg-blur-md">
+          <h2 className="font-playfair font-bold flex items-center gap-2 text-2xl sm:text-3xl text-emvi-dark animate-fade-in">
+            <span className="hidden sm:inline">
+              <Calendar className="h-7 w-7 text-purple-500" />
+            </span>
+            <span>Your Beauty Calendar</span>
+          </h2>
+        </div>
+        <div className="text-gray-600 text-base sm:text-lg font-light text-center px-4 pb-5">
+          {motivationalSubline}
+        </div>
       </div>
-      <div className="mb-6 mt-1 text-base sm:text-lg text-gray-600 font-light text-center sm:text-left">
-        {motivationalSubline}
-      </div>
-      <div className="bg-white rounded-2xl shadow-lg border border-purple-50 p-6 pt-5 space-y-4">
+      <div className="bg-white/90 rounded-3xl shadow-md border border-purple-100 p-3 sm:p-6 space-y-4 animate-fade-in">
         <Tabs
           defaultValue="upcoming"
           value={activeTab}
           onValueChange={handleTabChange}
           className="w-full"
         >
+          {/* Tabs in mobile chips style */}
           <BookingsTabs tabs={tabs} value={activeTab} onValueChange={handleTabChange} />
 
-          <UpcomingAppointments
-            show={activeTab === "upcoming"}
-            bookings={upcoming}
-            loading={loading}
-            isMobile={isMobile}
-            onView={handleViewBooking}
-            onReschedule={handleRescheduleBooking}
-            onCancel={handleCancelBooking}
-          />
-          <NeedsAttention
-            show={activeTab === "needs"}
-            bookings={needsAttention}
-            loading={loading}
-            isMobile={isMobile}
-            onView={handleViewBooking}
-            onReschedule={handleRescheduleBooking}
-            onCancel={handleCancelBooking}
-          />
-          <PastAppointments
-            show={activeTab === "past"}
-            bookings={past}
-            loading={loading}
-            isMobile={isMobile}
-            onView={handleViewBooking}
-            onReschedule={handleRescheduleBooking}
-          />
-          <CancelledAppointments
-            show={activeTab === "canceled"}
-            bookings={canceled}
-            loading={loading}
-            isMobile={isMobile}
-            onView={handleViewBooking}
-          />
+          {/* Responsive tab contents */}
+          <div className="mt-2">
+            <UpcomingAppointments
+              show={activeTab === "upcoming"}
+              bookings={upcoming}
+              loading={loading}
+              isMobile={isMobile}
+              onView={handleViewBooking}
+              onReschedule={handleRescheduleBooking}
+              onCancel={handleCancelBooking}
+            />
+            <NeedsAttention
+              show={activeTab === "needs"}
+              bookings={needsAttention}
+              loading={loading}
+              isMobile={isMobile}
+              onView={handleViewBooking}
+              onReschedule={handleRescheduleBooking}
+              onCancel={handleCancelBooking}
+            />
+            <PastAppointments
+              show={activeTab === "past"}
+              bookings={past}
+              loading={loading}
+              isMobile={isMobile}
+              onView={handleViewBooking}
+              onReschedule={handleRescheduleBooking}
+            />
+            <CancelledAppointments
+              show={activeTab === "canceled"}
+              bookings={canceled}
+              loading={loading}
+              isMobile={isMobile}
+              onView={handleViewBooking}
+            />
+          </div>
         </Tabs>
       </div>
     </section>
@@ -180,3 +189,4 @@ export const CustomerBookingsCenter: React.FC = () => {
 };
 
 export default CustomerBookingsCenter;
+
