@@ -4,10 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Card } from "@/components/ui/card";
 
-// Correcting import to use valid lucide-react icon names available in this version.
-// Replacing missing icons with closest available alternatives.
-
-import { Scissors, User, Heart, Smile, Spa, Tag } from "lucide-react";
+// Correcting import: import spa as Spa since lucide-react exports 'spa' lowercase
+import { Scissors, User, Heart, Smile, Tag, spa as Spa } from "lucide-react";
 
 const categories = [
   {
