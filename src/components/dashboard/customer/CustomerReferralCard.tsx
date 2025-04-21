@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Gift, Link2, Copy, CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 
 const CustomerReferralCard: React.FC = () => {
   const { userProfile } = useAuth();
@@ -42,32 +42,34 @@ const CustomerReferralCard: React.FC = () => {
             value={referralLink}
             readOnly
           />
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant={copied ? "outline" : "default"}
-                size="sm"
-                onClick={handleCopy}
-                className="ml-2 flex items-center gap-1"
-                aria-label="Copy referral link"
-              >
-                {copied ? (
-                  <>
-                    <CheckCircle2 className="h-4 w-4 text-green-500" />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-4 w-4" />
-                    Copy My Link
-                  </>
-                )}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              This early access reward is part of our launch thank-you. It won’t last forever.
-            </TooltipContent>
-          </Tooltip>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant={copied ? "outline" : "default"}
+                  size="sm"
+                  onClick={handleCopy}
+                  className="ml-2 flex items-center gap-1"
+                  aria-label="Copy referral link"
+                >
+                  {copied ? (
+                    <>
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4" />
+                      Copy My Link
+                    </>
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                This early access reward is part of our launch thank-you. It won't last forever.
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </CardContent>
     </Card>
@@ -75,4 +77,3 @@ const CustomerReferralCard: React.FC = () => {
 };
 
 export default CustomerReferralCard;
-

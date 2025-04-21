@@ -10,6 +10,7 @@ import SuggestedServicesSection from "./services/SuggestedServicesSection";
 import CustomerBrowseCategories from "./categories/CustomerBrowseCategories";
 import CustomerReferralPanel from "./CustomerReferralPanel";
 import CustomerGlamGoalsPanel from "./glam-goals/CustomerGlamGoalsPanel";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const CustomerDashboard: React.FC = () => {
   return (
@@ -18,7 +19,9 @@ const CustomerDashboard: React.FC = () => {
       <CustomerWelcomeHeader />
 
       {/* Referral Credits Card */}
-      <CustomerReferralCard />
+      <TooltipProvider>
+        <CustomerReferralCard />
+      </TooltipProvider>
 
       <div className="space-y-8 md:space-y-12">
         {/* Bookings Panel with Tabs */}
