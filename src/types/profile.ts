@@ -89,6 +89,12 @@ export interface UserProfile {
   google_review_link?: string;
   independent?: boolean;
   profile_completion?: number;
+
+  // ✨ NEW CUSTOMER FIELDS
+  favorite_artist_types?: string[]; // E.g. ["studio", "booth-renter"]
+  artistTypes?: string[];           // Synonym for favorite_artist_types
+  birthday?: string | null;         // ISO date string or null
+  communication_preferences?: string[]; // E.g. ["email", "sms", "app"]
 }
 
 // Helper function to safely get location as a string for display

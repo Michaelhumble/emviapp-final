@@ -59,14 +59,16 @@ function MultiSelect({ options, selected, onChange, name }: {
 const defaultForm = {
   preferences: [] as string[],
   artistTypes: [] as string[],
+  favorite_artist_types: [] as string[],
   preferred_language: "en",
   birthday: "",
   commPrefs: [] as string[],
+  communication_preferences: [] as string[],
   avatar_url: "",
   uploading: false,
 };
 
-const PERCENT_FIELDS = ["preferences", "artistTypes", "preferred_language", "commPrefs", "birthday", "avatar_url"];
+const PERCENT_FIELDS = ["preferences", "artistTypes", "favorite_artist_types", "preferred_language", "commPrefs", "communication_preferences", "birthday", "avatar_url"];
 
 const CustomerPreferencesPanel: React.FC = () => {
   const { user, userProfile, refreshUserProfile } = useAuth();
@@ -80,10 +82,12 @@ const CustomerPreferencesPanel: React.FC = () => {
     setForm(f => ({
       ...f,
       preferences: userProfile.preferences || [],
-      artistTypes: (userProfile.favorite_artist_types || []) as string[],
+      artistTypes: (userProfile.artistTypes || userProfile.favorite_artist_types || []) as string[],
+      favorite_artist_types: (userProfile.favorite_artist_types || userProfile.artistTypes || []) as string[],
       preferred_language: userProfile.preferred_language || "en",
       birthday: userProfile.birthday as string || "",
-      commPrefs: (userProfile.communication_preferences || []) as string[],
+      commPrefs: (userProfile.commPrefs || userProfile.communication_preferences || []) as string[],
+      communication_preferences: (userProfile.communication_preferences || userProfile.commPrefs || []) as string[],
       avatar_url: userProfile.avatar_url || "",
     }));
   }, [userProfile, user]);
@@ -108,14 +112,10 @@ const CustomerPreferencesPanel: React.FC = () => {
       setForm(f => ({ ...f, uploading: true }));
       try {
         const filePath = `avatars/${user.id}-${Date.now()}-${file.name}`;
-        const { data, error } = await supabase.storage.from("avatars").upload(filePath, file, {
-          upsert: true,
-        });
+        const { error } = await supabase.storage.from("avatars").upload(filePath, file, { upsert: true });
         if (error) throw error;
-        
         const { data: publicUrlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
         const url = publicUrlData.publicUrl;
-        
         setForm(f => ({ ...f, avatar_url: url, uploading: false }));
         toast.success("Avatar uploaded!");
       } catch (err) {
@@ -130,12 +130,14 @@ const CustomerPreferencesPanel: React.FC = () => {
     setSaving(true);
     const updateObj: any = {
       preferences: form.preferences,
-      favorite_artist_types: form.artistTypes,
+      artistTypes: form.artistTypes,
+      favorite_artist_types: form.favorite_artist_types,
       preferred_language: form.preferred_language,
-      communication_preferences: form.commPrefs,
+      birthday: form.birthday,
+      commPrefs: form.commPrefs,
+      communication_preferences: form.communication_preferences,
       avatar_url: form.avatar_url,
     };
-    if (form.birthday) updateObj.birthday = form.birthday;
     const { error } = await supabase
       .from("users")
       .update(updateObj)
