@@ -1,41 +1,18 @@
 
 import React, { useState } from "react";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { Tabs } from "@/components/ui/tabs";
 import BookingsTabs from "./BookingsTabs";
-import CustomerBookingsTabContent from "./CustomerBookingsTabContent";
 import { useCustomerBookings } from "@/hooks/useCustomerBookings";
 import { Calendar } from "lucide-react";
 import { isNeedsAttention } from "./utils";
+// Import new subcomponents
+import UpcomingAppointments from "./tabs/UpcomingAppointments";
+import NeedsAttention from "./tabs/NeedsAttention";
+import PastAppointments from "./tabs/PastAppointments";
+import CancelledAppointments from "./tabs/CancelledAppointments";
 
 const motivationalSubline =
   "Track your appointments, rewards, and favorite pros — all in one calming space.";
-
-const friendlyEmpty = {
-  upcoming: {
-    title: "No beauty plans yet? Let’s fix that.",
-    body: "Explore top artists, schedule something wonderful, and your beauty story begins here.",
-    cta: "Explore Artists",
-    ctaHref: "/explore/artists",
-  },
-  past: {
-    title: "No past appointments",
-    body: "Your journey is just beginning.",
-    cta: "Get Started",
-    ctaHref: "/explore/artists",
-  },
-  needsAttention: {
-    title: "Everything’s on track!",
-    body: "No bookings need your attention right now.",
-    cta: "View Artists",
-    ctaHref: "/explore/artists",
-  },
-  canceled: {
-    title: "No canceled appointments",
-    body: "Your schedule is clear. Time to book something fun!",
-    cta: "Browse Artists",
-    ctaHref: "/explore/artists",
-  }
-};
 
 export const CustomerBookingsCenter: React.FC = () => {
   const { bookings, loading, error } = useCustomerBookings();
@@ -43,8 +20,8 @@ export const CustomerBookingsCenter: React.FC = () => {
     "upcoming" | "past" | "needs" | "canceled"
   >("upcoming");
 
-  // Tab logic
   const now = new Date();
+
   const upcoming = bookings
     .filter(
       (b) =>
@@ -108,7 +85,6 @@ export const CustomerBookingsCenter: React.FC = () => {
 
   const isMobile = typeof window !== "undefined" ? window.innerWidth < 768 : false;
 
-  // Updated tabs with calm, modern accent
   const tabs = [
     {
       value: "upcoming",
@@ -133,7 +109,6 @@ export const CustomerBookingsCenter: React.FC = () => {
     },
   ];
 
-  // Ensures we only allow valid tab state changes
   const handleTabChange = (value: string) => {
     if (
       value === "upcoming" ||
@@ -144,31 +119,6 @@ export const CustomerBookingsCenter: React.FC = () => {
       setActiveTab(value);
     }
   };
-
-  // Helper to detect truly empty bookings for this user
-  const allEmpty =
-    bookings.length === 0 ||
-    (upcoming.length === 0 &&
-      needsAttention.length === 0 &&
-      past.length === 0 &&
-      canceled.length === 0);
-
-  // Customized empty state for the default (Upcoming) tab — soft and inviting
-  const EmptyBookingsState = () => (
-    <div className="flex flex-col items-center justify-center py-14 px-4 gap-3 bg-gradient-to-tr from-purple-50 via-indigo-50 to-pink-50 rounded-2xl border border-purple-100 shadow-md">
-      <Calendar className="h-12 w-12 text-purple-200 mb-4" />
-      <h3 className="font-serif text-2xl font-semibold text-emvi-dark text-center mb-1">
-        💅 No beauty plans yet? Let’s fix that.
-      </h3>
-      <p className="text-gray-500 mb-4 text-center max-w-md">{friendlyEmpty.upcoming.body}</p>
-      <button
-        className="rounded-full px-8 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold shadow-xl hover:bg-purple-600 transition text-base"
-        onClick={() => (window.location.href = friendlyEmpty.upcoming.ctaHref)}
-      >
-        {friendlyEmpty.upcoming.cta}
-      </button>
-    </div>
-  );
 
   return (
     <section className="w-full max-w-3xl mx-auto">
@@ -190,55 +140,39 @@ export const CustomerBookingsCenter: React.FC = () => {
         >
           <BookingsTabs tabs={tabs} value={activeTab} onValueChange={handleTabChange} />
 
-          <TabsContent value="upcoming" className="mt-6">
-            {upcoming.length === 0 ? (
-              <EmptyBookingsState />
-            ) : (
-              <CustomerBookingsTabContent
-                bookings={upcoming}
-                loading={loading}
-                emptyType="upcoming"
-                isMobile={isMobile}
-                cardType="upcoming"
-                onView={handleViewBooking}
-                onReschedule={handleRescheduleBooking}
-                onCancel={handleCancelBooking}
-              />
-            )}
-          </TabsContent>
-          <TabsContent value="needs" className="mt-6">
-            <CustomerBookingsTabContent
-              bookings={needsAttention}
-              loading={loading}
-              emptyType="needsAttention"
-              isMobile={isMobile}
-              cardType="upcoming"
-              onView={handleViewBooking}
-              onReschedule={handleRescheduleBooking}
-              onCancel={handleCancelBooking}
-            />
-          </TabsContent>
-          <TabsContent value="past" className="mt-6">
-            <CustomerBookingsTabContent
-              bookings={past}
-              loading={loading}
-              emptyType="past"
-              isMobile={isMobile}
-              cardType="past"
-              onView={handleViewBooking}
-              onReschedule={handleRescheduleBooking}
-            />
-          </TabsContent>
-          <TabsContent value="canceled" className="mt-6">
-            <CustomerBookingsTabContent
-              bookings={canceled}
-              loading={loading}
-              emptyType="canceled"
-              isMobile={isMobile}
-              cardType="canceled"
-              onView={handleViewBooking}
-            />
-          </TabsContent>
+          <UpcomingAppointments
+            show={activeTab === "upcoming"}
+            bookings={upcoming}
+            loading={loading}
+            isMobile={isMobile}
+            onView={handleViewBooking}
+            onReschedule={handleRescheduleBooking}
+            onCancel={handleCancelBooking}
+          />
+          <NeedsAttention
+            show={activeTab === "needs"}
+            bookings={needsAttention}
+            loading={loading}
+            isMobile={isMobile}
+            onView={handleViewBooking}
+            onReschedule={handleRescheduleBooking}
+            onCancel={handleCancelBooking}
+          />
+          <PastAppointments
+            show={activeTab === "past"}
+            bookings={past}
+            loading={loading}
+            isMobile={isMobile}
+            onView={handleViewBooking}
+            onReschedule={handleRescheduleBooking}
+          />
+          <CancelledAppointments
+            show={activeTab === "canceled"}
+            bookings={canceled}
+            loading={loading}
+            isMobile={isMobile}
+            onView={handleViewBooking}
+          />
         </Tabs>
       </div>
     </section>
