@@ -55,12 +55,18 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
           <Menu className="h-6 w-6" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="flex flex-col w-[85vw] sm:max-w-sm p-0">
-        <SheetHeader className="px-4 py-4 border-b flex justify-between items-center">
-          <SheetTitle className="text-xl">EmviApp</SheetTitle>
+      <SheetContent
+        side="left"
+        className={`
+          flex flex-col w-[87vw] max-w-[390px] p-0 border-0 mobile-glass-drawer
+          shadow-menuDrawer overflow-hidden
+        `}
+      >
+        <SheetHeader className="px-5 py-5 border-b-0 sm:px-6 flex justify-between items-center w-full bg-transparent">
+          <SheetTitle className="text-[1.45rem] font-playfair tracking-tight">EmviApp</SheetTitle>
           <SheetClose asChild>
-            <Button variant="ghost" size="sm" className="rounded-full h-8 w-8 p-0">
-              <X className="h-4 w-4" />
+            <Button variant="ghost" size="sm" className="rounded-full h-9 w-9 p-0 hover:bg-emvi-accent/10">
+              <X className="h-5 w-5" />
               <span className="sr-only">Close</span>
             </Button>
           </SheetClose>
@@ -72,24 +78,29 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex flex-col space-y-1 p-2"
+              className="flex flex-col space-y-2 pt-2 px-2"
             >
               {menuItems.map((item, index) => {
                 const isActive = location.pathname === item.path;
                 return (
                   <motion.div
                     key={item.label}
-                    initial={{ opacity: 0, x: -20 }}
+                    initial={{ opacity: 0, x: -28 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
                   >
                     <Button
                       variant={isActive ? "secondary" : "ghost"}
-                      className={`justify-start px-4 py-6 h-auto text-lg w-full ${isActive ? 'bg-primary/10 font-medium' : ''}`}
+                      className={`
+                        justify-start px-5 py-5 h-auto text-lg w-full
+                        rounded-xl mb-0.5 shadow-menuItem font-serif flex items-center leading-none
+                        ${isActive ? 'bg-white text-emvi-accent font-bold shadow-menuItemActive' : 'hover:bg-white/70 text-gray-700'}
+                        transition-all duration-200
+                      `}
                       onClick={() => handleNavigation(item.path, item.label)}
                     >
-                      <item.icon className="mr-3 h-5 w-5" />
-                      {item.label}
+                      <item.icon className={`mr-4 h-5 w-5 ${isActive ? "text-emvi-accent" : "text-gray-400 group-hover:text-emvi-accent"}`} />
+                      <span className="mt-0.5">{item.label}</span>
                     </Button>
                   </motion.div>
                 );
@@ -97,7 +108,7 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
 
               {user && (
                 <>
-                  <div className="mt-4 px-4 py-2 text-sm font-medium text-muted-foreground">
+                  <div className="mt-5 mb-2 px-5 text-[1.03rem] font-semibold text-emvi-accent/80 tracking-wide font-playfair">
                     Account
                   </div>
                   {userMenuItems.map((item, index) => {
@@ -105,17 +116,21 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
                     return (
                       <motion.div
                         key={item.label}
-                        initial={{ opacity: 0, x: -20 }}
+                        initial={{ opacity: 0, x: -28 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: (index + menuItems.length) * 0.05 }}
                       >
                         <Button
                           variant={isActive ? "secondary" : "ghost"}
-                          className={`justify-start px-4 py-6 h-auto text-lg w-full ${isActive ? 'bg-primary/10 font-medium' : ''}`}
+                          className={`
+                            justify-start px-5 py-5 h-auto w-full rounded-xl shadow-menuItem font-serif flex items-center
+                            ${isActive ? 'bg-white text-emvi-accent font-bold shadow-menuItemActive' : 'hover:bg-white/70 text-gray-700'}
+                            transition-all duration-200
+                          `}
                           onClick={() => handleNavigation(item.path, item.label)}
                         >
-                          <item.icon className="mr-3 h-5 w-5" />
-                          {item.label}
+                          <item.icon className={`mr-4 h-5 w-5 ${isActive ? "text-emvi-accent" : "text-gray-400 group-hover:text-emvi-accent"}`} />
+                          <span className="mt-0.5">{item.label}</span>
                         </Button>
                       </motion.div>
                     );
@@ -126,7 +141,7 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
           </AnimatePresence>
         </div>
         
-        <div className="border-t p-4">
+        <SheetFooter className="pt-6 pb-7 px-5 bg-transparent">
           <div className="mb-4">
             <LanguageToggle minimal={false} />
           </div>
@@ -134,33 +149,33 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
           {user ? (
             <Button 
               variant="destructive" 
-              className="w-full flex items-center justify-center h-12 text-base"
+              className="w-full flex items-center justify-center h-12 text-base rounded-xl shadow-menuItemActive font-semibold font-serif"
               onClick={() => {
                 handleSignOut();
                 closeMenu();
               }}
             >
-              <LogOut className="mr-2 h-4 w-4" />
+              <LogOut className="mr-2 h-5 w-5" />
               Sign Out
             </Button>
           ) : (
-            <div className="grid grid-cols-2 gap-3 w-full">
+            <div className="grid grid-cols-2 gap-4 w-full">
               <Button 
                 variant="outline" 
-                className="w-full h-12 text-base"
+                className="w-full h-12 text-base rounded-xl font-serif shadow-menuItem"
                 onClick={() => handleNavigation("/auth/signin", "Sign In")}
               >
                 Sign In
               </Button>
               <Button 
-                className="w-full h-12 text-base"
+                className="w-full h-12 text-base rounded-xl font-serif bg-emvi-accent/95 text-white shadow-menuItem"
                 onClick={() => handleNavigation("/auth/signup", "Sign Up")}
               >
                 Sign Up
               </Button>
             </div>
           )}
-        </div>
+        </SheetFooter>
       </SheetContent>
     </Sheet>
   );

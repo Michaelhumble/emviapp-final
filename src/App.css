@@ -255,3 +255,87 @@ textarea:focus {
     display: none !important;
   }
 }
+
+:root {
+  --emvi-accent: #9A7B69;
+  --tab-radius: 1.5rem;
+}
+
+/* --- MOBILE TAB BAR POLISH --- */
+.bg-tabBar-gradient {
+  background: radial-gradient(ellipse 170% 120% at 50% 40%, rgba(202,174,255,0.13) 12%, rgba(166,193,235,0.14) 65%, #fff 100%);
+}
+.shadow-tabBar {
+  box-shadow: 0 1.5px 28px 0 rgba(155,135,245,0.06), 0 0.5px 1.5px 0 rgba(0,0,0,0.04);
+}
+.shadow-tabActive {
+  box-shadow: 0px 7px 28px 0 rgba(155,135,245,0.10),0 2px 8px 0 rgba(154,123,105,0.08);
+}
+
+/* Use this for underline animation */
+.emvi-bookingtab-underline {
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  bottom: -8px;
+  height: 3.5px;
+  border-radius: 1.2rem;
+  background: linear-gradient(90deg, #ccbaf6 0%, #fff 38%, #eec8fa 100%);
+  box-shadow: 0 0.5px 6.5px #d2cef980;
+  z-index: 9;
+}
+
+/* For tab bar container horizontal padding (avoid edge clipping on mobile) */
+.px-mobileTab {
+  padding-left: max(8px, env(safe-area-inset-left));
+  padding-right: max(8px, env(safe-area-inset-right));
+}
+
+/* Emvi accent and transition */
+.text-emvi-accent {
+  color: var(--emvi-accent) !important;
+}
+.bg-emvi-accent {
+  background: var(--emvi-accent) !important;
+}
+.ease-emviTab {
+  transition-timing-function: cubic-bezier(.5,1.35,.12,1);
+}
+
+/* --- MOBILE MENU (DRAWER) POLISH --- */
+.mobile-glass-drawer {
+  background: rgba(255,255,255,0.96);
+  -webkit-backdrop-filter: blur(17px) saturate(140%);
+  backdrop-filter: blur(17px) saturate(140%);
+  box-shadow:
+    0 9px 42px 0 rgba(155,135,245,0.18),
+    0 2px 38px 0 rgba(154,123,105,0.12),
+    0 0.5px 2px 0 #b3866935 !important;
+  border-radius: 1.55rem 0.8rem 2.6rem 1.98rem/1.9rem 2.75rem 0.95rem 1.7rem;
+  border: none;
+}
+.shadow-menuDrawer {
+  box-shadow: 0 18px 44px 0 rgba(154,123,105,0.07), 0 1.5px 10px 0 #6E59A524;
+}
+/* clickable and active states for menu button */
+.shadow-menuItem {
+  box-shadow: 0 .5px 2.5px #e9ddf622;
+}
+.shadow-menuItemActive {
+  box-shadow: 0 8px 36px #9A7B6923;
+}
+
+.bg-emvi-accent\/10 {
+  background-color: #9A7B691a !important;
+}
+.bg-emvi-accent\/95 {
+  background-color: #9A7B69f2 !important;
+}
+
+.rounded-xl {
+  border-radius: 1.28rem !important;
+}
+
+.font-playfair {
+  font-family: 'Playfair Display', serif !important;
+}
