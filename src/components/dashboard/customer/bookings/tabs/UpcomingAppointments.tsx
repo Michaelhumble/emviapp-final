@@ -40,16 +40,17 @@ export default function UpcomingAppointments({
     <div className="mt-4">
       {isEmpty ? (
         <>
-          <div className="flex flex-col items-center justify-center py-10 px-3 gap-3 bg-gradient-to-tr from-purple-50 via-indigo-50 to-pink-50 rounded-2xl border border-purple-100 shadow-sm">
+          {/* Premium beauty empty card */}
+          <div className="flex flex-col items-center justify-center py-10 px-2 sm:px-7 gap-3 rounded-[2rem] border border-purple-100 shadow-lg bg-[radial-gradient(ellipse_110%_100%_at_50%_40%,rgba(202,174,255,0.10)_10%,rgba(166,193,235,0.10)_80%,#fff_100%)] animate-fade-in">
             <Calendar className="h-10 w-10 text-purple-200 mb-2" />
-            <h3 className="font-serif text-xl font-semibold text-emvi-dark text-center mb-1">
+            <h3 className="font-serif text-2xl font-semibold text-emvi-dark text-center mb-1">
               <span role="img" aria-label="nail polish" className="emoji emoji-pop">💅</span> {friendlyEmpty.headline}
             </h3>
-            <p className="text-gray-500 mb-3 text-center max-w-md text-sm">
+            <p className="text-gray-500 mb-4 text-center max-w-md text-base">
               {friendlyEmpty.body}
             </p>
             <button
-              className="rounded-full px-6 py-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium shadow-md hover:bg-purple-600 transition text-sm"
+              className="rounded-full px-8 py-2 mt-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold shadow-md hover:scale-105 hover:shadow-lg hover:bg-purple-600 transition text-base"
               onClick={() => (window.location.href = friendlyEmpty.ctaHref)}
             >
               {friendlyEmpty.cta}
