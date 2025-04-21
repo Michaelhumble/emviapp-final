@@ -4,8 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Card } from "@/components/ui/card";
 
-// Correcting import: import spa as Spa since lucide-react exports 'spa' lowercase
-import { Scissors, User, Heart, Smile, Tag, spa as Spa } from "lucide-react";
+// Fixed icon imports: removed spa import because it's not exported.
+// Use Tag icon as placeholder for spa category (massage/spa).
+import { Scissors, User, Heart, Smile, Tag } from "lucide-react";
 
 const categories = [
   {
@@ -35,7 +36,7 @@ const categories = [
   {
     key: "massage",
     label: "Massage",
-    icon: <Spa className="h-8 w-8 text-lime-500" />,
+    icon: <Tag className="h-8 w-8 text-lime-500" />, // Using Tag as placeholder for spa/massage icon
     image: "https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=400&q=80",
   },
   {
