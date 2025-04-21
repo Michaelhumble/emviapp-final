@@ -4,21 +4,22 @@ import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Card } from "@/components/ui/card";
 
-// Allowed Lucide icons only!
-// Correct import to use exact icon names matching lucide-react exports
-import { Scissors, Nail, Hair, Face, Barber, Tattoo, Massage } from "lucide-react";
+// Correcting import to use valid lucide-react icon names available in this version.
+// Replacing missing icons with closest available alternatives.
+
+import { Scissors, User, Heart, Smile, Spa, Tag } from "lucide-react";
 
 const categories = [
   {
     key: "nails",
     label: "Nails",
-    icon: <Nail className="h-8 w-8 text-pink-400" />,
+    icon: <Tag className="h-8 w-8 text-pink-400" />, // no nail icon, use Tag as placeholder
     image: "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=400&q=80",
   },
   {
     key: "hair",
     label: "Hair",
-    icon: <Hair className="h-8 w-8 text-purple-400" />,
+    icon: <Scissors className="h-8 w-8 text-purple-400" />,
     image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=400&q=80",
   },
   {
@@ -30,31 +31,31 @@ const categories = [
   {
     key: "brows",
     label: "Brows",
-    icon: <Face className="h-8 w-8 text-amber-400" />,
+    icon: <Smile className="h-8 w-8 text-amber-400" />,
     image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=400&q=80",
   },
   {
     key: "massage",
     label: "Massage",
-    icon: <Massage className="h-8 w-8 text-lime-500" />,
+    icon: <Spa className="h-8 w-8 text-lime-500" />,
     image: "https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=400&q=80",
   },
   {
     key: "skin",
     label: "Skin/Facial",
-    icon: <Face className="h-8 w-8 text-rose-400" />,
+    icon: <User className="h-8 w-8 text-rose-400" />,
     image: "https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=400&q=80",
   },
   {
     key: "barber",
     label: "Barber",
-    icon: <Barber className="h-8 w-8 text-gray-600" />,
+    icon: <Scissors className="h-8 w-8 text-gray-600" />,
     image: "https://images.unsplash.com/photo-1527576539890-dfa815648363?auto=format&fit=crop&w=400&q=80",
   },
   {
     key: "tattoo",
     label: "Tattoo",
-    icon: <Tattoo className="h-8 w-8 text-gray-900" />,
+    icon: <Heart className="h-8 w-8 text-gray-900" />,
     image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=400&q=80",
   },
 ];
@@ -67,7 +68,6 @@ const CustomerBrowseCategories: React.FC = () => {
     navigate(`/discover?category=${categoryKey}`);
   };
 
-  // Fallback UI: if categories changed in future, fallback is just an empty state
   if (!categories || categories.length === 0) {
     return (
       <div className="py-8 flex flex-col items-center">
@@ -91,9 +91,12 @@ const CustomerBrowseCategories: React.FC = () => {
               aria-label={cat.label}
             >
               <div className="rounded-xl overflow-hidden bg-gray-50 mb-2 h-20 w-20 flex items-center justify-center relative">
-                {/* Show the image behind the icon */}
-                <img src={cat.image} alt={cat.label}
-                  className="absolute w-20 h-20 object-cover rounded-xl" style={{ zIndex: 0 }} />
+                <img
+                  src={cat.image}
+                  alt={cat.label}
+                  className="absolute w-20 h-20 object-cover rounded-xl"
+                  style={{ zIndex: 0 }}
+                />
                 <span className="relative z-10">{cat.icon}</span>
               </div>
               <span className="mt-2 font-medium text-base text-gray-700">{cat.label}</span>
@@ -110,8 +113,12 @@ const CustomerBrowseCategories: React.FC = () => {
               aria-label={cat.label}
             >
               <div className="relative rounded-xl overflow-hidden mb-2 h-24 w-24 flex items-center justify-center">
-                <img src={cat.image} alt={cat.label}
-                  className="absolute w-24 h-24 object-cover rounded-xl" style={{ zIndex: 0 }} />
+                <img
+                  src={cat.image}
+                  alt={cat.label}
+                  className="absolute w-24 h-24 object-cover rounded-xl"
+                  style={{ zIndex: 0 }}
+                />
                 <span className="relative z-10">{cat.icon}</span>
               </div>
               <span className="mt-2 font-medium text-lg text-gray-700">{cat.label}</span>
