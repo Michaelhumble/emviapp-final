@@ -16,17 +16,22 @@ interface BookingsTabsProps {
 }
 
 const BookingsTabs: React.FC<BookingsTabsProps> = ({ tabs, value, onValueChange }) => (
-  <TabsList className="mb-2 w-full">
+  <TabsList className="w-full grid grid-cols-4 gap-1 bg-gray-100/50 p-1 rounded-full">
     {tabs.map(tab => (
-      <TabsTrigger value={tab.value} key={tab.value} className="flex-1 relative">
+      <TabsTrigger 
+        value={tab.value} 
+        key={tab.value} 
+        className="relative rounded-full py-2 transition-all data-[state=active]:bg-white data-[state=active]:text-purple-700 data-[state=active]:shadow-sm"
+      >
         {tab.label}
         {tab.count !== undefined && tab.count > 0 && (
-          <span className="ml-1.5 text-xs font-normal text-primary/80">
+          <span className="ml-1.5 text-xs font-normal text-purple-500">
             ({tab.count})
           </span>
         )}
         {tab.hasAttention && (
-          <span className="ml-2 inline-block w-2 h-2 bg-red-500 rounded-full animate-pulse absolute top-1 right-3" />
+          <span className="absolute top-1 right-2.5 w-2 h-2 bg-red-500 rounded-full animate-pulse" 
+                aria-hidden="true" />
         )}
       </TabsTrigger>
     ))}
