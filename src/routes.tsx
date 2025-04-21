@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Index from './pages/Index';
 import Welcome from './pages/Welcome';
@@ -59,6 +60,9 @@ import { AuthRedirect } from './components/auth/AuthRedirect';
 
 import PricingPage from './pages/pricing/PricingPage';
 import InvitePage from './pages/invite/InvitePage';
+
+// Use React.lazy for code-splitting the Messages page
+const Messages = React.lazy(() => import('./pages/messages/index'));
 
 const routes = [
   {
@@ -319,7 +323,9 @@ const routes = [
   },
   {
     path: '/messages',
-    element: <React.lazy(() => import('./pages/messages/index')) />,
+    element: <React.Suspense fallback={<div>Loading...</div>}>
+      <Messages />
+    </React.Suspense>,
   },
   {
     path: '/bookings',
