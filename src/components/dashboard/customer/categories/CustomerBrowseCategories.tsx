@@ -11,7 +11,7 @@ const categories = [
   {
     key: "nails",
     label: "Nails",
-    icon: <Tag className="h-8 w-8 text-pink-400" />, // no nail icon, use Tag as placeholder
+    icon: <Tag className="h-8 w-8 text-pink-400" />,
     image: "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=400&q=80",
   },
   {
@@ -35,7 +35,7 @@ const categories = [
   {
     key: "massage",
     label: "Massage",
-    icon: <Tag className="h-8 w-8 text-lime-500" />, // Using Tag as placeholder for spa/massage icon
+    icon: <Tag className="h-8 w-8 text-lime-500" />,
     image: "https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&w=400&q=80",
   },
   {
@@ -47,7 +47,7 @@ const categories = [
   {
     key: "barber",
     label: "Barber",
-    icon: <Tag className="h-8 w-8 text-gray-600" />, // Using Tag as fallback for Barber icon
+    icon: <Tag className="h-8 w-8 text-gray-600" />,
     image: "https://images.unsplash.com/photo-1588776814546-fbdc74f6466c?auto=format&fit=crop&w=400&q=80",
   },
   {
@@ -63,7 +63,7 @@ const CustomerBrowseCategories: React.FC = () => {
   const isMobile = useIsMobile();
 
   const handleClick = (categoryKey: string) => {
-    navigate(`/discover?category=${categoryKey}`);
+    navigate(`/explore/artists?category=${categoryKey}`);
   };
 
   if (!categories || categories.length === 0) {
@@ -85,8 +85,9 @@ const CustomerBrowseCategories: React.FC = () => {
             <button
               key={cat.key}
               onClick={() => handleClick(cat.key)}
-              className="flex-shrink-0 w-40 rounded-xl shadow-sm bg-white border focus:outline-none p-3 flex flex-col items-center transition hover:scale-[1.04] active:scale-95"
+              className="flex-shrink-0 w-36 rounded-xl shadow-sm bg-white border focus:outline-none p-3 flex flex-col items-center transition-transform duration-150 hover:scale-105 active:scale-95 touch-manipulation"
               aria-label={cat.label}
+              style={{ WebkitTapHighlightColor: "transparent" }}
             >
               <div className="rounded-xl overflow-hidden bg-gray-50 mb-2 h-20 w-20 flex items-center justify-center relative">
                 <img
@@ -107,8 +108,9 @@ const CustomerBrowseCategories: React.FC = () => {
             <button
               key={cat.key}
               onClick={() => handleClick(cat.key)}
-              className="flex flex-col items-center bg-white border rounded-2xl p-5 shadow-sm hover:shadow-lg transition hover:scale-[1.03] active:scale-95"
+              className="flex flex-col items-center bg-white border rounded-2xl p-5 shadow-sm hover:shadow-lg transition-transform duration-150 hover:scale-105 active:scale-95 focus:outline-none touch-manipulation"
               aria-label={cat.label}
+              style={{ WebkitTapHighlightColor: "transparent" }}
             >
               <div className="relative rounded-xl overflow-hidden mb-2 h-24 w-24 flex items-center justify-center">
                 <img
@@ -129,3 +131,4 @@ const CustomerBrowseCategories: React.FC = () => {
 };
 
 export default CustomerBrowseCategories;
+
