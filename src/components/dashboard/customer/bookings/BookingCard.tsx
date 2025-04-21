@@ -1,125 +1,275 @@
 
-import React from "react";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import React, { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CalendarCheck, Clock } from "lucide-react";
-import { format } from "date-fns";
 import { CustomerBooking } from "./types";
+import { format } from "date-fns";
+import { ThumbsUp, ThumbsDown, Calendar, Clock, Check, X } from "lucide-react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/context/auth";
 
-type BookingCardProps = {
+interface BookingCardProps {
   booking: CustomerBooking;
-  mode?: "desktop" | "mobile";
-  onView?: (id: string) => void;
-  onReschedule?: (id: string) => void;
-  onCancel?: (id: string) => void;
-};
+  type: "upcoming" | "progress" | "past" | "canceled";
+}
 
-const statusColor = (status: string) => {
-  switch (status) {
-    case "confirmed":
-      return "bg-green-100 text-green-700";
-    case "pending":
-    case "needs-action":
-      return "bg-red-100 text-red-700";
-    case "cancelled":
-      return "bg-gray-100 text-red-400";
-    case "completed":
-      return "bg-gray-100 text-gray-500";
-    default:
-      return "bg-gray-50 text-gray-600";
-  }
-};
+const BookingCard: React.FC<BookingCardProps> = ({ booking, type }) => {
+  const { user } = useAuth();
+  const [feedbackExpanded, setFeedbackExpanded] = useState(false);
+  const [feedbackText, setFeedbackText] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasReviewed, setHasReviewed] = useState(false);
 
-export const BookingCard: React.FC<BookingCardProps> = ({
-  booking,
-  mode = "desktop",
-  onView,
-  onReschedule,
-  onCancel,
-}) => {
-  const handleView = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onView) onView(booking.id);
+  // Helper functions to format information
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "Date TBD";
+    return format(new Date(dateStr), "EEE, MMM d, yyyy");
   };
-  const handleReschedule = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onReschedule) onReschedule(booking.id);
-  };
-  const handleCancel = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onCancel) onCancel(booking.id);
-  };
-  const isUpcoming =
-    booking.status === "pending" || booking.status === "confirmed";
-  const canReschedule = isUpcoming;
-  const canCancel = isUpcoming;
 
+  const getStatusColor = () => {
+    switch (booking.status) {
+      case "confirmed": return "bg-green-100 text-green-600";
+      case "completed": return "bg-blue-100 text-blue-600";
+      case "cancelled": return "bg-red-100 text-red-600";
+      case "pending": return "bg-amber-100 text-amber-600";
+      default: return "bg-gray-100 text-gray-600";
+    }
+  };
+
+  const getStatusLabel = () => {
+    switch (booking.status) {
+      case "confirmed": return "Confirmed";
+      case "completed": return "Completed";
+      case "cancelled": return "Canceled";
+      case "pending": return "Pending";
+      default: return booking.status || "Pending";
+    }
+  };
+
+  const handleCancelBooking = async () => {
+    if (!window.confirm("Are you sure you want to cancel this booking?")) return;
+    
+    try {
+      const { error } = await supabase
+        .from("bookings")
+        .update({ status: "cancelled" })
+        .eq("id", booking.id);
+        
+      if (error) throw error;
+      
+      toast.success("Booking cancelled successfully");
+      setTimeout(() => window.location.reload(), 1500);
+    } catch (err) {
+      console.error("Error cancelling booking:", err);
+      toast.error("Failed to cancel booking. Please try again.");
+    }
+  };
+
+  const handleFeedbackSubmit = async (rating: "positive" | "negative") => {
+    if (!user?.id || !booking.artist?.id) {
+      toast.error("Cannot submit feedback at this time");
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Submit review to database
+      const { error } = await supabase
+        .from("reviews")
+        .insert({
+          booking_id: booking.id,
+          artist_id: booking.artist.id,
+          customer_id: user.id,
+          rating: rating === "positive" ? 5 : 2,
+          comment: feedbackText,
+          status: "active"
+        });
+        
+      if (error) throw error;
+      
+      // Give credits for leaving a review using the award_credits function
+      const { error: creditError } = await supabase.rpc(
+        "award_credits",
+        { 
+          p_user_id: user.id, 
+          p_action_type: "review", 
+          p_value: 5, 
+          p_description: `review_${booking.id}`
+        }
+      );
+      
+      if (creditError) {
+        console.error("Error awarding credits:", creditError);
+        // Continue - credits are nice to have but not critical for the review
+      }
+      
+      toast.success("Thank you for your feedback!");
+      setHasReviewed(true);
+      setFeedbackExpanded(false);
+    } catch (err) {
+      console.error("Error submitting feedback:", err);
+      toast.error("Failed to submit feedback. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
   return (
-    <Card className="w-full rounded-2xl shadow-sm transition group cursor-pointer border border-gray-100">
-      <CardContent className="p-4 flex flex-col gap-2">
-        <div className="flex justify-between items-start">
-          <h3 className="font-semibold text-base md:text-lg flex-1">
-            {booking.service?.title || "Booking"}
-          </h3>
-          <span
-            className={`px-3 py-1 rounded-full text-xs font-medium capitalize ml-3 ${statusColor(
-              booking.status || ""
-            )}`}
-          >
-            {booking.status?.replace("-", " ") || "Pending"}
-          </span>
-        </div>
-        <div className="flex items-center gap-2 text-primary mt-1 text-[15px] font-medium">
-          <span>
-            {booking.artist?.full_name ||
-              "Artist/Salon"}
-          </span>
-        </div>
-        <div className="flex flex-wrap gap-2 text-gray-500 items-center text-[15px] mb-0">
-          {booking.date_requested && (
-            <span className="flex items-center gap-1">
-              <CalendarCheck className="h-4 w-4" />
-              {format(new Date(booking.date_requested), "MMM d, yyyy")}
-            </span>
-          )}
-          {booking.time_requested && (
-            <span className="flex items-center gap-1">
-              <Clock className="h-4 w-4" />
-              {booking.time_requested}
-            </span>
+    <Card className="overflow-hidden hover:shadow-md transition-shadow duration-200 border border-gray-100">
+      <CardContent className="p-0">
+        <div className="p-4">
+          <div className="flex justify-between items-start">
+            <div>
+              <h3 className="text-base font-medium mb-1">
+                {booking.service?.title || "Booking"}
+              </h3>
+              <p className="text-sm text-primary/80 mb-2">
+                with {booking.artist?.full_name || "Your stylist"}
+              </p>
+            </div>
+            <div className={`px-3 py-1 rounded-full text-xs ${getStatusColor()}`}>
+              {getStatusLabel()}
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2 text-gray-500 text-sm mb-4">
+            <Calendar className="h-4 w-4" />
+            <span>{formatDate(booking.date_requested)}</span>
+            {booking.time_requested && (
+              <>
+                <Clock className="h-4 w-4 ml-2" />
+                <span>{booking.time_requested}</span>
+              </>
+            )}
+          </div>
+
+          {/* Action buttons based on booking type */}
+          <div className="flex flex-wrap gap-2">
+            {type === "upcoming" && (
+              <>
+                <Button 
+                  variant="default" 
+                  size="sm"
+                  onClick={() => window.location.href = `/bookings/${booking.id}`}
+                >
+                  View Details
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleCancelBooking}
+                >
+                  Cancel
+                </Button>
+              </>
+            )}
+            
+            {type === "progress" && (
+              <Button 
+                variant="default" 
+                size="sm"
+                onClick={() => window.location.href = `/bookings/${booking.id}`}
+              >
+                View Details
+              </Button>
+            )}
+            
+            {type === "past" && !hasReviewed && (
+              <>
+                <Button 
+                  variant="secondary" 
+                  size="sm"
+                  onClick={() => window.location.href = booking.artist?.id 
+                    ? `/artists/${booking.artist.id}` 
+                    : `/explore/artists`
+                  }
+                >
+                  Book Again
+                </Button>
+                {!feedbackExpanded && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setFeedbackExpanded(true)}
+                  >
+                    Leave Feedback
+                  </Button>
+                )}
+              </>
+            )}
+            
+            {type === "canceled" && (
+              <Button 
+                variant="secondary" 
+                size="sm"
+                onClick={() => window.location.href = booking.artist?.id 
+                  ? `/artists/${booking.artist.id}` 
+                  : `/explore/artists`
+                }
+              >
+                Reschedule
+              </Button>
+            )}
+          </div>
+          
+          {/* Feedback section for past bookings */}
+          {type === "past" && feedbackExpanded && !hasReviewed && (
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <h4 className="text-sm font-medium mb-2">How was your experience?</h4>
+              <div className="flex gap-4 mb-3">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="flex-1 flex items-center justify-center gap-2 hover:bg-green-50 hover:text-green-600 hover:border-green-200"
+                  onClick={() => handleFeedbackSubmit("positive")}
+                  disabled={isSubmitting}
+                >
+                  <ThumbsUp className="h-4 w-4" /> 
+                  Great
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="flex-1 flex items-center justify-center gap-2 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+                  onClick={() => handleFeedbackSubmit("negative")}
+                  disabled={isSubmitting}
+                >
+                  <ThumbsDown className="h-4 w-4" /> 
+                  Not good
+                </Button>
+              </div>
+              <textarea
+                placeholder="Add comments (optional)"
+                className="w-full p-2 border border-gray-200 rounded-md text-sm"
+                rows={2}
+                value={feedbackText}
+                onChange={(e) => setFeedbackText(e.target.value)}
+                disabled={isSubmitting}
+              />
+              <div className="flex justify-end gap-2 mt-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => setFeedbackExpanded(false)}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  variant="default" 
+                  size="sm"
+                  onClick={() => handleFeedbackSubmit(feedbackText.length > 0 ? "positive" : "negative")}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Submitting..." : "Submit"}
+                </Button>
+              </div>
+            </div>
           )}
         </div>
       </CardContent>
-      <CardFooter className="pt-0 pb-3 px-4 flex gap-3 flex-col xs:flex-row items-stretch xs:items-center">
-        <Button
-          variant="secondary"
-          size={mode === "mobile" ? "lg" : "sm"}
-          className="w-full xs:w-auto"
-          onClick={handleView}
-        >
-          View Details
-        </Button>
-        {canReschedule && (
-          <Button
-            variant="outline"
-            size={mode === "mobile" ? "lg" : "sm"}
-            className="w-full xs:w-auto border-blue-400 text-blue-600 hover:bg-blue-50"
-            onClick={handleReschedule}
-          >
-            Reschedule
-          </Button>
-        )}
-        {canCancel && (
-          <Button
-            variant="outline"
-            size={mode === "mobile" ? "lg" : "sm"}
-            className="w-full xs:w-auto border-red-400 text-red-600 hover:bg-red-50"
-            onClick={handleCancel}
-          >
-            Cancel
-          </Button>
-        )}
-      </CardFooter>
     </Card>
   );
 };
