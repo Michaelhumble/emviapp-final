@@ -3,6 +3,8 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star, TrendingUp, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 type Service = {
   id: string;
@@ -72,9 +74,24 @@ function sortServices(services: Service[]) {
 const SuggestedServicesSection: React.FC = () => {
   // In a real version, fetch services using useQuery/useSafeQuery here.
   const services = sortServices(mockServices);
+  const navigate = useNavigate();
 
   // Responsive checks
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+
+  const handleBookNow = (service: Service) => {
+    // Create a URL-friendly version of the service title
+    const serviceParam = service.title.toLowerCase().replace(/\s+/g, '-');
+    
+    // Show toast notification since full booking flow isn't ready
+    toast.info("Coming soon! You'll be able to book this service.", {
+      duration: 3000,
+      position: "top-center",
+    });
+    
+    // Navigate to salons page with service query param
+    navigate(`/salons?service=${serviceParam}`);
+  };
 
   return (
     <section className="mb-6 md:mb-12">
@@ -153,9 +170,7 @@ const SuggestedServicesSection: React.FC = () => {
                   size="sm"
                   className="w-full min-h-[44px] rounded font-medium flex items-center justify-center group-hover:bg-purple-600 transition"
                   tabIndex={0}
-                  onClick={() => {
-                    // Implement modal or booking redirect here
-                  }}
+                  onClick={() => handleBookNow(service)}
                 >
                   Book Now
                   <ArrowRight className="ml-1 h-4 w-4" />
