@@ -1,5 +1,6 @@
 
 import React from "react";
+import { CheckCircle } from "lucide-react";
 import CustomerBookingsTabContent from "../CustomerBookingsTabContent";
 import BookingIncentiveBanner from "./BookingIncentiveBanner";
 
@@ -13,12 +14,6 @@ interface NeedsAttentionProps {
   onCancel: (id: string) => void;
   currentCredits?: number;
 }
-
-const emojiSpan = (label: string, emoji: string) => (
-  <span role="img" aria-label={label} className="emoji">
-    {emoji}
-  </span>
-);
 
 const friendlyEmpty = {
   headline: "Everything's on track!",
@@ -47,9 +42,9 @@ export default function NeedsAttention({
         <>
           {/* Premium empty card UI */}
           <div className="flex flex-col items-center justify-center py-10 px-2 sm:px-7 gap-3 rounded-[2rem] border border-purple-100 shadow-lg bg-[radial-gradient(ellipse_110%_100%_at_50%_40%,rgba(202,174,255,0.10)_10%,rgba(166,193,235,0.10)_80%,#fff_100%)] animate-fade-in">
-            <span role="img" aria-label="check mark" className="emoji text-4xl mb-2">✅</span>
+            <CheckCircle className="h-10 w-10 text-green-500 mb-2" />
             <h3 className="font-serif text-2xl font-semibold text-emvi-dark text-center mb-1">
-              <span role="img" aria-label="check mark" className="emoji">✅</span> {friendlyEmpty.headline}
+              {friendlyEmpty.headline}
             </h3>
             <p className="text-gray-500 mb-4 text-center max-w-md text-base">
               {friendlyEmpty.body}
