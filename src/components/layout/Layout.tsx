@@ -1,6 +1,6 @@
-
 import React from 'react';
 import Navbar from './Navbar';
+import MobileBottomNavBar from './MobileBottomNavBar';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -14,6 +14,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, hideNavbar = false }) 
       <main className={`flex-grow ${!hideNavbar ? 'pt-16' : ''}`}>
         {children}
       </main>
+      <MobileBottomNavBar />
     </div>
   );
 };
