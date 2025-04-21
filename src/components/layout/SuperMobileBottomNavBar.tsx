@@ -1,17 +1,17 @@
-
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Home, Search, MessageCircle, Heart, User } from "lucide-react";
+import NailHomeIcon from "./NailHomeIcon";
 
 const NAV_TABS = [
   {
     key: "home",
     label: "Home",
     route: "/",
-    icon: Home,
+    icon: (active: boolean) => <NailHomeIcon active={active} />,
   },
   {
     key: "search",
@@ -41,6 +41,9 @@ const NAV_TABS = [
 ];
 
 function TabIcon({ Icon, isActive }: { Icon: any; isActive: boolean }) {
+  if (Icon && typeof Icon === "function" && Icon.name === "") {
+    return Icon(isActive);
+  }
   return (
     <motion.div
       initial={{ scale: 0.92, opacity: 0.8, y: 10 }}
