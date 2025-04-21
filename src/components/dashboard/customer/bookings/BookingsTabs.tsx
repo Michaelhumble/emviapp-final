@@ -23,14 +23,14 @@ const BookingsTabs: React.FC<BookingsTabsProps> = ({ tabs, value, onValueChange 
         key={tab.value} 
         className="relative rounded-full py-2 transition-all data-[state=active]:bg-white data-[state=active]:text-purple-700 data-[state=active]:shadow-sm"
       >
-        {tab.label}
+        <span className="text-xs sm:text-sm font-medium">{tab.label}</span>
         {tab.count !== undefined && tab.count > 0 && (
-          <span className="ml-1.5 text-xs font-normal text-purple-500">
+          <span className="ml-1 text-[10px] sm:text-xs font-normal text-purple-500">
             ({tab.count})
           </span>
         )}
         {tab.hasAttention && (
-          <span className="absolute top-1 right-2.5 w-2 h-2 bg-red-500 rounded-full animate-pulse" 
+          <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" 
                 aria-hidden="true" />
         )}
       </TabsTrigger>
