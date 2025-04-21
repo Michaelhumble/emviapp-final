@@ -4,8 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Card } from "@/components/ui/card";
 
-// Fixed icon imports: removed spa import because it's not exported.
-// Use Tag icon as placeholder for spa category (massage/spa).
+// Updated imports: replaced Barber with Tag as fallback
 import { Scissors, User, Heart, Smile, Tag } from "lucide-react";
 
 const categories = [
@@ -48,8 +47,8 @@ const categories = [
   {
     key: "barber",
     label: "Barber",
-    icon: <Scissors className="h-8 w-8 text-gray-600" />,
-    image: "https://images.unsplash.com/photo-1527576539890-dfa815648363?auto=format&fit=crop&w=400&q=80",
+    icon: <Tag className="h-8 w-8 text-gray-600" />, // Using Tag as fallback for Barber icon
+    image: "https://images.unsplash.com/photo-1588776814546-fbdc74f6466c?auto=format&fit=crop&w=400&q=80",
   },
   {
     key: "tattoo",
@@ -130,4 +129,3 @@ const CustomerBrowseCategories: React.FC = () => {
 };
 
 export default CustomerBrowseCategories;
-
