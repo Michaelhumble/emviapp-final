@@ -1,16 +1,16 @@
-
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
 import { SalonMessage } from "@/types/SalonMessage";
 
 export interface ConversationPreview {
-  id: string; // conversation id (otherUserId)
-  userId: string; // artist/salon id
+  id: string;
+  userId: string;
   name: string;
   avatarUrl?: string;
   lastMessage: string;
   lastMessageAt: string;
+  unread?: boolean;
 }
 
 export function useCustomerConversations() {
@@ -25,7 +25,6 @@ export function useCustomerConversations() {
     const fetchConversations = async () => {
       setLoading(true);
       setError(null);
-      // Fetch all messages for this user where booking status is confirmed/completed.
       const { data, error: err } = await supabase
         .from("messages")
         .select(
@@ -54,7 +53,6 @@ export function useCustomerConversations() {
         return;
       }
 
-      // Build conversation map where artist/salon role and only from confirmed bookings (simulate for now)
       const map = new Map<string, ConversationPreview>();
 
       data.forEach((msg: any) => {
@@ -62,10 +60,8 @@ export function useCustomerConversations() {
         const otherParty = isCustomerSender ? msg.recipient : msg.sender;
         const otherId = isCustomerSender ? msg.recipient_id : msg.sender_id;
 
-        // Only allow conversations with role: artist or salon/owner
         if (!otherParty?.role || !["artist", "owner", "salon"].includes(otherParty.role)) return;
 
-        // Use as conversation id
         if (!map.has(otherId)) {
           map.set(otherId, {
             id: otherId,
@@ -78,7 +74,11 @@ export function useCustomerConversations() {
         }
       });
 
-      setConversations(Array.from(map.values()));
+      const values = Array.from(map.values());
+      if (values.length > 0) {
+        values[0].unread = true;
+      }
+      setConversations(values);
       setLoading(false);
     };
 

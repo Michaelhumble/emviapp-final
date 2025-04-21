@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,6 +14,14 @@ interface ConversationThreadProps {
   onBack?: () => void;
   isMobile?: boolean;
 }
+
+const smartReplies = [
+  "Thanks, see you soon!",
+  "Can we reschedule?",
+  "I’ll be there.",
+  "Sounds good!",
+  "Sorry, I can’t make it.",
+];
 
 const ConversationThread = ({
   currentUserId,
@@ -77,22 +84,24 @@ const ConversationThread = ({
       recipient_id: otherUserId,
       message_body: input,
       message_type: "chat",
-      salon_id: otherUserId, // This will allow showing which salon/artist, for now.
+      salon_id: otherUserId,
     });
     setInput("");
     setSending(false);
-    // fetch again after a short delay
     setTimeout(() => {
-      // fetchMessages() -- but trigger re-run by incrementing a dummy state
-      // Instead, hacky but easy: force re-mount by incrementing a key in parent
-      // So leave the update to the parent for now.
-      window.location.reload(); // Basic refresh for MVP
+      window.location.reload();
     }, 500);
   };
 
+  const canConfirm =
+    messages.length &&
+    /appointment|book(ed)?|confirm/i.test(messages[messages.length - 1]?.message ?? "");
+  const canCancel =
+    messages.length &&
+    /appointment|book(ed)?|cancel/i.test(messages[messages.length - 1]?.message ?? "");
+
   return (
     <div className={`flex flex-col h-full ${isMobile ? "pt-2" : ""}`}>
-      {/* Header on mobile */}
       {isMobile && (
         <div className="flex items-center gap-2 pb-2">
           <Button variant="ghost" size="icon" onClick={onBack}>
@@ -114,11 +123,8 @@ const ConversationThread = ({
             Loading conversation...
           </div>
         ) : (
-          messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`flex ${msg.senderId === otherUserId ? "justify-start" : "justify-end"}`}
-            >
+          messages.map((msg, i) => (
+            <div key={msg.id} className={`flex ${msg.senderId === otherUserId ? "justify-start" : "justify-end"}`}>
               <div
                 className={`px-3 py-2 rounded-xl max-w-[68vw] break-words leading-snug text-sm ${
                   msg.senderId === otherUserId
@@ -127,15 +133,62 @@ const ConversationThread = ({
                 }`}
               >
                 {msg.message}
+                {i === messages.length - 1 && msg.senderId === otherUserId && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="min-h-[44px] px-3 bg-pink-100 text-pink-700 border-pink-200 hover:bg-pink-200"
+                      onClick={() => setInput("")}
+                    >
+                      Reply
+                    </Button>
+                    {canConfirm && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        className="min-h-[44px] px-3 bg-green-100 text-green-700 border-green-200 hover:bg-green-200"
+                        onClick={() => setInput("Confirming my appointment!")}
+                      >
+                        Confirm Appointment
+                      </Button>
+                    )}
+                    {canCancel && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        className="min-h-[44px] px-3 bg-yellow-100 text-yellow-700 border-yellow-200 hover:bg-yellow-200"
+                        onClick={() => setInput("Sorry, I need to cancel my appointment.")}
+                      >
+                        Cancel Appointment
+                      </Button>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           ))
         )}
         <div ref={scrollRef}></div>
       </div>
-      {/* Reply input */}
+      {!loading && (
+        <div className="flex flex-wrap gap-2 bg-slate-50 py-2 px-3 rounded-b-lg mb-2">
+          {smartReplies.slice(0, 2).map((reply, idx) => (
+            <Button
+              key={idx}
+              type="button"
+              variant="outline"
+              size="sm"
+              className="min-h-[44px] bg-white border-gray-200 hover:bg-gray-100 text-gray-700"
+              onClick={() => setInput(reply)}
+            >
+              {reply}
+            </Button>
+          ))}
+        </div>
+      )}
       <form
-        className="flex gap-2 border-t pt-1 mt-2"
+        className="flex gap-2 border-t pt-1 mt-0 px-2"
         onSubmit={e => {
           e.preventDefault();
           handleSend();
@@ -144,7 +197,7 @@ const ConversationThread = ({
         <input
           type="text"
           placeholder="Type your reply…"
-          className="rounded-full px-4 py-2 border bg-white flex-1 text-sm focus:outline-none"
+          className="rounded-full px-4 py-2 border bg-white flex-1 text-sm focus:outline-none min-h-[44px]"
           value={input}
           onChange={e => setInput(e.target.value)}
           disabled={sending}
