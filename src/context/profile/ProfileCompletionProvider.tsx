@@ -10,7 +10,6 @@ interface ProfileCompletionContextProps {
   isLoading: boolean;
   isProfileComplete: boolean;
   completionPercentage: number;
-  incompleteFields: string[]; // Added incompleteFields property
   markTaskComplete: (taskId: string) => void;
   isTaskComplete: (taskId: string) => boolean;
 }
@@ -97,10 +96,7 @@ export const ProfileCompletionProvider: React.FC<{ children: React.ReactNode }> 
   const isTaskComplete = (taskId: string): boolean => {
     return completedTasks.includes(taskId);
   };
-
-  // Provide missingFields as incompleteFields; fallback to empty array
-  const incompleteFields = dbCompletionStatus?.missingFields || [];
-
+  
   return (
     <ProfileCompletionContext.Provider
       value={{
@@ -108,7 +104,6 @@ export const ProfileCompletionProvider: React.FC<{ children: React.ReactNode }> 
         isLoading,
         isProfileComplete: dbCompletionStatus?.isComplete ?? false,
         completionPercentage: dbCompletionStatus?.completionPercentage || 0,
-        incompleteFields, // Provide incompleteFields to context consumers
         markTaskComplete,
         isTaskComplete
       }}

@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { hasRoleAccess } from "@/utils/navigation";
 import { UserRole } from "@/context/auth/types";
 import Layout from "@/components/layout/Layout";
-import { ProfileCompletionProvider } from "@/context/profile/ProfileCompletionProvider";
 
 const CustomerDashboardPage = () => {
   const { userProfile, userRole, loading } = useAuth();
@@ -64,9 +63,7 @@ const CustomerDashboardPage = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <ProfileCompletionProvider>
-          <CustomerDashboard />
-        </ProfileCompletionProvider>
+        <CustomerDashboard />
       </motion.div>
     </Layout>
   );
