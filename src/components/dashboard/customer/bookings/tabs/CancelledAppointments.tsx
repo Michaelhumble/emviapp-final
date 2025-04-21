@@ -11,7 +11,7 @@ interface CancelledAppointmentsProps {
 }
 
 const friendlyEmpty = {
-  title: "No canceled appointments",
+  headline: "No canceled appointments",
   body: "Your schedule is clear. Time to book something fun!",
   cta: "Browse Artists",
   ctaHref: "/explore/artists",
@@ -37,7 +37,7 @@ export default function CancelledAppointments({
         onView={onView}
         emptyStateProps={{
           icon: "calendar-x",
-          headline: friendlyEmpty.title,
+          headline: friendlyEmpty.headline,
           body: friendlyEmpty.body,
           cta: friendlyEmpty.cta,
           ctaHref: friendlyEmpty.ctaHref,

@@ -12,7 +12,7 @@ interface PastAppointmentsProps {
 }
 
 const friendlyEmpty = {
-  title: "No past appointments",
+  headline: "No past appointments",
   body: "Your journey is just beginning.",
   cta: "Get Started",
   ctaHref: "/explore/artists",
@@ -40,7 +40,7 @@ export default function PastAppointments({
         onReschedule={onReschedule}
         emptyStateProps={{
           icon: "calendar-clock",
-          headline: friendlyEmpty.title,
+          headline: friendlyEmpty.headline,
           body: friendlyEmpty.body,
           cta: friendlyEmpty.cta,
           ctaHref: friendlyEmpty.ctaHref,

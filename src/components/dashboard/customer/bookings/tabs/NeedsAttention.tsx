@@ -13,7 +13,7 @@ interface NeedsAttentionProps {
 }
 
 const friendlyEmpty = {
-  title: "Everything’s on track!",
+  headline: "Everything's on track!",
   body: "No bookings need your attention right now.",
   cta: "View Artists",
   ctaHref: "/explore/artists",
@@ -43,7 +43,7 @@ export default function NeedsAttention({
         onCancel={onCancel}
         emptyStateProps={{
           icon: "calendar-check",
-          headline: friendlyEmpty.title,
+          headline: friendlyEmpty.headline,
           body: friendlyEmpty.body,
           cta: friendlyEmpty.cta,
           ctaHref: friendlyEmpty.ctaHref,

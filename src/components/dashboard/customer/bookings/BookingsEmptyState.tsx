@@ -15,28 +15,28 @@ interface EmptyStateProps {
 
 const friendlyEmpty = {
   upcoming: {
-    title: "No upcoming bookings yet",
+    headline: "No upcoming bookings yet",
     body: "You deserve a moment of peace — book your next beauty session now.",
     cta: "Book Now",
     ctaHref: "/explore/artists",
     icon: <Calendar className="h-12 w-12 text-purple-200" />,
   },
   past: {
-    title: "You haven't had any appointments yet",
+    headline: "You haven't had any appointments yet",
     body: "Your beauty story is about to begin. Save your favorite moments here.",
     cta: "Explore Services",
     ctaHref: "/explore/artists",
     icon: <Calendar className="h-12 w-12 text-purple-200" />,
   },
   needsAttention: {
-    title: "All good here!",
+    headline: "All good here!",
     body: "You're all set – no bookings need your attention right now.",
     cta: "View Artists",
     ctaHref: "/explore/artists",
     icon: <Sparkles className="h-12 w-12 text-purple-200" />,
   },
   canceled: {
-    title: "No canceled appointments",
+    headline: "No canceled appointments",
     body: "Your schedule is clear. We're here when you're ready to book again.",
     cta: "Browse Services",
     ctaHref: "/explore/artists",
@@ -65,7 +65,7 @@ const BookingsEmptyState: React.FC<BookingsEmptyStateProps> = ({
         content.icon || friendlyEmpty[type].icon
       )}
       <h3 className="font-serif font-semibold text-xl text-gray-700 mt-2 text-center">
-        {content.headline || content.title}
+        {content.headline}
       </h3>
       <p className="text-gray-500 mb-4 text-center max-w-md">{content.body}</p>
       <Button
