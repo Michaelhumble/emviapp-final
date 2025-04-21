@@ -5,7 +5,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Card } from "@/components/ui/card";
 
 // Allowed Lucide icons only!
-import { Scissors, Nail, Eye, Massage, Face, Barber, Tattoo } from "lucide-react";
+// Correct import to use exact icon names matching lucide-react exports
+import { Scissors, Nail, Hair, Face, Barber, Tattoo, Massage } from "lucide-react";
 
 const categories = [
   {
@@ -17,19 +18,19 @@ const categories = [
   {
     key: "hair",
     label: "Hair",
-    icon: <Scissors className="h-8 w-8 text-purple-400" />,
+    icon: <Hair className="h-8 w-8 text-purple-400" />,
     image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=400&q=80",
   },
   {
     key: "lashes",
     label: "Lashes",
-    icon: <Eye className="h-8 w-8 text-fuchsia-400" />,
+    icon: <Scissors className="h-8 w-8 text-fuchsia-400" />,
     image: "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?auto=format&fit=crop&w=400&q=80",
   },
   {
     key: "brows",
     label: "Brows",
-    icon: <Eye className="h-8 w-8 text-amber-400" />,
+    icon: <Face className="h-8 w-8 text-amber-400" />,
     image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=400&q=80",
   },
   {
@@ -89,8 +90,8 @@ const CustomerBrowseCategories: React.FC = () => {
               className="flex-shrink-0 w-40 rounded-xl shadow-sm bg-white border focus:outline-none p-3 flex flex-col items-center transition hover:scale-[1.04] active:scale-95"
               aria-label={cat.label}
             >
-              <div className="rounded-xl overflow-hidden bg-gray-50 mb-2 h-20 w-20 flex items-center justify-center">
-                {/* Show the icon over the image, or just icon if image fails */}
+              <div className="rounded-xl overflow-hidden bg-gray-50 mb-2 h-20 w-20 flex items-center justify-center relative">
+                {/* Show the image behind the icon */}
                 <img src={cat.image} alt={cat.label}
                   className="absolute w-20 h-20 object-cover rounded-xl" style={{ zIndex: 0 }} />
                 <span className="relative z-10">{cat.icon}</span>
@@ -123,3 +124,4 @@ const CustomerBrowseCategories: React.FC = () => {
 };
 
 export default CustomerBrowseCategories;
+
