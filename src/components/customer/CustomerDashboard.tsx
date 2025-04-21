@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +6,7 @@ import { useAuth } from "@/context/auth";
 import { Sparkles, Lock, TrendingUp, Gift, Lightbulb } from "lucide-react";
 import AIWelcomeAssistant from "@/components/ai/AIWelcomeAssistant";
 import AISmartReminder from "@/components/ai/AISmartReminder";
+import CustomerLoyaltyTracker from "./CustomerLoyaltyTracker";
 
 const CustomerDashboard = () => {
   const { user } = useAuth();
@@ -46,6 +46,9 @@ const CustomerDashboard = () => {
           </p>
         </motion.div>
         
+        {/* Loyalty Tracker goes here (only for signed-in users) */}
+        {isLoggedIn && <CustomerLoyaltyTracker />}
+
         {/* AI Components for logged in users */}
         {isLoggedIn && (
           <div className="max-w-3xl mx-auto mb-10 space-y-4">
