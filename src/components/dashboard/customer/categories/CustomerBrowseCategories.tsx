@@ -4,14 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Badge } from "@/components/ui/badge";
 import {
-  // Use available icons from Lucide instead of the ones that don't exist
   Scissors,
   Eye,
   Brush,
   Sparkles,
   Paintbrush,
   HandMetal, // for tattoo
-  Comb // for barber
+  Hairdryer, // for barber replacement
 } from "lucide-react";
 
 // Soft pastel gradient classes per category (tailwind custom colors + bg blur)
@@ -44,25 +43,25 @@ const categoryData = [
   {
     key: "massage",
     label: "Massage",
-    Icon: Sparkles, // Changed from Massage to Sparkles
+    Icon: Sparkles,
     gradient: "from-mint-200/60 to-teal-100/80",
   },
   {
     key: "skin",
     label: "Facial",
-    Icon: Brush, // Changed from Face to Brush
+    Icon: Brush,
     gradient: "from-blue-100/80 to-purple-100/80",
   },
   {
     key: "barber",
     label: "Barber",
-    Icon: Comb, // Changed from Barber to Comb
+    Icon: Hairdryer, // Replaced Comb with Hairdryer
     gradient: "from-gray-100/80 to-blue-200/80",
   },
   {
     key: "tattoo",
     label: "Tattoo",
-    Icon: HandMetal, // Changed from Tattoo to HandMetal
+    Icon: HandMetal,
     gradient: "from-purple-800/70 to-indigo-300/80",
     badge: "🔥 Trending"
   },
@@ -109,7 +108,6 @@ const CustomerBrowseCategories: React.FC = () => {
             `}
             style={{
               WebkitTapHighlightColor: "transparent",
-              // Subtle glassmorphism border
               boxShadow: "0 2px 24px 0 rgba(134, 128, 162, 0.08)",
             }}
           >
@@ -144,3 +142,4 @@ const CustomerBrowseCategories: React.FC = () => {
 };
 
 export default CustomerBrowseCategories;
+
