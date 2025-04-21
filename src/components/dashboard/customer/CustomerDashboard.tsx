@@ -15,6 +15,7 @@ import CustomerWallet from "@/components/customer/CustomerWallet";
 import RecommendedServicesSection from "./services/RecommendedServicesSection";
 import BookAgainSection from "./services/BookAgainSection";
 import CustomerPendingReviewsSection from "./reviews/CustomerPendingReviewsSection";
+import CustomerBookingsCenter from "./bookings/CustomerBookingsCenter";
 
 const CustomerDashboard = () => {
   const { user, userRole } = useAuth();
@@ -117,6 +118,9 @@ const CustomerDashboard = () => {
             <CustomerPendingReviewsSection />
           </div>
         )}
+
+        {/* ---- My Bookings Center: Primary Placement ---- */}
+        <CustomerBookingsCenter />
 
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 mb-10 md:mb-12"
