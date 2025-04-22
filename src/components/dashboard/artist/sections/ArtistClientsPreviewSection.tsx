@@ -40,27 +40,27 @@ const cardGradient =
   "bg-gradient-to-br from-[#F1F0FB] via-[#E5DEFF]/70 to-white";
 
 const ArtistClientsPreviewSection: React.FC = () => (
-  <section className="w-full mt-2" aria-label="My Clients Preview">
-    <Card className={`${cardGradient} border-0 shadow-md rounded-2xl px-0 md:px-2 py-3 mb-6`}>
-      <CardContent className="py-4 px-2 sm:px-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-3">
-          <h2 className="font-playfair text-lg md:text-xl font-semibold text-gray-900 flex items-center gap-2">
+  <section className="w-full mt-0 sm:mt-2" aria-label="My Clients Preview">
+    <Card className={`${cardGradient} border-0 shadow-md rounded-2xl px-0 md:px-2 py-3 mb-3`}>
+      <CardContent className="py-4 px-2 xs:px-3 sm:px-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-2">
+          <h2 className="font-playfair text-[1rem] xs:text-lg md:text-xl font-semibold text-gray-900 flex items-center gap-2">
             <Users className="h-5 w-5 text-emvi-accent" />
             My Clients
           </h2>
           <Link
             to="#"
-            className="text-emvi-accent text-sm font-medium hover:underline transition"
+            className="text-emvi-accent text-[13px] xs:text-sm font-medium hover:underline transition"
             tabIndex={-1}
           >
             View All Clients
           </Link>
         </div>
-        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <ul className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-2 xs:gap-3">
           {mockClients.map((client) => (
             <li key={client.id}>
-              <div className="flex items-center bg-white/80 rounded-xl border border-purple-50 shadow-sm px-3 py-2.5 gap-3 hover:shadow-md transition">
-                <Avatar className="h-11 w-11 border-2 border-white shadow">
+              <div className="flex items-center bg-white/90 rounded-xl border border-purple-50 shadow-sm px-2 xs:px-3 py-2 gap-2.5 hover:shadow-md transition">
+                <Avatar className="h-10 w-10 xs:h-11 xs:w-11 border-2 border-white shadow">
                   <AvatarImage
                     src={client.avatar}
                     alt={client.name}
@@ -71,13 +71,13 @@ const ArtistClientsPreviewSection: React.FC = () => (
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <div className="font-serif font-medium text-gray-800 truncate">
+                  <div className="font-serif font-medium text-[15px] xs:text-base text-gray-800 truncate">
                     {client.name}
                   </div>
                   <div className="text-xs text-gray-500 truncate">
                     Last: {client.lastService}
                   </div>
-                  <div className="text-[11px] text-gray-400">
+                  <div className="text-[10px] xs:text-[11px] text-gray-400">
                     {client.lastAppointment}
                   </div>
                 </div>

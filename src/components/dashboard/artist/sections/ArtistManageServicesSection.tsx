@@ -16,19 +16,19 @@ const cardGradient =
 
 const ArtistManageServicesSection: React.FC = () => (
   <section
-    className="w-full mt-6"
+    className="w-full mt-4 xs:mt-6"
     aria-label="Manage My Services"
   >
-    <Card className={`${cardGradient} border-0 shadow-md rounded-2xl px-0 md:px-2 py-3 mb-6`}>
-      <CardContent className="py-4 px-2 sm:px-6 flex flex-col gap-2 md:gap-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-          <h2 className="font-playfair text-lg md:text-xl font-semibold text-gray-900 mb-1">
+    <Card className={`${cardGradient} border-0 shadow-md rounded-2xl px-0 md:px-2 py-3 mb-3 xs:mb-6`}>
+      <CardContent className="py-4 px-2 xs:px-3 sm:px-6 flex flex-col gap-2 md:gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 xs:gap-4 mb-3 xs:mb-4">
+          <h2 className="font-playfair text-[1rem] xs:text-lg md:text-xl font-semibold text-gray-900 mb-0.5">
             Manage My Services
           </h2>
           <Button
             variant="outline"
             size="sm"
-            className="border-[#9b87f5] text-[#9b87f5] font-medium rounded-lg hover:bg-[#E5DEFF] transition"
+            className="border-[#9b87f5] text-[#9b87f5] font-medium rounded-lg hover:bg-[#E5DEFF] transition min-h-[38px] min-w-[120px] text-[15px]"
             tabIndex={-1}
             aria-label="Add New Service"
             // Placeholder action
@@ -37,13 +37,14 @@ const ArtistManageServicesSection: React.FC = () => (
             + Add New Service
           </Button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {/* Responsive grid: single col on mobile */}
+        <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-2 xs:gap-3">
           {SERVICES.map(service => (
             <div
               key={service.id}
-              className="relative bg-white/80 rounded-xl border border-purple-50 shadow-sm flex flex-col justify-between transition hover:shadow-md"
+              className="relative bg-white/90 rounded-xl border border-purple-50 shadow-sm flex flex-col justify-between transition hover:shadow-md px-3 py-3 xs:px-4 xs:py-4 min-h-[110px] sm:min-h-[128px]"
             >
-              <div className="p-4 flex flex-col gap-2">
+              <div className="flex flex-col gap-1.5">
                 <div className="flex justify-between items-center">
                   <span className="font-serif text-base font-medium text-gray-700 line-clamp-1">
                     {service.name}
@@ -52,7 +53,7 @@ const ArtistManageServicesSection: React.FC = () => (
                     ${service.price}
                   </span>
                 </div>
-                <div className="flex gap-2 mt-3">
+                <div className="flex gap-2 mt-2 xs:mt-3">
                   <Button
                     variant="ghost"
                     size="icon"
