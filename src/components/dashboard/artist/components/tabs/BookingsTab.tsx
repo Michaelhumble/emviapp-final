@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useArtistBookings } from "@/hooks/artist/useArtistBookings";
@@ -6,23 +5,6 @@ import { Calendar, ListCheck, Plus } from "lucide-react";
 import AddBookingModal from "./AddBookingModal";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
-
-const statusBadge = (status: string) => {
-  switch (status) {
-    case "confirmed":
-      return "bg-blue-100 text-blue-700";
-    case "accepted":
-      return "bg-green-100 text-green-700";
-    case "pending":
-      return "bg-yellow-100 text-yellow-800";
-    case "cancelled":
-      return "bg-gray-100 text-gray-700";
-    case "completed":
-      return "bg-indigo-100 text-indigo-700";
-    default:
-      return "bg-muted text-muted-foreground";
-  }
-};
 
 const BookingsTab = () => {
   const { bookings, loading, error, refresh } = useArtistBookings();

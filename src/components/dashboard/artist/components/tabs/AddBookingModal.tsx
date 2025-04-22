@@ -43,12 +43,9 @@ export default function AddBookingModal({
     if (!canSave || !user?.id) return;
     setSaving(true);
 
-    // Compose date_requested and appointment_time for bookings row
     const d = date!;
     const t = time!;
-    // Date in yyyy-mm-dd format
     const appointment_date = d.toISOString().slice(0, 10);
-    // Appointment_time as "HH:MM:SS"
     const appointment_time = t.toTimeString().slice(0, 8);
 
     await supabase.from("bookings").insert([
