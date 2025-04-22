@@ -34,6 +34,7 @@ import DailyInspiration from "./DailyInspiration";
 import MilestoneBadges from "./MilestoneBadges";
 import SmartSuggestions from "./SmartSuggestions";
 import WeeklyProgressTracker from "./WeeklyProgressTracker";
+import ClientLoveWidget from "./ClientLoveWidget";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -200,6 +201,15 @@ const ArtistDashboard = () => {
         </div>
         <motion.div variants={itemVariants}>
           <ArtistCalendarPreview />
+        </motion.div>
+        <motion.div variants={itemVariants}>
+          {/*
+            Client Love Widget — calm positioning just above the dashboard's bottom section.
+          */}
+          {/*
+            Placing near the bottom, after main sections but before dashboard ends.
+          */}
+          <ClientLoveWidget />
         </motion.div>
       </div>
     </motion.div>
