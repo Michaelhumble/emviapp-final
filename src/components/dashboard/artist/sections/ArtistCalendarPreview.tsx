@@ -1,9 +1,10 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, ExternalLink, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import ComingSoonModal from "@/components/common/ComingSoonModal";
 
 const ArtistCalendarPreview = () => {
   // Mock booking data
@@ -34,8 +35,15 @@ const ArtistCalendarPreview = () => {
     }
   ];
 
+  const [modalOpen, setModalOpen] = useState(false);
+
   return (
     <Card className="border-gray-100 shadow-sm">
+      <ComingSoonModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        featureName="Manage Appointments"
+      />
       <CardHeader className="pb-3 flex flex-row items-center justify-between">
         <CardTitle className="text-lg font-medium text-gray-900 flex items-center">
           <CalendarDays className="h-5 w-5 mr-2 text-blue-500" />
@@ -86,10 +94,8 @@ const ArtistCalendarPreview = () => {
         </div>
         
         <div className="mt-6 flex justify-center">
-          <Button asChild>
-            <Link to="/calendar">
-              Manage Appointments
-            </Link>
+          <Button type="button" onClick={() => setModalOpen(true)}>
+            Manage Appointments
           </Button>
         </div>
       </CardContent>
