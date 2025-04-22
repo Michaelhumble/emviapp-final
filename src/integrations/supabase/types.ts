@@ -392,6 +392,8 @@ export type Database = {
       }
       bookings: {
         Row: {
+          appointment_time: string | null
+          client_name: string | null
           created_at: string | null
           date_requested: string | null
           id: string
@@ -402,10 +404,13 @@ export type Database = {
           reminder_sent_at: string | null
           sender_id: string
           service_id: string | null
+          service_type: string | null
           status: string | null
           time_requested: string | null
         }
         Insert: {
+          appointment_time?: string | null
+          client_name?: string | null
           created_at?: string | null
           date_requested?: string | null
           id?: string
@@ -416,10 +421,13 @@ export type Database = {
           reminder_sent_at?: string | null
           sender_id: string
           service_id?: string | null
+          service_type?: string | null
           status?: string | null
           time_requested?: string | null
         }
         Update: {
+          appointment_time?: string | null
+          client_name?: string | null
           created_at?: string | null
           date_requested?: string | null
           id?: string
@@ -430,6 +438,7 @@ export type Database = {
           reminder_sent_at?: string | null
           sender_id?: string
           service_id?: string | null
+          service_type?: string | null
           status?: string | null
           time_requested?: string | null
         }
