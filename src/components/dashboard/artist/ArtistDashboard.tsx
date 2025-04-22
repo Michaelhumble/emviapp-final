@@ -30,6 +30,7 @@ import ArtistReferralCenter from "./ArtistReferralCenter";
 import ArtistManageServicesSection from "./sections/ArtistManageServicesSection";
 import ArtistClientsPreviewSection from "./sections/ArtistClientsPreviewSection";
 import EarningsSummaryCard from "./sections/EarningsSummaryCard";
+import DailyInspiration from "./DailyInspiration";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -134,6 +135,10 @@ const ArtistDashboard = () => {
             </div>
           </div>
         </Card>
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <DailyInspiration />
       </motion.div>
 
       <div className="space-y-5 sm:space-y-8">
