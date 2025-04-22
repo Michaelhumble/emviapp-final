@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/auth";
@@ -21,6 +20,7 @@ import ArtistPortfolioPreview from "./sections/ArtistPortfolioPreview";
 import ArtistTestimonials from "./sections/ArtistTestimonials";
 import ArtistCalendarPreview from "./sections/ArtistCalendarPreview";
 import ArtistMessagesPreview from "./sections/ArtistMessagesPreview";
+import ArtistPortfolioSection from "./sections/ArtistPortfolioSection";
 
 // Animation variants
 const containerVariants = {
@@ -138,7 +138,12 @@ const ArtistDashboard = () => {
           </div>
         </Card>
       </motion.div>
-      
+
+      {/* Portfolio Section */}
+      <motion.div variants={itemVariants}>
+        <ArtistPortfolioSection />
+      </motion.div>
+
       {/* Metrics Section */}
       <motion.div variants={itemVariants}>
         <ArtistMetrics />
