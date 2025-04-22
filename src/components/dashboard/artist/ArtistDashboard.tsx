@@ -21,8 +21,8 @@ import ArtistTestimonials from "./sections/ArtistTestimonials";
 import ArtistCalendarPreview from "./sections/ArtistCalendarPreview";
 import ArtistMessagesPreview from "./sections/ArtistMessagesPreview";
 import ArtistPortfolioSection from "./sections/ArtistPortfolioSection";
+import ArtistBookingsOverview from "./sections/ArtistBookingsOverview";
 
-// Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: { 
@@ -46,7 +46,6 @@ const itemVariants = {
 const ArtistDashboard = () => {
   const { userProfile } = useAuth();
   
-  // Extract profile information
   const profileName = userProfile?.full_name || "Artist Name";
   const firstName = profileName.split(" ")[0];
   const specialty = userProfile?.specialty || "Nail Artist";
@@ -54,7 +53,6 @@ const ArtistDashboard = () => {
   const instagramHandle = userProfile?.instagram;
   const website = userProfile?.website;
   
-  // Use a premium cover image
   const coverImage = "/images/dashboard-cover.jpg";
   
   return (
@@ -64,7 +62,6 @@ const ArtistDashboard = () => {
       initial="hidden"
       animate="visible"
     >
-      {/* Header Section */}
       <motion.div variants={itemVariants}>
         <Card className="overflow-hidden border-0 shadow-sm">
           <div className="h-32 md:h-40 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 relative">
@@ -139,22 +136,22 @@ const ArtistDashboard = () => {
         </Card>
       </motion.div>
 
-      {/* Portfolio Section */}
       <motion.div variants={itemVariants}>
         <ArtistPortfolioSection />
       </motion.div>
 
-      {/* Metrics Section */}
+      <motion.div variants={itemVariants}>
+        <ArtistBookingsOverview />
+      </motion.div>
+
       <motion.div variants={itemVariants}>
         <ArtistMetrics />
       </motion.div>
       
-      {/* Portfolio Preview */}
       <motion.div variants={itemVariants}>
         <ArtistPortfolioPreview />
       </motion.div>
       
-      {/* Two Column Layout for Testimonials and Messages */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <motion.div variants={itemVariants}>
           <ArtistTestimonials />
@@ -165,7 +162,6 @@ const ArtistDashboard = () => {
         </motion.div>
       </div>
       
-      {/* Calendar Preview */}
       <motion.div variants={itemVariants}>
         <ArtistCalendarPreview />
       </motion.div>
