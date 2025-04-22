@@ -10,8 +10,9 @@ export interface BlockedTime {
   artist_id: string;
   start_time: string;
   end_time: string;
-  reason?: string | null;
+  notes?: string | null;
   created_at: string;
+  updated_at: string;
 }
 
 export const useBlockedTimes = (startDate: Date, endDate: Date) => {
@@ -44,18 +45,20 @@ export const useBlockedTimes = (startDate: Date, endDate: Date) => {
     mutationFn: async (blockedTimeData: Partial<BlockedTime>) => {
       if (!user?.id) throw new Error('User not authenticated');
       
-      // Ensure artist_id is set to current user
       const dataToSave = {
         ...blockedTimeData,
-        artist_id: user.id
+        artist_id: user.id,
+        updated_at: new Date().toISOString()
       };
       
-      // Ensure start_time and end_time are present
-      if (!dataToSave.start_time || !dataToSave.end_time) {
-        throw new Error("Start time and end time are required");
+      if (!blockedTimeData.id) {
+        dataToSave.created_at = new Date().toISOString();
       }
       
-      // Create a guaranteed valid object with non-optional required fields
+      if (!dataToSave.start_time || !dataToSave.end_time) {
+        throw new Error('Start time and end time are required');
+      }
+      
       const finalData = {
         ...dataToSave,
         start_time: dataToSave.start_time,
@@ -76,7 +79,7 @@ export const useBlockedTimes = (startDate: Date, endDate: Date) => {
       toast.success('Time block saved successfully');
     },
     onError: (error: any) => {
-      console.error('Error saving blocked time:', error);
+      console.error('Error saving time block:', error);
       toast.error(`Error saving time block: ${error.message}`);
     }
   });
@@ -89,7 +92,7 @@ export const useBlockedTimes = (startDate: Date, endDate: Date) => {
         .from('blocked_times')
         .delete()
         .eq('id', id)
-        .eq('artist_id', user.id); // Ensure only owner can delete
+        .eq('artist_id', user.id);
       
       if (error) throw error;
       return id;
@@ -99,7 +102,7 @@ export const useBlockedTimes = (startDate: Date, endDate: Date) => {
       toast.success('Time block deleted successfully');
     },
     onError: (error: any) => {
-      console.error('Error deleting blocked time:', error);
+      console.error('Error deleting time block:', error);
       toast.error(`Error deleting time block: ${error.message}`);
     }
   });

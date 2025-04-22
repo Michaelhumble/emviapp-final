@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays } from "lucide-react";
 import { useArtistBookings } from "../hooks/useArtistBookings";
-import { Booking } from "../types/ArtistDashboardTypes";
+import { Booking } from "../hooks/useArtistBookings";
 import { AppointmentCard } from "./AppointmentCard";
 import { EmptyAppointments } from "./EmptyAppointments";
 

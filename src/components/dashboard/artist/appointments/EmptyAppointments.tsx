@@ -1,17 +1,16 @@
 
-import { CalendarDays } from "lucide-react";
+import { CalendarClock } from "lucide-react";
 
 export const EmptyAppointments = () => {
   return (
-    <div className="text-center py-8 px-4">
-      <div className="mb-4 flex justify-center">
-        <CalendarDays className="h-12 w-12 text-gray-400" />
+    <div className="py-8 text-center">
+      <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-purple-50">
+        <CalendarClock className="h-8 w-8 text-purple-500" />
       </div>
-      <h3 className="text-lg font-medium mb-2">
-        No appointments yet
-      </h3>
-      <p className="text-muted-foreground max-w-md mx-auto">
-        Your next client is just around the corner! Keep sharing your profile to get booked.
+      <h3 className="text-lg font-medium mb-2">No appointments yet</h3>
+      <p className="text-gray-500 max-w-md mx-auto">
+        No appointments yet — but your next client is just around the corner! 
+        Keep sharing your profile to get booked.
       </p>
     </div>
   );

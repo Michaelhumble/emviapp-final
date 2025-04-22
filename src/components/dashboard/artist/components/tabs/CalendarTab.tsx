@@ -17,7 +17,7 @@ const statusColors = {
   cancelled: "bg-gray-100 text-gray-800 border-gray-200"
 };
 
-export default function CalendarTab() {
+const CalendarTab = () => {
   const { 
     currentDate,
     weekDays,
@@ -29,7 +29,7 @@ export default function CalendarTab() {
     goToToday
   } = useArtistCalendar();
   
-  const [activeDay, setActiveDay] = useState<Date | null>(null);
+  const [activeDay, setActiveDay] = useState<Date | null>(new Date());
 
   // Get appointments for a specific day
   const getAppointmentsForDay = (date: Date) => {
@@ -218,6 +218,7 @@ export default function CalendarTab() {
               <div className="text-center py-8 border rounded-md bg-muted/30">
                 <Calendar className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
                 <p className="text-muted-foreground">No appointments for this day</p>
+                <p className="text-sm text-muted-foreground mt-1">Your next client is just around the corner!</p>
               </div>
             )}
           </div>
@@ -225,4 +226,6 @@ export default function CalendarTab() {
       </div>
     </div>
   );
-}
+};
+
+export default CalendarTab;
