@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +32,7 @@ const EditPortfolioItemModal: React.FC<EditPortfolioItemModalProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Reset fields when opening a new item
-  React.useEffect(() => {
+  useEffect(() => {
     if (item) {
       setTitle(item.title);
       setImagePreview(item.image);

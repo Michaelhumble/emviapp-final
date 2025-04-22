@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { motion } from 'framer-motion';
@@ -10,11 +11,10 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Image as ImageIcon, Move, Trash2 } from 'lucide-react';
+import { Plus, Image as ImageIcon, Move, Trash2, Pencil } from 'lucide-react';
 import { useArtistPortfolio } from '@/hooks/useArtistPortfolio';
 import PortfolioUploader from './PortfolioUploader';
 import EditPortfolioItemModal from "./EditPortfolioItemModal";
-import { Pencil } from "lucide-react";
 
 // Replace the entire component - now with full local/mock data handling and modal logic.
 const initialPortfolioItems = [
@@ -63,6 +63,7 @@ const ArtistPortfolioManager = () => {
 
   // Modal open state
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { toast } = useToast();
 
   // Drag-and-drop reorder using react-beautiful-dnd
   const onDragEnd = (result: any) => {
@@ -71,6 +72,10 @@ const ArtistPortfolioManager = () => {
     const [removed] = newPortfolio.splice(result.source.index, 1);
     newPortfolio.splice(result.destination.index, 0, removed);
     setPortfolio(newPortfolio);
+    toast({
+      title: "Portfolio reordered",
+      description: "Your portfolio order has been updated.",
+    });
   };
 
   // Handle save changes
@@ -81,19 +86,27 @@ const ArtistPortfolioManager = () => {
           ? {
               ...item,
               title: newTitle,
-              image:
-                newImage
-                  ? URL.createObjectURL(newImage)
-                  : item.image
+              image: newImage
+                ? URL.createObjectURL(newImage)
+                : item.image
             }
           : item
       )
     );
+    toast({
+      title: "Portfolio updated",
+      description: "Your portfolio item has been updated successfully.",
+    });
   };
 
   // Handle delete
   const handleDelete = (id: number) => {
     setPortfolio((prev) => prev.filter((item) => item.id !== id));
+    toast({
+      title: "Portfolio item deleted",
+      description: "Your portfolio item has been removed.",
+      variant: "destructive"
+    });
   };
 
   // Open modal for editing
@@ -139,7 +152,7 @@ const ArtistPortfolioManager = () => {
                       <div
                         ref={provided.innerRef}
                         {...provided.draggableProps}
-                        className={`relative aspect-square rounded-lg overflow-hidden border transition-all duration-200 bg-white shadow-sm
+                        className={`relative aspect-square rounded-lg overflow-hidden border transition-all duration-200 bg-white shadow-sm group
                           ${snapshot.isDragging ? "shadow-lg ring-2 ring-purple-400" : ""}`}
                       >
                         <img
@@ -149,7 +162,7 @@ const ArtistPortfolioManager = () => {
                         />
                         {/* Edit Button (pencil) */}
                         <button
-                          className="absolute top-2 right-2 z-10 bg-white/90 hover:bg-white transition p-1.5 rounded-full shadow group"
+                          className="absolute top-2 right-2 z-10 bg-white/90 hover:bg-white transition p-1.5 rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity"
                           onClick={() => handleEdit(item)}
                           type="button"
                           aria-label="Edit"
