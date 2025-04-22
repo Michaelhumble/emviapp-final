@@ -57,11 +57,12 @@ export const useArtistBookings = () => {
           id: booking.id,
           sender_id: booking.sender_id,
           recipient_id: booking.recipient_id,
-          client_name: booking.client_name || 'Client', // Ensure client_name is always set
-          service_name: booking.service_name || 'Service', // Ensure service_name is always set
+          client_name: booking.client_name || 'Client', // Use client_name if available or default to 'Client'
+          service_name: booking.service_name || 'Service', // Use service_name if available or default to 'Service'
           date_requested: booking.date_requested,
           time_requested: booking.time_requested,
-          status: booking.status,
+          // Ensure status is one of the expected values
+          status: validateStatus(booking.status),
           created_at: booking.created_at,
           note: booking.note // Include the note field
         }));
@@ -94,6 +95,14 @@ export const useArtistBookings = () => {
     
     fetchBookings();
   }, [user?.id]);
+  
+  // Helper function to validate status is one of the expected values
+  const validateStatus = (status: string): Booking['status'] => {
+    const validStatuses: Booking['status'][] = ['pending', 'accepted', 'declined', 'completed', 'cancelled'];
+    return validStatuses.includes(status as Booking['status']) 
+      ? (status as Booking['status']) 
+      : 'pending'; // Default to pending if invalid status
+  };
   
   const handleAccept = async (bookingId: string) => {
     try {
