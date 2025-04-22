@@ -24,11 +24,6 @@ export interface BookingCounts {
   cancelled?: number;
 }
 
-export interface BookingWithDetails extends Booking {
-  price?: number;
-  appointment_time?: string;
-}
-
 export interface ServiceType {
   id: string;
   label: string;

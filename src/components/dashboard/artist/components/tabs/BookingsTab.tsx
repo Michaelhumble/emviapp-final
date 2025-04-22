@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useArtistBookings } from "@/components/dashboard/artist/hooks/useArtistBookings";
+import { useArtistBookings } from "@/hooks/artist/hooks/useArtistBookings";
 import BookingsTable from "../../bookings/BookingsTable";
 import { Calendar } from "lucide-react";
 
