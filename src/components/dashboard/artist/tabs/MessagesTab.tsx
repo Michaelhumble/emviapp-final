@@ -4,7 +4,7 @@ import { MessageSquare } from "lucide-react";
 import { MessageCenter } from "@/components/chat/MessageCenter";
 import { useTestRecipient } from "@/hooks/chat/useTestRecipient";
 import FallbackBoundary from "@/components/error-handling/FallbackBoundary";
-import LoadingState from "./LoadingState";
+import LoadingState from "../components/tabs/LoadingState";
 
 const MessagesTab = () => {
   const { testRecipient, loading, error } = useTestRecipient();
