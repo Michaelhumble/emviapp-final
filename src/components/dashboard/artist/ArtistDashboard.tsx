@@ -22,6 +22,7 @@ import ArtistCalendarPreview from "./sections/ArtistCalendarPreview";
 import ArtistMessagesPreview from "./sections/ArtistMessagesPreview";
 import ArtistPortfolioSection from "./sections/ArtistPortfolioSection";
 import ArtistBookingsOverview from "./sections/ArtistBookingsOverview";
+import ArtistDailyMotivation from "./ArtistDailyMotivation";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -142,6 +143,10 @@ const ArtistDashboard = () => {
 
       <motion.div variants={itemVariants}>
         <ArtistBookingsOverview />
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <ArtistDailyMotivation />
       </motion.div>
 
       <motion.div variants={itemVariants}>
