@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useArtistData } from './context/ArtistDataContext';
@@ -73,8 +72,6 @@ const ArtistDashboardContent = () => {
   }
   
   const handleUpgrade = () => {
-    // To simulate redirect after payment, append "?premium_success=1" to the dashboard route
-    // In Stripe, you would set the success_url to /dashboard/artist?premium_success=1
     window.location.href = PREMIUM_CHECKOUT_LINK;
   };
 
@@ -108,10 +105,8 @@ const ArtistDashboardContent = () => {
         <ArtistMetrics />
       </motion.div>
       
-      <motion.div variants={itemVariants}>
-        <ArtistPortfolioPreview />
-      </motion.div>
-      
+      <div className="h-2 md:h-4" />
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <motion.div variants={itemVariants}>
           <ArtistActivityFeed />
