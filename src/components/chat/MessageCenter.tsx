@@ -83,5 +83,3 @@ export const MessageCenter = ({ recipientId }: MessageCenterProps) => {
     </div>
   );
 };
-
-export default MessageCenter;
