@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/auth";
@@ -14,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { toast } from "sonner";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
 import ArtistMetrics from "./sections/ArtistMetrics";
 import ArtistPortfolioPreview from "./sections/ArtistPortfolioPreview";
@@ -22,7 +24,7 @@ import ArtistCalendarPreview from "./sections/ArtistCalendarPreview";
 import ArtistMessagesPreview from "./sections/ArtistMessagesPreview";
 import ArtistPortfolioSection from "./sections/ArtistPortfolioSection";
 import ArtistBookingsOverview from "./sections/ArtistBookingsOverview";
-import ArtistDailyMotivation from "./ArtistDailyMotivation";
+import ArtistDailyMotivation from "./sections/ArtistDailyMotivation";
 import ArtistQuickStats from "./sections/ArtistQuickStats";
 import ArtistGrowYourBusinessCard from "./sections/ArtistGrowYourBusinessCard";
 import YourNextGoalCard from "./sections/YourNextGoalCard";
@@ -67,6 +69,13 @@ const ArtistDashboard = () => {
   const website = userProfile?.website;
   
   const coverImage = "/images/dashboard-cover.jpg";
+  
+  const handleFeatureComingSoon = (featureName) => {
+    toast.info(`${featureName} feature coming soon!`, {
+      description: "We're working hard to bring you this functionality.",
+      duration: 3000,
+    });
+  };
   
   return (
     <motion.div
@@ -115,6 +124,12 @@ const ArtistDashboard = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center hover:text-purple-600 transition-colors"
+                      onClick={(e) => {
+                        if (!instagramHandle.startsWith('http')) {
+                          e.preventDefault();
+                          handleFeatureComingSoon("Instagram integration");
+                        }
+                      }}
                     >
                       <Instagram className="h-4 w-4 mr-1.5 text-gray-400" />
                       @{instagramHandle}
@@ -126,6 +141,12 @@ const ArtistDashboard = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center hover:text-purple-600 transition-colors"
+                      onClick={(e) => {
+                        if (!website.startsWith('http')) {
+                          e.preventDefault();
+                          handleFeatureComingSoon("Website linking");
+                        }
+                      }}
                     >
                       <Globe className="h-4 w-4 mr-1.5 text-gray-400" />
                       Website
@@ -203,12 +224,6 @@ const ArtistDashboard = () => {
           <ArtistCalendarPreview />
         </motion.div>
         <motion.div variants={itemVariants}>
-          {/*
-            Client Love Widget — calm positioning just above the dashboard's bottom section.
-          */}
-          {/*
-            Placing near the bottom, after main sections but before dashboard ends.
-          */}
           <ClientLoveWidget />
         </motion.div>
       </div>

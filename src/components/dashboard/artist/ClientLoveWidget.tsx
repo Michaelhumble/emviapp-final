@@ -23,7 +23,7 @@ const testimonials = [
     id: "3",
     text: "The attention to detail is unmatched. Always a joy.",
     clientFirstName: "Jade",
-    avatar: "https://images.unsplash.com/photo-1501286353178-1ec881214838?auto=format&w=64&q=80"
+    avatar: "https://images.unsplash.com/photo-1501286353178-1ec871214838?auto=format&w=64&q=80"
   },
 ];
 

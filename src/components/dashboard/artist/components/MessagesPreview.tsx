@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 // Mock messages data
 const messages = [
@@ -34,6 +35,13 @@ const messages = [
 ];
 
 const MessagesPreview = () => {
+  const handleMessageClick = (messageId) => {
+    toast.info("Message feature coming soon", { 
+      description: "Full messaging functionality is under development.",
+      duration: 3000
+    });
+  };
+
   return (
     <Card className="border-0 shadow-sm">
       <CardHeader className="pb-2">
@@ -52,9 +60,10 @@ const MessagesPreview = () => {
               initial={{ y: 10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.2 }}
-              className={`p-3 rounded-lg flex items-start space-x-3 ${
+              className={`p-3 rounded-lg flex items-start space-x-3 cursor-pointer hover:opacity-90 transition-opacity ${
                 message.unread ? "bg-purple-50 border border-purple-100" : "bg-gray-50 border border-gray-100"
               }`}
+              onClick={() => handleMessageClick(message.id)}
             >
               <img
                 src={message.avatar}
@@ -74,12 +83,15 @@ const MessagesPreview = () => {
           <Button 
             variant="outline" 
             className="w-full mt-4" 
-            asChild
+            onClick={() => {
+              toast.info("Messages feature coming soon", {
+                description: "Complete messaging system is in development.",
+                duration: 3000
+              });
+            }}
           >
-            <Link to="/messages">
-              <MessageSquare className="h-4 w-4 mr-2" />
-              View All Messages
-            </Link>
+            <MessageSquare className="h-4 w-4 mr-2" />
+            View All Messages
           </Button>
         </motion.div>
       </CardContent>
