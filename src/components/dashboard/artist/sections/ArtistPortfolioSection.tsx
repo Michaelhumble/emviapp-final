@@ -1,49 +1,11 @@
 
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Image } from "lucide-react";
-import PortfolioUploadModal, { UploadedWork } from "../PortfolioUploadModal";
+import { Plus, Image as ImageIcon } from "lucide-react";
+import PortfolioUploadModal from "../portfolio/PortfolioUploadModal";
 import { motion, AnimatePresence } from "framer-motion";
-
-const initialPortfolio = [
-  {
-    id: "1",
-    image: "/lovable-uploads/67947adb-5754-4569-aa1c-228d8f9db461.png",
-    caption: "Nail Art",
-    previewMode: false
-  },
-  {
-    id: "2",
-    image: "/lovable-uploads/70c8662a-4525-4854-a529-62616b5b6c81.png",
-    caption: "Signature Design",
-    previewMode: false
-  },
-  {
-    id: "3",
-    image: "/lovable-uploads/81e6d95d-e09b-45f0-a4bc-96358592e462.png",
-    caption: "Custom Look",
-    previewMode: false
-  },
-  {
-    id: "4",
-    image: "/lovable-uploads/7d585be5-b70d-4d65-b57f-803de81839ba.png",
-    caption: "Minimalist",
-    previewMode: false
-  },
-  {
-    id: "5",
-    image: "/lovable-uploads/a3c08446-c1cb-492d-a361-7ec4aca18cfd.png",
-    caption: "Editorial",
-    previewMode: false
-  },
-  {
-    id: "6",
-    image: "/lovable-uploads/c9e52825-c7f4-4923-aecf-a92a8799530b.png",
-    caption: "Classic",
-    previewMode: false
-  }
-];
+import { useArtistPortfolio } from "@/hooks/useArtistPortfolio";
 
 const itemVariants = {
   hidden: { opacity: 0, scale: 0.94, y: 18 },
@@ -57,19 +19,12 @@ const itemVariants = {
 
 const ArtistPortfolioSection = () => {
   const [uploadOpen, setUploadOpen] = useState(false);
-  const [portfolio, setPortfolio] = useState(initialPortfolio);
-
-  function handleMockUpload(item: UploadedWork) {
-    setPortfolio(prev => [
-      {
-        id: (Date.now() + Math.random()).toString(),
-        image: item.imageUrl,
-        caption: item.title,
-        previewMode: item.previewMode,
-      },
-      ...prev,
-    ]);
-  }
+  const {
+    portfolio,
+    isLoading,
+    addPortfolioItem,
+    uploading
+  } = useArtistPortfolio();
 
   return (
     <section className="max-w-4xl mx-auto w-full px-2 xs:px-0 mt-6 sm:mt-10">
@@ -79,7 +34,12 @@ const ArtistPortfolioSection = () => {
         exit={{ opacity: 0, y: 12 }}
         transition={{ duration: 0.22, ease: "easeOut" }}
       >
-        <PortfolioUploadModal open={uploadOpen} onOpenChange={setUploadOpen} onUploadMock={handleMockUpload} />
+        <PortfolioUploadModal
+          open={uploadOpen}
+          onClose={() => setUploadOpen(false)}
+          onUpload={addPortfolioItem}
+          loading={uploading}
+        />
       </motion.div>
       <motion.div
         initial={{ opacity: 0, y: 18 }}
@@ -91,24 +51,28 @@ const ArtistPortfolioSection = () => {
           whileHover={{ scale: 1.025 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
         >
-          <CardHeader className="pb-2 bg-gradient-to-r from-[#F1F0FB] via-white to-[#E5DEFF] rounded-t-lg">
-            <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-2">
-              <CardTitle className="text-xl xs:text-2xl font-playfair font-semibold text-[#1A1F2C]">
-                My Portfolio
-              </CardTitle>
-              <Button
-                className="glassmorphism text-emvi-accent font-medium shadow-md px-3 xs:px-4 py-2 flex items-center gap-2 backdrop-blur-sm mt-2 xs:mt-0"
-                aria-label="Add New Work"
-                type="button"
-                onClick={() => setUploadOpen(true)}
-              >
-                <Plus className="h-4 w-4 xs:h-5 xs:w-5 mr-1" />
-                <span className="text-sm xs:text-base">Add New Work</span>
-              </Button>
-            </div>
+          <CardHeader className="pb-2 bg-gradient-to-r from-[#F1F0FB] via-white to-[#E5DEFF] rounded-t-lg flex flex-col xs:flex-row xs:items-center xs:justify-between gap-2">
+            <CardTitle className="text-xl xs:text-2xl font-playfair font-semibold text-[#1A1F2C]">
+              My Portfolio
+            </CardTitle>
+            <Button
+              className="glassmorphism text-emvi-accent font-medium shadow-md px-3 xs:px-4 py-2 flex items-center gap-2 backdrop-blur-sm mt-2 xs:mt-0"
+              aria-label="Add New Work"
+              type="button"
+              onClick={() => setUploadOpen(true)}
+            >
+              <Plus className="h-4 w-4 xs:h-5 xs:w-5 mr-1" />
+              <span className="text-sm xs:text-base">Add New Work</span>
+            </Button>
           </CardHeader>
           <CardContent className="pt-4 xs:pt-5 pb-6 xs:pb-7 px-3 xs:px-6">
-            {portfolio.length === 0 ? (
+            {isLoading ? (
+              <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-4 xs:gap-6">
+                {[1,2,3,4,5,6].map((i) => (
+                  <div key={i} className="aspect-square rounded-xl bg-gray-100 animate-pulse" />
+                ))}
+              </div>
+            ) : portfolio.length === 0 ? (
               <motion.div
                 initial={{ opacity: 0, scale: 0.97 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -116,9 +80,9 @@ const ArtistPortfolioSection = () => {
               >
                 <div className="text-center py-12 xs:py-16">
                   <div className="mx-auto w-14 h-14 xs:w-16 xs:h-16 flex items-center justify-center bg-purple-50 rounded-full mb-4">
-                    <Image className="h-7 w-7 xs:h-8 xs:w-8 text-purple-200" />
+                    <ImageIcon className="h-7 w-7 xs:h-8 xs:w-8 text-purple-200" />
                   </div>
-                  <p className="text-base xs:text-lg font-playfair text-gray-400 mb-2">No portfolio items yet.</p>
+                  <p className="text-base xs:text-lg font-playfair text-gray-400 mb-2">Your portfolio is empty. Start showcasing your best work!</p>
                   <Button
                     className="glassmorphism text-emvi-accent font-medium px-4 xs:px-6 py-2 mt-4 backdrop-blur-sm"
                     aria-label="Add New Work"
@@ -147,18 +111,13 @@ const ArtistPortfolioSection = () => {
                     >
                       <div className="aspect-square w-full overflow-hidden flex items-center justify-center relative">
                         <img
-                          src={item.image}
-                          alt={item.caption}
+                          src={item.image_url}
+                          alt={item.title}
                           className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105 group-hover:shadow-xl"
                         />
-                        {item.previewMode && (
-                          <span className="absolute top-2 right-2 z-20 bg-black/40 text-white text-[10px] xs:text-[11px] px-2 py-0.5 xs:px-2.5 xs:py-1 rounded-full font-semibold font-serif shadow">
-                            Preview Mode
-                          </span>
-                        )}
                       </div>
                       <span className="absolute top-2 xs:top-3 left-2 xs:left-3 bg-white/80 text-[#7E69AB] font-semibold text-[10px] xs:text-xs px-2 xs:px-3 py-1 xs:py-1.5 rounded-full shadow-sm backdrop-blur-sm font-playfair z-10">
-                        {item.caption}
+                        {item.title}
                       </span>
                     </motion.div>
                   ))}
