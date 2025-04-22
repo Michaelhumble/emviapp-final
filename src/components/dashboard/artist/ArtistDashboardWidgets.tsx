@@ -1,12 +1,12 @@
+
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart3, DollarSign } from "lucide-react";
 import FallbackBoundary from "@/components/error-handling/FallbackBoundary";
-import StatsGrid from "./components/StatsGrid";
-import MainGrid from "./components/MainGrid";
-import EarningsSection from "./components/EarningsSection";
+import OverviewTab from "./components/tabs/OverviewTab";
+import EarningsTabContent from "./components/tabs/EarningsTabContent";
+import QuickActions from "./components/QuickActions";
 import { useArtistDashboardData } from "./hooks/useArtistDashboardData";
-import AnalyticsWidget from "./components/AnalyticsWidget";
 
 const ArtistDashboardWidgets = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -22,6 +22,11 @@ const ArtistDashboardWidgets = () => {
 
   return (
     <FallbackBoundary>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-serif font-medium">Dashboard</h2>
+        <QuickActions />
+      </div>
+
       <Tabs defaultValue="overview" className="space-y-4" onValueChange={setActiveTab}>
         <TabsList className="flex-wrap">
           <TabsTrigger value="overview" className="flex items-center">
@@ -35,21 +40,17 @@ const ArtistDashboardWidgets = () => {
         </TabsList>
         
         <TabsContent value="overview" className="space-y-4">
-          <StatsGrid stats={stats} isLoading={isLoadingStats} />
-          <MainGrid 
+          <OverviewTab 
+            stats={stats}
+            isLoadingStats={isLoadingStats}
             bookings={recentBookings}
             isLoadingBookings={isLoadingBookings}
-            stats={stats}
           />
         </TabsContent>
         
-        <TabsContent value="earnings" className="space-y-4">
+        <TabsContent value="earnings">
           <FallbackBoundary>
-            <AnalyticsWidget stats={stats} isLoading={isLoadingStats} />
-            <EarningsSection 
-              earningsData={earningsData}
-              isLoading={isLoadingEarnings}
-            />
+            <EarningsTabContent />
           </FallbackBoundary>
         </TabsContent>
       </Tabs>
