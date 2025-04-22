@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,6 @@ const ArtistHero: React.FC = () => {
   const { artistProfile } = useArtistData() || {};
   const { userProfile } = useAuth();
   
-  // Use data from context or fallback to userProfile
   const profile = artistProfile || userProfile || {};
   
   const {
@@ -23,7 +21,6 @@ const ArtistHero: React.FC = () => {
     website,
   } = profile;
 
-  // Helper for Initials fallback
   const getInitials = (name?: string) =>
     name
       ? name
@@ -33,7 +30,6 @@ const ArtistHero: React.FC = () => {
           .toUpperCase()
       : "A";
 
-  // Format Instagram handle
   const formattedInstagram = instagram ? 
     (instagram.startsWith('@') ? instagram : `@${instagram}`) : 
     '@https://instagram.com/humbleinsider';
@@ -41,9 +37,7 @@ const ArtistHero: React.FC = () => {
   return (
     <section className="w-full mb-8">
       <div className="relative rounded-xl overflow-hidden shadow-sm">
-        {/* Purple gradient background */}
         <div className="h-48 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 relative flex items-center justify-center">
-          {/* Edit profile button */}
           <Button 
             asChild
             variant="secondary"
@@ -55,7 +49,6 @@ const ArtistHero: React.FC = () => {
             </Link>
           </Button>
 
-          {/* Centered Name */}
           <h1
             className="
               font-playfair font-bold antialiased
@@ -73,10 +66,8 @@ const ArtistHero: React.FC = () => {
           </h1>
         </div>
         
-        {/* Content with avatar */}
         <div className="px-6 pb-6 bg-white">
           <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center -mt-14">
-            {/* Avatar */}
             <Avatar className="w-28 h-28 border-4 border-white shadow-md">
               <AvatarImage 
                 src={avatar_url} 
@@ -88,12 +79,9 @@ const ArtistHero: React.FC = () => {
               </AvatarFallback>
             </Avatar>
             
-            {/* Profile info */}
             <div className="pt-2 sm:pt-0">
-              {/* Name moved to gradient header, nothing here */}
               <p className="text-lg text-gray-600 mt-1">{specialty}</p>
               
-              {/* Social links */}
               <div className="flex flex-wrap items-center gap-4 mt-3">
                 <a 
                   href={`https://instagram.com/${formattedInstagram.replace('@', '')}`}
@@ -118,7 +106,6 @@ const ArtistHero: React.FC = () => {
                 )}
               </div>
               
-              {/* Bio */}
               <p className="text-gray-600 font-serif italic text-sm mt-2">
                 {bio}
               </p>
@@ -131,4 +118,3 @@ const ArtistHero: React.FC = () => {
 };
 
 export default ArtistHero;
-
