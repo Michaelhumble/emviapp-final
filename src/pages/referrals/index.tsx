@@ -17,11 +17,11 @@ const ReferralsPage = () => {
   const { 
     referralStats, 
     referralProgress, 
-    referrals, 
+    referrals = [], // Provide a default empty array
     loading 
   } = useReferralSystem();
 
-  // Sample referrals data for demo purposes
+  // Sample referrals data for demo purposes if referrals is empty
   const sampleReferrals: Referral[] = [
     { 
       id: "1", 
@@ -54,6 +54,8 @@ const ReferralsPage = () => {
       completedAt: "2023-11-22"
     }
   ];
+  
+  const displayReferrals = referrals && referrals.length > 0 ? referrals : sampleReferrals;
   
   useEffect(() => {
     document.title = "Referral Program | EmviApp";
@@ -156,7 +158,7 @@ const ReferralsPage = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ReferralList referrals={referrals as Referral[] || sampleReferrals} />
+                    <ReferralList referrals={displayReferrals} />
                   </CardContent>
                 </Card>
               </div>

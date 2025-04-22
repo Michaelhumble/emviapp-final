@@ -8,7 +8,14 @@ import { useReferralSystem } from "@/hooks/useReferralSystem";
 import { motion } from "framer-motion";
 
 export const ReferralCard = () => {
-  const { referralStats, referralLink, nextMilestone, copyReferralLink, loading } = useReferralSystem();
+  const { 
+    referralStats, 
+    referralLink, 
+    referralProgress, 
+    copyReferralLink, 
+    loading 
+  } = useReferralSystem();
+  
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -18,8 +25,8 @@ export const ReferralCard = () => {
   };
 
   // Calculate progress to next milestone
-  const progress = nextMilestone 
-    ? (referralStats.completedReferrals / nextMilestone) * 100
+  const progress = referralProgress?.nextMilestone 
+    ? (referralStats.completedReferrals / referralProgress.nextMilestone) * 100
     : 100;
 
   if (loading) {
@@ -52,15 +59,15 @@ export const ReferralCard = () => {
         </div>
 
         {/* Progress Section */}
-        {nextMilestone && (
+        {referralProgress?.nextMilestone && (
           <div>
             <div className="flex justify-between text-sm mb-2">
               <span>Progress to next milestone</span>
-              <span>{referralStats.completedReferrals}/{nextMilestone}</span>
+              <span>{referralStats.completedReferrals}/{referralProgress.nextMilestone}</span>
             </div>
             <Progress value={progress} className="h-2" />
             <p className="text-sm text-muted-foreground mt-2">
-              {nextMilestone - referralStats.completedReferrals} more referrals until your next reward!
+              {referralProgress.nextMilestoneIn} more referrals until your next reward!
             </p>
           </div>
         )}

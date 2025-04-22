@@ -11,7 +11,7 @@ export const useReferralSystem = () => {
   const { user, userProfile } = useAuth();
   const { referralStats, loading: statsLoading } = useReferralStats();
   const referralProgress = useReferralProgress(referralStats);
-  const { referralCode, referralLink, loading: dataLoading } = useReferralData();
+  const { referralCode, referralLink, referrals, loading: dataLoading } = useReferralData();
   const { copyReferralLink, getMotivationalMessage } = useReferralUtils();
   const [copied, setCopied] = useState(false);
   
@@ -36,9 +36,12 @@ export const useReferralSystem = () => {
     referralProgress,
     referralCode,
     referralLink,
+    referrals,
     loading,
     copied,
     copyReferralLink: handleCopyReferralLink,
-    getMotivationalMessage
+    getMotivationalMessage,
+    // Adding the nextMilestone property directly from referralProgress
+    nextMilestone: referralProgress?.nextMilestone || 0
   };
 };
