@@ -1,13 +1,17 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Users, Star } from "lucide-react";
 import { useArtistData } from '../context/ArtistDataContext';
+import { motion } from "framer-motion";
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" } }
+};
 
 const ArtistMetrics = () => {
   const { bookingCount, reviewCount, averageRating } = useArtistData();
   
-  // Define metrics with icons and values
   const metrics = [
     {
       title: "Total Bookings",
@@ -33,34 +37,45 @@ const ArtistMetrics = () => {
   ];
 
   return (
-    <Card className="border-0 shadow-sm">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-medium text-gray-900">
-          Performance Overview
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {metrics.map((metric, index) => (
-            <div 
-              key={metric.title} 
-              className={`${metric.color} rounded-lg p-4 border transition-all duration-200 hover:shadow-md`}
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <p className="text-sm text-gray-600">{metric.title}</p>
-                  <h3 className="text-2xl font-semibold mt-1">{metric.value}</h3>
-                  <p className="text-xs text-gray-500 mt-1">{metric.change}</p>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.55, ease: "easeOut" }}
+    >
+      <Card className="border-0 shadow-sm">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg font-medium text-gray-900">
+            Performance Overview
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {metrics.map((metric, index) => (
+              <motion.div 
+                key={metric.title}
+                variants={itemVariants}
+                initial="hidden"
+                animate="visible"
+                whileHover={{ scale: 1.045 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className={`${metric.color} rounded-lg p-4 border transition-all`}
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-sm text-gray-600">{metric.title}</p>
+                    <h3 className="text-2xl font-semibold mt-1">{metric.value}</h3>
+                    <p className="text-xs text-gray-500 mt-1">{metric.change}</p>
+                  </div>
+                  <div className="p-2 rounded-full bg-white/80">
+                    {metric.icon}
+                  </div>
                 </div>
-                <div className="p-2 rounded-full bg-white/80">
-                  {metric.icon}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+              </motion.div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
 

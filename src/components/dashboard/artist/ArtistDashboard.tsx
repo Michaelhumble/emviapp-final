@@ -84,8 +84,13 @@ const ArtistDashboard = () => {
       initial="hidden"
       animate="visible"
     >
-      <motion.div variants={itemVariants}>
-        <Card className="overflow-hidden border-0 shadow-sm">
+      <motion.div variants={itemVariants} initial="hidden" animate="visible">
+        <Card className="overflow-hidden border-0 shadow-sm"
+          as={motion.div}
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
           <div className="h-28 xs:h-32 md:h-40 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 relative">
             <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-10 mix-blend-overlay"></div>
             <Button 
@@ -162,76 +167,94 @@ const ArtistDashboard = () => {
         </Card>
       </motion.div>
 
-      <motion.div variants={itemVariants}>
-        <DailyInspiration />
+      <motion.div variants={itemVariants} initial="hidden" animate="visible">
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <DailyInspiration />
+        </motion.div>
       </motion.div>
 
-      <motion.div variants={itemVariants}>
-        <WeeklyProgressTracker />
-      </motion.div>
-
-      <motion.div variants={itemVariants}>
+      <motion.div variants={itemVariants} initial="hidden" animate="visible">
         <EarningsSnapshot />
       </motion.div>
 
-      <div className="space-y-5 sm:space-y-8">
-        <motion.div variants={itemVariants}>
-          <ArtistPortfolioSection />
+      <motion.div variants={itemVariants} initial="hidden" animate="visible">
+        <ArtistPortfolioSection />
+      </motion.div>
+
+      <motion.div variants={itemVariants} initial="hidden" animate="visible">
+        <ArtistMetrics />
+      </motion.div>
+
+      <motion.div variants={itemVariants} initial="hidden" animate="visible">
+        <ArtistBookingsOverview />
+      </motion.div>
+
+      <motion.div variants={itemVariants} initial="hidden" animate="visible">
+        <ArtistDailyMotivation />
+      </motion.div>
+
+      <motion.div variants={itemVariants} initial="hidden" animate="visible">
+        <EarningsSummaryCard />
+      </motion.div>
+
+      <motion.div variants={itemVariants} initial="hidden" animate="visible">
+        <ArtistQuickStats />
+      </motion.div>
+
+      <motion.div variants={itemVariants} initial="hidden" animate="visible">
+        <ArtistGrowYourBusinessCard />
+        <YourNextGoalCard />
+      </motion.div>
+
+      <motion.div variants={itemVariants} initial="hidden" animate="visible">
+        <ArtistReferralCenter />
+      </motion.div>
+
+      <div className="flex flex-col gap-5 sm:gap-6">
+        <motion.div variants={itemVariants} initial="hidden" animate="visible">
+          <ArtistManageServicesSection />
         </motion.div>
-        <motion.div variants={itemVariants}>
-          <ArtistBookingsOverview />
-        </motion.div>
-        <motion.div variants={itemVariants}>
-          <ArtistDailyMotivation />
-        </motion.div>
-        <motion.div variants={itemVariants}>
-          <EarningsSummaryCard />
-        </motion.div>
-        <motion.div variants={itemVariants}>
-          <ArtistQuickStats />
-        </motion.div>
-        <motion.div variants={itemVariants}>
-          <ArtistGrowYourBusinessCard />
-          <YourNextGoalCard />
-        </motion.div>
-        <motion.div variants={itemVariants}>
-          <ArtistReferralCenter />
-        </motion.div>
-        <div className="flex flex-col gap-5 sm:gap-6">
-          <motion.div variants={itemVariants}>
-            <ArtistManageServicesSection />
-          </motion.div>
-          <motion.div variants={itemVariants}>
-            <ArtistClientsPreviewSection />
-          </motion.div>
-        </div>
-        <motion.div variants={itemVariants}>
-          <ArtistMetrics />
-        </motion.div>
-        <motion.div variants={itemVariants}>
-          <MilestoneBadges />
-        </motion.div>
-        <motion.div variants={itemVariants}>
-          <SmartSuggestions />
-        </motion.div>
-        <motion.div variants={itemVariants}>
-          <ArtistPortfolioPreview />
-        </motion.div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          <motion.div variants={itemVariants}>
-            <ArtistTestimonials />
-          </motion.div>
-          <motion.div variants={itemVariants}>
-            <ArtistMessagesPreview />
-          </motion.div>
-        </div>
-        <motion.div variants={itemVariants}>
-          <ArtistCalendarPreview />
-        </motion.div>
-        <motion.div variants={itemVariants}>
-          <ClientLoveWidget />
+        <motion.div variants={itemVariants} initial="hidden" animate="visible">
+          <ArtistClientsPreviewSection />
         </motion.div>
       </div>
+
+      <motion.div variants={itemVariants} initial="hidden" animate="visible">
+        <ArtistMetrics />
+      </motion.div>
+
+      <motion.div variants={itemVariants} initial="hidden" animate="visible">
+        <MilestoneBadges />
+      </motion.div>
+
+      <motion.div variants={itemVariants} initial="hidden" animate="visible">
+        <SmartSuggestions />
+      </motion.div>
+
+      <motion.div variants={itemVariants} initial="hidden" animate="visible">
+        <ArtistPortfolioPreview />
+      </motion.div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        <motion.div variants={itemVariants} initial="hidden" animate="visible">
+          <ArtistTestimonials />
+        </motion.div>
+        <motion.div variants={itemVariants} initial="hidden" animate="visible">
+          <ArtistMessagesPreview />
+        </motion.div>
+      </div>
+
+      <motion.div variants={itemVariants} initial="hidden" animate="visible">
+        <ArtistCalendarPreview />
+      </motion.div>
+
+      <motion.div variants={itemVariants} initial="hidden" animate="visible">
+        <ClientLoveWidget />
+      </motion.div>
     </motion.div>
   );
 };
