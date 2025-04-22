@@ -1,39 +1,47 @@
 
-import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
-import { MessageSender } from "@/types/MessageSender";
+
+export interface Recipient {
+  id: string;
+  name: string;
+  avatar?: string;
+}
 
 export const useTestRecipient = () => {
-  const [testRecipient, setTestRecipient] = useState<MessageSender | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [testRecipient, setTestRecipient] = useState<Recipient | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    // Simulate API call to get a test recipient
     const fetchTestRecipient = async () => {
-      // Try to find our test support user
-      const { data, error } = await supabase
-        .from('users')
-        .select('id, full_name, avatar_url')
-        .eq('role', 'support')
-        .single();
-
-      if (error) {
-        console.error('Error fetching test recipient:', error);
-        return;
+      try {
+        setLoading(true);
+        // This would be replaced with a real API call in production
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // 80% chance to return a test recipient, 20% chance to return null
+        // to simulate both cases for development
+        if (Math.random() > 0.2) {
+          setTestRecipient({
+            id: "test-recipient-1",
+            name: "Sarah Johnson",
+            avatar: "https://i.pravatar.cc/150?img=32"
+          });
+        } else {
+          setTestRecipient(null);
+        }
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching test recipient:", err);
+        setError(err instanceof Error ? err : new Error("Failed to load test recipient"));
+      } finally {
+        setLoading(false);
       }
-
-      if (data) {
-        setTestRecipient({
-          id: data.id,
-          name: data.full_name,
-          avatarUrl: data.avatar_url
-        });
-      }
-      
-      setLoading(false);
     };
 
     fetchTestRecipient();
   }, []);
 
-  return { testRecipient, loading };
+  return { testRecipient, loading, error };
 };
