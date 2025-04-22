@@ -1,102 +1,157 @@
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import OverviewTab from "./components/tabs/OverviewTab";
-import BookingsTab from "./components/tabs/BookingsTab";
-import PortfolioTab from "./components/tabs/PortfolioTab";
-import MessagesTab from "./components/tabs/MessagesTab";
-import ReferralsTab from "./components/tabs/ReferralsTab";
-import ClientsTab from "./components/tabs/ClientsTab";
-import QuickActions from "./components/QuickActions";
-import EarningsTabContent from "./components/tabs/EarningsTabContent";
-import { useArtistDashboardData } from "./hooks/useArtistDashboardData";
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  BarChart3, 
+  GalleryHorizontal, 
+  Users, 
+  Star, 
+  MessageSquare, 
+  CalendarDays 
+} from 'lucide-react';
+import { UserProfile } from '@/context/auth/types';
+import ArtistDashboardHeader from './ArtistDashboardHeader';
+import OverviewTab from './tabs/OverviewTab';
+import PortfolioTab from './tabs/PortfolioTab';
+import ClientsTab from './tabs/ClientsTab';
+import ReviewsTab from './tabs/ReviewsTab';
+import MessagesTab from './tabs/MessagesTab';
+import CalendarTab from './tabs/CalendarTab';
 
-const tabs = [
-  { id: "Overview", label: "Overview", visible: true },
-  { id: "Bookings", label: "Bookings", visible: true },
-  { id: "Portfolio", label: "Portfolio", visible: true },
-  { id: "Clients", label: "Clients", visible: true },
-  { id: "Messages", label: "Messages", visible: true },
-  { id: "Referrals", label: "Referrals", visible: true },
-  { id: "Earnings", label: "Earnings", visible: true },
-  { id: "Calendar", label: "Calendar", visible: false },
-  { id: "Services", label: "Services", visible: false }
-];
-
-const visibleTabs = tabs.filter(tab => tab.visible).map(tab => tab.id);
-
-const tabVariants = {
-  inactive: { opacity: 0.7, y: 0 },
-  active: { opacity: 1, y: 0 },
-  hover: { opacity: 0.9, y: 0 }
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1,
+    transition: { 
+      staggerChildren: 0.1,
+      delayChildren: 0.1
+    } 
+  }
 };
 
-export default function ArtistDashboardContent() {
-  const [activeTab, setActiveTab] = useState("Overview");
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.4 } 
+  }
+};
 
-  // Add useArtistDashboardData hook to get required props for OverviewTab
-  const {
-    stats,
-    isLoadingStats,
-    recentBookings,
-    isLoadingBookings
-  } = useArtistDashboardData(activeTab);
+interface ArtistDashboardContentProps {
+  profile: UserProfile | null;
+}
 
-  useEffect(() => {
-    const savedTab = localStorage.getItem('artist_dashboard_tab');
-    if (savedTab && visibleTabs.includes(savedTab)) {
-      setActiveTab(savedTab);
-    }
-  }, []);
-
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-    localStorage.setItem('artist_dashboard_tab', tab);
+const ArtistDashboardContent = ({ profile }: ArtistDashboardContentProps) => {
+  const [activeTab, setActiveTab] = useState('overview');
+  
+  // Store the active tab in localStorage for persistence
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    localStorage.setItem('artist_dashboard_tab', value);
   };
 
+  // Check if there's a stored tab preference
+  useState(() => {
+    const storedTab = localStorage.getItem('artist_dashboard_tab');
+    if (storedTab) {
+      setActiveTab(storedTab);
+    }
+  });
+  
+  const firstName = profile?.full_name?.split(' ')[0] || 'Artist';
+  
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <div className="flex space-x-1 sm:space-x-2 overflow-x-auto pb-2 border-b border-gray-200 w-full sm:w-auto">
-          {tabs.filter(tab => tab.visible).map((tab) => (
-            <motion.button
-              key={tab.id}
-              onClick={() => handleTabChange(tab.id)}
-              id={tab.id}
-              className={`pb-2 border-b-2 transition-all whitespace-nowrap px-3 text-sm sm:text-base ${
-                activeTab === tab.id
-                  ? "border-primary text-primary font-semibold"
-                  : "border-transparent text-gray-500 hover:text-primary hover:border-gray-300"
-              }`}
-              variants={tabVariants}
-              initial="inactive"
-              animate={activeTab === tab.id ? "active" : "inactive"}
-              whileHover="hover"
-              transition={{ duration: 0.2 }}
+    <motion.div 
+      className="space-y-8 px-4 py-6 sm:px-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <motion.div variants={itemVariants}>
+        <ArtistDashboardHeader profile={profile} />
+      </motion.div>
+      
+      <motion.div variants={itemVariants}>
+        <Tabs 
+          value={activeTab} 
+          onValueChange={handleTabChange}
+          className="space-y-8"
+        >
+          <TabsList className="bg-white/50 backdrop-blur-sm border border-gray-100 shadow-sm p-1 flex-wrap justify-start">
+            <TabsTrigger 
+              value="overview" 
+              className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm py-2"
             >
-              {tab.label}
-            </motion.button>
-          ))}
-        </div>
-        <QuickActions />
-      </div>
-
-      <div className="py-2">
-        {activeTab === "Overview" && (
-          <OverviewTab 
-            stats={stats}
-            isLoadingStats={isLoadingStats}
-            bookings={recentBookings}
-            isLoadingBookings={isLoadingBookings}
-          />
-        )}
-        {activeTab === "Bookings" && <BookingsTab />}
-        {activeTab === "Portfolio" && <PortfolioTab />}
-        {activeTab === "Clients" && <ClientsTab />}
-        {activeTab === "Messages" && <MessagesTab />}
-        {activeTab === "Referrals" && <ReferralsTab />}
-        {activeTab === "Earnings" && <EarningsTabContent />}
-      </div>
-    </div>
+              <BarChart3 className="h-4 w-4 text-purple-500" />
+              Overview
+            </TabsTrigger>
+            <TabsTrigger 
+              value="portfolio" 
+              className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm py-2"
+            >
+              <GalleryHorizontal className="h-4 w-4 text-purple-500" />
+              Portfolio
+            </TabsTrigger>
+            <TabsTrigger 
+              value="clients" 
+              className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm py-2"
+            >
+              <Users className="h-4 w-4 text-purple-500" />
+              Clients
+            </TabsTrigger>
+            <TabsTrigger 
+              value="reviews" 
+              className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm py-2"
+            >
+              <Star className="h-4 w-4 text-purple-500" />
+              Reviews
+            </TabsTrigger>
+            <TabsTrigger 
+              value="messages" 
+              className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm py-2"
+            >
+              <MessageSquare className="h-4 w-4 text-purple-500" />
+              Messages
+            </TabsTrigger>
+            <TabsTrigger 
+              value="calendar" 
+              className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-sm py-2"
+            >
+              <CalendarDays className="h-4 w-4 text-purple-500" />
+              Calendar
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="overview" className="space-y-6 pt-2">
+            <OverviewTab profile={profile} />
+          </TabsContent>
+          
+          <TabsContent value="portfolio" className="space-y-6 pt-2">
+            <PortfolioTab />
+          </TabsContent>
+          
+          <TabsContent value="clients" className="space-y-6 pt-2">
+            <ClientsTab />
+          </TabsContent>
+          
+          <TabsContent value="reviews" className="space-y-6 pt-2">
+            <ReviewsTab />
+          </TabsContent>
+          
+          <TabsContent value="messages" className="space-y-6 pt-2">
+            <MessagesTab />
+          </TabsContent>
+          
+          <TabsContent value="calendar" className="space-y-6 pt-2">
+            <CalendarTab />
+          </TabsContent>
+        </Tabs>
+      </motion.div>
+    </motion.div>
   );
-}
+};
+
+export default ArtistDashboardContent;

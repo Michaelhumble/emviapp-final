@@ -1,67 +1,49 @@
 
 /**
- * Get initials from a user's full name
+ * Extract initials from a name (e.g., "John Doe" -> "JD")
  */
-export const getInitials = (name?: string): string => {
-  if (!name) return 'NA';
+export const getInitials = (name: string): string => {
+  if (!name) return '';
   
   return name
     .split(' ')
-    .map(part => part.charAt(0).toUpperCase())
-    .slice(0, 2)
-    .join('');
+    .map(part => part[0])
+    .join('')
+    .toUpperCase()
+    .substring(0, 2);
 };
 
 /**
- * Format a user role for display
+ * Format currency values
  */
-export const formatUserRole = (role?: string): string => {
-  if (!role) return 'User';
-  
-  return role
-    .split(/[/_\s]/)
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');
+export const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(amount);
 };
 
 /**
- * Check if the user profile is complete enough based on their role
+ * Get a user-friendly time string from a date
  */
-export const isProfileComplete = (profile: any, role?: string): boolean => {
-  if (!profile) return false;
+export const getTimeAgo = (date: Date): string => {
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
   
-  // Basic fields every user should have
-  const hasBasicInfo = !!(
-    profile.full_name &&
-    profile.email
-  );
-  
-  // For customers, just basic info is enough
-  if (!role || role === 'customer') {
-    return hasBasicInfo;
+  if (diffInSeconds < 60) {
+    return 'just now';
+  } else if (diffInSeconds < 3600) {
+    const minutes = Math.floor(diffInSeconds / 60);
+    return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+  } else if (diffInSeconds < 86400) {
+    const hours = Math.floor(diffInSeconds / 3600);
+    return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+  } else if (diffInSeconds < 604800) {
+    const days = Math.floor(diffInSeconds / 86400);
+    return `${days} day${days > 1 ? 's' : ''} ago`;
+  } else {
+    return date.toLocaleDateString();
   }
-  
-  // For artists, require more info
-  if (role === 'artist' || role === 'nail technician/artist' || role === 'freelancer') {
-    return !!(
-      hasBasicInfo &&
-      profile.avatar_url &&
-      profile.bio &&
-      profile.specialty &&
-      profile.location
-    );
-  }
-  
-  // For salon owners
-  if (role === 'salon' || role === 'owner') {
-    return !!(
-      hasBasicInfo &&
-      profile.salon_name &&
-      profile.location &&
-      profile.phone
-    );
-  }
-  
-  // Default case
-  return hasBasicInfo;
 };

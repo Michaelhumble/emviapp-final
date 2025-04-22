@@ -1,17 +1,23 @@
 
 import { ReactNode } from 'react';
-import RoleDashboardLayout from '@/components/dashboard/RoleDashboardLayout';
+import { motion } from 'framer-motion';
 
 interface ArtistDashboardLayoutProps {
   children: ReactNode;
-  className?: string;
 }
 
-const ArtistDashboardLayout = ({ children, className = "" }: ArtistDashboardLayoutProps) => {
+const ArtistDashboardLayout = ({ children }: ArtistDashboardLayoutProps) => {
   return (
-    <RoleDashboardLayout className={className}>
-      {children}
-    </RoleDashboardLayout>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen bg-gradient-to-b from-white to-gray-50"
+    >
+      <div className="max-w-7xl mx-auto">
+        {children}
+      </div>
+    </motion.div>
   );
 };
 
