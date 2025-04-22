@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Users, CalendarDays } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import { toast } from "@/hooks/use-toast";
 
 const mockClients = [
   {
@@ -118,7 +119,11 @@ const ArtistClientsPreviewSection: React.FC = () => (
                         type="button"
                         onClick={() => {
                           // Only mock, show UI feedback for user, no real booking logic
-                          window?.showToast?.("Booking flow coming soon!");
+                          toast({
+                            title: "Booking Flow",
+                            description: "Booking flow coming soon!",
+                            variant: "default"
+                          });
                         }}
                       >
                         Book Again
@@ -143,4 +148,3 @@ const ArtistClientsPreviewSection: React.FC = () => (
 );
 
 export default ArtistClientsPreviewSection;
-
