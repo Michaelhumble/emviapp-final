@@ -53,19 +53,26 @@ export const useArtistBookings = () => {
         if (error) throw error;
         
         // Transform raw booking data to match our Booking interface
-        const formattedBookings: Booking[] = (data || []).map(booking => ({
-          id: booking.id,
-          sender_id: booking.sender_id,
-          recipient_id: booking.recipient_id,
-          client_name: booking.client_name || 'Client', // Use client_name if available or default to 'Client'
-          service_name: booking.service_name || 'Service', // Use service_name if available or default to 'Service'
-          date_requested: booking.date_requested,
-          time_requested: booking.time_requested,
-          // Ensure status is one of the expected values
-          status: validateStatus(booking.status),
-          created_at: booking.created_at,
-          note: booking.note // Include the note field
-        }));
+        const formattedBookings: Booking[] = (data || []).map(booking => {
+          // Extract client and service names from metadata if available
+          const metadata = booking.metadata as Record<string, any> || {};
+          
+          return {
+            id: booking.id,
+            sender_id: booking.sender_id,
+            recipient_id: booking.recipient_id,
+            // Extract client_name from metadata or use a default
+            client_name: metadata.client_name || 'Client',
+            // Extract service_name from metadata or use a default
+            service_name: metadata.service_name || 'Service',
+            date_requested: booking.date_requested,
+            time_requested: booking.time_requested,
+            // Ensure status is one of the expected values
+            status: validateStatus(booking.status),
+            created_at: booking.created_at,
+            note: booking.note // Include the note field
+          };
+        });
         
         setBookings(formattedBookings);
         
