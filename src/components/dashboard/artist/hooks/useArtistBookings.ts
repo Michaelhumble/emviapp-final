@@ -32,6 +32,7 @@ export interface BookingCounts {
 export const useArtistBookings = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [serviceTypes, setServiceTypes] = useState<string[]>([]);
   const { user } = useAuth();
   
   useEffect(() => {
@@ -69,6 +70,17 @@ export const useArtistBookings = () => {
         }));
         
         setBookings(formattedBookings);
+        
+        // Extract unique service types from bookings
+        const uniqueServiceTypes = Array.from(
+          new Set(
+            formattedBookings
+              .filter(booking => booking.service_name)
+              .map(booking => booking.service_name as string)
+          )
+        );
+        
+        setServiceTypes(uniqueServiceTypes);
       } catch (error) {
         console.error('Error fetching bookings:', error);
       } finally {
@@ -131,10 +143,31 @@ export const useArtistBookings = () => {
     }
   };
   
+  // Calculate booking counts
+  const calculateCounts = (): BookingCounts => {
+    const pending = bookings.filter(b => b.status === 'pending').length;
+    const accepted = bookings.filter(b => b.status === 'accepted').length;
+    const completed = bookings.filter(b => b.status === 'completed').length;
+    const declined = bookings.filter(b => b.status === 'declined').length;
+    const cancelled = bookings.filter(b => b.status === 'cancelled').length;
+    const total = bookings.length;
+    
+    return {
+      pending,
+      accepted,
+      completed,
+      declined,
+      cancelled,
+      total
+    };
+  };
+  
   return {
     bookings,
     loading,
     handleAccept,
-    handleDecline
+    handleDecline,
+    serviceTypes,
+    counts: calculateCounts()
   };
 };
