@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Image } from "lucide-react";
+import { Image, Upload, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
@@ -34,6 +34,7 @@ const PortfolioUploadModal = ({
 }: Props) => {
   const { toast } = useToast();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [inputKey, setInputKey] = useState(0);
   const [saving, setSaving] = useState(false);
@@ -44,6 +45,7 @@ const PortfolioUploadModal = ({
     // Reset all states when closed
     if (!open) {
       setSelectedImage(null);
+      setPreviewUrl(null);
       setTitle("");
       setInputKey((prev) => prev + 1);
       setSaving(false);
@@ -53,10 +55,21 @@ const PortfolioUploadModal = ({
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] ?? null;
     setSelectedImage(file);
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setPreviewUrl(null);
+    }
   }
 
   function handleRemoveFile() {
     setSelectedImage(null);
+    setPreviewUrl(null);
     setInputKey((prev) => prev + 1);
     if (inputRef.current) inputRef.current.value = "";
   }
@@ -66,32 +79,35 @@ const PortfolioUploadModal = ({
   }
 
   async function handleSave() {
-    if (!selectedImage) return;
+    if (!selectedImage || title.trim().length === 0) return;
 
     setSaving(true);
 
-    // In real, would upload to backend. Here, we create a blob url for session preview use.
-    const imageUrl = URL.createObjectURL(selectedImage);
+    // Create preview URL for mock workflow
+    const imageUrl = previewUrl
+      ? previewUrl
+      : URL.createObjectURL(selectedImage);
 
     const mockItem: UploadedWork = {
       imageUrl,
-      title: title.trim() || "Untitled Work",
+      title: title.trim(),
       previewMode: true,
     };
 
+    // Pass to parent to update the grid (local state only)
     onUploadMock(mockItem);
 
-    onOpenChange(false);
-
-    setTimeout(() => { // Small delay to allow UI update before toasting
+    // UI feedback
+    setTimeout(() => {
       toast({
-        title: "✅ Your new work has been added to your portfolio preview!",
+        title: "✅ Added to your portfolio!",
         description: "",
         variant: "success",
       });
-    }, 250);
+    }, 200);
 
     setSaving(false);
+    onOpenChange(false);
   }
 
   const isSaveDisabled = !selectedImage || title.trim().length === 0 || saving;
@@ -100,7 +116,7 @@ const PortfolioUploadModal = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={cn(
-          "w-full max-w-md md:max-w-lg p-0 rounded-2xl border-0 bg-white/70 shadow-xl backdrop-blur-[10px] mx-auto",
+          "w-full max-w-md md:max-w-lg p-0 rounded-2xl border-0 bg-white/70 shadow-xl backdrop-blur-[10px] mx-auto"
         )}
         style={{ minWidth: "0" }}
       >
@@ -130,14 +146,14 @@ const PortfolioUploadModal = ({
                   selectedImage ? "border-solid bg-white/60" : ""
                 )}
               >
-                {selectedImage ? (
+                {previewUrl ? (
                   <div className="flex flex-col items-center">
                     <img
-                      src={URL.createObjectURL(selectedImage)}
+                      src={previewUrl}
                       alt="preview"
                       className="h-28 w-28 object-cover rounded-lg border mb-2"
                     />
-                    <span className="text-sm text-gray-700 max-w-[200px] truncate">{selectedImage.name}</span>
+                    <span className="text-sm text-gray-700 max-w-[200px] truncate">{selectedImage?.name}</span>
                     <Button
                       variant="outline"
                       size="sm"
@@ -147,13 +163,14 @@ const PortfolioUploadModal = ({
                         handleRemoveFile();
                       }}
                       type="button"
+                      disabled={saving}
                     >
                       Remove
                     </Button>
                   </div>
                 ) : (
                   <>
-                    <Image className="h-8 w-8 text-[#9b87f5] opacity-80 mb-2" />
+                    <Upload className="h-8 w-8 text-[#9b87f5] opacity-80 mb-2" />
                     <span className="text-sm font-medium text-gray-700">
                       Click to select or drag in a .jpg/.png image
                     </span>
@@ -169,14 +186,15 @@ const PortfolioUploadModal = ({
                   onChange={handleFileChange}
                   tabIndex={-1}
                   aria-label="Upload work image"
+                  disabled={saving}
                 />
               </label>
             </div>
           </div>
-          {/* Title/Description input */}
+          {/* Title input */}
           <div className="w-full mt-6">
             <Label htmlFor="portfolio-title" className="text-emvi-accent text-sm font-medium">
-              Title <span className="text-gray-400 font-normal">(optional)</span>
+              Title
             </Label>
             <Input
               id="portfolio-title"
@@ -184,7 +202,7 @@ const PortfolioUploadModal = ({
               className="mt-1 bg-white/90 border border-[#E5DEFF] text-base"
               maxLength={50}
               value={title}
-              disabled={false}
+              disabled={saving}
               onChange={e => setTitle(e.target.value)}
               autoComplete="off"
             />
@@ -210,9 +228,6 @@ const PortfolioUploadModal = ({
             >
               Save
             </Button>
-          </div>
-          <div className="text-xs text-gray-400 italic mt-1 text-center" aria-live="polite">
-            No real uploading yet – preview only.
           </div>
         </div>
       </DialogContent>

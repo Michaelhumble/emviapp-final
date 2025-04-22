@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Image } from "lucide-react";
 import PortfolioUploadModal, { UploadedWork } from "../PortfolioUploadModal";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Initial mock
 const initialPortfolio = [
@@ -45,20 +46,31 @@ const initialPortfolio = [
   }
 ];
 
+// Animation variants for added images
+const itemVariants = {
+  hidden: { opacity: 0, scale: 0.94, y: 18 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 220, damping: 18 }
+  }
+};
+
 const ArtistPortfolioSection = () => {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [portfolio, setPortfolio] = useState(initialPortfolio);
 
-  // Handle new upload (mocked)
+  // Handle new upload (mocked, now with preview and title)
   function handleMockUpload(item: UploadedWork) {
-    setPortfolio([
+    setPortfolio(prev => [
       {
         id: (Date.now() + Math.random()).toString(),
         image: item.imageUrl,
         caption: item.title,
         previewMode: item.previewMode,
       },
-      ...portfolio,
+      ...prev,
     ]);
   }
 
@@ -101,28 +113,35 @@ const ArtistPortfolioSection = () => {
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
-              {portfolio.map(item => (
-                <div
-                  key={item.id}
-                  className="rounded-xl bg-gradient-to-br from-purple-50 to-white shadow-sm overflow-hidden relative flex flex-col group"
-                >
-                  <div className="aspect-square w-full overflow-hidden flex items-center justify-center relative">
-                    <img
-                      src={item.image}
-                      alt={item.caption}
-                      className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105 group-hover:shadow-xl"
-                    />
-                    {item.previewMode && (
-                      <span className="absolute top-2 right-2 z-20 bg-black/40 text-white text-[11px] px-2.5 py-1 rounded-full font-semibold font-serif shadow">
-                        Preview Mode
-                      </span>
-                    )}
-                  </div>
-                  <span className="absolute top-3 left-3 bg-white/80 text-[#7E69AB] font-semibold text-xs px-3 py-1.5 rounded-full shadow-sm backdrop-blur-sm font-playfair z-10">
-                    {item.caption}
-                  </span>
-                </div>
-              ))}
+              <AnimatePresence initial={false}>
+                {portfolio.map(item => (
+                  <motion.div
+                    key={item.id}
+                    className="rounded-xl bg-gradient-to-br from-purple-50 to-white shadow-sm overflow-hidden relative flex flex-col group"
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                    variants={itemVariants}
+                    layout
+                  >
+                    <div className="aspect-square w-full overflow-hidden flex items-center justify-center relative">
+                      <img
+                        src={item.image}
+                        alt={item.caption}
+                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105 group-hover:shadow-xl"
+                      />
+                      {item.previewMode && (
+                        <span className="absolute top-2 right-2 z-20 bg-black/40 text-white text-[11px] px-2.5 py-1 rounded-full font-semibold font-serif shadow">
+                          Preview Mode
+                        </span>
+                      )}
+                    </div>
+                    <span className="absolute top-3 left-3 bg-white/80 text-[#7E69AB] font-semibold text-xs px-3 py-1.5 rounded-full shadow-sm backdrop-blur-sm font-playfair z-10">
+                      {item.caption}
+                    </span>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
           )}
         </CardContent>
