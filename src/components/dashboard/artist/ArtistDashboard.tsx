@@ -31,6 +31,7 @@ import ArtistManageServicesSection from "./sections/ArtistManageServicesSection"
 import ArtistClientsPreviewSection from "./sections/ArtistClientsPreviewSection";
 import EarningsSummaryCard from "./sections/EarningsSummaryCard";
 import DailyInspiration from "./DailyInspiration";
+import MilestoneBadges from "./MilestoneBadges";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -175,6 +176,14 @@ const ArtistDashboard = () => {
         <motion.div variants={itemVariants}>
           <ArtistMetrics />
         </motion.div>
+      {/* Milestone Badges section: below Performance Overview, above Portfolio Highlights */}
+      <motion.div variants={itemVariants}>
+        {/*
+          Placement is intentional per requirements: 
+          below Performance Overview, above portfolio sections/highlights.
+        */}
+        <MilestoneBadges />
+      </motion.div>
         <motion.div variants={itemVariants}>
           <ArtistPortfolioPreview />
         </motion.div>
