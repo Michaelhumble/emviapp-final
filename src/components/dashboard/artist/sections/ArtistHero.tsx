@@ -7,7 +7,13 @@ import { Instagram, Link, Edit } from "lucide-react";
 import { Link as RouterLink } from "react-router-dom";
 import { useArtistData } from '../context/ArtistDataContext';
 
-const ArtistHero = () => {
+// Soft luxury background gradient using EmviApp palette
+const HEADER_BG =
+  "bg-gradient-to-br from-[#F7F5FE]/80 via-[#E5DEFF]/75 to-white/90";
+const CARD_SHADOW =
+  "shadow-[0_8px_32px_0_rgba(155,135,245,0.09)]";
+
+const ArtistHero: React.FC = () => {
   const { artistProfile } = useArtistData() || {};
 
   const {
@@ -18,7 +24,7 @@ const ArtistHero = () => {
     website,
   } = artistProfile || {};
 
-  // Function to get initials from name (for fallback)
+  // Helper for Initials fallback
   const getInitials = (name?: string) =>
     name
       ? name
@@ -30,52 +36,89 @@ const ArtistHero = () => {
 
   return (
     <section>
-      <Card className="overflow-hidden border-0 shadow-none bg-white">
-        {/* Soft gradient header */}
-        <div className="relative h-36 md:h-48 w-full flex items-end justify-center bg-gradient-to-r from-[#E5DEFF] via-[#fff] to-[#9b87f5]">
-          <div className="absolute inset-0 pointer-events-none" style={{
-            background: 'linear-gradient(112deg, #E5DEFF 0%, #fff 62%, #9b87f5 100%)'
-          }} />
-          {/* Avatar centered below gradient */}
-          <div className="relative z-10 -mb-12 md:-mb-16 flex flex-col items-center">
-            <Avatar className="h-24 w-24 md:h-32 md:w-32 border-4 border-white shadow-lg bg-emvi-offwhite">
-              <AvatarImage src={avatar_url} alt={full_name} className="object-cover" />
-              <AvatarFallback className="bg-gradient-to-br from-purple-100 to-purple-300 text-[#7E69AB] font-playfair text-2xl md:text-3xl">
-                {getInitials(full_name)}
-              </AvatarFallback>
-            </Avatar>
+      <Card
+        className={`
+          ${HEADER_BG} ${CARD_SHADOW} border-0 rounded-3xl px-0 pb-6 pt-0
+          flex flex-col items-center
+          transition-all
+        `}
+        style={{
+          overflow: "visible",
+        }}
+      >
+        {/* Centered avatar block */}
+        <div className="flex flex-col items-center w-full pt-7 md:pt-12">
+          <div className="relative flex justify-center items-center">
+            <div
+              className="
+                rounded-full
+                bg-white
+                border-4 border-white
+                shadow-lg
+                transition
+                p-2
+                "
+              style={{
+                boxShadow: "0 4px 20px 0 rgba(155,135,245,0.08)"
+              }}
+            >
+              <Avatar className="h-28 w-28 md:h-36 md:w-36 bg-emvi-offwhite border-0">
+                <AvatarImage
+                  src={avatar_url}
+                  alt={full_name}
+                  className="object-cover"
+                />
+                <AvatarFallback className="bg-gradient-to-br from-purple-100 to-purple-200 text-[#7E69AB] font-playfair text-3xl md:text-4xl">
+                  {getInitials(full_name)}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+            {/* Edit button absolute on avatar (mobile: below avatar, md+: top right of card) */}
+            <div className="absolute right-0 top-0 md:right-[-60px] md:top-2 z-20">
+              <Button
+                size="sm"
+                variant="secondary"
+                asChild
+                className="
+                  rounded-full bg-[#f7f5fe]/70 hover:bg-[#e5deff]/80 text-emvi-accent font-medium flex items-center gap-2 shadow-md transition-all duration-150
+                  px-3 py-2
+                  ring-1 ring-[#e5deff]/50
+                  border-0
+                "
+                aria-label="Edit Profile"
+              >
+                <RouterLink to="/profile/edit">
+                  <Edit className="h-4 w-4 mr-1 text-emvi-accent" />
+                  <span className="sr-only md:not-sr-only">Edit</span>
+                  {/* Hide text on mobile for pure icon button */}
+                </RouterLink>
+              </Button>
+            </div>
           </div>
-          {/* Edit button in top-right */}
-          <Button
-            size="sm"
-            variant="secondary"
-            asChild
-            className="absolute right-4 top-4 bg-white/80 hover:bg-white/90 text-emvi-accent font-medium flex items-center gap-2 shadow transition"
-            aria-label="Edit Profile"
-          >
-            <RouterLink to="/profile/edit">
-              <Edit className="h-4 w-4 mr-1 text-emvi-accent" />
-              Edit Profile
-            </RouterLink>
-          </Button>
-        </div>
-        {/* Info block under avatar */}
-        <div className="flex flex-col items-center justify-center px-4 md:px-8 pt-16 md:pt-20 pb-8 space-y-2">
-          <h1 className="font-playfair text-2xl md:text-3xl font-semibold text-[#1A1F2C] text-center tracking-tight">
-            {full_name}
-          </h1>
-          <p className="text-md md:text-lg text-[#7E69AB] font-medium text-center">{specialty}</p>
+
+          {/* Name & Role */}
+          <div className="flex flex-col items-center mt-5 mb-2">
+            <h1 className="font-playfair text-[1.75rem] md:text-3xl font-bold text-[#1A1F2C] text-center tracking-tight leading-none">
+              {full_name}
+            </h1>
+            <span className="text-sm md:text-lg text-[#7E69AB] font-light mt-1 text-center block">
+              {specialty}
+            </span>
+          </div>
+
+          {/* Minimalist icon links under name */}
           {(instagram || website) && (
-            <div className="flex gap-4 mt-1">
+            <div className="flex flex-row items-center justify-center gap-4 mt-3 mb-3">
               {instagram && (
                 <a
                   href={`https://instagram.com/${instagram.replace('@', '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center text-[#9b87f5] font-medium hover:underline transition"
+                  className="group flex items-center p-2 rounded-full bg-white/70 hover:bg-[#e5deff]/80 hover:shadow transition text-[#9b87f5]"
+                  style={{ minWidth: 40, minHeight: 40 }}
                   aria-label="Instagram"
                 >
-                  <Instagram className="h-4 w-4 mr-1" />@{instagram.replace('@', '')}
+                  <Instagram className="h-5 w-5 group-hover:scale-110 transition-transform" />
                 </a>
               )}
               {website && (
@@ -87,20 +130,22 @@ const ArtistHero = () => {
                   }
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center text-[#7E69AB] font-medium hover:underline transition"
+                  className="group flex items-center p-2 rounded-full bg-white/70 hover:bg-[#e5deff]/80 hover:shadow transition text-[#7E69AB]"
+                  style={{ minWidth: 40, minHeight: 40 }}
                   aria-label="Website"
                 >
-                  <Link className="h-4 w-4 mr-1" />Website
+                  <Link className="h-5 w-5 group-hover:scale-110 transition-transform" />
                 </a>
               )}
             </div>
           )}
-        </div>
-        {/* Motivational tagline */}
-        <div className="w-full flex justify-center mb-4">
-          <span className="italic text-[#222] text-sm md:text-base font-playfair text-center opacity-90">
-            "Your artistry is the heart of EmviApp."
-          </span>
+
+          {/* Motivational tagline */}
+          <div className="w-full flex justify-center mt-2">
+            <span className="italic font-playfair text-[#444] text-sm md:text-base text-center opacity-60">
+              "Your artistry is the heart of EmviApp."
+            </span>
+          </div>
         </div>
       </Card>
     </section>
