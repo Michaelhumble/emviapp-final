@@ -24,7 +24,7 @@ import ArtistCalendarPreview from "./sections/ArtistCalendarPreview";
 import ArtistMessagesPreview from "./sections/ArtistMessagesPreview";
 import ArtistPortfolioSection from "./sections/ArtistPortfolioSection";
 import ArtistBookingsOverview from "./sections/ArtistBookingsOverview";
-import ArtistDailyMotivation from "./sections/ArtistDailyMotivation";
+import ArtistDailyMotivation from "./ArtistDailyMotivation"; // Fixed import path
 import ArtistQuickStats from "./sections/ArtistQuickStats";
 import ArtistGrowYourBusinessCard from "./sections/ArtistGrowYourBusinessCard";
 import YourNextGoalCard from "./sections/YourNextGoalCard";
