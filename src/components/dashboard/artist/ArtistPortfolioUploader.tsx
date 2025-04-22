@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
@@ -33,7 +34,9 @@ const ArtistPortfolioUploader = (props: ArtistPortfolioUploaderProps) => {
   const [file, setFile] = useState<File | null>(null);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    setFile(acceptedFiles[0]);
+    if (acceptedFiles && acceptedFiles.length > 0) {
+      setFile(acceptedFiles[0]);
+    }
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -148,7 +151,10 @@ const ArtistPortfolioUploader = (props: ArtistPortfolioUploaderProps) => {
                         variant="ghost"
                         size="icon"
                         className="absolute top-2 right-2 bg-white/80 hover:bg-white"
-                        onClick={() => setFile(null)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setFile(null);
+                        }}
                       >
                         <X className="h-4 w-4" />
                       </Button>

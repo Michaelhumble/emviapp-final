@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/auth";
@@ -85,8 +86,8 @@ const ArtistDashboard = () => {
       animate="visible"
     >
       <motion.div variants={itemVariants} initial="hidden" animate="visible">
-        <Card className="overflow-hidden border-0 shadow-sm"
-          as={motion.div}
+        <motion.div
+          className="overflow-hidden border-0 shadow-sm"
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
@@ -164,7 +165,7 @@ const ArtistDashboard = () => {
               </div>
             </div>
           </div>
-        </Card>
+        </motion.div>
       </motion.div>
 
       <motion.div variants={itemVariants} initial="hidden" animate="visible">

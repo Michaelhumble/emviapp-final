@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -85,8 +86,8 @@ const ArtistPortfolioSection = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        <Card className="border-0 shadow-none bg-white/70"
-          as={motion.div}
+        <motion.div 
+          className="border-0 shadow-none bg-white/70"
           whileHover={{ scale: 1.025 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
         >
@@ -165,7 +166,7 @@ const ArtistPortfolioSection = () => {
               </div>
             )}
           </CardContent>
-        </Card>
+        </motion.div>
       </motion.div>
     </section>
   );
