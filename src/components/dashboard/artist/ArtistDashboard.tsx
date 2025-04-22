@@ -24,6 +24,7 @@ import ArtistPortfolioSection from "./sections/ArtistPortfolioSection";
 import ArtistBookingsOverview from "./sections/ArtistBookingsOverview";
 import ArtistDailyMotivation from "./ArtistDailyMotivation";
 import ArtistQuickStats from "./sections/ArtistQuickStats";
+import ArtistGrowYourBusinessCard from "./sections/ArtistGrowYourBusinessCard";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -154,6 +155,10 @@ const ArtistDashboard = () => {
         <ArtistQuickStats />
       </motion.div>
 
+      <motion.div variants={itemVariants}>
+        <ArtistGrowYourBusinessCard />
+      </motion.div>
+      
       <motion.div variants={itemVariants}>
         <ArtistMetrics />
       </motion.div>
