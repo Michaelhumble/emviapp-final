@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, ExternalLink, Clock } from "lucide-react";
@@ -5,37 +6,26 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import ComingSoonModal from "@/components/common/ComingSoonModal";
+import { useArtistUpcomingBookings } from "@/hooks/artist/useArtistUpcomingBookings";
+
+const statusBadge = (status: string) => {
+  switch (status) {
+    case "confirmed":
+      return "bg-blue-100 text-blue-700";
+    case "accepted":
+      return "bg-emerald-100 text-emerald-700";
+    case "pending":
+      return "bg-amber-100 text-amber-700";
+    default:
+      return "bg-gray-100 text-gray-700";
+  }
+};
 
 const ArtistCalendarPreview = () => {
-  // Mock booking data
-  const upcomingBookings = [
-    {
-      id: 1,
-      client: "Sarah Johnson",
-      service: "Gel Manicure",
-      date: "Today",
-      time: "2:30 PM",
-      status: "confirmed"
-    },
-    {
-      id: 2,
-      client: "Emma Wilson",
-      service: "Full Set Acrylic",
-      date: "Tomorrow",
-      time: "10:00 AM",
-      status: "confirmed"
-    },
-    {
-      id: 3,
-      client: "Jessica Miller",
-      service: "Nail Art Design",
-      date: "Thu, Oct 26",
-      time: "3:15 PM",
-      status: "pending"
-    }
-  ];
-
+  const { bookings, loading, error } = useArtistUpcomingBookings();
   const [modalOpen, setModalOpen] = useState(false);
+
+  const previewBookings = bookings.slice(0, 3);
 
   return (
     <Card className="border-gray-100 shadow-sm">
@@ -58,41 +48,57 @@ const ArtistCalendarPreview = () => {
       <CardContent className="p-4">
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {upcomingBookings.map((booking) => (
-              <motion.div
-                key={booking.id}
-                className={`p-4 rounded-lg border ${
-                  booking.status === 'confirmed' 
-                    ? 'border-blue-100 bg-blue-50' 
-                    : 'border-amber-100 bg-amber-50'
-                }`}
-                whileHover={{ y: -2, transition: { duration: 0.2 } }}
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="font-medium text-gray-900">{booking.client}</h4>
-                    <p className="text-sm text-gray-600 mt-1">{booking.service}</p>
+            {loading ? (
+              [1, 2, 3].map((n) => (
+                <div
+                  key={n}
+                  className="rounded-lg border border-gray-100 bg-gray-50 animate-pulse p-4 h-32"
+                />
+              ))
+            ) : error ? (
+              <div className="col-span-3 text-center py-8 text-gray-500">{error}</div>
+            ) : previewBookings.length === 0 ? (
+              <div className="col-span-3 text-center py-8 text-gray-500">
+                No appointments yet. Start promoting your services to attract clients!
+              </div>
+            ) : (
+              previewBookings.map((booking) => (
+                <motion.div
+                  key={booking.id}
+                  className={`p-4 rounded-lg border ${statusBadge(booking.status)}`}
+                  whileHover={{ y: -2, transition: { duration: 0.2 } }}
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-medium text-gray-900">
+                        {booking.client_name || "Client"}
+                      </h4>
+                      <p className="text-sm text-gray-600 mt-1">{booking.service_type}</p>
+                    </div>
+                    <div
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${statusBadge(
+                        booking.status
+                      )}`}
+                    >
+                      {booking.status.charAt(0).toUpperCase() +
+                        booking.status.slice(1)}
+                    </div>
                   </div>
-                  <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    booking.status === 'confirmed' 
-                      ? 'bg-blue-100 text-blue-700' 
-                      : 'bg-amber-100 text-amber-700'
-                  }`}>
-                    {booking.status === 'confirmed' ? 'Confirmed' : 'Pending'}
+                  <div className="flex items-center mt-3 text-sm text-gray-600">
+                    <CalendarDays className="h-4 w-4 mr-1.5 text-gray-500" />
+                    <span>
+                      {booking.appointment_date
+                        ? new Date(booking.appointment_date).toLocaleDateString()
+                        : "-"}
+                    </span>
+                    <Clock className="h-4 w-4 ml-3 mr-1.5 text-gray-500" />
+                    <span>{booking.appointment_time || "-"}</span>
                   </div>
-                </div>
-                
-                <div className="flex items-center mt-3 text-sm text-gray-600">
-                  <CalendarDays className="h-4 w-4 mr-1.5 text-gray-500" />
-                  <span>{booking.date}</span>
-                  <Clock className="h-4 w-4 ml-3 mr-1.5 text-gray-500" />
-                  <span>{booking.time}</span>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              ))
+            )}
           </div>
         </div>
-        
         <div className="mt-6 flex justify-center">
           <Button type="button" onClick={() => setModalOpen(true)}>
             Manage Appointments

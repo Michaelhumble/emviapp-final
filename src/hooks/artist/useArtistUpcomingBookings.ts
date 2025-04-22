@@ -70,3 +70,4 @@ export function useArtistUpcomingBookings() {
 
   return { bookings, loading, error };
 }
+
