@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
+import { BookingCounts } from "@/types/booking";
 
 export interface Booking {
   id: string;
@@ -22,6 +23,7 @@ export interface Booking {
 export const useArtistBookings = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [serviceTypes, setServiceTypes] = useState<string[]>([]);
   const { user } = useAuth();
   
   useEffect(() => {
@@ -31,7 +33,6 @@ export const useArtistBookings = () => {
       try {
         setLoading(true);
         
-        // Get bookings where current user is the recipient (artist)
         const { data, error } = await supabase
           .from('bookings')
           .select(`
@@ -44,7 +45,6 @@ export const useArtistBookings = () => {
         
         if (error) throw error;
         
-        // Format bookings
         const formattedBookings: Booking[] = (data || []).map((booking: any) => ({
           id: booking.id,
           sender_id: booking.sender_id,
@@ -61,6 +61,17 @@ export const useArtistBookings = () => {
         }));
         
         setBookings(formattedBookings);
+        
+        // Extract unique service types from bookings
+        const uniqueServiceTypes = Array.from(
+          new Set(
+            formattedBookings
+              .filter(booking => booking.service_name)
+              .map(booking => booking.service_name as string)
+          )
+        );
+        
+        setServiceTypes(uniqueServiceTypes);
       } catch (error) {
         console.error('Error fetching bookings:', error);
       } finally {
@@ -123,10 +134,31 @@ export const useArtistBookings = () => {
     }
   };
   
+  // Calculate booking counts
+  const calculateCounts = (): BookingCounts => {
+    const pending = bookings.filter(b => b.status === 'pending').length;
+    const accepted = bookings.filter(b => b.status === 'accepted').length;
+    const completed = bookings.filter(b => b.status === 'completed').length;
+    const declined = bookings.filter(b => b.status === 'declined').length;
+    const cancelled = bookings.filter(b => b.status === 'cancelled').length;
+    const total = bookings.length;
+    
+    return {
+      pending,
+      accepted,
+      completed,
+      declined,
+      cancelled,
+      total
+    };
+  };
+  
   return {
     bookings,
     loading,
     handleAccept,
-    handleDecline
+    handleDecline,
+    serviceTypes,
+    counts: calculateCounts()
   };
 };

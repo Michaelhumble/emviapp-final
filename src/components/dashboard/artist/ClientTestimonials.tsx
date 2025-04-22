@@ -2,8 +2,23 @@
 import { motion } from "framer-motion";
 import { Star, Quote } from "lucide-react";
 import { useState } from "react";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
 
-const testimonials = [
+interface Testimonial {
+  id: number;
+  name: string;
+  avatar: string;
+  rating: number;
+  date: string;
+  text: string;
+}
+
+interface ClientTestimonialsProps {
+  testimonials?: Testimonial[];
+  title?: string;
+}
+
+const defaultTestimonials: Testimonial[] = [
   {
     id: 1,
     name: "Sarah Johnson",
@@ -30,31 +45,54 @@ const testimonials = [
   },
 ];
 
-const ClientTestimonials = () => {
+const ClientTestimonials = ({ 
+  testimonials = defaultTestimonials,
+  title = "Client Testimonials"
+}: ClientTestimonialsProps) => {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        duration: 0.6,
+        staggerChildren: 0.1 
+      } 
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.4 } 
+    }
+  };
+  
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.3 }}
-      className="rounded-xl overflow-hidden border border-gray-100 shadow-sm"
-    >
-      <div className="bg-gradient-to-r from-purple-50 to-pink-50 px-6 py-4 border-b border-gray-100">
+    <Card className="overflow-hidden border border-gray-100 shadow-sm">
+      <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 px-6 py-4 border-b border-gray-100">
         <h3 className="text-lg font-medium text-gray-800 flex items-center">
           <Star className="h-5 w-5 text-amber-500 mr-2" />
-          Client Testimonials
+          {title}
         </h3>
-      </div>
+      </CardHeader>
       
-      <div className="bg-white p-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <CardContent className="p-6">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-3 gap-5"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
           {testimonials.map((testimonial, index) => (
             <motion.div
               key={testimonial.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.2 + index * 0.1 }}
+              variants={itemVariants}
               className="rounded-lg border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
               onHoverStart={() => setHoveredCard(testimonial.id)}
               onHoverEnd={() => setHoveredCard(null)}
@@ -64,7 +102,7 @@ const ClientTestimonials = () => {
                   <img 
                     src={testimonial.avatar} 
                     alt={testimonial.name} 
-                    className="w-10 h-10 rounded-full mr-3"
+                    className="w-10 h-10 rounded-full mr-3 object-cover"
                   />
                   <div>
                     <h4 className="font-medium text-gray-900">{testimonial.name}</h4>
@@ -100,9 +138,9 @@ const ClientTestimonials = () => {
               </div>
             </motion.div>
           ))}
-        </div>
-      </div>
-    </motion.div>
+        </motion.div>
+      </CardContent>
+    </Card>
   );
 };
 
