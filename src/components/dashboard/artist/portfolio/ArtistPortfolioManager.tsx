@@ -14,23 +14,23 @@ import { useToast } from '@/hooks/use-toast';
 import { Plus, Image as ImageIcon, Move, Trash2 } from 'lucide-react';
 import { useArtistPortfolio } from '@/hooks/useArtistPortfolio';
 import PortfolioUploader from './PortfolioUploader';
-import { PortfolioItem } from '@/types/portfolio';
 
 const ArtistPortfolioManager = () => {
   const { toast } = useToast();
   const { 
-    items, 
+    portfolio, 
     isLoading, 
-    reorderItems,
-    uploadItem,
-    deleteItem,
-    fetchPortfolioItems
+    reorderPortfolioItems,
+    addPortfolioItem,
+    deletePortfolioItem,
+    fetchPortfolio
   } = useArtistPortfolio();
   
   const [showUploader, setShowUploader] = useState(false);
 
   useEffect(() => {
-    fetchPortfolioItems();
+    fetchPortfolio();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleDragEnd = async (result: any) => {
@@ -42,7 +42,7 @@ const ArtistPortfolioManager = () => {
     if (startIndex === endIndex) return;
     
     try {
-      await reorderItems(startIndex, endIndex);
+      await reorderPortfolioItems(startIndex, endIndex);
       toast({
         title: "Portfolio reordered",
         description: "Your images have been reordered successfully."
@@ -59,7 +59,7 @@ const ArtistPortfolioManager = () => {
 
   const handleDeleteItem = async (id: string, imageUrl: string) => {
     try {
-      await deleteItem(id, imageUrl);
+      await deletePortfolioItem(id, imageUrl);
       toast({
         title: "Image deleted",
         description: "Portfolio item has been removed."
@@ -72,6 +72,14 @@ const ArtistPortfolioManager = () => {
         variant: "destructive"
       });
     }
+  };
+  
+  const handleUploadItem = async (file: File, title: string, description?: string) => {
+    const success = await addPortfolioItem(file, title, description);
+    if (success) {
+      setShowUploader(false);
+    }
+    return success;
   };
 
   return (
@@ -90,7 +98,7 @@ const ArtistPortfolioManager = () => {
         {showUploader ? (
           <PortfolioUploader 
             onComplete={() => setShowUploader(false)}
-            onUpload={uploadItem}
+            onUpload={handleUploadItem}
           />
         ) : (
           <>
@@ -113,7 +121,7 @@ const ArtistPortfolioManager = () => {
                   />
                 ))}
               </div>
-            ) : items.length === 0 ? (
+            ) : portfolio.length === 0 ? (
               <div className="text-center py-16 bg-muted/30 rounded-lg border border-dashed">
                 <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
                 <p className="text-muted-foreground">No portfolio images yet</p>
@@ -135,7 +143,7 @@ const ArtistPortfolioManager = () => {
                       ref={provided.innerRef}
                       className="grid grid-cols-2 md:grid-cols-3 gap-5"
                     >
-                      {items.map((item, index) => (
+                      {portfolio.map((item, index) => (
                         <Draggable 
                           key={item.id} 
                           draggableId={item.id} 
