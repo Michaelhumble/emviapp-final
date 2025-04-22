@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -91,6 +90,7 @@ const BoothDetail = () => {
                 src={boothData.imageUrl}
                 alt={boothData.title}
                 className="w-full h-[300px] md:h-[400px] object-cover"
+                fallbackImage="/placeholder.svg"
               />
             </div>
 
