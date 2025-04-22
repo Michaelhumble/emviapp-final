@@ -2,7 +2,7 @@
 import { Card } from "@/components/ui/card";
 import { UserProfile as AuthUserProfile } from "@/context/auth/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Scissors, MapPin, Instagram, Globe, Pencil } from "lucide-react";
+import { Instagram, Globe, Pencil, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -15,93 +15,69 @@ interface ArtistDashboardHeaderProps {
 const ArtistDashboardHeader = ({ profile }: ArtistDashboardHeaderProps) => {
   const coverImage = "/lovable-uploads/749e5584-caa4-4229-84a2-93589c7455c2.png";
   
-  const getInitials = () => {
-    if (!profile?.full_name) return "AR";
-    return profile.full_name
-      .split(" ")
-      .map(name => name[0])
-      .join("")
-      .toUpperCase()
-      .substring(0, 2);
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
-      <Card className="overflow-hidden shadow-md border-0 rounded-xl">
-        {/* Cover Photo with Overlay */}
-        <div className="h-48 md:h-56 w-full relative">
+      <Card className="overflow-hidden shadow-sm border-0 rounded-xl bg-white">
+        {/* Reduced height gradient banner */}
+        <div className="h-40 md:h-48 w-full relative">
           <div className="absolute inset-0 overflow-hidden">
             <ImageWithFallback 
               src={coverImage}
               alt="Profile cover"
-              className="w-full h-full object-cover filter blur-sm transform scale-105"
+              className="w-full h-full object-cover"
               fallbackImage="https://emvi.app/images/fallback-profile.jpg"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/40" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/5 to-black/20 backdrop-blur-[1px]" />
           </div>
           
-          {/* Cover Content */}
-          <div className="relative h-full flex flex-col justify-end p-6 text-white">
-            <h1 className="font-serif text-3xl md:text-4xl font-bold mb-2 drop-shadow-lg">
-              {profile?.full_name || 'Your Name'}
-            </h1>
-            {profile?.specialty && (
-              <p className="text-lg font-medium drop-shadow-md">
-                {profile.specialty}
-              </p>
-            )}
-          </div>
-
-          <div className="absolute bottom-4 right-4">
-            <Button 
-              size="sm" 
-              variant="secondary" 
-              className="bg-white/20 backdrop-blur-md hover:bg-white/30 transition-all duration-300"
-            >
-              <Pencil className="h-4 w-4 mr-1" />
-              Edit Cover
-            </Button>
-          </div>
+          {/* Edit Cover Button */}
+          <Button 
+            size="sm" 
+            variant="secondary" 
+            className="absolute bottom-4 right-4 bg-white/80 backdrop-blur-md hover:bg-white/90 transition-all duration-300"
+          >
+            <Pencil className="h-4 w-4 mr-1.5" />
+            Edit Cover
+          </Button>
         </div>
         
-        {/* Profile Info Section */}
+        {/* Profile Content Section */}
         <div className="px-6 pb-6 pt-16 md:pt-6 relative">
-          {/* Avatar */}
-          <div className="absolute -top-12 left-6 md:relative md:top-0 md:left-0 md:float-left md:mr-6 md:-mt-20">
-            <Avatar className="h-24 w-24 border-4 border-white shadow-xl rounded-full transition-transform hover:scale-105">
+          {/* Avatar with enhanced styling */}
+          <div className="absolute -top-12 left-6 md:relative md:top-0 md:left-0 md:float-left md:mr-6 md:-mt-16">
+            <Avatar className="h-24 w-24 ring-4 ring-white shadow-xl rounded-full transition-transform duration-200 hover:scale-[1.02]">
               <AvatarImage 
                 src={profile?.avatar_url || ''} 
                 alt={profile?.full_name || 'Artist'} 
                 className="object-cover"
               />
-              <AvatarFallback className="text-2xl bg-purple-100 text-purple-700">
-                <ImageWithFallback
-                  src={profile?.avatar_url || ''}
-                  alt={profile?.full_name || 'Artist'}
-                  className="h-full w-full object-cover"
-                  fallbackImage="https://emvi.app/images/fallback-profile.jpg"
-                />
+              <AvatarFallback className="bg-gradient-to-br from-purple-50 to-purple-100 text-purple-700">
+                {profile?.full_name?.charAt(0) || 'A'}
               </AvatarFallback>
             </Avatar>
           </div>
           
+          {/* Profile Information */}
           <div className="md:flex md:justify-between md:items-start">
-            <div>
-              <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600 mb-3">
-                {profile?.specialty && (
-                  <span className="flex items-center">
-                    <Scissors className="h-4 w-4 mr-1 text-purple-500" />
-                    {profile.specialty}
-                  </span>
-                )}
-                
+            <div className="space-y-3">
+              <div>
+                <h1 className="text-2xl font-medium text-gray-900">
+                  {profile?.full_name || 'Your Name'}
+                </h1>
+                <p className="text-gray-600 mt-0.5">
+                  {profile?.specialty || 'Nail Artist'}
+                </p>
+              </div>
+              
+              {/* Location and Social Links */}
+              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
                 {profile?.location && (
                   <span className="flex items-center">
-                    <MapPin className="h-4 w-4 mr-1 text-purple-500" />
+                    <MapPin className="h-4 w-4 mr-1.5 text-gray-400" />
                     {profile.location}
                   </span>
                 )}
@@ -113,7 +89,7 @@ const ArtistDashboardHeader = ({ profile }: ArtistDashboardHeaderProps) => {
                     rel="noopener noreferrer" 
                     className="flex items-center hover:text-purple-600 transition-colors"
                   >
-                    <Instagram className="h-4 w-4 mr-1 text-purple-500" />
+                    <Instagram className="h-4 w-4 mr-1.5 text-gray-400" />
                     @{profile.instagram}
                   </a>
                 )}
@@ -125,31 +101,46 @@ const ArtistDashboardHeader = ({ profile }: ArtistDashboardHeaderProps) => {
                     rel="noopener noreferrer"
                     className="flex items-center hover:text-purple-600 transition-colors"
                   >
-                    <Globe className="h-4 w-4 mr-1 text-purple-500" />
+                    <Globe className="h-4 w-4 mr-1.5 text-gray-400" />
                     Website
                   </a>
                 )}
               </div>
               
-              <p className="text-gray-700 line-clamp-3 mb-4 font-sans">
-                {profile?.bio || 'Add your bio to tell potential clients about your skills, experience, and style.'}
+              {/* Bio Section */}
+              <p className="text-gray-600 text-sm max-w-2xl leading-relaxed">
+                {profile?.bio || 'Add your bio to tell potential clients about your experience and style.'}
+              </p>
+              
+              {/* Profile Completion Reminder - Subtle text */}
+              <p className="text-sm text-gray-400 font-light">
+                Complete your profile to attract more clients and boost visibility
               </p>
             </div>
             
-            <div className="flex gap-3 mt-4 md:mt-0">
-              <Button 
-                variant="default"
-                className="shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
-                asChild
-              >
-                <Link to="/profile/edit">Edit Profile</Link>
-              </Button>
+            {/* Action Buttons */}
+            <div className="flex gap-3 mt-6 md:mt-0">
               <Button 
                 variant="outline"
-                className="hover:bg-gray-50 transition-all duration-300"
+                size="sm"
+                className="text-gray-700 border-gray-200 hover:bg-gray-50 transition-colors"
                 asChild
               >
-                <Link to={`/profile/${profile?.id || ''}`}>View Public Profile</Link>
+                <Link to="/profile/edit">
+                  <Pencil className="h-4 w-4 mr-1.5" />
+                  Edit Profile
+                </Link>
+              </Button>
+              
+              <Button 
+                variant="ghost"
+                size="sm"
+                className="text-gray-600 hover:bg-gray-50 transition-colors"
+                asChild
+              >
+                <Link to={`/profile/${profile?.id || ''}`}>
+                  View Public Profile
+                </Link>
               </Button>
             </div>
           </div>
