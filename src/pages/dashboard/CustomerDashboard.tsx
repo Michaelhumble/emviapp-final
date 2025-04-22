@@ -7,10 +7,11 @@ import DashboardQuickCard from "@/components/dashboard/customer/DashboardQuickCa
 import { Users, Search, Calendar, Star, ArrowRight, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import FavoritesSection from "@/components/dashboard/customer/favorites/FavoritesSection";
+import { differenceInDays } from "date-fns";
 
 const accentColor = "#9b87f5";
 const lavenderGradient =
-  "linear-gradient(90deg, rgba(229,222,255,1) 0%, rgba(255,222,226,0.9) 100%)"; // Soft lavender to pink
+  "linear-gradient(90deg, rgba(229,222,255,1) 0%, rgba(255,222,226,0.9) 100%)";
 
 const CustomerDashboard: React.FC = () => {
   const { userProfile } = useAuth();
@@ -32,6 +33,16 @@ const CustomerDashboard: React.FC = () => {
     if (!referralLink) return;
     navigator.clipboard.writeText(referralLink);
     toast.success("Referral link copied!");
+  };
+
+  // Check if user needs a booking reminder
+  const showBookingReminder = () => {
+    const lastBookingDate = userProfile?.last_booking_date 
+      ? new Date(userProfile.last_booking_date)
+      : new Date('2024-03-15'); // Mock date for testing - remove in production
+
+    const daysSinceLastBooking = differenceInDays(new Date(), lastBookingDate);
+    return daysSinceLastBooking > 21;
   };
 
   return (
@@ -95,6 +106,32 @@ const CustomerDashboard: React.FC = () => {
             </Card>
           )}
         </div>
+      )}
+      {/* Smart Booking Reminder */}
+      {showBookingReminder() && (
+        <Card className="w-full max-w-2xl mx-auto mb-6 bg-[#F8F7FF] border border-primary/20">
+          <CardContent className="py-6 px-6">
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <div className="flex-1">
+                <h3 
+                  className="text-xl mb-2 text-gray-800"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
+                  💡 It's been a while since your last beauty appointment
+                </h3>
+                <p className="text-gray-600 font-inter">
+                  Keep your style fresh — book your next session today!
+                </p>
+              </div>
+              <Button 
+                className="whitespace-nowrap"
+                onClick={() => navigate("/search")}
+              >
+                Book Now
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       )}
       {/* Dashboard navigation cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-2xl">
