@@ -3,10 +3,10 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import ArtistAvatar from "@/components/artists/ArtistAvatar";
-import { UserProfile } from "@/types/profile";
+import { CustomerFavorite } from "@/hooks/useCustomerDashboard";
 
 interface FavoriteArtistCardProps {
-  artist: UserProfile;
+  artist: CustomerFavorite;
 }
 
 const FavoriteArtistCard = ({ artist }: FavoriteArtistCardProps) => {
@@ -16,7 +16,7 @@ const FavoriteArtistCard = ({ artist }: FavoriteArtistCardProps) => {
         <div className="flex flex-col items-center text-center">
           <ArtistAvatar
             imageUrl={artist.avatar_url}
-            name={artist.full_name}
+            name={artist.name}
             size="lg"
             className="mb-3"
           />
@@ -24,7 +24,7 @@ const FavoriteArtistCard = ({ artist }: FavoriteArtistCardProps) => {
             className="font-playfair font-medium text-lg mb-1 text-gray-800"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            {artist.full_name}
+            {artist.name}
           </h3>
           {artist.specialty && (
             <p className="text-sm text-gray-600 mb-3">{artist.specialty}</p>
