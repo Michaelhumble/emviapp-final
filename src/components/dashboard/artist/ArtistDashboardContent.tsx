@@ -1,14 +1,15 @@
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import OverviewTab from "./tabs/OverviewTab";
-import BookingsTab from "./tabs/BookingsTab";
-import PortfolioTab from "./tabs/PortfolioTab";
-import MessagesTab from "./tabs/MessagesTab";
-import ReferralsTab from "./tabs/ReferralsTab";
-import ClientsTab from "./tabs/ClientsTab";
-import QuickActions from "./QuickActions";
-import EarningsTabContent from "./tabs/EarningsTabContent";
-import { useArtistDashboardData } from "../hooks/useArtistDashboardData";
+import OverviewTab from "./components/tabs/OverviewTab";
+import BookingsTab from "./components/tabs/BookingsTab";
+import PortfolioTab from "./components/tabs/PortfolioTab";
+import MessagesTab from "./components/tabs/MessagesTab";
+import ReferralsTab from "./components/tabs/ReferralsTab";
+import ClientsTab from "./components/tabs/ClientsTab";
+import QuickActions from "./components/QuickActions";
+import EarningsTabContent from "./components/tabs/EarningsTabContent";
+import { useArtistDashboardData } from "./hooks/useArtistDashboardData";
 
 const tabs = [
   { id: "Overview", label: "Overview", visible: true },
