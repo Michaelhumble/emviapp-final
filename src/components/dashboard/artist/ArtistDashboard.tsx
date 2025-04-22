@@ -33,6 +33,7 @@ import EarningsSummaryCard from "./sections/EarningsSummaryCard";
 import DailyInspiration from "./DailyInspiration";
 import MilestoneBadges from "./MilestoneBadges";
 import SmartSuggestions from "./SmartSuggestions";
+import WeeklyProgressTracker from "./WeeklyProgressTracker";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -182,6 +183,9 @@ const ArtistDashboard = () => {
         </motion.div>
         <motion.div variants={itemVariants}>
           <SmartSuggestions />
+        </motion.div>
+        <motion.div variants={itemVariants}>
+          <WeeklyProgressTracker />
         </motion.div>
         <motion.div variants={itemVariants}>
           <ArtistPortfolioPreview />
