@@ -1,3 +1,4 @@
+
 import { Helmet } from 'react-helmet-async';
 import RoleDashboardLayout from '@/components/dashboard/RoleDashboardLayout';
 import ArtistDashboard from '@/components/dashboard/artist/ArtistDashboard';
@@ -7,11 +8,10 @@ import PersonalMessageBanner from '@/components/artist-profile/PersonalMessageBa
 import BookArtistCta from '@/components/artist-profile/BookArtistCta';
 import ClientTestimonials from '@/components/artist-profile/ClientTestimonials';
 import { useState } from 'react';
-import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion } from 'framer-motion';
-import { AppointmentsSection } from '@/components/dashboard/artist/appointments/AppointmentsSection';
+import PortfolioShowcase from '@/components/artist-profile/PortfolioShowcase';
 
 const ArtistDashboardPage = () => {
   const { userProfile, loading } = useAuth();
@@ -63,7 +63,7 @@ const ArtistDashboardPage = () => {
             </div>
             
             <div className="mt-8">
-              <AppointmentsSection />
+              <PortfolioShowcase isPreview={true} />
             </div>
             
             <div className="mt-8">

@@ -1,10 +1,11 @@
 
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, DollarSign } from "lucide-react";
+import { BarChart3, CalendarDays, DollarSign } from "lucide-react";
 import FallbackBoundary from "@/components/error-handling/FallbackBoundary";
 import OverviewTab from "./components/tabs/OverviewTab";
 import EarningsTabContent from "./components/tabs/EarningsTabContent";
+import CalendarTab from "./components/tabs/CalendarTab";
 import QuickActions from "./components/QuickActions";
 import { useArtistDashboardData } from "./hooks/useArtistDashboardData";
 
@@ -33,6 +34,10 @@ const ArtistDashboardWidgets = () => {
             <BarChart3 className="h-4 w-4 mr-2" />
             Overview
           </TabsTrigger>
+          <TabsTrigger value="calendar" className="flex items-center">
+            <CalendarDays className="h-4 w-4 mr-2" />
+            Calendar
+          </TabsTrigger>
           <TabsTrigger value="earnings" className="flex items-center">
             <DollarSign className="h-4 w-4 mr-2" />
             Earnings
@@ -46,6 +51,12 @@ const ArtistDashboardWidgets = () => {
             bookings={recentBookings}
             isLoadingBookings={isLoadingBookings}
           />
+        </TabsContent>
+
+        <TabsContent value="calendar">
+          <FallbackBoundary>
+            <CalendarTab />
+          </FallbackBoundary>
         </TabsContent>
         
         <TabsContent value="earnings">
