@@ -23,7 +23,7 @@ const ArtistDashboardHeader = ({ profile }: ArtistDashboardHeaderProps) => {
     >
       <Card className="overflow-hidden shadow-sm border-0 rounded-xl bg-white">
         {/* Reduced height gradient banner */}
-        <div className="h-40 md:h-48 w-full relative">
+        <div className="h-32 md:h-40 w-full relative">
           <div className="absolute inset-0 overflow-hidden">
             <ImageWithFallback 
               src={coverImage}
@@ -112,36 +112,35 @@ const ArtistDashboardHeader = ({ profile }: ArtistDashboardHeaderProps) => {
                 {profile?.bio || 'Add your bio to tell potential clients about your experience and style.'}
               </p>
               
-              {/* Profile Completion Reminder - Subtle text */}
-              <p className="text-sm text-gray-400 font-light">
+              {/* Subtle Profile Completion Reminder */}
+              <p className="text-sm text-[#888] font-light text-center mt-2">
                 Complete your profile to attract more clients and boost visibility
               </p>
-            </div>
-            
-            {/* Action Buttons */}
-            <div className="flex gap-3 mt-6 md:mt-0">
-              <Button 
-                variant="outline"
-                size="sm"
-                className="text-gray-700 border-gray-200 hover:bg-gray-50 transition-colors"
-                asChild
-              >
-                <Link to="/profile/edit">
-                  <Pencil className="h-4 w-4 mr-1.5" />
-                  Edit Profile
-                </Link>
-              </Button>
               
-              <Button 
-                variant="ghost"
-                size="sm"
-                className="text-gray-600 hover:bg-gray-50 transition-colors"
-                asChild
-              >
-                <Link to={`/profile/${profile?.id || ''}`}>
-                  View Public Profile
-                </Link>
-              </Button>
+              <div className="flex justify-end items-center gap-3">
+                <Button 
+                  variant="outline"
+                  size="sm"
+                  className="text-gray-700 border-gray-200 hover:bg-gray-50 transition-colors"
+                  asChild
+                >
+                  <Link to="/profile/edit">
+                    <Pencil className="h-4 w-4 mr-1.5" />
+                    Edit Profile
+                  </Link>
+                </Button>
+                
+                <Button 
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-600 hover:bg-gray-50 transition-colors"
+                  asChild
+                >
+                  <Link to={`/profile/${profile?.id || ''}`}>
+                    View Public Profile
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
