@@ -149,9 +149,17 @@ export function useArtistPortfolio() {
     
     try {
       // Batch update the order in the database
+      // This is where the error was happening. We need to include all required fields
+      // or use the onConflict option to only update the order field
       const { error } = await supabase.from('portfolio_items')
         .upsert(
-          updatedItems.map(({ id, order }) => ({ id, order })),
+          updatedItems.map(({ id, order, user_id, title, image_url }) => ({ 
+            id, 
+            order, 
+            user_id, 
+            title, 
+            image_url 
+          })),
           { onConflict: 'id' }
         );
       
