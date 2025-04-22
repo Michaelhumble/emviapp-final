@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import OverviewTab from "./tabs/OverviewTab";
@@ -8,7 +9,7 @@ import ReferralsTab from "./tabs/ReferralsTab";
 import ClientsTab from "./tabs/ClientsTab";
 import QuickActions from "./QuickActions";
 import EarningsTabContent from "./tabs/EarningsTabContent";
-import PortfolioShowcase from "./tabs/PortfolioShowcase";
+import { useArtistDashboardData } from "../hooks/useArtistDashboardData";
 
 const tabs = [
   { id: "Overview", label: "Overview", visible: true },
@@ -17,6 +18,7 @@ const tabs = [
   { id: "Clients", label: "Clients", visible: true },
   { id: "Messages", label: "Messages", visible: true },
   { id: "Referrals", label: "Referrals", visible: true },
+  { id: "Earnings", label: "Earnings", visible: true },
   { id: "Calendar", label: "Calendar", visible: false },
   { id: "Services", label: "Services", visible: false }
 ];
@@ -31,6 +33,14 @@ const tabVariants = {
 
 export default function ArtistDashboardContent() {
   const [activeTab, setActiveTab] = useState("Overview");
+
+  // Add useArtistDashboardData hook to get required props for OverviewTab
+  const {
+    stats,
+    isLoadingStats,
+    recentBookings,
+    isLoadingBookings
+  } = useArtistDashboardData(activeTab);
 
   useEffect(() => {
     const savedTab = localStorage.getItem('artist_dashboard_tab');
@@ -73,12 +83,12 @@ export default function ArtistDashboardContent() {
 
       <div className="py-2">
         {activeTab === "Overview" && (
-          <>
-            <OverviewTab />
-            <div className="mt-8">
-              <PortfolioShowcase />
-            </div>
-          </>
+          <OverviewTab 
+            stats={stats}
+            isLoadingStats={isLoadingStats}
+            bookings={recentBookings}
+            isLoadingBookings={isLoadingBookings}
+          />
         )}
         {activeTab === "Bookings" && <BookingsTab />}
         {activeTab === "Portfolio" && <PortfolioTab />}
