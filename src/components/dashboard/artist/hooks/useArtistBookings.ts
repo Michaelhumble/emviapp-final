@@ -8,20 +8,13 @@ export interface Booking {
   id: string;
   sender_id: string;
   recipient_id: string;
-  client_name: string;
-  service_name: string;
-  date_requested: string;
-  time_requested: string;
+  client_name?: string;
+  service_name?: string;
+  date_requested?: string;
+  time_requested?: string;
   status: 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled';
   created_at: string;
-  note?: string; // Added note property as optional
-}
-
-export interface BookingCounts {
-  pending: number;
-  accepted: number;
-  completed: number;
-  total: number;
+  note?: string;
 }
 
 export const useArtistBookings = () => {
@@ -29,13 +22,6 @@ export const useArtistBookings = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [counts, setCounts] = useState<BookingCounts>({
-    pending: 0,
-    accepted: 0,
-    completed: 0,
-    total: 0
-  });
-  const [serviceTypes, setServiceTypes] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -46,70 +32,49 @@ export const useArtistBookings = () => {
         
         const { data, error } = await supabase
           .from('bookings')
-          .select('*')
+          .select(`
+            *,
+            sender:sender_id(full_name),
+            service:service_id(title)
+          `)
           .eq('recipient_id', user.id)
           .order('created_at', { ascending: false });
-          
+        
         if (error) throw error;
         
-        // Transform raw booking data to match our Booking interface
-        const formattedBookings: Booking[] = (data || []).map(booking => {
-          // Extract client and service names from metadata if available
-          const metadata = booking.metadata as Record<string, any> || {};
-          
-          return {
-            id: booking.id,
-            sender_id: booking.sender_id,
-            recipient_id: booking.recipient_id,
-            // Extract client_name from metadata or use a default
-            client_name: metadata.client_name || 'Client',
-            // Extract service_name from metadata or use a default
-            service_name: metadata.service_name || 'Service',
-            date_requested: booking.date_requested,
-            time_requested: booking.time_requested,
-            // Ensure status is one of the expected values
-            status: validateStatus(booking.status),
-            created_at: booking.created_at,
-            note: booking.note // Include the note field
-          };
-        });
+        const formattedBookings: Booking[] = (data || []).map((booking: any) => ({
+          id: booking.id,
+          sender_id: booking.sender_id,
+          recipient_id: booking.recipient_id,
+          client_name: booking.sender?.full_name || 'Client',
+          service_name: booking.service?.title || 'Service',
+          date_requested: booking.date_requested,
+          time_requested: booking.time_requested,
+          status: validateStatus(booking.status),
+          created_at: booking.created_at,
+          note: booking.note
+        }));
         
         setBookings(formattedBookings);
-        
-        // Extract service types
-        const services = [...new Set(formattedBookings.map(booking => booking.service_name) || [])];
-        setServiceTypes(services.filter(Boolean) as string[]);
-        
-        // Calculate counts
-        const pendingCount = formattedBookings.filter(booking => booking.status === 'pending').length || 0;
-        const acceptedCount = formattedBookings.filter(booking => booking.status === 'accepted').length || 0;
-        const completedCount = formattedBookings.filter(booking => booking.status === 'completed').length || 0;
-        
-        setCounts({
-          pending: pendingCount,
-          accepted: acceptedCount,
-          completed: completedCount,
-          total: formattedBookings.length || 0
-        });
-        
       } catch (err) {
         console.error('Error fetching bookings:', err);
         setError(err as Error);
+        toast.error('Failed to load bookings');
       } finally {
         setLoading(false);
       }
     };
     
+    // Helper function to validate status
+    const validateStatus = (status: string): Booking['status'] => {
+      const validStatuses: Booking['status'][] = ['pending', 'accepted', 'declined', 'completed', 'cancelled'];
+      return validStatuses.includes(status as Booking['status']) 
+        ? status as Booking['status'] 
+        : 'pending';
+    };
+    
     fetchBookings();
   }, [user?.id]);
-  
-  // Helper function to validate status is one of the expected values
-  const validateStatus = (status: string): Booking['status'] => {
-    const validStatuses: Booking['status'][] = ['pending', 'accepted', 'declined', 'completed', 'cancelled'];
-    return validStatuses.includes(status as Booking['status']) 
-      ? (status as Booking['status']) 
-      : 'pending'; // Default to pending if invalid status
-  };
   
   const handleAccept = async (bookingId: string) => {
     try {
@@ -128,13 +93,6 @@ export const useArtistBookings = () => {
             : booking
         )
       );
-      
-      // Update counts
-      setCounts(prev => ({
-        ...prev,
-        pending: prev.pending - 1,
-        accepted: prev.accepted + 1
-      }));
       
       toast.success('Booking accepted successfully');
     } catch (err) {
@@ -161,12 +119,6 @@ export const useArtistBookings = () => {
         )
       );
       
-      // Update counts
-      setCounts(prev => ({
-        ...prev,
-        pending: prev.pending - 1
-      }));
-      
       toast.success('Booking declined');
     } catch (err) {
       console.error('Error declining booking:', err);
@@ -178,8 +130,6 @@ export const useArtistBookings = () => {
     bookings,
     loading,
     error,
-    counts,
-    serviceTypes,
     handleAccept,
     handleDecline
   };
