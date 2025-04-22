@@ -7,14 +7,16 @@ import { Quote, MessageCircle } from "lucide-react";
 interface PersonalMessageBannerProps {
   artistName?: string;
   customMessage?: string;
+  message?: string; // Added for backward compatibility
 }
 
 const PersonalMessageBanner = ({ 
   artistName = "Artist", 
-  customMessage 
+  customMessage,
+  message
 }: PersonalMessageBannerProps) => {
-  // Default message if none provided
-  const message = customMessage || `Thank you for viewing my profile! I'm passionate about delivering exceptional service and creating beautiful work that makes my clients feel confident and happy. I look forward to working with you soon!`;
+  // Use customMessage or message, falling back to a default if neither is provided
+  const displayMessage = customMessage || message || `Thank you for viewing my profile! I'm passionate about delivering exceptional service and creating beautiful work that makes my clients feel confident and happy. I look forward to working with you soon!`;
   
   return (
     <motion.div
@@ -35,7 +37,7 @@ const PersonalMessageBanner = ({
             </div>
             
             <p className="text-gray-600 italic">
-              "{message}"
+              "{displayMessage}"
             </p>
           </div>
         </CardContent>
