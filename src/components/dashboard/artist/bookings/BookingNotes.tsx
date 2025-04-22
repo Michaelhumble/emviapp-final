@@ -13,7 +13,7 @@ const BookingNotes = ({ bookings }: BookingNotesProps) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   
-  // Filter bookings with notes
+  // Filter bookings with notes - ensure we check if note exists and is not empty
   const bookingsWithNotes = bookings.filter(booking => booking.note && booking.note.trim() !== '');
   
   if (bookingsWithNotes.length === 0) {

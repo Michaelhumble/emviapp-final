@@ -14,6 +14,7 @@ export interface Booking {
   time_requested: string;
   status: 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled';
   created_at: string;
+  note?: string; // Added note property as optional
 }
 
 export interface BookingCounts {
@@ -51,22 +52,36 @@ export const useArtistBookings = () => {
           
         if (error) throw error;
         
-        setBookings(data || []);
+        // Transform raw booking data to match our Booking interface
+        const formattedBookings: Booking[] = (data || []).map(booking => ({
+          id: booking.id,
+          sender_id: booking.sender_id,
+          recipient_id: booking.recipient_id,
+          client_name: booking.client_name || 'Client', // Ensure client_name is always set
+          service_name: booking.service_name || 'Service', // Ensure service_name is always set
+          date_requested: booking.date_requested,
+          time_requested: booking.time_requested,
+          status: booking.status,
+          created_at: booking.created_at,
+          note: booking.note // Include the note field
+        }));
+        
+        setBookings(formattedBookings);
         
         // Extract service types
-        const services = [...new Set(data?.map(booking => booking.service_name) || [])];
+        const services = [...new Set(formattedBookings.map(booking => booking.service_name) || [])];
         setServiceTypes(services.filter(Boolean) as string[]);
         
         // Calculate counts
-        const pendingCount = data?.filter(booking => booking.status === 'pending').length || 0;
-        const acceptedCount = data?.filter(booking => booking.status === 'accepted').length || 0;
-        const completedCount = data?.filter(booking => booking.status === 'completed').length || 0;
+        const pendingCount = formattedBookings.filter(booking => booking.status === 'pending').length || 0;
+        const acceptedCount = formattedBookings.filter(booking => booking.status === 'accepted').length || 0;
+        const completedCount = formattedBookings.filter(booking => booking.status === 'completed').length || 0;
         
         setCounts({
           pending: pendingCount,
           accepted: acceptedCount,
           completed: completedCount,
-          total: data?.length || 0
+          total: formattedBookings.length || 0
         });
         
       } catch (err) {
