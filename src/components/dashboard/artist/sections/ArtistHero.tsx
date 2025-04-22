@@ -58,8 +58,9 @@ const ArtistHero: React.FC = () => {
           {/* Centered Name */}
           <h1
             className="
-              font-playfair font-bold
-              text-3xl md:text-5xl
+              font-playfair font-bold antialiased
+              text-4xl md:text-6xl
+              tracking-wide
               text-[#1A1A1A]
               text-center
               w-full
@@ -67,7 +68,6 @@ const ArtistHero: React.FC = () => {
               select-none
               pointer-events-none
             "
-            style={{ letterSpacing: '-0.02em' }}
           >
             {full_name}
           </h1>
@@ -131,3 +131,4 @@ const ArtistHero: React.FC = () => {
 };
 
 export default ArtistHero;
+
