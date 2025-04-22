@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import DashboardQuickCard from "@/components/dashboard/customer/DashboardQuickCard";
 import { Users, Search, Calendar, Star, ArrowRight, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import FavoritesSection from "@/components/dashboard/customer/favorites/FavoritesSection";
 
 const accentColor = "#9b87f5";
 const lavenderGradient =
@@ -155,6 +155,11 @@ const CustomerDashboard: React.FC = () => {
           </div>
           <div className="text-xs text-gray-600 mt-1">Share and earn free credits—let’s grow our beauty community together!</div>
         </Card>
+      </div>
+
+      {/* Add Favorites Section */}
+      <div className="mt-8 w-full">
+        <FavoritesSection />
       </div>
     </div>
   );
