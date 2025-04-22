@@ -22,7 +22,6 @@ const ArtistDashboardHeader = ({ profile }: ArtistDashboardHeaderProps) => {
       transition={{ duration: 0.6 }}
     >
       <Card className="overflow-hidden shadow-sm border-0 rounded-xl bg-white">
-        {/* Premium gradient banner */}
         <div className="h-28 md:h-36 w-full relative">
           <div className="absolute inset-0 overflow-hidden">
             <ImageWithFallback 
@@ -44,9 +43,7 @@ const ArtistDashboardHeader = ({ profile }: ArtistDashboardHeaderProps) => {
           </Button>
         </div>
         
-        {/* Clean, minimal profile content */}
         <div className="px-6 pb-6 pt-16 md:pt-6 relative flex flex-col items-center md:items-start">
-          {/* Premium avatar styling */}
           <div className="absolute -top-12 left-6 md:relative md:top-0 md:left-0 md:float-left md:mr-6 md:-mt-16">
             <Avatar className="h-24 w-24 ring-4 ring-white shadow-xl rounded-full transition-transform duration-200 hover:scale-[1.02]">
               <AvatarImage 
@@ -72,7 +69,6 @@ const ArtistDashboardHeader = ({ profile }: ArtistDashboardHeaderProps) => {
                   </p>
                 </div>
                 
-                {/* Desktop edit button */}
                 <div className="hidden md:flex">
                   <Button 
                     variant="outline"
@@ -88,7 +84,6 @@ const ArtistDashboardHeader = ({ profile }: ArtistDashboardHeaderProps) => {
                 </div>
               </div>
               
-              {/* Social links and location */}
               <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
                 {profile?.location && (
                   <span className="flex items-center">
@@ -122,12 +117,10 @@ const ArtistDashboardHeader = ({ profile }: ArtistDashboardHeaderProps) => {
                 )}
               </div>
               
-              {/* Bio section */}
               <p className="text-gray-600 text-sm max-w-2xl leading-relaxed">
                 {profile?.bio || 'Add your bio to tell potential clients about your experience and style.'}
               </p>
 
-              {/* Mobile edit button */}
               <div className="flex md:hidden justify-end mt-4">
                 <Button 
                   variant="outline"
