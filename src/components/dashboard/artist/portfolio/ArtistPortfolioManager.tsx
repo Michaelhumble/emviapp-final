@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { motion } from 'framer-motion';
@@ -14,202 +13,178 @@ import { useToast } from '@/hooks/use-toast';
 import { Plus, Image as ImageIcon, Move, Trash2 } from 'lucide-react';
 import { useArtistPortfolio } from '@/hooks/useArtistPortfolio';
 import PortfolioUploader from './PortfolioUploader';
+import EditPortfolioItemModal from "./EditPortfolioItemModal";
+import { Pencil } from "lucide-react";
+
+// Replace the entire component - now with full local/mock data handling and modal logic.
+const initialPortfolioItems = [
+  {
+    id: 1,
+    image: "/lovable-uploads/67947adb-5754-4569-aa1c-228d8f9db461.png",
+    title: "French Gradient",
+    featured: true
+  },
+  {
+    id: 2,
+    image: "/lovable-uploads/70c8662a-4525-4854-a529-62616b5b6c81.png",
+    title: "Minimalist Line Art",
+    featured: false
+  },
+  {
+    id: 3,
+    image: "/lovable-uploads/81e6d95d-e09b-45f0-a4bc-96358592e462.png",
+    title: "Pink Floral Design",
+    featured: false
+  },
+  {
+    id: 4,
+    image: "/lovable-uploads/7d585be5-b70d-4d65-b57f-803de81839ba.png",
+    title: "Elegant Marble Pattern",
+    featured: true
+  },
+  {
+    id: 5,
+    image: "/lovable-uploads/a3c08446-c1cb-492d-a361-7ec4aca18cfd.png",
+    title: "Geometric Abstract",
+    featured: false
+  },
+  {
+    id: 6,
+    image: "/lovable-uploads/c9e52825-c7f4-4923-aecf-a92a8799530b.png",
+    title: "Glitter Accent",
+    featured: false
+  }
+];
 
 const ArtistPortfolioManager = () => {
-  const { toast } = useToast();
-  const { 
-    portfolio, 
-    isLoading, 
-    reorderPortfolioItems,
-    addPortfolioItem,
-    deletePortfolioItem,
-    fetchPortfolio
-  } = useArtistPortfolio();
-  
-  const [showUploader, setShowUploader] = useState(false);
+  // Local mock state only!
+  const [portfolio, setPortfolio] = useState(initialPortfolioItems);
+  const [editingItem, setEditingItem] = useState<typeof initialPortfolioItems[0] | null>(null);
 
-  useEffect(() => {
-    fetchPortfolio();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Modal open state
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleDragEnd = async (result: any) => {
+  // Drag-and-drop reorder using react-beautiful-dnd
+  const onDragEnd = (result: any) => {
     if (!result.destination) return;
-    
-    const startIndex = result.source.index;
-    const endIndex = result.destination.index;
-    
-    if (startIndex === endIndex) return;
-    
-    try {
-      await reorderPortfolioItems(startIndex, endIndex);
-      toast({
-        title: "Portfolio reordered",
-        description: "Your images have been reordered successfully."
-      });
-    } catch (error) {
-      console.error('Error reordering portfolio:', error);
-      toast({
-        title: "Reordering failed",
-        description: "There was a problem saving the new order.",
-        variant: "destructive"
-      });
-    }
+    const newPortfolio = Array.from(portfolio);
+    const [removed] = newPortfolio.splice(result.source.index, 1);
+    newPortfolio.splice(result.destination.index, 0, removed);
+    setPortfolio(newPortfolio);
   };
 
-  const handleDeleteItem = async (id: string, imageUrl: string) => {
-    try {
-      await deletePortfolioItem(id, imageUrl);
-      toast({
-        title: "Image deleted",
-        description: "Portfolio item has been removed."
-      });
-    } catch (error) {
-      console.error('Error deleting item:', error);
-      toast({
-        title: "Deletion failed",
-        description: "There was a problem removing this item.",
-        variant: "destructive"
-      });
-    }
+  // Handle save changes
+  const handleSave = (id: number, newTitle: string, newImage?: File | null) => {
+    setPortfolio((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              title: newTitle,
+              image:
+                newImage
+                  ? URL.createObjectURL(newImage)
+                  : item.image
+            }
+          : item
+      )
+    );
   };
-  
-  const handleUploadItem = async (file: File, title: string, description?: string) => {
-    const success = await addPortfolioItem(file, title, description);
-    if (success) {
-      setShowUploader(false);
-    }
-    return success;
+
+  // Handle delete
+  const handleDelete = (id: number) => {
+    setPortfolio((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  // Open modal for editing
+  const handleEdit = (item: typeof initialPortfolioItems[0]) => {
+    setEditingItem(item);
+    setIsModalOpen(true);
+  };
+
+  // Close modal handler
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setTimeout(() => setEditingItem(null), 200); // Small delay for modal exit
   };
 
   return (
     <Card className="shadow-sm border-purple-100">
       <CardHeader className="pb-3">
         <CardTitle className="text-xl font-serif flex items-center">
-          <ImageIcon className="h-5 w-5 mr-2 text-purple-500" />
+          <span className="mr-2"><img src="/lovable-uploads/f6bb9656-c400-4f28-ba97-69d71c651a97.png" alt="" className="h-6 w-6 rounded-md" /></span>
           Portfolio Gallery
         </CardTitle>
         <CardDescription>
           Showcase your best work to attract clients
         </CardDescription>
       </CardHeader>
-      
       <CardContent>
-        {showUploader ? (
-          <PortfolioUploader 
-            onComplete={() => setShowUploader(false)}
-            onUpload={handleUploadItem}
-          />
-        ) : (
-          <>
-            <div className="mb-4">
-              <Button 
-                onClick={() => setShowUploader(true)}
-                className="bg-purple-600 hover:bg-purple-700"
+        {/* Drag & Drop portfolio grid */}
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="portfolio-grid" direction="horizontal">
+            {(provided) => (
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className="grid grid-cols-2 md:grid-cols-3 gap-5"
               >
-                <Plus className="mr-2 h-4 w-4" />
-                Add Portfolio Images
-              </Button>
-            </div>
-            
-            {isLoading ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {[1, 2, 3, 4].map((i) => (
-                  <div 
-                    key={i} 
-                    className="aspect-square rounded-md bg-gray-100 animate-pulse"
-                  />
-                ))}
-              </div>
-            ) : portfolio.length === 0 ? (
-              <div className="text-center py-16 bg-muted/30 rounded-lg border border-dashed">
-                <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                <p className="text-muted-foreground">No portfolio images yet</p>
-                <Button 
-                  variant="outline" 
-                  className="mt-4"
-                  onClick={() => setShowUploader(true)}
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Upload Your First Image
-                </Button>
-              </div>
-            ) : (
-              <DragDropContext onDragEnd={handleDragEnd}>
-                <Droppable droppableId="portfolio-items" direction="horizontal">
-                  {(provided) => (
-                    <div 
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                      className="grid grid-cols-2 md:grid-cols-3 gap-5"
-                    >
-                      {portfolio.map((item, index) => (
-                        <Draggable 
-                          key={item.id} 
-                          draggableId={item.id} 
-                          index={index}
+                {portfolio.map((item, idx) => (
+                  <Draggable
+                    key={item.id}
+                    draggableId={item.id.toString()}
+                    index={idx}
+                  >
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        className={`relative aspect-square rounded-lg overflow-hidden border transition-all duration-200 bg-white shadow-sm
+                          ${snapshot.isDragging ? "shadow-lg ring-2 ring-purple-400" : ""}`}
+                      >
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
+                        />
+                        {/* Edit Button (pencil) */}
+                        <button
+                          className="absolute top-2 right-2 z-10 bg-white/90 hover:bg-white transition p-1.5 rounded-full shadow group"
+                          onClick={() => handleEdit(item)}
+                          type="button"
+                          aria-label="Edit"
                         >
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              className={`
-                                relative aspect-square rounded-lg overflow-hidden border
-                                ${snapshot.isDragging ? 'shadow-lg ring-2 ring-purple-300' : 'shadow-sm'}
-                                transition-all duration-200
-                              `}
-                            >
-                              <img 
-                                src={item.image_url} 
-                                alt={item.title || 'Portfolio item'} 
-                                className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
-                              />
-                              
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 hover:opacity-100 transition-opacity flex flex-col justify-between p-3">
-                                <div {...provided.dragHandleProps} className="self-start bg-black/40 p-1.5 rounded-full cursor-grab">
-                                  <Move className="h-4 w-4 text-white" />
-                                </div>
-                                
-                                <div>
-                                  <h4 className="text-white font-medium truncate">{item.title || 'Untitled'}</h4>
-                                  <div className="flex justify-between items-center mt-1">
-                                    <input 
-                                      type="text" 
-                                      placeholder="Add title..." 
-                                      defaultValue={item.title || ''}
-                                      className="bg-white/20 text-white text-sm rounded px-2 py-1 w-3/4 placeholder:text-white/70 focus:outline-none focus:ring-1 focus:ring-white/50"
-                                      onBlur={async (e) => {
-                                        const newTitle = e.target.value;
-                                        if (newTitle !== item.title) {
-                                          // Handle title update in a real implementation
-                                          toast({
-                                            title: "Title updated",
-                                            description: "Changes saved successfully."
-                                          });
-                                        }
-                                      }}
-                                    />
-                                    <button
-                                      onClick={() => handleDeleteItem(item.id, item.image_url)}
-                                      className="bg-red-500/80 p-1.5 rounded-full hover:bg-red-600/80"
-                                    >
-                                      <Trash2 className="h-3.5 w-3.5 text-white" />
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
+                          <Pencil className="h-4 w-4 text-purple-500" />
+                        </button>
+                        {/* Drag handle */}
+                        <div
+                          {...provided.dragHandleProps}
+                          className="absolute left-2 top-2 bg-black/40 p-1.5 rounded-full cursor-grab"
+                          style={{ zIndex: 6 }}
+                        >
+                          <span className="inline-block w-2 h-2 bg-purple-300 rounded-full" />
+                        </div>
+                        {/* Title overlay */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+                          <span className="text-white text-sm font-semibold">{item.title}</span>
+                        </div>
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
             )}
-          </>
-        )}
+          </Droppable>
+        </DragDropContext>
+        {/* Edit Modal */}
+        <EditPortfolioItemModal
+          open={isModalOpen}
+          onClose={handleCloseModal}
+          item={editingItem}
+          onSave={handleSave}
+          onDelete={handleDelete}
+        />
       </CardContent>
     </Card>
   );
