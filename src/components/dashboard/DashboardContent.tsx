@@ -1,9 +1,11 @@
 
+import React from 'react';
 import { useAuth } from "@/context/auth";
 import { motion } from "framer-motion";
 import ProfileCompletionCard from "../profile/ProfileCompletionCard";
 import AIDashboardWidgets from "../ai/AIDashboardWidgets";
 import DashboardGreeting from "./common/DashboardGreeting";
+// Replace the incorrect import with a new artist dashboard widgets component
 import ArtistDashboardWidgets from "./artist/ArtistDashboardWidgets";
 import SalonOwnerDashboardWidgets from "./salon/SalonOwnerDashboardWidgets";
 import CustomerDashboardWidgets from "./customer/CustomerDashboardWidgets";
