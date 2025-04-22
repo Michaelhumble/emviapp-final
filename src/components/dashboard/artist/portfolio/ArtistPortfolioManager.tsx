@@ -160,9 +160,9 @@ const ArtistPortfolioManager = () => {
                           alt={item.title}
                           className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
                         />
-                        {/* Edit Button (pencil) */}
+                        {/* Edit Button (always visible, with hover effect) */}
                         <button
-                          className="absolute top-2 right-2 z-10 bg-white/90 hover:bg-white transition p-1.5 rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute top-2 right-2 z-10 bg-white/90 hover:bg-white transition p-1.5 rounded-full shadow"
                           onClick={() => handleEdit(item)}
                           type="button"
                           aria-label="Edit"
