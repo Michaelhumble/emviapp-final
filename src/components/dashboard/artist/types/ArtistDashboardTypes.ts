@@ -1,4 +1,3 @@
-
 export interface Booking {
   id: string;
   sender_id: string;
@@ -17,10 +16,11 @@ export interface Booking {
 
 export interface BookingCounts {
   pending: number;
-  upcoming?: number;
   accepted: number;
   completed: number;
   total: number;
+  declined?: number;
+  cancelled?: number;
 }
 
 export interface ServiceType {
