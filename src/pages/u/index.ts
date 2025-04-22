@@ -1,4 +1,4 @@
 
-import ArtistPublicProfile from './ArtistPublicProfile';
+import ArtistPublicProfilePage from './artist-profile/ArtistPublicProfilePage';
 
-export default ArtistPublicProfile;
+export default ArtistPublicProfilePage;

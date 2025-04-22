@@ -1,7 +1,7 @@
 
 import StatsGrid from "../StatsGrid";
 import MainGrid from "../MainGrid";
-import PortfolioShowcase from "./PortfolioShowcase";
+import PortfolioShowcase from "../../../../artist-profile/PortfolioShowcase";
 
 const OverviewTab = ({ 
   stats, 
@@ -22,7 +22,7 @@ const OverviewTab = ({
         isLoadingBookings={isLoadingBookings}
         stats={stats}
       />
-      <PortfolioShowcase />
+      <PortfolioShowcase isPreview={true} />
     </div>
   );
 };
