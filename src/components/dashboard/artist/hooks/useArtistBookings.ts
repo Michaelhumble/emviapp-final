@@ -1,27 +1,46 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
-import { Booking, BookingCounts } from "../types/ArtistDashboardTypes";
+
+// Properly export the interfaces
+export interface Booking {
+  id: string;
+  sender_id: string;
+  recipient_id: string;
+  client_name?: string;
+  client_avatar?: string;
+  service_id?: string;
+  service_name?: string;
+  date_requested?: string;
+  time_requested?: string;
+  status: 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled';
+  note?: string;
+  created_at: string;
+}
+
+export interface BookingCounts {
+  pending: number;
+  accepted: number;
+  completed: number;
+  total: number;
+  declined?: number;
+  cancelled?: number;
+}
 
 export const useArtistBookings = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  const [serviceTypes, setServiceTypes] = useState<string[]>([]);
-  const [counts, setCounts] = useState<BookingCounts>({
-    pending: 0,
-    accepted: 0,
-    completed: 0,
-    total: 0
-  });
   const { user } = useAuth();
-
+  
   useEffect(() => {
+    if (!user) return;
+    
     const fetchBookings = async () => {
       try {
-        if (!user) return;
-
+        setLoading(true);
+        
         const { data, error } = await supabase
           .from('bookings')
           .select(`
@@ -31,9 +50,9 @@ export const useArtistBookings = () => {
           `)
           .eq('recipient_id', user.id)
           .order('created_at', { ascending: false });
-
+        
         if (error) throw error;
-
+        
         const formattedBookings: Booking[] = (data || []).map((booking: any) => ({
           id: booking.id,
           sender_id: booking.sender_id,
@@ -48,96 +67,73 @@ export const useArtistBookings = () => {
           note: booking.note,
           created_at: booking.created_at
         }));
-
-        // Calculate booking counts
-        const calculatedCounts: BookingCounts = {
-          pending: formattedBookings.filter(b => b.status === 'pending').length,
-          accepted: formattedBookings.filter(b => b.status === 'accepted').length,
-          completed: formattedBookings.filter(b => b.status === 'completed').length,
-          total: formattedBookings.length,
-          declined: formattedBookings.filter(b => b.status === 'declined').length,
-          cancelled: formattedBookings.filter(b => b.status === 'cancelled').length
-        };
-
+        
         setBookings(formattedBookings);
-        setCounts(calculatedCounts);
-
-        // Extract service types
-        const uniqueServiceTypes = [...new Set(
-          formattedBookings
-            .map(b => b.service_name)
-            .filter(Boolean)
-        )];
-        setServiceTypes(uniqueServiceTypes);
-
       } catch (error) {
         console.error('Error fetching bookings:', error);
-        setError(error as Error);
-        toast.error('Failed to load bookings');
       } finally {
         setLoading(false);
       }
     };
-
+    
     fetchBookings();
   }, [user]);
-
+  
   const handleAccept = async (bookingId: string) => {
+    if (!user) return;
+    
     try {
       const { error } = await supabase
         .from('bookings')
         .update({ status: 'accepted' })
-        .eq('id', bookingId);
-        
+        .eq('id', bookingId)
+        .eq('recipient_id', user.id);
+      
       if (error) throw error;
       
       // Update local state
-      setBookings(prev => 
-        prev.map(booking => 
-          booking.id === bookingId 
-            ? { ...booking, status: 'accepted' } 
-            : booking
-        )
-      );
+      setBookings(prev => prev.map(booking => 
+        booking.id === bookingId 
+          ? { ...booking, status: 'accepted' } 
+          : booking
+      ));
       
       toast.success('Booking accepted successfully');
-    } catch (err) {
-      console.error('Error accepting booking:', err);
+    } catch (error) {
+      console.error('Error accepting booking:', error);
       toast.error('Failed to accept booking');
     }
   };
-
+  
   const handleDecline = async (bookingId: string) => {
+    if (!user) return;
+    
     try {
       const { error } = await supabase
         .from('bookings')
         .update({ status: 'declined' })
-        .eq('id', bookingId);
-        
+        .eq('id', bookingId)
+        .eq('recipient_id', user.id);
+      
       if (error) throw error;
       
       // Update local state
-      setBookings(prev => 
-        prev.map(booking => 
-          booking.id === bookingId 
-            ? { ...booking, status: 'declined' } 
-            : booking
-        )
-      );
+      setBookings(prev => prev.map(booking => 
+        booking.id === bookingId 
+          ? { ...booking, status: 'declined' } 
+          : booking
+      ));
       
       toast.success('Booking declined');
-    } catch (err) {
-      console.error('Error declining booking:', err);
+    } catch (error) {
+      console.error('Error declining booking:', error);
       toast.error('Failed to decline booking');
     }
   };
-
+  
   return {
     bookings,
     loading,
-    error,
-    counts,
-    serviceTypes,
     handleAccept,
     handleDecline
   };
