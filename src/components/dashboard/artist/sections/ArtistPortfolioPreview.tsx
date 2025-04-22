@@ -1,32 +1,39 @@
 
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { GalleryHorizontal, Plus, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useArtistData } from '../context/ArtistDataContext';
 
 const ArtistPortfolioPreview = () => {
-  // Mock portfolio images
-  const portfolioImages = [
-    {
-      id: 1,
-      url: "https://images.unsplash.com/photo-1604902396830-aca29e19b067?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
-      title: "Gradient Nails"
-    },
-    {
-      id: 2,
-      url: "https://images.unsplash.com/photo-1610992015762-125d030d537a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
-      title: "French Tips"
-    },
-    {
-      id: 3,
-      url: "https://images.unsplash.com/photo-1607779097040-26e80aa78e66?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
-      title: "Artistic Design"
-    }
-  ];
-
+  const { portfolioImages, loadingPortfolio } = useArtistData();
+  
+  // Show up to 6 portfolio images
+  const displayImages = portfolioImages.slice(0, 6);
+  
+  if (loadingPortfolio) {
+    return (
+      <Card className="border-0 shadow-sm">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg font-medium text-gray-900">
+            Portfolio Highlights
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {[...Array(6)].map((_, index) => (
+              <div key={index} className="aspect-square bg-gray-100 animate-pulse rounded-md"></div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+  
   return (
-    <Card className="border-gray-100 shadow-sm overflow-hidden">
+    <Card className="border-0 shadow-sm overflow-hidden">
       <CardHeader className="pb-3 flex flex-row items-center justify-between">
         <CardTitle className="text-lg font-medium text-gray-900 flex items-center">
           <GalleryHorizontal className="h-5 w-5 mr-2 text-purple-500" />
@@ -39,8 +46,8 @@ const ArtistPortfolioPreview = () => {
         </Button>
       </CardHeader>
       <CardContent className="p-4">
-        <div className="grid grid-cols-3 gap-4">
-          {portfolioImages.map((image) => (
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {displayImages.map((image) => (
             <motion.div
               key={image.id}
               className="relative aspect-square overflow-hidden rounded-md"
@@ -49,19 +56,19 @@ const ArtistPortfolioPreview = () => {
             >
               <img
                 src={image.url}
-                alt={image.title}
+                alt={image.title || "Portfolio work"}
                 className="object-cover h-full w-full"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-3">
                 <span className="text-white text-xs font-medium truncate">
-                  {image.title}
+                  {image.title || "Nail Art"}
                 </span>
               </div>
             </motion.div>
           ))}
         </div>
         
-        <div className="mt-4 flex justify-center">
+        <div className="mt-6 flex justify-center">
           <Button size="sm" className="flex items-center gap-1">
             <Plus className="h-4 w-4" />
             Add New Work

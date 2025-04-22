@@ -12,7 +12,7 @@ interface ArtistDataContextType {
   reviewCount: number;
   averageRating: number;
   
-  // Add missing properties
+  // Artist profile and portfolio data
   artistProfile: any;
   refreshArtistProfile: () => Promise<void>;
   portfolioImages: PortfolioImage[];
@@ -28,7 +28,7 @@ const defaultContext: ArtistDataContextType = {
   reviewCount: 0,
   averageRating: 0,
   
-  // Add default values for missing properties
+  // Default values for additional properties
   artistProfile: null,
   refreshArtistProfile: async () => {},
   portfolioImages: [],
