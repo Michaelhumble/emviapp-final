@@ -29,6 +29,7 @@ import YourNextGoalCard from "./sections/YourNextGoalCard";
 import ArtistReferralCenter from "./ArtistReferralCenter";
 import ArtistManageServicesSection from "./sections/ArtistManageServicesSection";
 import ArtistClientsPreviewSection from "./sections/ArtistClientsPreviewSection";
+import EarningsSummaryCard from "./sections/EarningsSummaryCard";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -153,6 +154,10 @@ const ArtistDashboard = () => {
 
       <motion.div variants={itemVariants}>
         <ArtistDailyMotivation />
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <EarningsSummaryCard />
       </motion.div>
 
       <motion.div variants={itemVariants}>
