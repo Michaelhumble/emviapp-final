@@ -28,6 +28,7 @@ import ArtistGrowYourBusinessCard from "./sections/ArtistGrowYourBusinessCard";
 import YourNextGoalCard from "./sections/YourNextGoalCard";
 import ArtistReferralCenter from "./ArtistReferralCenter";
 import ArtistManageServicesSection from "./sections/ArtistManageServicesSection";
+import ArtistClientsPreviewSection from "./sections/ArtistClientsPreviewSection";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -169,6 +170,10 @@ const ArtistDashboard = () => {
       
       <motion.div variants={itemVariants}>
         <ArtistManageServicesSection />
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <ArtistClientsPreviewSection />
       </motion.div>
 
       <motion.div variants={itemVariants}>
