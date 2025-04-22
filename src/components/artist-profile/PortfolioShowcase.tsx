@@ -95,7 +95,7 @@ const PortfolioShowcase = ({
                       />
                       <div className="p-3">
                         <p className="text-sm text-muted-foreground">
-                          {image.name || `Portfolio item ${index + 1}`}
+                          {image.title || `Portfolio item ${index + 1}`}
                         </p>
                       </div>
                     </HoverCardContent>
