@@ -42,7 +42,7 @@ const ArtistHero: React.FC = () => {
     <section className="w-full mb-8">
       <div className="relative rounded-xl overflow-hidden shadow-sm">
         {/* Purple gradient background */}
-        <div className="h-48 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 relative">
+        <div className="h-48 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 relative flex items-center justify-center">
           {/* Edit profile button */}
           <Button 
             asChild
@@ -54,6 +54,23 @@ const ArtistHero: React.FC = () => {
               Edit Profile
             </Link>
           </Button>
+
+          {/* Centered Name */}
+          <h1
+            className="
+              font-playfair font-bold
+              text-3xl md:text-5xl
+              text-[#1A1A1A]
+              text-center
+              w-full
+              z-10
+              select-none
+              pointer-events-none
+            "
+            style={{ letterSpacing: '-0.02em' }}
+          >
+            {full_name}
+          </h1>
         </div>
         
         {/* Content with avatar */}
@@ -73,9 +90,7 @@ const ArtistHero: React.FC = () => {
             
             {/* Profile info */}
             <div className="pt-2 sm:pt-0">
-              <h1 className="font-serif text-3xl font-bold text-gray-900">
-                {full_name}
-              </h1>
+              {/* Name moved to gradient header, nothing here */}
               <p className="text-lg text-gray-600 mt-1">{specialty}</p>
               
               {/* Social links */}
