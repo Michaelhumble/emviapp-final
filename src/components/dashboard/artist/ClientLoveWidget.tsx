@@ -1,7 +1,7 @@
 
 import * as React from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import { user } from "lucide-react";
+import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -97,10 +97,10 @@ export default function ClientLoveWidget() {
                     />
                   </span>
                   <blockquote className="font-serif text-lg xs:text-xl text-gray-900 leading-tight text-center px-1">
-                    “{testimonial.text}”
+                    "{testimonial.text}"
                   </blockquote>
                   <div className="flex items-center gap-2 mt-2">
-                    <user className="text-emvi-accent w-4 h-4 opacity-70" aria-hidden="true" />
+                    <User className="text-emvi-accent w-4 h-4 opacity-70" aria-hidden="true" />
                     <span className="font-medium text-emvi-accent/80 text-sm">{testimonial.clientFirstName}</span>
                   </div>
                 </Card>
