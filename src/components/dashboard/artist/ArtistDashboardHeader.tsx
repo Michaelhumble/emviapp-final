@@ -22,8 +22,8 @@ const ArtistDashboardHeader = ({ profile }: ArtistDashboardHeaderProps) => {
       transition={{ duration: 0.6 }}
     >
       <Card className="overflow-hidden shadow-sm border-0 rounded-xl bg-white">
-        {/* Reduced height gradient banner */}
-        <div className="h-32 md:h-40 w-full relative">
+        {/* Reduced height gradient banner (20% reduction applied) */}
+        <div className="h-28 md:h-36 w-full relative">
           <div className="absolute inset-0 overflow-hidden">
             <ImageWithFallback 
               src={coverImage}
@@ -45,9 +45,9 @@ const ArtistDashboardHeader = ({ profile }: ArtistDashboardHeaderProps) => {
           </Button>
         </div>
         
-        {/* Profile Content Section */}
-        <div className="px-6 pb-6 pt-16 md:pt-6 relative">
-          {/* Avatar with enhanced styling */}
+        {/* Profile Content Section - Improved alignment and padding */}
+        <div className="px-6 pb-6 pt-16 md:pt-6 relative flex flex-col items-center md:items-start">
+          {/* Avatar with enhanced premium styling */}
           <div className="absolute -top-12 left-6 md:relative md:top-0 md:left-0 md:float-left md:mr-6 md:-mt-16">
             <Avatar className="h-24 w-24 ring-4 ring-white shadow-xl rounded-full transition-transform duration-200 hover:scale-[1.02]">
               <AvatarImage 
@@ -61,16 +61,33 @@ const ArtistDashboardHeader = ({ profile }: ArtistDashboardHeaderProps) => {
             </Avatar>
           </div>
           
-          {/* Profile Information */}
-          <div className="md:flex md:justify-between md:items-start">
-            <div className="space-y-3">
-              <div>
-                <h1 className="text-2xl font-medium text-gray-900">
-                  {profile?.full_name || 'Your Name'}
-                </h1>
-                <p className="text-gray-600 mt-0.5">
-                  {profile?.specialty || 'Nail Artist'}
-                </p>
+          {/* Profile Information - Better aligned */}
+          <div className="md:flex md:justify-between md:items-start w-full">
+            <div className="space-y-3 w-full">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h1 className="text-2xl font-medium text-gray-900">
+                    {profile?.full_name || 'Your Name'}
+                  </h1>
+                  <p className="text-gray-600 mt-0.5">
+                    {profile?.specialty || 'Nail Artist'}
+                  </p>
+                </div>
+                
+                {/* Edit Profile Button - Repositioned to top-right */}
+                <div className="hidden md:flex gap-2">
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    className="text-gray-700 border-gray-200 hover:bg-gray-50 transition-colors rounded-lg"
+                    asChild
+                  >
+                    <Link to="/profile/edit">
+                      <Pencil className="h-4 w-4 mr-1.5" />
+                      Edit Profile
+                    </Link>
+                  </Button>
+                </div>
               </div>
               
               {/* Location and Social Links */}
@@ -112,16 +129,17 @@ const ArtistDashboardHeader = ({ profile }: ArtistDashboardHeaderProps) => {
                 {profile?.bio || 'Add your bio to tell potential clients about your experience and style.'}
               </p>
               
-              {/* Subtle Profile Completion Reminder */}
-              <p className="text-sm text-[#888] font-light text-center mt-2">
-                Complete your profile to attract more clients and boost visibility
+              {/* Elegant Tip Message - As requested */}
+              <p className="text-sm text-[#999] italic font-light text-center md:text-left mt-2">
+                Tip: Complete your profile to attract more clients.
               </p>
               
-              <div className="flex justify-end items-center gap-3">
+              {/* Action Buttons - For mobile and repositioned */}
+              <div className="flex md:hidden justify-end items-center gap-3 mt-2">
                 <Button 
                   variant="outline"
                   size="sm"
-                  className="text-gray-700 border-gray-200 hover:bg-gray-50 transition-colors"
+                  className="text-gray-700 border-gray-200 hover:bg-gray-50 transition-colors rounded-lg"
                   asChild
                 >
                   <Link to="/profile/edit">
@@ -129,7 +147,9 @@ const ArtistDashboardHeader = ({ profile }: ArtistDashboardHeaderProps) => {
                     Edit Profile
                   </Link>
                 </Button>
-                
+              </div>
+              
+              <div className="flex justify-end items-center gap-3">
                 <Button 
                   variant="ghost"
                   size="sm"
