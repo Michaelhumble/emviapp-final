@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useArtistData } from './context/ArtistDataContext';
 import ArtistHero from './sections/ArtistHero';
@@ -7,6 +7,8 @@ import ArtistMetrics from './sections/ArtistMetrics';
 import ArtistPortfolioPreview from './sections/ArtistPortfolioPreview';
 import ArtistActivityFeed from './sections/ArtistActivityFeed';
 import ArtistAppointments from './sections/ArtistAppointments';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from "sonner";
 
 // Animation variants
 const containerVariants = {
@@ -29,8 +31,30 @@ const itemVariants = {
   }
 };
 
+// Helper: Parse query params from location
+function useQuery() {
+  const { search } = useLocation();
+  return React.useMemo(() => new URLSearchParams(search), [search]);
+}
+
+const PREMIUM_CHECKOUT_LINK = "https://buy.stripe.com/test_4gw8ycdIz2J4gUw9AA";
+
 const ArtistDashboardContent = () => {
   const { loading } = useArtistData();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const query = useQuery();
+
+  // Show welcome toast on premium upgrade
+  useEffect(() => {
+    if (query.get("premium_success") === "1") {
+      toast.success("Welcome to EmviApp Premium!", {
+        duration: 5000,
+      });
+      // Clean URL
+      navigate(location.pathname, { replace: true });
+    }
+  }, [query, location, navigate]);
   
   if (loading) {
     return (
@@ -48,6 +72,12 @@ const ArtistDashboardContent = () => {
     );
   }
   
+  const handleUpgrade = () => {
+    // To simulate redirect after payment, append "?premium_success=1" to the dashboard route
+    // In Stripe, you would set the success_url to /dashboard/artist?premium_success=1
+    window.location.href = PREMIUM_CHECKOUT_LINK;
+  };
+
   return (
     <motion.div
       className="max-w-5xl mx-auto py-8 space-y-8"
@@ -55,6 +85,21 @@ const ArtistDashboardContent = () => {
       initial="hidden"
       animate="visible"
     >
+      {/* Header row: Upgrade button at right */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 mb-8">
+        <div />
+        <button
+          onClick={handleUpgrade}
+          className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold tracking-wide shadow transition
+            border-none focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-300
+            text-sm md:text-base"
+          aria-label="Upgrade to Premium"
+          style={{ letterSpacing: '0.02em' }}
+        >
+          Upgrade to Premium
+        </button>
+      </div>
+
       <motion.div variants={itemVariants}>
         <ArtistHero />
       </motion.div>
