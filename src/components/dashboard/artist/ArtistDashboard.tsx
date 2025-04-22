@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/auth";
@@ -25,6 +26,7 @@ import ArtistBookingsOverview from "./sections/ArtistBookingsOverview";
 import ArtistDailyMotivation from "./ArtistDailyMotivation";
 import ArtistQuickStats from "./sections/ArtistQuickStats";
 import ArtistGrowYourBusinessCard from "./sections/ArtistGrowYourBusinessCard";
+import ArtistReferralCenter from "./ArtistReferralCenter";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -157,6 +159,10 @@ const ArtistDashboard = () => {
 
       <motion.div variants={itemVariants}>
         <ArtistGrowYourBusinessCard />
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <ArtistReferralCenter />
       </motion.div>
       
       <motion.div variants={itemVariants}>

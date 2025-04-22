@@ -21,11 +21,3 @@ export interface Referral {
   createdAt: string;
   completedAt?: string;
 }
-
-export interface ReferralTransactionHistory {
-  id: string;
-  amount: number;
-  type: 'earned' | 'used';
-  description: string;
-  date: string;
-}
