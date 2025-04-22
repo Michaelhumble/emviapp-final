@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/auth";
@@ -24,7 +23,7 @@ import ArtistCalendarPreview from "./sections/ArtistCalendarPreview";
 import ArtistMessagesPreview from "./sections/ArtistMessagesPreview";
 import ArtistPortfolioSection from "./sections/ArtistPortfolioSection";
 import ArtistBookingsOverview from "./sections/ArtistBookingsOverview";
-import ArtistDailyMotivation from "./ArtistDailyMotivation"; // Fixed import path
+import ArtistDailyMotivation from "./ArtistDailyMotivation";
 import ArtistQuickStats from "./sections/ArtistQuickStats";
 import ArtistGrowYourBusinessCard from "./sections/ArtistGrowYourBusinessCard";
 import YourNextGoalCard from "./sections/YourNextGoalCard";
@@ -37,6 +36,7 @@ import MilestoneBadges from "./MilestoneBadges";
 import SmartSuggestions from "./SmartSuggestions";
 import WeeklyProgressTracker from "./WeeklyProgressTracker";
 import ClientLoveWidget from "./ClientLoveWidget";
+import EarningsSnapshot from "./EarningsSnapshot";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -166,6 +166,14 @@ const ArtistDashboard = () => {
         <DailyInspiration />
       </motion.div>
 
+      <motion.div variants={itemVariants}>
+        <WeeklyProgressTracker />
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <EarningsSnapshot />
+      </motion.div>
+
       <div className="space-y-5 sm:space-y-8">
         <motion.div variants={itemVariants}>
           <ArtistPortfolioSection />
@@ -205,9 +213,6 @@ const ArtistDashboard = () => {
         </motion.div>
         <motion.div variants={itemVariants}>
           <SmartSuggestions />
-        </motion.div>
-        <motion.div variants={itemVariants}>
-          <WeeklyProgressTracker />
         </motion.div>
         <motion.div variants={itemVariants}>
           <ArtistPortfolioPreview />
