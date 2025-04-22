@@ -1,12 +1,11 @@
-
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BarChart3, DollarSign } from "lucide-react";
 import FallbackBoundary from "@/components/error-handling/FallbackBoundary";
 import StatsGrid from "./components/StatsGrid";
 import MainGrid from "./components/MainGrid";
 import EarningsSection from "./components/EarningsSection";
 import { useArtistDashboardData } from "./hooks/useArtistDashboardData";
-import { BarChart3, DollarSign } from "lucide-react";
 import AnalyticsWidget from "./components/AnalyticsWidget";
 
 const ArtistDashboardWidgets = () => {
@@ -24,7 +23,7 @@ const ArtistDashboardWidgets = () => {
   return (
     <FallbackBoundary>
       <Tabs defaultValue="overview" className="space-y-4" onValueChange={setActiveTab}>
-        <TabsList>
+        <TabsList className="flex-wrap">
           <TabsTrigger value="overview" className="flex items-center">
             <BarChart3 className="h-4 w-4 mr-2" />
             Overview
