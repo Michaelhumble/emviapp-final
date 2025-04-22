@@ -1,10 +1,10 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Image } from "lucide-react";
+import PortfolioUploadModal from "../PortfolioUploadModal";
+import { useState } from "react";
 
-// Mock portfolio data (replace with real data later)
 const mockPortfolio = [
   {
     id: "1",
@@ -39,8 +39,11 @@ const mockPortfolio = [
 ];
 
 const ArtistPortfolioSection = () => {
+  const [uploadOpen, setUploadOpen] = useState(false);
+
   return (
     <section className="max-w-4xl mx-auto w-full mt-10">
+      <PortfolioUploadModal open={uploadOpen} onOpenChange={setUploadOpen} />
       <Card className="border-0 shadow-none bg-white/70">
         <CardHeader className="pb-2 bg-gradient-to-r from-[#F1F0FB] via-white to-[#E5DEFF] rounded-t-lg">
           <div className="flex items-center justify-between gap-2">
@@ -50,6 +53,8 @@ const ArtistPortfolioSection = () => {
             <Button
               className="glassmorphism text-emvi-accent font-medium shadow-md px-4 py-2 flex items-center gap-2 backdrop-blur-sm"
               aria-label="Add New Work"
+              type="button"
+              onClick={() => setUploadOpen(true)}
             >
               <Plus className="h-5 w-5 mr-1" />
               Add New Work
@@ -66,6 +71,8 @@ const ArtistPortfolioSection = () => {
               <Button
                 className="glassmorphism text-emvi-accent font-medium px-6 py-2 mt-4 backdrop-blur-sm"
                 aria-label="Add New Work"
+                type="button"
+                onClick={() => setUploadOpen(true)}
               >
                 <Plus className="h-5 w-5 mr-1" />
                 Add New Work
