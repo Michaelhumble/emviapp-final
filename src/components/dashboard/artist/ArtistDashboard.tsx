@@ -1,157 +1,171 @@
 
 import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, CalendarDays, GalleryHorizontal, Star, MessageSquare, Users } from "lucide-react";
 import { motion } from "framer-motion";
-import { useArtistProfile } from "@/hooks/artist/useArtistProfile";
-
-// Import our clean, modular components
-import ArtistProfile from "./ArtistProfile";
-import ClientTestimonials from "./ClientTestimonials";
-import PortfolioShowcase from "./PortfolioShowcase";
-import ProfileHighlights from "./ProfileHighlights";
-import PersonalMessageBanner from "./PersonalMessageBanner";
+import { useAuth } from "@/context/auth";
+import { 
+  Instagram, 
+  Globe, 
+  CalendarDays, 
+  Users, 
+  Star, 
+  MessageSquare,
+  Edit
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Link } from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import ImageWithFallback from "@/components/ui/ImageWithFallback";
+import ArtistMetrics from "./sections/ArtistMetrics";
+import ArtistPortfolioPreview from "./sections/ArtistPortfolioPreview";
+import ArtistTestimonials from "./sections/ArtistTestimonials";
+import ArtistCalendarPreview from "./sections/ArtistCalendarPreview";
+import ArtistMessagesPreview from "./sections/ArtistMessagesPreview";
 
 // Animation variants
-const pageVariants = {
-  initial: { opacity: 0 },
-  animate: { 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { 
     opacity: 1,
     transition: { 
-      staggerChildren: 0.1,
+      staggerChildren: 0.12,
       delayChildren: 0.1,
-      duration: 0.5 
     } 
   }
 };
 
-const sectionVariants = {
-  initial: { opacity: 0, y: 20 },
-  animate: { 
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: { 
     opacity: 1, 
     y: 0,
-    transition: { duration: 0.4 } 
+    transition: { duration: 0.5 } 
   }
 };
 
-export default function ArtistDashboard() {
-  const [activeTab, setActiveTab] = useState("overview");
-  const { profile, isLoading } = useArtistProfile();
+const ArtistDashboard = () => {
+  const { userProfile } = useAuth();
   
-  // Handle portfolio upload
-  const handlePortfolioUpload = () => {
-    // Navigate to portfolio upload page or open upload modal
-    window.location.href = "/profile/portfolio";
-  };
+  // Extract profile information
+  const profileName = userProfile?.full_name || "Artist Name";
+  const firstName = profileName.split(" ")[0];
+  const specialty = userProfile?.specialty || "Nail Artist";
+  const avatarUrl = userProfile?.avatar_url;
+  const instagramHandle = userProfile?.instagram;
+  const website = userProfile?.website;
+  
+  // Use a premium cover image
+  const coverImage = "/images/dashboard-cover.jpg";
   
   return (
-    <motion.div 
-      className="space-y-8"
-      variants={pageVariants}
-      initial="initial"
-      animate="animate"
+    <motion.div
+      className="mx-auto max-w-5xl px-4 py-8 space-y-8"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
     >
-      {/* Artist Profile Section */}
-      <motion.div variants={sectionVariants}>
-        <ArtistProfile artistProfile={profile} />
+      {/* Header Section */}
+      <motion.div variants={itemVariants}>
+        <Card className="overflow-hidden border-0 shadow-sm">
+          <div className="h-32 md:h-40 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 relative">
+            <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-10 mix-blend-overlay"></div>
+            <Button 
+              size="sm" 
+              variant="secondary" 
+              className="absolute top-4 right-4 bg-white/80 backdrop-blur-md hover:bg-white/90"
+              asChild
+            >
+              <Link to="/profile/edit">
+                <Edit className="h-4 w-4 mr-1.5" />
+                Edit Profile
+              </Link>
+            </Button>
+          </div>
+          
+          <div className="px-6 pb-6 relative">
+            <div className="flex flex-col md:flex-row md:items-start gap-6 -mt-12 md:-mt-14">
+              <Avatar className="h-24 w-24 border-4 border-white rounded-full shadow-md">
+                <AvatarImage 
+                  src={avatarUrl} 
+                  alt={profileName} 
+                  className="object-cover"
+                />
+                <AvatarFallback className="bg-gradient-to-br from-purple-50 to-purple-200 text-purple-700">
+                  {profileName?.charAt(0) || 'A'}
+                </AvatarFallback>
+              </Avatar>
+
+              <div className="space-y-3 flex-1">
+                <h1 className="font-serif text-2xl font-semibold text-gray-900">
+                  {profileName}
+                </h1>
+                
+                <p className="text-gray-600">
+                  {specialty}
+                </p>
+
+                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                  {instagramHandle && (
+                    <a 
+                      href={`https://instagram.com/${instagramHandle}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="flex items-center hover:text-purple-600 transition-colors"
+                    >
+                      <Instagram className="h-4 w-4 mr-1.5 text-gray-400" />
+                      @{instagramHandle}
+                    </a>
+                  )}
+                  
+                  {website && (
+                    <a 
+                      href={website} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center hover:text-purple-600 transition-colors"
+                    >
+                      <Globe className="h-4 w-4 mr-1.5 text-gray-400" />
+                      Website
+                    </a>
+                  )}
+                </div>
+                
+                <p className="text-gray-600 font-serif italic">
+                  "Your artistry is your brand. Let's grow it."
+                </p>
+              </div>
+            </div>
+          </div>
+        </Card>
       </motion.div>
       
-      {/* Dashboard Tabs */}
-      <motion.div variants={sectionVariants}>
-        <Tabs 
-          defaultValue="overview" 
-          className="space-y-6"
-          onValueChange={setActiveTab}
-        >
-          <TabsList className="flex-wrap border border-gray-200 p-1 bg-gray-50/80 backdrop-blur-sm">
-            <TabsTrigger value="overview" className="flex items-center py-2 px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <BarChart3 className="h-4 w-4 mr-2 text-purple-500" />
-              Overview
-            </TabsTrigger>
-            <TabsTrigger value="portfolio" className="flex items-center py-2 px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <GalleryHorizontal className="h-4 w-4 mr-2 text-purple-500" />
-              Portfolio
-            </TabsTrigger>
-            <TabsTrigger value="clients" className="flex items-center py-2 px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <Users className="h-4 w-4 mr-2 text-purple-500" />
-              Clients
-            </TabsTrigger>
-            <TabsTrigger value="reviews" className="flex items-center py-2 px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <Star className="h-4 w-4 mr-2 text-purple-500" />
-              Reviews
-            </TabsTrigger>
-            <TabsTrigger value="messages" className="flex items-center py-2 px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <MessageSquare className="h-4 w-4 mr-2 text-purple-500" />
-              Messages
-            </TabsTrigger>
-            <TabsTrigger value="calendar" className="flex items-center py-2 px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <CalendarDays className="h-4 w-4 mr-2 text-purple-500" />
-              Calendar
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="overview" className="space-y-8 pt-4">
-            <ProfileHighlights 
-              stats={{
-                rating: 4.9,
-                clients: profile?.credits || 156,
-                completionRate: 98,
-                responseTime: "2 hrs",
-                repeatClients: 42,
-                experience: profile?.years_experience ? `${profile.years_experience} years` : "5+ years"
-              }} 
-            />
-            
-            <PersonalMessageBanner artistName={profile?.full_name} />
-            
-            <PortfolioShowcase 
-              limit={3} 
-              isPreview={true} 
-              onAddClick={handlePortfolioUpload}
-            />
-            
-            <ClientTestimonials />
-          </TabsContent>
-          
-          <TabsContent value="portfolio" className="pt-4">
-            <PortfolioShowcase onAddClick={handlePortfolioUpload} />
-          </TabsContent>
-          
-          <TabsContent value="clients" className="pt-4">
-            <div className="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-200">
-              <Users className="h-12 w-12 mx-auto text-gray-300 mb-3" />
-              <h3 className="text-lg font-medium text-gray-700 mb-1">Client Management</h3>
-              <p className="text-gray-500 max-w-md mx-auto">
-                Track and manage all your clients in one place. This feature is coming soon!
-              </p>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="reviews" className="pt-4">
-            <ClientTestimonials title="My Reviews" />
-          </TabsContent>
-          
-          <TabsContent value="messages" className="pt-4">
-            <div className="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-200">
-              <MessageSquare className="h-12 w-12 mx-auto text-gray-300 mb-3" />
-              <h3 className="text-lg font-medium text-gray-700 mb-1">Messaging</h3>
-              <p className="text-gray-500 max-w-md mx-auto">
-                Chat with your clients and manage appointments. This feature is coming soon!
-              </p>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="calendar" className="pt-4">
-            <div className="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-200">
-              <CalendarDays className="h-12 w-12 mx-auto text-gray-300 mb-3" />
-              <h3 className="text-lg font-medium text-gray-700 mb-1">Appointment Calendar</h3>
-              <p className="text-gray-500 max-w-md mx-auto">
-                Manage your schedule and bookings. This feature is coming soon!
-              </p>
-            </div>
-          </TabsContent>
-        </Tabs>
+      {/* Metrics Section */}
+      <motion.div variants={itemVariants}>
+        <ArtistMetrics />
+      </motion.div>
+      
+      {/* Portfolio Preview */}
+      <motion.div variants={itemVariants}>
+        <ArtistPortfolioPreview />
+      </motion.div>
+      
+      {/* Two Column Layout for Testimonials and Messages */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <motion.div variants={itemVariants}>
+          <ArtistTestimonials />
+        </motion.div>
+        
+        <motion.div variants={itemVariants}>
+          <ArtistMessagesPreview />
+        </motion.div>
+      </div>
+      
+      {/* Calendar Preview */}
+      <motion.div variants={itemVariants}>
+        <ArtistCalendarPreview />
       </motion.div>
     </motion.div>
   );
-}
+};
+
+export default ArtistDashboard;

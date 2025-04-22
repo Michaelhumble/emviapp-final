@@ -2,14 +2,13 @@
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/context/auth';
-import ArtistDashboardLayout from '@/components/dashboard/artist/ArtistDashboardLayout';
-import ArtistDashboardContent from '@/components/dashboard/artist/ArtistDashboardContent';
+import ArtistDashboard from '@/components/dashboard/artist/ArtistDashboard';
 
 const ArtistDashboardPage = () => {
   const { userProfile } = useAuth();
   
   return (
-    <ArtistDashboardLayout>
+    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
       <Helmet>
         <title>Artist Dashboard | EmviApp</title>
       </Helmet>
@@ -18,11 +17,11 @@ const ArtistDashboardPage = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-7xl mx-auto"
+        className="w-full"
       >
-        <ArtistDashboardContent profile={userProfile} />
+        <ArtistDashboard />
       </motion.div>
-    </ArtistDashboardLayout>
+    </div>
   );
 };
 
