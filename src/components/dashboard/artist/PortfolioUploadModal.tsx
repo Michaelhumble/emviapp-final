@@ -116,22 +116,22 @@ const PortfolioUploadModal = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={cn(
-          "w-full max-w-md md:max-w-lg p-0 rounded-2xl border-0 bg-white/70 shadow-xl backdrop-blur-[10px] mx-auto"
+          "w-[calc(100%-32px)] max-w-md md:max-w-lg p-0 rounded-2xl border-0 bg-white/70 shadow-xl backdrop-blur-[10px] mx-auto"
         )}
         style={{ minWidth: "0" }}
       >
-        <div className="flex flex-col items-center px-6 py-7 xs:px-8">
+        <div className="flex flex-col items-center px-4 py-5 xs:px-6 xs:py-7 sm:px-8">
           <DialogHeader className="w-full mb-2">
-            <DialogTitle className="font-serif text-2xl flex items-center justify-center gap-2 text-[#1A1F2C]">
+            <DialogTitle className="font-serif text-xl xs:text-2xl flex items-center justify-center gap-2 text-[#1A1F2C]">
               <Image className="h-5 w-5 text-primary-purple" />
               Upload Your Latest Work
             </DialogTitle>
-            <DialogDescription className="text-gray-500 font-normal text-center text-sm mt-2">
+            <DialogDescription className="text-gray-500 font-normal text-center text-xs xs:text-sm mt-2">
               Keep your portfolio fresh—showcase your latest work to attract even more clients.
             </DialogDescription>
           </DialogHeader>
           {/* Image Upload */}
-          <div className="w-full mt-5">
+          <div className="w-full mt-4 xs:mt-5">
             <Label
               htmlFor="portfolio-image"
               className="block text-emvi-accent text-sm font-medium mb-1"
@@ -142,7 +142,7 @@ const PortfolioUploadModal = ({
               <label
                 htmlFor="portfolio-image"
                 className={cn(
-                  "flex flex-col items-center justify-center rounded-xl bg-[#F1F0FB] hover:bg-purple-50 transition border-2 border-dashed border-[#D6BCFA] cursor-pointer p-5 w-full min-h-[120px]",
+                  "flex flex-col items-center justify-center rounded-xl bg-[#F1F0FB] hover:bg-purple-50 transition border-2 border-dashed border-[#D6BCFA] cursor-pointer p-4 xs:p-5 w-full min-h-[100px] xs:min-h-[120px]",
                   selectedImage ? "border-solid bg-white/60" : ""
                 )}
               >
@@ -151,9 +151,9 @@ const PortfolioUploadModal = ({
                     <img
                       src={previewUrl}
                       alt="preview"
-                      className="h-28 w-28 object-cover rounded-lg border mb-2"
+                      className="h-24 xs:h-28 w-24 xs:w-28 object-cover rounded-lg border mb-2"
                     />
-                    <span className="text-sm text-gray-700 max-w-[200px] truncate">{selectedImage?.name}</span>
+                    <span className="text-xs xs:text-sm text-gray-700 max-w-[200px] truncate">{selectedImage?.name}</span>
                     <Button
                       variant="outline"
                       size="sm"
@@ -170,8 +170,8 @@ const PortfolioUploadModal = ({
                   </div>
                 ) : (
                   <>
-                    <Upload className="h-8 w-8 text-[#9b87f5] opacity-80 mb-2" />
-                    <span className="text-sm font-medium text-gray-700">
+                    <Upload className="h-7 w-7 xs:h-8 xs:w-8 text-[#9b87f5] opacity-80 mb-2" />
+                    <span className="text-xs xs:text-sm font-medium text-gray-700 text-center">
                       Click to select or drag in a .jpg/.png image
                     </span>
                   </>
@@ -192,26 +192,26 @@ const PortfolioUploadModal = ({
             </div>
           </div>
           {/* Title input */}
-          <div className="w-full mt-6">
+          <div className="w-full mt-5 xs:mt-6">
             <Label htmlFor="portfolio-title" className="text-emvi-accent text-sm font-medium">
               Title
             </Label>
             <Input
               id="portfolio-title"
-              placeholder="Describe your artwork (e.g., ‘Elegant French Tips’)"
-              className="mt-1 bg-white/90 border border-[#E5DEFF] text-base"
+              placeholder="Describe your artwork (e.g., 'Elegant French Tips')"
+              className="mt-1 bg-white/90 border border-[#E5DEFF] text-sm xs:text-base"
               maxLength={50}
               value={title}
               disabled={saving}
               onChange={e => setTitle(e.target.value)}
               autoComplete="off"
             />
-            <div className="w-full text-right text-xs text-gray-400 mt-1">{title.length}/50</div>
+            <div className="w-full text-right text-[10px] xs:text-xs text-gray-400 mt-1">{title.length}/50</div>
           </div>
           {/* Button Row */}
-          <div className="flex w-full flex-col xs:flex-row gap-3 mt-8">
+          <div className="flex w-full flex-col xs:flex-row gap-3 mt-6 xs:mt-8">
             <Button
-              className="min-h-[44px] text-base font-semibold rounded-lg transition bg-[#ece9fa] shadow-md text-purple-700 hover:bg-[#e5deff]/90 font-serif flex-1"
+              className="min-h-[40px] xs:min-h-[44px] text-sm xs:text-base font-semibold rounded-lg transition bg-[#ece9fa] shadow-md text-purple-700 hover:bg-[#e5deff]/90 font-serif flex-1"
               variant="outline"
               type="button"
               onClick={handleCancel}
@@ -220,7 +220,7 @@ const PortfolioUploadModal = ({
               Cancel
             </Button>
             <Button
-              className="min-h-[44px] text-base font-semibold rounded-lg transition bg-gradient-to-r from-[#9b87f5] to-[#D6BCFA] shadow-md text-white flex-1 disabled:bg-gray-200 disabled:text-gray-400"
+              className="min-h-[40px] xs:min-h-[44px] text-sm xs:text-base font-semibold rounded-lg transition bg-gradient-to-r from-[#9b87f5] to-[#D6BCFA] shadow-md text-white flex-1 disabled:bg-gray-200 disabled:text-gray-400"
               disabled={isSaveDisabled}
               type="button"
               style={{ opacity: isSaveDisabled ? 0.7 : 1 }}

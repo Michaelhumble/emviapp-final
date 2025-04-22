@@ -75,44 +75,44 @@ const ArtistPortfolioSection = () => {
   }
 
   return (
-    <section className="max-w-4xl mx-auto w-full mt-10">
+    <section className="max-w-4xl mx-auto w-full px-2 xs:px-0 mt-6 sm:mt-10">
       <PortfolioUploadModal open={uploadOpen} onOpenChange={setUploadOpen} onUploadMock={handleMockUpload} />
       <Card className="border-0 shadow-none bg-white/70">
         <CardHeader className="pb-2 bg-gradient-to-r from-[#F1F0FB] via-white to-[#E5DEFF] rounded-t-lg">
-          <div className="flex items-center justify-between gap-2">
-            <CardTitle className="text-2xl font-playfair font-semibold text-[#1A1F2C]">
+          <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-2">
+            <CardTitle className="text-xl xs:text-2xl font-playfair font-semibold text-[#1A1F2C]">
               My Portfolio
             </CardTitle>
             <Button
-              className="glassmorphism text-emvi-accent font-medium shadow-md px-4 py-2 flex items-center gap-2 backdrop-blur-sm"
+              className="glassmorphism text-emvi-accent font-medium shadow-md px-3 xs:px-4 py-2 flex items-center gap-2 backdrop-blur-sm mt-2 xs:mt-0"
               aria-label="Add New Work"
               type="button"
               onClick={() => setUploadOpen(true)}
             >
-              <Plus className="h-5 w-5 mr-1" />
-              Add New Work
+              <Plus className="h-4 w-4 xs:h-5 xs:w-5 mr-1" />
+              <span className="text-sm xs:text-base">Add New Work</span>
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="pt-5 pb-7">
+        <CardContent className="pt-4 xs:pt-5 pb-6 xs:pb-7 px-3 xs:px-6">
           {portfolio.length === 0 ? (
-            <div className="text-center py-16">
-              <div className="mx-auto w-16 h-16 flex items-center justify-center bg-purple-50 rounded-full mb-4">
-                <Image className="h-8 w-8 text-purple-200" />
+            <div className="text-center py-12 xs:py-16">
+              <div className="mx-auto w-14 h-14 xs:w-16 xs:h-16 flex items-center justify-center bg-purple-50 rounded-full mb-4">
+                <Image className="h-7 w-7 xs:h-8 xs:w-8 text-purple-200" />
               </div>
-              <p className="text-lg font-playfair text-gray-400 mb-2">No portfolio items yet.</p>
+              <p className="text-base xs:text-lg font-playfair text-gray-400 mb-2">No portfolio items yet.</p>
               <Button
-                className="glassmorphism text-emvi-accent font-medium px-6 py-2 mt-4 backdrop-blur-sm"
+                className="glassmorphism text-emvi-accent font-medium px-4 xs:px-6 py-2 mt-4 backdrop-blur-sm"
                 aria-label="Add New Work"
                 type="button"
                 onClick={() => setUploadOpen(true)}
               >
-                <Plus className="h-5 w-5 mr-1" />
+                <Plus className="h-4 w-4 xs:h-5 xs:w-5 mr-1" />
                 Add New Work
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-4 xs:gap-6">
               <AnimatePresence initial={false}>
                 {portfolio.map(item => (
                   <motion.div
@@ -131,12 +131,12 @@ const ArtistPortfolioSection = () => {
                         className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105 group-hover:shadow-xl"
                       />
                       {item.previewMode && (
-                        <span className="absolute top-2 right-2 z-20 bg-black/40 text-white text-[11px] px-2.5 py-1 rounded-full font-semibold font-serif shadow">
+                        <span className="absolute top-2 right-2 z-20 bg-black/40 text-white text-[10px] xs:text-[11px] px-2 py-0.5 xs:px-2.5 xs:py-1 rounded-full font-semibold font-serif shadow">
                           Preview Mode
                         </span>
                       )}
                     </div>
-                    <span className="absolute top-3 left-3 bg-white/80 text-[#7E69AB] font-semibold text-xs px-3 py-1.5 rounded-full shadow-sm backdrop-blur-sm font-playfair z-10">
+                    <span className="absolute top-2 xs:top-3 left-2 xs:left-3 bg-white/80 text-[#7E69AB] font-semibold text-[10px] xs:text-xs px-2 xs:px-3 py-1 xs:py-1.5 rounded-full shadow-sm backdrop-blur-sm font-playfair z-10">
                       {item.caption}
                     </span>
                   </motion.div>
