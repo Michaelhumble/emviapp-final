@@ -1,7 +1,11 @@
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useArtistBookings } from "@/hooks/artist/useArtistBookings";
-import { Calendar, ListCheck } from "lucide-react";
+import { Calendar, ListCheck, Plus } from "lucide-react";
+import AddBookingModal from "./AddBookingModal";
+import { useAuth } from "@/context/auth";
+import { supabase } from "@/integrations/supabase/client";
 
 const statusBadge = (status: string) => {
   switch (status) {
@@ -21,15 +25,25 @@ const statusBadge = (status: string) => {
 };
 
 const BookingsTab = () => {
-  const { bookings, loading, error } = useArtistBookings();
+  const { bookings, loading, error, refresh } = useArtistBookings();
+  const { user } = useAuth();
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <Card className="border-purple-100">
-      <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100">
+      <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100 flex flex-col md:flex-row md:items-center md:justify-between">
         <CardTitle className="text-lg flex items-center gap-2">
           <ListCheck className="h-5 w-5 text-purple-500" />
           View All Bookings
         </CardTitle>
+        <button
+          className="ml-0 md:ml-4 flex items-center gap-2 px-3 py-1 rounded-full bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium transition"
+          onClick={() => setShowModal(true)}
+          type="button"
+        >
+          <Plus className="h-4 w-4" />
+          Add Booking
+        </button>
       </CardHeader>
       <CardContent className="p-0">
         <div className="h-[480px] overflow-y-auto px-6 py-4">
@@ -87,6 +101,13 @@ const BookingsTab = () => {
           )}
         </div>
       </CardContent>
+      <AddBookingModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onBookingAdded={refresh}
+        supabase={supabase}
+        user={user}
+      />
     </Card>
   );
 };
