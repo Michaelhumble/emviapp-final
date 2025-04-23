@@ -1,13 +1,14 @@
+
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useArtistData } from './context/ArtistDataContext';
 import ArtistHero from './sections/ArtistHero';
 import ArtistMetrics from './sections/ArtistMetrics';
-import ArtistServicesHighlight from './sections/ArtistServicesHighlight';
 import ArtistActivityFeed from './sections/ArtistActivityFeed';
 import ArtistAppointments from './sections/ArtistAppointments';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
+import ArtistPortfolioManager from './portfolio/ArtistPortfolioManager';
 
 // Animation variants
 const containerVariants = {
@@ -105,15 +106,9 @@ const ArtistDashboardContent = () => {
         <ArtistMetrics />
       </motion.div>
       
-      {/* Removed Portfolio Highlights for a single, unified Portfolio area */}
-      {/* Place the unified Artist Portfolio section here */}
+      {/* Portfolio Manager Section */}
       <motion.div variants={itemVariants}>
-        {/* Call the portfolio manager for full functionality: drag-and-drop, edit, delete, local state */}
-        {/* This replaces old highlight/preview components */}
-        <div className="mt-8">
-          
-          <ArtistPortfolioManager />
-        </div>
+        <ArtistPortfolioManager />
       </motion.div>
       
       <div className="h-2 md:h-4" />
