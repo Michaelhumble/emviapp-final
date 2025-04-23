@@ -53,7 +53,7 @@ export function useArtistUpcomingBookings() {
           appointment_time: booking.time_requested,
           date_requested: booking.date_requested,
           time_requested: booking.time_requested,
-          status: booking.status,
+          status: booking.status as 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled',
           note: booking.note
         }));
 

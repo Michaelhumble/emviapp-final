@@ -72,7 +72,7 @@ const BookingsTab = () => {
                 >
                   <div>
                     <div className="font-medium text-base text-gray-900">{b.client_name || "Client"}</div>
-                    <div className="text-sm text-gray-600">{b.service_type || b.service_name || "-"}</div>
+                    <div className="text-sm text-gray-600">{b.service_name || b.service_type || "-"}</div>
                   </div>
                   <div className="flex flex-col md:flex-row md:items-center md:gap-6 mt-2 md:mt-0">
                     <div className="flex items-center text-sm text-gray-500 mr-4">

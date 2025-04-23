@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Dialog,
@@ -88,6 +87,7 @@ const BookClientModal: React.FC<BookClientModalProps> = ({
           time_requested: time,
           note: note || null,
           recipient_id: user.id,
+          sender_id: user.id,
           status: 'pending'
         });
         

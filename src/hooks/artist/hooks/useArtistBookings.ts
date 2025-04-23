@@ -13,6 +13,7 @@ export interface Booking {
   client_avatar?: string;
   service_id?: string;
   service_name?: string;
+  service_type?: string;
   date_requested?: string;
   time_requested?: string;
   status: 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled';
@@ -47,7 +48,13 @@ export const useArtistBookings = () => {
       
       if (fetchError) throw fetchError;
       
-      setBookings(data || []);
+      // Convert database status strings to our enum type
+      const typedBookings = (data || []).map(booking => ({
+        ...booking,
+        status: booking.status as 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled'
+      }));
+      
+      setBookings(typedBookings);
       
       // Extract unique service types
       const uniqueServiceTypes = Array.from(
@@ -82,7 +89,7 @@ export const useArtistBookings = () => {
       // Update local state
       setBookings(prev => prev.map(booking => 
         booking.id === bookingId 
-          ? { ...booking, status: 'accepted' } 
+          ? { ...booking, status: 'accepted' as const } 
           : booking
       ));
       
@@ -108,7 +115,7 @@ export const useArtistBookings = () => {
       // Update local state
       setBookings(prev => prev.map(booking => 
         booking.id === bookingId 
-          ? { ...booking, status: 'declined' } 
+          ? { ...booking, status: 'declined' as const } 
           : booking
       ));
       
