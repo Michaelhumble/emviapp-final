@@ -1,7 +1,6 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { messageSquareReply, reply } from "lucide-react";
+import { MessageSquareReply, Reply } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const messages = [
@@ -28,7 +27,7 @@ export default function ArtistMessagesPreview() {
         <CardTitle className="text-lg font-medium text-gray-900 flex items-center font-playfair">
           <span className="mr-2">
             <span className="inline-block align-middle">
-              {messageSquareReply && (
+              {MessageSquareReply && (
                 <span>
                   {/* Icon */}
                   <svg viewBox="0 0 24 24" width={20} height={20} className="text-emvi-accent align-middle mr-1.5" stroke="currentColor" fill="none" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
