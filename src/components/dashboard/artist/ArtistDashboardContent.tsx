@@ -1,9 +1,10 @@
+
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useArtistData } from './context/ArtistDataContext';
 import ArtistHero from './sections/ArtistHero';
 import ArtistMetrics from './sections/ArtistMetrics';
-import ArtistPortfolioPreview from './sections/ArtistPortfolioPreview';
+import ArtistServicesHighlight from './sections/ArtistServicesHighlight';
 import ArtistActivityFeed from './sections/ArtistActivityFeed';
 import ArtistAppointments from './sections/ArtistAppointments';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -103,6 +104,10 @@ const ArtistDashboardContent = () => {
       
       <motion.div variants={itemVariants}>
         <ArtistMetrics />
+      </motion.div>
+      
+      <motion.div variants={itemVariants}>
+        <ArtistServicesHighlight />
       </motion.div>
       
       <div className="h-2 md:h-4" />

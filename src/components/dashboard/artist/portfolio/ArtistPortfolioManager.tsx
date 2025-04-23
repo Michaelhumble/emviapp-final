@@ -123,7 +123,7 @@ const ArtistPortfolioManager = () => {
 
   return (
     <Card className="shadow-sm border-purple-100">
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-3 bg-gradient-to-r from-purple-50 to-white">
         <CardTitle className="text-xl font-serif flex items-center">
           <span className="mr-2"><img src="/lovable-uploads/f6bb9656-c400-4f28-ba97-69d71c651a97.png" alt="" className="h-6 w-6 rounded-md" /></span>
           Portfolio Gallery
@@ -160,9 +160,9 @@ const ArtistPortfolioManager = () => {
                           alt={item.title}
                           className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
                         />
-                        {/* Edit Button (always visible, with hover effect) */}
+                        {/* Edit Button - Always visible */}
                         <button
-                          className="absolute top-2 right-2 z-10 bg-white/90 hover:bg-white transition p-1.5 rounded-full shadow"
+                          className="absolute top-2 right-2 z-10 bg-white/80 hover:bg-white p-1.5 rounded-full shadow-md"
                           onClick={() => handleEdit(item)}
                           type="button"
                           aria-label="Edit"
