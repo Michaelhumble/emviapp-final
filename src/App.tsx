@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import {
   Routes,
@@ -10,6 +9,7 @@ import { SalonProvider } from '@/context/salon';
 import { SubscriptionProvider } from '@/context/subscription';
 import { NotificationProvider } from '@/context/notification';
 import routes from './routes';
+import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
 
 function App() {
   const location = useLocation();
@@ -32,6 +32,7 @@ function App() {
                   element={route.element}
                 />
               ))}
+              <Route path="/dashboard/artist/booking-calendar" element={<BookingCalendar />} />
             </Routes>
           </NotificationProvider>
         </SubscriptionProvider>

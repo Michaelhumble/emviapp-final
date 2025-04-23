@@ -1,12 +1,12 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, ExternalLink, Clock } from "lucide-react";
+import { CalendarDays, ExternalLink, Clock, UserPlus } from "lucide-react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ComingSoonModal from "@/components/common/ComingSoonModal";
 import { useArtistUpcomingBookings } from "@/hooks/artist/useArtistUpcomingBookings";
+import BookClientModal from "./BookClientModal";
 
 const statusBadge = (status: string) => {
   switch (status) {
@@ -24,26 +24,68 @@ const statusBadge = (status: string) => {
 const ArtistCalendarPreview = () => {
   const { bookings, loading, error } = useArtistUpcomingBookings();
   const [modalOpen, setModalOpen] = useState(false);
+  const [clientModalOpen, setClientModalOpen] = useState(false);
+  const [localBookings, setLocalBookings] = useState<any[]>([]);
 
-  const previewBookings = bookings.slice(0, 3);
+  const previewBookings = [
+    ...localBookings,
+    ...bookings
+  ].slice(0, 3);
+
+  const navigate = useNavigate();
+
+  const handleMockBooking = (newBooking: any) => {
+    setLocalBookings((prev) => [
+      {
+        id: Date.now().toString(),
+        ...newBooking,
+        status: "pending",
+        appointment_date: newBooking.date,
+        appointment_time: newBooking.time,
+        client_name: newBooking.clientName,
+        service_type: newBooking.service,
+      },
+      ...prev
+    ]);
+  };
 
   return (
-    <Card className="border-gray-100 shadow-sm">
+    <Card className="border-gray-100 shadow-sm bg-gradient-to-br from-white via-purple-50 to-pink-50 rounded-2xl">
       <ComingSoonModal
         open={modalOpen}
         onOpenChange={setModalOpen}
         featureName="Manage Appointments"
       />
-      <CardHeader className="pb-3 flex flex-row items-center justify-between">
-        <CardTitle className="text-lg font-medium text-gray-900 flex items-center">
-          <CalendarDays className="h-5 w-5 mr-2 text-blue-500" />
+      <BookClientModal
+        open={clientModalOpen}
+        onClose={() => setClientModalOpen(false)}
+        onBook={handleMockBooking}
+      />
+      <CardHeader className="pb-3 flex flex-row items-center justify-between bg-gradient-to-r from-white via-purple-50 to-pink-50 rounded-t-2xl">
+        <CardTitle className="text-lg font-medium text-gray-900 flex items-center font-playfair">
+          <CalendarDays className="h-5 w-5 mr-2 text-emvi-accent" />
           Upcoming Appointments
         </CardTitle>
-        <Button variant="ghost" size="sm" asChild>
-          <Link to="/calendar" className="flex items-center">
-            Full Calendar <ExternalLink className="ml-1 h-3.5 w-3.5" />
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            className="flex items-center font-semibold bg-gradient-to-r from-emvi-accent/80 to-pink-400/80 text-white hover:scale-105 transition-transform shadow"
+            onClick={() => setClientModalOpen(true)}
+          >
+            <UserPlus className="h-4 w-4 mr-1" />
+            Book Client
+          </Button>
+          <Button variant="ghost" size="sm" asChild>
+            <Link
+              to="/dashboard/artist/booking-calendar"
+              className="flex items-center px-2 font-medium text-emvi-accent"
+            >
+              Manage Appointments
+              <ExternalLink className="ml-1 h-3.5 w-3.5" />
+            </Link>
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="p-4">
         <div className="space-y-4">
@@ -65,15 +107,15 @@ const ArtistCalendarPreview = () => {
               previewBookings.map((booking) => (
                 <motion.div
                   key={booking.id}
-                  className={`p-4 rounded-lg border ${statusBadge(booking.status)}`}
+                  className={`p-4 rounded-lg border ${statusBadge(booking.status)} bg-white/80 shadow`}
                   whileHover={{ y: -2, transition: { duration: 0.2 } }}
                 >
                   <div className="flex justify-between items-start">
                     <div>
-                      <h4 className="font-medium text-gray-900">
-                        {booking.client_name || "Client"}
+                      <h4 className="font-medium text-gray-900 font-playfair">
+                        {booking.client_name || booking.clientName || "Client"}
                       </h4>
-                      <p className="text-sm text-gray-600 mt-1">{booking.service_type}</p>
+                      <p className="text-sm text-gray-600 mt-1">{booking.service_type || booking.service}</p>
                     </div>
                     <div
                       className={`px-2 py-1 rounded-full text-xs font-medium ${statusBadge(
@@ -85,24 +127,19 @@ const ArtistCalendarPreview = () => {
                     </div>
                   </div>
                   <div className="flex items-center mt-3 text-sm text-gray-600">
-                    <CalendarDays className="h-4 w-4 mr-1.5 text-gray-500" />
+                    <CalendarDays className="h-4 w-4 mr-1.5 text-gray-400" />
                     <span>
-                      {booking.appointment_date
-                        ? new Date(booking.appointment_date).toLocaleDateString()
+                      {booking.appointment_date || booking.date
+                        ? new Date(booking.appointment_date || booking.date).toLocaleDateString()
                         : "-"}
                     </span>
-                    <Clock className="h-4 w-4 ml-3 mr-1.5 text-gray-500" />
-                    <span>{booking.appointment_time || "-"}</span>
+                    <Clock className="h-4 w-4 ml-3 mr-1.5 text-gray-400" />
+                    <span>{booking.appointment_time || booking.time || "-"}</span>
                   </div>
                 </motion.div>
               ))
             )}
           </div>
-        </div>
-        <div className="mt-6 flex justify-center">
-          <Button type="button" onClick={() => setModalOpen(true)}>
-            Manage Appointments
-          </Button>
         </div>
       </CardContent>
     </Card>
