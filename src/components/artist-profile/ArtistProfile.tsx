@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar, X } from "lucide-react";
@@ -11,6 +10,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Service } from "@/pages/u/artist-profile/types";
 import { UserProfile } from "@/types/profile";
 import TestimonialsSection from "./TestimonialsSection";
+import BookArtistModal from "./BookArtistModal";
+import { useLocalBookings } from "./hooks/useLocalBookings";
 
 interface ArtistProfileProps {
   profile: UserProfile;
@@ -38,6 +39,12 @@ const demoTestimonials = [
   },
 ];
 
+const exampleServices = [
+  { id: "s1", name: "Signature Manicure" },
+  { id: "s2", name: "Artistic Nail Design" },
+  { id: "s3", name: "Deluxe Gel Nails" }
+];
+
 const ArtistProfile = ({
   profile,
   services,
@@ -47,6 +54,7 @@ const ArtistProfile = ({
 }: ArtistProfileProps) => {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const isMobile = useIsMobile();
+  const { addBooking } = useLocalBookings();
 
   const handleBookNow = () => setShowBookingModal(true);
   const closeBookingModal = () => setShowBookingModal(false);
@@ -160,43 +168,14 @@ const ArtistProfile = ({
       )}
 
       {/* Booking Modal */}
-      <AnimatePresence>
-        {showBookingModal && (
-          <motion.div
-            className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={closeBookingModal}
-          >
-            <motion.div
-              className="w-full max-w-md"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="relative">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-2 top-2 z-10 rounded-full h-8 w-8 bg-white/90 text-gray-700 hover:bg-white hover:text-gray-900"
-                  onClick={closeBookingModal}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-                <BookingForm
-                  artistId={profile.id}
-                  artistName={profile.full_name || "Artist"}
-                  services={services}
-                  onClose={closeBookingModal}
-                />
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <BookArtistModal
+        open={showBookingModal}
+        onClose={closeBookingModal}
+        onBook={({ clientName, service, date, time, note }) => {
+          addBooking({ clientName, service, date, time, note });
+        }}
+        services={services.length ? services.map(s => ({ id: s.id, name: s.name || s.title })) : exampleServices}
+      />
     </div>
   );
 };

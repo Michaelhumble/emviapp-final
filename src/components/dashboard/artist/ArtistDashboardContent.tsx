@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useArtistData } from './context/ArtistDataContext';
@@ -6,6 +5,7 @@ import ArtistHero from './sections/ArtistHero';
 import ArtistMetrics from './sections/ArtistMetrics';
 import ArtistActivityFeed from './sections/ArtistActivityFeed';
 import ArtistAppointments from './sections/ArtistAppointments';
+import ArtistBookingsLocal from './sections/ArtistBookingsLocal';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
 import ArtistPortfolioManager from './portfolio/ArtistPortfolioManager';
@@ -105,9 +105,14 @@ const ArtistDashboardContent = () => {
         <ArtistMetrics />
       </motion.div>
 
-      {/* --- ONLY this Portfolio section remains --- */}
+      {/* --- Portfolio section (as before) --- */}
       <motion.div variants={itemVariants}>
         <ArtistPortfolioManager />
+      </motion.div>
+      
+      {/* New local bookings section */}
+      <motion.div variants={itemVariants}>
+        <ArtistBookingsLocal />
       </motion.div>
       
       <div className="h-2 md:h-4" />
@@ -126,4 +131,3 @@ const ArtistDashboardContent = () => {
 };
 
 export default ArtistDashboardContent;
-
