@@ -3,38 +3,37 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GalleryHorizontal } from "lucide-react";
 
-// Static beauty-related placeholder images (public domain)
 const PLACEHOLDER_IMAGES = [
   {
-    url: "https://images.unsplash.com/photo-1515548212235-40c1c7fbde06?w=600&q=80",
-    alt: "Modern nails with subtle gradient",
-    label: "Gradient Nails"
+    url: "/lovable-uploads/ac97ca70-1589-41f2-b35b-f17345583c7d.png",
+    alt: "Professional facial treatment with soft lighting",
+    label: "Facial Therapy"
   },
   {
-    url: "https://images.unsplash.com/photo-1522337660859-02fbefca4702?w=600&q=80",
-    alt: "Woman getting makeup applied",
-    label: "Makeup Artistry"
+    url: "/lovable-uploads/5f8eaed6-4a17-4992-a270-6394aad0f43b.png",
+    alt: "Nail artist applying elegant dark nail polish",
+    label: "Nail Design"
   },
   {
-    url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&q=80",
-    alt: "Body of water surrounded by trees (soothing luxury mood)",
-    label: "Luxury Calm"
+    url: "/lovable-uploads/5f4b0b9e-d1c2-43ad-a85c-92c4b6c61441.png",
+    alt: "Close-up of makeup brushes and beauty tools",
+    label: "Professional Makeup"
   },
   {
-    url: "https://images.unsplash.com/photo-1519415943484-cfb6d3c87958?w=600&q=80",
-    alt: "Professional hair styling with waves",
-    label: "Hairstyling"
+    url: "/lovable-uploads/be0807fc-786e-4491-8fa9-00b4ad0f201f.png",
+    alt: "Relaxing spa massage treatment",
+    label: "Wellness Massage"
   },
   {
-    url: "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=600&q=80",
-    alt: "Orange flowers (artistic beauty accent)",
-    label: "Bloom Accent"
+    url: "/lovable-uploads/fe0bd314-25aa-4296-bf38-80dddf69b992.png",
+    alt: "Detailed nail polish application",
+    label: "Precision Manicure"
   },
   {
-    url: "https://images.unsplash.com/photo-1500673922987-e212871fec22?w=600&q=80",
-    alt: "String lights in trees (elegance and detail)",
-    label: "Elegant Details"
-  },
+    url: "/lovable-uploads/b428f0c9-5145-4620-9400-4fa8d534c639.png",
+    alt: "Beauty professional performing a relaxing treatment",
+    label: "Spa Techniques"
+  }
 ];
 
 const ArtistPortfolioPreview = () => {
@@ -78,3 +77,4 @@ const ArtistPortfolioPreview = () => {
 };
 
 export default ArtistPortfolioPreview;
+
