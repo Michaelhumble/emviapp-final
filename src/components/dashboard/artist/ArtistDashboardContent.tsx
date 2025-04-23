@@ -45,7 +45,6 @@ const ArtistDashboardContent = () => {
   const navigate = useNavigate();
   const query = useQuery();
 
-  // Show welcome toast on premium upgrade
   useEffect(() => {
     if (query.get("premium_success") === "1") {
       toast.success("Welcome to EmviApp Premium!", {
@@ -73,7 +72,7 @@ const ArtistDashboardContent = () => {
   }
   
   const handleUpgrade = () => {
-    window.location.href = PREMIUM_CHECKOUT_LINK;
+    window.location.href = "https://buy.stripe.com/test_4gw8ycdIz2J4gUw9AA";
   };
 
   return (
@@ -105,8 +104,8 @@ const ArtistDashboardContent = () => {
       <motion.div variants={itemVariants}>
         <ArtistMetrics />
       </motion.div>
-      
-      {/* Portfolio Manager Section */}
+
+      {/* --- ONLY this Portfolio section remains --- */}
       <motion.div variants={itemVariants}>
         <ArtistPortfolioManager />
       </motion.div>
@@ -127,3 +126,4 @@ const ArtistDashboardContent = () => {
 };
 
 export default ArtistDashboardContent;
+
