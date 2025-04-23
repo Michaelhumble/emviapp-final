@@ -12,6 +12,7 @@ import { UserProfile } from "@/types/profile";
 import TestimonialsSection from "./TestimonialsSection";
 import BookArtistModal from "./BookArtistModal";
 import { useLocalBookings } from "./hooks/useLocalBookings";
+import ArtistTestimonials from "./ArtistTestimonials";
 
 interface ArtistProfileProps {
   profile: UserProfile;
@@ -36,6 +37,12 @@ const demoTestimonials = [
     service_type: "Nail Art",
     review_text: "Unique and beautiful designs. The atmosphere was relaxing & friendly.",
     rating: 4,
+  },
+  {
+    id: "3",
+    client_name: "Jessica Miller",
+    service_type: "Gel Manicure",
+    review_text: "Great experience! Professional, friendly, and very talented. My nails look fantastic and I've received so many compliments.",
   },
 ];
 
@@ -99,25 +106,8 @@ const ArtistProfile = ({
         />
       </div>
 
-      {/* Testimonials Section */}
-      <TestimonialsSection testimonials={testimonials} artistName={profile.full_name} />
-
-      {/* Second Book Button after testimonials */}
-      {profile.accepts_bookings && (
-        <div className="flex justify-center my-10">
-          <Button
-            size="lg"
-            className="
-              min-w-[220px] px-8 py-4 rounded-lg font-semibold text-base shadow-lg bg-gradient-to-r from-purple-600 via-pink-500 to-purple-700
-              text-white hover:from-purple-700 hover:to-pink-600 transition-colors
-            "
-            onClick={handleBookNow}
-          >
-            <Calendar className="mr-2 h-5 w-5" />
-            Book This Artist
-          </Button>
-        </div>
-      )}
+      {/* --- Insert new Testimonials section here --- */}
+      <ArtistTestimonials />
 
       {/* Services Section */}
       <div className="mb-12">
