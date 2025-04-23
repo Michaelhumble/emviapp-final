@@ -38,7 +38,8 @@ export const usePortfolioImages = (artistId?: string) => {
             url: item.image_url,
             title: item.title,
             description: item.description,
-            featured: item.featured || false
+            // Set featured to false by default since it doesn't exist in the database
+            featured: false
           }));
           
           setImages(transformedData);
