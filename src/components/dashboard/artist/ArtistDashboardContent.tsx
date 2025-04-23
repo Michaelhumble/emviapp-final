@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import ArtistPortfolioManager from './portfolio/ArtistPortfolioManager';
 import ProfileBoostBanner from "./ProfileBoostBanner";
 import EarningsSnapshot from '../artist/EarningsSnapshot';
+import { Link } from 'react-router-dom';
 
 // Animation variants
 const containerVariants = {
@@ -121,9 +122,11 @@ const ArtistDashboardContent = () => {
         <EarningsSnapshot />
       </motion.div>
 
-      {/* Portfolio section (as before) */}
+      {/* Portfolio section - Updated with link */}
       <motion.div variants={itemVariants}>
-        <ArtistPortfolioManager />
+        <Link to="/dashboard/artist/portfolio">
+          <ArtistPortfolioManager />
+        </Link>
       </motion.div>
       
       <motion.div variants={itemVariants}>

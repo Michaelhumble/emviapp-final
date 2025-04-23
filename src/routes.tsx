@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Index from './pages/Index';
 import Welcome from './pages/Welcome';
@@ -312,6 +311,10 @@ const routes = [
   {
     path: '/invite/:token',
     element: <InvitePage />,
+  },
+  {
+    path: '/dashboard/artist/portfolio',
+    element: <PortfolioManagerPage />
   },
   {
     path: '*',
