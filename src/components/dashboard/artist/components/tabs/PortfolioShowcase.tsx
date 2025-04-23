@@ -25,7 +25,7 @@ const PortfolioShowcase = () => {
       <div className="flex justify-center">
         <Button 
           className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-          onClick={() => window.location.href = '/artist/portfolio'}
+          onClick={() => window.location.href = '/dashboard/artist/portfolio'}
         >
           <span>View Full Portfolio</span>
           <ArrowRight className="ml-2 h-4 w-4" />
