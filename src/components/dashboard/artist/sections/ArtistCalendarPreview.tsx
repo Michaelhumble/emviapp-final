@@ -1,11 +1,12 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, ExternalLink, Clock, UserPlus } from "lucide-react";
+import { CalendarDays, ExternalLink, Clock, UserPlus, Loader } from "lucide-react";
 import { motion } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import ComingSoonModal from "@/components/common/ComingSoonModal";
-import { useArtistUpcomingBookings } from "@/hooks/artist/useArtistUpcomingBookings";
+import { useArtistUpcomingBookings } from "@/hooks/useArtistUpcomingBookings";
 import BookClientModal from "./BookClientModal";
 
 const statusBadge = (status: string) => {
@@ -25,28 +26,10 @@ const ArtistCalendarPreview = () => {
   const { bookings, loading, error } = useArtistUpcomingBookings();
   const [modalOpen, setModalOpen] = useState(false);
   const [clientModalOpen, setClientModalOpen] = useState(false);
-  const [localBookings, setLocalBookings] = useState<any[]>([]);
-
-  const previewBookings = [
-    ...localBookings,
-    ...bookings
-  ].slice(0, 3);
-
-  const navigate = useNavigate();
 
   const handleMockBooking = (newBooking: any) => {
-    setLocalBookings((prev) => [
-      {
-        id: Date.now().toString(),
-        ...newBooking,
-        status: "pending",
-        appointment_date: newBooking.date,
-        appointment_time: newBooking.time,
-        client_name: newBooking.clientName,
-        service_type: newBooking.service,
-      },
-      ...prev
-    ]);
+    // Now just a UI callback - data is saved in Supabase via the modal
+    console.log("Booking created:", newBooking);
   };
 
   return (
@@ -91,31 +74,37 @@ const ArtistCalendarPreview = () => {
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {loading ? (
-              [1, 2, 3].map((n) => (
-                <div
-                  key={n}
-                  className="rounded-lg border border-gray-100 bg-gray-50 animate-pulse p-4 h-32"
-                />
-              ))
+              <div className="col-span-3 flex justify-center items-center py-16">
+                <Loader className="h-8 w-8 animate-spin text-emvi-accent" />
+              </div>
             ) : error ? (
-              <div className="col-span-3 text-center py-8 text-gray-500">{error}</div>
-            ) : previewBookings.length === 0 ? (
               <div className="col-span-3 text-center py-8 text-gray-500">
-                No appointments yet. Start promoting your services to attract clients!
+                <p className="mb-2">{error}</p>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => window.location.reload()}
+                >
+                  Try Again
+                </Button>
+              </div>
+            ) : bookings.length === 0 ? (
+              <div className="col-span-3 text-center py-8 text-gray-500">
+                No appointments yet. Start promoting your services to attract clients or book a client directly!
               </div>
             ) : (
-              previewBookings.map((booking) => (
+              bookings.map((booking) => (
                 <motion.div
                   key={booking.id}
-                  className={`p-4 rounded-lg border ${statusBadge(booking.status)} bg-white/80 shadow`}
+                  className={`p-4 rounded-lg border border-opacity-40 ${statusBadge(booking.status)} bg-white/80 shadow`}
                   whileHover={{ y: -2, transition: { duration: 0.2 } }}
                 >
                   <div className="flex justify-between items-start">
                     <div>
                       <h4 className="font-medium text-gray-900 font-playfair">
-                        {booking.client_name || booking.clientName || "Client"}
+                        {booking.client_name || "Client"}
                       </h4>
-                      <p className="text-sm text-gray-600 mt-1">{booking.service_type || booking.service}</p>
+                      <p className="text-sm text-gray-600 mt-1">{booking.service_type || "Service"}</p>
                     </div>
                     <div
                       className={`px-2 py-1 rounded-full text-xs font-medium ${statusBadge(
@@ -129,12 +118,12 @@ const ArtistCalendarPreview = () => {
                   <div className="flex items-center mt-3 text-sm text-gray-600">
                     <CalendarDays className="h-4 w-4 mr-1.5 text-gray-400" />
                     <span>
-                      {booking.appointment_date || booking.date
-                        ? new Date(booking.appointment_date || booking.date).toLocaleDateString()
+                      {booking.appointment_date || booking.date_requested
+                        ? new Date(booking.appointment_date || booking.date_requested).toLocaleDateString()
                         : "-"}
                     </span>
                     <Clock className="h-4 w-4 ml-3 mr-1.5 text-gray-400" />
-                    <span>{booking.appointment_time || booking.time || "-"}</span>
+                    <span>{booking.appointment_time || booking.time_requested || "-"}</span>
                   </div>
                 </motion.div>
               ))

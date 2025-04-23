@@ -9,10 +9,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { CalendarIcon, Clock, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/context/auth";
 
 const SERVICES = [
   { id: "nail", label: "Nail" },
@@ -51,6 +54,8 @@ const BookClientModal: React.FC<BookClientModalProps> = ({
   const [time, setTime] = useState("");
   const [note, setNote] = useState("");
   const [step, setStep] = useState<"form" | "success">("form");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
 
   const reset = () => {
     setClientName("");
@@ -59,16 +64,53 @@ const BookClientModal: React.FC<BookClientModalProps> = ({
     setTime("");
     setNote("");
     setStep("form");
+    setIsSubmitting(false);
   };
 
-  const handleBook = (e: React.FormEvent) => {
+  const handleBook = async (e: React.FormEvent) => {
     e.preventDefault();
-    onBook({ clientName, service, date, time, note });
-    setStep("success");
-    setTimeout(() => {
-      onClose();
-      reset();
-    }, 1200);
+    
+    if (!user?.id) {
+      toast.error("You must be logged in to book a client");
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Insert booking to Supabase
+      const { data, error } = await supabase
+        .from('bookings')
+        .insert({
+          client_name: clientName,
+          service_type: service,
+          date_requested: date,
+          time_requested: time,
+          note: note || null,
+          recipient_id: user.id,
+          status: 'pending'
+        });
+        
+      if (error) {
+        throw error;
+      }
+      
+      // Still call the local handler for UI updates
+      onBook({ clientName, service, date, time, note });
+      
+      setStep("success");
+      toast.success("Booking created successfully!");
+      
+      setTimeout(() => {
+        onClose();
+        reset();
+      }, 1200);
+    } catch (error) {
+      console.error("Error creating booking:", error);
+      toast.error("Failed to create booking. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -95,6 +137,7 @@ const BookClientModal: React.FC<BookClientModalProps> = ({
                 onChange={(e) => setClientName(e.target.value)}
                 className="bg-soft-gray font-sans"
                 required
+                disabled={isSubmitting}
               />
             </div>
             <div>
@@ -109,6 +152,7 @@ const BookClientModal: React.FC<BookClientModalProps> = ({
                 value={service}
                 onChange={(e) => setService(e.target.value)}
                 required
+                disabled={isSubmitting}
                 className="block w-full rounded-md border border-gray-200 px-3 py-2 font-sans text-gray-800 bg-[#F1F0FB] focus:ring-2 focus:ring-purple-300"
               >
                 <option value="">Select...</option>
@@ -135,6 +179,7 @@ const BookClientModal: React.FC<BookClientModalProps> = ({
                   onChange={(e) => setDate(e.target.value)}
                   className="bg-soft-gray font-sans"
                   required
+                  disabled={isSubmitting}
                 />
               </div>
               <div className="flex-1">
@@ -149,6 +194,7 @@ const BookClientModal: React.FC<BookClientModalProps> = ({
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
                   required
+                  disabled={isSubmitting}
                   className="block w-full rounded-md border border-gray-200 px-3 py-2 font-sans text-gray-800 bg-[#F1F0FB] focus:ring-2 focus:ring-purple-300"
                 >
                   <option value="">Select...</option>
@@ -174,17 +220,18 @@ const BookClientModal: React.FC<BookClientModalProps> = ({
                 className="resize-none font-sans"
                 rows={2}
                 placeholder="Details for this booking..."
+                disabled={isSubmitting}
               />
             </div>
             <Button
               type="submit"
               className={cn(
                 "w-full mt-3 bg-gradient-to-r from-purple-600 via-pink-500 to-emvi-accent text-white font-semibold shadow-lg hover:from-purple-700 hover:to-pink-600 text-base py-2 rounded-lg transition font-serif",
-                (!clientName || !service || !date || !time) && "opacity-60 cursor-not-allowed"
+                (!clientName || !service || !date || !time || isSubmitting) && "opacity-60 cursor-not-allowed"
               )}
-              disabled={!clientName || !service || !date || !time}
+              disabled={!clientName || !service || !date || !time || isSubmitting}
             >
-              Confirm Booking
+              {isSubmitting ? "Creating booking..." : "Confirm Booking"}
             </Button>
           </form>
         ) : (
@@ -200,10 +247,10 @@ const BookClientModal: React.FC<BookClientModalProps> = ({
               </div>
             </div>
             <p className="text-lg font-semibold mb-1 text-center">
-              Booking request added!
+              Booking created!
             </p>
             <p className="text-muted-foreground text-center">
-              The appointment has been added (mock only).
+              The appointment has been added to your calendar.
             </p>
           </motion.div>
         )}

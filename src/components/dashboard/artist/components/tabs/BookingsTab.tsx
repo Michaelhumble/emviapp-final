@@ -1,11 +1,11 @@
 
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useArtistBookings } from "@/hooks/artist/useArtistBookings";
-import { Calendar, ListCheck, Plus } from "lucide-react";
+import { Calendar, ListCheck, Plus, Loader } from "lucide-react";
 import AddBookingModal from "./AddBookingModal";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
+import { useArtistBookings } from "@/hooks/artist/hooks/useArtistBookings";
 
 // Restoring the statusBadge function
 const statusBadge = (status: string) => {
@@ -26,9 +26,11 @@ const statusBadge = (status: string) => {
 };
 
 const BookingsTab = () => {
-  const { bookings, loading, error, refresh } = useArtistBookings();
   const { user } = useAuth();
   const [showModal, setShowModal] = useState(false);
+  
+  // Use the real Supabase hook
+  const { bookings, loading, error, refresh } = useArtistBookings();
 
   return (
     <Card className="border-purple-100">
@@ -49,10 +51,8 @@ const BookingsTab = () => {
       <CardContent className="p-0">
         <div className="h-[480px] overflow-y-auto px-6 py-4">
           {loading ? (
-            <div className="space-y-3">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="w-full h-20 bg-gradient-to-r from-gray-100 to-gray-50 rounded-lg animate-pulse" />
-              ))}
+            <div className="h-full flex justify-center items-center">
+              <Loader className="h-8 w-8 animate-spin text-purple-400" />
             </div>
           ) : error ? (
             <div className="flex flex-col h-full items-center justify-center p-12 text-gray-500">
@@ -72,20 +72,20 @@ const BookingsTab = () => {
                 >
                   <div>
                     <div className="font-medium text-base text-gray-900">{b.client_name || "Client"}</div>
-                    <div className="text-sm text-gray-600">{b.service_type || "-"}</div>
+                    <div className="text-sm text-gray-600">{b.service_type || b.service_name || "-"}</div>
                   </div>
                   <div className="flex flex-col md:flex-row md:items-center md:gap-6 mt-2 md:mt-0">
                     <div className="flex items-center text-sm text-gray-500 mr-4">
                       <Calendar className="h-4 w-4 mr-1" />
                       <span>
-                        {b.appointment_date
-                          ? new Date(b.appointment_date).toLocaleDateString()
+                        {b.date_requested
+                          ? new Date(b.date_requested).toLocaleDateString()
                           : "-"}
                       </span>
                     </div>
                     <div className="flex items-center text-sm text-gray-500 mr-4">
                       <span>
-                        {b.appointment_time ? b.appointment_time : "-"}
+                        {b.time_requested ? b.time_requested : "-"}
                       </span>
                     </div>
                     <span
