@@ -11,9 +11,13 @@ interface ProfileBoostBannerProps {
   onBoostClick?: () => void;
 }
 
-export default function ProfileBoostBanner({ hasBoost, boostExpiry, onBoostClick }: ProfileBoostBannerProps) {
+export default function ProfileBoostBanner({ 
+  hasBoost, 
+  boostExpiry, 
+  onBoostClick 
+}: ProfileBoostBannerProps) {
   return (
-    <div className={`w-full rounded-xl overflow-hidden shadow border border-purple-100 my-2 ${premiumGradient} px-4 py-4 flex flex-col items-center sm:flex-row sm:justify-between`}>
+    <div className={`w-full rounded-xl overflow-hidden shadow border border-purple-100 my-4 ${premiumGradient} px-4 py-4 flex flex-col items-center sm:flex-row sm:justify-between`}>
       <div className="flex items-center gap-3">
         <span>
           <Rocket className="h-6 w-6 text-purple-500" />
