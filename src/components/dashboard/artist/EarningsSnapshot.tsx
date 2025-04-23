@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -78,102 +77,72 @@ const EarningsSnapshot: React.FC = () => {
         whileHover={{ scale: 1.03 }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
       >
-        <Card className="bg-[linear-gradient(104deg,#f1f0fb_60%,#e5deff_115%,#fff_100%)] border-0 shadow-md glassmorphism pb-0 overflow-hidden relative">
-          {/* Watermark icon (subtle background icon top-right) */}
-          <span className="absolute right-5 top-3 opacity-10 pointer-events-none text-[80px] hidden xs:block">
-            <TrendingUp className="w-[80px] h-[80px] text-emvi-accent" />
-          </span>
-          <CardHeader className="!p-5 xs:!p-6 pb-1 bg-gradient-to-r from-[#F1F0FB] via-white to-[#E5DEFF] rounded-t-2xl">
+        <Card 
+          className="bg-purple-50/50 backdrop-blur-md border-0 shadow-lg rounded-2xl overflow-hidden relative"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-100/30 to-purple-200/30 opacity-50 pointer-events-none" />
+          
+          <CardHeader className="!p-5 xs:!p-6 pb-1 relative z-10">
+            <div className="absolute right-4 top-4 opacity-20 pointer-events-none">
+              <TrendingUp className="w-16 h-16 text-purple-500" />
+            </div>
             <CardTitle className="font-serif text-lg xs:text-xl font-semibold text-emvi-dark flex items-center gap-2">
-              <span role="img" aria-label="money" className="select-none">💰</span>
-              This Month's Earnings Snapshot
+              💰 This Month's Earnings Snapshot
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-col sm:flex-row items-start sm:items-end gap-4 sm:gap-7 px-5 xs:px-6 pt-3 xs:pt-4 pb-4">
-            <div className="flex-1 flex flex-col items-center sm:items-start text-center sm:text-left relative">
-              <span className="text-xs xs:text-sm text-emvi-accent font-semibold uppercase tracking-wide mb-2 block text-center sm:text-left">
-                Great job, you're building momentum!
-              </span>
-              <span
-                className="font-playfair text-[2.6rem] xs:text-[2.9rem] sm:text-[3.35rem] font-extrabold inline-block mb-1 tracking-tight 
-                  bg-gradient-to-r from-[#9b87f5] to-[#D6BCFA] text-transparent bg-clip-text drop-shadow"
-                style={{
-                  lineHeight: 1.06,
-                  letterSpacing: "-.02em",
-                }}
-              >
-                $1,250.00
-              </span>
-              <span className="text-[13px] xs:text-base text-neutral-500 font-medium mb-1">
-                $1,250.00 earned from 5 bookings this month — let's aim higher!
-              </span>
-              {/* Goal progress bar */}
-              <div className="mt-3 w-full max-w-xs">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-semibold text-emvi-dark/90">Goal: ${goal.toLocaleString()}</span>
-                  <span className="text-xs text-gray-400">{progressPct.toFixed(0)}%</span>
-                </div>
-                <div className="w-full rounded-full bg-[#ede9fe] h-2.5 xs:h-3 shadow-inner overflow-hidden relative">
-                  <div
-                    className="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-[#9b87f5] to-[#D6BCFA] transition-all duration-500"
-                    style={{ width: `${progressPct}%` }}
-                  />
-                </div>
-                <span className="block mt-1 text-xs text-gray-400 font-serif text-center xs:text-left">
-                  {goal - earned > 0
-                    ? <>${goal - earned} more to reach your goal</>
-                    : "Goal achieved!"}
-                </span>
+          
+          <CardContent className="relative z-10 px-5 xs:px-6 pt-3 xs:pt-4 pb-4">
+            <div className="text-xs xs:text-sm text-purple-600 font-semibold uppercase tracking-wide mb-2 text-center">
+              Great Job, You're Building Momentum!
+            </div>
+            
+            <div 
+              className="font-playfair text-[2.6rem] xs:text-[2.9rem] sm:text-[3rem] font-extrabold inline-block mb-1 tracking-tight 
+              bg-gradient-to-r from-purple-600 to-purple-400 text-transparent bg-clip-text text-center w-full"
+            >
+              $1,250.00
+            </div>
+            
+            <div className="text-[13px] xs:text-base text-neutral-600 text-center mb-4">
+              $1,250.00 earned from 5 bookings this month — let's aim higher!
+            </div>
+            
+            <div className="mt-3 w-full max-w-md mx-auto">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-semibold text-emvi-dark/90">Goal: $2,000</span>
+                <span className="text-xs text-gray-500">63%</span>
               </div>
+              <div className="w-full rounded-full bg-purple-100 h-2.5 xs:h-3 shadow-inner overflow-hidden relative">
+                <div
+                  className="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-purple-500 to-purple-400 transition-all duration-500"
+                  style={{ width: '63%' }}
+                />
+              </div>
+              <div className="block mt-1 text-xs text-gray-500 text-center">
+                $750 more to reach your goal
+              </div>
+            </div>
+            
+            <div className="flex justify-center mt-4">
               <Button
-                variant="ghost"
-                size="sm"
-                className="mt-5 px-4 bg-gradient-to-r from-[#9b87f5] to-[#D6BCFA] text-white font-semibold rounded-lg shadow hover:from-[#7e69ab] hover:to-[#d6bcfa]/90 transition-all inline-flex gap-1 items-center"
+                variant="outline"
+                className="bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-200 gap-2"
                 onClick={handleDetailedReport}
-                aria-label="View Full Earnings Breakdown"
-                style={{
-                  background: "linear-gradient(90deg, #9b87f5 0%, #D6BCFA 100%)",
-                  color: "#fff",
-                  boxShadow: "0 2px 10px 0 rgba(155,135,245,0.11)",
-                  fontSize: "15px"
-                }}
               >
-                <TrendingUp className="h-5 w-5 opacity-90 mr-1" />
-                📈 View Full Earnings Breakdown
+                <TrendingUp className="h-4 w-4" />
+                View Full Earnings Breakdown
               </Button>
             </div>
-            <div className="w-full sm:w-1/2 min-w-[160px] xs:min-w-[180px] sm:max-w-[270px] h-20 xs:h-24 sm:h-28">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={data}
-                  barCategoryGap="38%"
-                  margin={{ top: 8, right: 12, left: 0, bottom: 0 }}
+            
+            <div className="flex justify-center mt-4 space-x-2">
+              {['Apr 1-5', 'Apr 6-12', 'Apr 13-19', 'Apr 20-26'].map((range) => (
+                <span 
+                  key={range} 
+                  className="text-xs text-gray-500 px-2 py-1 rounded-full hover:bg-purple-100 cursor-pointer"
                 >
-                  <XAxis
-                    dataKey="week"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 12, fill: "#9b87f5" }}
-                  />
-                  <YAxis hide />
-                  <Tooltip content={<CustomTooltip />} cursor={{ fill: "#E5DEFF85" }} />
-                  <Bar
-                    dataKey="earnings"
-                    fill="url(#EmviEarningsBar)"
-                    radius={[7, 7, 0, 0]}
-                    maxBarSize={30}
-                    isAnimationActive
-                  >
-                    {/* Custom bar gradient */}
-                    <defs>
-                      <linearGradient id="EmviEarningsBar" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#9b87f5" />
-                        <stop offset="100%" stopColor="#D6BCFA" />
-                      </linearGradient>
-                    </defs>
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+                  {range}
+                </span>
+              ))}
             </div>
           </CardContent>
         </Card>
@@ -183,4 +152,3 @@ const EarningsSnapshot: React.FC = () => {
 };
 
 export default EarningsSnapshot;
-
