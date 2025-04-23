@@ -5,6 +5,7 @@ import ProfileHighlights from './ProfileHighlights';
 import ArtistMetrics from '@/components/dashboard/artist/sections/ArtistMetrics';
 import ArtistTestimonials from './sections/ArtistTestimonials';
 import ArtistCalendarPreview from './sections/ArtistCalendarPreview';
+// Import the new Messages Preview card
 import ArtistMessagesPreview from './sections/ArtistMessagesPreview';
 import { useAuth } from '@/context/auth';
 
@@ -35,7 +36,7 @@ const ArtistDashboardWidgets: React.FC = () => {
       {/* Performance Metrics */}
       <ArtistMetrics />
       
-      {/* Two Column Layout for Client Activity and Upcoming Appointments */}
+      {/* Two Column Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <ArtistTestimonials />
         <ArtistMessagesPreview />
