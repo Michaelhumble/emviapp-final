@@ -1,8 +1,8 @@
-
 import React, { useMemo, useState } from "react";
 import { UserPlus, ImagePlus, DollarSign, CheckCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import NextMilestoneProgress from "./NextMilestoneProgress";
 
 // EmviApp's premium color palette
 const GRADIENT = "bg-gradient-to-br from-[#F1F0FB] via-[#E5DEFF]/90 to-white";
@@ -12,11 +12,6 @@ const ACCENT = "#9b87f5";
 
 // Mocked user progress for this week (toggle as needed)
 const TASKS = [
-  {
-    label: "Add 2 new photos",
-    icon: ImagePlus,
-    complete: false, // mock state
-  },
   {
     label: "Invite a client",
     icon: UserPlus,
@@ -31,15 +26,6 @@ const TASKS = [
 
 // Pick a random suggestion per "user" session (mock)
 const SUGGESTIONS = [
-  {
-    icon: ImagePlus,
-    headline: "Boost Your Visibility Today!",
-    detail:
-      "Adding recent photos keeps your portfolio fresh and helps you book more dream clients. Show off your latest styles!",
-    ctaText: "Add Photos",
-    ctaLink: "/dashboard/artist/portfolio",
-    taskIndex: 0,
-  },
   {
     icon: UserPlus,
     headline: "Grow Your Loyal Client List",
@@ -61,7 +47,7 @@ const SUGGESTIONS = [
 ];
 
 function getRandomSuggestion(seen = []) {
-  // Filter out already seen if possible, else random
+  // Updated to only consider the two remaining suggestions
   const available = SUGGESTIONS.filter((_, i) => !seen.includes(i));
   const pool = available.length ? available : SUGGESTIONS;
   const idx = Math.floor(Math.random() * pool.length);
@@ -132,6 +118,8 @@ const GrowYourBusiness: React.FC = () => {
           ))}
         </ol>
       </div>
+
+      <NextMilestoneProgress />
 
       {/* Dynamic Smart Suggestion Card */}
       <div
