@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar, X } from "lucide-react";
@@ -106,7 +107,7 @@ const ArtistProfile = ({
         />
       </div>
 
-      {/* --- Insert new Testimonials section here --- */}
+      {/* Testimonials Section */}
       <ArtistTestimonials />
 
       {/* Services Section */}

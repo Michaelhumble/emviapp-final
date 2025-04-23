@@ -25,13 +25,13 @@ const defaultTestimonials: Testimonial[] = [
     id: "2",
     clientName: "Sara P.",
     rating: 4,
-    text: "Very professional and welcoming. Loved my manicure and the studio’s atmosphere.",
+    text: "Very professional and welcoming. Loved my manicure and the studio's atmosphere.",
   },
   {
     id: "3",
     clientName: "Amelia R.",
     rating: 5,
-    text: "Best nail experience I’ve had. Highly recommended for anyone seeking luxury service.",
+    text: "Best nail experience I've had. Highly recommended for anyone seeking luxury service.",
   },
 ];
 
@@ -44,7 +44,7 @@ function calculateAverage(testimonials: Testimonial[]): number | null {
 const ArtistTestimonials: React.FC<ArtistTestimonialsProps> = ({
   testimonials = defaultTestimonials,
 }) => {
-  const reviews = testimonials.slice(0, 3);
+  const reviews = testimonials.slice(0, 3); // Always show exactly 3 reviews
   const average = calculateAverage(reviews);
 
   return (
