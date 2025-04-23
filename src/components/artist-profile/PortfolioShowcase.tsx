@@ -3,11 +3,12 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { GalleryHorizontal, Plus, ExternalLink } from "lucide-react";
+import { GalleryHorizontal, Plus, ExternalLink, Pencil } from "lucide-react";
 import { usePortfolioImages } from "@/hooks/artist/usePortfolioImages";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { PortfolioImage } from "@/types/artist";
+import { useAuth } from "@/context/auth";
 
 interface PortfolioShowcaseProps {
   artistId?: string;
@@ -26,6 +27,10 @@ const PortfolioShowcase = ({
 }: PortfolioShowcaseProps) => {
   const { images, isLoading } = usePortfolioImages(artistId);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const { user } = useAuth();
+  
+  // Check if current user is the profile owner
+  const isOwner = user?.id === artistId;
   
   // Use either prop images or fetch from hook
   const displayImages = images.slice(0, limit);
@@ -52,15 +57,34 @@ const PortfolioShowcase = ({
     }
   };
   
+  // Handle edit portfolio click
+  const handleEditClick = () => {
+    // Navigate to portfolio edit page or open modal
+    if (onAddClick) {
+      onAddClick();
+    }
+  };
+  
   // Handle loading state with skeleton placeholders
   if (isLoading) {
     return (
       <Card className="overflow-hidden border border-gray-100 shadow-sm">
-        <CardHeader className="pb-2">
+        <CardHeader className="pb-2 flex flex-row items-center justify-between">
           <CardTitle className="text-xl font-serif flex items-center">
             <GalleryHorizontal className="h-5 w-5 mr-2 text-purple-500" />
             Portfolio
           </CardTitle>
+          {isOwner && (
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="text-purple-600 border-purple-200 hover:bg-purple-50"
+              onClick={handleEditClick}
+            >
+              <Pencil className="h-4 w-4 mr-1.5" />
+              Edit Portfolio
+            </Button>
+          )}
         </CardHeader>
         <CardContent className="p-4">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -78,11 +102,22 @@ const PortfolioShowcase = ({
   
   return (
     <Card className="overflow-hidden border border-gray-100 shadow-sm">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-2 flex flex-row items-center justify-between">
         <CardTitle className="text-xl font-serif flex items-center">
           <GalleryHorizontal className="h-5 w-5 mr-2 text-purple-500" />
           Portfolio
         </CardTitle>
+        {isOwner && (
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="text-purple-600 border-purple-200 hover:bg-purple-50"
+            onClick={handleEditClick}
+          >
+            <Pencil className="h-4 w-4 mr-1.5" />
+            Edit Portfolio
+          </Button>
+        )}
       </CardHeader>
       
       <CardContent className="p-4">
@@ -159,7 +194,7 @@ const PortfolioShowcase = ({
           </motion.div>
         )}
         
-        {hasImages && (
+        {hasImages && isOwner && (
           <div className="mt-6 flex justify-center">
             <Button 
               onClick={onAddClick}
