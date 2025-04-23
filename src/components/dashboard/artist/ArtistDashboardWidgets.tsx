@@ -3,7 +3,6 @@ import React from 'react';
 import WelcomeGreeting from './components/WelcomeGreeting';
 import ProfileHighlights from './ProfileHighlights';
 import ArtistMetrics from '@/components/dashboard/artist/sections/ArtistMetrics';
-import ArtistPortfolioPreview from '@/components/dashboard/artist/sections/ArtistPortfolioPreview';
 import ArtistTestimonials from './sections/ArtistTestimonials';
 import ArtistCalendarPreview from './sections/ArtistCalendarPreview';
 import ArtistMessagesPreview from './sections/ArtistMessagesPreview';
@@ -35,9 +34,6 @@ const ArtistDashboardWidgets: React.FC = () => {
       
       {/* Performance Metrics */}
       <ArtistMetrics />
-      
-      {/* Portfolio Preview */}
-      <ArtistPortfolioPreview />
       
       {/* Two Column Layout for Client Activity and Upcoming Appointments */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
