@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useArtistData } from './context/ArtistDataContext';
@@ -11,6 +10,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
 import ArtistPortfolioManager from './portfolio/ArtistPortfolioManager';
 import ProfileBoostBanner from "./ProfileBoostBanner";
+import EarningsSnapshot from '../artist/EarningsSnapshot';
 
 // Animation variants
 const containerVariants = {
@@ -116,12 +116,16 @@ const ArtistDashboardContent = () => {
         <ArtistMetrics />
       </motion.div>
 
-      {/* --- Portfolio section (as before) --- */}
+      {/* Earnings Snapshot */}
+      <motion.div variants={itemVariants}>
+        <EarningsSnapshot />
+      </motion.div>
+
+      {/* Portfolio section (as before) */}
       <motion.div variants={itemVariants}>
         <ArtistPortfolioManager />
       </motion.div>
       
-      {/* New local bookings section */}
       <motion.div variants={itemVariants}>
         <ArtistBookingsLocal />
       </motion.div>

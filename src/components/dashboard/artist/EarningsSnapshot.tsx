@@ -86,7 +86,7 @@ const EarningsSnapshot: React.FC = () => {
           <CardHeader className="!p-5 xs:!p-6 pb-1 bg-gradient-to-r from-[#F1F0FB] via-white to-[#E5DEFF] rounded-t-2xl">
             <CardTitle className="font-serif text-lg xs:text-xl font-semibold text-emvi-dark flex items-center gap-2">
               <span role="img" aria-label="money" className="select-none">💰</span>
-              This Month’s Earnings Snapshot
+              This Month's Earnings Snapshot
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col sm:flex-row items-start sm:items-end gap-4 sm:gap-7 px-5 xs:px-6 pt-3 xs:pt-4 pb-4">
@@ -105,7 +105,7 @@ const EarningsSnapshot: React.FC = () => {
                 $1,250.00
               </span>
               <span className="text-[13px] xs:text-base text-neutral-500 font-medium mb-1">
-                $1,250.00 earned from 5 bookings this month — let’s aim higher!
+                $1,250.00 earned from 5 bookings this month — let's aim higher!
               </span>
               {/* Goal progress bar */}
               <div className="mt-3 w-full max-w-xs">
