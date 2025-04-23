@@ -183,3 +183,4 @@ const EarningsSnapshot: React.FC = () => {
 };
 
 export default EarningsSnapshot;
+
