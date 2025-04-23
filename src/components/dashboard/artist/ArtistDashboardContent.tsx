@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useArtistData } from './context/ArtistDataContext';
 import ArtistHero from './sections/ArtistHero';
@@ -9,6 +10,7 @@ import ArtistBookingsLocal from './sections/ArtistBookingsLocal';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
 import ArtistPortfolioManager from './portfolio/ArtistPortfolioManager';
+import ProfileBoostBanner from "./ProfileBoostBanner";
 
 // Animation variants
 const containerVariants = {
@@ -39,7 +41,12 @@ function useQuery() {
 
 const PREMIUM_CHECKOUT_LINK = "https://buy.stripe.com/test_4gw8ycdIz2J4gUw9AA";
 
+const MOCK_EXPIRY = "May 31, 2025"; // mock expiry date for visual banner
+
 const ArtistDashboardContent = () => {
+  // MOCK STATE
+  const [hasBoost, setHasBoost] = useState(false);
+
   const { loading } = useArtistData();
   const location = useLocation();
   const navigate = useNavigate();
@@ -54,7 +61,7 @@ const ArtistDashboardContent = () => {
       navigate(location.pathname, { replace: true });
     }
   }, [query, location, navigate]);
-  
+
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto py-8">
@@ -70,9 +77,10 @@ const ArtistDashboardContent = () => {
       </div>
     );
   }
-  
+
   const handleUpgrade = () => {
-    window.location.href = "https://buy.stripe.com/test_4gw8ycdIz2J4gUw9AA";
+    // Mock profile boost activation for demo (no payment). Real implementation would integrate payments.
+    setHasBoost(true);
   };
 
   return (
@@ -82,6 +90,9 @@ const ArtistDashboardContent = () => {
       initial="hidden"
       animate="visible"
     >
+      {/* Profile Boost Banner (Premium Monetization UI) */}
+      <ProfileBoostBanner hasBoost={hasBoost} boostExpiry={MOCK_EXPIRY} onBoostClick={handleUpgrade} />
+
       {/* Header row: Upgrade button at right */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 mb-8">
         <div />

@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -5,13 +6,17 @@ import { Instagram, Globe, Pencil } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useArtistData } from "../context/ArtistDataContext";
 import { useAuth } from "@/context/auth";
+import VerifiedBadge from "@/components/artist-profile/VerifiedBadge";
 
 const ArtistHero: React.FC = () => {
   const { artistProfile } = useArtistData() || {};
   const { userProfile } = useAuth();
-  
+
+  // MOCK: Verified badge
+  const isVerified = true;
+
   const profile = artistProfile || userProfile || {};
-  
+
   const {
     full_name = "Michael Nguyen",
     specialty = "Nail Design",
@@ -30,9 +35,11 @@ const ArtistHero: React.FC = () => {
           .toUpperCase()
       : "A";
 
-  const formattedInstagram = instagram ? 
-    (instagram.startsWith('@') ? instagram : `@${instagram}`) : 
-    '@https://instagram.com/humbleinsider';
+  const formattedInstagram = instagram
+    ? instagram.startsWith("@")
+      ? instagram
+      : `@${instagram}`
+    : "@https://instagram.com/humbleinsider";
 
   return (
     <section className="w-full mb-8">
@@ -60,12 +67,15 @@ const ArtistHero: React.FC = () => {
               z-10
               select-none
               pointer-events-none
+              flex items-center justify-center gap-2
             "
           >
             {full_name}
+            {/* Verified Badge next to the name */}
+            {isVerified && <VerifiedBadge />}
           </h1>
         </div>
-        
+
         <div className="px-6 pb-6 bg-white">
           <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center -mt-14">
             <Avatar className="w-28 h-28 border-4 border-white shadow-md">
