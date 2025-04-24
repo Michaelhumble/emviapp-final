@@ -82,6 +82,7 @@ export interface ArtistProfileState {
   user_id?: string;
   credits?: number;
   referral_count?: number; 
+  referral_code?: string;
   affiliate_code?: string;
   portfolio_urls?: string[];
   preferred_language?: string;
@@ -90,6 +91,8 @@ export interface ArtistProfileState {
   avatar_url?: string; // Add the avatar_url property
   profile_completion?: number; // Add the profile_completion property
   independent?: boolean; // Add the independent property
+  instagram?: string; // Add instagram property
+  website?: string; // Add website property
 }
 
 export interface ArtistDataContextType {

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useReliableAuth } from '@/context/auth';
+import { useAuth } from '@/context/auth';
 import { ArtistDataContextType, ArtistProfileState, PortfolioImage } from '../types/ArtistDashboardTypes';
 import { toast } from "sonner";
 import { usePortfolioImages } from '@/hooks/portfolio/usePortfolioImages';
@@ -40,7 +40,7 @@ export const ArtistDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [artistProfile, setArtistProfile] = useState<ArtistProfileState>({});
   const [copied, setCopied] = useState(false);
   const [userCredits, setUserCredits] = useState(0);
-  const { user } = useReliableAuth();
+  const { user } = useAuth();
   const { images: portfolioImages, isLoading: loadingPortfolio } = usePortfolioImages();
   
   const [bookingCount, setBookingCount] = useState({ 
