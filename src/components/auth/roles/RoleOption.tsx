@@ -12,7 +12,6 @@ interface RoleOptionProps {
 }
 
 const RoleOption: React.FC<RoleOptionProps> = ({ role, isSelected, onSelect }) => {
-  // Create an instance of the icon component
   const IconComponent = role.icon;
   
   return (
