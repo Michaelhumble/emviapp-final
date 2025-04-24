@@ -1,9 +1,10 @@
 
+import React from 'react';
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-interface ArtistErrorStateProps {
+export interface ArtistErrorStateProps {
   error: Error;
   retryAction?: () => void;
 }
