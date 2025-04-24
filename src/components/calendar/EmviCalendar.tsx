@@ -1,229 +1,261 @@
 
-import React, { useState } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { format } from "date-fns";
+import { ChevronLeft, ChevronRight, Calendar, Plus, List, Grid3X3 } from "lucide-react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
-import { CalendarDays, List, Plus, ChevronLeft, ChevronRight } from "lucide-react";
-import { format, startOfWeek, addDays, subWeeks, addWeeks } from "date-fns";
-import { toast } from "sonner";
-import WeekView from "./views/WeekView";
-import MonthView from "./views/MonthView";
-import ListViewCalendar from "./views/ListView";
-import { useCalendar } from "./hooks/useCalendar";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import EmviBookingModal from "./EmviBookingModal";
+import WeekView from "./WeekView";
+import MonthView from "./MonthView";
+import ListView from "./ListView";
+import CalendarLoadingState from "./CalendarLoadingState";
 import { Booking } from "@/types/booking";
-import { cn } from "@/lib/utils";
 
-export type CalendarRole = "artist" | "salon" | "customer";
-
-export interface EmviCalendarProps {
-  role: CalendarRole;
-  bookings?: Booking[];
-  className?: string;
+interface EmviCalendarProps {
+  role: "artist" | "salon" | "customer";
+  bookings: Booking[];
   onAddBooking?: (booking: any) => void;
   onUpdateBooking?: (booking: any) => void;
   onDeleteBooking?: (id: string) => void;
   onDateChange?: (startDate: Date, endDate: Date) => void;
   isLoading?: boolean;
+  error?: string | null;
 }
 
-const EmviCalendar: React.FC<EmviCalendarProps> = ({
+const EmviCalendar = ({
   role,
   bookings = [],
-  className,
   onAddBooking,
   onUpdateBooking,
   onDeleteBooking,
   onDateChange,
   isLoading = false,
-}) => {
-  const [calendarView, setCalendarView] = useState<"week" | "month" | "list">("week");
-  const [showBookingModal, setShowBookingModal] = useState(false);
-  const [selectedBooking, setSelectedBooking] = useState<Partial<Booking> | null>(null);
+  error = null
+}: EmviCalendarProps) => {
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedView, setSelectedView] = useState<"week" | "month" | "list">("week");
+  const [showModal, setShowModal] = useState(false);
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
+  const [internalLoadingState, setInternalLoadingState] = useState(true);
+
+  // Reset internal loading state after component load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setInternalLoadingState(false);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
   
-  const { 
-    currentDate,
-    weekDays,
-    goToPreviousWeek,
-    goToNextWeek,
-    goToToday,
-  } = useCalendar({
-    onDateChange,
-  });
+  // Set loading timeout to prevent infinite loading
+  useEffect(() => {
+    if (isLoading) {
+      const timeoutId = setTimeout(() => {
+        setLoadingTimeout(true);
+      }, 10000); // 10 second timeout
 
-  const handleAddBooking = () => {
-    setSelectedBooking(null);
-    setShowBookingModal(true);
-  };
-
-  const handleEditBooking = (booking: Booking) => {
-    setSelectedBooking(booking);
-    setShowBookingModal(true);
-  };
-
-  const handleSaveBooking = (bookingData: any) => {
-    if (selectedBooking?.id) {
-      onUpdateBooking?.({...bookingData, id: selectedBooking.id});
-      toast.success("Appointment updated successfully");
+      return () => clearTimeout(timeoutId);
     } else {
-      onAddBooking?.(bookingData);
-      toast.success("New appointment created");
+      setLoadingTimeout(false);
     }
-    setShowBookingModal(false);
+  }, [isLoading]);
+
+  const handlePrevious = () => {
+    const newDate = new Date(currentDate);
+    if (selectedView === "week") {
+      newDate.setDate(newDate.getDate() - 7);
+    } else {
+      newDate.setMonth(newDate.getMonth() - 1);
+    }
+    setCurrentDate(newDate);
+    
+    // Notify parent if date range changed
+    if (onDateChange) {
+      const endDate = new Date(newDate);
+      if (selectedView === "week") {
+        endDate.setDate(endDate.getDate() + 6);
+      } else {
+        endDate.setMonth(endDate.getMonth() + 1);
+        endDate.setDate(0); // Last day of month
+      }
+      onDateChange(newDate, endDate);
+    }
   };
 
-  const handleCopyBookingLink = () => {
-    navigator.clipboard.writeText(`https://emvi.app/book/${role === 'artist' ? 'artist' : 'salon'}/your-username`);
-    toast.success('Booking link copied to clipboard!');
+  const handleNext = () => {
+    const newDate = new Date(currentDate);
+    if (selectedView === "week") {
+      newDate.setDate(newDate.getDate() + 7);
+    } else {
+      newDate.setMonth(newDate.getMonth() + 1);
+    }
+    setCurrentDate(newDate);
+    
+    // Notify parent if date range changed
+    if (onDateChange) {
+      const endDate = new Date(newDate);
+      if (selectedView === "week") {
+        endDate.setDate(endDate.getDate() + 6);
+      } else {
+        endDate.setMonth(endDate.getMonth() + 1);
+        endDate.setDate(0); // Last day of month
+      }
+      onDateChange(newDate, endDate);
+    }
   };
+
+  const handleToday = () => {
+    setCurrentDate(new Date());
+    
+    // Notify parent if date range changed
+    if (onDateChange) {
+      const today = new Date();
+      const endDate = new Date(today);
+      if (selectedView === "week") {
+        endDate.setDate(endDate.getDate() + 6);
+      } else {
+        endDate.setMonth(endDate.getMonth() + 1);
+        endDate.setDate(0); // Last day of month
+      }
+      onDateChange(today, endDate);
+    }
+  };
+
+  const handleBookingSubmit = (bookingData: any) => {
+    if (onAddBooking) {
+      onAddBooking(bookingData);
+    }
+    setShowModal(false);
+  };
+
+  // Show loading state
+  if (isLoading && !loadingTimeout) {
+    return <CalendarLoadingState />;
+  }
+  
+  // Show error state
+  if (error || loadingTimeout) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm p-6 text-center">
+        <div className="text-red-500 mb-4">
+          {error || "Loading took too long. Please try refreshing the page."}
+        </div>
+        <Button onClick={() => window.location.reload()}>Refresh</Button>
+      </div>
+    );
+  }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className={cn("w-full", className)}
-    >
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl font-serif text-gray-800">Booking Calendar</h1>
-          <p className="text-gray-600 mt-1 font-light">Manage your appointments and availability</p>
-        </div>
-
-        <div className="flex flex-wrap gap-3">
-          <Button 
-            onClick={handleAddBooking}
-            className="bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-md hover:shadow-lg transition-shadow"
-          >
-            <Plus className="mr-1.5 h-4 w-4" /> New Appointment
-          </Button>
-          
-          <Button
-            variant="outline"
-            onClick={handleCopyBookingLink}
-            className="border-purple-200 hover:border-purple-300"
-          >
-            Copy Booking Link
-          </Button>
-        </div>
-      </div>
-
-      <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-md rounded-xl overflow-hidden">
-        <div className="p-4 md:p-6 border-b border-gray-100 bg-gradient-to-r from-purple-50 to-pink-50">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <Tabs 
-              value={calendarView} 
-              onValueChange={(v) => setCalendarView(v as "week" | "month" | "list")}
-              className="w-full max-w-[400px]"
-            >
-              <TabsList className="bg-white/50 backdrop-blur-sm">
-                <TabsTrigger value="week" className="flex items-center">
-                  <CalendarDays className="h-3.5 w-3.5 mr-1.5" />
-                  Weekly
-                </TabsTrigger>
-                <TabsTrigger value="month" className="flex items-center">
-                  <CalendarDays className="h-3.5 w-3.5 mr-1.5" />
-                  Monthly
-                </TabsTrigger>
-                <TabsTrigger value="list" className="flex items-center">
-                  <List className="h-3.5 w-3.5 mr-1.5" />
-                  List
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-            
-            <div className="flex items-center space-x-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={goToPreviousWeek}
-                className="h-8 w-8 p-0 rounded-full"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={goToToday}
-                className="h-8"
-              >
-                Today
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={goToNextWeek}
-                className="h-8 w-8 p-0 rounded-full"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-              
-              <p className="text-sm font-medium text-gray-600 ml-2 hidden md:block">
-                {format(weekDays[0], "MMMM d")} - {format(weekDays[6], "MMMM d, yyyy")}
-              </p>
-            </div>
+    <Card className="shadow-sm border-primary/5">
+      <CardHeader className="bg-white px-6 pt-6 pb-4 flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0 border-b border-gray-100">
+        <div className="flex items-center space-x-4">
+          <Calendar className="h-6 w-6 text-primary" />
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">{format(currentDate, "MMMM yyyy")}</h2>
+            <p className="text-sm text-gray-500">
+              {role === "artist" ? "Artist Calendar" : "Salon Calendar"}
+            </p>
           </div>
         </div>
         
-        <CardContent className="p-0">
-          <TabsContent value="week" className="m-0 focus:outline-none">
-            <div className="p-6">
-              <WeekView 
-                weekDays={weekDays}
-                bookings={bookings}
-                isLoading={isLoading}
-                onBookingClick={handleEditBooking}
-                onTimeSlotClick={(day, hour) => {
-                  setSelectedBooking({
-                    date_requested: format(day, 'yyyy-MM-dd'),
-                    time_requested: `${hour % 12 || 12}:00 ${hour >= 12 ? 'PM' : 'AM'}`,
-                    status: 'pending'
-                  });
-                  setShowBookingModal(true);
-                }}
-              />
-            </div>
-          </TabsContent>
+        <div className="flex items-center space-x-2">
+          <div className="bg-gray-100 rounded-lg p-1 flex">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="h-8 w-8"
+              onClick={handlePrevious}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs h-8"
+              onClick={handleToday}
+            >
+              Today
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="h-8 w-8"
+              onClick={handleNext}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
           
-          <TabsContent value="month" className="m-0 focus:outline-none">
-            <MonthView 
-              currentDate={currentDate}
-              bookings={bookings}
-              isLoading={isLoading}
-              onBookingClick={handleEditBooking}
-              onDateClick={(date) => {
-                setSelectedBooking({
-                  date_requested: format(date, 'yyyy-MM-dd'),
-                  status: 'pending'
-                });
-                setShowBookingModal(true);
-              }}
-            />
-          </TabsContent>
+          <Tabs
+            defaultValue={selectedView}
+            value={selectedView}
+            onValueChange={(value) => setSelectedView(value as "week" | "month" | "list")}
+            className="hidden sm:block"
+          >
+            <TabsList className="bg-gray-100">
+              <TabsTrigger value="week" className="text-xs">Week</TabsTrigger>
+              <TabsTrigger value="month" className="text-xs">Month</TabsTrigger>
+              <TabsTrigger value="list" className="text-xs">List</TabsTrigger>
+            </TabsList>
+          </Tabs>
           
-          <TabsContent value="list" className="m-0 focus:outline-none">
-            <div className="p-6">
-              <ListViewCalendar 
-                bookings={bookings}
-                isLoading={isLoading}
-                onBookingClick={handleEditBooking}
-              />
-            </div>
-          </TabsContent>
-        </CardContent>
-      </Card>
+          <Button 
+            onClick={() => setShowModal(true)}
+            className="ml-2 bg-primary text-white hover:bg-primary/90"
+            size="sm"
+          >
+            <Plus className="h-4 w-4 mr-1" />
+            <span className="hidden sm:inline">Add Booking</span>
+            <span className="sm:hidden">Add</span>
+          </Button>
+        </div>
+      </CardHeader>
       
-      <EmviBookingModal 
-        open={showBookingModal} 
-        onClose={() => setShowBookingModal(false)}
-        onSave={handleSaveBooking}
-        booking={selectedBooking}
+      <CardContent className="p-0">
+        {internalLoadingState ? (
+          <div className="p-6">
+            <CalendarLoadingState message="Preparing calendar view..." />
+          </div>
+        ) : (
+          <>
+            {selectedView === "week" && (
+              <WeekView
+                currentDate={currentDate}
+                bookings={bookings}
+                onUpdateBooking={onUpdateBooking}
+                onDeleteBooking={onDeleteBooking}
+              />
+            )}
+            
+            {selectedView === "month" && (
+              <MonthView
+                currentDate={currentDate}
+                bookings={bookings}
+                onUpdateBooking={onUpdateBooking}
+                onDeleteBooking={onDeleteBooking}
+              />
+            )}
+            
+            {selectedView === "list" && (
+              <ListView
+                currentDate={currentDate}
+                bookings={bookings}
+                onUpdateBooking={onUpdateBooking}
+                onDeleteBooking={onDeleteBooking}
+              />
+            )}
+          </>
+        )}
+      </CardContent>
+      
+      <EmviBookingModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onSubmit={handleBookingSubmit}
         role={role}
       />
-    </motion.div>
+    </Card>
   );
 };
 

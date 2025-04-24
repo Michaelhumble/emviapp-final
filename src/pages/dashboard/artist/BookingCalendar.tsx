@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import EmviCalendar from "@/components/calendar/EmviCalendar";
 import PageTransition from "@/components/shared/PageTransition";
@@ -61,22 +61,48 @@ const MOCK_BOOKINGS = [
 ];
 
 const BookingCalendar = () => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [bookings, setBookings] = useState(MOCK_BOOKINGS);
+
+  // Simulate data loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
   const handleAddBooking = (booking: any) => {
     console.log("Adding booking:", booking);
     toast.success("Booking successfully created");
+    
     // In a real app, this would make an API call to add the booking
+    // For now, let's add it to our local state
+    const newBooking = {
+      ...booking,
+      id: `temp-${Date.now()}`,
+      status: "pending" as const
+    };
+    
+    setBookings(prev => [...prev, newBooking]);
   };
   
   const handleUpdateBooking = (booking: any) => {
     console.log("Updating booking:", booking);
     toast.success("Booking successfully updated");
-    // In a real app, this would make an API call to update the booking
+    
+    // Update in our local state
+    setBookings(prev => prev.map(b => b.id === booking.id ? booking : b));
   };
   
   const handleDeleteBooking = (id: string) => {
     console.log("Deleting booking:", id);
     toast.success("Booking successfully deleted");
-    // In a real app, this would make an API call to delete the booking
+    
+    // Remove from our local state
+    setBookings(prev => prev.filter(b => b.id !== id));
   };
   
   const handleDateChange = (startDate: Date, endDate: Date) => {
@@ -97,11 +123,13 @@ const BookingCalendar = () => {
             <div className="max-w-7xl mx-auto">
               <EmviCalendar 
                 role="artist"
-                bookings={MOCK_BOOKINGS}
+                bookings={bookings}
                 onAddBooking={handleAddBooking}
                 onUpdateBooking={handleUpdateBooking}
                 onDeleteBooking={handleDeleteBooking}
                 onDateChange={handleDateChange}
+                isLoading={loading}
+                error={error}
               />
             </div>
           </motion.div>
