@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -5,14 +6,14 @@ import { Button } from "@/components/ui/button";
 import { CalendarDays, List, Plus, Share2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { WeeklyCalendar } from "./WeeklyCalendar";
+import { WeeklyCalendarView } from "./WeeklyCalendarView";
 import MonthlyCalendarView from "./MonthlyCalendarView";
 import BookingList from "./BookingList";
 import BookingModal from "./BookingModal";
 import { useArtistCalendar } from "@/hooks/useArtistCalendar";
 
 const ArtistBookingCalendar = () => {
-  const [calendarView, setCalendarView] = useState<'week' | 'month'>('week');
+  const [calendarView, setCalendarView] = useState<'week' | 'month' | 'list'>('week');
   const [showBookingModal, setShowBookingModal] = useState(false);
   const { currentDate } = useArtistCalendar();
   
@@ -57,8 +58,8 @@ const ArtistBookingCalendar = () => {
           <div className="flex justify-between items-center">
             <Tabs 
               value={calendarView} 
-              onValueChange={(v) => setCalendarView(v as 'week' | 'month')}
-              className="w-[300px]"
+              onValueChange={(v) => setCalendarView(v as 'week' | 'month' | 'list')}
+              className="w-[400px]"
             >
               <TabsList className="bg-white/50 backdrop-blur-sm">
                 <TabsTrigger value="week" className="flex items-center">
@@ -87,8 +88,8 @@ const ArtistBookingCalendar = () => {
         </div>
         
         <div>
-          <TabsContent value="week" className="m-0 focus:outline-none">
-            <WeeklyCalendar />
+          <TabsContent value="week" className="m-0 p-6 focus:outline-none">
+            <WeeklyCalendarView currentDate={currentDate} bookings={[]} />
           </TabsContent>
           
           <TabsContent value="month" className="m-0 focus:outline-none">
@@ -103,12 +104,12 @@ const ArtistBookingCalendar = () => {
         </div>
       </Card>
 
-      <div className="rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 p-4 border border-purple-100 flex items-center justify-between mb-8">
-        <div className="flex-grow">
+      <div className="rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 p-4 border border-purple-100 flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+        <div>
           <h3 className="font-medium text-gray-800">Automated Client Reminders</h3>
           <p className="text-sm text-gray-600">Clients will receive automatic reminders 24h before appointments.</p>
         </div>
-        <Button variant="outline" className="border-purple-200 text-purple-700">
+        <Button variant="outline" className="border-purple-200 text-purple-700 whitespace-nowrap">
           Configure
         </Button>
       </div>

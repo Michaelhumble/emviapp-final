@@ -1,98 +1,114 @@
 
-import React from 'react';
-import { format, addDays, startOfWeek } from 'date-fns';
-import { cn } from "@/lib/utils";
-import { Card } from "@/components/ui/card";
+import React, { useState } from 'react';
+import { format, addDays, startOfWeek, isSameDay } from 'date-fns';
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Clock } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import DayColumn from './DayColumn';
+import { Booking } from "@/types/booking";
+import BookingModal from "./BookingModal";
 
 interface WeeklyCalendarViewProps {
   currentDate: Date;
-  bookings: any[];
-  onTimeSlotClick: (date: Date, hour: number) => void;
+  bookings: Booking[];
 }
+
+// Mock data for bookings
+const mockBookings: Booking[] = [
+  {
+    id: '1',
+    sender_id: '',
+    recipient_id: '',
+    client_name: 'Emma Thompson',
+    service_name: 'Gel Manicure',
+    date_requested: '2025-04-26',
+    time_requested: '10:00 AM',
+    status: 'pending',
+    created_at: new Date().toISOString()
+  },
+  {
+    id: '2',
+    sender_id: '',
+    recipient_id: '',
+    client_name: 'Michael Chen',
+    service_name: 'Full Set Acrylic',
+    date_requested: '2025-04-25',
+    time_requested: '2:30 PM',
+    status: 'completed',
+    created_at: new Date().toISOString()
+  },
+  {
+    id: '3',
+    sender_id: '',
+    recipient_id: '',
+    client_name: 'Jessica Brown',
+    service_name: 'Pedicure + Nail Art',
+    date_requested: '2025-04-27',
+    time_requested: '3:15 PM',
+    status: 'pending',
+    created_at: new Date().toISOString()
+  },
+];
 
 const WeeklyCalendarView: React.FC<WeeklyCalendarViewProps> = ({
   currentDate,
-  bookings,
-  onTimeSlotClick
+  bookings = mockBookings
 }) => {
-  const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 }); // Start week on Monday
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [selectedDay, setSelectedDay] = useState<Date | null>(null);
+  const [selectedHour, setSelectedHour] = useState<number | null>(null);
+  
+  // Get week days starting from Monday
+  const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
-  const businessHours = Array.from({ length: 12 }, (_, i) => i + 8); // 8 AM to 8 PM
+
+  const handleBookingClick = (booking: Booking) => {
+    setSelectedBooking(booking);
+    setShowBookingModal(true);
+  };
+
+  const handleEmptySlotClick = (day: Date, hour: number) => {
+    setSelectedDay(day);
+    setSelectedHour(hour);
+    setSelectedBooking(null);
+    setShowBookingModal(true);
+  };
+
+  const getBookingsForDay = (day: Date) => {
+    return bookings.filter(booking => {
+      if (!booking.date_requested) return false;
+      
+      const bookingDate = new Date(booking.date_requested);
+      return isSameDay(bookingDate, day);
+    });
+  };
 
   return (
-    <div className="overflow-x-auto mt-8">
-      <div className="min-w-[800px]">
-        {/* Time column headers */}
-        <div className="grid grid-cols-8 gap-1">
-          <div className="p-2" /> {/* Empty corner cell */}
-          {weekDays.map((day) => (
-            <div
+    <div className="space-y-4">
+      <div className="flex overflow-x-auto hide-scrollbar pb-2">
+        <div className="min-w-full grid grid-cols-7 gap-2">
+          {weekDays.map((day, index) => (
+            <DayColumn 
               key={day.toString()}
-              className={cn(
-                "p-3 text-center border-b border-purple-100/20",
-                "bg-gradient-to-b from-purple-50 to-transparent"
-              )}
-            >
-              <div className="font-medium text-purple-900">{format(day, 'EEE')}</div>
-              <div className="text-sm text-purple-600">{format(day, 'MMM d')}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Time slots */}
-        <div className="relative">
-          {businessHours.map((hour) => (
-            <div key={hour} className="grid grid-cols-8 gap-1">
-              {/* Time label */}
-              <div className="p-2 text-sm text-gray-500 text-right">
-                {format(new Date().setHours(hour), 'h:mm a')}
-              </div>
-
-              {/* Day columns */}
-              {weekDays.map((day) => {
-                const currentSlotDate = new Date(day.setHours(hour));
-                const hasBooking = bookings.some(
-                  booking => 
-                    new Date(booking.date_requested).getDate() === currentSlotDate.getDate() &&
-                    new Date(booking.time_requested).getHours() === hour
-                );
-
-                return (
-                  <motion.div
-                    key={`${day}-${hour}`}
-                    className={cn(
-                      "h-16 border border-gray-100/50 relative group",
-                      "transition-colors duration-200",
-                      hasBooking ? "bg-purple-50" : "hover:bg-purple-50/50"
-                    )}
-                    whileHover={{ scale: 1.02 }}
-                    onClick={() => !hasBooking && onTimeSlotClick(currentSlotDate, hour)}
-                  >
-                    {hasBooking ? (
-                      <div className="absolute inset-1 rounded bg-gradient-to-r from-purple-100 to-pink-100 p-2">
-                        <div className="text-xs font-medium truncate">
-                          {bookings.find(
-                            b => 
-                              new Date(b.date_requested).getDate() === currentSlotDate.getDate() &&
-                              new Date(b.time_requested).getHours() === hour
-                          )?.client_name}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 flex items-center justify-center">
-                        <Clock className="h-4 w-4 text-purple-400" />
-                      </div>
-                    )}
-                  </motion.div>
-                );
-              })}
-            </div>
+              day={day}
+              bookings={getBookingsForDay(day)}
+              isToday={isSameDay(day, new Date())}
+              onBookingClick={handleBookingClick}
+              onEmptySlotClick={(hour) => handleEmptySlotClick(day, hour)}
+            />
           ))}
         </div>
       </div>
+
+      <BookingModal
+        open={showBookingModal}
+        onClose={() => setShowBookingModal(false)}
+        existingBooking={selectedBooking ? selectedBooking : selectedDay ? {
+          date: selectedDay,
+          time: selectedHour ? new Date(selectedDay).setHours(selectedHour) : undefined
+        } : undefined}
+      />
     </div>
   );
 };

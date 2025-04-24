@@ -1,119 +1,66 @@
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useState } from 'react';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
-import { useAuth } from '@/context/auth';
-
-export interface BlockedTime {
-  id: string;
-  artist_id: string;
-  start_time: string;
-  end_time: string;
-  notes?: string | null;
-  created_at: string;
-  updated_at: string;
-}
+import { useDialogState } from './useDialogState';
+import type { BlockedTime } from './useDialogState';
 
 export const useBlockedTimes = (startDate: Date, endDate: Date) => {
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const [blockedTimes, setBlockedTimes] = useState<BlockedTime[]>([]);
+  const [isLoadingBlockedTimes, setIsLoadingBlockedTimes] = useState(false);
+  const [blockedTimesError, setBlockedTimesError] = useState<string | null>(null);
+  const [isSavingBlockedTime, setIsSavingBlockedTime] = useState(false);
+  const [isDeletingBlockedTime, setIsDeletingBlockedTime] = useState(false);
 
-  const { data: blockedTimes = [], isLoading: isLoadingBlockedTimes, error: blockedTimesError } = useQuery({
-    queryKey: ['blocked-times', format(startDate, 'yyyy-MM-dd'), format(endDate, 'yyyy-MM-dd')],
-    queryFn: async () => {
-      if (!user?.id) return [];
-
-      const { data, error } = await supabase
-        .from('blocked_times')
-        .select('*')
-        .eq('artist_id', user.id)
-        .gte('start_time', startDate.toISOString())
-        .lte('end_time', endDate.toISOString())
-        .order('start_time', { ascending: true });
+  const saveBlockedTime = async (blockedTimeData: Partial<BlockedTime>): Promise<void> => {
+    setIsSavingBlockedTime(true);
+    
+    try {
+      // Mock API call - in a real app, you'd save to your backend
+      await new Promise(resolve => setTimeout(resolve, 500));
       
-      if (error) {
-        console.error('Error fetching blocked times:', error);
-        throw error;
+      if (blockedTimeData.id) {
+        // Update existing blocked time
+        setBlockedTimes(prev => 
+          prev.map(bt => bt.id === blockedTimeData.id ? { ...bt, ...blockedTimeData } as BlockedTime : bt)
+        );
+        toast.success("Time block updated");
+      } else {
+        // Create new blocked time
+        const newBlockedTime = {
+          id: `blocked_${Date.now()}`,
+          ...blockedTimeData,
+          start_time: blockedTimeData.start_time || new Date().toISOString(),
+          end_time: blockedTimeData.end_time || new Date().toISOString()
+        } as BlockedTime;
+        
+        setBlockedTimes(prev => [...prev, newBlockedTime]);
+        toast.success("Time blocked successfully");
       }
-      return data || [];
-    },
-    enabled: !!user?.id
-  });
-
-  const { mutateAsync: saveBlockedTime, isPending: isSavingBlockedTime } = useMutation({
-    mutationFn: async (blockedTimeData: Partial<BlockedTime>) => {
-      if (!user?.id) throw new Error('User not authenticated');
-      
-      const dataToSave = {
-        ...blockedTimeData,
-        artist_id: user.id,
-        updated_at: new Date().toISOString()
-      };
-      
-      if (!blockedTimeData.id) {
-        dataToSave.created_at = new Date().toISOString();
-      }
-      
-      if (!dataToSave.start_time || !dataToSave.end_time) {
-        throw new Error('Start time and end time are required');
-      }
-      
-      const finalData = {
-        ...dataToSave,
-        start_time: dataToSave.start_time,
-        end_time: dataToSave.end_time
-      };
-      
-      const { data, error } = await supabase
-        .from('blocked_times')
-        .upsert(finalData)
-        .select()
-        .single();
-      
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['blocked-times'] });
-      toast.success('Time block saved successfully');
-    },
-    onError: (error: any) => {
-      console.error('Error saving time block:', error);
-      toast.error(`Error saving time block: ${error.message}`);
+    } catch (error) {
+      console.error("Error saving blocked time:", error);
+      setBlockedTimesError("Failed to save blocked time");
+      toast.error("Failed to block time");
+    } finally {
+      setIsSavingBlockedTime(false);
     }
-  });
-
-  const { mutateAsync: deleteBlockedTime, isPending: isDeletingBlockedTime } = useMutation({
-    mutationFn: async (id: string) => {
-      if (!user?.id) throw new Error('User not authenticated');
-      
-      const { error } = await supabase
-        .from('blocked_times')
-        .delete()
-        .eq('id', id)
-        .eq('artist_id', user.id);
-      
-      if (error) throw error;
-      return id;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['blocked-times'] });
-      toast.success('Time block deleted successfully');
-    },
-    onError: (error: any) => {
-      console.error('Error deleting time block:', error);
-      toast.error(`Error deleting time block: ${error.message}`);
-    }
-  });
-
-  // Create void-returning wrapper functions to match expected types
-  const saveBlockedTimeVoid = async (blockedTimeData: Partial<BlockedTime>): Promise<void> => {
-    await saveBlockedTime(blockedTimeData);
   };
 
-  const deleteBlockedTimeVoid = async (id: string): Promise<void> => {
-    await deleteBlockedTime(id);
+  const deleteBlockedTime = async (id: string): Promise<void> => {
+    setIsDeletingBlockedTime(true);
+    
+    try {
+      // Mock API call
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      setBlockedTimes(prev => prev.filter(bt => bt.id !== id));
+      toast.success("Time block removed");
+    } catch (error) {
+      console.error("Error deleting blocked time:", error);
+      setBlockedTimesError("Failed to delete blocked time");
+      toast.error("Failed to remove time block");
+    } finally {
+      setIsDeletingBlockedTime(false);
+    }
   };
 
   return {
@@ -122,7 +69,7 @@ export const useBlockedTimes = (startDate: Date, endDate: Date) => {
     blockedTimesError,
     isSavingBlockedTime,
     isDeletingBlockedTime,
-    saveBlockedTime: saveBlockedTimeVoid,
-    deleteBlockedTime: deleteBlockedTimeVoid
+    saveBlockedTime,
+    deleteBlockedTime
   };
 };

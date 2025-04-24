@@ -1,56 +1,50 @@
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
+import { Booking } from '@/types/booking';
+
+export interface BlockedTime {
+  id: string;
+  start_time: string;
+  end_time: string;
+  notes?: string;
+}
 
 export const useDialogState = () => {
-  // Booking dialog state
   const [isBookingDialogOpen, setIsBookingDialogOpen] = useState(false);
-  const [selectedBooking, setSelectedBooking] = useState<any | null>(null);
-  
-  // Block time dialog state
   const [isBlockTimeDialogOpen, setIsBlockTimeDialogOpen] = useState(false);
-  const [selectedBlockedTime, setSelectedBlockedTime] = useState<any | null>(null);
-  
-  const openAddBookingDialog = useCallback((date?: Date) => {
-    const defaultBooking = date ? {
-      start_time: date.toISOString(),
-      end_time: new Date(date.getTime() + 60 * 60 * 1000).toISOString(),
-      status: 'pending'
-    } : null;
-    
-    setSelectedBooking(defaultBooking);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [selectedBlockedTime, setSelectedBlockedTime] = useState<BlockedTime | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+  const openAddBookingDialog = (date?: Date) => {
+    setSelectedDate(date || null);
+    setSelectedBooking(null);
     setIsBookingDialogOpen(true);
-  }, []);
-  
-  const openEditBookingDialog = useCallback((booking: any) => {
+  };
+
+  const openEditBookingDialog = (booking: Booking) => {
     setSelectedBooking(booking);
     setIsBookingDialogOpen(true);
-  }, []);
-  
-  const openBlockTimeDialog = useCallback((date?: Date) => {
-    const defaultBlockedTime = date ? {
-      start_time: date.toISOString(),
-      end_time: new Date(date.getTime() + 60 * 60 * 1000).toISOString()
-    } : null;
-    
-    setSelectedBlockedTime(defaultBlockedTime);
+  };
+
+  const openBlockTimeDialog = (date?: Date, blockedTime?: BlockedTime) => {
+    setSelectedDate(date || null);
+    setSelectedBlockedTime(blockedTime || null);
     setIsBlockTimeDialogOpen(true);
-  }, []);
-  
-  const openEditBlockedTimeDialog = useCallback((blockedTime: any) => {
-    setSelectedBlockedTime(blockedTime);
-    setIsBlockTimeDialogOpen(true);
-  }, []);
-  
+  };
+
   return {
     isBookingDialogOpen,
-    isBlockTimeDialogOpen,
-    selectedBooking,
-    selectedBlockedTime,
     setIsBookingDialogOpen,
+    isBlockTimeDialogOpen,
     setIsBlockTimeDialogOpen,
+    selectedBooking,
+    setSelectedBooking,
+    selectedBlockedTime,
+    setSelectedBlockedTime,
+    selectedDate,
     openAddBookingDialog,
     openEditBookingDialog,
-    openBlockTimeDialog,
-    openEditBlockedTimeDialog
+    openBlockTimeDialog
   };
 };

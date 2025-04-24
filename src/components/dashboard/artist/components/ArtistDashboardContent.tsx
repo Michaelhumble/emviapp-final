@@ -9,6 +9,7 @@ import ReferralsTab from "./tabs/ReferralsTab";
 import ClientsTab from "./tabs/ClientsTab";
 import QuickActions from "./QuickActions";
 import EarningsTabContent from "./tabs/EarningsTabContent";
+import CalendarTab from "./tabs/CalendarTab";
 import { useArtistDashboardData } from "../hooks/useArtistDashboardData";
 
 const tabs = [
@@ -19,7 +20,7 @@ const tabs = [
   { id: "Messages", label: "Messages", visible: true },
   { id: "Referrals", label: "Referrals", visible: true },
   { id: "Earnings", label: "Earnings", visible: true },
-  { id: "Calendar", label: "Calendar", visible: false },
+  { id: "Calendar", label: "Calendar", visible: true }, // Made Calendar tab visible
   { id: "Services", label: "Services", visible: false }
 ];
 
@@ -96,6 +97,7 @@ export default function ArtistDashboardContent() {
         {activeTab === "Messages" && <MessagesTab />}
         {activeTab === "Referrals" && <ReferralsTab />}
         {activeTab === "Earnings" && <EarningsTabContent />}
+        {activeTab === "Calendar" && <CalendarTab />}
       </div>
     </div>
   );
