@@ -9,6 +9,8 @@ import ArtistErrorState from './ArtistErrorState';
 import { useAuth } from '@/context/auth';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const ArtistDashboard = () => {
   return (
@@ -19,10 +21,11 @@ const ArtistDashboard = () => {
 };
 
 const ArtistDashboardInner = () => {
-  const { loading } = useArtistData();
+  const { loading, error: artistDataError } = useArtistData();
   const [loadingTime, setLoadingTime] = useState(0);
   const [error, setError] = useState<Error | null>(null);
   const { signOut } = useAuth();
+  const navigate = useNavigate();
   
   // Track loading time
   useEffect(() => {
@@ -43,19 +46,34 @@ const ArtistDashboardInner = () => {
     return () => clearInterval(interval);
   }, [loading]);
   
+  // Set error if artistDataError exists
+  useEffect(() => {
+    if (artistDataError) {
+      setError(artistDataError);
+    }
+  }, [artistDataError]);
+  
   // Handle emergency logout
   const handleEmergencyLogout = async () => {
     try {
       // Clear any local storage that might be causing issues
       localStorage.removeItem('artist_dashboard_tab');
+      
       // Sign out using auth context
       await signOut();
+      
+      toast.success("Successfully signed out");
+      
       // Redirect to sign-in page
-      window.location.href = '/auth/signin';
-    } catch (error) {
-      console.error("Failed to log out:", error);
+      navigate('/auth/signin');
+    } catch (logoutError) {
+      console.error("Failed to log out:", logoutError);
+      toast.error("Failed to log out. Forcing redirect...");
+      
       // Force redirect to signin as fallback
-      window.location.href = '/auth/signin';
+      setTimeout(() => {
+        window.location.href = '/auth/signin';
+      }, 1000);
     }
   };
   

@@ -2,6 +2,7 @@
 import React from 'react';
 import { AlertTriangle, RefreshCcw, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 interface ArtistErrorStateProps {
   error: Error;
@@ -10,6 +11,13 @@ interface ArtistErrorStateProps {
 }
 
 const ArtistErrorState = ({ error, retryAction, logoutAction }: ArtistErrorStateProps) => {
+  const handleLogout = () => {
+    if (logoutAction) {
+      toast.info("Signing out...");
+      logoutAction();
+    }
+  };
+  
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] p-6">
       <div className="bg-red-50 border border-red-200 rounded-xl p-8 max-w-lg w-full text-center">
@@ -37,7 +45,7 @@ const ArtistErrorState = ({ error, retryAction, logoutAction }: ArtistErrorState
           {logoutAction && (
             <Button 
               variant="outline" 
-              onClick={logoutAction}
+              onClick={handleLogout}
               className="flex items-center gap-2"
             >
               <LogOut className="h-4 w-4" />

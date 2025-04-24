@@ -41,8 +41,14 @@ export async function signUpWithEmail(email: string, password: string, userData:
 
 export async function signOut() {
   try {
+    // Clear any potentially problematic items from localStorage
+    localStorage.removeItem('artist_dashboard_tab');
+    localStorage.removeItem('supabase.auth.token');
+    
+    // Sign out from Supabase
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+    
     return { success: true };
   } catch (error) {
     console.error("Sign out error:", error);

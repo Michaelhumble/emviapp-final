@@ -39,10 +39,18 @@ export function UserMenu() {
   
   const handleSignOut = async () => {
     try {
+      toast.info("Signing out...");
       await signOut();
+      toast.success("Successfully signed out");
       setOpen(false);
+      navigate('/auth/signin');
     } catch (error) {
       console.error("Error signing out:", error);
+      toast.error("Failed to sign out. Trying alternative method...");
+      // Force redirect as fallback
+      setTimeout(() => {
+        window.location.href = '/auth/signin';
+      }, 1000);
     }
   };
 
@@ -169,7 +177,7 @@ export function UserMenu() {
             })}</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+          <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-500 hover:text-red-600 hover:bg-red-50">
             <LogOut className="mr-2 h-4 w-4" />
             <span>{t({
               english: "Log out",
