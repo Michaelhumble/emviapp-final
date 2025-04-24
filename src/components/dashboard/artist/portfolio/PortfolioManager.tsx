@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Palette, Plus, Edit, Trash2 } from "lucide-react";
+import { Plus, Edit, Trash2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PortfolioHero from "./PortfolioHero";
 import EmptyPortfolioState from "./EmptyPortfolioState";
@@ -34,10 +34,14 @@ const mockPortfolio = [
 const PortfolioManager = () => {
   const [portfolio, setPortfolio] = useState(mockPortfolio);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState<null | { id: number; image: string; title: string }>(null);
+
+  const handleDeleteItem = (id: number) => {
+    setPortfolio(prev => prev.filter(item => item.id !== id));
+  };
 
   const handleAddWork = () => {
-    // Mock function for now
+    // Mock function for now - would integrate with upload dialog in future
     console.log("Add new work clicked");
   };
 
@@ -50,12 +54,23 @@ const PortfolioManager = () => {
         <div className="flex gap-3">
           {portfolio.length > 0 && (
             <Button
-              variant="outline"
-              className="bg-white/80 border-purple-200 hover:bg-purple-50 text-purple-700"
+              variant={isEditMode ? "default" : "outline"}
+              className={isEditMode 
+                ? "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-md"
+                : "bg-white/80 border-purple-200 hover:bg-purple-50 text-purple-700"}
               onClick={() => setIsEditMode(!isEditMode)}
             >
-              <Edit className="w-4 h-4 mr-2" />
-              {isEditMode ? "Done Editing" : "Edit Portfolio"}
+              {isEditMode ? (
+                <>
+                  <Check className="w-4 h-4 mr-2" />
+                  Save Changes
+                </>
+              ) : (
+                <>
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit Portfolio
+                </>
+              )}
             </Button>
           )}
           <Button
@@ -83,7 +98,7 @@ const PortfolioManager = () => {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="relative group rounded-xl overflow-hidden aspect-square cursor-pointer"
+                className="relative group rounded-xl overflow-hidden aspect-square cursor-pointer shadow-sm hover:shadow-md transition-all"
                 onClick={() => !isEditMode && setSelectedImage(item)}
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
@@ -103,6 +118,10 @@ const PortfolioManager = () => {
                       variant="secondary"
                       size="icon"
                       className="h-10 w-10 bg-white hover:bg-white/90"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        console.log('Edit item:', item.id);
+                      }}
                     >
                       <Edit className="h-4 w-4 text-gray-700" />
                     </Button>
@@ -110,6 +129,10 @@ const PortfolioManager = () => {
                       variant="secondary"
                       size="icon"
                       className="h-10 w-10 bg-white hover:bg-white/90 text-red-500 hover:text-red-600"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteItem(item.id);
+                      }}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -128,7 +151,7 @@ const PortfolioManager = () => {
         </motion.div>
       )}
 
-      {/* Basic Lightbox Preview - to be enhanced */}
+      {/* Lightbox Preview */}
       {selectedImage && (
         <div
           className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"

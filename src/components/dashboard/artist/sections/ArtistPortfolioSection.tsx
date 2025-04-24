@@ -3,10 +3,9 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Plus, Image as ImageIcon } from "lucide-react";
+import { Image, Plus } from "lucide-react";
 import { motion } from "framer-motion";
 
-// Mock portfolio data for demonstration
 const mockPortfolioItems = [
   {
     id: "1",
@@ -26,8 +25,6 @@ const mockPortfolioItems = [
 ];
 
 const ArtistPortfolioSection = () => {
-  // For demonstration, we're using mock data
-  // In a real implementation, this would use the actual portfolio data
   const hasItems = mockPortfolioItems.length > 0;
   
   return (
@@ -39,7 +36,7 @@ const ArtistPortfolioSection = () => {
       <Card className="border-purple-100 shadow-sm overflow-hidden">
         <CardHeader className="pb-2 bg-gradient-to-r from-purple-50 to-pink-50">
           <CardTitle className="text-xl font-serif flex items-center">
-            <ImageIcon className="h-5 w-5 mr-2 text-purple-500" />
+            <Image className="h-5 w-5 mr-2 text-purple-500" />
             My Portfolio
           </CardTitle>
         </CardHeader>
@@ -69,8 +66,8 @@ const ArtistPortfolioSection = () => {
               
               <div className="mt-4 flex justify-center">
                 <Link to="/dashboard/artist/portfolio">
-                  <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
-                    <Plus className="h-4 w-4 mr-2" />
+                  <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-md hover:shadow-lg">
+                    <Image className="h-4 w-4 mr-2" />
                     Manage My Portfolio
                   </Button>
                 </Link>
@@ -79,14 +76,14 @@ const ArtistPortfolioSection = () => {
           ) : (
             <div className="text-center py-8">
               <div className="bg-purple-50 p-4 rounded-full mb-4 inline-flex">
-                <ImageIcon className="h-8 w-8 text-purple-400" />
+                <Image className="h-8 w-8 text-purple-400" />
               </div>
               <h3 className="text-lg font-medium mb-2">Build your portfolio</h3>
               <p className="text-gray-500 mb-4 max-w-md mx-auto">
                 Upload photos of your best work to attract clients and showcase your talent.
               </p>
               <Link to="/dashboard/artist/portfolio">
-                <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
+                <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-md hover:shadow-lg">
                   <Plus className="h-4 w-4 mr-2" />
                   Create Portfolio
                 </Button>
