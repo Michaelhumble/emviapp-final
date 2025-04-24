@@ -1,298 +1,147 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/context/auth';
-import { 
-  DashboardStats, 
-  BookingWithDetails, 
-  EarningsData 
-} from '../types/ArtistDashboardTypes';
-import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
 
-export const useArtistDashboardData = (activeTab: string) => {
-  const { user } = useAuth();
+import { useState, useEffect } from "react";
+import { useAuth } from "@/context/auth";
+import { supabase } from "@/integrations/supabase/client";
+import { BookingWithDetails } from "@/hooks/artist/hooks/useArtistBookings";
+import { Booking } from "@/types/booking";
+
+// Define interfaces for better type safety
+export interface DashboardStats {
+  totalBookings: number;
+  pendingBookings: number;
+  completedBookings: number;
+  totalEarnings: number;
+  averageRating: number;
+}
+
+export interface EarningsData {
+  currentMonth: number;
+  previousMonth: number;
+  total: number;
+}
+
+export function useArtistDashboardData(activeTab: string) {
   const [stats, setStats] = useState<DashboardStats>({
-    booking_count: 0,
-    completed_services: 0,
-    total_earnings: 0,
-    average_rating: 0,
-    referral_count: 0,
-    repeat_client_percentage: 0,
-    profile_views: 0
+    totalBookings: 0,
+    pendingBookings: 0,
+    completedBookings: 0,
+    totalEarnings: 0,
+    averageRating: 0
+  });
+  const [recentBookings, setRecentBookings] = useState<BookingWithDetails[]>([]);
+  const [earningsData, setEarningsData] = useState<EarningsData>({
+    currentMonth: 0,
+    previousMonth: 0,
+    total: 0
   });
   const [isLoadingStats, setIsLoadingStats] = useState(true);
-  const [recentBookings, setRecentBookings] = useState<BookingWithDetails[]>([]);
   const [isLoadingBookings, setIsLoadingBookings] = useState(true);
-  const [earningsData, setEarningsData] = useState<EarningsData>({
-    monthly_earnings: [],
-    total_earnings: 0,
-    pending_payouts: 0
-  });
   const [isLoadingEarnings, setIsLoadingEarnings] = useState(true);
-
-  // Fetch data when tab changes or user changes
+  const [error, setError] = useState<Error | null>(null);
+  
+  const { user } = useAuth();
+  
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user) return;
     
-    if (activeTab === 'overview') {
-      fetchStatsData();
-      fetchRecentBookings();
-    } else if (activeTab === 'earnings') {
-      fetchEarningsData();
-    }
-  }, [activeTab, user]);
-
-  const fetchStatsData = async () => {
-    if (!user?.id) return;
-    
-    setIsLoadingStats(true);
-    try {
-      // Get booking stats
-      const { data: bookingData, error: bookingError } = await supabase
-        .from('appointments')
-        .select('id, status')
-        .eq('artist_id', user.id);
-      
-      if (bookingError) throw bookingError;
-      
-      // Get completed bookings with earnings data
-      const { data: completedBookingsData, error: completedError } = await supabase
-        .from('completed_bookings')
-        .select('commission_earned')
-        .eq('artist_id', user.id);
-      
-      if (completedError) throw completedError;
-      
-      // Get ratings data
-      const { data: ratingsData, error: ratingsError } = await supabase
-        .from('reviews')
-        .select('rating')
-        .eq('artist_id', user.id)
-        .eq('status', 'active');
-      
-      if (ratingsError) throw ratingsError;
-      
-      // Count referrals
-      const { count: referralCount, error: referralError } = await supabase
-        .from('referrals')
-        .select('id', { count: 'exact' })
-        .eq('referrer_id', user.id);
-      
-      if (referralError) throw referralError;
-      
-      // Get unique customer counts
-      const { data: clientsData, error: clientsError } = await supabase
-        .from('appointments')
-        .select('customer_id')
-        .eq('artist_id', user.id)
-        .not('customer_id', 'is', null);
-      
-      if (clientsError) throw clientsError;
-      
-      // Calculate stats from fetched data
-      const bookingCount = bookingData?.length || 0;
-      const completedServices = completedBookingsData?.length || 0;
-      
-      // Sum total earnings
-      const totalEarnings = completedBookingsData?.reduce((sum, booking) => 
-        sum + (booking.commission_earned || 0), 0) || 0;
-      
-      // Calculate average rating
-      const ratings = ratingsData?.map(r => r.rating) || [];
-      const averageRating = ratings.length 
-        ? parseFloat((ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length).toFixed(1))
-        : 0;
-      
-      // Count unique customers for repeat calculations
-      const uniqueCustomers = new Set();
-      const customerCounts: Record<string, number> = {};
-      
-      // Count occurrences of each customer
-      clientsData?.forEach(item => {
-        if (item.customer_id) {
-          uniqueCustomers.add(item.customer_id);
-          customerCounts[item.customer_id] = (customerCounts[item.customer_id] || 0) + 1;
+    const fetchDashboardData = async () => {
+      try {
+        setIsLoadingStats(true);
+        setError(null);
+        
+        // Fetch booking stats
+        const { data: bookingsData, error: bookingsError } = await supabase
+          .from('bookings')
+          .select('*')
+          .eq('recipient_id', user.id);
+          
+        if (bookingsError) throw bookingsError;
+        
+        // Calculate stats
+        const totalBookings = bookingsData?.length || 0;
+        const pendingBookings = bookingsData?.filter(b => b.status === 'pending').length || 0;
+        const completedBookings = bookingsData?.filter(b => b.status === 'completed').length || 0;
+        
+        // Fetch earnings data (from completed_bookings table if available)
+        const { data: earningsData, error: earningsError } = await supabase
+          .from('completed_bookings')
+          .select('commission_earned, created_at')
+          .eq('artist_id', user.id);
+          
+        if (earningsError && earningsError.message !== 'No rows found') {
+          console.error("Earnings data error:", earningsError);
+          // Continue execution even if this fails
         }
-      });
+        
+        // Calculate earnings
+        const totalEarnings = earningsData ? 
+          earningsData.reduce((sum, item) => sum + (item.commission_earned || 0), 0) : 
+          0;
+        
+        // Mock average rating for now
+        const averageRating = 4.8;
+        
+        setStats({
+          totalBookings,
+          pendingBookings,
+          completedBookings,
+          totalEarnings,
+          averageRating
+        });
+        
+        // Set mock earnings data
+        setEarningsData({
+          currentMonth: totalEarnings * 0.6,
+          previousMonth: totalEarnings * 0.4,
+          total: totalEarnings
+        });
+      } catch (err) {
+        console.error("Error fetching dashboard stats:", err);
+        setError(err instanceof Error ? err : new Error('Failed to load dashboard data'));
+      } finally {
+        setIsLoadingStats(false);
+        setIsLoadingEarnings(false);
+      }
       
-      // Count repeat customers (those with more than one booking)
-      const repeatClients = Object.values(customerCounts).filter(count => count > 1).length;
-      const totalClients = uniqueCustomers.size;
-      const repeatClientPercentage = totalClients 
-        ? Math.round((repeatClients / totalClients) * 100) 
-        : 0;
-      
-      // Get profile views (placeholder for now)
-      const profileViews = Math.floor(Math.random() * 100) + 50; // Placeholder
-      
-      setStats({
-        booking_count: bookingCount,
-        completed_services: completedServices,
-        total_earnings: totalEarnings,
-        average_rating: averageRating,
-        referral_count: referralCount || 0,
-        repeat_client_percentage: repeatClientPercentage,
-        profile_views: profileViews
-      });
-    } catch (error) {
-      console.error('Error fetching stats:', error);
-      // Use fallback stats
-      setStats({
-        booking_count: 0,
-        completed_services: 0,
-        total_earnings: 0,
-        average_rating: 0,
-        referral_count: 0,
-        repeat_client_percentage: 0,
-        profile_views: 0
-      });
-    } finally {
+      try {
+        setIsLoadingBookings(true);
+        
+        // Fetch recent bookings
+        const { data: recentBookingsData, error: recentBookingsError } = await supabase
+          .from('bookings')
+          .select('*')
+          .eq('recipient_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(5);
+          
+        if (recentBookingsError) throw recentBookingsError;
+        
+        setRecentBookings(recentBookingsData as BookingWithDetails[] || []);
+      } catch (err) {
+        console.error("Error fetching recent bookings:", err);
+        setError(err instanceof Error ? err : new Error('Failed to load recent bookings'));
+      } finally {
+        setIsLoadingBookings(false);
+      }
+    };
+    
+    if (activeTab === 'Overview') {
+      fetchDashboardData();
+    } else {
+      // Reset loading states for other tabs
       setIsLoadingStats(false);
-    }
-  };
-
-  const fetchRecentBookings = async () => {
-    if (!user?.id) return;
-    
-    setIsLoadingBookings(true);
-    try {
-      // Get recent bookings with service details
-      const { data, error } = await supabase
-        .from('appointments')
-        .select(`
-          id, 
-          artist_id,
-          customer_id, 
-          customer_name,
-          service_id, 
-          start_time, 
-          end_time, 
-          status, 
-          created_at,
-          notes,
-          services (
-            title,
-            price
-          )
-        `)
-        .eq('artist_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(5);
-      
-      if (error) throw error;
-      
-      // Transform data to match BookingWithDetails
-      const transformedBookings: BookingWithDetails[] = data.map(booking => ({
-        id: booking.id,
-        sender_id: booking.customer_id || '',
-        recipient_id: booking.artist_id,
-        client_name: booking.customer_name || 'Client',
-        service_name: booking.services?.title || 'Service',
-        service_id: booking.service_id,
-        date_requested: format(new Date(booking.start_time), 'yyyy-MM-dd'),
-        time_requested: format(new Date(booking.start_time), 'h:mm a'),
-        appointment_time: booking.start_time,
-        status: booking.status as any,
-        created_at: booking.created_at,
-        price: booking.services?.price,
-        note: booking.notes
-      }));
-      
-      setRecentBookings(transformedBookings);
-    } catch (error) {
-      console.error('Error fetching bookings:', error);
-      setRecentBookings([]);
-    } finally {
       setIsLoadingBookings(false);
-    }
-  };
-
-  const fetchEarningsData = async () => {
-    if (!user?.id) return;
-    
-    setIsLoadingEarnings(true);
-    try {
-      // Get monthly earnings for last 6 months
-      const months = Array.from({ length: 6 }, (_, i) => {
-        const date = subMonths(new Date(), i);
-        return {
-          start: startOfMonth(date).toISOString(),
-          end: endOfMonth(date).toISOString(),
-          name: format(date, 'MMM')
-        };
-      }).reverse();
-      
-      const monthlyEarnings = await Promise.all(
-        months.map(async (month) => {
-          const { data, error } = await supabase
-            .from('completed_bookings')
-            .select('commission_earned')
-            .eq('artist_id', user.id)
-            .gte('completed_at', month.start)
-            .lte('completed_at', month.end);
-          
-          if (error) throw error;
-          
-          const amount = data.reduce((sum, booking) => 
-            sum + (booking.commission_earned || 0), 0);
-          
-          return { month: month.name, amount };
-        })
-      );
-      
-      // Get total earnings (all time)
-      const { data: totalData, error: totalError } = await supabase
-        .from('completed_bookings')
-        .select('commission_earned')
-        .eq('artist_id', user.id);
-      
-      if (totalError) throw totalError;
-      
-      const totalEarnings = totalData.reduce((sum, booking) => 
-        sum + (booking.commission_earned || 0), 0);
-      
-      // Get pending payouts (completed but not paid)
-      const { data: pendingData, error: pendingError } = await supabase
-        .from('completed_bookings')
-        .select('commission_earned')
-        .eq('artist_id', user.id)
-        .eq('paid', false);
-      
-      if (pendingError) throw pendingError;
-      
-      const pendingPayouts = pendingData.reduce((sum, booking) => 
-        sum + (booking.commission_earned || 0), 0);
-      
-      setEarningsData({
-        monthly_earnings: monthlyEarnings,
-        total_earnings: totalEarnings,
-        pending_payouts: pendingPayouts
-      });
-    } catch (error) {
-      console.error('Error fetching earnings data:', error);
-      // Use fallback data
-      setEarningsData({
-        monthly_earnings: [
-          { month: 'Jan', amount: 0 },
-          { month: 'Feb', amount: 0 },
-          { month: 'Mar', amount: 0 },
-          { month: 'Apr', amount: 0 },
-          { month: 'May', amount: 0 },
-          { month: 'Jun', amount: 0 }
-        ],
-        total_earnings: 0,
-        pending_payouts: 0
-      });
-    } finally {
       setIsLoadingEarnings(false);
     }
-  };
-
+  }, [user, activeTab]);
+  
   return {
     stats,
     isLoadingStats,
     recentBookings,
     isLoadingBookings,
     earningsData,
-    isLoadingEarnings
+    isLoadingEarnings,
+    error
   };
-};
+}

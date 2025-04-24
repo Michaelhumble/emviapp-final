@@ -166,7 +166,9 @@ export const ArtistDataProvider = ({ children }: { children: ReactNode }) => {
           ...userProfile,
           id: userProfile.user_id || userProfile.id,
           accepts_bookings: true,
-          preferences: []
+          preferences: [],
+          instagram: userProfile.instagram || '',
+          website: userProfile.website || '',
         }
       }));
       

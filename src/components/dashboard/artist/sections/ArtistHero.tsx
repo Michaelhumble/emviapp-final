@@ -1,129 +1,61 @@
 
-import React from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Instagram, Globe, Pencil } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useArtistData } from "../context/ArtistDataContext";
-import { useAuth } from "@/context/auth";
-import VerifiedBadge from "@/components/artist-profile/VerifiedBadge";
+import React from 'react';
+import { useArtistData } from '../context/ArtistDataContext';
+import { motion } from "framer-motion";
+import { Instagram, Globe } from "lucide-react";
 
-const ArtistHero: React.FC = () => {
-  const { artistProfile } = useArtistData() || {};
-  const { userProfile } = useAuth();
-
-  // MOCK: Verified badge
-  const isVerified = true;
-
-  const profile = artistProfile || userProfile || {};
-
-  const {
-    full_name = "Michael Nguyen",
-    specialty = "Nail Design",
-    bio = '"Your artistry is your brand. Let\'s grow it."',
-    avatar_url = "",
-    instagram,
-    website,
-  } = profile;
-
-  const getInitials = (name?: string) =>
-    name
-      ? name
-          .split(" ")
-          .map((n) => n[0])
-          .join("")
-          .toUpperCase()
-      : "A";
-
-  const formattedInstagram = instagram
-    ? instagram.startsWith("@")
-      ? instagram
-      : `@${instagram}`
-    : "@https://instagram.com/humbleinsider";
-
+const ArtistHero = () => {
+  const { firstName, specialty, artistProfile } = useArtistData();
+  
+  // Safely access social media links, providing fallbacks
+  const instagram = artistProfile?.instagram || '';
+  const website = artistProfile?.website || '';
+  
   return (
-    <section className="w-full mb-8">
-      <div className="relative rounded-xl overflow-hidden shadow-sm">
-        <div className="h-48 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 relative flex items-center justify-center">
-          <Button 
-            asChild
-            variant="secondary"
-            className="absolute top-4 right-4 bg-white/90 backdrop-blur-md hover:bg-white/95 text-gray-800"
-          >
-            <Link to="/profile/edit">
-              <Pencil className="h-4 w-4 mr-1.5" />
-              Edit Profile
-            </Link>
-          </Button>
-
-          <h1
-            className="
-              font-playfair font-bold antialiased
-              text-4xl md:text-6xl
-              tracking-wide
-              text-[#1A1A1A]
-              text-center
-              w-full
-              z-10
-              select-none
-              pointer-events-none
-              flex items-center justify-center gap-2
-            "
-          >
-            {full_name}
-            {/* Verified Badge next to the name */}
-            {isVerified && <VerifiedBadge />}
-          </h1>
-        </div>
-
-        <div className="px-6 pb-6 bg-white">
-          <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center -mt-14">
-            <Avatar className="w-28 h-28 border-4 border-white shadow-md">
-              <AvatarImage 
-                src={avatar_url} 
-                alt={full_name}
-                className="object-cover"
-              />
-              <AvatarFallback className="bg-gradient-to-br from-purple-50 to-purple-200 text-purple-700 text-4xl font-semibold">
-                {getInitials(full_name)}
-              </AvatarFallback>
-            </Avatar>
-            
-            <div className="pt-2 sm:pt-0">
-              <p className="text-lg text-gray-600 mt-1">{specialty}</p>
-              
-              <div className="flex flex-wrap items-center gap-4 mt-3">
-                <a 
-                  href={`https://instagram.com/${formattedInstagram.replace('@', '')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-gray-500 hover:text-purple-600 transition-colors"
-                >
-                  <Instagram className="h-5 w-5" />
-                  <span>{formattedInstagram}</span>
-                </a>
-                
-                {website && (
-                  <a 
-                    href={website.startsWith('http') ? website : `https://${website}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-gray-500 hover:text-purple-600 transition-colors"
-                  >
-                    <Globe className="h-5 w-5" />
-                    <span>Website</span>
-                  </a>
-                )}
-              </div>
-              
-              <p className="text-gray-600 font-serif italic text-sm mt-2">
-                {bio}
-              </p>
-            </div>
+    <motion.div 
+      className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 shadow-sm border border-purple-100"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.1 }}
+    >
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="h-16 w-16 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white text-2xl font-semibold">
+            {firstName ? firstName.charAt(0) : 'A'}
+          </div>
+          <div>
+            <h1 className="text-2xl font-playfair font-semibold text-gray-900">
+              Welcome, {firstName || 'Artist'}
+            </h1>
+            <p className="text-gray-600 mt-1">{specialty || 'Nail Artist'}</p>
           </div>
         </div>
+        
+        <div className="flex gap-3">
+          {instagram && (
+            <a 
+              href={`https://instagram.com/${instagram.replace('@', '')}`} 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-full bg-white shadow-sm hover:shadow-md transition-shadow duration-200 border border-purple-100"
+            >
+              <Instagram className="h-5 w-5 text-pink-500" />
+            </a>
+          )}
+          
+          {website && (
+            <a 
+              href={website.startsWith('http') ? website : `https://${website}`}
+              target="_blank"
+              rel="noopener noreferrer" 
+              className="p-2 rounded-full bg-white shadow-sm hover:shadow-md transition-shadow duration-200 border border-purple-100"
+            >
+              <Globe className="h-5 w-5 text-purple-500" />
+            </a>
+          )}
+        </div>
       </div>
-    </section>
+    </motion.div>
   );
 };
 

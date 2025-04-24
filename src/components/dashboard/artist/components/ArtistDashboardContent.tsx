@@ -12,6 +12,8 @@ import EarningsTabContent from "./tabs/EarningsTabContent";
 import CalendarTab from "./tabs/CalendarTab";
 import { useArtistDashboardData } from "../hooks/useArtistDashboardData";
 import { useNavigate } from "react-router-dom";
+import ArtistErrorState from "../ArtistErrorState";
+import ArtistLoadingState from "./ArtistLoadingState";
 
 const tabs = [
   { id: "Overview", label: "Overview", visible: true },
@@ -36,13 +38,15 @@ const tabVariants = {
 export default function ArtistDashboardContent() {
   const [activeTab, setActiveTab] = useState("Overview");
   const navigate = useNavigate();
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
 
   // Add useArtistDashboardData hook to get required props for OverviewTab
   const {
     stats,
     isLoadingStats,
     recentBookings,
-    isLoadingBookings
+    isLoadingBookings,
+    error
   } = useArtistDashboardData(activeTab);
 
   useEffect(() => {
@@ -51,6 +55,19 @@ export default function ArtistDashboardContent() {
       setActiveTab(savedTab);
     }
   }, []);
+
+  // Add a timeout to detect prolonged loading states
+  useEffect(() => {
+    if (isLoadingStats || isLoadingBookings) {
+      const timer = setTimeout(() => {
+        setLoadingTimeout(true);
+      }, 10000); // 10 seconds timeout
+      
+      return () => clearTimeout(timer);
+    } else {
+      setLoadingTimeout(false);
+    }
+  }, [isLoadingStats, isLoadingBookings]);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -61,6 +78,22 @@ export default function ArtistDashboardContent() {
       navigate("/dashboard/artist/booking-calendar");
     }
   };
+
+  const handleRetry = () => {
+    window.location.reload();
+  };
+
+  // Show error state if there's an error
+  if (error) {
+    return <ArtistErrorState error={error} retryAction={handleRetry} />;
+  }
+
+  // Show loading state with timeout message if loading takes too long
+  if ((isLoadingStats || isLoadingBookings) && loadingTimeout) {
+    return (
+      <ArtistLoadingState />
+    );
+  }
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-6">
