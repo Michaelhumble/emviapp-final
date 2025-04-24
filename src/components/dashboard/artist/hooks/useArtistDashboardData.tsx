@@ -25,7 +25,7 @@ export const useArtistDashboardData = (activeTab: string) => {
   const [isLoadingStats, setIsLoadingStats] = useState(true);
   const [recentBookings, setRecentBookings] = useState<BookingData[]>([]);
   const [isLoadingBookings, setIsLoadingBookings] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<Error | null>(null);  // Add this error state
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
 
   // Fetch stats when the dashboard is loaded or refreshed
@@ -158,12 +158,30 @@ export const useArtistDashboardData = (activeTab: string) => {
     fetchRecentBookings();
   }, [user?.id, activeTab]);
   
+  // Add default earnings data
+  const earningsData = {
+    monthly_earnings: [
+      {month: "Jan", amount: 2400},
+      {month: "Feb", amount: 1398},
+      {month: "Mar", amount: 2800},
+      {month: "Apr", amount: 3908},
+      {month: "May", amount: 4800},
+      {month: "Jun", amount: 3800},
+    ],
+    total_earnings: 21450,
+    pending_payouts: 1250
+  };
+  
+  const isLoadingEarnings = false;
+  
   return {
     stats,
     isLoadingStats,
     recentBookings,
     isLoadingBookings,
-    error,
-    lastRefresh
+    error,  // Include the error property
+    lastRefresh,
+    earningsData,
+    isLoadingEarnings
   };
 };

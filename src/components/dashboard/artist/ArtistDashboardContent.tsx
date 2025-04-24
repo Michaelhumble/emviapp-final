@@ -36,7 +36,8 @@ export default function ArtistDashboardContent() {
   const [activeTab, setActiveTab] = useState("Overview");
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
+  const [loadingAttempts, setLoadingAttempts] = useState(0);
 
   // Add useArtistDashboardData hook to get required props for OverviewTab
   const {
@@ -44,18 +45,10 @@ export default function ArtistDashboardContent() {
     isLoadingStats,
     recentBookings,
     isLoadingBookings,
-    error: dashboardError
+    error,  // Now this is properly received from the hook
+    earningsData,
+    isLoadingEarnings
   } = useArtistDashboardData(activeTab);
-
-  useEffect(() => {
-    // Set error state if dashboard data fails to load
-    if (dashboardError) {
-      setLoadError("Failed to load dashboard data. Please try again.");
-      console.error("Dashboard data error:", dashboardError);
-    } else {
-      setLoadError(null);
-    }
-  }, [dashboardError]);
 
   // Set loading timeout to prevent long loading screens
   useEffect(() => {
@@ -63,9 +56,14 @@ export default function ArtistDashboardContent() {
     setIsLoading(loading);
     
     if (loading) {
+      setLoadingAttempts(prev => prev + 1);
+      
       // Auto-clear loading state after timeout
       const timeoutId = setTimeout(() => {
-        setIsLoading(false);
+        if (isLoadingStats || isLoadingBookings) {
+          setLoadingTimeout(true);
+          console.log("Dashboard loading timeout reached");
+        }
       }, 10000); // 10 seconds max loading time
       
       return () => clearTimeout(timeoutId);
@@ -90,18 +88,32 @@ export default function ArtistDashboardContent() {
   };
 
   // Show error message if loading failed
-  if (loadError) {
+  if (error || loadingTimeout || loadingAttempts > 3) {
     return (
       <div className="w-full max-w-6xl mx-auto px-4 py-6">
         <div className="bg-red-50 border border-red-100 rounded-md p-6 text-center">
           <h3 className="text-lg font-medium text-red-800 mb-2">Dashboard Error</h3>
-          <p className="text-sm text-red-600 mb-4">{loadError}</p>
+          <p className="text-sm text-red-600 mb-4">
+            {error?.message || "We encountered an issue loading your dashboard. This might be due to connection problems or temporary server issues."}
+          </p>
           <button
             onClick={() => window.location.reload()}
             className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
           >
             Reload Dashboard
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="w-full max-w-6xl mx-auto px-4 py-12">
+        <div className="flex flex-col items-center justify-center">
+          <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-gray-600">Loading your dashboard...</p>
         </div>
       </div>
     );
