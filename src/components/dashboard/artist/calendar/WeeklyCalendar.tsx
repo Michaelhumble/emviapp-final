@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { format, addDays, startOfWeek, isSameDay, parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, ChevronLeft, ChevronRight, Clock, Plus, X } from "lucide-react";
-import { DayColumn } from "./DayColumn";
+import DayColumn from "./DayColumn";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useArtistCalendar } from "@/hooks/useArtistCalendar";
 import { Booking } from "@/components/dashboard/artist/types/ArtistDashboardTypes";

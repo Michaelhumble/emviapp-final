@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { CalendarDays, List, Plus, Share2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { WeeklyCalendarView } from "./WeeklyCalendarView";
+import WeeklyCalendarView from "./WeeklyCalendarView";
 import MonthlyCalendarView from "./MonthlyCalendarView";
 import BookingList from "./BookingList";
 import BookingModal from "./BookingModal";

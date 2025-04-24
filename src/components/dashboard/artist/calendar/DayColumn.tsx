@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { format, isSameDay } from 'date-fns';
 import { cn } from "@/lib/utils";
@@ -83,7 +82,7 @@ const DayColumn: React.FC<DayColumnProps> = ({
                       {booking.client_name || "Client"}
                     </div>
                     <div className="text-[10px] text-gray-600 truncate">
-                      {booking.service_name || booking.service_type || "Service"}
+                      {booking.service_name || "Service"}
                     </div>
                   </motion.div>
                 ))
