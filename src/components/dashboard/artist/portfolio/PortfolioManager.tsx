@@ -59,8 +59,16 @@ const PortfolioManager = () => {
   };
 
   const handleAddWork = () => {
-    // Mock function for now - would integrate with upload dialog in future
-    console.log("Add new work clicked");
+    // Mock function for adding new work
+    const newId = Math.max(...portfolio.map(item => item.id), 0) + 1;
+    const newItem = {
+      id: newId,
+      image: "/lovable-uploads/a3c08446-c1cb-492d-a361-7ec4aca18cfd.png", // Default image
+      title: `New Work ${newId}`,
+      category: "New Category",
+      featured: false
+    };
+    setPortfolio(prev => [...prev, newItem]);
   };
 
   return (
