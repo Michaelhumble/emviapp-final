@@ -2,14 +2,13 @@
 import { motion } from "framer-motion";
 import { format, addDays, startOfWeek, isSameDay, parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, ChevronLeft, ChevronRight, Clock, Plus } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Clock, Plus, X } from "lucide-react";
 import { DayColumn } from "./DayColumn";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useArtistCalendar } from "@/hooks/useArtistCalendar";
 import { Booking } from "@/components/dashboard/artist/types/ArtistDashboardTypes";
-import ArtistBookingDialog from "./ArtistBookingDialog";
-import BlockTimeDialog from "./BlockTimeDialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import BookingModal from "./BookingModal";
 
 export const WeeklyCalendar = () => {
   const { 
@@ -38,79 +37,74 @@ export const WeeklyCalendar = () => {
   
   const loading = isLoadingAppointments || isLoadingBlockedTimes;
 
-  // Fixed event handlers for button clicks
-  const handleAddBookingClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    openAddBookingDialog();
-  };
-
-  const handlePreviousWeekClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    goToPreviousWeek();
-  };
-
-  const handleTodayClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    goToToday();
-  };
-
-  const handleNextWeekClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    goToNextWeek();
-  };
-
-  const handleBlockTimeClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    openBlockTimeDialog();
-  };
+  // Mock data for bookings (we'll integrate with appointments/API data later)
+  const mockBookings = [
+    {
+      id: '1',
+      client_name: 'Emma Thompson',
+      service_name: 'Bridal Makeup',
+      date_requested: '2025-04-26',
+      time_requested: '2:00 PM',
+      status: 'confirmed',
+      note: 'Wedding at Grand Hotel'
+    },
+    {
+      id: '2',
+      client_name: 'Sarah Johnson',
+      service_name: 'Makeup Session',
+      date_requested: '2025-04-27',
+      time_requested: '10:30 AM',
+      status: 'completed',
+      note: 'Corporate photoshoot'
+    },
+    {
+      id: '3',
+      client_name: 'Jessica Brown',
+      service_name: 'Full Glam Package',
+      date_requested: '2025-04-28',
+      time_requested: '4:00 PM',
+      status: 'pending',
+      note: 'Birthday party'
+    },
+  ];
 
   const getBookingsForDay = (day: Date) => {
-    return appointments.filter((booking) => {
-      if (booking.start_time) {
-        // Use start_time instead of date_requested
-        const bookingDate = parseISO(booking.start_time);
+    return mockBookings.filter((booking) => {
+      if (booking.date_requested) {
+        const bookingDate = new Date(booking.date_requested);
         return isSameDay(bookingDate, day);
       }
       return false;
-    }).map(booking => {
-      // Convert from API format to our Booking type
-      return {
-        id: booking.id,
-        sender_id: booking.customer_id || '',
-        recipient_id: booking.artist_id || '',
-        client_name: booking.customer_name || 'Client',
-        service_name: booking.services?.title || 'Service',
-        date_requested: booking.start_time || '',
-        time_requested: booking.start_time ? format(parseISO(booking.start_time), 'h:mm a') : '',
-        status: booking.status as 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled',
-        created_at: booking.created_at || new Date().toISOString()
-      } as Booking;
-    });
+    }) as Booking[];
   };
 
   return (
     <Card className="shadow-sm border-gray-100/50">
       <CardHeader className="pb-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <CardTitle className="text-xl flex items-center">
-            <CalendarDays className="h-5 w-5 mr-2 text-primary" />
-            Calendar
-          </CardTitle>
+          <div className="font-medium text-muted-foreground">
+            {format(weekDays[0], "MMMM d")} - {format(weekDays[6], "MMMM d, yyyy")}
+          </div>
           
           <div className="flex space-x-2">
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={handlePreviousWeekClick}
+              onClick={goToPreviousWeek}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={handleTodayClick}
+              onClick={goToToday}
             >
               Today
             </Button>
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={handleNextWeekClick}
+              onClick={goToNextWeek}
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -120,17 +114,27 @@ export const WeeklyCalendar = () => {
       
       <CardContent className="pb-6">
         <div className="mb-4 flex flex-col sm:flex-row justify-between gap-2">
-          <div className="font-medium text-muted-foreground mb-2">
-            {format(weekDays[0], "MMMM d")} - {format(weekDays[6], "MMMM d, yyyy")}
-          </div>
+          <CardTitle className="text-lg flex items-center">
+            <CalendarDays className="h-5 w-5 mr-2 text-primary" />
+            Weekly View
+          </CardTitle>
           
           <div className="flex space-x-2">
-            <Button size="sm" onClick={handleAddBookingClick}>
+            <Button 
+              size="sm" 
+              onClick={() => openAddBookingDialog()}
+              className="bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-sm hover:shadow-md transition-shadow"
+            >
               <Plus className="h-4 w-4 mr-1.5" />
               Add Booking
             </Button>
-            <Button size="sm" variant="outline" onClick={handleBlockTimeClick}>
-              <Clock className="h-4 w-4 mr-1.5" />
+            <Button 
+              size="sm" 
+              variant="outline" 
+              onClick={() => openBlockTimeDialog()}
+              className="border-purple-200"
+            >
+              <X className="h-4 w-4 mr-1.5" />
               Block Time
             </Button>
           </div>
@@ -167,23 +171,10 @@ export const WeeklyCalendar = () => {
       </CardContent>
       
       {/* Booking Dialog */}
-      <ArtistBookingDialog
-        isOpen={isBookingDialogOpen}
+      <BookingModal
+        open={isBookingDialogOpen}
         onClose={() => setIsBookingDialogOpen(false)}
-        onSave={saveAppointment}
-        onDelete={deleteAppointment}
-        booking={selectedBooking}
-        isEditing={!!selectedBooking}
-      />
-      
-      {/* Block Time Dialog */}
-      <BlockTimeDialog
-        isOpen={isBlockTimeDialogOpen}
-        onClose={() => setIsBlockTimeDialogOpen(false)}
-        onSave={saveBlockedTime}
-        onDelete={deleteBlockedTime}
-        blockedTime={selectedBlockedTime}
-        isEditing={!!selectedBlockedTime}
+        existingBooking={selectedBooking}
       />
     </Card>
   );

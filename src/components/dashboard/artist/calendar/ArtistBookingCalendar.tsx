@@ -1,46 +1,25 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, ChevronLeft, ChevronRight, Plus, Clock } from "lucide-react";
-import { format } from 'date-fns';
+import { CalendarDays, List, Plus, Share2 } from "lucide-react";
 import { motion } from "framer-motion";
-
-// Mock data for calendar view
-const mockBookings = [
-  {
-    id: '1',
-    clientName: 'Sarah Johnson',
-    service: 'Makeup Session',
-    date: '2025-04-25',
-    time: '10:00 AM',
-    status: 'confirmed'
-  },
-  {
-    id: '2',
-    clientName: 'Emma Smith',
-    service: 'Hair Styling',
-    date: '2025-04-26',
-    time: '2:00 PM',
-    status: 'pending'
-  }
-];
+import { toast } from "sonner";
+import { WeeklyCalendar } from "./WeeklyCalendar";
+import MonthlyCalendarView from "./MonthlyCalendarView";
+import BookingList from "./BookingList";
+import BookingModal from "./BookingModal";
+import { useArtistCalendar } from "@/hooks/useArtistCalendar";
 
 const ArtistBookingCalendar = () => {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedBooking, setSelectedBooking] = useState<any>(null);
-  const [showBookingDetails, setShowBookingDetails] = useState(false);
-
-  const nextWeek = () => {
-    const next = new Date(currentDate);
-    next.setDate(next.getDate() + 7);
-    setCurrentDate(next);
-  };
-
-  const prevWeek = () => {
-    const prev = new Date(currentDate);
-    prev.setDate(prev.getDate() - 7);
-    setCurrentDate(prev);
+  const [calendarView, setCalendarView] = useState<'week' | 'month'>('week');
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const { currentDate } = useArtistCalendar();
+  
+  const handleCopyBookingLink = () => {
+    navigator.clipboard.writeText('https://emvi.app/book/michael-artist');
+    toast.success('Booking link copied to clipboard!');
   };
 
   return (
@@ -48,94 +27,97 @@ const ArtistBookingCalendar = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="container mx-auto px-4 py-8"
+      className="container mx-auto px-4 py-8 max-w-7xl"
     >
-      <Card className="overflow-hidden bg-white/90 backdrop-blur-sm border-0 shadow-lg rounded-xl">
-        <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-              <CardTitle className="text-xl font-serif">Booking Calendar</CardTitle>
-              <CardDescription>Manage your appointments and schedule</CardDescription>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={prevWeek}>
-                <ChevronLeft className="h-4 w-4 mr-1" /> Previous
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>
-                Today
-              </Button>
-              <Button variant="outline" size="sm" onClick={nextWeek}>
-                Next <ChevronRight className="h-4 w-4 ml-1" />
-              </Button>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-serif text-gray-800">Booking Calendar</h1>
+          <p className="text-gray-600 mt-1">Manage your appointments and schedule</p>
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          <Button 
+            onClick={() => setShowBookingModal(true)}
+            className="bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-md hover:shadow-lg transition-shadow"
+          >
+            <Plus className="mr-1 h-4 w-4" /> New Appointment
+          </Button>
+          
+          <Button
+            variant="outline"
+            onClick={handleCopyBookingLink}
+            className="border-purple-200 hover:border-purple-300"
+          >
+            <Share2 className="mr-1 h-4 w-4" /> Copy Booking Link
+          </Button>
+        </div>
+      </div>
+
+      <Card className="mb-8 bg-white/90 backdrop-blur-sm border-0 shadow-md rounded-xl overflow-hidden">
+        <div className="p-4 md:p-6 border-b border-gray-100 bg-gradient-to-r from-purple-50 to-pink-50">
+          <div className="flex justify-between items-center">
+            <Tabs 
+              value={calendarView} 
+              onValueChange={(v) => setCalendarView(v as 'week' | 'month')}
+              className="w-[300px]"
+            >
+              <TabsList className="bg-white/50 backdrop-blur-sm">
+                <TabsTrigger value="week" className="flex items-center">
+                  <CalendarDays className="h-3.5 w-3.5 mr-1.5" />
+                  Weekly
+                </TabsTrigger>
+                <TabsTrigger value="month" className="flex items-center">
+                  <CalendarDays className="h-3.5 w-3.5 mr-1.5" />
+                  Monthly
+                </TabsTrigger>
+                <TabsTrigger value="list" className="flex items-center">
+                  <List className="h-3.5 w-3.5 mr-1.5" />
+                  List
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+            
+            <div className="text-sm text-gray-500 hidden md:block">
+              {calendarView === 'week' 
+                ? 'View and manage your week at a glance' 
+                : calendarView === 'month'
+                ? 'See your entire month\'s schedule'
+                : 'List view of all appointments'}
             </div>
           </div>
-        </CardHeader>
-        <CardContent className="p-6">
-          <div className="space-y-6">
-            {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-2">
-              {Array.from({ length: 7 }).map((_, i) => {
-                const date = new Date(currentDate);
-                date.setDate(currentDate.getDate() - currentDate.getDay() + i);
-                return (
-                  <div key={i} className="min-h-[120px] border rounded-lg p-2">
-                    <div className="text-sm font-medium mb-2">
-                      {format(date, 'EEE, MMM d')}
-                    </div>
-                    {mockBookings
-                      .filter(booking => booking.date === format(date, 'yyyy-MM-dd'))
-                      .map(booking => (
-                        <motion.div
-                          key={booking.id}
-                          whileHover={{ scale: 1.02 }}
-                          className="bg-purple-50 rounded-md p-2 mb-2 cursor-pointer text-sm"
-                          onClick={() => {
-                            setSelectedBooking(booking);
-                            setShowBookingDetails(true);
-                          }}
-                        >
-                          <div className="font-medium">{booking.clientName}</div>
-                          <div className="flex items-center text-xs text-gray-600">
-                            <Clock className="h-3 w-3 mr-1" />
-                            {booking.time}
-                          </div>
-                        </motion.div>
-                      ))}
-                  </div>
-                );
-              })}
+        </div>
+        
+        <div>
+          <TabsContent value="week" className="m-0 focus:outline-none">
+            <WeeklyCalendar />
+          </TabsContent>
+          
+          <TabsContent value="month" className="m-0 focus:outline-none">
+            <MonthlyCalendarView />
+          </TabsContent>
+          
+          <TabsContent value="list" className="m-0 focus:outline-none">
+            <div className="p-6">
+              <BookingList />
             </div>
-          </div>
-        </CardContent>
+          </TabsContent>
+        </div>
       </Card>
 
-      {/* Booking Details Dialog */}
-      {showBookingDetails && selectedBooking && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-xl p-6 max-w-md w-full"
-          >
-            <h3 className="text-lg font-medium mb-4">Booking Details</h3>
-            <div className="space-y-3">
-              <p><span className="font-medium">Client:</span> {selectedBooking.clientName}</p>
-              <p><span className="font-medium">Service:</span> {selectedBooking.service}</p>
-              <p><span className="font-medium">Date:</span> {selectedBooking.date}</p>
-              <p><span className="font-medium">Time:</span> {selectedBooking.time}</p>
-              <p><span className="font-medium">Status:</span> {selectedBooking.status}</p>
-            </div>
-            <div className="mt-6 flex justify-end gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setShowBookingDetails(false)}
-              >
-                Close
-              </Button>
-            </div>
-          </motion.div>
+      <div className="rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 p-4 border border-purple-100 flex items-center justify-between mb-8">
+        <div className="flex-grow">
+          <h3 className="font-medium text-gray-800">Automated Client Reminders</h3>
+          <p className="text-sm text-gray-600">Clients will receive automatic reminders 24h before appointments.</p>
         </div>
-      )}
+        <Button variant="outline" className="border-purple-200 text-purple-700">
+          Configure
+        </Button>
+      </div>
+      
+      <BookingModal 
+        open={showBookingModal} 
+        onClose={() => setShowBookingModal(false)} 
+      />
     </motion.div>
   );
 };

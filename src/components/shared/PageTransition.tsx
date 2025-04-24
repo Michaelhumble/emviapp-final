@@ -1,39 +1,19 @@
 
-import { motion } from "framer-motion";
-import { ReactNode } from "react";
+import React, { PropsWithChildren } from 'react';
+import { motion } from 'framer-motion';
 
 interface PageTransitionProps {
-  children: ReactNode;
+  children: React.ReactNode;
   className?: string;
 }
 
-const pageTransitionVariants = {
-  initial: { opacity: 0, y: 20 },
-  animate: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: [0.645, 0.045, 0.355, 1],
-    }
-  },
-  exit: {
-    opacity: 0,
-    y: -20,
-    transition: {
-      duration: 0.3,
-      ease: [0.645, 0.045, 0.355, 1],
-    }
-  }
-};
-
-const PageTransition = ({ children, className = "" }: PageTransitionProps) => {
+const PageTransition: React.FC<PageTransitionProps> = ({ children, className = '' }) => {
   return (
     <motion.div
-      variants={pageTransitionVariants}
-      initial="initial"
-      animate="animate"
-      exit="exit"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 10 }}
+      transition={{ duration: 0.3 }}
       className={className}
     >
       {children}

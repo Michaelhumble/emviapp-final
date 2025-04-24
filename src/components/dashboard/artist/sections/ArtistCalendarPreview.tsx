@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, ExternalLink, Clock, UserPlus, Loader } from "lucide-react";
@@ -7,6 +8,7 @@ import { useState } from "react";
 import ComingSoonModal from "@/components/common/ComingSoonModal";
 import { useArtistUpcomingBookings } from "@/hooks/useArtistUpcomingBookings";
 import BookClientModal from "./BookClientModal";
+import BookingModal from "../calendar/BookingModal";
 
 const statusBadge = (status: string) => {
   switch (status) {
@@ -24,12 +26,7 @@ const statusBadge = (status: string) => {
 const ArtistCalendarPreview = () => {
   const { bookings, loading, error } = useArtistUpcomingBookings();
   const [modalOpen, setModalOpen] = useState(false);
-  const [clientModalOpen, setClientModalOpen] = useState(false);
-
-  const handleMockBooking = (newBooking: any) => {
-    // Now just a UI callback - data is saved in Supabase via the modal
-    console.log("Booking created:", newBooking);
-  };
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
 
   return (
     <Card className="border-gray-100 shadow-sm bg-gradient-to-br from-white via-purple-50 to-pink-50 rounded-2xl">
@@ -38,10 +35,9 @@ const ArtistCalendarPreview = () => {
         onOpenChange={setModalOpen}
         featureName="Manage Appointments"
       />
-      <BookClientModal
-        open={clientModalOpen}
-        onClose={() => setClientModalOpen(false)}
-        onBook={handleMockBooking}
+      <BookingModal
+        open={bookingModalOpen}
+        onClose={() => setBookingModalOpen(false)}
       />
       <CardHeader className="pb-3 flex flex-row items-center justify-between bg-gradient-to-r from-white via-purple-50 to-pink-50 rounded-t-2xl">
         <CardTitle className="text-lg font-medium text-gray-900 flex items-center font-playfair">
@@ -53,7 +49,7 @@ const ArtistCalendarPreview = () => {
             variant="secondary"
             size="sm"
             className="flex items-center font-semibold bg-gradient-to-r from-emvi-accent/80 to-pink-400/80 text-white hover:scale-105 transition-transform shadow"
-            onClick={() => setClientModalOpen(true)}
+            onClick={() => setBookingModalOpen(true)}
           >
             <UserPlus className="h-4 w-4 mr-1" />
             Book Client
