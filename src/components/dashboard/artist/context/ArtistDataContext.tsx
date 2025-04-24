@@ -1,7 +1,6 @@
-
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/context/auth';
+import { useReliableAuth } from '@/context/auth';
 import { ArtistDataContextType, ArtistProfileState, PortfolioImage } from '../types/ArtistDashboardTypes';
 import { toast } from "sonner";
 import { usePortfolioImages } from '@/hooks/portfolio/usePortfolioImages';
@@ -17,7 +16,6 @@ const defaultContextValue: ArtistDataContextType = {
   loading: true,
   error: null,
   refetch: async () => {},
-  // Add missing properties that components are trying to use
   artistProfile: {},
   refreshProfile: () => {},
   refreshArtistProfile: async () => {},
@@ -42,10 +40,9 @@ export const ArtistDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [artistProfile, setArtistProfile] = useState<ArtistProfileState>({});
   const [copied, setCopied] = useState(false);
   const [userCredits, setUserCredits] = useState(0);
-  const { user } = useAuth();
+  const { user } = useReliableAuth();
   const { images: portfolioImages, isLoading: loadingPortfolio } = usePortfolioImages();
   
-  // Mock data for metrics
   const [bookingCount, setBookingCount] = useState({ 
     total: 0, pending: 0, accepted: 0, completed: 0 
   });
@@ -59,14 +56,11 @@ export const ArtistDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setError(null);
     
     try {
-      // We'll wrap all fetch operations in a Promise.race with a timeout
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => reject(new Error("Data fetch timeout")), 8000);
       });
       
-      // Actual data fetching
       const dataFetchPromise = async () => {
-        // You can fetch whatever artist data you need here
         const { data: profileData, error: profileError } = await supabase
           .from('users')
           .select('*')
@@ -75,13 +69,10 @@ export const ArtistDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           
         if (profileError) throw profileError;
         
-        // Update artist profile state
         setArtistProfile(profileData || {});
         
-        // Set user credits
         setUserCredits(profileData?.credits || 0);
         
-        // Fetch services (adjust table name if needed)
         const { data: servicesData, error: servicesError } = await supabase
           .from('services')
           .select('*')
@@ -89,7 +80,6 @@ export const ArtistDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           
         if (servicesError) throw servicesError;
         
-        // Fetch booking counts
         const { data: bookingsData, error: bookingsError } = await supabase
           .from('bookings')
           .select('status')
@@ -105,7 +95,6 @@ export const ArtistDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           setBookingCount(counts);
         }
         
-        // Fetch reviews data
         const { data: reviewsData, error: reviewsError } = await supabase
           .from('reviews')
           .select('rating')
@@ -123,7 +112,6 @@ export const ArtistDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         };
       };
       
-      // Race between data fetch and timeout
       const result = await Promise.race([dataFetchPromise(), timeoutPromise]);
       setData(result as ArtistData);
       setError(null);
@@ -168,7 +156,6 @@ export const ArtistDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         
       if (error) throw error;
       
-      // Update local state
       setArtistProfile(prev => ({ ...prev, ...data }));
       toast.success('Profile updated successfully');
       
@@ -197,7 +184,6 @@ export const ArtistDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   };
 
-  // Initial data fetch when component mounts
   useEffect(() => {
     if (user?.id) {
       fetchArtistData();
@@ -206,7 +192,6 @@ export const ArtistDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   }, [user?.id]);
 
-  // Calculate first name for greeting
   const firstName = artistProfile?.full_name?.split(' ')[0] || '';
 
   return (

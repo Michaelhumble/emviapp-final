@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import {
   Routes,
@@ -20,7 +19,7 @@ function App() {
   }, [location.pathname]);
 
   return (
-    <AuthProvider>
+    <ReliableAuthProvider>
       <SalonProvider>
         <SubscriptionProvider>
           <NotificationProvider>
@@ -38,7 +37,7 @@ function App() {
           </NotificationProvider>
         </SubscriptionProvider>
       </SalonProvider>
-    </AuthProvider>
+    </ReliableAuthProvider>
   );
 }
 
