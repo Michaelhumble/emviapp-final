@@ -1,103 +1,97 @@
 
-import React from "react";
-import { format, startOfWeek, addDays, isSameDay } from "date-fns";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import React from 'react';
+import { format, addDays, startOfWeek } from 'date-fns';
 import { cn } from "@/lib/utils";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { Clock } from "lucide-react";
 
 interface WeeklyCalendarViewProps {
   currentDate: Date;
-  bookings: Array<any>;
-  blockedTimes: Array<any>;
-  onSelectTimeSlot: (date: Date, hour: number) => void;
+  bookings: any[];
+  onTimeSlotClick: (date: Date, hour: number) => void;
 }
 
 const WeeklyCalendarView: React.FC<WeeklyCalendarViewProps> = ({
   currentDate,
   bookings,
-  blockedTimes,
-  onSelectTimeSlot
+  onTimeSlotClick
 }) => {
-  // Generate weekly calendar
-  const startOfCurrentWeek = startOfWeek(currentDate, { weekStartsOn: 1 });
-  const daysOfWeek = Array.from({ length: 7 }, (_, i) => 
-    addDays(startOfCurrentWeek, i)
-  );
-  
-  // Business hours (9 AM to 6 PM)
-  const hours = Array.from({ length: 10 }, (_, i) => i + 9);
-  
-  // Helper to check if a time slot has a booking
-  const hasBooking = (date: Date, hour: number) => {
-    const timeString = `${hour}:00`;
-    return bookings.some(booking => 
-      isSameDay(new Date(booking.date_requested), date) && 
-      booking.time_requested === timeString
-    );
-  };
-  
-  // Helper to check if a time slot is blocked
-  const isBlocked = (date: Date, hour: number) => {
-    return blockedTimes.some(block => 
-      isSameDay(new Date(block.start_time), date) && 
-      new Date(block.start_time).getHours() <= hour &&
-      new Date(block.end_time).getHours() > hour
-    );
-  };
+  const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 }); // Start week on Monday
+  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+  const businessHours = Array.from({ length: 12 }, (_, i) => i + 8); // 8 AM to 8 PM
 
   return (
-    <div className="overflow-auto">
-      <div className="grid grid-cols-8 gap-1 min-w-[800px]">
-        {/* Time column */}
-        <div className="col-span-1">
-          <div className="h-12"></div> {/* Empty cell for alignment */}
-          {hours.map(hour => (
-            <div 
-              key={`time-${hour}`} 
-              className="h-16 flex items-center justify-center text-sm text-gray-500"
+    <div className="overflow-x-auto mt-8">
+      <div className="min-w-[800px]">
+        {/* Time column headers */}
+        <div className="grid grid-cols-8 gap-1">
+          <div className="p-2" /> {/* Empty corner cell */}
+          {weekDays.map((day) => (
+            <div
+              key={day.toString()}
+              className={cn(
+                "p-3 text-center border-b border-purple-100/20",
+                "bg-gradient-to-b from-purple-50 to-transparent"
+              )}
             >
-              {format(new Date().setHours(hour), 'h a')}
+              <div className="font-medium text-purple-900">{format(day, 'EEE')}</div>
+              <div className="text-sm text-purple-600">{format(day, 'MMM d')}</div>
             </div>
           ))}
         </div>
-        
-        {/* Days columns */}
-        {daysOfWeek.map(day => (
-          <div key={day.toString()} className="col-span-1">
-            <div className="h-12 text-center py-2 font-medium">
-              <div>{format(day, "EEE")}</div>
-              <div className="text-xs text-gray-500">{format(day, "MMM d")}</div>
-            </div>
-            
-            {hours.map(hour => (
-              <div 
-                key={`${day}-${hour}`} 
-                className="h-16 border border-gray-100 relative"
-              >
-                {hasBooking(day, hour) ? (
-                  <Card className="absolute inset-1 bg-blue-100 border-blue-200 p-1 text-xs overflow-hidden">
-                    <div className="font-medium">Booked</div>
-                    <div className="truncate">{format(new Date().setHours(hour), 'h:mm a')}</div>
-                  </Card>
-                ) : isBlocked(day, hour) ? (
-                  <Card className="absolute inset-1 bg-gray-100 border-gray-200 p-1 text-xs overflow-hidden">
-                    <div className="font-medium">Unavailable</div>
-                  </Card>
-                ) : (
-                  <Button
-                    variant="ghost"
-                    className="absolute inset-0 h-full w-full p-0 rounded-none hover:bg-blue-50"
-                    onClick={() => onSelectTimeSlot(day, hour)}
-                  >
-                    <span className="sr-only">
-                      Select {format(day, "EEE MMM d")} at {format(new Date().setHours(hour), 'h a')}
-                    </span>
-                  </Button>
-                )}
+
+        {/* Time slots */}
+        <div className="relative">
+          {businessHours.map((hour) => (
+            <div key={hour} className="grid grid-cols-8 gap-1">
+              {/* Time label */}
+              <div className="p-2 text-sm text-gray-500 text-right">
+                {format(new Date().setHours(hour), 'h:mm a')}
               </div>
-            ))}
-          </div>
-        ))}
+
+              {/* Day columns */}
+              {weekDays.map((day) => {
+                const currentSlotDate = new Date(day.setHours(hour));
+                const hasBooking = bookings.some(
+                  booking => 
+                    new Date(booking.date_requested).getDate() === currentSlotDate.getDate() &&
+                    new Date(booking.time_requested).getHours() === hour
+                );
+
+                return (
+                  <motion.div
+                    key={`${day}-${hour}`}
+                    className={cn(
+                      "h-16 border border-gray-100/50 relative group",
+                      "transition-colors duration-200",
+                      hasBooking ? "bg-purple-50" : "hover:bg-purple-50/50"
+                    )}
+                    whileHover={{ scale: 1.02 }}
+                    onClick={() => !hasBooking && onTimeSlotClick(currentSlotDate, hour)}
+                  >
+                    {hasBooking ? (
+                      <div className="absolute inset-1 rounded bg-gradient-to-r from-purple-100 to-pink-100 p-2">
+                        <div className="text-xs font-medium truncate">
+                          {bookings.find(
+                            b => 
+                              new Date(b.date_requested).getDate() === currentSlotDate.getDate() &&
+                              new Date(b.time_requested).getHours() === hour
+                          )?.client_name}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 flex items-center justify-center">
+                        <Clock className="h-4 w-4 text-purple-400" />
+                      </div>
+                    )}
+                  </motion.div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

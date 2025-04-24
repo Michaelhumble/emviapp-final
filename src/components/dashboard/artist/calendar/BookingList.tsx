@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +24,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-// Define the interface for a booking
 interface Booking {
   id: string;
   client_name: string;
@@ -38,7 +36,6 @@ interface Booking {
   paid: boolean;
 }
 
-// Sample data (mock)
 const mockBookings: Booking[] = [
   {
     id: '1',
@@ -103,7 +100,6 @@ const mockBookings: Booking[] = [
   }
 ];
 
-// Get status badge style
 const getStatusBadge = (status: Booking['status']) => {
   switch (status) {
     case 'confirmed':
@@ -119,7 +115,6 @@ const getStatusBadge = (status: Booking['status']) => {
   }
 };
 
-// Format date for display
 const formatBookingDate = (dateStr: string) => {
   const date = parseISO(dateStr);
   if (isToday(date)) {
@@ -132,26 +127,21 @@ const formatBookingDate = (dateStr: string) => {
 };
 
 const BookingList = () => {
-  // State for filters
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  // Fix: Change the state type to match the DateRange type expected by the Calendar
   const [dateRange, setDateRange] = useState<{
     from: Date | undefined;
-    to?: Date | undefined;
+    to: Date | undefined;
   }>({
     from: undefined,
     to: undefined
   });
-  
-  // Filtered bookings
+
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>(mockBookings);
-  
-  // Apply filters
+
   useEffect(() => {
     let result = [...mockBookings];
     
-    // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter(booking => 
@@ -160,12 +150,10 @@ const BookingList = () => {
       );
     }
     
-    // Apply status filter
     if (statusFilter !== 'all') {
       result = result.filter(booking => booking.status === statusFilter);
     }
     
-    // Apply date range filter
     if (dateRange.from) {
       const fromDate = new Date(dateRange.from);
       fromDate.setHours(0, 0, 0, 0);
@@ -186,10 +174,9 @@ const BookingList = () => {
     
     setFilteredBookings(result);
   }, [searchQuery, statusFilter, dateRange]);
-  
+
   return (
     <div className="space-y-6">
-      {/* Filters */}
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-grow max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -251,7 +238,6 @@ const BookingList = () => {
         </Popover>
       </div>
       
-      {/* Bookings List */}
       <div className="space-y-4">
         {filteredBookings.length === 0 ? (
           <div className="text-center py-10">
