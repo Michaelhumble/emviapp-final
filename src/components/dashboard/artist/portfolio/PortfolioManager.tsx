@@ -1,7 +1,8 @@
+
 import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit2, Trash2, ImagePlus } from "lucide-react";
+import { Plus, Edit2, Trash2, ImagePlus, EyeOff, Eye } from "lucide-react";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
 import {
   AlertDialog,
@@ -45,6 +46,7 @@ export const PortfolioManager = () => {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
   const [editingItem, setEditingItem] = useState<typeof mockPortfolio[0] | null>(null);
+  const [showEmptyState, setShowEmptyState] = useState(false);
 
   const handleDeleteConfirm = () => {
     if (itemToDelete !== null) {
@@ -60,17 +62,33 @@ export const PortfolioManager = () => {
     setEditingItem(null);
   };
 
+  const handleToggleEmptyState = () => {
+    setShowEmptyState(!showEmptyState);
+  };
+
+  const displayedPortfolio = showEmptyState ? [] : portfolio;
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-playfair font-semibold text-gray-900">Portfolio Manager</h1>
-        <Button 
-          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-          onClick={() => {}}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Upload New Work
-        </Button>
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            className="flex items-center gap-2 bg-white/80 border-purple-200 hover:bg-purple-50"
+            onClick={handleToggleEmptyState}
+          >
+            {showEmptyState ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+            {showEmptyState ? "Show Content" : "Show Empty State"}
+          </Button>
+          <Button 
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+            onClick={() => {}}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Upload New Work
+          </Button>
+        </div>
       </div>
 
       <Card className="border-0 shadow-lg bg-white/60 backdrop-blur-sm">
@@ -78,7 +96,7 @@ export const PortfolioManager = () => {
           <CardTitle className="font-playfair text-xl text-gray-800">Your Portfolio</CardTitle>
         </CardHeader>
         <CardContent className="pt-6">
-          {portfolio.length === 0 ? (
+          {displayedPortfolio.length === 0 ? (
             <motion.div 
               className="text-center py-16"
               initial={{ opacity: 0 }}
@@ -96,7 +114,10 @@ export const PortfolioManager = () => {
               </p>
               <Button 
                 className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-                onClick={() => {}}
+                onClick={() => {
+                  setShowEmptyState(false);
+                  // In a real implementation, this would open the upload dialog
+                }}
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Your First Work
@@ -105,12 +126,12 @@ export const PortfolioManager = () => {
           ) : (
             <Reorder.Group 
               axis="y" 
-              values={portfolio} 
+              values={displayedPortfolio} 
               onReorder={setPortfolio}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
             >
               <AnimatePresence>
-                {portfolio.map((item) => (
+                {displayedPortfolio.map((item) => (
                   <Reorder.Item
                     key={item.id}
                     value={item}
