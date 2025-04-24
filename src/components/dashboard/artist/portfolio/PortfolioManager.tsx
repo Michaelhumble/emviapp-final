@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit2, Trash2, ImagePlus, EyeOff, Eye } from "lucide-react";
+import { Plus, Upload, ImagePlus, EyeOff, Eye } from "lucide-react";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
 import {
   AlertDialog,
@@ -103,24 +103,24 @@ export const PortfolioManager = () => {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <div className="mx-auto w-16 h-16 bg-purple-50 rounded-full flex items-center justify-center mb-4">
+              <div className="mx-auto w-16 h-16 bg-purple-50 rounded-full flex items-center justify-center mb-4 shadow-md">
                 <ImagePlus className="h-8 w-8 text-purple-400" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-2xl font-playfair font-semibold text-gray-900 mb-2">
                 Your portfolio is currently empty
               </h3>
-              <p className="text-gray-600 mb-6">
-                Upload your best work to impress potential clients!
+              <p className="text-base text-gray-600 mb-6 max-w-md mx-auto">
+                Showcase your talent and attract clients by uploading your best work. 
+                High-quality images make a lasting first impression.
               </p>
               <Button 
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white min-h-[44px] min-w-[200px] rounded-full"
                 onClick={() => {
-                  setShowEmptyState(false);
-                  // In a real implementation, this would open the upload dialog
+                  // TODO: Implement actual upload functionality
                 }}
               >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Your First Work
+                <Upload className="h-4 w-4 mr-2" />
+                Upload Your First Work
               </Button>
             </motion.div>
           ) : (
@@ -215,3 +215,5 @@ export const PortfolioManager = () => {
     </div>
   );
 };
+
+export default PortfolioManager;
