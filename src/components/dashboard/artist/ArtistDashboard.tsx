@@ -22,10 +22,10 @@ const ArtistDashboard = () => {
 };
 
 const ArtistDashboardInner = () => {
-  const { loading, error: artistDataError } = useArtistData();
+  const { loading, error: artistDataError, refreshArtistProfile } = useArtistData();
   const [loadingTime, setLoadingTime] = useState(0);
   const [error, setError] = useState<Error | null>(null);
-  const { signOut: contextSignOut } = useAuth();
+  const { user, signOut: contextSignOut } = useAuth();
   const navigate = useNavigate();
   
   // Track loading time
@@ -53,41 +53,55 @@ const ArtistDashboardInner = () => {
       setError(artistDataError);
     }
   }, [artistDataError]);
+
+  // Check if user exists, if not redirect to login
+  useEffect(() => {
+    if (!user && !loading) {
+      toast.error("Session expired. Please sign in again.");
+      navigate('/auth/signin', { replace: true });
+    }
+  }, [user, loading, navigate]);
   
   // Handle emergency logout
   const handleEmergencyLogout = async () => {
     try {
       toast.info("Signing out...");
       
-      // Use auth service signOut function
+      // Use the enhanced service function for more robust logout
       await signOut();
       
       // Also use context signOut as backup
-      await contextSignOut();
+      if (contextSignOut) {
+        await contextSignOut();
+      }
       
       // Redirect to sign-in page
-      navigate('/auth/signin');
+      navigate('/auth/signin', { replace: true });
     } catch (logoutError) {
       console.error("Failed to log out:", logoutError);
       toast.error("Failed to log out. Forcing redirect...");
       
-      // Clear any problematic localStorage items
-      localStorage.removeItem('artist_dashboard_tab');
-      localStorage.removeItem('emviapp_user_role');
-      localStorage.removeItem('emviapp_new_user');
+      // Clear localStorage and sessionStorage
+      localStorage.clear();
+      sessionStorage.clear();
       
       // Force redirect to signin as fallback
-      setTimeout(() => {
-        window.location.href = '/auth/signin';
-      }, 1000);
+      window.location.href = '/auth/signin';
     }
+  };
+  
+  // Handle retry action
+  const handleRetry = () => {
+    setError(null);
+    refreshArtistProfile();
+    window.location.reload();
   };
   
   if (error) {
     return (
       <ArtistErrorState 
         error={error} 
-        retryAction={() => window.location.reload()} 
+        retryAction={handleRetry}
         logoutAction={handleEmergencyLogout}
       />
     );

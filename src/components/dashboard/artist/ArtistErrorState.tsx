@@ -7,7 +7,7 @@ import { signOut } from '@/services/auth';
 import { useNavigate } from 'react-router-dom';
 
 interface ArtistErrorStateProps {
-  error: Error;
+  error: Error | null;
   retryAction: () => void;
   logoutAction?: () => void;
 }
@@ -18,17 +18,27 @@ const ArtistErrorState = ({ error, retryAction, logoutAction }: ArtistErrorState
   const handleLogout = async () => {
     if (logoutAction) {
       logoutAction();
-    } else {
-      try {
-        toast.info("Signing out...");
-        await signOut();
-        navigate('/auth/signin');
-      } catch (err) {
-        console.error("Error in emergency logout:", err);
-        toast.error("Forcing sign out...");
-        // Force navigation as last resort
-        window.location.href = '/auth/signin';
-      }
+      return;
+    }
+    
+    try {
+      toast.info("Signing out...");
+      
+      // Use the enhanced signOut function
+      const result = await signOut();
+      
+      // Navigate regardless of success to ensure user can escape
+      navigate('/auth/signin', { replace: true });
+    } catch (err) {
+      console.error("Error in emergency logout:", err);
+      toast.error("Forcing sign out...");
+      
+      // Force clear localStorage and redirect as ultimate fallback
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Force navigation as last resort
+      window.location.href = '/auth/signin';
     }
   };
   
@@ -44,7 +54,7 @@ const ArtistErrorState = ({ error, retryAction, logoutAction }: ArtistErrorState
         </h3>
         
         <p className="text-sm text-gray-600 mb-6">
-          {error.message || "We couldn't load your dashboard. Please try again or contact support if the issue persists."}
+          {error ? error.message : "We couldn't load your dashboard. Please try again or contact support if the issue persists."}
         </p>
         
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -62,7 +72,7 @@ const ArtistErrorState = ({ error, retryAction, logoutAction }: ArtistErrorState
             className="flex items-center gap-2 bg-white hover:bg-red-50 text-red-500 border-red-200"
           >
             <LogOut className="h-4 w-4" />
-            Sign Out
+            Emergency Sign Out
           </Button>
         </div>
       </div>

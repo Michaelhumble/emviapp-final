@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { 
   Avatar, 
@@ -41,29 +40,19 @@ export function UserMenu() {
   const handleSignOut = async () => {
     try {
       toast.info("Signing out...");
+      setOpen(false);
       
-      // Use the service function for more robust logout
       const result = await signOut();
       
-      if (result.success) {
-        toast.success("Successfully signed out");
-      }
-      
-      setOpen(false);
-      navigate('/auth/signin');
+      navigate('/auth/signin', { replace: true });
     } catch (error) {
       console.error("Error signing out:", error);
       toast.error("Failed to sign out. Trying alternative method...");
       
-      // Clear critical localStorage items
-      localStorage.removeItem('artist_dashboard_tab');
-      localStorage.removeItem('emviapp_user_role');
-      localStorage.removeItem('emviapp_new_user');
+      localStorage.clear();
+      sessionStorage.clear();
       
-      // Force redirect as fallback
-      setTimeout(() => {
-        window.location.href = '/auth/signin';
-      }, 1000);
+      window.location.href = '/auth/signin';
     }
   };
 

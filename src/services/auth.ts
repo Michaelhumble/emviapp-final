@@ -41,15 +41,23 @@ export async function signUpWithEmail(email: string, password: string, userData:
 
 export async function signOut() {
   try {
-    // Clear all app-specific local storage items first
-    localStorage.removeItem('artist_dashboard_tab');
-    localStorage.removeItem('emviapp_user_role');
-    localStorage.removeItem('emviapp_new_user');
-    localStorage.removeItem('supabase.auth.token');
-    sessionStorage.clear(); // Clear any session storage as well
+    // First, clear all local storage and session storage to ensure clean state
+    const keysToRemove = [
+      'artist_dashboard_tab',
+      'emviapp_user_role',
+      'emviapp_new_user',
+      'supabase.auth.token',
+      'sb-wwhqbjrhbajpabfdwnip-auth-token', // Supabase-specific token with project ref
+    ];
+    
+    // Clear specific keys
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+    
+    // Clear session storage
+    sessionStorage.clear();
     
     // Sign out from Supabase
-    const { error } = await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut({ scope: 'global' });
     if (error) throw error;
     
     toast.success("Successfully signed out");
@@ -58,9 +66,12 @@ export async function signOut() {
     console.error("Sign out error:", error);
     toast.error("Sign out encountered an error. Redirecting anyway...");
     
-    // Even if there's an error, we should force clear auth state
+    // Even if there's an error, we should force a clean state
     try {
-      // Force clear supabase session
+      // Force clear remaining localStorage items as a fallback
+      localStorage.clear();
+      
+      // Try a forced signOut with different options as fallback
       await supabase.auth.signOut({ scope: 'global' });
     } catch (e) {
       console.error("Forced sign out also failed:", e);
