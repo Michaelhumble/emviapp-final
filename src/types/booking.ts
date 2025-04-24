@@ -7,7 +7,7 @@ export interface Booking {
   service_name?: string;
   date_requested?: string;
   time_requested?: string;
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+  status: 'pending' | 'confirmed' | 'accepted' | 'completed' | 'cancelled' | 'declined';
   note?: string;
   price?: number;
   paid?: boolean;

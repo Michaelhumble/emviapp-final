@@ -44,10 +44,10 @@ export const useArtistBookings = () => {
       // Convert database status strings to our enum type
       const typedBookings = (data || []).map(booking => ({
         ...booking,
-        status: booking.status as 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled'
+        status: booking.status as BookingWithDetails["status"]
       }));
       
-      setBookings(typedBookings);
+      setBookings(typedBookings as BookingWithDetails[]);
       
       // Extract unique service types
       const uniqueServiceTypes = Array.from(
