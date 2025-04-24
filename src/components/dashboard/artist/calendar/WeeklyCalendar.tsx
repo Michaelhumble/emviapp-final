@@ -6,7 +6,7 @@ import { CalendarDays, ChevronLeft, ChevronRight, Clock, Plus, X } from "lucide-
 import DayColumn from "./DayColumn";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useArtistCalendar } from "@/hooks/useArtistCalendar";
-import { Booking } from "@/components/dashboard/artist/types/ArtistDashboardTypes";
+import { Booking } from "@/types/booking";
 import { Skeleton } from "@/components/ui/skeleton";
 import BookingModal from "./BookingModal";
 
@@ -38,7 +38,7 @@ export const WeeklyCalendar = () => {
   const loading = isLoadingAppointments || isLoadingBlockedTimes;
 
   // Mock data for bookings (we'll integrate with appointments/API data later)
-  const mockBookings = [
+  const mockBookings: Booking[] = [
     {
       id: '1',
       client_name: 'Emma Thompson',
@@ -75,7 +75,7 @@ export const WeeklyCalendar = () => {
         return isSameDay(bookingDate, day);
       }
       return false;
-    }) as Booking[];
+    });
   };
 
   return (
@@ -179,3 +179,5 @@ export const WeeklyCalendar = () => {
     </Card>
   );
 };
+
+export default WeeklyCalendar;

@@ -3,26 +3,19 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
-import { BookingCounts } from "@/types/booking";
+import { Booking, BookingCounts } from "@/types/booking";
 
-export interface Booking {
-  id: string;
+export interface BookingWithDetails extends Booking {
   sender_id: string;
   recipient_id: string;
-  client_name?: string;
   client_avatar?: string;
   service_id?: string;
-  service_name?: string;
   service_type?: string;
-  date_requested?: string;
-  time_requested?: string;
-  status: 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled';
-  note?: string;
   created_at: string;
 }
 
 export const useArtistBookings = () => {
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState<BookingWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [serviceTypes, setServiceTypes] = useState<string[]>([]);
