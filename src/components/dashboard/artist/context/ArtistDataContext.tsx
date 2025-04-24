@@ -1,189 +1,129 @@
 
-import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from '@/context/auth';
-import { PortfolioImage } from '@/types/artist';
+import { supabase } from '@/integrations/supabase/client';
 
-interface ArtistDataContextType {
-  firstName: string;
-  specialty: string;
-  loading: boolean;
-  portfolioCount: number;
-  bookingCount: number;
-  reviewCount: number;
-  averageRating: number;
-  
-  // Artist profile and portfolio data
-  artistProfile: any;
-  refreshArtistProfile: () => Promise<void>;
-  portfolioImages: PortfolioImage[];
-  loadingPortfolio: boolean;
+interface ArtistStats {
+  upcoming_bookings: number;
+  total_bookings: number;
+  earnings_this_month: number;
+  total_clients: number;
 }
 
-const defaultContext: ArtistDataContextType = {
-  firstName: '',
-  specialty: '',
-  loading: true,
-  portfolioCount: 0,
-  bookingCount: 0,
-  reviewCount: 0,
-  averageRating: 0,
-  
-  // Default values for additional properties
-  artistProfile: null,
-  refreshArtistProfile: async () => {},
-  portfolioImages: [],
-  loadingPortfolio: true
+interface ArtistDataContextType {
+  loading: boolean;
+  error: Error | null;
+  stats: ArtistStats;
+  refreshData: () => Promise<void>;
+}
+
+const defaultStats: ArtistStats = {
+  upcoming_bookings: 0,
+  total_bookings: 0,
+  earnings_this_month: 0,
+  total_clients: 0
 };
 
-const ArtistDataContext = createContext<ArtistDataContextType>(defaultContext);
+const ArtistDataContext = createContext<ArtistDataContextType>({
+  loading: false,
+  error: null,
+  stats: defaultStats,
+  refreshData: async () => {}
+});
 
-export const ArtistDataProvider = ({ children }: { children: ReactNode }) => {
-  const { userProfile } = useAuth();
+export const useArtistData = () => useContext(ArtistDataContext);
+
+interface ArtistDataProviderProps {
+  children: ReactNode;
+}
+
+export const ArtistDataProvider = ({ children }: ArtistDataProviderProps) => {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [loadingPortfolio, setLoadingPortfolio] = useState(true);
-  const [data, setData] = useState<Omit<ArtistDataContextType, 'loading' | 'loadingPortfolio' | 'refreshArtistProfile'>>({
-    firstName: '',
-    specialty: '',
-    portfolioCount: 0,
-    bookingCount: 0,
-    reviewCount: 0,
-    averageRating: 0,
-    artistProfile: null,
-    portfolioImages: []
-  });
+  const [error, setError] = useState<Error | null>(null);
+  const [stats, setStats] = useState<ArtistStats>(defaultStats);
+  const [loadAttempts, setLoadAttempts] = useState(0);
 
-  // Function to refresh artist profile
-  const refreshArtistProfile = async () => {
-    if (userProfile) {
+  const fetchArtistData = async () => {
+    if (!user?.id) {
+      setLoading(false);
+      return;
+    }
+
+    try {
       setLoading(true);
-      try {
-        // In a real implementation, this would fetch updated data from an API
-        // For now, we'll just simulate a refresh delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Update the profile data
-        const firstName = userProfile.full_name?.split(' ')[0] || 'Artist';
-        const specialty = userProfile.specialty || 'Nail Artist';
-
-        setData(prev => ({
-          ...prev,
-          firstName,
-          specialty,
-          artistProfile: {
-            ...userProfile,
-            id: userProfile.user_id || userProfile.id,
-          }
-        }));
-      } catch (error) {
-        console.error("Error refreshing artist profile:", error);
-      } finally {
-        setLoading(false);
+      setError(null);
+      setLoadAttempts(prev => prev + 1);
+      
+      // Break out if we've tried too many times to prevent loops
+      if (loadAttempts > 5) {
+        throw new Error("Too many load attempts. Please refresh the page.");
       }
+
+      // Fetch artist stats from Supabase
+      // This is a placeholder for actual data fetching logic
+      // In a real implementation, you would query your database tables
+      const { data, error } = await supabase
+        .from('bookings')
+        .select('*')
+        .eq('recipient_id', user.id);
+
+      if (error) throw error;
+
+      // Process the data to calculate stats
+      const upcomingBookings = (data || []).filter(booking => 
+        booking.status === 'pending' || booking.status === 'confirmed'
+      ).length;
+
+      const totalBookings = (data || []).length;
+      
+      // Mock earnings calculation - in real app, you'd query a proper earnings table
+      const earningsThisMonth = (data || [])
+        .filter(booking => booking.status === 'completed')
+        .reduce((sum, booking) => sum + (booking.price || 0), 0);
+      
+      // Get unique client count
+      const uniqueClients = new Set((data || []).map(booking => booking.sender_id));
+
+      setStats({
+        upcoming_bookings: upcomingBookings,
+        total_bookings: totalBookings,
+        earnings_this_month: earningsThisMonth,
+        total_clients: uniqueClients.size
+      });
+      
+      // Reset error state if successful
+      setError(null);
+      
+    } catch (err) {
+      console.error('Error fetching artist data:', err);
+      setError(err instanceof Error ? err : new Error('Failed to load artist data'));
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Load portfolio images
+  // Initial data load
   useEffect(() => {
-    const loadPortfolio = async () => {
-      setLoadingPortfolio(true);
-      try {
-        // Mock portfolio data
-        const mockPortfolioImages: PortfolioImage[] = [
-          {
-            id: "1",
-            url: "/lovable-uploads/67947adb-5754-4569-aa1c-228d8f9db461.png",
-            title: "French Gradient",
-            description: "Classic French manicure with a modern gradient twist"
-          },
-          {
-            id: "2",
-            url: "/lovable-uploads/70c8662a-4525-4854-a529-62616b5b6c81.png",
-            title: "Minimalist Line Art",
-            description: "Simple yet elegant line art on a neutral base"
-          },
-          {
-            id: "3",
-            url: "/lovable-uploads/81e6d95d-e09b-45f0-a4bc-96358592e462.png",
-            title: "Pink Floral Design",
-            description: "Delicate floral patterns on a soft pink base"
-          },
-          {
-            id: "4",
-            url: "/lovable-uploads/7d585be5-b70d-4d65-b57f-803de81839ba.png",
-            title: "Elegant Marble Pattern",
-            description: "Luxurious marble effect with gold accents"
-          },
-          {
-            id: "5",
-            url: "/lovable-uploads/a3c08446-c1cb-492d-a361-7ec4aca18cfd.png",
-            title: "Geometric Abstract",
-            description: "Bold geometric patterns with contrasting colors"
-          },
-          {
-            id: "6",
-            url: "/lovable-uploads/c9e52825-c7f4-4923-aecf-a92a8799530b.png",
-            title: "Glitter Accent",
-            description: "Subtle glitter accents on a matte base"
-          }
-        ];
-        
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 300));
-        
-        setData(prev => ({
-          ...prev,
-          portfolioImages: mockPortfolioImages,
-          portfolioCount: mockPortfolioImages.length
-        }));
-      } catch (error) {
-        console.error("Error loading portfolio:", error);
-      } finally {
-        setLoadingPortfolio(false);
-      }
-    };
-    
-    if (userProfile) {
-      loadPortfolio();
-    }
-  }, [userProfile]);
+    fetchArtistData();
+  }, [user?.id]);
 
+  // Set up error recovery with retry mechanism
   useEffect(() => {
-    if (userProfile) {
-      // Extract first name from full name
-      const firstName = userProfile.full_name?.split(' ')[0] || 'Artist';
-      const specialty = userProfile.specialty || 'Nail Artist';
-
-      // Set mock data for now - would be replaced with real API calls
-      setData(prev => ({
-        ...prev,
-        firstName,
-        specialty,
-        portfolioCount: 12,
-        bookingCount: 58,
-        reviewCount: 24,
-        averageRating: 4.9,
-        artistProfile: {
-          ...userProfile,
-          id: userProfile.user_id || userProfile.id,
-          accepts_bookings: true,
-          preferences: []
-        }
-      }));
+    if (error && loadAttempts < 3) {
+      // Auto-retry once after a brief delay
+      const retryTimer = setTimeout(() => {
+        console.log(`Retrying artist data fetch (attempt ${loadAttempts + 1})`);
+        fetchArtistData();
+      }, 3000); // 3 second delay before retry
       
-      setLoading(false);
+      return () => clearTimeout(retryTimer);
     }
-  }, [userProfile]);
+  }, [error, loadAttempts]);
 
   return (
-    <ArtistDataContext.Provider value={{ 
-      ...data,
-      loading,
-      loadingPortfolio,
-      refreshArtistProfile
-    }}>
+    <ArtistDataContext.Provider value={{ loading, error, stats, refreshData: fetchArtistData }}>
       {children}
     </ArtistDataContext.Provider>
   );
 };
-
-export const useArtistData = () => useContext(ArtistDataContext);

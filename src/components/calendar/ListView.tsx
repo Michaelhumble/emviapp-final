@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { format, isSameDay, isAfter } from 'date-fns';
+import { format } from 'date-fns';
 import { Booking } from '@/types/booking';
+import { Badge } from '@/components/ui/badge';
 
 interface ListViewProps {
   currentDate: Date;
@@ -16,132 +17,70 @@ const ListView: React.FC<ListViewProps> = ({
   onUpdateBooking,
   onDeleteBooking
 }) => {
-  // Sort bookings by date (most recent first)
-  const sortedBookings = [...bookings].sort((a, b) => {
-    const dateA = a.date_requested ? new Date(a.date_requested) : new Date();
-    const dateB = b.date_requested ? new Date(b.date_requested) : new Date();
+  // Filter bookings for the current month
+  const currentMonthBookings = bookings.filter((booking) => {
+    if (!booking.date_requested) return false;
+    const bookingDate = new Date(booking.date_requested);
+    return bookingDate.getMonth() === currentDate.getMonth() && 
+           bookingDate.getFullYear() === currentDate.getFullYear();
+  });
+  
+  // Sort bookings by date and time
+  const sortedBookings = [...currentMonthBookings].sort((a, b) => {
+    if (!a.date_requested || !b.date_requested) return 0;
+    const dateA = new Date(a.date_requested);
+    const dateB = new Date(b.date_requested);
     
-    // Compare dates first
-    if (dateA.toDateString() !== dateB.toDateString()) {
+    if (dateA.getTime() !== dateB.getTime()) {
       return dateA.getTime() - dateB.getTime();
     }
     
-    // If dates are the same, compare times
-    const timeA = a.time_requested || "";
-    const timeB = b.time_requested || "";
-    return timeA.localeCompare(timeB);
+    return (a.time_requested || '').localeCompare(b.time_requested || '');
   });
-
-  // Group bookings by date
-  const groupedBookings = sortedBookings.reduce<Record<string, Booking[]>>((acc, booking) => {
-    if (!booking.date_requested) return acc;
-    
-    const dateKey = booking.date_requested;
-    if (!acc[dateKey]) {
-      acc[dateKey] = [];
-    }
-    
-    acc[dateKey].push(booking);
-    return acc;
-  }, {});
-
-  const getStatusBadgeClass = (status: string) => {
+  
+  const getStatusBadge = (status: string) => {
     switch (status) {
       case 'confirmed':
-        return 'bg-blue-100 text-blue-800';
+        return <Badge className="bg-blue-100 hover:bg-blue-100 text-blue-800 border-blue-200">Confirmed</Badge>;
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
+        return <Badge className="bg-yellow-50 hover:bg-yellow-50 text-yellow-800 border-yellow-200">Pending</Badge>;
       case 'completed':
-        return 'bg-green-100 text-green-800';
+        return <Badge className="bg-green-50 hover:bg-green-50 text-green-800 border-green-200">Completed</Badge>;
       case 'cancelled':
-        return 'bg-gray-100 text-gray-800';
+        return <Badge className="bg-gray-50 hover:bg-gray-50 text-gray-800 border-gray-200">Cancelled</Badge>;
       default:
-        return 'bg-gray-100 text-gray-800';
+        return <Badge className="bg-gray-50 hover:bg-gray-50 text-gray-800 border-gray-200">{status}</Badge>;
     }
   };
 
   return (
-    <div className="divide-y">
-      {Object.keys(groupedBookings).length > 0 ? (
-        Object.keys(groupedBookings).map((dateKey) => {
-          const bookingsForDate = groupedBookings[dateKey];
-          const bookingDate = new Date(dateKey);
-          const isToday = isSameDay(bookingDate, new Date());
-          const isPast = !isAfter(bookingDate, new Date()) && !isToday;
-          
-          return (
-            <div key={dateKey} className={`p-4 ${isPast ? 'bg-gray-50/50' : ''}`}>
-              <div className="flex items-center mb-3">
-                <div className={`text-sm font-semibold ${isToday ? 'text-primary' : 'text-gray-700'}`}>
-                  {isToday ? 'Today' : format(bookingDate, 'EEEE, MMMM d, yyyy')}
+    <div className="p-4 bg-white">
+      {sortedBookings.length > 0 ? (
+        <div className="divide-y">
+          {sortedBookings.map((booking) => (
+            <div key={booking.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between">
+              <div className="mb-2 sm:mb-0">
+                <div className="flex items-center">
+                  <div className="text-sm font-medium">{booking.client_name}</div>
+                  <div className="ml-2">
+                    {getStatusBadge(booking.status)}
+                  </div>
                 </div>
-                {isToday && (
-                  <span className="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded ml-2">
-                    Today
-                  </span>
-                )}
+                <div className="text-sm text-gray-500">{booking.service_name}</div>
               </div>
               
-              <div className="space-y-3">
-                {bookingsForDate.map((booking) => (
-                  <div 
-                    key={booking.id} 
-                    className="bg-white rounded-lg border border-gray-200 p-3 flex flex-col sm:flex-row sm:items-center justify-between"
-                  >
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-medium text-gray-900">
-                          {booking.time_requested}
-                        </span>
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${getStatusBadgeClass(booking.status)}`}>
-                          {booking.status}
-                        </span>
-                      </div>
-                      <div className="text-sm font-medium">{booking.client_name}</div>
-                      <div className="text-xs text-gray-600">{booking.service_name}</div>
-                      {booking.note && (
-                        <div className="text-xs text-gray-500 mt-1 italic">
-                          "{booking.note}"
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center mt-2 sm:mt-0">
-                      {booking.price && (
-                        <div className="text-sm font-medium mr-4">
-                          ${booking.price}
-                        </div>
-                      )}
-                      
-                      <div className="flex space-x-2">
-                        {onUpdateBooking && (
-                          <button 
-                            className="text-xs px-3 py-1 border border-primary/20 text-primary rounded-md hover:bg-primary/10"
-                            onClick={() => onUpdateBooking(booking)}
-                          >
-                            Edit
-                          </button>
-                        )}
-                        
-                        {onDeleteBooking && (
-                          <button 
-                            className="text-xs px-3 py-1 border border-red-300/20 text-red-500 rounded-md hover:bg-red-50"
-                            onClick={() => onDeleteBooking(booking.id)}
-                          >
-                            Cancel
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+              <div className="flex items-center mt-2 sm:mt-0">
+                <div className="text-sm text-gray-600 mr-4">
+                  {booking.date_requested ? format(new Date(booking.date_requested), 'MMM d, yyyy') : 'N/A'} at {booking.time_requested || 'N/A'}
+                </div>
+                <div className="text-sm font-medium">${booking.price || 0}</div>
               </div>
             </div>
-          );
-        })
+          ))}
+        </div>
       ) : (
-        <div className="p-10 text-center text-gray-500">
-          No bookings found for this period
+        <div className="py-12 text-center text-gray-500">
+          <p>No bookings found for {format(currentDate, 'MMMM yyyy')}</p>
         </div>
       )}
     </div>
