@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useArtistData } from './context/ArtistDataContext';
@@ -41,7 +40,6 @@ function useQuery() {
 }
 
 const PREMIUM_CHECKOUT_LINK = "https://buy.stripe.com/test_4gw8ycdIz2J4gUw9AA";
-
 const MOCK_EXPIRY = "May 31, 2025"; // mock expiry date for visual banner
 
 const ArtistDashboardContent = () => {
