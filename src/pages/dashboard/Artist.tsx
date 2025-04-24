@@ -3,17 +3,15 @@ import React from "react";
 import { useAuth } from "@/context/auth";
 import Layout from "@/components/layout/Layout";
 import ArtistDashboard from "@/components/dashboard/artist/ArtistDashboard";
-import ProfileCompletionGuard from "@/components/profile/ProfileCompletionGuard";
-import { motion } from "framer-motion";
+import ArtistRouteGuard from "@/components/auth/ArtistRouteGuard";
 import { ProfileCompletionProvider } from "@/context/profile/ProfileCompletionProvider";
+import { motion } from "framer-motion";
 
 const ArtistDashboardPage = () => {
-  const { userProfile } = useAuth();
-  
   return (
     <Layout>
       <ProfileCompletionProvider>
-        <ProfileCompletionGuard>
+        <ArtistRouteGuard>
           <div className="container mx-auto px-4 py-6">
             <motion.div
               initial={{ opacity: 0 }}
@@ -23,7 +21,7 @@ const ArtistDashboardPage = () => {
               <ArtistDashboard />
             </motion.div>
           </div>
-        </ProfileCompletionGuard>
+        </ArtistRouteGuard>
       </ProfileCompletionProvider>
     </Layout>
   );
