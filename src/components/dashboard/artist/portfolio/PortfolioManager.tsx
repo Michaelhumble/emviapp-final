@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Upload, ImagePlus, EyeOff, Eye } from "lucide-react";
+import { Plus, Upload, ImagePlus, EyeOff, Eye, Edit, Trash2 } from "lucide-react";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
 import {
   AlertDialog,
@@ -159,7 +159,7 @@ export const PortfolioManager = () => {
                         className="h-10 w-10 bg-white hover:bg-white/90"
                         onClick={() => setEditingItem(item)}
                       >
-                        <Edit2 className="h-4 w-4 text-gray-700" />
+                        <Edit className="h-4 w-4 text-gray-700" />
                       </Button>
                       <Button
                         variant="secondary"
