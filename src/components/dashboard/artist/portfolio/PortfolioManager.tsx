@@ -1,20 +1,9 @@
-
 import React, { useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { motion, AnimatePresence } from "framer-motion";
+import { Palette, Plus, Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Plus, Upload, ImagePlus, Edit, Trash2, Check, X } from "lucide-react";
-import { motion, AnimatePresence, Reorder } from "framer-motion";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@/components/ui/alert-dialog";
-import EditPortfolioItemModal from "./EditPortfolioItemModal";
+import PortfolioHero from "./PortfolioHero";
+import EmptyPortfolioState from "./EmptyPortfolioState";
 
 // Mock portfolio data with unique IDs
 const mockPortfolio = [
@@ -41,181 +30,116 @@ const mockPortfolio = [
   }
 ];
 
-export const PortfolioManager = () => {
+const PortfolioManager = () => {
   const [portfolio, setPortfolio] = useState(mockPortfolio);
-  const [hoveredId, setHoveredId] = useState<number | null>(null);
-  const [itemToDelete, setItemToDelete] = useState<number | null>(null);
-  const [editingItem, setEditingItem] = useState<typeof mockPortfolio[0] | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
-  const handleDeleteConfirm = () => {
-    if (itemToDelete !== null) {
-      setPortfolio(prev => prev.filter(item => item.id !== itemToDelete));
-      setItemToDelete(null);
-    }
-  };
-
-  const handleEditSave = (id: number, newTitle: string, newCategory: string) => {
-    setPortfolio(prev => prev.map(item => 
-      item.id === id ? { ...item, title: newTitle, category: newCategory } : item
-    ));
-    setEditingItem(null);
+  const handleAddWork = () => {
+    // Mock function for now
+    console.log("Add new work clicked");
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-playfair font-semibold text-gray-900">Portfolio Manager</h1>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+      <PortfolioHero artistName="Michael" />
+      
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-2xl font-playfair font-medium text-gray-900">Portfolio Manager</h2>
         <div className="flex gap-3">
-          {isEditMode ? (
-            <Button 
-              onClick={() => setIsEditMode(false)}
-              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+          {portfolio.length > 0 && (
+            <Button
+              variant="outline"
+              className="bg-white/80 border-purple-200 hover:bg-purple-50 text-purple-700"
+              onClick={() => setIsEditMode(!isEditMode)}
             >
-              <Check className="h-4 w-4 mr-2" />
-              Save Changes
+              <Edit className="w-4 h-4 mr-2" />
+              {isEditMode ? "Done Editing" : "Edit Portfolio"}
             </Button>
-          ) : (
-            <>
-              <Button 
-                variant="outline"
-                className="flex items-center gap-2 bg-white/80 border-purple-200 hover:bg-purple-50"
-                onClick={() => setIsEditMode(true)}
-              >
-                <Edit className="h-4 w-4" />
-                Edit Portfolio
-              </Button>
-              <Button 
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-                onClick={() => {}}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add New Work
-              </Button>
-            </>
           )}
+          <Button
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-md hover:shadow-lg transition-all"
+            onClick={handleAddWork}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add New Masterpiece
+          </Button>
         </div>
       </div>
 
-      <Card className="border-0 shadow-lg bg-white/60 backdrop-blur-sm">
-        <CardHeader className="border-b border-gray-100/80 pb-4">
-          <CardTitle className="font-playfair text-xl text-gray-800">Your Portfolio</CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6">
-          {portfolio.length === 0 ? (
-            <motion.div 
-              className="text-center py-16"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="mx-auto w-16 h-16 bg-purple-50 rounded-full flex items-center justify-center mb-4 shadow-md">
-                <ImagePlus className="h-8 w-8 text-purple-400" />
-              </div>
-              <h3 className="text-2xl font-playfair font-semibold text-gray-900 mb-2">
-                Your portfolio is currently empty
-              </h3>
-              <p className="text-base text-gray-600 mb-6 max-w-md mx-auto">
-                Showcase your talent and attract clients by uploading your best work. 
-                High-quality images make a lasting first impression.
-              </p>
-              <Button 
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white min-h-[44px] min-w-[200px] rounded-full"
-                onClick={() => {}}
+      {portfolio.length === 0 ? (
+        <EmptyPortfolioState onAddWork={handleAddWork} />
+      ) : (
+        <motion.div 
+          layout
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          <AnimatePresence>
+            {portfolio.map((item) => (
+              <motion.div
+                key={item.id}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="relative group rounded-xl overflow-hidden aspect-square cursor-pointer"
+                onClick={() => !isEditMode && setSelectedImage(item)}
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.2 }}
               >
-                <Upload className="h-4 w-4 mr-2" />
-                Upload Your First Work
-              </Button>
-            </motion.div>
-          ) : (
-            <Reorder.Group 
-              axis="y" 
-              values={portfolio} 
-              onReorder={setPortfolio}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-            >
-              <AnimatePresence>
-                {portfolio.map((item) => (
-                  <Reorder.Item
-                    key={item.id}
-                    value={item}
-                    whileDrag={{ scale: 1.03 }}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    className="relative group rounded-xl overflow-hidden aspect-square cursor-move"
-                  >
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <motion.div 
-                      initial={false}
-                      animate={{ opacity: isEditMode || hoveredId === item.id ? 1 : 0 }}
-                      className="absolute inset-0 bg-black/50 flex items-center justify-center gap-3"
-                      onHoverStart={() => setHoveredId(item.id)}
-                      onHoverEnd={() => setHoveredId(null)}
+                <div className="relative h-full">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+                
+                {isEditMode ? (
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                    <Button
+                      variant="secondary"
+                      size="icon"
+                      className="h-10 w-10 bg-white hover:bg-white/90"
                     >
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        className="h-10 w-10 bg-white hover:bg-white/90"
-                        onClick={() => setEditingItem(item)}
-                      >
-                        <Edit className="h-4 w-4 text-gray-700" />
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        className="h-10 w-10 bg-white hover:bg-white/90 text-red-500 hover:text-red-600"
-                        onClick={() => setItemToDelete(item.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </motion.div>
-                    {item.featured && (
-                      <div className="absolute top-2 right-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white text-xs font-medium px-2 py-1 rounded">
-                        Featured
-                      </div>
+                      <Edit className="h-4 w-4 text-gray-700" />
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="icon"
+                      className="h-10 w-10 bg-white hover:bg-white/90 text-red-500 hover:text-red-600"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform">
+                    <h3 className="text-lg font-medium">{item.title}</h3>
+                    {item.category && (
+                      <p className="text-sm text-white/80">{item.category}</p>
                     )}
-                  </Reorder.Item>
-                ))}
-              </AnimatePresence>
-            </Reorder.Group>
-          )}
-        </CardContent>
-      </Card>
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+      )}
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={itemToDelete !== null} onOpenChange={() => setItemToDelete(null)}>
-        <AlertDialogContent className="bg-white/95 backdrop-blur-sm border-0">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="font-playfair text-xl">Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this work? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteConfirm}
-              className="bg-red-500 hover:bg-red-600 text-white"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Edit Portfolio Item Modal */}
-      <EditPortfolioItemModal
-        open={editingItem !== null}
-        onClose={() => setEditingItem(null)}
-        item={editingItem}
-        onSave={handleEditSave}
-        onDelete={(id) => setItemToDelete(id)}
-      />
+      {/* Basic Lightbox Preview - to be enhanced */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+          onClick={() => setSelectedImage(null)}
+        >
+          <img
+            src={selectedImage.image}
+            alt={selectedImage.title}
+            className="max-w-full max-h-[90vh] object-contain"
+          />
+        </div>
+      )}
     </div>
   );
 };
