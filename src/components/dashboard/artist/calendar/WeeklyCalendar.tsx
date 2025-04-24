@@ -159,9 +159,10 @@ export const WeeklyCalendar = () => {
             >
               {weekDays.map((day, i) => (
                 <DayColumn
-                  key={day.toISOString()}
+                  key={i}
                   day={day}
                   bookings={getBookingsForDay(day)}
+                  isToday={isSameDay(day, new Date())}
                 />
               ))}
             </motion.div>
@@ -169,14 +170,12 @@ export const WeeklyCalendar = () => {
         )}
       </CardContent>
       
-      {/* Booking modals */}
-      {isBookingDialogOpen && (
-        <BookingModal 
-          open={isBookingDialogOpen}
-          onClose={() => setIsBookingDialogOpen(false)}
-          existingBooking={selectedBooking}
-        />
-      )}
+      {/* Booking Dialog */}
+      <BookingModal
+        open={isBookingDialogOpen}
+        onClose={() => setIsBookingDialogOpen(false)}
+        existingBooking={selectedBooking}
+      />
     </Card>
   );
 };

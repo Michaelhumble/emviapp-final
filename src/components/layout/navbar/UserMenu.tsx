@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { 
   Avatar, 
@@ -21,8 +22,7 @@ import {
   CreditCard, 
   LayoutDashboard, 
   UserPlus, 
-  MessageSquare,
-  Loader2 
+  MessageSquare 
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
@@ -30,38 +30,19 @@ import { NotificationCenter } from "@/components/notifications/NotificationCente
 import { useTranslation } from "@/hooks/useTranslation";
 import { toast } from "sonner";
 import { validateRoute } from "@/utils/routeValidator";
-import { signOut } from "@/services/auth";
 
 export function UserMenu() {
-  const { user, userProfile } = useAuth();
+  const { user, signOut, userProfile } = useAuth();
   const [open, setOpen] = useState(false);
-  const [isSigningOut, setIsSigningOut] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate();
   
   const handleSignOut = async () => {
     try {
-      setIsSigningOut(true);
-      toast.info("Signing out...");
+      await signOut();
       setOpen(false);
-      
-      const result = await signOut();
-      
-      navigate('/auth/signin', { replace: true });
     } catch (error) {
       console.error("Error signing out:", error);
-      toast.error("Failed to sign out. Trying alternative method...");
-      
-      try {
-        localStorage.clear();
-        sessionStorage.clear();
-      } catch (err) {
-        console.error("Failed to clear storage:", err);
-      }
-      
-      window.location.href = '/auth/signin';
-    } finally {
-      setIsSigningOut(false);
     }
   };
 
@@ -188,24 +169,12 @@ export function UserMenu() {
             })}</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-500 hover:text-red-600 hover:bg-red-50" disabled={isSigningOut}>
-            {isSigningOut ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <LogOut className="mr-2 h-4 w-4" />
-            )}
-            <span>
-              {isSigningOut ? 
-                t({
-                  english: "Signing out...",
-                  vietnamese: "Đang đăng xuất..."
-                }) : 
-                t({
-                  english: "Sign out",
-                  vietnamese: "Đăng xuất"
-                })
-              }
-            </span>
+          <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>{t({
+              english: "Log out",
+              vietnamese: "Đăng xuất"
+            })}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
