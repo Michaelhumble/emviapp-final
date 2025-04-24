@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useArtistData } from './context/ArtistDataContext';
@@ -8,7 +9,6 @@ import ArtistAppointments from './sections/ArtistAppointments';
 import ArtistBookingsLocal from './sections/ArtistBookingsLocal';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { toast } from "sonner";
-import ArtistPortfolioManager from './portfolio/ArtistPortfolioManager';
 import ProfileBoostBanner from "./ProfileBoostBanner";
 import EarningsSnapshot from './EarningsSnapshot';
 import { Button } from "@/components/ui/button";
