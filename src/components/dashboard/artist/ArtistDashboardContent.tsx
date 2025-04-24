@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useArtistData } from './context/ArtistDataContext';
 import ArtistHero from './sections/ArtistHero';
@@ -14,6 +13,8 @@ import EarningsSnapshot from './EarningsSnapshot';
 import { Button } from "@/components/ui/button";
 import { Image } from "lucide-react";
 import ArtistPortfolioSection from './sections/ArtistPortfolioSection';
+import BoostProfileModal from './modals/BoostProfileModal';
+import PremiumFeaturesModal from './modals/PremiumFeaturesModal';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -45,6 +46,8 @@ const MOCK_EXPIRY = "May 31, 2025";
 
 const ArtistDashboardContent = () => {
   const [hasBoost, setHasBoost] = useState(false);
+  const [boostModalOpen, setBoostModalOpen] = useState(false);
+  const [premiumModalOpen, setPremiumModalOpen] = useState(false);
 
   const { loading } = useArtistData();
   const location = useLocation();
@@ -80,6 +83,16 @@ const ArtistDashboardContent = () => {
     setHasBoost(true);
   };
 
+  const handleBoostProceed = () => {
+    setBoostModalOpen(false);
+    toast.success("Taking you to checkout...");
+  };
+
+  const handlePremiumProceed = () => {
+    setPremiumModalOpen(false);
+    toast.success("Redirecting to premium plans...");
+  };
+
   return (
     <motion.div
       className="max-w-5xl mx-auto py-8 space-y-8"
@@ -87,21 +100,33 @@ const ArtistDashboardContent = () => {
       initial="hidden"
       animate="visible"
     >
-      <ProfileBoostBanner hasBoost={hasBoost} boostExpiry={MOCK_EXPIRY} onBoostClick={handleUpgrade} />
+      <ProfileBoostBanner hasBoost={hasBoost} boostExpiry={MOCK_EXPIRY} onBoostClick={() => setBoostModalOpen(true)} />
 
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 mb-8">
         <div />
-        <button
-          onClick={handleUpgrade}
+        <Button
+          onClick={() => setPremiumModalOpen(true)}
           className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold tracking-wide shadow transition
             border-none focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-300
-            text-sm md:text-base"
+            text-sm md:text-base transform hover:scale-[1.02] active:scale-[0.98] duration-200"
           aria-label="Upgrade to Premium"
-          style={{ letterSpacing: '0.02em' }}
         >
+          <Image className="h-4 w-4 text-purple-500" />
           Upgrade to Premium
-        </button>
+        </Button>
       </div>
+
+      <BoostProfileModal 
+        isOpen={boostModalOpen}
+        onClose={() => setBoostModalOpen(false)}
+        onProceed={handleBoostProceed}
+      />
+      
+      <PremiumFeaturesModal
+        isOpen={premiumModalOpen}
+        onClose={() => setPremiumModalOpen(false)}
+        onProceed={handlePremiumProceed}
+      />
 
       <motion.div variants={itemVariants}>
         <ArtistHero />
