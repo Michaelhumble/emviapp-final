@@ -3,6 +3,8 @@ import React from 'react';
 import { AlertTriangle, RefreshCcw, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { signOut } from '@/services/auth';
+import { useNavigate } from 'react-router-dom';
 
 interface ArtistErrorStateProps {
   error: Error;
@@ -11,10 +13,22 @@ interface ArtistErrorStateProps {
 }
 
 const ArtistErrorState = ({ error, retryAction, logoutAction }: ArtistErrorStateProps) => {
-  const handleLogout = () => {
+  const navigate = useNavigate();
+  
+  const handleLogout = async () => {
     if (logoutAction) {
-      toast.info("Signing out...");
       logoutAction();
+    } else {
+      try {
+        toast.info("Signing out...");
+        await signOut();
+        navigate('/auth/signin');
+      } catch (err) {
+        console.error("Error in emergency logout:", err);
+        toast.error("Forcing sign out...");
+        // Force navigation as last resort
+        window.location.href = '/auth/signin';
+      }
     }
   };
   
@@ -42,16 +56,14 @@ const ArtistErrorState = ({ error, retryAction, logoutAction }: ArtistErrorState
             Try Again
           </Button>
           
-          {logoutAction && (
-            <Button 
-              variant="outline" 
-              onClick={handleLogout}
-              className="flex items-center gap-2"
-            >
-              <LogOut className="h-4 w-4" />
-              Sign Out
-            </Button>
-          )}
+          <Button 
+            variant="outline" 
+            onClick={handleLogout}
+            className="flex items-center gap-2 bg-white hover:bg-red-50 text-red-500 border-red-200"
+          >
+            <LogOut className="h-4 w-4" />
+            Sign Out
+          </Button>
         </div>
       </div>
     </div>

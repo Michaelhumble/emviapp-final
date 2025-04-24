@@ -30,9 +30,10 @@ import { NotificationCenter } from "@/components/notifications/NotificationCente
 import { useTranslation } from "@/hooks/useTranslation";
 import { toast } from "sonner";
 import { validateRoute } from "@/utils/routeValidator";
+import { signOut } from "@/services/auth";
 
 export function UserMenu() {
-  const { user, signOut, userProfile } = useAuth();
+  const { user, userProfile } = useAuth();
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -40,13 +41,25 @@ export function UserMenu() {
   const handleSignOut = async () => {
     try {
       toast.info("Signing out...");
-      await signOut();
-      toast.success("Successfully signed out");
+      
+      // Use the service function for more robust logout
+      const result = await signOut();
+      
+      if (result.success) {
+        toast.success("Successfully signed out");
+      }
+      
       setOpen(false);
       navigate('/auth/signin');
     } catch (error) {
       console.error("Error signing out:", error);
       toast.error("Failed to sign out. Trying alternative method...");
+      
+      // Clear critical localStorage items
+      localStorage.removeItem('artist_dashboard_tab');
+      localStorage.removeItem('emviapp_user_role');
+      localStorage.removeItem('emviapp_new_user');
+      
       // Force redirect as fallback
       setTimeout(() => {
         window.location.href = '/auth/signin';
@@ -180,7 +193,7 @@ export function UserMenu() {
           <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-500 hover:text-red-600 hover:bg-red-50">
             <LogOut className="mr-2 h-4 w-4" />
             <span>{t({
-              english: "Log out",
+              english: "Sign out",
               vietnamese: "Đăng xuất"
             })}</span>
           </DropdownMenuItem>
@@ -188,4 +201,4 @@ export function UserMenu() {
       </DropdownMenu>
     </div>
   );
-}
+};

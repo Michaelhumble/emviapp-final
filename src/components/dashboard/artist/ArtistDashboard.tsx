@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { signOut } from '@/services/auth';
 
 const ArtistDashboard = () => {
   return (
@@ -24,7 +25,7 @@ const ArtistDashboardInner = () => {
   const { loading, error: artistDataError } = useArtistData();
   const [loadingTime, setLoadingTime] = useState(0);
   const [error, setError] = useState<Error | null>(null);
-  const { signOut } = useAuth();
+  const { signOut: contextSignOut } = useAuth();
   const navigate = useNavigate();
   
   // Track loading time
@@ -56,19 +57,24 @@ const ArtistDashboardInner = () => {
   // Handle emergency logout
   const handleEmergencyLogout = async () => {
     try {
-      // Clear any local storage that might be causing issues
-      localStorage.removeItem('artist_dashboard_tab');
+      toast.info("Signing out...");
       
-      // Sign out using auth context
+      // Use auth service signOut function
       await signOut();
       
-      toast.success("Successfully signed out");
+      // Also use context signOut as backup
+      await contextSignOut();
       
       // Redirect to sign-in page
       navigate('/auth/signin');
     } catch (logoutError) {
       console.error("Failed to log out:", logoutError);
       toast.error("Failed to log out. Forcing redirect...");
+      
+      // Clear any problematic localStorage items
+      localStorage.removeItem('artist_dashboard_tab');
+      localStorage.removeItem('emviapp_user_role');
+      localStorage.removeItem('emviapp_new_user');
       
       // Force redirect to signin as fallback
       setTimeout(() => {

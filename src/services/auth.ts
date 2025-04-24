@@ -41,17 +41,31 @@ export async function signUpWithEmail(email: string, password: string, userData:
 
 export async function signOut() {
   try {
-    // Clear any potentially problematic items from localStorage
+    // Clear all app-specific local storage items first
     localStorage.removeItem('artist_dashboard_tab');
+    localStorage.removeItem('emviapp_user_role');
+    localStorage.removeItem('emviapp_new_user');
     localStorage.removeItem('supabase.auth.token');
+    sessionStorage.clear(); // Clear any session storage as well
     
     // Sign out from Supabase
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
     
+    toast.success("Successfully signed out");
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Sign out error:", error);
+    toast.error("Sign out encountered an error. Redirecting anyway...");
+    
+    // Even if there's an error, we should force clear auth state
+    try {
+      // Force clear supabase session
+      await supabase.auth.signOut({ scope: 'global' });
+    } catch (e) {
+      console.error("Forced sign out also failed:", e);
+    }
+    
     return { success: false, error };
   }
 }
