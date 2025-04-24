@@ -13,46 +13,9 @@ interface WeeklyCalendarViewProps {
   bookings: Booking[];
 }
 
-// Mock data for bookings
-const mockBookings: Booking[] = [
-  {
-    id: '1',
-    sender_id: '',
-    recipient_id: '',
-    client_name: 'Emma Thompson',
-    service_name: 'Gel Manicure',
-    date_requested: '2025-04-26',
-    time_requested: '10:00 AM',
-    status: 'pending',
-    created_at: new Date().toISOString()
-  },
-  {
-    id: '2',
-    sender_id: '',
-    recipient_id: '',
-    client_name: 'Michael Chen',
-    service_name: 'Full Set Acrylic',
-    date_requested: '2025-04-25',
-    time_requested: '2:30 PM',
-    status: 'completed',
-    created_at: new Date().toISOString()
-  },
-  {
-    id: '3',
-    sender_id: '',
-    recipient_id: '',
-    client_name: 'Jessica Brown',
-    service_name: 'Pedicure + Nail Art',
-    date_requested: '2025-04-27',
-    time_requested: '3:15 PM',
-    status: 'pending',
-    created_at: new Date().toISOString()
-  },
-];
-
 const WeeklyCalendarView: React.FC<WeeklyCalendarViewProps> = ({
   currentDate,
-  bookings = mockBookings
+  bookings = []
 }) => {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
@@ -105,8 +68,10 @@ const WeeklyCalendarView: React.FC<WeeklyCalendarViewProps> = ({
         open={showBookingModal}
         onClose={() => setShowBookingModal(false)}
         existingBooking={selectedBooking ? selectedBooking : selectedDay ? {
+          id: '',
+          status: 'pending',
           date: selectedDay,
-          time: selectedHour ? new Date(selectedDay).setHours(selectedHour) : undefined
+          time: selectedHour ? selectedHour : undefined
         } : undefined}
       />
     </div>

@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import {
   Routes,
@@ -9,8 +10,6 @@ import { SalonProvider } from '@/context/salon';
 import { SubscriptionProvider } from '@/context/subscription';
 import { NotificationProvider } from '@/context/notification';
 import routes from './routes';
-import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
-import ArtistInbox from "@/pages/dashboard/artist/Inbox";
 
 function App() {
   const location = useLocation();
@@ -33,8 +32,8 @@ function App() {
                   element={route.element}
                 />
               ))}
-              <Route path="/dashboard/artist/booking-calendar" element={<BookingCalendar />} />
-              <Route path="/dashboard/artist/inbox" element={<ArtistInbox />} />
+              {/* Note: These routes should be in the routes.tsx file instead of here */}
+              {/* Removing duplicate routes that are already defined in routes.tsx */}
             </Routes>
           </NotificationProvider>
         </SubscriptionProvider>
