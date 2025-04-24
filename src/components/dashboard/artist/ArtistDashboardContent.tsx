@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useArtistData } from './context/ArtistDataContext';
@@ -12,7 +11,7 @@ import { toast } from "sonner";
 import ProfileBoostBanner from "./ProfileBoostBanner";
 import EarningsSnapshot from './EarningsSnapshot';
 import { Button } from "@/components/ui/button";
-import { Image } from "lucide-react";
+import { Image, Calendar } from "lucide-react";
 import ArtistPortfolioSection from './sections/ArtistPortfolioSection';
 import BoostProfileModal from './modals/BoostProfileModal';
 import PremiumFeaturesModal from './modals/PremiumFeaturesModal';
@@ -104,7 +103,17 @@ const ArtistDashboardContent = () => {
       <ProfileBoostBanner hasBoost={hasBoost} boostExpiry={MOCK_EXPIRY} onBoostClick={() => setBoostModalOpen(true)} />
 
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 mb-8">
-        <div />
+        <div className="flex items-center gap-3">
+          <Link to="/dashboard/artist/booking-calendar">
+            <Button 
+              variant="outline"
+              className="flex items-center gap-2 bg-white/80 border-purple-200 hover:bg-purple-50"
+            >
+              <Calendar className="h-4 w-4 text-purple-500" />
+              Booking Calendar
+            </Button>
+          </Link>
+        </div>
         <Button
           onClick={() => setPremiumModalOpen(true)}
           className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold tracking-wide shadow transition

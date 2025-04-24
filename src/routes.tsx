@@ -131,6 +131,10 @@ const routes = [
     element: <ArtistDashboard />,
   },
   {
+    path: '/dashboard/artist/booking-calendar',
+    element: <BookingCalendar />,
+  },
+  {
     path: '/dashboard/customer',
     element: <CustomerDashboard />,
   },
