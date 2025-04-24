@@ -1,417 +1,305 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CalendarIcon, Clock, Search, X, Edit2, Trash2 } from "lucide-react";
-import { format, parseISO, isAfter, isBefore, startOfDay } from 'date-fns';
-import { Badge } from "@/components/ui/badge";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { 
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format, isToday, isYesterday, parseISO } from "date-fns";
+import { 
+  CalendarIcon, 
+  Search, 
+  ChevronDown, 
+  ChevronRight 
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import BookingModal from './BookingModal';
-import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogDescription,
-} from "@/components/ui/dialog";
 
-// Mock data for bookings
-const mockBookings = [
+// Define the interface for a booking
+interface Booking {
+  id: string;
+  client_name: string;
+  service_name: string;
+  date: string;
+  time: string;
+  status: 'confirmed' | 'completed' | 'cancelled' | 'pending';
+  price: number;
+  notes?: string;
+  paid: boolean;
+}
+
+// Sample data (mock)
+const mockBookings: Booking[] = [
   {
     id: '1',
-    clientName: 'Emma Thompson',
-    serviceId: '4',
-    serviceName: 'Bridal Makeup',
-    date: '2025-05-15T00:00:00.000Z',
-    time: '2025-05-15T14:00:00.000Z',
-    price: 250,
+    client_name: 'Sarah Johnson',
+    service_name: 'Gel Manicure',
+    date: '2025-04-26',
+    time: '10:00 AM',
     status: 'confirmed',
-    paymentStatus: 'paid',
-    notes: 'Wedding at Grand Hotel'
+    price: 45,
+    paid: true,
+    notes: 'Regular client, prefers pastel colors'
   },
   {
     id: '2',
-    clientName: 'Sarah Johnson',
-    serviceId: '1',
-    serviceName: 'Makeup Session',
-    date: '2025-05-10T00:00:00.000Z',
-    time: '2025-05-10T10:30:00.000Z',
-    price: 120,
+    client_name: 'Michael Chen',
+    service_name: 'Full Set Acrylic',
+    date: '2025-04-25',
+    time: '2:30 PM',
     status: 'completed',
-    paymentStatus: 'paid',
-    notes: 'Corporate photoshoot'
+    price: 65,
+    paid: true
   },
   {
     id: '3',
-    clientName: 'Jessica Brown',
-    serviceId: '3',
-    serviceName: 'Full Glam Package',
-    date: '2025-05-20T00:00:00.000Z',
-    time: '2025-05-20T16:00:00.000Z',
-    price: 200,
+    client_name: 'Emma Wilson',
+    service_name: 'Pedicure + Nail Art',
+    date: '2025-04-27',
+    time: '3:15 PM',
     status: 'confirmed',
-    paymentStatus: 'unpaid',
-    notes: 'Birthday party'
+    price: 75,
+    paid: false
   },
   {
     id: '4',
-    clientName: 'Lisa Wilson',
-    serviceId: '2',
-    serviceName: 'Hair Styling',
-    date: '2025-04-05T00:00:00.000Z',
-    time: '2025-04-05T13:00:00.000Z',
-    price: 80,
+    client_name: 'David Miller',
+    service_name: 'Nail Repair',
+    date: '2025-04-24',
+    time: '11:00 AM',
     status: 'cancelled',
-    paymentStatus: 'refunded',
-    notes: 'Cancelled due to illness'
+    price: 25,
+    paid: false
   },
   {
     id: '5',
-    clientName: 'Rachel Green',
-    serviceId: '1',
-    serviceName: 'Makeup Session',
-    date: '2025-05-25T00:00:00.000Z',
-    time: '2025-05-25T11:00:00.000Z',
-    price: 120,
+    client_name: 'Jessica Taylor',
+    service_name: 'Dip Powder',
+    date: '2025-04-30',
+    time: '4:45 PM',
     status: 'confirmed',
-    paymentStatus: 'partial',
-    notes: 'Graduation ceremony'
+    price: 55,
+    paid: true
+  },
+  {
+    id: '6',
+    client_name: 'Lisa Wong',
+    service_name: 'Gel Polish Removal',
+    date: '2025-04-23',
+    time: '9:30 AM',
+    status: 'completed',
+    price: 20,
+    paid: true
   }
 ];
 
-const getStatusColor = (status: string) => {
-  switch (status.toLowerCase()) {
+// Get status badge style
+const getStatusBadge = (status: Booking['status']) => {
+  switch (status) {
     case 'confirmed':
-      return 'bg-blue-100 text-blue-800 border-blue-200';
+      return 'bg-blue-100 text-blue-700';
     case 'completed':
-      return 'bg-green-100 text-green-800 border-green-200';
+      return 'bg-green-100 text-green-700';
     case 'cancelled':
-      return 'bg-gray-100 text-gray-800 border-gray-200';
+      return 'bg-gray-100 text-gray-700';
     case 'pending':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      return 'bg-yellow-100 text-yellow-800';
     default:
-      return 'bg-gray-100 text-gray-800 border-gray-200';
+      return 'bg-gray-100 text-gray-700';
   }
 };
 
-const getPaymentStatusColor = (status: string) => {
-  switch (status.toLowerCase()) {
-    case 'paid':
-      return 'bg-emerald-100 text-emerald-800 border-emerald-200';
-    case 'unpaid':
-      return 'bg-red-100 text-red-800 border-red-200';
-    case 'partial':
-      return 'bg-amber-100 text-amber-800 border-amber-200';
-    case 'refunded':
-      return 'bg-purple-100 text-purple-800 border-purple-200';
-    default:
-      return 'bg-gray-100 text-gray-800 border-gray-200';
+// Format date for display
+const formatBookingDate = (dateStr: string) => {
+  const date = parseISO(dateStr);
+  if (isToday(date)) {
+    return 'Today';
+  } else if (isYesterday(date)) {
+    return 'Yesterday';
+  } else {
+    return format(date, 'MMM d, yyyy');
   }
 };
 
 const BookingList = () => {
+  // State for filters
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  // Fix: Change the state type to match the DateRange type expected by the Calendar
   const [dateRange, setDateRange] = useState<{
     from: Date | undefined;
-    to: Date | undefined;
-  }>({ from: undefined, to: undefined });
-  const [editBooking, setEditBooking] = useState<any | null>(null);
-  const [deleteConfirmation, setDeleteConfirmation] = useState<string | null>(null);
-
-  const today = startOfDay(new Date());
-
-  const filteredBookings = useMemo(() => {
-    return mockBookings.filter(booking => {
-      // Search query filter
-      if (searchQuery && !booking.clientName.toLowerCase().includes(searchQuery.toLowerCase()) && 
-          !booking.serviceName.toLowerCase().includes(searchQuery.toLowerCase())) {
-        return false;
-      }
+    to?: Date | undefined;
+  }>({
+    from: undefined,
+    to: undefined
+  });
+  
+  // Filtered bookings
+  const [filteredBookings, setFilteredBookings] = useState<Booking[]>(mockBookings);
+  
+  // Apply filters
+  useEffect(() => {
+    let result = [...mockBookings];
+    
+    // Apply search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(booking => 
+        booking.client_name.toLowerCase().includes(query) ||
+        booking.service_name.toLowerCase().includes(query)
+      );
+    }
+    
+    // Apply status filter
+    if (statusFilter !== 'all') {
+      result = result.filter(booking => booking.status === statusFilter);
+    }
+    
+    // Apply date range filter
+    if (dateRange.from) {
+      const fromDate = new Date(dateRange.from);
+      fromDate.setHours(0, 0, 0, 0);
       
-      // Status filter
-      if (statusFilter !== 'all' && booking.status !== statusFilter) {
-        return false;
-      }
-      
-      // Date range filter
-      if (dateRange.from && isBefore(parseISO(booking.date), startOfDay(dateRange.from))) {
-        return false;
-      }
-      
-      if (dateRange.to && isAfter(parseISO(booking.date), startOfDay(dateRange.to))) {
-        return false;
-      }
-      
-      return true;
-    });
+      result = result.filter(booking => {
+        const bookingDate = new Date(booking.date);
+        bookingDate.setHours(0, 0, 0, 0);
+        
+        if (dateRange.to) {
+          const toDate = new Date(dateRange.to);
+          toDate.setHours(23, 59, 59, 999);
+          return bookingDate >= fromDate && bookingDate <= toDate;
+        }
+        
+        return bookingDate >= fromDate;
+      });
+    }
+    
+    setFilteredBookings(result);
   }, [searchQuery, statusFilter, dateRange]);
   
-  const upcomingBookings = filteredBookings.filter(booking => 
-    isAfter(parseISO(booking.date), today) && booking.status !== 'cancelled'
-  );
-  
-  const pastBookings = filteredBookings.filter(booking => 
-    isBefore(parseISO(booking.date), today) || booking.status === 'cancelled'
-  );
-
-  const handleDeleteBooking = (id: string) => {
-    // In a real app, this would be an API call
-    console.log('Deleting booking:', id);
-    toast.success('Booking deleted successfully');
-    setDeleteConfirmation(null);
-  };
-
-  const resetFilters = () => {
-    setSearchQuery('');
-    setStatusFilter('all');
-    setDateRange({ from: undefined, to: undefined });
-  };
-
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row gap-3 mb-6">
-        <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+      {/* Filters */}
+      <div className="flex flex-wrap gap-3">
+        <div className="relative flex-grow max-w-md">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="Search by client or service"
-            className="pl-9"
+            placeholder="Search by client or service..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9"
           />
-          {searchQuery && (
-            <button
-              className="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-600"
-              onClick={() => setSearchQuery('')}
-              type="button"
+        </div>
+        
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="All Statuses" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Statuses</SelectItem>
+            <SelectItem value="confirmed">Confirmed</SelectItem>
+            <SelectItem value="completed">Completed</SelectItem>
+            <SelectItem value="cancelled">Cancelled</SelectItem>
+            <SelectItem value="pending">Pending</SelectItem>
+          </SelectContent>
+        </Select>
+        
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "justify-start text-left",
+                !dateRange.from && "text-muted-foreground"
+              )}
             >
-              <X className="h-4 w-4" />
-            </button>
-          )}
-        </div>
-        
-        <div className="w-full md:w-48">
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger>
-              <SelectValue placeholder="Filter by status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="confirmed">Confirmed</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="cancelled">Cancelled</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div className="w-full md:w-auto">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full justify-start text-left"
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {dateRange.from ? (
-                  dateRange.to ? (
-                    <>
-                      {format(dateRange.from, "LLL dd, y")} -{" "}
-                      {format(dateRange.to, "LLL dd, y")}
-                    </>
-                  ) : (
-                    format(dateRange.from, "LLL dd, y")
-                  )
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {dateRange.from ? (
+                dateRange.to ? (
+                  <>
+                    {format(dateRange.from, "LLL dd, y")} -{" "}
+                    {format(dateRange.to, "LLL dd, y")}
+                  </>
                 ) : (
-                  <span>Date range</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                initialFocus
-                mode="range"
-                defaultMonth={dateRange.from}
-                selected={dateRange}
-                onSelect={setDateRange}
-                numberOfMonths={2}
-                className="pointer-events-auto"
-              />
-              <div className="flex items-center justify-between p-3 border-t border-border">
-                <div className="text-sm text-muted-foreground">
-                  {dateRange.from && dateRange.to
-                    ? `${dateRange.to.getDate() - dateRange.from.getDate() + 1} days`
-                    : "Select date range"}
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setDateRange({ from: undefined, to: undefined })}
-                >
-                  Reset
-                </Button>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
-        
-        {(searchQuery || statusFilter !== 'all' || dateRange.from || dateRange.to) && (
-          <Button variant="ghost" size="sm" onClick={resetFilters} className="hidden md:flex">
-            <X className="mr-2 h-4 w-4" /> Clear filters
-          </Button>
-        )}
+                  format(dateRange.from, "LLL dd, y")
+                )
+              ) : (
+                <span>Date Range</span>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              initialFocus
+              mode="range"
+              selected={dateRange}
+              onSelect={setDateRange}
+              numberOfMonths={2}
+              className="pointer-events-auto"
+            />
+          </PopoverContent>
+        </Popover>
       </div>
       
-      {filteredBookings.length === 0 ? (
-        <div className="text-center py-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-            <CalendarIcon className="h-8 w-8 text-gray-400" />
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-1">No bookings found</h3>
-          <p className="text-gray-500">
-            {searchQuery || statusFilter !== 'all' || dateRange.from
-              ? "Try adjusting your search or filters"
-              : "Start by adding new appointments to your calendar"}
-          </p>
-        </div>
-      ) : (
-        <>
-          {upcomingBookings.length > 0 && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Upcoming Bookings</h3>
-              {upcomingBookings.map((booking) => (
-                <div 
-                  key={booking.id}
-                  className="bg-white rounded-lg border border-gray-100 p-4 hover:border-purple-200 transition-colors"
-                >
-                  <div className="flex flex-col md:flex-row justify-between gap-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-medium">{booking.clientName}</h4>
-                        <Badge className={cn("font-normal", getStatusColor(booking.status))}>
-                          {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                        </Badge>
-                        <Badge className={cn("font-normal", getPaymentStatusColor(booking.paymentStatus))}>
-                          {booking.paymentStatus.charAt(0).toUpperCase() + booking.paymentStatus.slice(1)}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-gray-600">{booking.serviceName}</p>
-                      <div className="flex items-center text-xs text-gray-500">
-                        <CalendarIcon className="h-3.5 w-3.5 mr-1.5" />
-                        {format(parseISO(booking.date), 'MMMM d, yyyy')}
-                        <Clock className="h-3.5 w-3.5 ml-3 mr-1.5" />
-                        {format(parseISO(booking.time), 'h:mm a')}
-                      </div>
-                      {booking.notes && (
-                        <p className="text-xs text-gray-500 mt-1 italic">"{booking.notes}"</p>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center md:items-start gap-3">
-                      <div className="text-right min-w-20">
-                        <div className="font-medium">${booking.price}</div>
-                      </div>
-                      <Button 
-                        variant="ghost" 
-                        size="icon"
-                        onClick={() => setEditBooking(booking)} 
-                        className="h-8 w-8"
-                      >
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        onClick={() => setDeleteConfirmation(booking.id)}
-                        className="h-8 w-8 text-red-500 hover:text-red-700"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-          
-          {pastBookings.length > 0 && (
-            <div className="space-y-4 mt-8">
-              <h3 className="text-lg font-medium">Past Bookings</h3>
-              {pastBookings.map((booking) => (
-                <div 
-                  key={booking.id}
-                  className="bg-white/80 rounded-lg border border-gray-100 p-4"
-                >
-                  <div className="flex flex-col md:flex-row justify-between gap-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-medium">{booking.clientName}</h4>
-                        <Badge className={cn("font-normal", getStatusColor(booking.status))}>
-                          {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                        </Badge>
-                        <Badge className={cn("font-normal", getPaymentStatusColor(booking.paymentStatus))}>
-                          {booking.paymentStatus.charAt(0).toUpperCase() + booking.paymentStatus.slice(1)}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-gray-600">{booking.serviceName}</p>
-                      <div className="flex items-center text-xs text-gray-500">
-                        <CalendarIcon className="h-3.5 w-3.5 mr-1.5" />
-                        {format(parseISO(booking.date), 'MMMM d, yyyy')}
-                        <Clock className="h-3.5 w-3.5 ml-3 mr-1.5" />
-                        {format(parseISO(booking.time), 'h:mm a')}
-                      </div>
-                      {booking.notes && (
-                        <p className="text-xs text-gray-500 mt-1 italic">"{booking.notes}"</p>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center md:items-start gap-3">
-                      <div className="text-right min-w-20">
-                        <div className="font-medium">${booking.price}</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </>
-      )}
-      
-      {editBooking && (
-        <BookingModal
-          open={!!editBooking}
-          onClose={() => setEditBooking(null)}
-          existingBooking={editBooking}
-        />
-      )}
-      
-      <Dialog open={!!deleteConfirmation} onOpenChange={() => setDeleteConfirmation(null)}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Delete Booking</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this booking? This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="flex space-x-2 sm:justify-end">
-            <Button variant="outline" onClick={() => setDeleteConfirmation(null)}>
-              Cancel
-            </Button>
+      {/* Bookings List */}
+      <div className="space-y-4">
+        {filteredBookings.length === 0 ? (
+          <div className="text-center py-10">
+            <p className="text-gray-500">No bookings found matching your filters.</p>
             <Button 
-              variant="destructive" 
-              onClick={() => deleteConfirmation && handleDeleteBooking(deleteConfirmation)}
+              variant="link" 
+              onClick={() => {
+                setSearchQuery('');
+                setStatusFilter('all');
+                setDateRange({ from: undefined, to: undefined });
+              }}
             >
-              Delete
+              Clear filters
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </div>
+        ) : (
+          filteredBookings.map((booking) => (
+            <div 
+              key={booking.id}
+              className="border border-gray-100 rounded-lg p-4 hover:shadow-sm transition-shadow flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+            >
+              <div>
+                <div className="flex items-center gap-2 mb-0.5">
+                  <h3 className="font-medium">{booking.client_name}</h3>
+                  <Badge className={cn("text-xs", getStatusBadge(booking.status))}>
+                    {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                  </Badge>
+                </div>
+                <p className="text-sm text-gray-600">{booking.service_name}</p>
+                <div className="flex items-center gap-4 mt-1 text-xs text-gray-500">
+                  <span>{formatBookingDate(booking.date)}</span>
+                  <span>{booking.time}</span>
+                  <span className={booking.paid ? "text-green-600" : "text-amber-600"}>
+                    {booking.paid ? "Paid" : "Unpaid"}
+                  </span>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2 ml-auto">
+                <span className="font-medium">${booking.price}</span>
+                <Button variant="ghost" size="icon">
+                  <ChevronRight className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 };
