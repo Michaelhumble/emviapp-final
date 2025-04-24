@@ -1,7 +1,7 @@
 
 import StatsGrid from "../StatsGrid";
 import MainGrid from "../MainGrid";
-// import PortfolioShowcase from "../../../../artist-profile/PortfolioShowcase";
+import LoadingState from "./LoadingState";
 
 const OverviewTab = ({ 
   stats, 
@@ -16,12 +16,18 @@ const OverviewTab = ({
 }) => {
   return (
     <div className="space-y-4">
-      <StatsGrid stats={stats} isLoading={isLoadingStats} />
-      <MainGrid 
-        bookings={bookings}
-        isLoadingBookings={isLoadingBookings}
-        stats={stats}
-      />
+      {isLoadingStats && isLoadingBookings ? (
+        <LoadingState message="Loading your dashboard data..." />
+      ) : (
+        <>
+          <StatsGrid stats={stats} isLoading={isLoadingStats} />
+          <MainGrid 
+            bookings={bookings}
+            isLoadingBookings={isLoadingBookings}
+            stats={stats}
+          />
+        </>
+      )}
       {/* Portfolio Highlights section temporarily removed for space optimization */}
       {/* <PortfolioShowcase isPreview={true} /> */}
     </div>
@@ -29,4 +35,3 @@ const OverviewTab = ({
 };
 
 export default OverviewTab;
-
