@@ -179,7 +179,7 @@ export const useArtistDashboardData = (activeTab: string) => {
     isLoadingStats,
     recentBookings,
     isLoadingBookings,
-    error,
+    error, // Make sure to include this in the return value
     lastRefresh,
     earningsData,
     isLoadingEarnings

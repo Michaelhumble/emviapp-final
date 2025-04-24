@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
@@ -17,7 +16,6 @@ interface ArtistDataContextType {
   stats: ArtistStats;
   refreshData: () => Promise<void>;
   
-  // Add missing properties that components are trying to use
   artistProfile: ArtistProfileState;
   refreshArtistProfile: () => Promise<void>;
   portfolioImages: PortfolioImage[];
@@ -40,8 +38,8 @@ const defaultArtistProfile: ArtistProfileState = {
   avatar: '',
   specialty: '',
   credits: 0,
-  instagram: '', // Add this property
-  website: '' // Add this property
+  instagram: '',
+  website: ''
 };
 
 const ArtistDataContext = createContext<ArtistDataContextType>({
@@ -88,14 +86,10 @@ export const ArtistDataProvider = ({ children }: ArtistDataProviderProps) => {
       setError(null);
       setLoadAttempts(prev => prev + 1);
       
-      // Break out if we've tried too many times to prevent loops
       if (loadAttempts > 5) {
         throw new Error("Too many load attempts. Please refresh the page.");
       }
 
-      // Fetch artist stats from Supabase
-      // This is a placeholder for actual data fetching logic
-      // In a real implementation, you would query your database tables
       const { data, error } = await supabase
         .from('bookings')
         .select('*')
@@ -103,7 +97,6 @@ export const ArtistDataProvider = ({ children }: ArtistDataProviderProps) => {
 
       if (error) throw error;
 
-      // Process the data to calculate stats
       const upcomingBookings = (data || []).filter(booking => 
         booking.status === 'pending' || booking.status === 'confirmed'
       ).length;
@@ -111,16 +104,19 @@ export const ArtistDataProvider = ({ children }: ArtistDataProviderProps) => {
       const totalBookings = (data || []).length;
       setBookingCount(totalBookings);
       
-      // Mock earnings calculation - in real app, you'd query a proper earnings table
       const earningsThisMonth = (data || [])
         .filter(booking => booking.status === 'completed')
         .reduce((sum, booking) => {
-          // Safely handle case where booking may not have price property
-          const bookingValue = booking.metadata?.price || 0;
+          let bookingValue = 0;
+          if (booking.metadata && typeof booking.metadata === 'object') {
+            const price = booking.metadata.price;
+            if (typeof price === 'number') {
+              bookingValue = price;
+            }
+          }
           return sum + bookingValue;
         }, 0);
       
-      // Get unique client count
       const uniqueClients = new Set((data || []).map(booking => booking.sender_id));
 
       setStats({
@@ -130,7 +126,6 @@ export const ArtistDataProvider = ({ children }: ArtistDataProviderProps) => {
         total_clients: uniqueClients.size
       });
       
-      // Fetch ratings from reviews
       const { data: reviewData, error: reviewError } = await supabase
         .from('reviews')
         .select('rating')
@@ -146,9 +141,7 @@ export const ArtistDataProvider = ({ children }: ArtistDataProviderProps) => {
         setAverageRating(parseFloat(avgRating.toFixed(1)));
       }
       
-      // Reset error state if successful
       setError(null);
-      
     } catch (err) {
       console.error('Error fetching artist data:', err);
       setError(err instanceof Error ? err : new Error('Failed to load artist data'));
@@ -161,7 +154,6 @@ export const ArtistDataProvider = ({ children }: ArtistDataProviderProps) => {
     if (!user?.id) return;
     
     try {
-      // Get artist profile from user profile data
       setArtistProfile({
         id: user.id,
         name: userProfile?.full_name || '',
@@ -184,8 +176,8 @@ export const ArtistDataProvider = ({ children }: ArtistDataProviderProps) => {
         avatar_url: userProfile?.avatar_url || '',
         profile_completion: userProfile?.profile_completion || 0,
         independent: userProfile?.independent || true,
-        instagram: userProfile?.instagram || '', // Add instagram from userProfile
-        website: userProfile?.website || '' // Add website from userProfile
+        instagram: userProfile?.instagram || '',
+        website: userProfile?.website || ''
       });
     } catch (err) {
       console.error('Error fetching artist profile:', err);
@@ -198,7 +190,6 @@ export const ArtistDataProvider = ({ children }: ArtistDataProviderProps) => {
     try {
       setLoadingPortfolio(true);
       
-      // Get portfolio from user's portfolio_urls
       const portfolioUrls = userProfile?.portfolio_urls || [];
       
       if (portfolioUrls.length > 0) {
@@ -219,27 +210,23 @@ export const ArtistDataProvider = ({ children }: ArtistDataProviderProps) => {
     }
   };
 
-  // Function to refresh the artist profile
   const refreshArtistProfile = async () => {
     await fetchArtistProfile();
     await fetchPortfolioImages();
   };
 
-  // Initial data load
   useEffect(() => {
     fetchArtistData();
     fetchArtistProfile();
     fetchPortfolioImages();
   }, [user?.id, userProfile]);
 
-  // Set up error recovery with retry mechanism
   useEffect(() => {
     if (error && loadAttempts < 3) {
-      // Auto-retry once after a brief delay
       const retryTimer = setTimeout(() => {
         console.log(`Retrying artist data fetch (attempt ${loadAttempts + 1})`);
         fetchArtistData();
-      }, 3000); // 3 second delay before retry
+      }, 3000);
       
       return () => clearTimeout(retryTimer);
     }
