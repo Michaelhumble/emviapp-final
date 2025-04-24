@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Palette, Plus, Edit, Trash2 } from "lucide-react";
