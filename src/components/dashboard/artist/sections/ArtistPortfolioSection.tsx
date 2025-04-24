@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,7 @@ import { Plus, Image as ImageIcon } from "lucide-react";
 import PortfolioUploadModal from "../portfolio/PortfolioUploadModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { useArtistPortfolio } from "@/hooks/useArtistPortfolio";
+import { Link } from "react-router-dom";
 
 const itemVariants = {
   hidden: { opacity: 0, scale: 0.94, y: 18 },
@@ -52,18 +52,30 @@ const ArtistPortfolioSection = () => {
           transition={{ duration: 0.3, ease: "easeInOut" }}
         >
           <CardHeader className="pb-2 bg-gradient-to-r from-[#F1F0FB] via-white to-[#E5DEFF] rounded-t-lg flex flex-col xs:flex-row xs:items-center xs:justify-between gap-2">
-            <CardTitle className="text-xl xs:text-2xl font-playfair font-semibold text-[#1A1F2C]">
-              My Portfolio
-            </CardTitle>
-            <Button
-              className="glassmorphism text-emvi-accent font-medium shadow-md px-3 xs:px-4 py-2 flex items-center gap-2 backdrop-blur-sm mt-2 xs:mt-0"
-              aria-label="Add New Work"
-              type="button"
-              onClick={() => setUploadOpen(true)}
-            >
-              <Plus className="h-4 w-4 xs:h-5 xs:w-5 mr-1" />
-              <span className="text-sm xs:text-base">Add New Work</span>
-            </Button>
+            <div className="flex items-center justify-between w-full">
+              <CardTitle className="text-xl xs:text-2xl font-playfair font-semibold text-[#1A1F2C]">
+                My Portfolio
+              </CardTitle>
+              <div className="flex items-center gap-3">
+                <Link to="/dashboard/artist/portfolio">
+                  <Button
+                    className="glassmorphism text-emvi-accent font-medium shadow-md px-3 xs:px-4 py-2 flex items-center gap-2 backdrop-blur-sm"
+                    variant="outline"
+                  >
+                    🎨 View Full Portfolio
+                  </Button>
+                </Link>
+                <Button
+                  className="glassmorphism text-emvi-accent font-medium shadow-md px-3 xs:px-4 py-2 flex items-center gap-2 backdrop-blur-sm"
+                  aria-label="Add New Work"
+                  type="button"
+                  onClick={() => setUploadOpen(true)}
+                >
+                  <Plus className="h-4 w-4 xs:h-5 xs:w-5 mr-1" />
+                  <span className="text-sm xs:text-base">Add New Work</span>
+                </Button>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="pt-4 xs:pt-5 pb-6 xs:pb-7 px-3 xs:px-6">
             {isLoading ? (
