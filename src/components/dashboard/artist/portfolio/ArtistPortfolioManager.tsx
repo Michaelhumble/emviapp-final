@@ -15,6 +15,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import EditPortfolioItemModal from "./EditPortfolioItemModal";
+import PortfolioUploadModal from "./PortfolioUploadModal";
 
 // Mock portfolio data with unique IDs
 const mockPortfolio = [
@@ -47,6 +48,8 @@ const ArtistPortfolioManager = () => {
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
   const [editingItem, setEditingItem] = useState<typeof mockPortfolio[0] | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const handleDeleteConfirm = () => {
     if (itemToDelete !== null) {
@@ -60,6 +63,33 @@ const ArtistPortfolioManager = () => {
       item.id === id ? { ...item, title: newTitle, category: newCategory } : item
     ));
     setEditingItem(null);
+  };
+
+  const handleAddPortfolioItem = async (file: File, title: string) => {
+    try {
+      setUploading(true);
+      // Mock upload delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Find the highest ID to create a new unique ID
+      const maxId = portfolio.reduce((max, item) => Math.max(max, item.id), 0);
+      
+      const newItem = {
+        id: maxId + 1,
+        image: URL.createObjectURL(file),
+        title: title,
+        category: "New Work",
+        featured: false
+      };
+      
+      setPortfolio(prev => [...prev, newItem]);
+      setUploading(false);
+      return true;
+    } catch (error) {
+      console.error("Error adding portfolio item:", error);
+      setUploading(false);
+      return false;
+    }
   };
 
   return (
@@ -87,7 +117,7 @@ const ArtistPortfolioManager = () => {
               </Button>
               <Button 
                 className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-                onClick={() => {}}
+                onClick={() => setIsUploadModalOpen(true)}
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add New Work
@@ -121,7 +151,7 @@ const ArtistPortfolioManager = () => {
               </p>
               <Button 
                 className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white min-h-[44px] min-w-[200px] rounded-full"
-                onClick={() => {}}
+                onClick={() => setIsUploadModalOpen(true)}
               >
                 <Upload className="h-4 w-4 mr-2" />
                 Upload Your First Work
@@ -215,6 +245,14 @@ const ArtistPortfolioManager = () => {
         item={editingItem}
         onSave={handleEditSave}
         onDelete={(id) => setItemToDelete(id)}
+      />
+
+      {/* Upload Portfolio Item Modal */}
+      <PortfolioUploadModal
+        open={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        onUpload={handleAddPortfolioItem}
+        loading={uploading}
       />
     </div>
   );
