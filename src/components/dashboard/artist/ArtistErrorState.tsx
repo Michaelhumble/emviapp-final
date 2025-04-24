@@ -1,34 +1,51 @@
 
-import { AlertTriangle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import React from 'react';
+import { AlertTriangle, RefreshCcw, LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface ArtistErrorStateProps {
   error: Error;
-  retryAction?: () => void;
+  retryAction: () => void;
+  logoutAction?: () => void;
 }
 
-const ArtistErrorState = ({ error, retryAction }: ArtistErrorStateProps) => {
+const ArtistErrorState = ({ error, retryAction, logoutAction }: ArtistErrorStateProps) => {
   return (
-    <div className="p-4">
-      <Alert variant="destructive">
-        <AlertTriangle className="h-4 w-4" />
-        <AlertTitle>Error Loading Dashboard</AlertTitle>
-        <AlertDescription>
-          <p className="mt-2 text-sm text-gray-500">{error.message || "Something went wrong. Please try again."}</p>
+    <div className="flex flex-col items-center justify-center min-h-[60vh] p-6">
+      <div className="bg-red-50 border border-red-200 rounded-xl p-8 max-w-lg w-full text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-4">
+          <AlertTriangle className="h-6 w-6 text-red-600" />
+        </div>
+        
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          Something went wrong
+        </h3>
+        
+        <p className="text-sm text-gray-600 mb-6">
+          {error.message || "We couldn't load your dashboard. Please try again or contact support if the issue persists."}
+        </p>
+        
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Button 
+            onClick={retryAction}
+            className="flex items-center gap-2"
+          >
+            <RefreshCcw className="h-4 w-4" />
+            Try Again
+          </Button>
           
-          {retryAction && (
+          {logoutAction && (
             <Button 
-              onClick={retryAction} 
-              className="mt-4" 
-              variant="outline"
-              size="sm"
+              variant="outline" 
+              onClick={logoutAction}
+              className="flex items-center gap-2"
             >
-              Try Again
+              <LogOut className="h-4 w-4" />
+              Sign Out
             </Button>
           )}
-        </AlertDescription>
-      </Alert>
+        </div>
+      </div>
     </div>
   );
 };
