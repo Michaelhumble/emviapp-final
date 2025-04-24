@@ -2,7 +2,7 @@
 import React from "react";
 import Layout from "@/components/layout/Layout";
 import ArtistBookingCalendar from "@/components/dashboard/artist/calendar/ArtistBookingCalendar";
-import { PageTransition } from "@/components/shared/PageTransition";
+import PageTransition from "@/components/shared/PageTransition";
 
 const BookingCalendar = () => {
   return (
