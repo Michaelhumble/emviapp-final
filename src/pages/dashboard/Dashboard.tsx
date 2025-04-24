@@ -5,6 +5,7 @@ import { Navigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import Map from "@/components/Map";
+import ReliableAuthGuard from "@/components/auth/ReliableAuthGuard";
 
 const DashboardPage = () => {
   const { user, userRole, loading } = useAuth();
