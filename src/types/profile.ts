@@ -18,7 +18,7 @@ export interface OpeningTime {
 export interface UserProfile {
   // Required properties
   id: string;
-  email: string;
+  email?: string; // Changed from required to optional for compatibility
   
   // Auth related properties from auth context
   userId?: string;

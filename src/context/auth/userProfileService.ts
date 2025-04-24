@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile, UserRole } from './types';
 import { toast } from 'sonner';
@@ -47,7 +46,6 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       company_name: (data as any).company_name || '',
       preferred_language: data.preferred_language || 'en',
       profile_views: typeof (data as any).profile_views === 'number' ? (data as any).profile_views : 0,
-      account_type: (data as any).account_type || 'free',
       referral_code: data.referral_code || '',
       affiliate_code: data.referral_code || '', // Map referral_code to affiliate_code for compatibility
       referral_count: typeof (data as any).referral_count === 'number' ? (data as any).referral_count : 0,
@@ -63,7 +61,13 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],
       years_experience: typeof (data as any).years_experience === 'number' ? (data as any).years_experience : 0,
-      professional_name: (data as any).professional_name || ''
+      professional_name: (data as any).professional_name || '',
+      favorite_artist_types: Array.isArray(data.favorite_artist_types) ? data.favorite_artist_types : [],
+      artistTypes: Array.isArray(data.artistTypes) ? data.artistTypes : [],
+      birthday: data.birthday || null,
+      communication_preferences: Array.isArray(data.communication_preferences) ? data.communication_preferences : [],
+      commPrefs: Array.isArray(data.commPrefs) ? data.commPrefs : [],
+      creditsThisMonth: typeof data.creditsThisMonth === 'number' ? data.creditsThisMonth : 0
     };
     
     // Also update the cache for faster subsequent access

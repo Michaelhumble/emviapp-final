@@ -78,12 +78,12 @@ export interface AuthContextType {
   userProfile: UserProfile | null;
   userRole: UserRole | null;
   loading: boolean;
-  isLoading: boolean;
+  isLoading: boolean; // Added missing property
   isSignedIn: boolean;
   isError: boolean;
-  error: Error | null;
+  error: Error | null; // Added missing property
   isNewUser: boolean;
-  session: Session | null;
+  session: Session | null; // Added missing property
   clearIsNewUser: () => void;
   signIn: (email: string, password: string) => Promise<{ success: boolean; error?: Error }>;
   signUp: (email: string, password: string, userData?: any) => Promise<{ success: boolean; error?: Error; userId?: string }>;

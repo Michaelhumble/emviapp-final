@@ -1,4 +1,3 @@
-
 // Make sure the file uses proper TypeScript with proper data access
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,10 +10,12 @@ export const useAuthProvider = (): AuthContextType => {
   const [session, setSession] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [userRole, setUserRole] = useState<UserRole>(null);
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true); // Added for compatibility
   const [isNewUser, setIsNewUser] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [error, setError] = useState<Error | null>(null); // Added for compatibility
 
   const clearIsNewUser = () => {
     setIsNewUser(false);
@@ -25,6 +26,7 @@ export const useAuthProvider = (): AuthContextType => {
     const getInitialSession = async () => {
       try {
         setLoading(true);
+        setIsLoading(true); // Update both loading states
         
         // Get current session
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
@@ -50,8 +52,10 @@ export const useAuthProvider = (): AuthContextType => {
       } catch (error) {
         console.error('Error fetching initial session:', error);
         setIsError(true);
+        setError(error instanceof Error ? error : new Error('Unknown error fetching session'));
       } finally {
         setLoading(false);
+        setIsLoading(false); // Update both loading states
       }
     };
     
@@ -240,11 +244,13 @@ export const useAuthProvider = (): AuthContextType => {
   
   return {
     loading,
+    isLoading, // Added for compatibility
     isSignedIn: !!user,
     user,
     userRole,
     userProfile,
     isError,
+    error,   // Added for compatibility
     isNewUser,
     clearIsNewUser,
     signIn,
@@ -252,6 +258,7 @@ export const useAuthProvider = (): AuthContextType => {
     signUp,
     updateUserRole,
     updateProfile,
-    refreshUserProfile
+    refreshUserProfile,
+    session  // Added for compatibility
   };
 };

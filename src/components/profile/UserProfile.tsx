@@ -1,3 +1,4 @@
+
 import { useAuth } from "@/context/auth";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { toast } from "sonner";
@@ -8,7 +9,7 @@ import ProfileTabs from "./ProfileTabs";
 import ProfileLoadingManager from "./ProfileLoadingManager";
 import ProfileAISupport from "./ProfileAISupport";
 import { getRoleTheme } from "./utils/themeHelpers";
-import { UserProfile as UserProfileType } from "@/context/auth/types";
+import { UserProfile as UserProfileType } from "@/context/auth/types"; // Import from auth context for consistency
 import PremiumArtistProfile from "@/components/artist-profile/PremiumArtistProfile";
 
 // Reduced cache timeout to prevent stale data issues
@@ -76,9 +77,9 @@ const UserProfile = () => {
     if (userProfile) {
       // Update cache with new data
       console.log("User profile data available, updating cache");
-      cachedProfileData = userProfile as UserProfileType;
+      cachedProfileData = userProfile;
       lastLoadedTime = Date.now();
-      setLocalProfile(userProfile as UserProfileType);
+      setLocalProfile(userProfile);
       setShowCachedData(false);
       setLoadTimeout(false); // Reset timeout if profile loaded successfully
       setLoadAttempts(0); // Reset attempts counter
@@ -201,10 +202,10 @@ const UserProfile = () => {
     <div className="min-h-screen bg-[#FDFDFD]">
       {isArtistRole ? (
         hasActiveSubscription ? (
-          <PremiumArtistProfile userProfile={userProfile as UserProfileType} />
+          <PremiumArtistProfile userProfile={userProfile} />
         ) : (
           <PremiumFeatureGate feature="profile-promotion">
-            <PremiumArtistProfile userProfile={userProfile as UserProfileType} />
+            <PremiumArtistProfile userProfile={userProfile} />
           </PremiumFeatureGate>
         )
       ) : (
@@ -212,8 +213,8 @@ const UserProfile = () => {
           <UserProfileBanner />
           <div className="container mx-auto px-4 pb-16">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <ProfileSidebar userProfile={userProfile as UserProfileType} />
-              <ProfileTabs userProfile={userProfile as UserProfileType} />
+              <ProfileSidebar userProfile={userProfile} />
+              <ProfileTabs userProfile={userProfile} />
             </div>
             
             <div className={`mt-10 text-center text-sm ${theme.textColor}`}>
