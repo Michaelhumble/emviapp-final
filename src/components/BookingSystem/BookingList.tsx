@@ -91,7 +91,7 @@ const BookingList: React.FC<BookingListProps> = ({
                   Mark Completed
                 </button>
               )}
-              {booking.status !== 'cancelled' && (
+              {booking.status !== 'cancelled' && booking.status !== 'completed' && (
                 <button
                   onClick={() => onStatusChange(booking.id, 'cancelled')}
                   className="text-xs px-2 py-1 bg-red-50 text-red-700 hover:bg-red-100 rounded border border-red-200 transition-colors"
