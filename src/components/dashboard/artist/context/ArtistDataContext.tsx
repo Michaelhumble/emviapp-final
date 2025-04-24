@@ -11,6 +11,7 @@ interface ArtistDataContextType {
   bookingCount: number;
   reviewCount: number;
   averageRating: number;
+  error: Error | null;
   
   // Artist profile and portfolio data
   artistProfile: any;
@@ -27,6 +28,7 @@ const defaultContext: ArtistDataContextType = {
   bookingCount: 0,
   reviewCount: 0,
   averageRating: 0,
+  error: null,
   
   // Default values for additional properties
   artistProfile: null,
@@ -41,7 +43,8 @@ export const ArtistDataProvider = ({ children }: { children: ReactNode }) => {
   const { userProfile } = useAuth();
   const [loading, setLoading] = useState(true);
   const [loadingPortfolio, setLoadingPortfolio] = useState(true);
-  const [data, setData] = useState<Omit<ArtistDataContextType, 'loading' | 'loadingPortfolio' | 'refreshArtistProfile'>>({
+  const [error, setError] = useState<Error | null>(null);
+  const [data, setData] = useState<Omit<ArtistDataContextType, 'loading' | 'loadingPortfolio' | 'refreshArtistProfile' | 'error'>>({
     firstName: '',
     specialty: '',
     portfolioCount: 0,
@@ -56,6 +59,7 @@ export const ArtistDataProvider = ({ children }: { children: ReactNode }) => {
   const refreshArtistProfile = async () => {
     if (userProfile) {
       setLoading(true);
+      setError(null);
       try {
         // In a real implementation, this would fetch updated data from an API
         // For now, we'll just simulate a refresh delay
@@ -74,8 +78,9 @@ export const ArtistDataProvider = ({ children }: { children: ReactNode }) => {
             id: userProfile.user_id || userProfile.id,
           }
         }));
-      } catch (error) {
-        console.error("Error refreshing artist profile:", error);
+      } catch (err) {
+        console.error("Error refreshing artist profile:", err);
+        setError(err instanceof Error ? err : new Error('Failed to refresh artist profile'));
       } finally {
         setLoading(false);
       }
@@ -135,8 +140,9 @@ export const ArtistDataProvider = ({ children }: { children: ReactNode }) => {
           portfolioImages: mockPortfolioImages,
           portfolioCount: mockPortfolioImages.length
         }));
-      } catch (error) {
-        console.error("Error loading portfolio:", error);
+      } catch (err) {
+        console.error("Error loading portfolio:", err);
+        setError(err instanceof Error ? err : new Error('Failed to load portfolio'));
       } finally {
         setLoadingPortfolio(false);
       }
@@ -149,30 +155,36 @@ export const ArtistDataProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (userProfile) {
-      // Extract first name from full name
-      const firstName = userProfile.full_name?.split(' ')[0] || 'Artist';
-      const specialty = userProfile.specialty || 'Nail Artist';
+      try {
+        // Extract first name from full name
+        const firstName = userProfile.full_name?.split(' ')[0] || 'Artist';
+        const specialty = userProfile.specialty || 'Nail Artist';
 
-      // Set mock data for now - would be replaced with real API calls
-      setData(prev => ({
-        ...prev,
-        firstName,
-        specialty,
-        portfolioCount: 12,
-        bookingCount: 58,
-        reviewCount: 24,
-        averageRating: 4.9,
-        artistProfile: {
-          ...userProfile,
-          id: userProfile.user_id || userProfile.id,
-          accepts_bookings: true,
-          preferences: [],
-          instagram: userProfile.instagram || '',
-          website: userProfile.website || '',
-        }
-      }));
-      
-      setLoading(false);
+        // Set mock data for now - would be replaced with real API calls
+        setData(prev => ({
+          ...prev,
+          firstName,
+          specialty,
+          portfolioCount: 12,
+          bookingCount: 58,
+          reviewCount: 24,
+          averageRating: 4.9,
+          artistProfile: {
+            ...userProfile,
+            id: userProfile.user_id || userProfile.id,
+            accepts_bookings: true,
+            preferences: [],
+            instagram: userProfile.instagram || '',
+            website: userProfile.website || '',
+          }
+        }));
+        
+        setLoading(false);
+      } catch (err) {
+        console.error("Error setting artist data:", err);
+        setError(err instanceof Error ? err : new Error('Failed to initialize artist data'));
+        setLoading(false);
+      }
     }
   }, [userProfile]);
 
@@ -181,7 +193,8 @@ export const ArtistDataProvider = ({ children }: { children: ReactNode }) => {
       ...data,
       loading,
       loadingPortfolio,
-      refreshArtistProfile
+      refreshArtistProfile,
+      error
     }}>
       {children}
     </ArtistDataContext.Provider>
