@@ -88,19 +88,21 @@ const ArtistBookingCalendar = () => {
         </div>
         
         <div>
-          <TabsContent value="week" className="m-0 p-6 focus:outline-none">
-            <WeeklyCalendarView currentDate={currentDate} bookings={[]} />
-          </TabsContent>
-          
-          <TabsContent value="month" className="m-0 focus:outline-none">
-            <MonthlyCalendarView />
-          </TabsContent>
-          
-          <TabsContent value="list" className="m-0 focus:outline-none">
-            <div className="p-6">
-              <BookingList />
-            </div>
-          </TabsContent>
+          <Tabs value={calendarView}>
+            <TabsContent value="week" className="m-0 p-6 focus:outline-none">
+              <WeeklyCalendarView currentDate={currentDate} bookings={[]} />
+            </TabsContent>
+            
+            <TabsContent value="month" className="m-0 focus:outline-none">
+              <MonthlyCalendarView />
+            </TabsContent>
+            
+            <TabsContent value="list" className="m-0 focus:outline-none">
+              <div className="p-6">
+                <BookingList />
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </Card>
 
