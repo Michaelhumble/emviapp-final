@@ -1,8 +1,10 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Users, Star } from "lucide-react";
 import { useArtistData } from '../context/ArtistDataContext';
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 import {
   Tooltip,
   TooltipContent,
