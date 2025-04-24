@@ -13,6 +13,7 @@ import ProfileBoostBanner from "./ProfileBoostBanner";
 import EarningsSnapshot from './EarningsSnapshot';
 import { Button } from "@/components/ui/button";
 import { Image } from "lucide-react";
+import ArtistPortfolioSection from './sections/ArtistPortfolioSection';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -133,7 +134,7 @@ const ArtistDashboardContent = () => {
       </motion.div>
       
       <motion.div variants={itemVariants}>
-        <ArtistBookingsLocal />
+        <ArtistPortfolioSection />
       </motion.div>
       
       <div className="h-2 md:h-4" />
