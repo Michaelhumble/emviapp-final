@@ -56,6 +56,21 @@ export interface UserProfile {
   google_review_link?: string;
   independent?: boolean;
   profile_completion?: number;
+  
+  // Artist-specific properties
+  skills?: string[];
+  years_experience?: number;
+  portfolio_urls?: string[];
+  custom_role?: string;
+  is_premium?: boolean;
+  
+  // Customer-specific properties
+  favorite_artist_types?: string[];
+  artistTypes?: string[];
+  birthday?: string | null;
+  communication_preferences?: string[];
+  commPrefs?: string[];
+  creditsThisMonth?: number;
 }
 
 export interface AuthContextType {

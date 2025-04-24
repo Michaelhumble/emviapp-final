@@ -121,9 +121,38 @@ export const useAuthSession = (): AuthState => {
       
       if (data) {
         // Process profile data and ensure role is properly typed
+        // Normalize fields to support all required properties
         const profile: UserProfile = {
           ...data,
-          role: data.role ? normalizeRole(data.role) : 'customer'
+          id: data.id,
+          email: data.email || '',
+          full_name: data.full_name || '',
+          role: data.role ? normalizeRole(data.role) : 'customer',
+          avatar_url: data.avatar_url || '',
+          
+          // Map database fields that might have different names
+          userId: data.user_id || data.id,
+          user_id: data.user_id || data.id,
+          
+          // Customer-specific fields
+          favorite_artist_types: data.favorite_artist_types || [],
+          artistTypes: data.favorite_artist_types || data.artistTypes || [],
+          communication_preferences: data.communication_preferences || [],
+          commPrefs: data.communication_preferences || data.commPrefs || [],
+          birthday: data.birthday || null,
+          
+          // Artist-specific fields
+          skills: data.skills || [],
+          years_experience: data.years_experience || 0,
+          portfolio_urls: data.portfolio_urls || [],
+          custom_role: data.custom_role || '',
+          is_premium: !!data.is_premium,
+          
+          // Add other fields with safe defaults
+          profile_views: typeof data.profile_views === 'number' ? data.profile_views : 0,
+          creditsThisMonth: typeof data.credits_this_month === 'number' ? data.credits_this_month : 0,
+          credits: typeof data.credits === 'number' ? data.credits : 0,
+          referral_count: typeof data.referral_count === 'number' ? data.referral_count : 0,
         };
         
         setUserProfile(profile);
@@ -152,10 +181,38 @@ export const useAuthSession = (): AuthState => {
       if (error) throw error;
       
       if (data) {
-        // Process profile data with normalized role
+        // Process profile data with normalized role and fields
         const profile: UserProfile = {
           ...data,
-          role: data.role ? normalizeRole(data.role) : 'customer'
+          id: data.id,
+          email: data.email || '',
+          full_name: data.full_name || '',
+          role: data.role ? normalizeRole(data.role) : 'customer',
+          avatar_url: data.avatar_url || '',
+          
+          // Map database fields that might have different names
+          userId: data.user_id || data.id,
+          user_id: data.user_id || data.id,
+          
+          // Customer-specific fields
+          favorite_artist_types: data.favorite_artist_types || [],
+          artistTypes: data.favorite_artist_types || data.artistTypes || [],
+          communication_preferences: data.communication_preferences || [],
+          commPrefs: data.communication_preferences || data.commPrefs || [],
+          birthday: data.birthday || null,
+          
+          // Artist-specific fields
+          skills: data.skills || [],
+          years_experience: data.years_experience || 0,
+          portfolio_urls: data.portfolio_urls || [],
+          custom_role: data.custom_role || '',
+          is_premium: !!data.is_premium,
+          
+          // Add other fields with safe defaults
+          profile_views: typeof data.profile_views === 'number' ? data.profile_views : 0,
+          creditsThisMonth: typeof data.credits_this_month === 'number' ? data.credits_this_month : 0,
+          credits: typeof data.credits === 'number' ? data.credits : 0,
+          referral_count: typeof data.referral_count === 'number' ? data.referral_count : 0,
         };
         
         setUserProfile(profile);
