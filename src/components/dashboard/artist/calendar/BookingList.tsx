@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +24,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { DateRange } from "react-day-picker";
 
 interface Booking {
   id: string;
@@ -129,10 +131,8 @@ const formatBookingDate = (dateStr: string) => {
 const BookingList = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [dateRange, setDateRange] = useState<{
-    from: Date | undefined;
-    to: Date | undefined;
-  }>({
+  // Fixed: Changed the type to DateRange to match what react-day-picker uses
+  const [dateRange, setDateRange] = useState<DateRange>({
     from: undefined,
     to: undefined
   });
