@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -90,10 +89,10 @@ export const PortfolioManager = () => {
                 <ImagePlus className="h-8 w-8 text-purple-400" />
               </div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Your portfolio is empty
+                Your portfolio is currently empty
               </h3>
               <p className="text-gray-600 mb-6">
-                Add your first masterpiece to attract clients!
+                Upload your best work to impress potential clients!
               </p>
               <Button 
                 className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
@@ -195,4 +194,3 @@ export const PortfolioManager = () => {
     </div>
   );
 };
-
