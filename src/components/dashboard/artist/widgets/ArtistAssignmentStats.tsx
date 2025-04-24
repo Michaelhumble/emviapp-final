@@ -73,7 +73,7 @@ export default function ArtistAssignmentStats() {
             <TrendingUp className="h-10 w-10 text-indigo-300 opacity-70 mb-2" />
             <div className="text-lg font-bold mb-1">Start accepting appointments to see your progress!</div>
             <div className="text-xs text-gray-500">
-              As you get bookings, you’ll see your stats, estimated hours, and trends here.
+              As you get bookings, you'll see your stats, estimated hours, and trends here.
             </div>
           </div>
         </Card>

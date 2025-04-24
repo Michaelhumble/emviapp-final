@@ -15,7 +15,7 @@ const MOCK_BOOKINGS = [
     service_name: "Bridal Makeup",
     date_requested: "2025-04-26",
     time_requested: "2:00 PM",
-    status: "confirmed",
+    status: "confirmed" as const,
     note: "Wedding at Grand Hotel",
     price: 150
   },
@@ -25,7 +25,7 @@ const MOCK_BOOKINGS = [
     service_name: "Makeup Session",
     date_requested: "2025-04-27",
     time_requested: "10:30 AM",
-    status: "completed",
+    status: "completed" as const,
     note: "Corporate photoshoot",
     price: 85
   },
@@ -35,7 +35,7 @@ const MOCK_BOOKINGS = [
     service_name: "Full Glam Package",
     date_requested: "2025-04-29",
     time_requested: "4:00 PM",
-    status: "pending",
+    status: "pending" as const,
     note: "Birthday party",
     price: 200
   },
@@ -45,7 +45,7 @@ const MOCK_BOOKINGS = [
     service_name: "Natural Look",
     date_requested: "2025-04-24",
     time_requested: "11:00 AM",
-    status: "pending",
+    status: "pending" as const,
     price: 75
   },
   {
@@ -54,7 +54,7 @@ const MOCK_BOOKINGS = [
     service_name: "Bridal Makeup",
     date_requested: "2025-04-30",
     time_requested: "1:00 PM",
-    status: "confirmed",
+    status: "confirmed" as const,
     note: "Pre-wedding photoshoot",
     price: 150
   }

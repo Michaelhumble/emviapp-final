@@ -15,7 +15,7 @@ const MOCK_SALON_BOOKINGS = [
     service_name: "Hair Styling",
     date_requested: "2025-04-26",
     time_requested: "1:00 PM",
-    status: "confirmed",
+    status: "confirmed" as const,
     note: "Wedding preparation",
     price: 120
   },
@@ -25,7 +25,7 @@ const MOCK_SALON_BOOKINGS = [
     service_name: "Full Service Package",
     date_requested: "2025-04-25",
     time_requested: "10:00 AM",
-    status: "completed",
+    status: "completed" as const,
     price: 250
   },
   {
@@ -34,7 +34,7 @@ const MOCK_SALON_BOOKINGS = [
     service_name: "Beard Trim",
     date_requested: "2025-04-28",
     time_requested: "3:30 PM",
-    status: "pending",
+    status: "pending" as const,
     price: 45
   },
   {
@@ -43,7 +43,7 @@ const MOCK_SALON_BOOKINGS = [
     service_name: "Hair Coloring",
     date_requested: "2025-04-29",
     time_requested: "11:00 AM",
-    status: "confirmed",
+    status: "confirmed" as const,
     note: "Special occasion",
     price: 180
   },
@@ -53,7 +53,7 @@ const MOCK_SALON_BOOKINGS = [
     service_name: "Haircut",
     date_requested: "2025-04-24",
     time_requested: "4:00 PM",
-    status: "pending",
+    status: "pending" as const,
     price: 65
   }
 ];
