@@ -1,9 +1,9 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import ArtistDashboardContent from './ArtistDashboardContent';
 import { useArtistData } from './context/ArtistDataContext';
 import { ArtistDataProvider } from './context/ArtistDataContext';
-import ArtistDashboardHeader from './ArtistDashboardHeader';
 
 const ArtistDashboard = () => {
   return (
@@ -14,7 +14,7 @@ const ArtistDashboard = () => {
 };
 
 const ArtistDashboardInner = () => {
-  const { loading, error } = useArtistData();
+  const { loading } = useArtistData();
   
   return (
     <motion.div
@@ -23,7 +23,6 @@ const ArtistDashboardInner = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <ArtistDashboardHeader />
       <ArtistDashboardContent />
     </motion.div>
   );
