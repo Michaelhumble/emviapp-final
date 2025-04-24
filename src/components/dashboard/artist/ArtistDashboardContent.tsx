@@ -40,7 +40,7 @@ function useQuery() {
 }
 
 const PREMIUM_CHECKOUT_LINK = "https://buy.stripe.com/test_4gw8ycdIz2J4gUw9AA";
-const MOCK_EXPIRY = "May 31, 2025"; // mock expiry date for visual banner
+const MOCK_EXPIRY = "May 31, 2025";
 
 const ArtistDashboardContent = () => {
   const [hasBoost, setHasBoost] = useState(false);
