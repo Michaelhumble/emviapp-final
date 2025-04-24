@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useArtistData } from './context/ArtistDataContext';
@@ -7,15 +6,15 @@ import ArtistMetrics from './sections/ArtistMetrics';
 import ArtistActivityFeed from './sections/ArtistActivityFeed';
 import ArtistAppointments from './sections/ArtistAppointments';
 import ArtistBookingsLocal from './sections/ArtistBookingsLocal';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { toast } from "sonner";
 import ArtistPortfolioManager from './portfolio/ArtistPortfolioManager';
 import ProfileBoostBanner from "./ProfileBoostBanner";
 import EarningsSnapshot from '../artist/EarningsSnapshot';
-import { Link } from 'react-router-dom';
 import ArtistPortfolioSection from './sections/ArtistPortfolioSection';
+import { Button } from "@/components/ui/button";
+import { Image } from "lucide-react";
 
-// Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: { 
@@ -36,7 +35,6 @@ const itemVariants = {
   }
 };
 
-// Helper: Parse query params from location
 function useQuery() {
   const { search } = useLocation();
   return React.useMemo(() => new URLSearchParams(search), [search]);
@@ -47,7 +45,6 @@ const PREMIUM_CHECKOUT_LINK = "https://buy.stripe.com/test_4gw8ycdIz2J4gUw9AA";
 const MOCK_EXPIRY = "May 31, 2025"; // mock expiry date for visual banner
 
 const ArtistDashboardContent = () => {
-  // MOCK STATE
   const [hasBoost, setHasBoost] = useState(false);
 
   const { loading } = useArtistData();
@@ -60,7 +57,6 @@ const ArtistDashboardContent = () => {
       toast.success("Welcome to EmviApp Premium!", {
         duration: 5000,
       });
-      // Clean URL
       navigate(location.pathname, { replace: true });
     }
   }, [query, location, navigate]);
@@ -82,7 +78,6 @@ const ArtistDashboardContent = () => {
   }
 
   const handleUpgrade = () => {
-    // Mock profile boost activation for demo (no payment). Real implementation would integrate payments.
     setHasBoost(true);
   };
 
@@ -93,10 +88,8 @@ const ArtistDashboardContent = () => {
       initial="hidden"
       animate="visible"
     >
-      {/* Profile Boost Banner (Premium Monetization UI) */}
       <ProfileBoostBanner hasBoost={hasBoost} boostExpiry={MOCK_EXPIRY} onBoostClick={handleUpgrade} />
 
-      {/* Header row: Upgrade button at right */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 mb-8">
         <div />
         <button
@@ -119,14 +112,23 @@ const ArtistDashboardContent = () => {
         <ArtistMetrics />
       </motion.div>
 
-      {/* Earnings Snapshot */}
       <motion.div variants={itemVariants}>
         <EarningsSnapshot />
       </motion.div>
 
-      {/* Portfolio section - Updated with portfolio section component that has the view button */}
       <motion.div variants={itemVariants}>
-        <ArtistPortfolioSection />
+        <div className="flex justify-between items-center mb-4">
+          <ArtistPortfolioSection />
+          <Link to="/dashboard/artist/portfolio">
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2 bg-white/80 border-purple-200 hover:bg-purple-50"
+            >
+              <Image className="h-4 w-4 text-purple-500" />
+              Manage Portfolio
+            </Button>
+          </Link>
+        </div>
       </motion.div>
       
       <motion.div variants={itemVariants}>
