@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useArtistData } from './context/ArtistDataContext';
@@ -12,6 +13,7 @@ import ArtistPortfolioManager from './portfolio/ArtistPortfolioManager';
 import ProfileBoostBanner from "./ProfileBoostBanner";
 import EarningsSnapshot from '../artist/EarningsSnapshot';
 import { Link } from 'react-router-dom';
+import ArtistPortfolioSection from './sections/ArtistPortfolioSection';
 
 // Animation variants
 const containerVariants = {
@@ -122,11 +124,9 @@ const ArtistDashboardContent = () => {
         <EarningsSnapshot />
       </motion.div>
 
-      {/* Portfolio section - Updated with link */}
+      {/* Portfolio section - Updated with portfolio section component that has the view button */}
       <motion.div variants={itemVariants}>
-        <Link to="/dashboard/artist/portfolio">
-          <ArtistPortfolioManager />
-        </Link>
+        <ArtistPortfolioSection />
       </motion.div>
       
       <motion.div variants={itemVariants}>
