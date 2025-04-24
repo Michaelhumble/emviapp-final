@@ -68,7 +68,7 @@ const ArtistPortfolioSection = () => {
                 <Link to="/dashboard/artist/portfolio">
                   <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-md hover:shadow-lg">
                     <Image className="h-4 w-4 mr-2" />
-                    Manage My Portfolio
+                    🎨 Curate Portfolio
                   </Button>
                 </Link>
               </div>
@@ -85,7 +85,7 @@ const ArtistPortfolioSection = () => {
               <Link to="/dashboard/artist/portfolio">
                 <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-md hover:shadow-lg">
                   <Plus className="h-4 w-4 mr-2" />
-                  Create Portfolio
+                  ➕ Add New Masterpiece
                 </Button>
               </Link>
             </div>
