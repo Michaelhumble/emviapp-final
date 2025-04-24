@@ -1,69 +1,45 @@
+
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
 import { toast } from "sonner";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, Info } from "lucide-react";
 import { motion } from "framer-motion";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-// Dynamic date range helpers
-function getWeekRangesOfMonth(year: number, month: number) {
-  const date = new Date(year, month, 1);
-  const weeks = [];
-  let week = 1;
-  while (date.getMonth() === month) {
-    const start = new Date(date);
-    const end = new Date(date);
-    end.setDate(start.getDate() + 6 - start.getDay());
-    if (end.getMonth() !== month) end.setDate(new Date(year, month + 1, 0).getDate());
-    weeks.push({
-      label: `${start.toLocaleString("en-US", { month: "short" })} ${start.getDate()}-${end.getDate()}`,
-      week: `Week ${week}`,
-      start: new Date(start),
-      end: new Date(end),
-    });
-    date.setDate(end.getDate() + 1);
-    week++;
-  }
-  return weeks.slice(0, 4); // always 4 weeks for graph
-}
-
-const BOOKINGS_PER_WEEK = [2, 1, 1, 1];
-const earningsData = [250, 400, 350, 250].map((amt, i) => ({
-  earnings: amt,
-  bookings: BOOKINGS_PER_WEEK[i],
-}));
-
-const now = new Date();
-const weeks = getWeekRangesOfMonth(now.getFullYear(), now.getMonth());
-const data = weeks.map((range, i) => ({
-  ...earningsData[i],
-  week: range.label,
-}));
-
-const CustomTooltip = ({ active, payload }: any) =>
-  active && payload && payload.length ? (
-    <div className="rounded-xl bg-white/95 shadow px-4 py-2 border border-[#e5deff] text-sm min-w-[126px]">
-      <div className="font-semibold text-emvi-accent mb-0.5">
-        ${payload[0].value?.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-      </div>
-      <div className="text-xs text-gray-600">
-        <span className="block">Bookings: {payload[0].payload.bookings}</span>
-      </div>
-    </div>
-  ) : null;
-
-const goal = 2000;
-const earned = 1250;
-const progressPct = Math.min((earned / goal) * 100, 100);
+const motivationalMessages = [
+  "Keep Going, You're Almost There! 🚀",
+  "You're Making Great Progress! ⭐",
+  "Every Booking Counts - Keep Shining! ✨",
+  "Building Your Empire, One Client at a Time! 👑"
+];
 
 const EarningsSnapshot: React.FC = () => {
+  const [motivationalIndex, setMotivationalIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setMotivationalIndex((prev) => (prev + 1) % motivationalMessages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleDetailedReport = () => {
     toast.info("Detailed Report Coming Soon", {
       description: "Advanced financial insights are in development.",
       duration: 3000,
     });
   };
+
+  // Mock data
+  const earned = 1250;
+  const goal = 2000;
+  const progressPct = Math.min((earned / goal) * 100, 100);
 
   return (
     <motion.section
@@ -93,33 +69,35 @@ const EarningsSnapshot: React.FC = () => {
           
           <CardContent className="relative z-10 px-5 xs:px-6 pt-3 xs:pt-4 pb-4">
             <div className="text-xs xs:text-sm text-purple-600 font-semibold uppercase tracking-wide mb-2 text-center">
-              Great Job, You're Building Momentum!
+              {motivationalMessages[motivationalIndex]}
             </div>
             
             <div 
               className="font-playfair text-[2.6rem] xs:text-[2.9rem] sm:text-[3rem] font-extrabold inline-block mb-1 tracking-tight 
               bg-gradient-to-r from-purple-600 to-purple-400 text-transparent bg-clip-text text-center w-full"
             >
-              $1,250.00
+              ${earned.toLocaleString()}.00
             </div>
             
             <div className="text-[13px] xs:text-base text-neutral-600 text-center mb-4">
-              $1,250.00 earned from 5 bookings this month — let's aim higher!
+              ${earned.toLocaleString()}.00 earned from 5 bookings this month — let's aim higher!
             </div>
             
             <div className="mt-3 w-full max-w-md mx-auto">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs font-semibold text-emvi-dark/90">Goal: $2,000</span>
-                <span className="text-xs text-gray-500">63%</span>
+                <span className="text-xs font-semibold text-emvi-dark/90">Goal: ${goal.toLocaleString()}</span>
+                <span className="text-xs text-gray-500">{progressPct}%</span>
               </div>
               <div className="w-full rounded-full bg-purple-100 h-2.5 xs:h-3 shadow-inner overflow-hidden relative">
-                <div
-                  className="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-purple-500 to-purple-400 transition-all duration-500"
-                  style={{ width: '63%' }}
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progressPct}%` }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-purple-500 to-purple-400"
                 />
               </div>
               <div className="block mt-1 text-xs text-gray-500 text-center">
-                $750 more to reach your goal
+                ${(goal - earned).toLocaleString()} more to reach your goal
               </div>
             </div>
             
