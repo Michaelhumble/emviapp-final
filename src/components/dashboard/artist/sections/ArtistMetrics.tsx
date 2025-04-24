@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Users, Star } from "lucide-react";
@@ -14,6 +13,29 @@ import {
 const itemVariants = {
   hidden: { opacity: 0, y: 12 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" } }
+};
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      delayChildren: 0.2,
+      staggerChildren: 0.12
+    }
+  }
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.45,
+      ease: "easeOut"
+    }
+  }
 };
 
 const ArtistMetrics = () => {
@@ -48,14 +70,15 @@ const ArtistMetrics = () => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.55, ease: "easeOut" }}
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="w-full"
     >
       <TooltipProvider>
-        <Card className="border-0 shadow-sm">
+        <Card className="border-0 shadow-lg rounded-xl overflow-hidden backdrop-blur-sm">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg font-medium text-gray-900">
+            <CardTitle className="text-lg font-medium bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
               Performance Overview
             </CardTitle>
           </CardHeader>
@@ -64,13 +87,16 @@ const ArtistMetrics = () => {
               {metrics.map((metric, index) => (
                 <Tooltip key={metric.title}>
                   <TooltipTrigger asChild>
-                    <motion.div 
-                      variants={itemVariants}
-                      initial="hidden"
-                      animate="visible"
-                      whileHover={{ scale: 1.045 }}
-                      transition={{ duration: 0.3, ease: "easeInOut" }}
-                      className={`${metric.color} rounded-lg p-4 border transition-all cursor-help`}
+                    <motion.div
+                      variants={cardVariants}
+                      whileHover={{ 
+                        scale: 1.03,
+                        transition: { duration: 0.2 } 
+                      }}
+                      className={cn(
+                        metric.color,
+                        "rounded-xl p-4 border shadow-sm transition-shadow hover:shadow-md"
+                      )}
                     >
                       <div className="flex justify-between items-start">
                         <div>
@@ -84,7 +110,10 @@ const ArtistMetrics = () => {
                       </div>
                     </motion.div>
                   </TooltipTrigger>
-                  <TooltipContent side="bottom" className="bg-white p-2 text-sm max-w-[200px] text-center">
+                  <TooltipContent
+                    side="bottom"
+                    className="bg-white/95 backdrop-blur-sm p-2 text-sm shadow-xl"
+                  >
                     {metric.tooltip}
                   </TooltipContent>
                 </Tooltip>

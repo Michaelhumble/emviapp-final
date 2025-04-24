@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,6 +17,28 @@ const motivationalMessages = [
   "Every Booking Counts - Keep Shining! ✨",
   "Building Your Empire, One Client at a Time! 👑"
 ];
+
+const containerVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      duration: 0.5,
+      when: "beforeChildren",
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.3 }
+  }
+};
 
 const EarningsSnapshot: React.FC = () => {
   const [motivationalIndex, setMotivationalIndex] = React.useState(0);
@@ -43,19 +64,16 @@ const EarningsSnapshot: React.FC = () => {
 
   return (
     <motion.section
-      aria-label="Earnings Snapshot"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
       className="w-full max-w-2xl mx-auto px-2 xs:px-0 mb-6"
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
     >
       <motion.div
-        whileHover={{ scale: 1.03 }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
+        whileHover={{ scale: 1.02 }}
+        transition={{ duration: 0.2 }}
       >
-        <Card 
-          className="bg-purple-50/50 backdrop-blur-md border-0 shadow-lg rounded-2xl overflow-hidden relative"
-        >
+        <Card className="overflow-hidden border-0 shadow-lg rounded-2xl bg-gradient-to-br from-purple-50/90 to-white backdrop-blur-sm">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-100/30 to-purple-200/30 opacity-50 pointer-events-none" />
           
           <CardHeader className="!p-5 xs:!p-6 pb-1 relative z-10">
