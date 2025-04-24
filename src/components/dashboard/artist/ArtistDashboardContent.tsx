@@ -1,169 +1,190 @@
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { useArtistData } from './context/ArtistDataContext';
+import ArtistHero from './sections/ArtistHero';
+import ArtistMetrics from './sections/ArtistMetrics';
+import ArtistActivityFeed from './sections/ArtistActivityFeed';
+import ArtistAppointments from './sections/ArtistAppointments';
+import ArtistBookingsLocal from './sections/ArtistBookingsLocal';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { toast } from "sonner";
+import ProfileBoostBanner from "./ProfileBoostBanner";
+import EarningsSnapshot from './EarningsSnapshot';
+import { Button } from "@/components/ui/button";
+import { Image, Calendar } from "lucide-react";
+import ArtistPortfolioSection from './sections/ArtistPortfolioSection';
+import BoostProfileModal from './modals/BoostProfileModal';
+import PremiumFeaturesModal from './modals/PremiumFeaturesModal';
 
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import OverviewTab from "./components/tabs/OverviewTab";
-import BookingsTab from "./components/tabs/BookingsTab";
-import PortfolioTab from "./components/tabs/PortfolioTab";
-import MessagesTab from "./components/tabs/MessagesTab";
-import ReferralsTab from "./components/tabs/ReferralsTab";
-import ClientsTab from "./components/tabs/ClientsTab";
-import QuickActions from "./components/QuickActions";
-import EarningsTabContent from "./components/tabs/EarningsTabContent";
-import { motion } from "framer-motion";
-import { useArtistDashboardData } from "./hooks/useArtistDashboardData";
-
-const tabs = [
-  { id: "Overview", label: "Overview", visible: true },
-  { id: "Bookings", label: "Bookings", visible: true },
-  { id: "Portfolio", label: "Portfolio", visible: true },
-  { id: "Clients", label: "Clients", visible: true },
-  { id: "Messages", label: "Messages", visible: true },
-  { id: "Referrals", label: "Referrals", visible: true },
-  { id: "Earnings", label: "Earnings", visible: true },
-  { id: "Calendar", label: "Calendar", visible: true },
-  { id: "Services", label: "Services", visible: false }
-];
-
-const visibleTabs = tabs.filter(tab => tab.visible).map(tab => tab.id);
-
-const tabVariants = {
-  inactive: { opacity: 0.7, y: 0 },
-  active: { opacity: 1, y: 0 },
-  hover: { opacity: 0.9, y: 0 }
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1,
+    transition: { 
+      staggerChildren: 0.12,
+      delayChildren: 0.1,
+    } 
+  }
 };
 
-export default function ArtistDashboardContent() {
-  const [activeTab, setActiveTab] = useState("Overview");
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.5 } 
+  }
+};
+
+function useQuery() {
+  const { search } = useLocation();
+  return React.useMemo(() => new URLSearchParams(search), [search]);
+}
+
+const PREMIUM_CHECKOUT_LINK = "https://buy.stripe.com/test_4gw8ycdIz2J4gUw9AA";
+const MOCK_EXPIRY = "May 31, 2025";
+
+const ArtistDashboardContent = () => {
+  const [hasBoost, setHasBoost] = useState(false);
+  const [boostModalOpen, setBoostModalOpen] = useState(false);
+  const [premiumModalOpen, setPremiumModalOpen] = useState(false);
+
+  const { loading } = useArtistData();
+  const location = useLocation();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadingTimeout, setLoadingTimeout] = useState(false);
-  const [loadingAttempts, setLoadingAttempts] = useState(0);
-
-  // Add useArtistDashboardData hook to get required props for OverviewTab
-  const {
-    stats,
-    isLoadingStats,
-    recentBookings,
-    isLoadingBookings,
-    error,  // Now this is properly received from the hook
-    earningsData,
-    isLoadingEarnings
-  } = useArtistDashboardData(activeTab);
-
-  // Set loading timeout to prevent long loading screens
-  useEffect(() => {
-    const loading = isLoadingStats || isLoadingBookings;
-    setIsLoading(loading);
-    
-    if (loading) {
-      setLoadingAttempts(prev => prev + 1);
-      
-      // Auto-clear loading state after timeout
-      const timeoutId = setTimeout(() => {
-        if (isLoadingStats || isLoadingBookings) {
-          setLoadingTimeout(true);
-          console.log("Dashboard loading timeout reached");
-        }
-      }, 10000); // 10 seconds max loading time
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [isLoadingStats, isLoadingBookings]);
+  const query = useQuery();
 
   useEffect(() => {
-    const savedTab = localStorage.getItem('artist_dashboard_tab');
-    if (savedTab && visibleTabs.includes(savedTab)) {
-      setActiveTab(savedTab);
+    if (query.get("premium_success") === "1") {
+      toast.success("Welcome to EmviApp Premium!", {
+        duration: 5000,
+      });
+      navigate(location.pathname, { replace: true });
     }
-  }, []);
+  }, [query, location, navigate]);
 
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-    localStorage.setItem('artist_dashboard_tab', tab);
-    
-    // Navigate to full calendar page when calendar tab is clicked
-    if (tab === "Calendar") {
-      navigate("/dashboard/artist/booking-calendar");
-    }
+  if (loading) {
+    return (
+      <div className="max-w-5xl mx-auto py-8">
+        <div className="space-y-6">
+          <div className="h-48 bg-gray-100 animate-pulse rounded-xl"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="h-32 bg-gray-100 animate-pulse rounded-lg"></div>
+            <div className="h-32 bg-gray-100 animate-pulse rounded-lg"></div>
+            <div className="h-32 bg-gray-100 animate-pulse rounded-lg"></div>
+          </div>
+          <div className="h-64 bg-gray-100 animate-pulse rounded-lg"></div>
+        </div>
+      </div>
+    );
+  }
+
+  const handleUpgrade = () => {
+    setHasBoost(true);
   };
 
-  // Show error message if loading failed
-  if (error || loadingTimeout || loadingAttempts > 3) {
-    return (
-      <div className="w-full max-w-6xl mx-auto px-4 py-6">
-        <div className="bg-red-50 border border-red-100 rounded-md p-6 text-center">
-          <h3 className="text-lg font-medium text-red-800 mb-2">Dashboard Error</h3>
-          <p className="text-sm text-red-600 mb-4">
-            {error?.message || "We encountered an issue loading your dashboard. This might be due to connection problems or temporary server issues."}
-          </p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
-          >
-            Reload Dashboard
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const handleBoostProceed = () => {
+    setBoostModalOpen(false);
+    toast.success("Taking you to checkout...");
+  };
 
-  // Show loading state
-  if (isLoading) {
-    return (
-      <div className="w-full max-w-6xl mx-auto px-4 py-12">
-        <div className="flex flex-col items-center justify-center">
-          <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-gray-600">Loading your dashboard...</p>
-        </div>
-      </div>
-    );
-  }
+  const handlePremiumProceed = () => {
+    setPremiumModalOpen(false);
+    toast.success("Redirecting to premium plans...");
+  };
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <div className="flex space-x-1 sm:space-x-2 overflow-x-auto pb-2 border-b border-gray-200 w-full sm:w-auto">
-          {tabs.filter(tab => tab.visible).map((tab) => (
-            <motion.button
-              key={tab.id}
-              onClick={() => handleTabChange(tab.id)}
-              id={tab.id}
-              className={`pb-2 border-b-2 transition-all whitespace-nowrap px-3 text-sm sm:text-base ${
-                activeTab === tab.id
-                  ? "border-primary text-primary font-semibold"
-                  : "border-transparent text-gray-500 hover:text-primary hover:border-gray-300"
-              }`}
-              variants={tabVariants}
-              initial="inactive"
-              animate={activeTab === tab.id ? "active" : "inactive"}
-              whileHover="hover"
-              transition={{ duration: 0.2 }}
+    <motion.div
+      className="max-w-5xl mx-auto py-8 space-y-8"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <ProfileBoostBanner hasBoost={hasBoost} boostExpiry={MOCK_EXPIRY} onBoostClick={() => setBoostModalOpen(true)} />
+
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 mb-8">
+        <div className="flex items-center gap-3">
+          <Link to="/dashboard/artist/booking-calendar">
+            <Button 
+              variant="outline"
+              className="flex items-center gap-2 bg-white/80 border-purple-200 hover:bg-purple-50"
             >
-              {tab.label}
-            </motion.button>
-          ))}
+              <Calendar className="h-4 w-4 text-purple-500" />
+              Booking Calendar
+            </Button>
+          </Link>
         </div>
-        <QuickActions />
+        <Button
+          onClick={() => setPremiumModalOpen(true)}
+          className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold tracking-wide shadow transition
+            border-none focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-300
+            text-sm md:text-base transform hover:scale-[1.02] active:scale-[0.98] duration-200"
+          aria-label="Upgrade to Premium"
+        >
+          <Image className="h-4 w-4 text-purple-500" />
+          Upgrade to Premium
+        </Button>
       </div>
 
-      <div className="py-2">
-        {activeTab === "Overview" && (
-          <OverviewTab 
-            stats={stats}
-            isLoadingStats={isLoadingStats}
-            bookings={recentBookings}
-            isLoadingBookings={isLoadingBookings}
-          />
-        )}
-        {activeTab === "Bookings" && <BookingsTab />}
-        {activeTab === "Portfolio" && <PortfolioTab />}
-        {activeTab === "Clients" && <ClientsTab />}
-        {activeTab === "Messages" && <MessagesTab />}
-        {activeTab === "Referrals" && <ReferralsTab />}
-        {activeTab === "Earnings" && <EarningsTabContent />}
-        {/* We don't render CalendarTab directly anymore as we navigate to the full page */}
-        {activeTab === "Calendar" && <div className="text-center py-10 text-gray-500">Navigating to calendar view...</div>}
+      <BoostProfileModal 
+        isOpen={boostModalOpen}
+        onClose={() => setBoostModalOpen(false)}
+        onProceed={handleBoostProceed}
+      />
+      
+      <PremiumFeaturesModal
+        isOpen={premiumModalOpen}
+        onClose={() => setPremiumModalOpen(false)}
+        onProceed={handlePremiumProceed}
+      />
+
+      <motion.div variants={itemVariants}>
+        <ArtistHero />
+      </motion.div>
+      
+      <motion.div variants={itemVariants}>
+        <ArtistMetrics />
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <EarningsSnapshot />
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center gap-2">
+            <Image className="h-5 w-5 text-purple-500" />
+            <h2 className="text-xl font-playfair font-semibold">My Portfolio</h2>
+          </div>
+          <Link to="/dashboard/artist/portfolio">
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2 bg-white/80 border-purple-200 hover:bg-purple-50"
+            >
+              <Image className="h-4 w-4 text-purple-500" />
+              Manage Portfolio
+            </Button>
+          </Link>
+        </div>
+      </motion.div>
+      
+      <motion.div variants={itemVariants}>
+        <ArtistPortfolioSection />
+      </motion.div>
+      
+      <div className="h-2 md:h-4" />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <motion.div variants={itemVariants}>
+          <ArtistActivityFeed />
+        </motion.div>
+        
+        <motion.div variants={itemVariants}>
+          <ArtistAppointments />
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
-}
+};
+
+export default ArtistDashboardContent;

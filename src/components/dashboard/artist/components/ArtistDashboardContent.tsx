@@ -42,8 +42,7 @@ export default function ArtistDashboardContent() {
     stats,
     isLoadingStats,
     recentBookings,
-    isLoadingBookings,
-    error // Property now included from the hook's return value
+    isLoadingBookings
   } = useArtistDashboardData(activeTab);
 
   useEffect(() => {
@@ -62,26 +61,6 @@ export default function ArtistDashboardContent() {
       navigate("/dashboard/artist/booking-calendar");
     }
   };
-
-  // Show error message if data fetching failed
-  if (error) {
-    return (
-      <div className="w-full max-w-6xl mx-auto px-4 py-6">
-        <div className="bg-red-50 border border-red-100 rounded-md p-6 text-center">
-          <h3 className="text-lg font-medium text-red-800 mb-2">Dashboard Error</h3>
-          <p className="text-sm text-red-600 mb-4">
-            {error.message || "Something went wrong loading the dashboard. Please try again."}
-          </p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
-          >
-            Reload Dashboard
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-6">

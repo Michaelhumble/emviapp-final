@@ -18,7 +18,6 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
   const { user, userRole, isSignedIn, isNewUser, clearIsNewUser } = useAuth();
   const navigate = useNavigate();
   const [showRoleModal, setShowRoleModal] = useState(false);
-  const [redirectAttempts, setRedirectAttempts] = useState(0);
 
   const checkUserRoleAndRedirect = useCallback(async () => {
     if (!isSignedIn || !user) {
@@ -26,21 +25,11 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
       return;
     }
 
-    // Increase attempt counter to prevent infinite loops
-    setRedirectAttempts(prev => prev + 1);
-    
-    // If we've tried too many times, show error
-    if (redirectAttempts > 3) {
-      setRedirectError("Unable to determine your role after multiple attempts. Please try signing out and back in.");
-      setLocalLoading(false);
-      return;
-    }
-
     try {
       // 1. First check auth metadata (most accurate source)
-      const { data: { user: authUser } } = await supabase.auth.getUser();
+      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
       
-      if (authUser) {
+      if (!authError) {
         // Get role from user metadata
         const metadataRole = authUser?.user_metadata?.role as UserRole | null;
         
@@ -49,13 +38,13 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
           localStorage.setItem('emviapp_user_role', normalizedRole || '');
           
           // Before navigating, check if user is a manager
-          const { data: userData } = await supabase
+          const { data: userData, error: userError } = await supabase
             .from('users')
             .select('manager_for_salon_id')
             .eq('id', user.id)
             .single();
             
-          if (userData && userData.manager_for_salon_id) {
+          if (!userError && userData && userData.manager_for_salon_id) {
             navigate('/dashboard/manager');
             return;
           }
@@ -67,6 +56,18 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
       
       // 2. Then try the context if available
       if (userRole) {
+        // Before navigating, check if user is a manager
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('manager_for_salon_id')
+          .eq('id', user.id)
+          .single();
+          
+        if (!userError && userData && userData.manager_for_salon_id) {
+          navigate('/dashboard/manager');
+          return;
+        }
+        
         navigateToRoleDashboard(navigate, userRole);
         return;
       }
@@ -75,6 +76,28 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
       const cachedRole = localStorage.getItem('emviapp_user_role');
       if (cachedRole) {
         const normalizedRole = normalizeRole(cachedRole as UserRole);
+        
+        // Update auth metadata to match localStorage (fix desync)
+        try {
+          await supabase.auth.updateUser({
+            data: { role: normalizedRole }
+          });
+        } catch (updateErr) {
+          // Silent error - continue anyway
+        }
+        
+        // Before navigating, check if user is a manager
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('manager_for_salon_id')
+          .eq('id', user.id)
+          .single();
+          
+        if (!userError && userData && userData.manager_for_salon_id) {
+          navigate('/dashboard/manager');
+          return;
+        }
+        
         navigateToRoleDashboard(navigate, normalizedRole);
         return;
       }
@@ -82,7 +105,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
       // 4. If all else fails, fetch it directly from the database
       const { data: profile, error } = await supabase
         .from('users')
-        .select('role')
+        .select('role, manager_for_salon_id')
         .eq('id', user.id)
         .maybeSingle();
         
@@ -98,6 +121,22 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         return;
       }
       
+      // Check if user is a manager
+      if (profile.manager_for_salon_id) {
+        navigate('/dashboard/manager');
+        return;
+      }
+      
+      // 5. If we have a role from the database, update auth metadata
+      try {
+        const normalizedRole = normalizeRole(profile.role as UserRole);
+        await supabase.auth.updateUser({
+          data: { role: normalizedRole }
+        });
+      } catch (updateErr) {
+        // Silent error - continue anyway
+      }
+      
       // If we have a role, save it to localStorage and redirect
       const normalizedRole = normalizeRole(profile.role as UserRole);
       localStorage.setItem('emviapp_user_role', normalizedRole || '');
@@ -109,7 +148,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
     } finally {
       setLocalLoading(false);
     }
-  }, [user, userRole, isSignedIn, navigate, isNewUser, clearIsNewUser, setRedirectError, setLocalLoading, redirectAttempts]);
+  }, [user, userRole, isSignedIn, navigate, isNewUser, clearIsNewUser, setRedirectError, setLocalLoading]);
 
   useEffect(() => {
     checkUserRoleAndRedirect();

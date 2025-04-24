@@ -1,4 +1,3 @@
-
 export interface Booking {
   id: string;
   sender_id: string;
@@ -88,11 +87,9 @@ export interface ArtistProfileState {
   preferred_language?: string;
   accepts_bookings?: boolean;
   preferences?: string[];
-  avatar_url?: string;
-  profile_completion?: number;
-  independent?: boolean;
-  instagram?: string; // Add instagram property
-  website?: string; // Add website property
+  avatar_url?: string; // Add the avatar_url property
+  profile_completion?: number; // Add the profile_completion property
+  independent?: boolean; // Add the independent property
 }
 
 export interface ArtistDataContextType {
