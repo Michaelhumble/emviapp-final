@@ -87,8 +87,13 @@ const BookingList: React.FC = () => {
                     booking.status === 'confirmed'
                       ? 'default'
                       : booking.status === 'completed'
-                      ? 'success'
+                      ? 'secondary'
                       : 'outline'
+                  }
+                  className={
+                    booking.status === 'completed' 
+                      ? 'bg-green-100 text-green-800 hover:bg-green-200' 
+                      : undefined
                   }
                 >
                   {booking.status}

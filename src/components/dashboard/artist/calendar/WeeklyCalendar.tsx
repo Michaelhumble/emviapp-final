@@ -174,9 +174,7 @@ export const WeeklyCalendar = () => {
         <BookingModal 
           open={isBookingDialogOpen}
           onClose={() => setIsBookingDialogOpen(false)}
-          booking={selectedBooking}
-          onSave={saveAppointment}
-          onDelete={deleteAppointment}
+          existingBooking={selectedBooking}
         />
       )}
     </Card>
