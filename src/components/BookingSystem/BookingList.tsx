@@ -73,7 +73,7 @@ const BookingList: React.FC<BookingListProps> = ({
             <p className="mt-2 text-sm text-gray-500 italic">"{booking.notes}"</p>
           )}
           
-          {onStatusChange && booking.status !== 'completed' && booking.status !== 'cancelled' && (
+          {onStatusChange && (
             <div className="mt-3 flex space-x-2">
               {booking.status === 'pending' && (
                 <button
