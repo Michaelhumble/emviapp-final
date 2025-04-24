@@ -63,6 +63,8 @@ import InvitePage from './pages/invite/InvitePage';
 // Use React.lazy for code-splitting the Messages page
 const Messages = React.lazy(() => import('./pages/messages/index'));
 
+import PortfolioManagerPage from './pages/dashboard/artist/portfolio/index';
+
 const routes = [
   {
     path: '/auth/redirect',
