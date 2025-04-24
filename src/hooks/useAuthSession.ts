@@ -7,7 +7,7 @@ import { UserProfile, UserRole } from '@/context/auth/types';
 export interface AuthState {
   user: User | null;
   userProfile: UserProfile | null;
-  userRole: UserRole;
+  userRole: UserRole | null;
   loading: boolean;
   isLoading: boolean;
   isSignedIn: boolean;
@@ -24,11 +24,28 @@ export interface AuthState {
   updateProfile: (data: Partial<UserProfile>) => Promise<{ success: boolean; error?: Error }>;
 }
 
+// Helper function to normalize role string to UserRole type
+const normalizeRole = (role: string): UserRole => {
+  const validRoles: UserRole[] = [
+    'customer', 'artist', 'salon', 'freelancer', 'manager', 'admin', 
+    'nail technician/artist', 'owner', 'vendor', 'supplier', 
+    'beauty supplier', 'renter', 'other'
+  ];
+  
+  const normalizedRole = role.toLowerCase().trim();
+  
+  if (validRoles.includes(normalizedRole as UserRole)) {
+    return normalizedRole as UserRole;
+  }
+  
+  return 'customer'; // Default role
+};
+
 export const useAuthSession = (): AuthState => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [userRole, setUserRole] = useState<UserRole>('customer');
+  const [userRole, setUserRole] = useState<UserRole | null>('customer');
   const [loading, setLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -103,8 +120,14 @@ export const useAuthSession = (): AuthState => {
       }
       
       if (data) {
-        setUserProfile(data);
-        setUserRole((data.role as UserRole) || 'customer');
+        // Process profile data and ensure role is properly typed
+        const profile: UserProfile = {
+          ...data,
+          role: data.role ? normalizeRole(data.role) : 'customer'
+        };
+        
+        setUserProfile(profile);
+        setUserRole(profile.role || 'customer');
       } else {
         // User exists in auth but not in profile table
         setIsNewUser(true);
@@ -129,8 +152,14 @@ export const useAuthSession = (): AuthState => {
       if (error) throw error;
       
       if (data) {
-        setUserProfile(data);
-        setUserRole((data.role as UserRole) || 'customer');
+        // Process profile data with normalized role
+        const profile: UserProfile = {
+          ...data,
+          role: data.role ? normalizeRole(data.role) : 'customer'
+        };
+        
+        setUserProfile(profile);
+        setUserRole(profile.role || 'customer');
         return true;
       }
       return false;

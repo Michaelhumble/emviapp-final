@@ -1,3 +1,4 @@
+
 export interface Booking {
   id: string;
   sender_id: string;
@@ -61,7 +62,7 @@ export interface PortfolioImage {
   url: string;
   title?: string;
   description?: string;
-  name?: string; // Add name property
+  name?: string; 
   created_at?: string;
 }
 
@@ -77,7 +78,7 @@ export interface ArtistProfileState {
   portfolio?: PortfolioImage[];
   services?: any[];
   
-  // Add missing properties
+  // Additional properties 
   full_name?: string;
   user_id?: string;
   credits?: number;
@@ -88,11 +89,11 @@ export interface ArtistProfileState {
   preferred_language?: string;
   accepts_bookings?: boolean;
   preferences?: string[];
-  avatar_url?: string; // Add the avatar_url property
-  profile_completion?: number; // Add the profile_completion property
-  independent?: boolean; // Add the independent property
-  instagram?: string; // Add instagram property
-  website?: string; // Add website property
+  avatar_url?: string;
+  profile_completion?: number;
+  independent?: boolean;
+  instagram?: string;
+  website?: string;
 }
 
 export interface ArtistDataContextType {

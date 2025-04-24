@@ -1,35 +1,79 @@
 
-import { User } from '@supabase/supabase-js';
+import { User, Session } from '@supabase/supabase-js';
 
-export type UserRole = 'customer' | 'artist' | 'salon' | 'owner' | 'manager' | 'admin' | 'freelancer' | 'nail technician/artist' | 'beauty supplier' | 'supplier' | 'vendor' | 'renter' | 'other';
+export type UserRole = 'customer' | 'artist' | 'salon' | 'freelancer' | 'manager' | 'admin' | 'nail technician/artist' | 'owner' | 'vendor' | 'supplier' | 'beauty supplier' | 'renter' | 'other';
 
 export interface UserProfile {
   id: string;
-  email: string; // Changed from optional to required to match other UserProfile definitions
+  email?: string;
+  userId?: string;
+  user_id?: string;
+  firstName?: string;
+  lastName?: string;
   full_name?: string;
-  role?: UserRole;
   avatar_url?: string;
+  avatarUrl?: string;
+  role?: UserRole;
+  created_at?: string;
+  updated_at?: string;
+  
+  // Profile information
+  phone?: string;
   bio?: string;
+  title?: string;
   specialty?: string;
-  location?: string;
+  instagram?: string;
+  tiktok?: string;
+  youtube?: string;
+  website?: string;
+  
+  // Location data
+  location?: any;
+  
+  // Salon-specific properties
+  salonName?: string;
+  salon_name?: string;
+  company_name?: string;
+  boothRental?: boolean;
+  number_of_stations?: number;
+  professional_name?: string;
+  
+  // Additional properties
+  profile_views?: number;
+  username?: string;
+  boosted_until?: string;
+  contact_link?: string;
+  badges?: any[];
+  accepts_bookings?: boolean;
+  booking_url?: string;
+  completed_profile_tasks?: string[];
+  preferences?: string[];
+  preferred_language?: string;
+  affiliate_code?: string;
   referral_code?: string;
-  portfolio_urls?: string[];
-  [key: string]: any;
+  referral_count?: number;
+  credits?: number;
+  google_review_link?: string;
+  independent?: boolean;
+  profile_completion?: number;
 }
 
 export interface AuthContextType {
   user: User | null;
   userProfile: UserProfile | null;
-  userRole: UserRole;
+  userRole: UserRole | null;
   loading: boolean;
+  isLoading: boolean;
   isSignedIn: boolean;
   isError: boolean;
+  error: Error | null;
   isNewUser: boolean;
+  session: Session | null;
   clearIsNewUser: () => void;
   signIn: (email: string, password: string) => Promise<{ success: boolean; error?: Error }>;
   signUp: (email: string, password: string, userData?: any) => Promise<{ success: boolean; error?: Error; userId?: string }>;
   signOut: () => Promise<void>;
   refreshUserProfile: () => Promise<boolean>;
-  updateUserRole: (role: UserRole) => Promise<void>;
-  updateProfile: (data: Partial<UserProfile>) => Promise<{ success: boolean; error?: Error }>;
+  updateUserRole?: (role: UserRole) => Promise<void>;
+  updateProfile?: (data: Partial<UserProfile>) => Promise<{ success: boolean; error?: Error }>;
 }
