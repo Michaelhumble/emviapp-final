@@ -3,33 +3,63 @@ import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Edit2, Trash2, ImagePlus } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Reorder } from "framer-motion";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
+import EditPortfolioItemModal from "./EditPortfolioItemModal";
 
-// Mock portfolio data
+// Mock portfolio data with unique IDs
 const mockPortfolio = [
   {
-    id: "1",
+    id: 1,
     image: "/lovable-uploads/67947adb-5754-4569-aa1c-228d8f9db461.png",
     title: "French Gradient",
+    category: "Nails",
     featured: true
   },
   {
-    id: "2",
+    id: 2,
     image: "/lovable-uploads/70c8662a-4525-4854-a529-62616b5b6c81.png",
     title: "Minimalist Line Art",
+    category: "Makeup",
     featured: false
   },
   {
-    id: "3",
+    id: 3,
     image: "/lovable-uploads/81e6d95d-e09b-45f0-a4bc-96358592e462.png",
     title: "Pink Floral Design",
+    category: "Nails",
     featured: false
   }
 ];
 
 export const PortfolioManager = () => {
   const [portfolio, setPortfolio] = useState(mockPortfolio);
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+  const [editingItem, setEditingItem] = useState<typeof mockPortfolio[0] | null>(null);
+
+  const handleDeleteConfirm = () => {
+    if (itemToDelete !== null) {
+      setPortfolio(prev => prev.filter(item => item.id !== itemToDelete));
+      setItemToDelete(null);
+    }
+  };
+
+  const handleEditSave = (id: number, newTitle: string, newCategory: string) => {
+    setPortfolio(prev => prev.map(item => 
+      item.id === id ? { ...item, title: newTitle, category: newCategory } : item
+    ));
+    setEditingItem(null);
+  };
 
   return (
     <div className="space-y-6">
@@ -74,18 +104,22 @@ export const PortfolioManager = () => {
               </Button>
             </motion.div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Reorder.Group 
+              axis="y" 
+              values={portfolio} 
+              onReorder={setPortfolio}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
               <AnimatePresence>
                 {portfolio.map((item) => (
-                  <motion.div
+                  <Reorder.Item
                     key={item.id}
-                    layout
+                    value={item}
+                    whileDrag={{ scale: 1.03 }}
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
-                    onHoverStart={() => setHoveredId(item.id)}
-                    onHoverEnd={() => setHoveredId(null)}
-                    className="relative group rounded-xl overflow-hidden aspect-square"
+                    className="relative group rounded-xl overflow-hidden aspect-square cursor-move"
                   >
                     <img
                       src={item.image}
@@ -96,12 +130,14 @@ export const PortfolioManager = () => {
                       initial={false}
                       animate={{ opacity: hoveredId === item.id ? 1 : 0 }}
                       className="absolute inset-0 bg-black/50 flex items-center justify-center gap-3"
+                      onHoverStart={() => setHoveredId(item.id)}
+                      onHoverEnd={() => setHoveredId(null)}
                     >
                       <Button
                         variant="secondary"
                         size="icon"
                         className="h-10 w-10 bg-white hover:bg-white/90"
-                        onClick={() => {}}
+                        onClick={() => setEditingItem(item)}
                       >
                         <Edit2 className="h-4 w-4 text-gray-700" />
                       </Button>
@@ -109,7 +145,7 @@ export const PortfolioManager = () => {
                         variant="secondary"
                         size="icon"
                         className="h-10 w-10 bg-white hover:bg-white/90 text-red-500 hover:text-red-600"
-                        onClick={() => {}}
+                        onClick={() => setItemToDelete(item.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -119,13 +155,44 @@ export const PortfolioManager = () => {
                         Featured
                       </div>
                     )}
-                  </motion.div>
+                  </Reorder.Item>
                 ))}
               </AnimatePresence>
-            </div>
+            </Reorder.Group>
           )}
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={itemToDelete !== null} onOpenChange={() => setItemToDelete(null)}>
+        <AlertDialogContent className="bg-white/95 backdrop-blur-sm border-0">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-playfair text-xl">Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this work? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Edit Portfolio Item Modal */}
+      <EditPortfolioItemModal
+        open={editingItem !== null}
+        onClose={() => setEditingItem(null)}
+        item={editingItem}
+        onSave={handleEditSave}
+        onDelete={(id) => setItemToDelete(id)}
+      />
     </div>
   );
 };
+
