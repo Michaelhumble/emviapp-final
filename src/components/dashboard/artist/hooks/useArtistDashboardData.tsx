@@ -25,7 +25,7 @@ export const useArtistDashboardData = (activeTab: string) => {
   const [isLoadingStats, setIsLoadingStats] = useState(true);
   const [recentBookings, setRecentBookings] = useState<BookingData[]>([]);
   const [isLoadingBookings, setIsLoadingBookings] = useState(true);
-  const [error, setError] = useState<Error | null>(null);  // Add this error state
+  const [error, setError] = useState<Error | null>(null);  
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
 
   // Fetch stats when the dashboard is loaded or refreshed
@@ -179,7 +179,7 @@ export const useArtistDashboardData = (activeTab: string) => {
     isLoadingStats,
     recentBookings,
     isLoadingBookings,
-    error,  // Include the error property
+    error,
     lastRefresh,
     earningsData,
     isLoadingEarnings

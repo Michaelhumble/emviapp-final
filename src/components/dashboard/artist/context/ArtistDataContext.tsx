@@ -39,7 +39,9 @@ const defaultArtistProfile: ArtistProfileState = {
   name: '',
   avatar: '',
   specialty: '',
-  credits: 0
+  credits: 0,
+  instagram: '', // Add this property
+  website: '' // Add this property
 };
 
 const ArtistDataContext = createContext<ArtistDataContextType>({
@@ -113,9 +115,9 @@ export const ArtistDataProvider = ({ children }: ArtistDataProviderProps) => {
       const earningsThisMonth = (data || [])
         .filter(booking => booking.status === 'completed')
         .reduce((sum, booking) => {
-          // Handle case where booking may not have price property
-          const bookingPrice = typeof booking.price === 'number' ? booking.price : 0;
-          return sum + bookingPrice;
+          // Safely handle case where booking may not have price property
+          const bookingValue = booking.metadata?.price || 0;
+          return sum + bookingValue;
         }, 0);
       
       // Get unique client count
@@ -182,6 +184,8 @@ export const ArtistDataProvider = ({ children }: ArtistDataProviderProps) => {
         avatar_url: userProfile?.avatar_url || '',
         profile_completion: userProfile?.profile_completion || 0,
         independent: userProfile?.independent || true,
+        instagram: userProfile?.instagram || '', // Add instagram from userProfile
+        website: userProfile?.website || '' // Add website from userProfile
       });
     } catch (err) {
       console.error('Error fetching artist profile:', err);

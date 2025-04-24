@@ -22,8 +22,8 @@ const ArtistHero: React.FC = () => {
     specialty = "Nail Design",
     bio = '"Your artistry is your brand. Let\'s grow it."',
     avatar_url = "",
-    instagram,
-    website,
+    instagram = "", // Default to empty string
+    website = "",  // Default to empty string
   } = profile;
 
   const getInitials = (name?: string) =>
