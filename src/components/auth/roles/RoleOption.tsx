@@ -12,6 +12,9 @@ interface RoleOptionProps {
 }
 
 const RoleOption: React.FC<RoleOptionProps> = ({ role, isSelected, onSelect }) => {
+  // Create an instance of the icon component
+  const IconComponent = role.icon;
+  
   return (
     <div
       key={role.id}
@@ -24,7 +27,7 @@ const RoleOption: React.FC<RoleOptionProps> = ({ role, isSelected, onSelect }) =
       <div className="flex-1">
         <div className="flex items-center gap-2">
           <div className="flex-shrink-0">
-            {role.icon}
+            <IconComponent className="h-5 w-5 text-indigo-500" />
           </div>
           <Label htmlFor={role.id} className="text-base font-medium">
             {role.label}
