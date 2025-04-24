@@ -1,6 +1,5 @@
-
-import { useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,11 +22,19 @@ const SignIn = () => {
   const [showVerificationAlert, setShowVerificationAlert] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Redirect if already logged in
-  if (user) {
-    return <Navigate to="/dashboard" replace />;
-  }
+  useEffect(() => {
+    if (user) {
+      const savedPath = sessionStorage.getItem("authRedirectPath");
+      if (savedPath) {
+        sessionStorage.removeItem("authRedirectPath");
+        navigate(savedPath, { replace: true });
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +46,11 @@ const SignIn = () => {
       const result = await signInWithEmail(email, password);
       
       if (result.success) {
-        navigate("/dashboard");
+        const savedPath = sessionStorage.getItem("authRedirectPath") || "/dashboard";
+        sessionStorage.removeItem("authRedirectPath");
+        
+        toast.success("Successfully signed in!");
+        navigate(savedPath, { replace: true });
       } else if (result.error?.message?.includes("Email not confirmed")) {
         setShowVerificationAlert(true);
       } else {

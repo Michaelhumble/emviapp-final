@@ -2,19 +2,19 @@
 import React from "react";
 import Layout from "@/components/layout/Layout";
 import ArtistDashboard from "@/components/dashboard/artist/ArtistDashboard";
-import ArtistRouteGuard from "@/components/auth/ArtistRouteGuard";
-import { ProfileCompletionProvider } from "@/context/profile/ProfileCompletionProvider";
 import ArtistDashboardLayout from "@/components/dashboard/artist/ArtistDashboardLayout";
+import { ProfileCompletionProvider } from "@/context/profile/ProfileCompletionProvider";
+import DashboardSessionProvider from "@/components/dashboard/DashboardSessionProvider";
 
 const ArtistDashboardPage = () => {
   return (
     <Layout>
       <ProfileCompletionProvider>
-        <ArtistRouteGuard>
+        <DashboardSessionProvider requiredRole={['artist', 'nail technician/artist']}>
           <ArtistDashboardLayout>
             <ArtistDashboard />
           </ArtistDashboardLayout>
-        </ArtistRouteGuard>
+        </DashboardSessionProvider>
       </ProfileCompletionProvider>
     </Layout>
   );
