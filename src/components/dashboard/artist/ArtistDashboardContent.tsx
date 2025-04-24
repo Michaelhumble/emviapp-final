@@ -10,8 +10,7 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { toast } from "sonner";
 import ArtistPortfolioManager from './portfolio/ArtistPortfolioManager';
 import ProfileBoostBanner from "./ProfileBoostBanner";
-import EarningsSnapshot from '../artist/EarningsSnapshot';
-import ArtistPortfolioSection from './sections/ArtistPortfolioSection';
+import EarningsSnapshot from './EarningsSnapshot';
 import { Button } from "@/components/ui/button";
 import { Image } from "lucide-react";
 
@@ -118,7 +117,10 @@ const ArtistDashboardContent = () => {
 
       <motion.div variants={itemVariants}>
         <div className="flex justify-between items-center mb-4">
-          <ArtistPortfolioSection />
+          <div className="flex items-center gap-2">
+            <Image className="h-5 w-5 text-purple-500" />
+            <h2 className="text-xl font-playfair font-semibold">My Portfolio</h2>
+          </div>
           <Link to="/dashboard/artist/portfolio">
             <Button 
               variant="outline" 
