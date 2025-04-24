@@ -93,18 +93,31 @@ export interface ArtistProfileState {
 }
 
 export interface ArtistDataContextType {
-  artistProfile: ArtistProfileState;
+  data: any | null;
   loading: boolean;
   error: Error | null;
-  updateProfile: (data: Partial<ArtistProfileState>) => Promise<void>;
+  refetch: () => Promise<void>;
   
-  // Add missing properties 
+  // Artist profile data
+  artistProfile: ArtistProfileState;
   refreshProfile: () => void;
   refreshArtistProfile: () => Promise<void>;
+  updateProfile: (data: Partial<ArtistProfileState>) => Promise<void>;
+  
+  // Referral functionality
   handleCopyReferralLink?: () => void;
   copied?: boolean;
+  
+  // User details
   firstName?: string;
   userCredits?: number;
+  
+  // Portfolio data
   portfolioImages: PortfolioImage[];
   loadingPortfolio: boolean;
+  
+  // Metrics
+  bookingCount: BookingCounts;
+  reviewCount: number;
+  averageRating: number;
 }
