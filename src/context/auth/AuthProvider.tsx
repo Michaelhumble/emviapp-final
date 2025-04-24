@@ -6,6 +6,8 @@ import { fetchUserProfile, createUserProfile, updateUserProfile } from './userPr
 import { UserRole, UserProfile } from './types';
 import { toast } from 'sonner';
 import { normalizeRole } from '@/utils/roles';
+import { useNavigate } from 'react-router-dom';
+import { navigateToRoleDashboard } from '@/utils/navigation';
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -19,6 +21,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isNewUser, setIsNewUser] = useState(false);
   const [isError, setIsError] = useState(false);
+  const navigate = useNavigate();
 
   const clearIsNewUser = () => {
     setIsNewUser(false);
@@ -33,6 +36,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (error) {
         return { success: false, error: new Error(error.message) };
+      }
+      
+      if (data.user) {
+        const profile = await fetchUserProfile(data.user.id);
+        if (profile?.role) {
+          navigateToRoleDashboard(navigate, profile.role);
+        }
       }
       
       return { success: true };
@@ -57,6 +67,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       if (error) {
         return { success: false, error: new Error(error.message) };
+      }
+
+      if (data.user && userData.role) {
+        navigateToRoleDashboard(navigate, userData.role);
       }
       
       return { success: true, userId: data.user?.id };
@@ -131,9 +145,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       setUser(session?.user || null);
+
+      if (session?.user) {
+        try {
+          const profile = await fetchUserProfile(session.user.id);
+          if (profile) {
+            setUserProfile(profile);
+            if (profile.role) {
+              const normalizedRole = normalizeRole(profile.role);
+              setUserRole(normalizedRole);
+              navigateToRoleDashboard(navigate, normalizedRole);
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching user profile:', error);
+          setIsError(true);
+        }
+      }
+      
       setLoading(false);
     });
 
@@ -146,7 +178,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     if (user) {
