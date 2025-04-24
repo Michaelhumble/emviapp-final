@@ -26,7 +26,7 @@ const DashboardLoadingState = ({ loadingTime, handleEmergencyLogout }: Dashboard
             <br />
             <br />
             <span className="text-amber-600">
-              This is taking longer than expected. If you continue to see this message, try 
+              This is taking longer than expected. Try 
               <Button 
                 variant="link" 
                 className="p-0 h-auto font-medium text-primary" 

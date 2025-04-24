@@ -1,190 +1,62 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import ArtistDashboardContent from './components/ArtistDashboardContent';
 import { useArtistData } from './context/ArtistDataContext';
-import ArtistHero from './sections/ArtistHero';
-import ArtistMetrics from './sections/ArtistMetrics';
-import ArtistActivityFeed from './sections/ArtistActivityFeed';
-import ArtistAppointments from './sections/ArtistAppointments';
-import ArtistBookingsLocal from './sections/ArtistBookingsLocal';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { toast } from "sonner";
-import ProfileBoostBanner from "./ProfileBoostBanner";
-import EarningsSnapshot from './EarningsSnapshot';
-import { Button } from "@/components/ui/button";
-import { Image, Calendar } from "lucide-react";
-import ArtistPortfolioSection from './sections/ArtistPortfolioSection';
-import BoostProfileModal from './modals/BoostProfileModal';
-import PremiumFeaturesModal from './modals/PremiumFeaturesModal';
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { 
-    opacity: 1,
-    transition: { 
-      staggerChildren: 0.12,
-      delayChildren: 0.1,
-    } 
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 15 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    transition: { duration: 0.5 } 
-  }
-};
-
-function useQuery() {
-  const { search } = useLocation();
-  return React.useMemo(() => new URLSearchParams(search), [search]);
-}
-
-const PREMIUM_CHECKOUT_LINK = "https://buy.stripe.com/test_4gw8ycdIz2J4gUw9AA";
-const MOCK_EXPIRY = "May 31, 2025";
-
-const ArtistDashboardContent = () => {
-  const [hasBoost, setHasBoost] = useState(false);
-  const [boostModalOpen, setBoostModalOpen] = useState(false);
-  const [premiumModalOpen, setPremiumModalOpen] = useState(false);
-
+const ArtistDashboard = () => {
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
   const { loading } = useArtistData();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const query = useQuery();
 
+  // Add timeout to prevent infinite loading
   useEffect(() => {
-    if (query.get("premium_success") === "1") {
-      toast.success("Welcome to EmviApp Premium!", {
-        duration: 5000,
-      });
-      navigate(location.pathname, { replace: true });
-    }
-  }, [query, location, navigate]);
+    const timeoutId = setTimeout(() => {
+      if (loading) {
+        setLoadingTimeout(true);
+      }
+    }, 10000); // 10 second timeout
 
-  if (loading) {
-    return (
-      <div className="max-w-5xl mx-auto py-8">
-        <div className="space-y-6">
-          <div className="h-48 bg-gray-100 animate-pulse rounded-xl"></div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="h-32 bg-gray-100 animate-pulse rounded-lg"></div>
-            <div className="h-32 bg-gray-100 animate-pulse rounded-lg"></div>
-            <div className="h-32 bg-gray-100 animate-pulse rounded-lg"></div>
-          </div>
-          <div className="h-64 bg-gray-100 animate-pulse rounded-lg"></div>
-        </div>
-      </div>
-    );
-  }
-
-  const handleUpgrade = () => {
-    setHasBoost(true);
-  };
-
-  const handleBoostProceed = () => {
-    setBoostModalOpen(false);
-    toast.success("Taking you to checkout...");
-  };
-
-  const handlePremiumProceed = () => {
-    setPremiumModalOpen(false);
-    toast.success("Redirecting to premium plans...");
-  };
+    return () => clearTimeout(timeoutId);
+  }, [loading]);
 
   return (
     <motion.div
-      className="max-w-5xl mx-auto py-8 space-y-8"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
+      className="w-full"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
     >
-      <ProfileBoostBanner hasBoost={hasBoost} boostExpiry={MOCK_EXPIRY} onBoostClick={() => setBoostModalOpen(true)} />
-
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 mb-8">
-        <div className="flex items-center gap-3">
-          <Link to="/dashboard/artist/booking-calendar">
-            <Button 
-              variant="outline"
-              className="flex items-center gap-2 bg-white/80 border-purple-200 hover:bg-purple-50"
-            >
-              <Calendar className="h-4 w-4 text-purple-500" />
-              Booking Calendar
-            </Button>
-          </Link>
-        </div>
-        <Button
-          onClick={() => setPremiumModalOpen(true)}
-          className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold tracking-wide shadow transition
-            border-none focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-300
-            text-sm md:text-base transform hover:scale-[1.02] active:scale-[0.98] duration-200"
-          aria-label="Upgrade to Premium"
-        >
-          <Image className="h-4 w-4 text-purple-500" />
-          Upgrade to Premium
-        </Button>
-      </div>
-
-      <BoostProfileModal 
-        isOpen={boostModalOpen}
-        onClose={() => setBoostModalOpen(false)}
-        onProceed={handleBoostProceed}
-      />
-      
-      <PremiumFeaturesModal
-        isOpen={premiumModalOpen}
-        onClose={() => setPremiumModalOpen(false)}
-        onProceed={handlePremiumProceed}
-      />
-
-      <motion.div variants={itemVariants}>
-        <ArtistHero />
-      </motion.div>
-      
-      <motion.div variants={itemVariants}>
-        <ArtistMetrics />
-      </motion.div>
-
-      <motion.div variants={itemVariants}>
-        <EarningsSnapshot />
-      </motion.div>
-
-      <motion.div variants={itemVariants}>
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-2">
-            <Image className="h-5 w-5 text-purple-500" />
-            <h2 className="text-xl font-playfair font-semibold">My Portfolio</h2>
+      {loading && !loadingTimeout ? (
+        <div className="max-w-5xl mx-auto py-8">
+          <div className="space-y-6">
+            <div className="h-48 bg-gray-100 animate-pulse rounded-xl"></div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="h-32 bg-gray-100 animate-pulse rounded-lg"></div>
+              <div className="h-32 bg-gray-100 animate-pulse rounded-lg"></div>
+              <div className="h-32 bg-gray-100 animate-pulse rounded-lg"></div>
+            </div>
           </div>
-          <Link to="/dashboard/artist/portfolio">
-            <Button 
-              variant="outline" 
-              className="flex items-center gap-2 bg-white/80 border-purple-200 hover:bg-purple-50"
-            >
-              <Image className="h-4 w-4 text-purple-500" />
-              Manage Portfolio
-            </Button>
-          </Link>
         </div>
-      </motion.div>
-      
-      <motion.div variants={itemVariants}>
-        <ArtistPortfolioSection />
-      </motion.div>
-      
-      <div className="h-2 md:h-4" />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <motion.div variants={itemVariants}>
-          <ArtistActivityFeed />
-        </motion.div>
-        
-        <motion.div variants={itemVariants}>
-          <ArtistAppointments />
-        </motion.div>
-      </div>
+      ) : loadingTimeout ? (
+        <div className="max-w-5xl mx-auto py-8 text-center">
+          <div className="bg-white rounded-lg shadow-sm p-6 max-w-md mx-auto">
+            <h2 className="text-xl font-serif mb-3">Dashboard Loading Issue</h2>
+            <p className="text-gray-600 mb-4">
+              It's taking longer than expected to load your dashboard. This could be due to connection issues.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+            >
+              Refresh Page
+            </button>
+          </div>
+        </div>
+      ) : (
+        <ArtistDashboardContent />
+      )}
     </motion.div>
   );
 };
 
-export default ArtistDashboardContent;
+export default ArtistDashboard;
