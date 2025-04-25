@@ -3,21 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Upload } from "lucide-react";
 import { motion } from "framer-motion";
-
-const defaultPortfolioItems = [
-  {
-    id: 1,
-    image: "/placeholders/portfolio-1.jpg",
-    title: "Example Work 1",
-    featured: true
-  },
-  {
-    id: 2,
-    image: "/placeholders/portfolio-2.jpg",
-    title: "Example Work 2",
-    featured: false
-  }
-];
+import { demoPortfolioItems } from "../../utils/demoData";
 
 const PortfolioTab = () => {
   return (
@@ -39,7 +25,7 @@ const PortfolioTab = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          {defaultPortfolioItems.map((item) => (
+          {demoPortfolioItems.map((item) => (
             <motion.div 
               key={item.id}
               className="group relative rounded-lg overflow-hidden"

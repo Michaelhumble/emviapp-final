@@ -2,7 +2,10 @@
 import StatsGrid from "../StatsGrid";
 import MainGrid from "../MainGrid";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import ProfileCompletionWarning from "../overview/ProfileCompletionWarning";
+import { demoStats, demoBookings } from "../../utils/demoData";
 
 const OverviewTab = ({ 
   stats, 
@@ -15,8 +18,29 @@ const OverviewTab = ({
   bookings: any[];
   isLoadingBookings: boolean;
 }) => {
+  const hasError = !stats && !isLoadingStats;
+  const finalStats = stats || demoStats;
+  const finalBookings = bookings || demoBookings;
+
   return (
     <div className="space-y-6">
+      <ProfileCompletionWarning />
+      
+      {hasError && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Alert variant="destructive" className="bg-red-50 border-red-100">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Some data couldn't be loaded. Showing preview content instead.
+            </AlertDescription>
+          </Alert>
+        </motion.div>
+      )}
+
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -30,19 +54,14 @@ const OverviewTab = ({
       </motion.div>
 
       <StatsGrid 
-        stats={stats || {
-          totalBookings: 0,
-          totalEarnings: 0,
-          totalClients: 0,
-          rating: 5.0
-        }} 
+        stats={finalStats}
         isLoading={isLoadingStats} 
       />
       
       <MainGrid 
-        bookings={bookings || []}
+        bookings={finalBookings}
         isLoadingBookings={isLoadingBookings}
-        stats={stats || {}}
+        stats={finalStats}
       />
     </div>
   );
