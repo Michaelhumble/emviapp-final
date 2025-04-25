@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
-import MarketProofSection from "@/components/home/sections/MarketProofSection";
 import ArtistTestimonials from "@/components/home/ArtistTestimonials";
 import FeaturedSalons from "@/components/home/FeaturedSalons";
 import JobsHighlight from "@/components/home/JobsHighlight";
@@ -53,9 +52,6 @@ const Index = () => {
       
       {/* Move Client Growth System section here */}
       <SalonClientGrowthSystem />
-      
-      {/* Display Real Job Listings + Expired Posts */}
-      <MarketProofSection />
       
       {/* Keep Why Artists Love EmviApp */}
       <ArtistTestimonials />
