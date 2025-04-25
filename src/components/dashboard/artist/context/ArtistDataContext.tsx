@@ -11,6 +11,7 @@ interface ArtistDataContextType {
   bookingCount: number;
   reviewCount: number;
   averageRating: number;
+  error: Error | null; // Added error property
   
   // Artist profile and portfolio data
   artistProfile: any;
@@ -27,6 +28,7 @@ const defaultContext: ArtistDataContextType = {
   bookingCount: 0,
   reviewCount: 0,
   averageRating: 0,
+  error: null, // Initialize error as null
   
   // Default values for additional properties
   artistProfile: null,
@@ -41,7 +43,8 @@ export const ArtistDataProvider = ({ children }: { children: ReactNode }) => {
   const { userProfile } = useAuth();
   const [loading, setLoading] = useState(true);
   const [loadingPortfolio, setLoadingPortfolio] = useState(true);
-  const [data, setData] = useState<Omit<ArtistDataContextType, 'loading' | 'loadingPortfolio' | 'refreshArtistProfile'>>({
+  const [error, setError] = useState<Error | null>(null); // Add error state
+  const [data, setData] = useState<Omit<ArtistDataContextType, 'loading' | 'loadingPortfolio' | 'refreshArtistProfile' | 'error'>>({
     firstName: '',
     specialty: '',
     portfolioCount: 0,
@@ -56,6 +59,7 @@ export const ArtistDataProvider = ({ children }: { children: ReactNode }) => {
   const refreshArtistProfile = async () => {
     if (userProfile) {
       setLoading(true);
+      setError(null); // Reset error state when refreshing
       try {
         // In a real implementation, this would fetch updated data from an API
         // For now, we'll just simulate a refresh delay
@@ -74,8 +78,9 @@ export const ArtistDataProvider = ({ children }: { children: ReactNode }) => {
             id: userProfile.user_id || userProfile.id,
           }
         }));
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error refreshing artist profile:", error);
+        setError(error instanceof Error ? error : new Error("Failed to refresh profile"));
       } finally {
         setLoading(false);
       }
@@ -135,8 +140,9 @@ export const ArtistDataProvider = ({ children }: { children: ReactNode }) => {
           portfolioImages: mockPortfolioImages,
           portfolioCount: mockPortfolioImages.length
         }));
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error loading portfolio:", error);
+        setError(error instanceof Error ? error : new Error("Failed to load portfolio"));
       } finally {
         setLoadingPortfolio(false);
       }
@@ -179,7 +185,8 @@ export const ArtistDataProvider = ({ children }: { children: ReactNode }) => {
       ...data,
       loading,
       loadingPortfolio,
-      refreshArtistProfile
+      refreshArtistProfile,
+      error // Add error to the context value
     }}>
       {children}
     </ArtistDataContext.Provider>
