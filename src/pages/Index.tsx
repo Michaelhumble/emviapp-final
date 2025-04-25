@@ -26,6 +26,7 @@ import MissingPieceSection from "@/components/home/missing-piece";
 import EnhancedAIFeatures from "@/components/home/EnhancedAIFeatures";
 import FinalFounderCTA from "@/components/home/FinalFounderCTA";
 import BilingualWhySomeSalons from "@/components/home/BilingualWhySomeSalons";
+import ClientGrowthSecretSection from "@/components/home/ClientGrowthSecretSection";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -52,6 +53,7 @@ const Index = () => {
       
       <MarketProofSection />
       <BilingualWhySomeSalons />
+      <ClientGrowthSecretSection />
       <ArtistTestimonials />
       <MissingPieceSection />
       <DynamicListingGrid />
