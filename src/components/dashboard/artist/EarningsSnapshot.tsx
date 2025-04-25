@@ -6,8 +6,9 @@ import { useAuth } from "@/context/auth";
 
 export default function EarningsSnapshot() {
   const { userProfile } = useAuth();
-  const isNewArtist = !userProfile?.profile_completion || userProfile.profile_completion < 20;
+  const isNewArtist = !userProfile?.profile_completion || userProfile.profile_completion < 60;
 
+  // Always show demo data for new artists
   const demoData = {
     monthEarnings: 1250,
     completedBookings: isNewArtist ? 0 : 12,

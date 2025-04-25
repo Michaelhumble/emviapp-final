@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-// Mock calendar data - days with appointments
+// Demo calendar data - days with appointments
 const bookedDays = [
   new Date(2025, 3, 8),
   new Date(2025, 3, 12),
@@ -18,7 +18,7 @@ const bookedDays = [
 
 const MiniCalendar = () => {
   const { userProfile } = useAuth();
-  const isNewArtist = !userProfile?.profile_completion || userProfile.profile_completion < 20;
+  const isNewArtist = !userProfile?.profile_completion || userProfile.profile_completion < 60;
 
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -42,12 +42,14 @@ const MiniCalendar = () => {
   return (
     <div className="space-y-4">
       {isNewArtist ? (
-        <div className="text-center py-6">
-          <h3 className="text-lg font-medium text-gray-900">Ready to Start Booking</h3>
-          <p className="text-sm text-gray-500 mt-2">
-            Complete your profile to start accepting client appointments.
-          </p>
-        </div>
+        <>
+          <div className="text-center py-6">
+            <h3 className="text-lg font-medium text-gray-900">Ready to Start Booking</h3>
+            <p className="text-sm text-gray-500 mt-2">
+              Complete your profile to start accepting client appointments.
+            </p>
+          </div>
+        </>
       ) : (
         <>
           <div className="flex items-center justify-between">
