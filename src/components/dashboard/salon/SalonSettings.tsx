@@ -33,14 +33,14 @@ const SalonSettings = () => {
     setIsSubmitting(true);
     
     try {
-      // Update profile in auth context
+      // Update profile in auth context - using a custom object with only the fields we update
       await updateProfile({
-        salon_name: formData.salon_name,
         bio: formData.bio,
         avatar_url: formData.logo_url
+        // Removing salon_name as it's not in the official UserProfile type
       });
       
-      // If using the salon context
+      // If using the salon context, update there too (which has a salon_name field)
       if (currentSalon) {
         await updateSalon(currentSalon.id, {
           salon_name: formData.salon_name,

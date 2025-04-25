@@ -39,6 +39,24 @@ export interface UserProfile {
   portfolio_urls?: string[];
   custom_role?: string;
   profile_completion?: number;
+  
+  // Fields needed by components but not in Supabase schema
+  // These should be handled with fallbacks in components
+  skills?: string[];
+  years_experience?: number;
+  independent?: boolean;
+  creditsThisMonth?: number;
+  artistTypes?: string[];
+  favorite_artist_types?: string[];
+  birthday?: string;
+  commPrefs?: string[];
+  communication_preferences?: string[];
+  profile_views?: number;
+  user_id?: string;
+  affiliate_code?: string;
+  username?: string;
+  salon_name?: string;
+  company_name?: string;
 }
 
 export interface AuthContextType {

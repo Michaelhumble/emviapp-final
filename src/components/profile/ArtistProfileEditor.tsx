@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { 
   Card, 
@@ -44,7 +45,8 @@ const ArtistProfileEditor = () => {
       initial="hidden"
       animate="visible"
     >
-      {userProfile?.independent && <IndependentBanner />}
+      {/* Only show independent banner if the property exists and is true */}
+      {userProfile?.independent === true && <IndependentBanner />}
       
       <motion.div variants={itemVariants}>
         <ProfileProgressTracker />

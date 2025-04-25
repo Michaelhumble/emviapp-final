@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useArtistProfileValidation } from "@/hooks/useArtistProfileValidation";
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,7 @@ export const ArtistProfileSetupForm = () => {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   
+  // Use optional chaining with default value when accessing independent
   const [formData, setFormData] = useState({
     full_name: userProfile?.full_name || "",
     specialty: userProfile?.specialty || "",
@@ -43,7 +45,7 @@ export const ArtistProfileSetupForm = () => {
     instagram: userProfile?.instagram || "",
     website: userProfile?.website || "",
     avatar_url: userProfile?.avatar_url || "",
-    independent: !!userProfile?.independent,
+    independent: !!userProfile?.independent, // Default to false if undefined
   });
 
   const handleChange = (

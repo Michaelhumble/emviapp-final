@@ -37,7 +37,7 @@ const CustomerDashboardStats = () => {
       <Card>
         <CardContent className="p-6 flex flex-col items-center justify-center">
           <BarChart className="h-8 w-8 text-purple-500 mb-2" />
-          <div className="text-2xl font-bold">{userProfile?.profile_views || 0}</div>
+          <div className="text-2xl font-bold">{0}</div>
           <div className="text-sm text-gray-500">Profile Views</div>
         </CardContent>
       </Card>

@@ -17,7 +17,7 @@ interface PremiumArtistProfileProps {
 const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile }) => {
   const navigate = useNavigate();
   
-  // Extract specialties from the userProfile if they exist
+  // Extract specialties from the userProfile if they exist, or use an empty array
   const specialties = Array.isArray(userProfile?.skills) ? userProfile.skills : [];
   
   return (
@@ -65,9 +65,10 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
                     </span>
                   )}
                   
-                  {userProfile?.years_experience && (
+                  {/* Use optional chaining for years_experience */}
+                  {userProfile?.years_experience !== undefined && (
                     <span className="inline-flex items-center rounded-full bg-purple-50 px-2.5 py-0.5 text-xs font-medium text-purple-700">
-                      {userProfile.years_experience} years experience
+                      {userProfile?.years_experience} years experience
                     </span>
                   )}
                 </div>
@@ -98,7 +99,7 @@ const PremiumArtistProfile: React.FC<PremiumArtistProfileProps> = ({ userProfile
                     completionRate: 98,
                     responseTime: "< 2 hrs",
                     repeatClients: 15,
-                    experience: userProfile?.years_experience ? `${userProfile.years_experience}+ years` : "3+ years"
+                    experience: userProfile?.years_experience ? `${userProfile?.years_experience}+ years` : "3+ years"
                   }} />
                   
                   <StyleSignature specialties={specialties} />

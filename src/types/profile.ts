@@ -40,7 +40,7 @@ export interface UserProfile {
   // Professional information
   years_experience?: number;
   
-  // Additional properties
+  // Fields needed by components
   username?: string;
   boosted_until?: string;
   contact_link?: string;
@@ -56,6 +56,20 @@ export interface UserProfile {
   profile_completion?: number;
   portfolio_urls?: string[];
   professional_name?: string;
+  
+  // Additional fields needed by components
+  skills?: string[];
+  independent?: boolean;
+  creditsThisMonth?: number;
+  artistTypes?: string[];
+  favorite_artist_types?: string[];
+  birthday?: string;
+  commPrefs?: string[];
+  communication_preferences?: string[];
+  profile_views?: number;
+  affiliate_code?: string;
+  salon_name?: string;
+  company_name?: string;
 }
 
 // Helper function to safely get location as a string for display
