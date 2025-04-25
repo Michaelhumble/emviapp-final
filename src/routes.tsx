@@ -187,10 +187,6 @@ const routes = [
     element: <SignUp />,
   },
   {
-    path: '/sign-in',
-    element: <SignIn />,
-  },
-  {
     path: '/sign-up',
     element: <SignUp />,
   },
