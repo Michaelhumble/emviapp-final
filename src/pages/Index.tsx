@@ -25,8 +25,7 @@ import FounderMessage from "@/components/home/FounderMessage";
 import MissingPieceSection from "@/components/home/missing-piece";
 import EnhancedAIFeatures from "@/components/home/EnhancedAIFeatures";
 import FinalFounderCTA from "@/components/home/FinalFounderCTA";
-import BilingualWhySomeSalons from "@/components/home/BilingualWhySomeSalons";
-import ClientGrowthSecretSection from "@/components/home/ClientGrowthSecretSection";
+import SalonGrowthSection from "@/components/home/SalonGrowthSection";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -52,8 +51,7 @@ const Index = () => {
       <FounderMessage />
       
       <MarketProofSection />
-      <BilingualWhySomeSalons />
-      <ClientGrowthSecretSection />
+      <SalonGrowthSection />
       <ArtistTestimonials />
       <MissingPieceSection />
       <DynamicListingGrid />
