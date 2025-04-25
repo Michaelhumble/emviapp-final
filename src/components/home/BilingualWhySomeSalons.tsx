@@ -2,11 +2,13 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/hooks/useTranslation";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import SectionHeader from "@/components/home/sections/SectionHeader";
 
 const BilingualWhySomeSalons = () => {
-  const { t } = useTranslation();
+  const { t, isVietnamese } = useTranslation();
   
   return (
     <section className="py-16 md:py-24 bg-white relative overflow-hidden">
@@ -27,17 +29,18 @@ const BilingualWhySomeSalons = () => {
               transition={{ duration: 0.7, delay: 0.2 }}
               className="prose prose-lg"
             >
-              <h3 className="font-playfair text-xl font-medium mb-4 text-gray-900">The Secret is Simple</h3>
+              <h3 className="font-playfair text-xl font-medium mb-4 text-gray-900">Imagine This Reality</h3>
               <p className="text-gray-700">
-                In today's beauty industry, the most successful salons have mastered one critical skill: 
-                client retention. They don't just attract new customers—they keep them coming back, again and again.
-              </p>
-              <p className="text-gray-700">
-                This isn't about gimmicks or discounts. It's about creating personalized experiences 
-                that make clients feel valued, understood, and eager to return.
+                Every salon owner knows the struggle: vacant chairs that should be filled with clients. Meanwhile, other salons nearby have waiting lists weeks long.
               </p>
               <p className="text-gray-700 font-medium">
-                EmviApp's Client Growth System helps you master this art with intelligent tools that keep your chairs filled.
+                The difference isn't location, talent, or even prices. It's <span className="font-bold">systematically nurturing client relationships</span> at scale.
+              </p>
+              <p className="text-gray-700">
+                Most salons lose 30% of clients after their first visit — and never know why. Those clients silently disappear to competitors who make them feel valued.
+              </p>
+              <p className="text-gray-700 font-bold">
+                EmviApp's Client Growth System lets you connect with 100 clients with one click — turning first-timers into lifelong customers.
               </p>
             </motion.div>
 
@@ -49,17 +52,18 @@ const BilingualWhySomeSalons = () => {
               transition={{ duration: 0.7, delay: 0.4 }}
               className="prose prose-lg"
             >
-              <h3 className="font-playfair text-xl font-medium mb-4 text-gray-900">Bí Quyết Rất Đơn Giản</h3>
+              <h3 className="font-playfair text-xl font-medium mb-4 text-gray-900">Hãy Tưởng Tượng Điều Này</h3>
               <p className="text-gray-700">
-                Trong ngành làm đẹp hiện nay, các salon thành công nhất đã thành thạo một kỹ năng quan trọng: 
-                giữ chân khách hàng. Họ không chỉ thu hút khách hàng mới mà còn khiến họ quay lại, lần này qua lần khác.
-              </p>
-              <p className="text-gray-700">
-                Đây không phải là về các mánh khóe hay giảm giá. Đó là về việc tạo ra những trải nghiệm cá nhân hóa 
-                khiến khách hàng cảm thấy được đánh giá cao, được thấu hiểu và háo hức quay trở lại.
+                Mọi chủ salon đều biết nỗi khổ: những chiếc ghế trống lẽ ra phải được lấp đầy bởi khách hàng. Trong khi đó, các salon khác gần đó có danh sách chờ dài hàng tuần.
               </p>
               <p className="text-gray-700 font-medium">
-                Hệ thống Phát triển Khách hàng của EmviApp giúp bạn làm chủ nghệ thuật này với các công cụ thông minh giúp ghế của bạn luôn đầy.
+                Sự khác biệt không phải là vị trí, tài năng, hay thậm chí giá cả. Đó là <span className="font-bold">việc nuôi dưỡng mối quan hệ khách hàng có hệ thống</span> ở quy mô lớn.
+              </p>
+              <p className="text-gray-700">
+                Hầu hết các salon mất 30% khách hàng sau lần ghé thăm đầu tiên — và không bao giờ biết tại sao. Những khách hàng đó âm thầm biến mất đến các đối thủ cạnh tranh khiến họ cảm thấy được coi trọng.
+              </p>
+              <p className="text-gray-700 font-bold">
+                Hệ thống Phát triển Khách hàng của EmviApp cho phép bạn kết nối với 100 khách hàng chỉ với một cú nhấp chuột — biến khách hàng lần đầu thành khách hàng trọn đời.
               </p>
             </motion.div>
           </div>
@@ -71,12 +75,19 @@ const BilingualWhySomeSalons = () => {
             transition={{ duration: 0.7, delay: 0.6 }}
             className="mt-12 text-center"
           >
-            <p className="text-lg font-playfair italic text-emvi-accent">
-              {t({
-                english: "Join EmviApp early to unlock exclusive client retention tools.",
-                vietnamese: "Tham gia EmviApp sớm để mở khóa các công cụ giữ chân khách hàng độc quyền."
-              })}
-            </p>
+            <Button 
+              className="bg-emvi-accent hover:bg-emvi-accent/90 transform hover:scale-[1.02] transition-all duration-200 group"
+              size="lg"
+              asChild
+            >
+              <Link to="/pricing">
+                {t({
+                  english: "Learn More About Client Growth",
+                  vietnamese: "Tìm Hiểu Thêm Về Tăng Trưởng Khách Hàng"
+                })}
+                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </Button>
           </motion.div>
         </div>
       </div>
