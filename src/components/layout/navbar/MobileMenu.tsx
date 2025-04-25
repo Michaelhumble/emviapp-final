@@ -42,9 +42,9 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
     },
   };
 
-  // Primary menu items: Artists, Salons, Jobs, Community
-  const primaryMenuItems = mainNavigationItems.filter(item => 
-    ["Artists", "Salons", "Jobs", "Community"].includes(item.label)
+  // Get the primary menu items we want to display
+  const menuItems = mainNavigationItems.filter(item => 
+    ["Artists", "Salons", "Jobs", "Community"].includes(item.title)
   );
 
   return (
@@ -64,14 +64,14 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
           <LanguageToggle minimal={false} className="text-white" />
         </div>
 
-        {/* Primary Navigation links - only the 4 requested items */}
+        {/* Primary Navigation links */}
         <motion.div
           className="flex flex-col gap-5 mb-8"
           variants={containerVariants}
           initial="hidden"
           animate="show"
         >
-          {primaryMenuItems.map((item, index) => (
+          {menuItems.map((item, index) => (
             <motion.div key={index} variants={itemVariants}>
               <Link
                 to={item.path}
@@ -79,7 +79,7 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
                 onClick={() => setOpen(false)}
               >
                 {item.icon && <item.icon className="h-5 w-5" />}
-                <span className="font-playfair">{item.label}</span>
+                <span className="font-playfair">{item.title}</span>
               </Link>
             </motion.div>
           ))}
