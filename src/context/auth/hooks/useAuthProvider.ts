@@ -1,3 +1,4 @@
+
 // Make sure the file uses proper TypeScript with proper data access
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -253,6 +254,7 @@ export const useAuthProvider = (): AuthContextType => {
     loading,
     isSignedIn: !!user,
     user,
+    session, // Make sure to include session in the return value
     userRole,
     userProfile,
     isError,

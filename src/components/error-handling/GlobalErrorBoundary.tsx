@@ -101,9 +101,10 @@ class GlobalErrorBoundaryClass extends Component<
 // Wrapper function component to provide history navigation
 export default function GlobalErrorBoundary({ children }: GlobalErrorBoundaryProps) {
   // Using try/catch since this component might be used outside Router context
-  let navigate = () => {};
+  let navigate = (path: string) => {}; // Fixed: Explicitly define navigate as a function that takes a path argument
   try {
-    navigate = useNavigate();
+    const navigateFunction = useNavigate();
+    navigate = (path: string) => navigateFunction(path); // Wrap the navigate function to match our expected signature
   } catch (error) {
     console.warn('GlobalErrorBoundary used outside Router context');
   }

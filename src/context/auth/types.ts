@@ -1,4 +1,5 @@
-import { User } from '@supabase/supabase-js';
+
+import { User, Session } from '@supabase/supabase-js';
 
 export type UserRole = 'customer' | 'artist' | 'salon' | 'owner' | 'manager' | 'admin' | 'freelancer' | 'nail technician/artist' | 'beauty supplier' | 'supplier' | 'vendor' | 'renter' | 'other';
 
@@ -74,6 +75,7 @@ export interface UserProfile {
 
 export interface AuthContextType {
   user: User | null;
+  session: Session | null; // Add session property to the interface
   userProfile: UserProfile | null;
   userRole: UserRole;
   loading: boolean;
