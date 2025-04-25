@@ -332,6 +332,10 @@ const routes = [
     path: '/bookings',
     element: <MyBookingsPage />,
   },
+  {
+    path: '/sign-in', // Explicitly define the /sign-in route
+    element: <SignIn />,
+  },
 ];
 
 export default routes;
