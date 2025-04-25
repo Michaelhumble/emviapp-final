@@ -1,3 +1,4 @@
+
 export interface Location {
   lat: number | null;
   lng: number | null;
@@ -52,14 +53,6 @@ export interface UserProfile {
   number_of_stations?: number;
   professional_name?: string;
   
-  // Additional salon properties
-  salon_type?: string;
-  phone_number?: string;
-  website_url?: string;
-  instagram_url?: string;
-  description?: string;
-  accepts_walk_ins?: boolean;
-  
   // Professional information
   specialties?: string[];
   services?: string[] | any[];
@@ -72,11 +65,10 @@ export interface UserProfile {
   openingTimes?: OpeningTime[];
   
   // Additional properties
-  profile_views?: number;
   username?: string;
   boosted_until?: string;
   contact_link?: string;
-  badges?: any[];
+  badges?: Record<string, any> | any[];
   accepts_bookings?: boolean;
   booking_url?: string;
   completed_profile_tasks?: string[];
@@ -89,12 +81,9 @@ export interface UserProfile {
   google_review_link?: string;
   independent?: boolean;
   profile_completion?: number;
-
-  // ✨ NEW CUSTOMER FIELDS
-  favorite_artist_types?: string[]; // E.g. ["studio", "booth-renter"]
-  artistTypes?: string[];           // Synonym for favorite_artist_types
-  birthday?: string | null;         // ISO date string or null
-  communication_preferences?: string[]; // E.g. ["email", "sms", "app"]
+  
+  // Portfolio-related
+  portfolio_urls?: string[];
 }
 
 // Helper function to safely get location as a string for display

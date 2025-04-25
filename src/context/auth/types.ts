@@ -5,7 +5,7 @@ export type UserRole = 'customer' | 'artist' | 'salon' | 'owner' | 'manager' | '
 
 export interface UserProfile {
   id: string;
-  email: string; // Changed from optional to required to match other UserProfile definitions
+  email: string; 
   full_name?: string;
   role?: UserRole;
   avatar_url?: string;
@@ -14,6 +14,22 @@ export interface UserProfile {
   location?: string;
   referral_code?: string;
   portfolio_urls?: string[];
+  phone?: string;
+  instagram?: string;
+  website?: string;
+  credits?: number;
+  badges?: Record<string, any> | any[];
+  boosted_until?: string;
+  accepts_bookings?: boolean;
+  booking_url?: string;
+  completed_profile_tasks?: string[];
+  preferences?: string[];
+  preferred_language?: string;
+  referral_count?: number;
+  contact_link?: string;
+  custom_role?: string;
+  updated_at?: string;
+  created_at?: string;
   [key: string]: any;
 }
 
