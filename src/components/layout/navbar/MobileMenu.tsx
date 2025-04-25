@@ -42,6 +42,17 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
     },
   };
 
+  // Filter items for mobile menu
+  const mobileMenuItems = mainNavigationItems.filter(item => 
+    ["Artists", "Salons", "Jobs", "Community"].includes(item.label)
+  );
+  
+  // Get remaining items
+  const additionalItems = mainNavigationItems.filter(item => 
+    !["Artists", "Salons", "Jobs", "Community"].includes(item.label) && 
+    item.label !== "Home" // Optional: exclude Home if not needed in mobile menu
+  );
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild className="md:hidden">
@@ -59,25 +70,46 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
           <LanguageToggle minimal={false} className="text-white" />
         </div>
 
-        {/* Navigation links */}
+        {/* Primary Navigation links */}
         <motion.div
-          className="flex flex-col gap-5"
+          className="flex flex-col gap-5 mb-8"
           variants={containerVariants}
           initial="hidden"
           animate="show"
         >
-          {mainNavigationItems.map((item, index) => (
+          {mobileMenuItems.map((item, index) => (
             <motion.div key={index} variants={itemVariants}>
               <Link
                 to={item.path}
-                className={`flex items-center gap-3 px-2 py-3 text-lg font-medium text-white rounded-lg transition duration-200 hover:bg-white/10 ${
+                className="flex items-center gap-3 px-2 py-3 text-lg font-medium text-white rounded-lg transition duration-200 hover:bg-white/10"
+                onClick={() => setOpen(false)}
+              >
+                {item.icon && <item.icon className="h-5 w-5" />}
+                <span className="font-playfair">{item.label}</span>
+              </Link>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Secondary Navigation links */}
+        <motion.div
+          className="flex flex-col gap-4 border-t border-white/10 pt-6 mb-6"
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+        >
+          {additionalItems.map((item, index) => (
+            <motion.div key={index} variants={itemVariants}>
+              <Link
+                to={item.path}
+                className={`flex items-center gap-3 px-2 py-2.5 text-base font-medium text-white rounded-lg transition duration-200 hover:bg-white/10 ${
                   item.highlight
                     ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full relative overflow-hidden"
                     : ""
                 }`}
                 onClick={() => setOpen(false)}
               >
-                {item.icon && <item.icon className="h-5 w-5" />}
+                {item.icon && <item.icon className="h-4.5 w-4.5" />}
                 <span className="font-playfair">{item.label}</span>
                 {item.highlight && (
                   <span className="ml-auto inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] bg-white/20 text-white rounded-sm font-bold tracking-wide">
