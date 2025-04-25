@@ -41,8 +41,10 @@ export function UserMenu() {
     try {
       await signOut();
       setOpen(false);
+      // No need to navigate here as the signOut function will handle the redirect
     } catch (error) {
       console.error("Error signing out:", error);
+      toast.error("Failed to sign out. Please try again.");
     }
   };
 

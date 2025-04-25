@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Menu, X, Home, Users, Store, Briefcase, LayoutDashboard, User, Gift, LogOut, Search } from 'lucide-react';
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from '@/components/ui/sheet';
@@ -21,6 +20,16 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
 
   const closeMenu = () => setOpen(false);
   
+  const handleLogout = async () => {
+    try {
+      await handleSignOut();
+      closeMenu();
+    } catch (error) {
+      console.error("Error signing out:", error);
+      toast.error("Failed to sign out. Please try again.");
+    }
+  };
+
   const handleNavigation = (path: string, label: string) => {
     if (validateRoute(path)) {
       navigate(path);
@@ -150,10 +159,7 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
             <Button 
               variant="destructive" 
               className="w-full flex items-center justify-center h-12 text-base rounded-xl shadow-menuItemActive font-semibold font-serif"
-              onClick={() => {
-                handleSignOut();
-                closeMenu();
-              }}
+              onClick={handleLogout}
             >
               <LogOut className="mr-2 h-5 w-5" />
               Sign Out

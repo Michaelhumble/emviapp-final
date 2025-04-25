@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useAuth } from '@/context/auth';
 import { useArtistProfile } from '@/hooks/artist/useArtistProfile';
@@ -6,10 +5,8 @@ import { useToast } from '@/components/ui/use-toast';
 import { ArtistDataContextType, ArtistProfileState, PortfolioImage } from '../types/ArtistDashboardTypes';
 import { usePortfolioImages } from '@/hooks/artist/usePortfolioImages';
 
-// Create context with default values
 const ArtistDataContext = createContext<ArtistDataContextType | undefined>(undefined);
 
-// Provider component
 export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { user } = useAuth();
   const { profile: artistProfileData, isLoading: profileLoading } = useArtistProfile();
@@ -20,7 +17,6 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
-  // Map artist profile data to the expected structure
   const artistProfile: ArtistProfileState = {
     id: artistProfileData?.id,
     user_id: artistProfileData?.user_id,
@@ -37,7 +33,6 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
     portfolio_urls: artistProfileData?.portfolio_urls,
     independent: artistProfileData?.independent,
     accepts_bookings: artistProfileData?.accepts_bookings,
-    // Fix the error by checking if preferences exists first
     preferences: artistProfileData?.preferred_language ? [artistProfileData?.preferred_language] : [],
     profile_completion: artistProfileData?.profile_completion,
   };
@@ -45,15 +40,12 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
   const firstName = artistProfile?.full_name?.split(' ')[0] || '';
   const userCredits = artistProfile?.credits || 0;
   
-  // Mock values for metrics
   const bookingCount = { toString: () => "12" };
   const reviewCount = 8;
   const averageRating = { toString: () => "4.8" };
 
   const fetchArtistStats = async () => {
-    // Simulate fetching artist stats - replace with actual stats fetching
     try {
-      // Simulate network delay
       await new Promise(resolve => setTimeout(resolve, 500));
       
       setStats({
@@ -85,11 +77,9 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
       console.error('Error loading artist data:', err);
       setError(err instanceof Error ? err : String(err));
       
-      // Fix Toast options - use the correct property name
       toast({
         title: "Error loading dashboard data",
         description: "Please try again or contact support if the issue persists.",
-        // Remove incorrect "variant" property and use the right property for error state
         variant: "destructive"
       });
     } finally {
@@ -97,7 +87,6 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
     }
   };
 
-  // Function to refresh artist profile
   const refreshArtistProfile = async () => {
     try {
       setLoading(true);
@@ -109,7 +98,6 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
     }
   };
 
-  // Handle copy referral link
   const handleCopyReferralLink = () => {
     if (artistProfile?.affiliate_code) {
       navigator.clipboard.writeText(
@@ -120,17 +108,14 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
     }
   };
 
-  // Load data on mount and when user changes
   useEffect(() => {
     loadData();
   }, [user]);
 
-  // Detect loading state from both sources
   useEffect(() => {
     setLoading(profileLoading);
   }, [profileLoading]);
 
-  // Context value
   const value: ArtistDataContextType = {
     profile: artistProfileData,
     stats,
@@ -138,7 +123,6 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
     error,
     refresh: loadData,
     
-    // Add all required properties to match the interface
     artistProfile,
     refreshArtistProfile,
     portfolioImages,
@@ -159,11 +143,9 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
   );
 };
 
-// Hook to use the context
 export const useArtistData = () => {
   const context = useContext(ArtistDataContext);
   
-  // Return a safe default if used outside provider
   if (context === undefined) {
     console.warn('useArtistData must be used within an ArtistDataProvider');
     return {
@@ -173,7 +155,6 @@ export const useArtistData = () => {
       error: new Error('ArtistDataContext used outside of provider'),
       refresh: () => {},
       
-      // Add missing properties to the default value
       artistProfile: {} as ArtistProfileState,
       refreshArtistProfile: async () => {},
       portfolioImages: [] as PortfolioImage[],

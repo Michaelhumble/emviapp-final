@@ -1,4 +1,3 @@
-
 // Make sure the file uses proper TypeScript with proper data access
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -160,6 +159,18 @@ export const useAuthProvider = (): AuthContextType => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+      
+      // Clear local state
+      setUser(null);
+      setUserProfile(null);
+      setUserRole(null);
+      setSession(null);
+      
+      // Clear localStorage role cache
+      localStorage.removeItem('emviapp_user_role');
+      
+      // Redirect to homepage
+      window.location.href = '/';
     } catch (error: any) {
       toast.error(error.message || 'Error signing out');
       throw error;
