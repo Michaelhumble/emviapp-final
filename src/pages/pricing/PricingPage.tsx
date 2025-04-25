@@ -1,6 +1,6 @@
-
 import React, { useState } from "react";
 import Layout from "@/components/layout/Layout";
+import FoundersEarlyAccess from "@/components/pricing/FoundersEarlyAccess";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -57,7 +57,6 @@ const unlimitedSalonFeatures = [
   "Referral dashboard"
 ];
 
-// Calculate yearly pricing with 15% discount
 const getYearlyPrice = (monthlyPrice: number) => {
   const yearlyDiscount = 0.15;
   const yearlyPrice = monthlyPrice * 12 * (1 - yearlyDiscount);
@@ -111,7 +110,8 @@ const PricingPage = () => {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-16">
-        {/* Hero Section */}
+        <FoundersEarlyAccess />
+        
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Choose Your Perfect Plan</h1>
           <p className="text-xl text-muted-foreground mb-6">
@@ -123,7 +123,6 @@ const PricingPage = () => {
           </div>
         </div>
 
-        {/* Billing Cycle Toggle */}
         <div className="flex justify-center mb-10">
           <Tabs
             defaultValue="monthly"
@@ -141,7 +140,6 @@ const PricingPage = () => {
           </Tabs>
         </div>
 
-        {/* Pricing Grid */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -206,7 +204,6 @@ const PricingPage = () => {
           ))}
         </motion.div>
 
-        {/* Referral Credits Banner */}
         <div className="max-w-3xl mx-auto bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-8 mb-12">
           <div className="flex flex-col sm:flex-row items-center">
             <div className="mb-6 sm:mb-0 sm:mr-8">
@@ -227,7 +224,6 @@ const PricingPage = () => {
           </div>
         </div>
 
-        {/* Trust Banner */}
         <div className="max-w-3xl mx-auto text-center bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg p-8">
           <div className="flex items-center justify-center mb-4">
             <Sparkles className="h-8 w-8 text-primary" />
