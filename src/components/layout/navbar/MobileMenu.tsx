@@ -44,7 +44,7 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
 
   // Get the primary menu items we want to display
   const menuItems = mainNavigationItems.filter(item => 
-    ["Artists", "Salons", "Jobs", "Community"].includes(item.title)
+    ["Artists", "Salons", "Jobs", "Community"].includes(item.title || "")
   );
 
   return (
