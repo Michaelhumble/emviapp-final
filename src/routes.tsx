@@ -49,7 +49,7 @@ import BoothRenterSetup from './pages/profile/renter/setup';
 import SupplierSetup from './pages/profile/supplier/setup';
 
 // Import static pages
-import EarlyAccess from './pages/EarlyAccess';
+import EarlyAccess from "./pages/EarlyAccess";
 import Contact from './pages/Contact';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
