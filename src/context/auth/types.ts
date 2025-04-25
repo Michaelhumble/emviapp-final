@@ -1,4 +1,3 @@
-
 import { User } from '@supabase/supabase-js';
 
 export type UserRole = 'customer' | 'artist' | 'salon' | 'owner' | 'manager' | 'admin' | 'freelancer' | 'nail technician/artist' | 'beauty supplier' | 'supplier' | 'vendor' | 'renter' | 'other';
@@ -18,6 +17,7 @@ export interface UserProfile {
   instagram?: string;
   website?: string;
   phone?: string;
+  professional_name?: string;  // Added this line to include the missing property
   
   // Timestamps
   created_at?: string;
