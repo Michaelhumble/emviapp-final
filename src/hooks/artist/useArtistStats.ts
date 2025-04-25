@@ -25,7 +25,7 @@ export const useArtistStats = (artistId: string | undefined) => {
         .select('status')
         .eq('recipient_id', artistId);
         
-      const counts = {
+      const counts: DashboardStats = {
         booking_count: bookings?.length || 0,
         completed_services: bookings?.filter(b => b.status === 'completed').length || 0,
         total_earnings: 0, // Fetch from earnings table if needed

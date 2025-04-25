@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile, UserRole } from './types';
 import { toast } from 'sonner';
@@ -46,7 +47,12 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       accepts_bookings: Boolean(data.accepts_bookings),
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],
-      profile_completion: typeof data.profile_completion === 'number' ? data.profile_completion : 0
+      profile_completion: typeof data.profile_completion === 'number' ? data.profile_completion : 0,
+      // Optional mappings for non-core fields that may be referenced across the app
+      custom_role: data.custom_role || '',
+      skills: Array.isArray(data.skills) ? data.skills : [],
+      years_experience: typeof data.years_experience === 'number' ? data.years_experience : undefined,
+      salon_name: data.salon_name || '',
     };
     
     cacheProfile(userId, profile, profile.role || null);

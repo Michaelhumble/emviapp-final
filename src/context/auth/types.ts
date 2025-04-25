@@ -33,13 +33,13 @@ export interface UserProfile {
   preferences?: string[];
   profile_completion?: number;
   independent?: boolean;
-  badges: any[] | Record<string, any>;
+  badges?: any[] | Record<string, any>;
   booking_url?: string;
   contact_link?: string;
   completed_profile_tasks?: string[];
   boosted_until?: string;
   
-  // Additional properties used in components
+  // Additional properties used across components
   skills?: string[];
   years_experience?: number;
   profile_views?: number;
@@ -58,9 +58,20 @@ export interface UserProfile {
   // Salon-specific fields
   salon_name?: string;
   company_name?: string;
+  salon_type?: string;
+  phone_number?: string;
+  website_url?: string;
+  instagram_url?: string;
+  description?: string;
+  accepts_walk_ins?: boolean;
   
   // Legacy/compatibility fields
   user_id?: string;
+  account_type?: string;
+  bookings_count?: number;
+  reviews_count?: number;
+  last_booking_date?: string;
+  gender?: string;
 }
 
 export interface AuthContextType {
