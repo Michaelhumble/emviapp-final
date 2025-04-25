@@ -8,6 +8,8 @@ import { navigateToRoleDashboard } from "@/utils/navigation";
 import { useAuth } from "@/context/auth";
 import { normalizeRole } from "@/utils/roles";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
+import { AlertTriangle, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface DashboardRedirectorProps {
   setRedirectError: (error: string | null) => void;
@@ -18,6 +20,19 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
   const { user, userRole, isSignedIn, isNewUser, clearIsNewUser } = useAuth();
   const navigate = useNavigate();
   const [showRoleModal, setShowRoleModal] = useState(false);
+  const [loadTimeout, setLoadTimeout] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+
+  // Set loading timeout to prevent infinite loops
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (retryCount > 0) {
+        setLoadTimeout(true);
+      }
+    }, 10000); // 10 second timeout
+
+    return () => clearTimeout(timeoutId);
+  }, [retryCount]);
 
   const checkUserRoleAndRedirect = useCallback(async () => {
     if (!isSignedIn || !user) {
@@ -26,6 +41,8 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
     }
 
     try {
+      setRetryCount(prev => prev + 1);
+      
       // 1. First check auth metadata (most accurate source)
       const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
       
@@ -42,7 +59,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
             .from('users')
             .select('manager_for_salon_id')
             .eq('id', user.id)
-            .single();
+            .maybeSingle();
             
           if (!userError && userData && userData.manager_for_salon_id) {
             navigate('/dashboard/manager');
@@ -61,7 +78,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
           .from('users')
           .select('manager_for_salon_id')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
           
         if (!userError && userData && userData.manager_for_salon_id) {
           navigate('/dashboard/manager');
@@ -84,6 +101,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
           });
         } catch (updateErr) {
           // Silent error - continue anyway
+          console.warn("Failed to update auth metadata with cached role");
         }
         
         // Before navigating, check if user is a manager
@@ -91,7 +109,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
           .from('users')
           .select('manager_for_salon_id')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
           
         if (!userError && userData && userData.manager_for_salon_id) {
           navigate('/dashboard/manager');
@@ -135,6 +153,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         });
       } catch (updateErr) {
         // Silent error - continue anyway
+        console.warn("Failed to update auth metadata with database role");
       }
       
       // If we have a role, save it to localStorage and redirect
@@ -144,15 +163,46 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
       
     } catch (error) {
       setRedirectError("Unable to determine your user role. Please try again or select a role.");
-      navigate("/profile/edit");
+      console.error("Dashboard redirection error:", error);
     } finally {
       setLocalLoading(false);
     }
   }, [user, userRole, isSignedIn, navigate, isNewUser, clearIsNewUser, setRedirectError, setLocalLoading]);
 
   useEffect(() => {
-    checkUserRoleAndRedirect();
-  }, [checkUserRoleAndRedirect]);
+    if (!loadTimeout) {
+      checkUserRoleAndRedirect();
+    }
+  }, [checkUserRoleAndRedirect, loadTimeout]);
+
+  if (loadTimeout) {
+    return (
+      <div className="container mx-auto p-6 text-center">
+        <AlertTriangle size={40} className="mx-auto text-amber-500 mb-4" />
+        <h2 className="text-xl font-semibold mb-4">⚠️ Unable to load your dashboard</h2>
+        <p className="mb-6">We're having trouble determining your user role. Please try again.</p>
+        <div className="flex justify-center gap-4">
+          <Button 
+            onClick={() => {
+              setLoadTimeout(false);
+              setRetryCount(0);
+              checkUserRoleAndRedirect();
+            }}
+            className="flex items-center gap-2"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Try Again
+          </Button>
+          <Button 
+            variant="outline"
+            onClick={() => navigate('/profile/edit')}
+          >
+            Update Profile
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
