@@ -1,277 +1,321 @@
 
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 import { 
-  Menu, X, Home, Users, Store, Briefcase, 
-  DollarSign, Rocket, Gift, Star, BarChart, User 
+  Menu, 
+  X, 
+  Home, 
+  User, 
+  Users, 
+  Store, 
+  Briefcase, 
+  DollarSign, 
+  Gift, 
+  Award, 
+  Globe,
+  LogOut,
+  ChevronRight,
+  Rocket
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/auth";
-import { NavigationItem } from "./types";
-import { mainNavigationItems } from "./config/navigationItems";
-import EmviLogo from "@/components/branding/EmviLogo";
+import { NavItem } from "@/components/layout/navbar/NavItem";
+import { mainNavigationItems } from "@/components/layout/navbar/config/navigationItems";
+import { motion, AnimatePresence } from "framer-motion";
 import LanguageToggle from "@/components/layout/LanguageToggle";
+import { Separator } from "@/components/ui/separator";
 
-type MobileMenuProps = {
+interface MobileMenuProps {
   user: any;
   handleSignOut: () => Promise<void>;
-};
+}
 
 const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
-  
-  const closeMenu = () => setIsOpen(false);
-  
-  // Enhanced animation variants
-  const menuVariants = {
-    closed: {
-      opacity: 0,
-      x: "100%",
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 30,
-      },
-    },
-    open: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 30,
-        staggerChildren: 0.07,
-        delayChildren: 0.1,
-      },
-    },
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
   };
-  
-  const itemVariants = {
-    closed: { 
-      x: 50, 
-      opacity: 0,
-      transition: { type: "spring", stiffness: 300, damping: 30 }
-    },
-    open: { 
-      x: 0, 
-      opacity: 1,
-      transition: { type: "spring", stiffness: 300, damping: 30 }
-    },
+
+  const closeMenu = () => {
+    setIsOpen(false);
   };
-  
-  // VIP section with visual highlight
-  const VipMenuItem = ({ icon: Icon, label, path, badge }: { icon: any; label: string; path: string; badge?: string }) => (
-    <motion.li variants={itemVariants}>
-      <Link 
-        to={path} 
-        className="relative flex items-center p-3 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-100 shadow-sm mb-1.5 group overflow-hidden"
-        onClick={closeMenu}
-      >
-        {/* Animated background glow */}
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-100/30 to-indigo-100/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        
-        {/* VIP badge */}
-        {badge && (
-          <div className="absolute top-1 right-2">
-            <span className="text-[10px] font-bold bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-1.5 py-0.5 rounded-sm">
-              {badge}
-            </span>
-          </div>
-        )}
-        
-        <span className="mr-3 flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 text-indigo-600 glow-effect">
-          <Icon className="w-4 h-4" />
-        </span>
-        <span className="text-sm font-medium text-indigo-900">{label}</span>
-      </Link>
-    </motion.li>
-  );
-  
-  // Regular menu item with icon
-  const RegularMenuItem = ({ icon: Icon, label, path }: { icon: any; label: string; path: string }) => (
-    <motion.li variants={itemVariants}>
-      <Link 
-        to={path} 
-        className="flex items-center p-3 rounded-lg hover:bg-gray-50 mb-1 transition-colors"
-        onClick={closeMenu}
-      >
-        <span className="mr-3 flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-gray-700">
-          <Icon className="w-4 h-4" />
-        </span>
-        <span className="text-sm font-medium text-gray-700">{label}</span>
-      </Link>
-    </motion.li>
-  );
-  
-  // Quick action button
-  const QuickActionButton = ({ icon: Icon, label }: { icon: any; label: string }) => (
-    <motion.button 
-      variants={itemVariants}
-      className="flex flex-col items-center justify-center p-2 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all w-[70px]"
-      onClick={() => {
-        navigate("/dashboard");
-        closeMenu();
-      }}
-    >
-      <span className="flex items-center justify-center w-9 h-9 mb-1 rounded-full bg-gradient-to-br from-gray-50 to-indigo-50 text-indigo-600">
-        <Icon className="w-4 h-4" />
-      </span>
-      <span className="text-[10px] font-medium text-gray-700 text-center">{label}</span>
-    </motion.button>
-  );
 
   return (
-    <>
-      {/* Mobile Menu Button */}
+    <div className="md:hidden">
       <Button 
+        onClick={toggleMenu} 
         variant="ghost" 
-        size="icon" 
-        onClick={() => setIsOpen(true)} 
-        className="md:hidden"
-        aria-label="Open mobile menu"
+        size="icon"
+        className="rounded-full w-10 h-10"
+        aria-label="Menu"
       >
         <Menu className="h-5 w-5" />
       </Button>
-      
-      {/* Mobile Menu Overlay */}
+
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* Background Overlay */}
-            <motion.div
+            {/* Overlay */}
+            <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 md:hidden"
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
               onClick={closeMenu}
             />
-            
+
             {/* Menu Panel */}
             <motion.div
-              initial="closed"
-              animate="open"
-              exit="closed"
-              variants={menuVariants}
-              className="fixed inset-y-0 right-0 w-[85%] max-w-xs bg-white shadow-lg z-50 md:hidden overflow-y-auto mobile-glass-drawer flex flex-col"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="fixed inset-y-0 right-0 w-[85%] max-w-xs mobile-glass-drawer z-50 overflow-y-auto pb-16"
             >
-              {/* Menu Header */}
-              <motion.div variants={itemVariants} className="relative flex items-center justify-between p-4 border-b border-gray-200">
-                <EmviLogo size="small" />
-                <div className="flex items-center">
-                  {/* Language Toggle in Top Corner */}
-                  <LanguageToggle minimal={true} className="mr-2" />
-                  
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    onClick={closeMenu}
-                    className="h-8 w-8"
-                    aria-label="Close menu"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+              {/* Header with close button */}
+              <div className="flex items-center justify-between p-4">
+                <div className="flex items-center gap-2">
+                  <Globe className="h-4 w-4" />
+                  <LanguageToggle minimal={true} className="mr-1" />
                 </div>
-              </motion.div>
-              
+                <Button 
+                  onClick={closeMenu} 
+                  variant="ghost" 
+                  size="icon"
+                  className="rounded-full w-9 h-9"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+
+              <Separator className="mb-4" />
+
               {/* Menu Content */}
-              <div className="flex-1 overflow-y-auto p-4">
-                {/* EXPLORE Section */}
-                <motion.div variants={itemVariants} className="mb-6">
-                  <h3 className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider px-2">Explore</h3>
-                  <ul>
-                    <RegularMenuItem icon={Home} label="Home" path="/" />
-                    <RegularMenuItem icon={Users} label="Find Artists" path="/artists" />
-                    <RegularMenuItem icon={Store} label="Browse Salons" path="/salons" />
-                    <RegularMenuItem icon={Briefcase} label="Search Jobs" path="/jobs" />
-                    <RegularMenuItem icon={DollarSign} label="Pricing" path="/pricing" />
+              <div className="px-5 py-2 space-y-6">
+                {/* Explore Section */}
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-500 mb-2.5">EXPLORE</h3>
+                  <ul className="space-y-2">
+                    <li>
+                      <Link 
+                        to="/" 
+                        className="flex items-center px-3 py-2 rounded-md hover:bg-gray-100"
+                        onClick={closeMenu}
+                      >
+                        <Home className="h-4 w-4 mr-3" />
+                        <span>Home</span>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link 
+                        to="/artists" 
+                        className="flex items-center px-3 py-2 rounded-md hover:bg-gray-100"
+                        onClick={closeMenu}
+                      >
+                        <Users className="h-4 w-4 mr-3" />
+                        <span>Find Artists</span>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link 
+                        to="/jobs" 
+                        className="flex items-center px-3 py-2 rounded-md hover:bg-gray-100"
+                        onClick={closeMenu}
+                      >
+                        <Briefcase className="h-4 w-4 mr-3" />
+                        <span>Search Jobs</span>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link 
+                        to="/salons" 
+                        className="flex items-center px-3 py-2 rounded-md hover:bg-gray-100"
+                        onClick={closeMenu}
+                      >
+                        <Store className="h-4 w-4 mr-3" />
+                        <span>Browse Salons</span>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link 
+                        to="/pricing" 
+                        className="flex items-center px-3 py-2 rounded-md hover:bg-gray-100"
+                        onClick={closeMenu}
+                      >
+                        <DollarSign className="h-4 w-4 mr-3" />
+                        <span>Pricing</span>
+                      </Link>
+                    </li>
                   </ul>
-                </motion.div>
-                
-                {/* VIP ACCESS Section */}
-                <motion.div variants={itemVariants} className="mb-6">
-                  <h3 className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider px-2">
-                    VIP Access
-                  </h3>
-                  <ul>
-                    <VipMenuItem icon={Rocket} label="Early Access Dashboard" path="/early-access-dashboard" badge="VIP" />
-                    <VipMenuItem icon={Gift} label="Referral Program" path="/referral-program" badge="REWARDS" />
+                </div>
+
+                {/* VIP Access Section */}
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-500 mb-2.5">VIP ACCESS</h3>
+                  <ul className="space-y-2">
+                    <li>
+                      <Link 
+                        to="/early-access-dashboard" 
+                        className="flex items-center px-3 py-2 rounded-md bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-100"
+                        onClick={closeMenu}
+                      >
+                        <Rocket className="h-4 w-4 mr-3 text-purple-600" />
+                        <span className="text-purple-700">Early Access</span>
+                        <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-yellow-100 text-yellow-800 font-medium">
+                          VIP
+                        </span>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link 
+                        to="/referral-program" 
+                        className="flex items-center px-3 py-2 rounded-md bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-100"
+                        onClick={closeMenu}
+                      >
+                        <Gift className="h-4 w-4 mr-3 text-purple-600" />
+                        <span className="text-purple-700">Referral Program</span>
+                        <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-yellow-100 text-yellow-800 font-medium">
+                          VIP
+                        </span>
+                      </Link>
+                    </li>
                   </ul>
-                </motion.div>
-                
-                {/* Quick Actions Grid */}
-                <motion.div variants={itemVariants} className="mb-6">
-                  <h3 className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider px-2">Quick Actions</h3>
-                  <motion.div className="grid grid-cols-4 gap-2" variants={itemVariants}>
-                    <QuickActionButton icon={Rocket} label="Dashboard" />
-                    <QuickActionButton icon={Gift} label="Rewards" />
-                    <QuickActionButton icon={Star} label="VIP Access" />
-                    <QuickActionButton icon={BarChart} label="Referrals" />
-                  </motion.div>
-                </motion.div>
-                
-                {/* ACCOUNT Section */}
-                <motion.div variants={itemVariants}>
-                  <h3 className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider px-2">Account</h3>
-                  <ul>
+                </div>
+
+                {/* Quick Actions */}
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-500 mb-2.5">QUICK ACTIONS</h3>
+                  <ul className="grid gap-2">
+                    <li>
+                      <Link 
+                        to="/dashboard" 
+                        className="flex items-center px-3 py-2 rounded-md bg-gray-50 hover:bg-gray-100"
+                        onClick={closeMenu}
+                      >
+                        <span className="mr-2">🚀</span>
+                        <span>Go to Dashboard</span>
+                        <ChevronRight className="h-4 w-4 ml-auto" />
+                      </Link>
+                    </li>
+                    <li>
+                      <Link 
+                        to="/rewards" 
+                        className="flex items-center px-3 py-2 rounded-md bg-gray-50 hover:bg-gray-100"
+                        onClick={closeMenu}
+                      >
+                        <span className="mr-2">🎁</span>
+                        <span>Claim Rewards</span>
+                        <ChevronRight className="h-4 w-4 ml-auto" />
+                      </Link>
+                    </li>
+                    <li>
+                      <Link 
+                        to="/vip-access" 
+                        className="flex items-center px-3 py-2 rounded-md bg-gray-50 hover:bg-gray-100"
+                        onClick={closeMenu}
+                      >
+                        <span className="mr-2">⭐</span>
+                        <span>My VIP Access</span>
+                        <ChevronRight className="h-4 w-4 ml-auto" />
+                      </Link>
+                    </li>
+                    <li>
+                      <Link 
+                        to="/referrals" 
+                        className="flex items-center px-3 py-2 rounded-md bg-gray-50 hover:bg-gray-100"
+                        onClick={closeMenu}
+                      >
+                        <span className="mr-2">📈</span>
+                        <span>Track Referrals</span>
+                        <ChevronRight className="h-4 w-4 ml-auto" />
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Account Section */}
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-500 mb-2.5">ACCOUNT</h3>
+                  <ul className="space-y-2">
                     {user ? (
                       <>
-                        <RegularMenuItem icon={Rocket} label="Dashboard" path="/dashboard" />
-                        <RegularMenuItem icon={User} label="Profile" path="/profile" />
-                        <motion.li variants={itemVariants}>
-                          <button
-                            onClick={handleSignOut}
-                            className="w-full flex items-center p-3 rounded-lg text-left mb-1 text-red-600 hover:bg-red-50 transition-colors"
+                        <li>
+                          <Link 
+                            to="/dashboard" 
+                            className="flex items-center px-3 py-2 rounded-md hover:bg-gray-100"
+                            onClick={closeMenu}
                           >
-                            <span className="mr-3 flex items-center justify-center w-8 h-8 rounded-full bg-red-100">
-                              <X className="w-4 h-4 text-red-600" />
-                            </span>
-                            <span className="text-sm font-medium">Sign Out</span>
+                            <Award className="h-4 w-4 mr-3" />
+                            <span>Dashboard</span>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link 
+                            to="/profile" 
+                            className="flex items-center px-3 py-2 rounded-md hover:bg-gray-100"
+                            onClick={closeMenu}
+                          >
+                            <User className="h-4 w-4 mr-3" />
+                            <span>Profile</span>
+                          </Link>
+                        </li>
+                        <li>
+                          <button 
+                            onClick={() => {
+                              handleSignOut();
+                              closeMenu();
+                            }}
+                            className="flex w-full items-center px-3 py-2 rounded-md hover:bg-red-50 text-red-600"
+                          >
+                            <LogOut className="h-4 w-4 mr-3" />
+                            <span>Sign Out</span>
                           </button>
-                        </motion.li>
+                        </li>
                       </>
                     ) : (
                       <>
-                        <RegularMenuItem icon={User} label="Sign In" path="/auth/signin" />
-                        <motion.li variants={itemVariants}>
-                          <Link
-                            to="/auth/signup"
-                            className="flex items-center p-3 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 mb-1 transition-colors"
+                        <li>
+                          <Link 
+                            to="/login" 
+                            className="flex items-center px-3 py-2 rounded-md hover:bg-gray-100"
                             onClick={closeMenu}
                           >
-                            <span className="mr-3 flex items-center justify-center w-8 h-8 rounded-full bg-indigo-500/30 text-white">
-                              <User className="w-4 h-4" />
-                            </span>
-                            <span className="text-sm font-medium">Sign Up</span>
+                            <User className="h-4 w-4 mr-3" />
+                            <span>Login</span>
                           </Link>
-                        </motion.li>
+                        </li>
+                        <li>
+                          <Link 
+                            to="/signup" 
+                            className="flex w-full items-center justify-center px-4 py-2 rounded-md bg-primary text-white"
+                            onClick={closeMenu}
+                          >
+                            Sign Up
+                          </Link>
+                        </li>
                       </>
                     )}
                   </ul>
-                </motion.div>
+                </div>
               </div>
-              
-              {/* Sticky VIP Footer */}
-              <motion.div 
-                variants={itemVariants}
-                className="p-4 border-t border-gray-200 bg-gradient-to-r from-purple-50 to-indigo-50"
-              >
+
+              {/* Sticky VIP Upgrade Footer */}
+              <div className="sticky bottom-0 mt-auto bg-gradient-to-r from-purple-600 to-indigo-600 p-3 text-white">
                 <Link 
-                  to="/early-access-dashboard" 
-                  className="block w-full p-3 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-center relative overflow-hidden group"
+                  to="/early-access-dashboard"
                   onClick={closeMenu}
+                  className="flex items-center justify-center gap-2 text-center font-medium"
                 >
-                  {/* Subtle pulse animation */}
-                  <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-200 animate-pulse"></span>
-                  <span className="text-sm font-medium">🌟 Upgrade to VIP — Limited Time Offer</span>
+                  <span className="text-lg">🌟</span> 
+                  <span>Upgrade to VIP — Limited Time Offer</span>
                 </Link>
-              </motion.div>
+              </div>
             </motion.div>
           </>
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 };
 
