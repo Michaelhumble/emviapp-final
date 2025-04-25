@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -49,15 +48,14 @@ const Index = () => {
     <Layout>
       <Hero />
       
-      {/* Early Access Dashboard Link */}
-      <div className="flex justify-center mt-4 mb-8">
+      {/* Early Access Dashboard Link - Made more prominent */}
+      <div className="flex justify-center mt-6 mb-10">
         <Button 
-          variant="outline" 
-          className="border-emvi-accent text-emvi-accent hover:bg-emvi-accent/10"
+          className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:shadow-lg transition-all shadow px-8 py-6 rounded-md text-lg"
           asChild
         >
           <Link to="/early-access-dashboard">
-            🎉 Early Access Dashboard
+            🎉 Access Your Early Pioneer Dashboard
           </Link>
         </Button>
       </div>
