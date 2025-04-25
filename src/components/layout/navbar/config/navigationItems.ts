@@ -6,5 +6,5 @@ export const mainNavigationItems: NavigationItem[] = [
   { label: "Artists", path: "/artists", isPrimary: false },
   { label: "Salons", path: "/salons", isPrimary: false },
   { label: "Jobs", path: "/jobs", isPrimary: false },
-  { label: "Early Access", path: "/early-access-dashboard", isPrimary: true }
+  { label: "Early Access", path: "/early-access-dashboard", isPrimary: true, highlight: true }
 ];
