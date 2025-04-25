@@ -244,6 +244,6 @@ const MenuButton = ({
 };
 
 // Import missing icons
-import { Award, DollarSign } from "lucide-react";
+import { Award, DollarSign, User } from "lucide-react";
 
 export default MobileMenu;
