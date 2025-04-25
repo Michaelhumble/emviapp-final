@@ -75,11 +75,24 @@ const ArtistDashboardInner = () => {
     return <ArtistLoadingState />;
   }
 
-  // Error states
+  // Error states - Here's where the type error was
   if (dataError || authError || loadingTimeout) {
+    // Convert the error value to the expected type (string | Error)
+    let errorToDisplay: string | Error;
+    
+    if (dataError) {
+      errorToDisplay = dataError;
+    } else if (authError) {
+      // Convert boolean to an Error object
+      errorToDisplay = new Error("Authentication error occurred");
+    } else {
+      // Handle timeout case
+      errorToDisplay = new Error("Dashboard loading timed out");
+    }
+    
     return (
       <ArtistErrorState 
-        error={dataError || authError || new Error("Dashboard loading timed out")} 
+        error={errorToDisplay} 
       />
     );
   }
