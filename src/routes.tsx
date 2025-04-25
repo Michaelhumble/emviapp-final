@@ -54,6 +54,7 @@ import Contact from './pages/Contact';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
 import Cookies from './pages/Cookies';
+import EarlyAccessDashboard from './pages/EarlyAccessDashboard';
 
 import { AuthRedirect } from './components/auth/AuthRedirect';
 
@@ -313,6 +314,10 @@ const routes = [
   {
     path: '/dashboard/artist/portfolio',
     element: <PortfolioManagerPage />
+  },
+  {
+    path: '/early-access-dashboard',
+    element: <EarlyAccessDashboard />,
   },
   {
     path: '*',
