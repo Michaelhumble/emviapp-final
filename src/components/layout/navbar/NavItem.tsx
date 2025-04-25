@@ -8,43 +8,18 @@ interface NavItemProps {
 }
 
 export const NavItem = ({ item }: NavItemProps) => {
-  const { path, label, title, isPrimary, highlight } = item;
-  // Use label if available, otherwise fall back to title
-  const displayText = label || title;
-  
-  if (highlight) {
-    return (
-      <Link 
-        to={path} 
-        className="relative group"
-      >
-        <motion.span 
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.98 }}
-          className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full text-sm font-medium overflow-hidden"
-        >
-          {/* Subtle animation effect */}
-          <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-200 animate-pulse"></span>
-          <span className="z-10">🚀 {displayText}</span>
-          {/* VIP indicator */}
-          <span className="ml-1.5 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] bg-white/20 text-white rounded-sm font-bold tracking-wide">
-            VIP
-          </span>
-        </motion.span>
-      </Link>
-    );
-  }
+  const { path, title, isPrimary } = item;
   
   return (
     <Link 
       to={path} 
-      className={`text-sm font-medium ${
+      className={`text-sm font-medium font-playfair ${
         isPrimary 
           ? "text-primary hover:text-primary/80" 
           : "text-gray-700 hover:text-primary"
       }`}
     >
-      {displayText}
+      {title}
     </Link>
   );
 };

@@ -1,6 +1,5 @@
 
-import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
 import EmviLogo from "@/components/branding/EmviLogo";
@@ -9,26 +8,13 @@ import { UserMenu } from "./navbar/UserMenu";
 import AuthButtons from "./navbar/AuthButtons";
 import MobileMenu from "./navbar/MobileMenu";
 import LanguageToggle from "@/components/layout/LanguageToggle";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Determine if we're on an explore page
-  const isExplorePage = 
-    location.pathname.includes('/artists') || 
-    location.pathname.includes('/salons') || 
-    location.pathname.includes('/jobs') || 
-    location.pathname.includes('/salon-marketplace') || 
-    location.pathname.includes('/freelancers') ||
-    location.pathname.includes('/explore');
-  
-  // Determine if we're on a profile setup page
-  const isProfileSetupPage = 
-    location.pathname.includes('/profile/') && 
-    location.pathname.includes('/setup');
-
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
@@ -38,12 +24,13 @@ const Navbar = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
       <div className="container flex items-center justify-between mx-auto h-16 px-4">
+        {/* Logo */}
         <Link to="/" className="flex items-center">
           <EmviLogo size="small" />
         </Link>
 
-        {/* Main navigation (hidden on mobile) */}
-        <div className="hidden md:block">
+        {/* Main navigation - centered (hidden on mobile) */}
+        <div className="hidden md:flex justify-center flex-grow">
           <MainNavigation />
         </div>
 

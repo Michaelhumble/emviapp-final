@@ -42,11 +42,6 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
     },
   };
 
-  // Get the primary menu items we want to display
-  const menuItems = mainNavigationItems.filter(item => 
-    ["Artists", "Salons", "Jobs", "Community"].includes(item.title || "")
-  );
-
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild className="md:hidden">
@@ -71,7 +66,7 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
           initial="hidden"
           animate="show"
         >
-          {menuItems.map((item, index) => (
+          {mainNavigationItems.map((item, index) => (
             <motion.div key={index} variants={itemVariants}>
               <Link
                 to={item.path}
