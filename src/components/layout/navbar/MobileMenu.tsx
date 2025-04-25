@@ -52,11 +52,11 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
       </SheetTrigger>
       <SheetContent
         side="right"
-        className="mobile-glass-drawer w-full max-w-[80vw] overflow-y-auto pb-safe-area"
+        className="mobile-glass-drawer w-full max-w-[80vw] bg-white/95 backdrop-blur-sm overflow-y-auto pb-safe-area border-l border-gray-200"
       >
         {/* Menu header with language toggle */}
         <div className="flex justify-between items-center py-4 px-2 mb-6">
-          <LanguageToggle minimal={false} className="text-white" />
+          <LanguageToggle minimal={false} />
         </div>
 
         {/* Primary Navigation links */}
@@ -70,7 +70,7 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
             <motion.div key={index} variants={itemVariants}>
               <Link
                 to={item.path}
-                className="flex items-center gap-3 px-2 py-3 text-lg font-medium text-white rounded-lg transition duration-200 hover:bg-white/10"
+                className="flex items-center gap-3 px-2 py-3 text-lg font-medium text-gray-800 rounded-lg transition duration-200 hover:bg-gray-100"
                 onClick={() => setOpen(false)}
               >
                 {item.icon && <item.icon className="h-5 w-5" />}
@@ -82,11 +82,11 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
 
         {/* Sign in/out section */}
         <div className="mt-auto pt-10">
-          <div className="border-t border-white/10 pt-5">
+          <div className="border-t border-gray-200 pt-5">
             {user ? (
               <Button
                 variant="outline"
-                className="w-full bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white"
+                className="w-full"
                 onClick={() => {
                   handleSignOut();
                   setOpen(false);
@@ -103,7 +103,7 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
                 >
                   <Button
                     variant="outline"
-                    className="w-full bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white"
+                    className="w-full"
                   >
                     Sign In
                   </Button>

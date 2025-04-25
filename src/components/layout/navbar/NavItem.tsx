@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import { NavigationItem } from "../navbar/types";
+import { NavigationItem } from "./types";
 import { motion } from "framer-motion";
 
 interface NavItemProps {
@@ -8,7 +8,9 @@ interface NavItemProps {
 }
 
 export const NavItem = ({ item }: NavItemProps) => {
-  const { path, title, isPrimary } = item;
+  // Use title or fall back to label if title isn't available
+  const displayText = item.title || item.label;
+  const { path, isPrimary } = item;
   
   return (
     <Link 
@@ -19,7 +21,7 @@ export const NavItem = ({ item }: NavItemProps) => {
           : "text-gray-700 hover:text-primary"
       }`}
     >
-      {title}
+      {displayText}
     </Link>
   );
 };

@@ -2,8 +2,8 @@
 import { LucideIcon } from "lucide-react";
 
 export interface NavigationItem {
-  label?: string;
-  title?: string;
+  title: string;
+  label?: string; // Make label optional
   path: string;
   isPrimary?: boolean;
   icon?: LucideIcon;
