@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -84,14 +83,14 @@ const DepositOptions = () => {
 
   return (
     <section className="space-y-12">
-      <div className="text-center">
-        <h2 className="text-3xl font-bold font-playfair mb-4">
+      <div className="text-center space-y-4">
+        <h2 className="text-3xl md:text-4xl font-bold font-playfair bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
           {t({
             english: "Not ready for full commitment?",
             vietnamese: "Chưa sẵn sàng cam kết đầy đủ?"
           })}
         </h2>
-        <p className="text-xl text-gray-600">
+        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
           {t({
             english: "Reserve your spot with a small deposit",
             vietnamese: "Đặt chỗ của bạn với một khoản đặt cọc nhỏ"
@@ -109,18 +108,18 @@ const DepositOptions = () => {
             transition={{ duration: 0.5, delay: index * 0.1 }}
           >
             <Card className={`h-full transform transition-all duration-300 hover:scale-[1.02] ${
-              plan.featured ? 'shadow-xl ring-2 ring-emvi-accent/20' : 'shadow-lg'
+              plan.featured ? 'shadow-xl ring-2 ring-emvi-accent' : 'shadow-lg hover:shadow-xl'
             }`}>
               <div className={`bg-gradient-to-r ${
                 plan.featured 
-                  ? 'from-emvi-accent/20 to-purple-200/20' 
-                  : 'from-gray-50 to-gray-100/50'
+                  ? 'from-emvi-accent to-purple-400' 
+                  : 'from-gray-100 to-gray-200'
               } h-2 rounded-t-lg`} />
               
               <CardHeader>
                 <CardTitle className="text-xl text-center">
                   {t(plan.title)}
-                  <div className="text-3xl font-bold mt-4">
+                  <div className="text-3xl font-bold mt-4 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
                     ${plan.price}
                     <span className="text-base ml-1 text-gray-500">
                       {t({
@@ -145,7 +144,7 @@ const DepositOptions = () => {
 
               <CardFooter className="pt-4">
                 <Button 
-                  className={`w-full ${
+                  className={`w-full transform transition-all duration-200 ${
                     plan.featured 
                       ? 'bg-emvi-accent hover:bg-emvi-accent/90' 
                       : 'bg-gray-800 hover:bg-gray-700'
