@@ -109,3 +109,4 @@ const LanguageToggle: React.FC<LanguageToggleProps> = ({ className, minimal = fa
 };
 
 export default LanguageToggle;
+

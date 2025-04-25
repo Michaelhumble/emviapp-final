@@ -64,3 +64,4 @@ export const getTranslation = (
   const lang = getLanguagePreference();
   return translations[lang]?.[key] || translations['en']?.[key] || fallback || key;
 };
+
