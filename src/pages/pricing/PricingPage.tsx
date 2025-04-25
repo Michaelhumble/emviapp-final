@@ -5,6 +5,7 @@ import LanguageToggle from '@/components/ui/LanguageToggle';
 import FoundingMemberOffer from '@/components/pricing/FoundingMemberOffer';
 import DepositOptions from '@/components/pricing/DepositOptions';
 import ReferralRewards from '@/components/pricing/ReferralRewards';
+import ClientManagementSection from '@/components/pricing/ClientManagementSection';
 import PricingFAQ from '@/components/pricing/PricingFAQ';
 import FinalCTA from '@/components/pricing/FinalCTA';
 
@@ -19,6 +20,7 @@ const PricingPage = () => {
         <FoundingMemberOffer />
         <DepositOptions />
         <ReferralRewards />
+        <ClientManagementSection />
         <PricingFAQ />
         <FinalCTA />
       </div>
