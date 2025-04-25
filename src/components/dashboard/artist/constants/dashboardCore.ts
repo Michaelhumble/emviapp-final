@@ -13,7 +13,12 @@ export const CORE_FEATURES = {
   PROFILE_COMPLETION: 'profile_completion'
 } as const;
 
-export const CORE_COMPONENTS = {
+// Define explicit type for component arrays
+type CoreComponentList = readonly string[];
+
+export const CORE_COMPONENTS: {
+  [K in keyof typeof CORE_FEATURES]: CoreComponentList;
+} = {
   [CORE_FEATURES.PORTFOLIO]: [
     'PortfolioShowcase',
     'PortfolioManager',
@@ -38,7 +43,7 @@ export const CORE_COMPONENTS = {
     'ProfileCompletionGuard',
     'ProfileCompletionWarning'
   ]
-} as const;
+};
 
 export const CORE_FEATURE_DESCRIPTIONS = {
   [CORE_FEATURES.PORTFOLIO]: 'Portfolio management is essential for artist credibility',
