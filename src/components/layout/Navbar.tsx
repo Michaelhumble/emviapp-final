@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
@@ -48,8 +49,10 @@ const Navbar = () => {
 
         {/* Auth buttons or user menu with language toggle */}
         <div className="flex items-center gap-2 md:gap-3">
-          {/* Language toggle always visible */}
-          <LanguageToggle minimal={true} className="mr-1" />
+          {/* Language toggle always visible on desktop */}
+          <div className="hidden md:block">
+            <LanguageToggle minimal={true} className="mr-1" />
+          </div>
           
           {/* Auth buttons or user menu (hidden on mobile) */}
           <div className="hidden md:block">
@@ -60,7 +63,7 @@ const Navbar = () => {
             )}
           </div>
           
-          {/* Mobile menu button */}
+          {/* Mobile menu button - enhanced premium version */}
           <MobileMenu 
             user={user}
             handleSignOut={handleSignOut}
