@@ -1,4 +1,6 @@
 
+import { User, Session } from '@supabase/supabase-js';
+
 export type UserRole = 'customer' | 'artist' | 'salon' | 'freelancer' | 'manager' | 'admin' | 'nail technician/artist' | 'owner' | 'vendor' | 'supplier' | 'beauty supplier' | 'renter' | 'other';
 
 export interface UserProfile {
@@ -31,11 +33,34 @@ export interface UserProfile {
   preferences?: string[];
   profile_completion?: number;
   independent?: boolean;
-  badges: any[] | Json;
+  badges: any[] | Record<string, any>;
   booking_url?: string;
   contact_link?: string;
   completed_profile_tasks?: string[];
   boosted_until?: string;
+  
+  // Additional properties used in components
+  skills?: string[];
+  years_experience?: number;
+  profile_views?: number;
+  username?: string;
+  custom_role?: string;
+  is_premium?: boolean;
+  
+  // Customer-specific fields
+  favorite_artist_types?: string[];
+  artistTypes?: string[];
+  birthday?: string | null;
+  communication_preferences?: string[];
+  commPrefs?: string[];
+  creditsThisMonth?: number;
+  
+  // Salon-specific fields
+  salon_name?: string;
+  company_name?: string;
+  
+  // Legacy/compatibility fields
+  user_id?: string;
 }
 
 export interface AuthContextType {

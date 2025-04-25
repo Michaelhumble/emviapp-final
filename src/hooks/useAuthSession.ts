@@ -1,8 +1,65 @@
-
-import { useState, useEffect } from 'react';
-import { User, Session } from '@supabase/supabase-js';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { User, Session } from '@supabase/supabase-js';
 import { UserProfile, UserRole } from '@/context/auth/types';
+
+const profileAdapter = (rawProfileData: any): UserProfile => {
+  if (!rawProfileData) return null;
+
+  return {
+    id: rawProfileData.id,
+    full_name: rawProfileData.full_name || '',
+    email: rawProfileData.email || '',
+    phone: rawProfileData.phone || '',
+    bio: rawProfileData.bio || '',
+    specialty: rawProfileData.specialty || '',
+    location: rawProfileData.location || '',
+    avatar_url: rawProfileData.avatar_url || '',
+    role: rawProfileData.role || 'customer',
+    created_at: rawProfileData.created_at || '',
+    updated_at: rawProfileData.updated_at || '',
+    instagram: rawProfileData.instagram || '',
+    website: rawProfileData.website || '',
+    preferred_language: rawProfileData.preferred_language || 'en',
+    referral_code: rawProfileData.referral_code || '',
+    affiliate_code: rawProfileData.affiliate_code || '',
+    booking_url: rawProfileData.booking_url || '',
+    boosted_until: rawProfileData.boosted_until || null,
+    portfolio_urls: Array.isArray(rawProfileData.portfolio_urls) ? rawProfileData.portfolio_urls : [],
+    credits: typeof rawProfileData.credits === 'number' ? rawProfileData.credits : 0,
+    contact_link: rawProfileData.contact_link || '',
+    badges: rawProfileData.badges || [],
+    accepts_bookings: Boolean(rawProfileData.accepts_bookings),
+    preferences: Array.isArray(rawProfileData.preferences) ? rawProfileData.preferences : [],
+    completed_profile_tasks: Array.isArray(rawProfileData.completed_profile_tasks) ? rawProfileData.completed_profile_tasks : [],
+    profile_completion: typeof rawProfileData.profile_completion === 'number' ? rawProfileData.profile_completion : 0,
+    
+    // Handle additional properties used by components
+    user_id: rawProfileData.id, // Use ID as user_id for compatibility
+    favorite_artist_types: rawProfileData.favorite_artist_types || [],
+    artistTypes: rawProfileData.favorite_artist_types || [],
+    communication_preferences: rawProfileData.communication_preferences || [],
+    commPrefs: rawProfileData.communication_preferences || [],
+    birthday: rawProfileData.birthday || null,
+    
+    // Artist-specific fields
+    skills: rawProfileData.skills || [],
+    years_experience: rawProfileData.years_experience || 0,
+    
+    // Premium-related fields
+    is_premium: Boolean(rawProfileData.is_premium),
+    
+    // Salon-specific fields
+    salon_name: rawProfileData.salon_name || '',
+    company_name: rawProfileData.company_name || '',
+    
+    // Others
+    username: rawProfileData.username || '',
+    custom_role: rawProfileData.custom_role || '',
+    profile_views: rawProfileData.profile_views || 0,
+    creditsThisMonth: rawProfileData.creditsThisMonth || 0,
+  };
+};
 
 export interface AuthState {
   user: User | null;
@@ -24,7 +81,6 @@ export interface AuthState {
   updateProfile: (data: Partial<UserProfile>) => Promise<{ success: boolean; error?: Error }>;
 }
 
-// Helper function to normalize role string to UserRole type
 const normalizeRole = (role: string): UserRole => {
   const validRoles: UserRole[] = [
     'customer', 'artist', 'salon', 'freelancer', 'manager', 'admin', 
@@ -51,14 +107,11 @@ export const useAuthSession = (): AuthState => {
   const [error, setError] = useState<Error | null>(null);
   const [isNewUser, setIsNewUser] = useState(false);
 
-  // Initialize auth state
   useEffect(() => {
-    // Get current session
     const initializeAuth = async () => {
       try {
         setLoading(true);
         
-        // Get current session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
@@ -74,7 +127,6 @@ export const useAuthSession = (): AuthState => {
           setLoading(false);
         }
         
-        // Setup auth state listener
         const { data: { subscription } } = await supabase.auth.onAuthStateChange(
           async (event, session) => {
             console.log('Auth state changed:', event);
@@ -120,45 +172,11 @@ export const useAuthSession = (): AuthState => {
       }
       
       if (data) {
-        // Process profile data and ensure role is properly typed
-        // Normalize fields to support all required properties
-        const profile: UserProfile = {
-          ...data,
-          id: data.id,
-          email: data.email || '',
-          full_name: data.full_name || '',
-          role: data.role ? normalizeRole(data.role) : 'customer',
-          avatar_url: data.avatar_url || '',
-          
-          // Map database fields that might have different names
-          userId: data.user_id || data.id,
-          user_id: data.user_id || data.id,
-          
-          // Customer-specific fields
-          favorite_artist_types: data.favorite_artist_types || [],
-          artistTypes: data.favorite_artist_types || data.artistTypes || [],
-          communication_preferences: data.communication_preferences || [],
-          commPrefs: data.communication_preferences || data.commPrefs || [],
-          birthday: data.birthday || null,
-          
-          // Artist-specific fields
-          skills: data.skills || [],
-          years_experience: data.years_experience || 0,
-          portfolio_urls: data.portfolio_urls || [],
-          custom_role: data.custom_role || '',
-          is_premium: !!data.is_premium,
-          
-          // Add other fields with safe defaults
-          profile_views: typeof data.profile_views === 'number' ? data.profile_views : 0,
-          creditsThisMonth: typeof data.credits_this_month === 'number' ? data.credits_this_month : 0,
-          credits: typeof data.credits === 'number' ? data.credits : 0,
-          referral_count: typeof data.referral_count === 'number' ? data.referral_count : 0,
-        };
+        const profile = profileAdapter(data);
         
         setUserProfile(profile);
         setUserRole(profile.role || 'customer');
       } else {
-        // User exists in auth but not in profile table
         setIsNewUser(true);
       }
     } catch (err) {
@@ -181,39 +199,7 @@ export const useAuthSession = (): AuthState => {
       if (error) throw error;
       
       if (data) {
-        // Process profile data with normalized role and fields
-        const profile: UserProfile = {
-          ...data,
-          id: data.id,
-          email: data.email || '',
-          full_name: data.full_name || '',
-          role: data.role ? normalizeRole(data.role) : 'customer',
-          avatar_url: data.avatar_url || '',
-          
-          // Map database fields that might have different names
-          userId: data.user_id || data.id,
-          user_id: data.user_id || data.id,
-          
-          // Customer-specific fields
-          favorite_artist_types: data.favorite_artist_types || [],
-          artistTypes: data.favorite_artist_types || data.artistTypes || [],
-          communication_preferences: data.communication_preferences || [],
-          commPrefs: data.communication_preferences || data.commPrefs || [],
-          birthday: data.birthday || null,
-          
-          // Artist-specific fields
-          skills: data.skills || [],
-          years_experience: data.years_experience || 0,
-          portfolio_urls: data.portfolio_urls || [],
-          custom_role: data.custom_role || '',
-          is_premium: !!data.is_premium,
-          
-          // Add other fields with safe defaults
-          profile_views: typeof data.profile_views === 'number' ? data.profile_views : 0,
-          creditsThisMonth: typeof data.credits_this_month === 'number' ? data.credits_this_month : 0,
-          credits: typeof data.credits === 'number' ? data.credits : 0,
-          referral_count: typeof data.referral_count === 'number' ? data.referral_count : 0,
-        };
+        const profile = profileAdapter(data);
         
         setUserProfile(profile);
         setUserRole(profile.role || 'customer');

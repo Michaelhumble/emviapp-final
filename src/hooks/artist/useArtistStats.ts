@@ -9,7 +9,9 @@ export const useArtistStats = (artistId: string | undefined) => {
     completed_services: 0,
     total_earnings: 0,
     average_rating: 0,
-    referral_count: 0
+    referral_count: 0,
+    repeat_client_percentage: 0,
+    profile_views: 0
   });
   const [isLoadingStats, setIsLoadingStats] = useState(true);
 
@@ -28,7 +30,9 @@ export const useArtistStats = (artistId: string | undefined) => {
         completed_services: bookings?.filter(b => b.status === 'completed').length || 0,
         total_earnings: 0, // Fetch from earnings table if needed
         average_rating: 0,
-        referral_count: 0
+        referral_count: 0,
+        repeat_client_percentage: 0, // Calculate if needed
+        profile_views: 0 // Fetch from profile views table if needed
       };
       
       setStats(counts);
