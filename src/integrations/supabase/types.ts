@@ -634,6 +634,27 @@ export type Database = {
         }
         Relationships: []
       }
+      default_artist_data: {
+        Row: {
+          content: Json
+          created_at: string | null
+          data_type: string
+          id: string
+        }
+        Insert: {
+          content: Json
+          created_at?: string | null
+          data_type: string
+          id?: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string | null
+          data_type?: string
+          id?: string
+        }
+        Relationships: []
+      }
       followers: {
         Row: {
           artist_id: string

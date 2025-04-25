@@ -1,49 +1,34 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageSquare } from "lucide-react";
-import { motion } from "framer-motion";
+import { MessageSquareReply } from "lucide-react";
 import { Link } from "react-router-dom";
-import { toast } from "sonner";
+import { useAuth } from "@/context/auth";
 
-// Mock messages data
-const messages = [
-  {
-    id: 1,
-    name: "Jessica Miller",
-    avatar: "https://i.pravatar.cc/100?img=5",
-    message: "Hi, I'd like to book an appointment for next Tuesday if you're available.",
-    time: "2h ago",
-    unread: true
-  },
-  {
-    id: 2,
-    name: "David Thompson",
-    avatar: "https://i.pravatar.cc/100?img=3",
-    message: "Thanks for the amazing service yesterday! I've already received so many compliments.",
-    time: "1d ago",
-    unread: false
-  },
-  {
-    id: 3,
-    name: "Emma Davis",
-    avatar: "https://i.pravatar.cc/100?img=9",
-    message: "Quick question - do you have any availability this weekend?",
-    time: "2d ago",
-    unread: false
-  }
-];
+export default function MessagesPreview() {
+  const { userProfile } = useAuth();
+  const isNewArtist = !userProfile?.profile_completion || userProfile.profile_completion < 20;
 
-const MessagesPreview = () => {
-  const handleMessageClick = (messageId) => {
-    toast.info("Message feature coming soon", { 
-      description: "Full messaging functionality is under development.",
-      duration: 3000
-    });
-  };
+  const welcomeMessages = [
+    {
+      id: 1,
+      name: "EmviApp Team",
+      avatar: "/lovable-uploads/emvi-team-avatar.png",
+      message: "Welcome to EmviApp! We're excited to have you join our community of talented artists.",
+      time: "just now"
+    },
+    {
+      id: 2,
+      name: "EmviApp Support",
+      avatar: "/lovable-uploads/emvi-support-avatar.png",
+      message: "Need help getting started? Reach out anytime - we're here to help you succeed!",
+      time: "just now"
+    }
+  ];
+
+  const messages = isNewArtist ? welcomeMessages : [];
 
   return (
-    <Card className="border-0 shadow-sm">
+    <Card className="bg-gradient-to-br from-white via-purple-50 to-pink-50 border-0 shadow-sm rounded-2xl">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-medium">Recent Messages</CardTitle>
       </CardHeader>
@@ -63,7 +48,12 @@ const MessagesPreview = () => {
               className={`p-3 rounded-lg flex items-start space-x-3 cursor-pointer hover:opacity-90 transition-opacity ${
                 message.unread ? "bg-purple-50 border border-purple-100" : "bg-gray-50 border border-gray-100"
               }`}
-              onClick={() => handleMessageClick(message.id)}
+              onClick={() => {
+                toast.info("Message feature coming soon", { 
+                  description: "Full messaging functionality is under development.",
+                  duration: 3000
+                });
+              }}
             >
               <img
                 src={message.avatar}
@@ -90,13 +80,11 @@ const MessagesPreview = () => {
               });
             }}
           >
-            <MessageSquare className="h-4 w-4 mr-2" />
+            <MessageSquareReply className="h-4 w-4 mr-2" />
             View All Messages
           </Button>
         </motion.div>
       </CardContent>
     </Card>
   );
-};
-
-export default MessagesPreview;
+}
