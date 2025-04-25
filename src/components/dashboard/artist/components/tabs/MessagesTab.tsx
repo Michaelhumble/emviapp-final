@@ -46,7 +46,6 @@ const MessagesTab = () => {
         
         {testRecipient ? (
           <FallbackBoundary
-            errorMessage="Could not load chat messages"
             fallback={
               <Card className="p-8 text-center">
                 <MessageSquare className="h-12 w-12 mx-auto text-purple-300 mb-3" />
