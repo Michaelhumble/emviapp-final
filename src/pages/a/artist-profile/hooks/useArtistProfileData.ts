@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile } from "@/types/profile";
@@ -85,7 +84,7 @@ export const useArtistProfileData = (username: string | undefined) => {
       };
       
       setProfile(artistProfile);
-      setViewCount(artistProfile.profile_views || 0);
+      setViewCount((userData as any).view_count || 0);
       
       // Fetch portfolio images
       if (userData.id) {

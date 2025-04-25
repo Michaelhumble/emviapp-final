@@ -1,10 +1,7 @@
+
 import React, { useEffect } from 'react';
-import {
-  Routes,
-  Route,
-  useLocation,
-} from 'react-router-dom';
-import { AuthProvider } from '@/context/auth';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { ReliableAuthProvider } from '@/context/auth';
 import { SalonProvider } from '@/context/salon';
 import { SubscriptionProvider } from '@/context/subscription';
 import { NotificationProvider } from '@/context/notification';
@@ -21,7 +18,7 @@ function App() {
   }, [location.pathname]);
 
   return (
-    <AuthProvider>
+    <ReliableAuthProvider>
       <SalonProvider>
         <SubscriptionProvider>
           <NotificationProvider>
@@ -39,7 +36,7 @@ function App() {
           </NotificationProvider>
         </SubscriptionProvider>
       </SalonProvider>
-    </AuthProvider>
+    </ReliableAuthProvider>
   );
 }
 

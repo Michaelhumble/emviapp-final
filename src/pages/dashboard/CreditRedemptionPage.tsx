@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
@@ -169,7 +168,23 @@ const CreditRedemptionPage = () => {
         const currentBadges = userProfile?.badges || [];
         
         // Check if user already has the verified badge
-        if (!currentBadges.some((badge: any) => badge.type === 'verified')) {
+        const hasBadge = (badges: Record<string, any> | any[] | undefined, badgeType: string): boolean => {
+          if (!badges) return false;
+          
+          if (Array.isArray(badges)) {
+            return badges.some(badge => 
+              badge === badgeType || 
+              (typeof badge === 'object' && badge?.type === badgeType)
+            );
+          }
+          
+          return Object.values(badges).some(badge => 
+            badge === badgeType || 
+            (typeof badge === 'object' && badge?.type === badgeType)
+          );
+        };
+        
+        if (!hasBadge(currentBadges, 'verified')) {
           const updatedBadges = [
             ...currentBadges,
             { 
