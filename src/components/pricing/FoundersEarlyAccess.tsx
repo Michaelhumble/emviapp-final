@@ -29,6 +29,7 @@ const FoundersEarlyAccess = () => {
     },
     {
       id: 'salon',
+      featured: true,
       title: {
         english: 'Salon Pro Pass',
         vietnamese: 'Vé Chuyên Nghiệp Salon'
@@ -64,45 +65,9 @@ const FoundersEarlyAccess = () => {
   ];
 
   return (
-    <section className="py-12 px-4 bg-gradient-to-b from-white to-[#F8F7FF]">
-      <div className="container mx-auto">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="text-center mb-12"
-        >
-          <Badge 
-            variant="outline" 
-            className="mb-4 bg-primary/5 text-primary px-4 py-1.5"
-          >
-            {t({
-              english: "Limited Time Offer",
-              vietnamese: "Ưu Đãi Có Thời Hạn"
-            })}
-          </Badge>
-          <h2 className="text-3xl md:text-4xl font-playfair font-bold mb-4">
-            {t({
-              english: "🎉 Founder's Early Access",
-              vietnamese: "🎉 Quyền Truy Cập Sớm Của Người Sáng Lập"
-            })}
-          </h2>
-          <h3 className="text-xl md:text-2xl text-emvi-dark mb-4">
-            {t({
-              english: "Unlock 3 Months FREE + Lifetime Discount!",
-              vietnamese: "Mở Khóa 3 Tháng MIỄN PHÍ + Giảm Giá Trọn Đời!"
-            })}
-          </h3>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            {t({
-              english: "Reserve your spot today with a small deposit and be part of EmviApp's VIP launch community.",
-              vietnamese: "Đặt chỗ ngay hôm nay với một khoản đặt cọc nhỏ và trở thành một phần của cộng đồng ra mắt VIP của EmviApp."
-            })}
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+    <section className="py-20 bg-gradient-to-b from-white to-gray-50/50">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {foundersPlans.map((plan, index) => (
             <motion.div
               key={plan.id}
@@ -111,10 +76,26 @@ const FoundersEarlyAccess = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="h-full backdrop-blur-sm bg-white/90 border border-gray-100 shadow-lg hover:shadow-xl transition-all duration-300">
+              <Card className={`h-full transform transition-all duration-300 hover:scale-[1.02] ${
+                plan.featured ? 'shadow-xl ring-2 ring-emvi-accent/20' : 'shadow-lg'
+              }`}>
+                <div className={`bg-gradient-to-r ${
+                  plan.featured 
+                    ? 'from-emvi-accent/20 to-purple-200/20' 
+                    : 'from-gray-50 to-gray-100/50'
+                } h-2 rounded-t-lg`} />
+                
                 <CardHeader>
-                  <CardTitle className="flex flex-col items-center">
-                    <span className="text-xl mb-4">{t(plan.title)}</span>
+                  <CardTitle className="flex flex-col items-center space-y-4">
+                    {plan.featured && (
+                      <Badge 
+                        variant="outline" 
+                        className="mb-2 bg-emvi-accent/5 text-emvi-accent border-emvi-accent/20"
+                      >
+                        Most Popular
+                      </Badge>
+                    )}
+                    <span className="text-xl font-semibold">{t(plan.title)}</span>
                     <div className="text-3xl font-bold font-serif">
                       ${plan.price}
                       <span className="text-base ml-1 text-gray-500">
@@ -126,14 +107,20 @@ const FoundersEarlyAccess = () => {
                     </div>
                   </CardTitle>
                 </CardHeader>
+
                 <CardContent>
                   <p className="text-center text-gray-600 mb-6">
                     {t(plan.description)}
                   </p>
                 </CardContent>
-                <CardFooter className="flex flex-col gap-4">
+
+                <CardFooter>
                   <Button 
-                    className="w-full bg-emvi-accent hover:bg-emvi-accent/90"
+                    className={`w-full ${
+                      plan.featured 
+                        ? 'bg-emvi-accent hover:bg-emvi-accent/90' 
+                        : 'bg-gray-800 hover:bg-gray-700'
+                    }`}
                     size="lg"
                     onClick={() => window.location.href = plan.stripeLink}
                   >
@@ -144,21 +131,6 @@ const FoundersEarlyAccess = () => {
             </motion.div>
           ))}
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.6 }}
-          className="text-center"
-        >
-          <p className="text-emvi-accent font-medium">
-            {t({
-              english: "🚨 Limited Spots Available — Offer expires soon.",
-              vietnamese: "🚨 Số Lượng Chỗ Có Hạn — Ưu đãi sẽ hết hạn sớm."
-            })}
-          </p>
-        </motion.div>
       </div>
     </section>
   );
