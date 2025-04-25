@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
-import { LanguageToggle } from '@/components/ui/LanguageToggle';
+import LanguageToggle from '@/components/ui/LanguageToggle';
 import PricingHero from '@/components/pricing/PricingHero';
 import FounderOffer from '@/components/pricing/FounderOffer';
 import DepositOptions from '@/components/pricing/DepositOptions';
