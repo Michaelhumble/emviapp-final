@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -26,6 +25,9 @@ import MissingPieceSection from "@/components/home/missing-piece";
 import EnhancedAIFeatures from "@/components/home/EnhancedAIFeatures";
 import FinalFounderCTA from "@/components/home/FinalFounderCTA";
 import SalonGrowthSection from "@/components/home/SalonGrowthSection";
+import SalonClientGrowthSystem from "@/components/home/SalonClientGrowthSystem";
+import WhyTrustSection from "@/components/home/sections/WhyTrustSection";
+import WhatYouCanDoSection from "@/components/home/sections/WhatYouCanDoSection";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -46,25 +48,41 @@ const Index = () => {
   
   return (
     <Layout>
+      {/* Keep Hero section as first */}
       <Hero />
       
-      <FounderMessage />
+      {/* Move Client Growth System section here */}
+      <SalonClientGrowthSystem />
       
+      {/* Display Real Job Listings + Expired Posts */}
       <MarketProofSection />
-      <SalonGrowthSection />
+      
+      {/* Keep Why Artists Love EmviApp */}
       <ArtistTestimonials />
-      <MissingPieceSection />
-      <DynamicListingGrid />
+      
+      {/* Keep Let's Experience EmviApp Together section */}
+      <EmotionalClosingSection />
+      
+      {/* Combine AI Features and What You Can Do sections */}
       <EnhancedAIFeatures />
-      <FreelancersHighlight />
-      <TrustFirstPanel />
+      <WhatYouCanDoSection />
+      
+      {/* Add Trust Section */}
+      <WhyTrustSection />
+      
+      {/* Final CTA buttons */}
+      <CallToAction />
+      
+      {/* Related components that should stay in relative position */}
       <FeaturedSalons />
       <JobsHighlight />
       <ArtistCallout />
-      <Testimonials />
-      <EmotionalClosingSection />
+      <FreelancersHighlight />
+      <TrustFirstPanel />
+      
+      {/* Move From The Founder to the very bottom */}
+      <FounderMessage />
       <FinalFounderCTA />
-      <CallToAction />
       
       {user && userId && (
         <RoleSelectionModal 
