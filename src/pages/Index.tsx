@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
-import ArtistTestimonials from "@/components/home/ArtistTestimonials";
+import ClientSuccessStories from "@/components/home/ClientSuccessStories";
 import FeaturedSalons from "@/components/home/FeaturedSalons";
 import JobsHighlight from "@/components/home/JobsHighlight";
 import ArtistCallout from "@/components/home/ArtistCallout";
+import FreelancersHighlight from "@/components/home/FreelancersHighlight";
 import Testimonials from "@/components/home/Testimonials";
 import CallToAction from "@/components/home/CallToAction";
 import { useAuth } from "@/context/auth";
@@ -14,7 +15,6 @@ import { useRoleSelection } from "@/hooks/useRoleSelection";
 import AIPowerhouse from "@/components/home/AIPowerhouse";
 import AITeam from "@/components/home/AITeam";
 import TrustFirstPanel from "@/components/home/TrustFirstPanel";
-import FreelancersHighlight from "@/components/home/FreelancersHighlight";
 
 // Enhanced homepage components
 import DynamicListingGrid from "@/components/home/DynamicListingGrid";
@@ -53,8 +53,8 @@ const Index = () => {
       {/* Move Client Growth System section here */}
       <SalonClientGrowthSystem />
       
-      {/* Keep Why Artists Love EmviApp */}
-      <ArtistTestimonials />
+      {/* Replace ArtistTestimonials with ClientSuccessStories */}
+      <ClientSuccessStories />
       
       {/* Keep Let's Experience EmviApp Together section */}
       <EmotionalClosingSection />
