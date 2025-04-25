@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
+import { Crown } from 'lucide-react';
 
 const FinalCTA = () => {
   const { t } = useTranslation();
@@ -16,26 +17,27 @@ const FinalCTA = () => {
     >
       <h2 className="text-3xl md:text-4xl font-bold font-playfair">
         {t({
-          english: "Secure Your Future in the Beauty Industry",
-          vietnamese: "Đảm bảo Tương lai của Bạn trong Ngành Làm đẹp"
+          english: "Join the Beauty Industry's Elite Founders Circle",
+          vietnamese: "Tham gia Câu lạc bộ Người sáng lập Ưu tú của Ngành Làm đẹp"
         })}
       </h2>
 
       <p className="text-xl text-gray-600">
         {t({
-          english: "Join thousands of beauty professionals already growing with EmviApp.",
-          vietnamese: "Tham gia cùng hàng nghìn chuyên gia làm đẹp đang phát triển với EmviApp."
+          english: "Be part of the revolution that's transforming the beauty industry forever.",
+          vietnamese: "Hãy là một phần của cuộc cách mạng đang biến đổi ngành làm đẹp mãi mãi."
         })}
       </p>
 
       <Button 
         size="lg" 
-        className="bg-emvi-accent hover:bg-emvi-accent/90 transform hover:scale-[1.02] transition-all duration-200"
+        className="bg-emvi-accent hover:bg-emvi-accent/90 transform hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl px-8 py-5 text-lg"
         onClick={() => window.location.href = '/checkout?plan=founding_member'}
       >
+        <Crown className="mr-2 h-5 w-5" />
         {t({
-          english: "Get Started Now",
-          vietnamese: "Bắt đầu Ngay"
+          english: "Join the Founders Circle",
+          vietnamese: "Tham gia Câu lạc bộ Người sáng lập"
         })}
       </Button>
     </motion.section>

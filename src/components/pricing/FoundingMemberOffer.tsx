@@ -3,27 +3,27 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
-import { Check, Crown } from 'lucide-react';
+import { Check, Crown, Sparkles } from 'lucide-react';
 
 const FoundingMemberOffer = () => {
   const { t } = useTranslation();
 
   const benefits = [
     { 
-      english: "Lifetime Discount",
+      english: "Lifetime Premium Discount",
       vietnamese: "Giảm giá trọn đời"
     },
     {
-      english: "3 Months Free",
-      vietnamese: "Miễn phí 3 tháng"
+      english: "Exclusive VIP Profile Badge",
+      vietnamese: "Huy hiệu VIP độc quyền"
     },
     {
-      english: "VIP Profile Badge",
-      vietnamese: "Huy hiệu VIP trên hồ sơ"
+      english: "Early Feature Access",
+      vietnamese: "Truy cập tính năng sớm"
     },
     {
-      english: "Priority Support",
-      vietnamese: "Hỗ trợ ưu tiên"
+      english: "Priority Support Access",
+      vietnamese: "Quyền truy cập hỗ trợ ưu tiên"
     }
   ];
 
@@ -47,8 +47,8 @@ const FoundingMemberOffer = () => {
               <Crown className="w-4 h-4 mr-2" />
               <span className="text-sm font-medium">
                 {t({
-                  english: "Founding Member Special",
-                  vietnamese: "Ưu đãi Thành viên Sáng lập"
+                  english: "EmviApp Founders Circle",
+                  vietnamese: "Câu Lạc Bộ Người Sáng Lập EmviApp"
                 })}
               </span>
             </motion.div>
@@ -57,6 +57,12 @@ const FoundingMemberOffer = () => {
               <span className="text-2xl text-gray-400 line-through">$5,999/year</span>
               <span className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-emvi-accent to-purple-600 bg-clip-text text-transparent">
                 $99/year
+              </span>
+              <span className="text-amber-600 font-semibold">
+                {t({
+                  english: "Limited Founder Access",
+                  vietnamese: "Truy cập người sáng lập có giới hạn"
+                })}
               </span>
             </div>
           </div>
@@ -83,8 +89,8 @@ const FoundingMemberOffer = () => {
               onClick={() => window.location.href = '/checkout?plan=founding_member'}
             >
               {t({
-                english: "Join as Founding Member",
-                vietnamese: "Tham gia với Tư cách Thành viên Sáng lập"
+                english: "Unlock My VIP Access",
+                vietnamese: "Mở Khóa Quyền Truy Cập VIP Của Tôi"
               })}
             </Button>
           </div>

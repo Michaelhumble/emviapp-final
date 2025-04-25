@@ -3,7 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
-import { Gift, ArrowUp, Star } from 'lucide-react';
+import { Gift, ArrowUp, Star, Award } from 'lucide-react';
 
 const ReferralRewards = () => {
   const { t } = useTranslation();
@@ -12,45 +12,45 @@ const ReferralRewards = () => {
     {
       icon: Star,
       title: {
-        english: "EmviApp Credits",
-        vietnamese: "Tín dụng EmviApp"
+        english: "Exclusive Perks",
+        vietnamese: "Đặc quyền độc quyền"
       },
       description: {
-        english: "Get EmviApp Credits for every friend who signs up",
-        vietnamese: "Nhận tín dụng EmviApp cho mỗi người bạn đăng ký"
+        english: "Profile boosts, premium themes, and priority visibility in search results",
+        vietnamese: "Tăng cường hồ sơ, chủ đề cao cấp và hiển thị ưu tiên trong kết quả tìm kiếm"
       }
     },
     {
       icon: ArrowUp,
       title: {
-        english: "Premium Perks Access",
-        vietnamese: "Truy cập đặc quyền cao cấp"
+        english: "Status Growth",
+        vietnamese: "Tăng trưởng trạng thái"
       },
       description: {
-        english: "Use credits for profile boosts, premium features, and special discounts",
-        vietnamese: "Sử dụng tín dụng để tăng cường hồ sơ, tính năng cao cấp và giảm giá đặc biệt"
+        english: "The more friends you invite, the higher your VIP status climbs with exclusive benefits",
+        vietnamese: "Càng nhiều bạn bè bạn mời, trạng thái VIP của bạn càng cao với những lợi ích độc quyền"
       }
     },
     {
       icon: Star,
       title: {
-        english: "VIP Rewards",
-        vietnamese: "Phần thưởng VIP"
+        english: "VIP Recognition",
+        vietnamese: "Công nhận VIP"
       },
       description: {
-        english: "The more friends you invite, the more VIP rewards you unlock",
-        vietnamese: "Càng mời nhiều bạn bè, bạn càng mở khóa nhiều phần thưởng VIP"
+        english: "Top referrers receive special recognition and exclusive platform opportunities",
+        vietnamese: "Người giới thiệu hàng đầu nhận được sự công nhận đặc biệt và cơ hội nền tảng độc quyền"
       }
     },
     {
       icon: Gift,
       title: {
-        english: "Surprise Bonuses",
-        vietnamese: "Thưởng bất ngờ"
+        english: "Surprise Rewards",
+        vietnamese: "Phần thưởng bất ngờ"
       },
       description: {
-        english: "Top referrers receive surprise bonuses and recognition!",
-        vietnamese: "Người giới thiệu hàng đầu nhận được thưởng bất ngờ và sự công nhận!"
+        english: "Unlock mystery bonuses as you reach new referral milestones",
+        vietnamese: "Mở khóa phần thưởng bí ẩn khi bạn đạt được các cột mốc giới thiệu mới"
       }
     }
   ];
@@ -77,10 +77,17 @@ const ReferralRewards = () => {
 
           <h2 className="text-3xl md:text-4xl font-bold font-playfair bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
             {t({
-              english: "Invite Friends. Earn Credits. Unlock Exclusive Perks!",
-              vietnamese: "Mời bạn bè. Kiếm tín dụng. Mở khóa đặc quyền!"
+              english: "Invite Friends. Earn Perks. Grow Your Status.",
+              vietnamese: "Mời bạn bè. Nhận đặc quyền. Nâng cao trạng thái của bạn."
             })}
           </h2>
+          
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            {t({
+              english: "Every invite unlocks exclusive bonuses like profile boosts, premium themes, and surprise rewards.",
+              vietnamese: "Mỗi lời mời mở khóa các phần thưởng độc quyền như tăng cường hồ sơ, chủ đề cao cấp và phần thưởng bất ngờ."
+            })}
+          </p>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-6 max-w-5xl mx-auto">
@@ -109,19 +116,18 @@ const ReferralRewards = () => {
         <div className="text-center space-y-6">
           <p className="text-lg text-gray-600 italic">
             {t({
-              english: "There's no limit — grow your network and enjoy exclusive benefits before anyone else.",
-              vietnamese: "Không có giới hạn — phát triển mạng lưới của bạn và tận hưởng lợi ích độc quyền trước mọi người."
+              english: "Top referrers will receive special recognition and exclusive opportunities within the EmviApp ecosystem.",
+              vietnamese: "Người giới thiệu hàng đầu sẽ nhận được sự công nhận đặc biệt và cơ hội độc quyền trong hệ sinh thái EmviApp."
             })}
           </p>
 
           <Button 
             size="lg" 
             className="bg-emvi-accent hover:bg-emvi-accent/90 transform hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl"
-            onClick={() => {}} // Mock function for now
           >
             {t({
-              english: "Get My Referral Link",
-              vietnamese: "Nhận Liên kết Giới thiệu của Tôi"
+              english: "Boost My Beauty Business",
+              vietnamese: "Tăng cường Doanh nghiệp Làm đẹp của Tôi"
             })}
           </Button>
         </div>
