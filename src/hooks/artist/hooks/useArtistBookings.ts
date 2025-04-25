@@ -3,19 +3,26 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
-import { Booking, BookingCounts } from "@/types/booking";
+import { BookingCounts } from "@/types/booking";
 
-export interface BookingWithDetails extends Booking {
+export interface Booking {
+  id: string;
   sender_id: string;
   recipient_id: string;
+  client_name?: string;
   client_avatar?: string;
   service_id?: string;
+  service_name?: string;
   service_type?: string;
+  date_requested?: string;
+  time_requested?: string;
+  status: 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled';
+  note?: string;
   created_at: string;
 }
 
 export const useArtistBookings = () => {
-  const [bookings, setBookings] = useState<BookingWithDetails[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [serviceTypes, setServiceTypes] = useState<string[]>([]);
@@ -44,10 +51,10 @@ export const useArtistBookings = () => {
       // Convert database status strings to our enum type
       const typedBookings = (data || []).map(booking => ({
         ...booking,
-        status: booking.status as BookingWithDetails["status"]
+        status: booking.status as 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled'
       }));
       
-      setBookings(typedBookings as BookingWithDetails[]);
+      setBookings(typedBookings);
       
       // Extract unique service types
       const uniqueServiceTypes = Array.from(

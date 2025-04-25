@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Index from './pages/Index';
 import Welcome from './pages/Welcome';
@@ -39,7 +38,6 @@ import MyBookingsPage from './pages/MyBookingsPage';
 import BoothDetail from './pages/booths/BoothDetail';
 import BoothsIndex from './pages/booths/BoothsIndex';
 import AdminDashboard from './pages/admin/AdminDashboard';
-import BookingCalendar from './pages/dashboard/artist/BookingCalendar';
 
 // Import the setup pages
 import ArtistProfileSetup from './pages/profile/artist/setup';
@@ -131,10 +129,6 @@ const routes = [
   {
     path: '/dashboard/artist',
     element: <ArtistDashboard />,
-  },
-  {
-    path: '/dashboard/artist/booking-calendar',
-    element: <BookingCalendar />,
   },
   {
     path: '/dashboard/customer',

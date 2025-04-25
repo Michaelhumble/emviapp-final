@@ -12,6 +12,7 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
   if (!userId) return null;
   
   try {
+    // Get user profile data
     const { data, error } = await supabase
       .from('users')
       .select('*')
@@ -19,8 +20,11 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       .single();
     
     if (error) throw error;
+    
     if (!data) return null;
     
+    // Transform database record to UserProfile type with safe fallbacks
+    // Use type assertion and optional chaining to safely access properties
     const profile: UserProfile = {
       id: data.id,
       full_name: data.full_name || '',
@@ -33,33 +37,43 @@ export const fetchUserProfile = async (userId: string): Promise<UserProfile | nu
       role: (data.role as UserRole) || 'customer',
       created_at: data.created_at || '',
       updated_at: data.updated_at || '',
+      
+      // Social media fields
       instagram: data.instagram || '',
       website: data.website || '',
+      
+      // Additional fields with safe access using optional chaining and type casting
+      salon_name: (data as any).salon_name || '',
+      company_name: (data as any).company_name || '',
       preferred_language: data.preferred_language || 'en',
+      profile_views: typeof (data as any).profile_views === 'number' ? (data as any).profile_views : 0,
+      account_type: (data as any).account_type || 'free',
       referral_code: data.referral_code || '',
-      affiliate_code: data.referral_code || '',
+      affiliate_code: data.referral_code || '', // Map referral_code to affiliate_code for compatibility
+      referral_count: typeof (data as any).referral_count === 'number' ? (data as any).referral_count : 0,
       booking_url: data.booking_url || '',
       boosted_until: data.boosted_until || null,
+      skills: Array.isArray((data as any).skills) ? (data as any).skills : [],
       portfolio_urls: Array.isArray(data.portfolio_urls) ? data.portfolio_urls : [],
       credits: typeof data.credits === 'number' ? data.credits : 0,
+      custom_role: data.custom_role || '',
       contact_link: data.contact_link || '',
-      badges: data.badges || [],
+      badges: Array.isArray(data.badges) ? data.badges : [],
       accepts_bookings: Boolean(data.accepts_bookings),
       preferences: Array.isArray(data.preferences) ? data.preferences : [],
       completed_profile_tasks: Array.isArray(data.completed_profile_tasks) ? data.completed_profile_tasks : [],
-      profile_completion: typeof data.profile_completion === 'number' ? data.profile_completion : 0,
-      // Optional mappings for non-core fields that may be referenced across the app
-      custom_role: data.custom_role || '',
-      skills: Array.isArray(data.skills) ? data.skills : [],
-      years_experience: typeof data.years_experience === 'number' ? data.years_experience : undefined,
-      salon_name: data.salon_name || '',
+      years_experience: typeof (data as any).years_experience === 'number' ? (data as any).years_experience : 0,
+      professional_name: (data as any).professional_name || ''
     };
     
+    // Also update the cache for faster subsequent access
     cacheProfile(userId, profile, profile.role || null);
+    
     return profile;
   } catch (error) {
     console.error('Error fetching user profile:', error);
-    if ((error as any)?.code !== 'PGRST116') {  
+    // Only show toast in interactive contexts, not during initial loading
+    if ((error as any)?.code !== 'PGRST116') { // Not the "No rows returned" error
       toast.error('Failed to load profile information');
     }
     return null;
@@ -76,10 +90,12 @@ export const createUserProfile = async (user: any): Promise<UserProfile | null> 
   }
   
   try {
+    // Extract basic information from user object
     const email = user.email || '';
     const fullName = user.user_metadata?.full_name || '';
     const role = (user.user_metadata?.role as UserRole) || 'customer';
     
+    // Default profile data
     const profileData = {
       id: user.id,
       email,
@@ -91,12 +107,14 @@ export const createUserProfile = async (user: any): Promise<UserProfile | null> 
       completed_profile_tasks: [],
     };
     
+    // Insert new profile into database
     const { error } = await supabase
       .from('users')
       .upsert(profileData);
     
     if (error) throw error;
     
+    // Fetch the full profile after creating
     return await fetchUserProfile(user.id);
   } catch (error) {
     console.error('Error creating user profile:', error);
@@ -116,15 +134,18 @@ export const updateUserProfile = async (profile: Partial<UserProfile>): Promise<
   }
   
   try {
+    // Convert any number values for created_at to string to satisfy TypeScript
     const updateData: Record<string, any> = {
       ...profile,
       updated_at: new Date().toISOString()
     };
     
+    // Ensure created_at is a string if it exists
     if (updateData.created_at && typeof updateData.created_at === 'number') {
       updateData.created_at = new Date(updateData.created_at).toISOString();
     }
     
+    // Update profile in database
     const { error } = await supabase
       .from('users')
       .update(updateData)
@@ -134,6 +155,7 @@ export const updateUserProfile = async (profile: Partial<UserProfile>): Promise<
     
     toast.success('Profile updated successfully');
     
+    // Fetch the updated profile - this also updates the cache
     return await fetchUserProfile(profile.id);
   } catch (error) {
     console.error('Error updating user profile:', error);

@@ -1,11 +1,9 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import ArtistDashboardContent from './ArtistDashboardContent';
 import { useArtistData } from './context/ArtistDataContext';
 import { ArtistDataProvider } from './context/ArtistDataContext';
-import ArtistLoadingState from './components/ArtistLoadingState';
-import ArtistErrorState from './ArtistErrorState';
 
 const ArtistDashboard = () => {
   return (
@@ -16,40 +14,7 @@ const ArtistDashboard = () => {
 };
 
 const ArtistDashboardInner = () => {
-  const { loading, error } = useArtistData();
-  const [showTimeoutError, setShowTimeoutError] = useState(false);
-  
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-    
-    if (loading) {
-      timeoutId = setTimeout(() => {
-        setShowTimeoutError(true);
-      }, 10000);
-    }
-    
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-    };
-  }, [loading]);
-  
-  if (showTimeoutError && loading) {
-    return (
-      <ArtistErrorState 
-        error={new Error("We're having trouble loading your dashboard. Please refresh.")}
-      />
-    );
-  }
-  
-  if (error) {
-    return <ArtistErrorState error={error} />;
-  }
-  
-  if (loading) {
-    return <ArtistLoadingState />;
-  }
+  const { loading } = useArtistData();
   
   return (
     <motion.div

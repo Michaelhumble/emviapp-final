@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -17,7 +16,6 @@ export const useRoleSignUp = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check for referral code in URL
     const params = new URLSearchParams(window.location.search);
     const ref = params.get("ref");
     if (ref) {

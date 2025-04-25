@@ -9,9 +9,7 @@ import ReferralsTab from "./tabs/ReferralsTab";
 import ClientsTab from "./tabs/ClientsTab";
 import QuickActions from "./QuickActions";
 import EarningsTabContent from "./tabs/EarningsTabContent";
-import CalendarTab from "./tabs/CalendarTab";
 import { useArtistDashboardData } from "../hooks/useArtistDashboardData";
-import { useNavigate } from "react-router-dom";
 
 const tabs = [
   { id: "Overview", label: "Overview", visible: true },
@@ -21,7 +19,7 @@ const tabs = [
   { id: "Messages", label: "Messages", visible: true },
   { id: "Referrals", label: "Referrals", visible: true },
   { id: "Earnings", label: "Earnings", visible: true },
-  { id: "Calendar", label: "Calendar", visible: true },
+  { id: "Calendar", label: "Calendar", visible: false },
   { id: "Services", label: "Services", visible: false }
 ];
 
@@ -35,7 +33,6 @@ const tabVariants = {
 
 export default function ArtistDashboardContent() {
   const [activeTab, setActiveTab] = useState("Overview");
-  const navigate = useNavigate();
 
   // Add useArtistDashboardData hook to get required props for OverviewTab
   const {
@@ -55,11 +52,6 @@ export default function ArtistDashboardContent() {
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     localStorage.setItem('artist_dashboard_tab', tab);
-    
-    // Navigate to full calendar page when calendar tab is clicked
-    if (tab === "Calendar") {
-      navigate("/dashboard/artist/booking-calendar");
-    }
   };
 
   return (
@@ -104,8 +96,6 @@ export default function ArtistDashboardContent() {
         {activeTab === "Messages" && <MessagesTab />}
         {activeTab === "Referrals" && <ReferralsTab />}
         {activeTab === "Earnings" && <EarningsTabContent />}
-        {/* We don't render CalendarTab directly anymore as we navigate to the full page */}
-        {activeTab === "Calendar" && <div className="text-center py-10 text-gray-500">Navigating to calendar view...</div>}
       </div>
     </div>
   );

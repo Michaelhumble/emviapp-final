@@ -1,124 +1,161 @@
 
 import React, { useState } from 'react';
-import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, List, Plus, Share2 } from "lucide-react";
-import { motion } from "framer-motion";
-import { toast } from "sonner";
-import WeeklyCalendarView from "./WeeklyCalendarView";
-import MonthlyCalendarView from "./MonthlyCalendarView";
-import BookingList from "./BookingList";
-import BookingModal from "./BookingModal";
+import { CalendarDays, ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { format, addWeeks, subWeeks } from 'date-fns';
 import { useArtistCalendar } from "@/hooks/useArtistCalendar";
+import { BookingStateWrapper } from "@/components/booking/BookingStateWrapper";
+import WeeklyCalendarView from './WeeklyCalendarView';
+import ArtistBookingDialog from './ArtistBookingDialog';
+import BlockTimeDialog from './BlockTimeDialog';
 
 const ArtistBookingCalendar = () => {
-  const [calendarView, setCalendarView] = useState<'week' | 'month' | 'list'>('week');
-  const [showBookingModal, setShowBookingModal] = useState(false);
-  const { currentDate } = useArtistCalendar();
+  const {
+    currentDate,
+    appointments,
+    blockedTimes,
+    isLoadingAppointments,
+    isLoadingBlockedTimes,
+    appointmentsError,
+    blockedTimesError,
+    isBookingDialogOpen,
+    isBlockTimeDialogOpen,
+    selectedBooking,
+    selectedBlockedTime,
+    setIsBookingDialogOpen,
+    setIsBlockTimeDialogOpen,
+    goToPreviousWeek,
+    goToNextWeek,
+    goToToday,
+    openAddBookingDialog,
+    openEditBookingDialog,
+    openBlockTimeDialog,
+    openEditBlockedTimeDialog,
+    saveAppointment,
+    saveBlockedTime,
+    deleteAppointment,
+    deleteBlockedTime
+  } = useArtistCalendar();
+
+  // Combine errors if any exist
+  const error = appointmentsError || blockedTimesError || null;
   
-  const handleCopyBookingLink = () => {
-    navigator.clipboard.writeText('https://emvi.app/book/michael-artist');
-    toast.success('Booking link copied to clipboard!');
+  // Handle selecting a time slot on the calendar
+  const handleSelectTimeSlot = (date: Date, hour: number) => {
+    // Create a date object with the selected hour
+    const selectedDate = new Date(date);
+    selectedDate.setHours(hour, 0, 0, 0);
+    
+    // Check if this time is already booked or blocked
+    const isBooked = appointments.some(apt => 
+      format(new Date(apt.start_time), "yyyy-MM-dd HH:00") === format(selectedDate, "yyyy-MM-dd HH:00")
+    );
+    
+    const isBlocked = blockedTimes.some(block =>
+      format(new Date(block.start_time), "yyyy-MM-dd HH:00") === format(selectedDate, "yyyy-MM-dd HH:00")
+    );
+    
+    if (!isBooked && !isBlocked) {
+      // Open booking dialog with this time slot
+      openAddBookingDialog(selectedDate);
+    }
+  };
+
+  // Fixed event handlers for button clicks
+  const handleAddBookingClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    openAddBookingDialog();
+  };
+
+  const handlePreviousWeekClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    goToPreviousWeek();
+  };
+
+  const handleTodayClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    goToToday();
+  };
+
+  const handleNextWeekClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    goToNextWeek();
+  };
+
+  const handleBlockTimeClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    openBlockTimeDialog();
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="container mx-auto px-4 py-8 max-w-7xl"
-    >
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-serif text-gray-800">Booking Calendar</h1>
-          <p className="text-gray-600 mt-1">Manage your appointments and schedule</p>
-        </div>
-
-        <div className="flex flex-wrap gap-3">
-          <Button 
-            onClick={() => setShowBookingModal(true)}
-            className="bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-md hover:shadow-lg transition-shadow"
-          >
-            <Plus className="mr-1 h-4 w-4" /> New Appointment
-          </Button>
+    <Card className="overflow-hidden">
+      <CardHeader>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <CardTitle className="text-xl font-serif">Booking Calendar</CardTitle>
+            <CardDescription>Manage your schedule and client appointments</CardDescription>
+          </div>
           
-          <Button
-            variant="outline"
-            onClick={handleCopyBookingLink}
-            className="border-purple-200 hover:border-purple-300"
-          >
-            <Share2 className="mr-1 h-4 w-4" /> Copy Booking Link
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={handlePreviousWeekClick}>
+              <ChevronLeft className="h-4 w-4 mr-1" /> Previous
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleTodayClick}>
+              Today
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleNextWeekClick}>
+              Next <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
         </div>
-      </div>
-
-      <Card className="mb-8 bg-white/90 backdrop-blur-sm border-0 shadow-md rounded-xl overflow-hidden">
-        <div className="p-4 md:p-6 border-b border-gray-100 bg-gradient-to-r from-purple-50 to-pink-50">
-          <div className="flex justify-between items-center">
-            <Tabs 
-              value={calendarView} 
-              onValueChange={(v) => setCalendarView(v as 'week' | 'month' | 'list')}
-              className="w-[400px]"
-            >
-              <TabsList className="bg-white/50 backdrop-blur-sm">
-                <TabsTrigger value="week" className="flex items-center">
-                  <CalendarDays className="h-3.5 w-3.5 mr-1.5" />
-                  Weekly
-                </TabsTrigger>
-                <TabsTrigger value="month" className="flex items-center">
-                  <CalendarDays className="h-3.5 w-3.5 mr-1.5" />
-                  Monthly
-                </TabsTrigger>
-                <TabsTrigger value="list" className="flex items-center">
-                  <List className="h-3.5 w-3.5 mr-1.5" />
-                  List
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-            
-            <div className="text-sm text-gray-500 hidden md:block">
-              {calendarView === 'week' 
-                ? 'View and manage your week at a glance' 
-                : calendarView === 'month'
-                ? 'See your entire month\'s schedule'
-                : 'List view of all appointments'}
-            </div>
+      </CardHeader>
+      
+      <CardContent>
+        <div className="mb-4 flex flex-col sm:flex-row justify-between gap-2">
+          <div className="flex gap-2">
+            <Button size="sm" onClick={handleAddBookingClick}>
+              <Plus className="h-4 w-4 mr-1" /> Add Booking
+            </Button>
+            <Button size="sm" variant="outline" onClick={handleBlockTimeClick}>
+              Block Time
+            </Button>
+          </div>
+          
+          <div className="text-sm text-muted-foreground">
+            <CalendarDays className="h-4 w-4 inline mr-1" />
+            {format(currentDate, "MMMM d, yyyy")}
           </div>
         </div>
         
-        <div>
-          <TabsContent value="week" className="m-0 p-6 focus:outline-none">
-            <WeeklyCalendarView currentDate={currentDate} bookings={[]} />
-          </TabsContent>
-          
-          <TabsContent value="month" className="m-0 focus:outline-none">
-            <MonthlyCalendarView />
-          </TabsContent>
-          
-          <TabsContent value="list" className="m-0 focus:outline-none">
-            <div className="p-6">
-              <BookingList />
-            </div>
-          </TabsContent>
-        </div>
-      </Card>
-
-      <div className="rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 p-4 border border-purple-100 flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
-        <div>
-          <h3 className="font-medium text-gray-800">Automated Client Reminders</h3>
-          <p className="text-sm text-gray-600">Clients will receive automatic reminders 24h before appointments.</p>
-        </div>
-        <Button variant="outline" className="border-purple-200 text-purple-700 whitespace-nowrap">
-          Configure
-        </Button>
-      </div>
+        <BookingStateWrapper
+          loading={isLoadingAppointments || isLoadingBlockedTimes}
+          error={error ? new Error(error.message) : null}
+          loadingComponent={<div className="min-h-[500px] flex items-center justify-center">Loading calendar data...</div>}
+        >
+          <WeeklyCalendarView
+            currentDate={currentDate}
+            bookings={appointments}
+            blockedTimes={blockedTimes}
+            onSelectTimeSlot={handleSelectTimeSlot}
+          />
+        </BookingStateWrapper>
+      </CardContent>
       
-      <BookingModal 
-        open={showBookingModal} 
-        onClose={() => setShowBookingModal(false)} 
+      {/* Dialogs */}
+      <ArtistBookingDialog
+        isOpen={isBookingDialogOpen}
+        onClose={() => setIsBookingDialogOpen(false)}
+        onSave={saveAppointment}
+        onDelete={deleteAppointment}
+        booking={selectedBooking}
+        isEditing={!!selectedBooking}
       />
-    </motion.div>
+      
+      <BlockTimeDialog
+        isOpen={isBlockTimeDialogOpen}
+        onClose={() => setIsBlockTimeDialogOpen(false)}
+        onSave={saveBlockedTime}
+        onDelete={deleteBlockedTime}
+        blockedTime={selectedBlockedTime}
+        isEditing={!!selectedBlockedTime}
+      />
+    </Card>
   );
 };
 

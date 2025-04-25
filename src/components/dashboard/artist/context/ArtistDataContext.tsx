@@ -1,231 +1,189 @@
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
-import { ArtistDataContextType, ArtistProfileState, PortfolioImage } from '../types/ArtistDashboardTypes';
-import { toast } from "sonner";
-import { usePortfolioImages } from '@/hooks/portfolio/usePortfolioImages';
+import { PortfolioImage } from '@/types/artist';
 
-interface ArtistData {
-  profile?: any;
-  services?: any[];
-  portfolio?: any[];
+interface ArtistDataContextType {
+  firstName: string;
+  specialty: string;
+  loading: boolean;
+  portfolioCount: number;
+  bookingCount: number;
+  reviewCount: number;
+  averageRating: number;
+  
+  // Artist profile and portfolio data
+  artistProfile: any;
+  refreshArtistProfile: () => Promise<void>;
+  portfolioImages: PortfolioImage[];
+  loadingPortfolio: boolean;
 }
 
-const defaultContextValue: ArtistDataContextType = {
-  data: null,
+const defaultContext: ArtistDataContextType = {
+  firstName: '',
+  specialty: '',
   loading: true,
-  error: null,
-  refetch: async () => {},
-  artistProfile: {},
-  refreshProfile: () => {},
-  refreshArtistProfile: async () => {},
-  updateProfile: async () => {},
-  handleCopyReferralLink: () => {},
-  copied: false,
-  firstName: "",
-  userCredits: 0,
-  portfolioImages: [],
-  loadingPortfolio: true,
-  bookingCount: { total: 0, pending: 0, accepted: 0, completed: 0 },
+  portfolioCount: 0,
+  bookingCount: 0,
   reviewCount: 0,
-  averageRating: 0
+  averageRating: 0,
+  
+  // Default values for additional properties
+  artistProfile: null,
+  refreshArtistProfile: async () => {},
+  portfolioImages: [],
+  loadingPortfolio: true
 };
 
-const ArtistDataContext = createContext<ArtistDataContextType>(defaultContextValue);
+const ArtistDataContext = createContext<ArtistDataContextType>(defaultContext);
 
-export const ArtistDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [data, setData] = useState<ArtistData | null>(null);
+export const ArtistDataProvider = ({ children }: { children: ReactNode }) => {
+  const { userProfile } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  const [artistProfile, setArtistProfile] = useState<ArtistProfileState>({});
-  const [copied, setCopied] = useState(false);
-  const [userCredits, setUserCredits] = useState(0);
-  const { user } = useAuth();
-  const { images: portfolioImages, isLoading: loadingPortfolio } = usePortfolioImages();
-  
-  const [bookingCount, setBookingCount] = useState({ 
-    total: 0, pending: 0, accepted: 0, completed: 0 
+  const [loadingPortfolio, setLoadingPortfolio] = useState(true);
+  const [data, setData] = useState<Omit<ArtistDataContextType, 'loading' | 'loadingPortfolio' | 'refreshArtistProfile'>>({
+    firstName: '',
+    specialty: '',
+    portfolioCount: 0,
+    bookingCount: 0,
+    reviewCount: 0,
+    averageRating: 0,
+    artistProfile: null,
+    portfolioImages: []
   });
-  const [reviewCount, setReviewCount] = useState(0);
-  const [averageRating, setAverageRating] = useState(0);
 
-  const fetchArtistData = async () => {
-    if (!user?.id) return;
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error("Data fetch timeout")), 8000);
-      });
-      
-      const dataFetchPromise = async () => {
-        const { data: profileData, error: profileError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-          
-        if (profileError) throw profileError;
+  // Function to refresh artist profile
+  const refreshArtistProfile = async () => {
+    if (userProfile) {
+      setLoading(true);
+      try {
+        // In a real implementation, this would fetch updated data from an API
+        // For now, we'll just simulate a refresh delay
+        await new Promise(resolve => setTimeout(resolve, 500));
         
-        setArtistProfile(profileData || {});
-        
-        setUserCredits(profileData?.credits || 0);
-        
-        const { data: servicesData, error: servicesError } = await supabase
-          .from('services')
-          .select('*')
-          .eq('user_id', user.id);
-          
-        if (servicesError) throw servicesError;
-        
-        const { data: bookingsData, error: bookingsError } = await supabase
-          .from('bookings')
-          .select('status')
-          .eq('recipient_id', user.id);
-          
-        if (!bookingsError && bookingsData) {
-          const counts = {
-            total: bookingsData.length,
-            pending: bookingsData.filter(b => b.status === 'pending').length,
-            accepted: bookingsData.filter(b => b.status === 'accepted').length,
-            completed: bookingsData.filter(b => b.status === 'completed').length
-          };
-          setBookingCount(counts);
-        }
-        
-        const { data: reviewsData, error: reviewsError } = await supabase
-          .from('reviews')
-          .select('rating')
-          .eq('artist_id', user.id);
-          
-        if (!reviewsError && reviewsData && reviewsData.length > 0) {
-          setReviewCount(reviewsData.length);
-          const totalRating = reviewsData.reduce((sum, review) => sum + review.rating, 0);
-          setAverageRating(parseFloat((totalRating / reviewsData.length).toFixed(1)));
-        }
-        
-        return {
-          profile: profileData,
-          services: servicesData || [],
-        };
-      };
-      
-      const result = await Promise.race([dataFetchPromise(), timeoutPromise]);
-      setData(result as ArtistData);
-      setError(null);
-    } catch (err) {
-      console.error('Error fetching artist data:', err);
-      setError(err instanceof Error ? err : new Error('Failed to load dashboard data'));
-      setData(null);
-    } finally {
-      setLoading(false);
+        // Update the profile data
+        const firstName = userProfile.full_name?.split(' ')[0] || 'Artist';
+        const specialty = userProfile.specialty || 'Nail Artist';
+
+        setData(prev => ({
+          ...prev,
+          firstName,
+          specialty,
+          artistProfile: {
+            ...userProfile,
+            id: userProfile.user_id || userProfile.id,
+          }
+        }));
+      } catch (error) {
+        console.error("Error refreshing artist profile:", error);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
-  const refreshArtistProfile = useCallback(async () => {
-    if (!user?.id) return;
-    
-    try {
-      const { data: profileData, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', user.id)
-        .single();
+  // Load portfolio images
+  useEffect(() => {
+    const loadPortfolio = async () => {
+      setLoadingPortfolio(true);
+      try {
+        // Mock portfolio data
+        const mockPortfolioImages: PortfolioImage[] = [
+          {
+            id: "1",
+            url: "/lovable-uploads/67947adb-5754-4569-aa1c-228d8f9db461.png",
+            title: "French Gradient",
+            description: "Classic French manicure with a modern gradient twist"
+          },
+          {
+            id: "2",
+            url: "/lovable-uploads/70c8662a-4525-4854-a529-62616b5b6c81.png",
+            title: "Minimalist Line Art",
+            description: "Simple yet elegant line art on a neutral base"
+          },
+          {
+            id: "3",
+            url: "/lovable-uploads/81e6d95d-e09b-45f0-a4bc-96358592e462.png",
+            title: "Pink Floral Design",
+            description: "Delicate floral patterns on a soft pink base"
+          },
+          {
+            id: "4",
+            url: "/lovable-uploads/7d585be5-b70d-4d65-b57f-803de81839ba.png",
+            title: "Elegant Marble Pattern",
+            description: "Luxurious marble effect with gold accents"
+          },
+          {
+            id: "5",
+            url: "/lovable-uploads/a3c08446-c1cb-492d-a361-7ec4aca18cfd.png",
+            title: "Geometric Abstract",
+            description: "Bold geometric patterns with contrasting colors"
+          },
+          {
+            id: "6",
+            url: "/lovable-uploads/c9e52825-c7f4-4923-aecf-a92a8799530b.png",
+            title: "Glitter Accent",
+            description: "Subtle glitter accents on a matte base"
+          }
+        ];
         
-      if (error) throw error;
-      
-      setArtistProfile(profileData || {});
-      setUserCredits(profileData?.credits || 0);
-      
-    } catch (err) {
-      console.error('Error refreshing artist profile:', err);
-      toast.error('Failed to refresh profile data');
-    }
-  }, [user?.id]);
-
-  const updateProfile = async (data: Partial<ArtistProfileState>) => {
-    if (!user?.id) return;
-    
-    try {
-      const { error } = await supabase
-        .from('users')
-        .update(data)
-        .eq('id', user.id);
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 300));
         
-      if (error) throw error;
-      
-      setArtistProfile(prev => ({ ...prev, ...data }));
-      toast.success('Profile updated successfully');
-      
-    } catch (err) {
-      console.error('Error updating profile:', err);
-      toast.error('Failed to update profile');
-    }
-  };
-
-  const handleCopyReferralLink = () => {
-    if (!artistProfile.referral_code) return;
+        setData(prev => ({
+          ...prev,
+          portfolioImages: mockPortfolioImages,
+          portfolioCount: mockPortfolioImages.length
+        }));
+      } catch (error) {
+        console.error("Error loading portfolio:", error);
+      } finally {
+        setLoadingPortfolio(false);
+      }
+    };
     
-    try {
-      const referralLink = `${window.location.origin}/sign-up?ref=${artistProfile.referral_code}`;
-      navigator.clipboard.writeText(referralLink);
-      setCopied(true);
-      toast.success('Referral link copied to clipboard!');
-      
-      setTimeout(() => {
-        setCopied(false);
-      }, 3000);
-      
-    } catch (err) {
-      toast.error('Failed to copy link');
-      console.error(err);
+    if (userProfile) {
+      loadPortfolio();
     }
-  };
+  }, [userProfile]);
 
   useEffect(() => {
-    if (user?.id) {
-      fetchArtistData();
-    } else {
+    if (userProfile) {
+      // Extract first name from full name
+      const firstName = userProfile.full_name?.split(' ')[0] || 'Artist';
+      const specialty = userProfile.specialty || 'Nail Artist';
+
+      // Set mock data for now - would be replaced with real API calls
+      setData(prev => ({
+        ...prev,
+        firstName,
+        specialty,
+        portfolioCount: 12,
+        bookingCount: 58,
+        reviewCount: 24,
+        averageRating: 4.9,
+        artistProfile: {
+          ...userProfile,
+          id: userProfile.user_id || userProfile.id,
+          accepts_bookings: true,
+          preferences: []
+        }
+      }));
+      
       setLoading(false);
     }
-  }, [user?.id]);
-
-  const firstName = artistProfile?.full_name?.split(' ')[0] || '';
+  }, [userProfile]);
 
   return (
-    <ArtistDataContext.Provider 
-      value={{ 
-        data, 
-        loading, 
-        error, 
-        refetch: fetchArtistData,
-        artistProfile,
-        refreshProfile: refreshArtistProfile,
-        refreshArtistProfile,
-        updateProfile,
-        handleCopyReferralLink,
-        copied,
-        firstName,
-        userCredits,
-        portfolioImages,
-        loadingPortfolio,
-        bookingCount,
-        reviewCount,
-        averageRating
-      }}
-    >
+    <ArtistDataContext.Provider value={{ 
+      ...data,
+      loading,
+      loadingPortfolio,
+      refreshArtistProfile
+    }}>
       {children}
     </ArtistDataContext.Provider>
   );
 };
 
-export const useArtistData = () => {
-  const context = useContext(ArtistDataContext);
-  if (context === undefined) {
-    throw new Error('useArtistData must be used within an ArtistDataProvider');
-  }
-  return context;
-};
+export const useArtistData = () => useContext(ArtistDataContext);

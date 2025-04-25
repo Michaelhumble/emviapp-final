@@ -3,8 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { getLocationString } from '@/types/profile';
-import { UserProfile } from '@/context/auth/types'; // Make sure we import from the auth context
+import { UserProfile, getLocationString } from '@/types/profile';
 
 interface ProfileFormData {
   full_name: string;
@@ -38,9 +37,7 @@ export const useProfileForm = ({ onProfileUpdate }: UseProfileFormProps = {}) =>
         full_name: userProfile.full_name || '',
         bio: userProfile.bio || '',
         specialty: userProfile.specialty || '',
-        location: typeof userProfile.location === 'object' && userProfile.location ? 
-            getLocationString(userProfile.location) : 
-            (userProfile.location as string || ''),
+        location: getLocationString(userProfile.location),
         instagram: userProfile.instagram || '',
         website: userProfile.website || '',
       });
@@ -89,7 +86,8 @@ export const useProfileForm = ({ onProfileUpdate }: UseProfileFormProps = {}) =>
       toast.success("Profile updated successfully");
       
       if (onProfileUpdate && userProfile) {
-        // When calling onProfileUpdate, provide a proper UserProfile object
+        // When calling onProfileUpdate, we need to make sure the object conforms to UserProfile
+        // Make a copy of the userProfile and spread in our form data to maintain type compatibility
         const updatedProfile: UserProfile = {
           ...userProfile,
           full_name: formData.full_name,

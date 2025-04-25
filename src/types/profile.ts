@@ -1,4 +1,3 @@
-
 export interface Location {
   lat: number | null;
   lng: number | null;
@@ -18,7 +17,7 @@ export interface OpeningTime {
 export interface UserProfile {
   // Required properties
   id: string;
-  email?: string; // Changed from required to optional for compatibility
+  email: string;
   
   // Auth related properties from auth context
   userId?: string;
@@ -90,20 +89,12 @@ export interface UserProfile {
   google_review_link?: string;
   independent?: boolean;
   profile_completion?: number;
-  
-  // Artist properties
-  skills?: string[];
-  portfolio_urls?: string[];
-  custom_role?: string;
-  is_premium?: boolean;
 
-  // Customer-specific fields
+  // ✨ NEW CUSTOMER FIELDS
   favorite_artist_types?: string[]; // E.g. ["studio", "booth-renter"]
   artistTypes?: string[];           // Synonym for favorite_artist_types
   birthday?: string | null;         // ISO date string or null
   communication_preferences?: string[]; // E.g. ["email", "sms", "app"]
-  commPrefs?: string[];            // Synonym for communication_preferences
-  creditsThisMonth?: number;        // Credits earned in current month
 }
 
 // Helper function to safely get location as a string for display
@@ -143,15 +134,6 @@ export function getPortfolioImages(profile: UserProfile): PortfolioImage[] {
   if (profile.gallery && Array.isArray(profile.gallery)) {
     return profile.gallery.map((url, index) => ({
       id: `gallery-${index}`,
-      url: typeof url === 'string' ? url : '',
-      alt: `Portfolio image ${index + 1}`
-    }));
-  }
-  
-  // Also check portfolio_urls if available
-  if (profile.portfolio_urls && Array.isArray(profile.portfolio_urls)) {
-    return profile.portfolio_urls.map((url, index) => ({
-      id: `portfolio-${index}`,
       url: typeof url === 'string' ? url : '',
       alt: `Portfolio image ${index + 1}`
     }));

@@ -1,33 +1,40 @@
 
-import React from "react";
 import { motion } from "framer-motion";
+import { Palette } from "lucide-react";
 
 interface PortfolioHeroProps {
-  artistName: string;
+  artistName?: string;
 }
 
-const PortfolioHero = ({ artistName }: PortfolioHeroProps) => {
+const PortfolioHero = ({ artistName = "Artist" }: PortfolioHeroProps) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="relative rounded-xl overflow-hidden mb-8"
+      transition={{ duration: 0.6 }}
+      className="relative mb-8 rounded-2xl overflow-hidden"
     >
-      <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-8 text-center border border-purple-100/50 shadow-sm">
-        <motion.div
-          initial={{ opacity: 0, y: 5 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-        >
-          <h1 className="text-3xl md:text-4xl font-playfair font-medium text-gray-900 mb-3">
-            {artistName}, this is your stage
-          </h1>
-          <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-            Showcase your best work to the world. Your portfolio is a reflection of your unique artistry and talent.
-          </p>
-        </motion.div>
+      <div className="bg-gradient-to-r from-purple-50 via-purple-100/50 to-pink-50 p-8 md:p-12">
+        <div className="max-w-3xl">
+          <motion.h1 
+            className="text-2xl md:text-3xl font-playfair text-gray-900 mb-3"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            {artistName}, this is your stage —
+          </motion.h1>
+          <motion.p 
+            className="text-lg md:text-xl text-gray-600"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            showcase your best work to the world
+          </motion.p>
+        </div>
       </div>
+      <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 pointer-events-none" />
     </motion.div>
   );
 };

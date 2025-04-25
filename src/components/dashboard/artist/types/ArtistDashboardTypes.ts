@@ -1,3 +1,44 @@
+export interface Booking {
+  id: string;
+  sender_id: string;
+  recipient_id: string;
+  client_name?: string;
+  client_avatar?: string;
+  service_id?: string;
+  service_name?: string;
+  date_requested?: string;
+  time_requested?: string;
+  status: 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled';
+  note?: string;
+  created_at: string;
+  artist_name?: string; // Added for customer bookings view
+}
+
+export interface BookingCounts {
+  pending: number;
+  accepted: number;
+  completed: number;
+  total: number;
+  declined?: number;
+  cancelled?: number;
+}
+
+export interface ServiceType {
+  id: string;
+  label: string;
+}
+
+export interface DaySchedule {
+  id?: string;
+  day: string;
+  time: string;
+  active: boolean;
+}
+
+export interface BookingWithDetails extends Booking {
+  price?: number;
+  appointment_time?: string;
+}
 
 export interface DashboardStats {
   booking_count: number;
@@ -5,90 +46,65 @@ export interface DashboardStats {
   total_earnings: number;
   average_rating: number;
   referral_count: number;
-  repeat_client_percentage?: number;
-  profile_views?: number;
+  repeat_client_percentage: number;
+  profile_views: number;
 }
 
-export interface BookingCardProps {
-  booking: any;
-  isLoading?: boolean;
-}
-
-export interface StatsCardProps {
-  title: string;
-  value: number | string;
-  icon: React.ElementType;
-  change?: number;
-  trend?: 'up' | 'down' | 'neutral';
-  isLoading?: boolean;
-}
-
-// Missing types referenced in other components
-export interface Booking {
-  id: string;
-  sender_id: string;
-  recipient_id: string;
-  date_requested?: string;
-  time_requested?: string;
-  service_id?: string;
-  service_type?: string;
-  status: 'pending' | 'accepted' | 'declined' | 'cancelled' | 'completed';
-  note?: string;
-  client_name?: string;
-  created_at?: string;
-  reminder_sent?: boolean;
-  reminder_sent_at?: string;
-  metadata?: Record<string, any>;
-}
-
-export interface BookingWithDetails extends Booking {
-  client?: {
-    name: string;
-    avatar?: string;
-  };
-  service?: {
-    name: string;
-    price: number;
-    duration: string;
-  };
+export interface EarningsData {
+  monthly_earnings: Array<{month: string, amount: number}>;
+  total_earnings: number;
+  pending_payouts: number;
 }
 
 export interface PortfolioImage {
   id: string;
   url: string;
-  name: string;
+  title?: string;
   description?: string;
-}
-
-export interface EarningsData {
-  totalEarnings: number;
-  pendingEarnings: number;
-  earningsThisWeek: number;
-  earningsTrend: number;
-  completedBookings: number;
-  transactions: Array<{
-    id: string;
-    amount: number;
-    date: string;
-    client: string;
-    service: string;
-    status: 'completed' | 'pending';
-  }>;
+  name?: string; // Add name property
+  created_at?: string;
 }
 
 export interface ArtistProfileState {
-  displayName: string;
-  role: string;
+  id?: string;
+  name?: string;
   avatar?: string;
+  bio?: string;
   location?: string;
   specialty?: string;
-  completionPercentage: number;
+  experience?: number;
+  rating?: number;
+  portfolio?: PortfolioImage[];
+  services?: any[];
+  
+  // Add missing properties
+  full_name?: string;
+  user_id?: string;
+  credits?: number;
+  referral_count?: number; 
+  affiliate_code?: string;
+  portfolio_urls?: string[];
+  preferred_language?: string;
+  accepts_bookings?: boolean;
+  preferences?: string[];
+  avatar_url?: string; // Add the avatar_url property
+  profile_completion?: number; // Add the profile_completion property
+  independent?: boolean; // Add the independent property
 }
 
 export interface ArtistDataContextType {
+  artistProfile: ArtistProfileState;
   loading: boolean;
   error: Error | null;
-  stats: DashboardStats;
-  bookings: Booking[];
-  refreshData: () => Promise<void>;
+  updateProfile: (data: Partial<ArtistProfileState>) => Promise<void>;
+  
+  // Add missing properties 
+  refreshProfile: () => void;
+  refreshArtistProfile: () => Promise<void>;
+  handleCopyReferralLink?: () => void;
+  copied?: boolean;
+  firstName?: string;
+  userCredits?: number;
+  portfolioImages: PortfolioImage[];
+  loadingPortfolio: boolean;
 }

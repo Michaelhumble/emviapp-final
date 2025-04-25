@@ -1,20 +1,9 @@
-
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Edit, Trash2, Check, ZoomIn } from "lucide-react";
+import { Palette, Plus, Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PortfolioHero from "./PortfolioHero";
 import EmptyPortfolioState from "./EmptyPortfolioState";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 
 // Mock portfolio data with unique IDs
 const mockPortfolio = [
@@ -44,31 +33,11 @@ const mockPortfolio = [
 const PortfolioManager = () => {
   const [portfolio, setPortfolio] = useState(mockPortfolio);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<null | { id: number; image: string; title: string }>(null);
-  const [itemToDelete, setItemToDelete] = useState<number | null>(null);
-
-  const handleDeleteItem = (id: number) => {
-    setItemToDelete(id);
-  };
-
-  const confirmDelete = () => {
-    if (itemToDelete !== null) {
-      setPortfolio(prev => prev.filter(item => item.id !== itemToDelete));
-      setItemToDelete(null);
-    }
-  };
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const handleAddWork = () => {
-    // Mock function for adding new work
-    const newId = Math.max(...portfolio.map(item => item.id), 0) + 1;
-    const newItem = {
-      id: newId,
-      image: "/lovable-uploads/a3c08446-c1cb-492d-a361-7ec4aca18cfd.png", // Default image
-      title: `New Work ${newId}`,
-      category: "New Category",
-      featured: false
-    };
-    setPortfolio(prev => [...prev, newItem]);
+    // Mock function for now
+    console.log("Add new work clicked");
   };
 
   return (
@@ -80,23 +49,12 @@ const PortfolioManager = () => {
         <div className="flex gap-3">
           {portfolio.length > 0 && (
             <Button
-              variant={isEditMode ? "default" : "outline"}
-              className={isEditMode 
-                ? "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-md"
-                : "bg-white/80 border-purple-200 hover:bg-purple-50 text-purple-700"}
+              variant="outline"
+              className="bg-white/80 border-purple-200 hover:bg-purple-50 text-purple-700"
               onClick={() => setIsEditMode(!isEditMode)}
             >
-              {isEditMode ? (
-                <>
-                  <Check className="w-4 h-4 mr-2" />
-                  Save Changes
-                </>
-              ) : (
-                <>
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit Portfolio
-                </>
-              )}
+              <Edit className="w-4 h-4 mr-2" />
+              {isEditMode ? "Done Editing" : "Edit Portfolio"}
             </Button>
           )}
           <Button
@@ -104,7 +62,7 @@ const PortfolioManager = () => {
             onClick={handleAddWork}
           >
             <Plus className="w-4 h-4 mr-2" />
-            ➕ Add New Masterpiece
+            Add New Masterpiece
           </Button>
         </div>
       </div>
@@ -124,7 +82,7 @@ const PortfolioManager = () => {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="relative group rounded-xl overflow-hidden aspect-square cursor-pointer shadow-sm hover:shadow-md transition-all"
+                className="relative group rounded-xl overflow-hidden aspect-square cursor-pointer"
                 onClick={() => !isEditMode && setSelectedImage(item)}
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
@@ -144,10 +102,6 @@ const PortfolioManager = () => {
                       variant="secondary"
                       size="icon"
                       className="h-10 w-10 bg-white hover:bg-white/90"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        console.log('Edit item:', item.id);
-                      }}
                     >
                       <Edit className="h-4 w-4 text-gray-700" />
                     </Button>
@@ -155,10 +109,6 @@ const PortfolioManager = () => {
                       variant="secondary"
                       size="icon"
                       className="h-10 w-10 bg-white hover:bg-white/90 text-red-500 hover:text-red-600"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteItem(item.id);
-                      }}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -169,24 +119,6 @@ const PortfolioManager = () => {
                     {item.category && (
                       <p className="text-sm text-white/80">{item.category}</p>
                     )}
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      className="mt-2 bg-white/20 hover:bg-white/40 backdrop-blur-sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedImage(item);
-                      }}
-                    >
-                      <ZoomIn className="h-3 w-3 mr-1" />
-                      View
-                    </Button>
-                  </div>
-                )}
-
-                {item.featured && !isEditMode && (
-                  <div className="absolute top-2 right-2 bg-gradient-to-r from-amber-400 to-amber-500 text-white text-xs font-medium px-2 py-1 rounded-full">
-                    Featured
                   </div>
                 )}
               </motion.div>
@@ -195,52 +127,19 @@ const PortfolioManager = () => {
         </motion.div>
       )}
 
-      {/* Lightbox Preview */}
+      {/* Basic Lightbox Preview - to be enhanced */}
       {selectedImage && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+        <div
           className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
           onClick={() => setSelectedImage(null)}
         >
-          <motion.img
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", damping: 25 }}
+          <img
             src={selectedImage.image}
             alt={selectedImage.title}
-            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+            className="max-w-full max-h-[90vh] object-contain"
           />
-          <Button 
-            className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white"
-            onClick={() => setSelectedImage(null)}
-          >
-            Close
-          </Button>
-        </motion.div>
+        </div>
       )}
-
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={itemToDelete !== null} onOpenChange={() => setItemToDelete(null)}>
-        <AlertDialogContent className="bg-white/95 backdrop-blur-sm border-0 shadow-xl">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="font-playfair text-xl">Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will delete this portfolio item permanently. This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="border-purple-200 hover:bg-purple-50 text-gray-700">Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-sm"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 };
