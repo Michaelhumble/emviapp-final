@@ -69,7 +69,7 @@ const FoundingMemberOffer = () => {
               className="bg-emvi-accent hover:bg-emvi-accent/90 transform hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl px-8 py-5 text-lg group"
               asChild
             >
-              <Link to="/early-access-dashboard">
+              <Link to="/early-access">
                 {t({
                   english: "Get Early Access Now",
                   vietnamese: "Nhận Quyền Truy Cập Sớm Ngay"

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Check } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const FoundersEarlyAccess = () => {
   const { t } = useTranslation();
@@ -36,7 +37,7 @@ const FoundersEarlyAccess = () => {
         english: 'Reserve My Artist Access',
         vietnamese: 'Đặt Trước Quyền Truy Cập Nghệ Sĩ'
       },
-      stripeLink: '/checkout?plan=artist_access',
+      link: '/early-access',
     },
     {
       id: 'salon',
@@ -68,7 +69,7 @@ const FoundersEarlyAccess = () => {
         english: 'Secure My Salon Spot',
         vietnamese: 'Đảm Bảo Vị Trí Salon Của Tôi'
       },
-      stripeLink: '/checkout?plan=salon_pro',
+      link: '/early-access',
     },
     {
       id: 'freelancer',
@@ -95,7 +96,7 @@ const FoundersEarlyAccess = () => {
         english: 'Join as Freelancer',
         vietnamese: 'Tham Gia với Tư Cách Freelancer'
       },
-      stripeLink: '/checkout?plan=freelancer_boost',
+      link: '/early-access',
     },
   ];
 
@@ -161,9 +162,11 @@ const FoundersEarlyAccess = () => {
                     : 'bg-gray-800 hover:bg-gray-700'
                 }`}
                 size="lg"
-                onClick={() => window.location.href = plan.stripeLink}
+                asChild
               >
-                {t(plan.buttonText)}
+                <Link to={plan.link}>
+                  {t(plan.buttonText)}
+                </Link>
               </Button>
             </CardFooter>
           </Card>

@@ -20,9 +20,14 @@ const CallToAction = () => {
         </p>
         <div className="flex flex-wrap gap-4 justify-center">
           {!user ? (
-            <Link to="/auth/signup">
-              <Button size="lg">Get Started</Button>
-            </Link>
+            <>
+              <Link to="/auth/signup">
+                <Button size="lg">Get Started</Button>
+              </Link>
+              <Link to="/early-access">
+                <Button size="lg" variant="outline">Get Early Access</Button>
+              </Link>
+            </>
           ) : (
             <>
               <Link to="/dashboard">
