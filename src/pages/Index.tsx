@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -16,6 +17,8 @@ import AIPowerhouse from "@/components/home/AIPowerhouse";
 import AITeam from "@/components/home/AITeam";
 import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 import FreelancersHighlight from "@/components/home/FreelancersHighlight";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 // Enhanced homepage components
 import DynamicListingGrid from "@/components/home/DynamicListingGrid";
@@ -45,6 +48,20 @@ const Index = () => {
   return (
     <Layout>
       <Hero />
+      
+      {/* Early Access Dashboard Link */}
+      <div className="flex justify-center mt-4 mb-8">
+        <Button 
+          variant="outline" 
+          className="border-emvi-accent text-emvi-accent hover:bg-emvi-accent/10"
+          asChild
+        >
+          <Link to="/early-access-dashboard">
+            🎉 Early Access Dashboard
+          </Link>
+        </Button>
+      </div>
+      
       <MarketProofSection />
       <ArtistTestimonials />
       <MissingPieceSection />
