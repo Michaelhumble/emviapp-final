@@ -62,6 +62,16 @@ const PricingFAQ = () => {
         english: "These VIP offers will disappear after public launch. Lock in your discount and get early access benefits.",
         vietnamese: "Những ưu đãi VIP này sẽ biến mất sau khi ra mắt công khai. Khóa mức giảm giá của bạn và nhận các lợi ích truy cập sớm."
       }
+    },
+    {
+      question: {
+        english: "How will I get updates about launch progress?",
+        vietnamese: "Làm thế nào để tôi nhận được cập nhật về tiến độ ra mắt?"
+      },
+      answer: {
+        english: "You'll receive exclusive email updates on our progress, new features, and your special access details.",
+        vietnamese: "Bạn sẽ nhận được email cập nhật độc quyền về tiến trình của chúng tôi, các tính năng mới và chi tiết truy cập đặc biệt của bạn."
+      }
     }
   ];
 

@@ -16,15 +16,15 @@ const FinalCTA = () => {
     >
       <h2 className="text-3xl md:text-4xl font-bold font-playfair">
         {t({
-          english: "Secure Your Future in the Beauty Industry",
-          vietnamese: "Đảm bảo Tương lai của Bạn trong Ngành Làm đẹp"
+          english: "These VIP Offers Will Never Return",
+          vietnamese: "Những Ưu Đãi VIP Này Sẽ Không Bao Giờ Trở Lại"
         })}
       </h2>
 
       <p className="text-xl text-gray-600">
         {t({
-          english: "These offers will never return once we launch publicly.",
-          vietnamese: "Những ưu đãi này sẽ không bao giờ quay lại sau khi chúng tôi ra mắt công khai."
+          english: "Join thousands securing their future in the beauty industry.",
+          vietnamese: "Tham gia cùng hàng nghìn người đang đảm bảo tương lai của họ trong ngành làm đẹp."
         })}
       </p>
 

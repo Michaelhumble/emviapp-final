@@ -3,8 +3,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import LanguageToggle from '@/components/ui/LanguageToggle';
-import PricingHero from '@/components/pricing/PricingHero';
-import FounderOffer from '@/components/pricing/FounderOffer';
+import HeroSection from '@/components/pricing/HeroSection';
+import FoundingMemberOffer from '@/components/pricing/FoundingMemberOffer';
 import DepositOptions from '@/components/pricing/DepositOptions';
 import ReferralRewards from '@/components/pricing/ReferralRewards';
 import PricingFAQ from '@/components/pricing/PricingFAQ';
@@ -18,8 +18,8 @@ const PricingPage = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-20">
-        <PricingHero />
-        <FounderOffer />
+        <HeroSection />
+        <FoundingMemberOffer />
         <DepositOptions />
         <ReferralRewards />
         <PricingFAQ />

@@ -23,8 +23,8 @@ const ReferralRewards = () => {
       
       <p className="text-xl text-gray-600 max-w-2xl mx-auto">
         {t({
-          english: "Earn exclusive bonuses when EmviApp launches by sharing your referral link.",
-          vietnamese: "Nhận thưởng độc quyền khi EmviApp ra mắt bằng cách chia sẻ liên kết giới thiệu của bạn."
+          english: "Share EmviApp and unlock exclusive bonuses when we launch.",
+          vietnamese: "Chia sẻ EmviApp và mở khóa các phần thưởng độc quyền khi chúng tôi ra mắt."
         })}
       </p>
 
@@ -36,7 +36,7 @@ const ReferralRewards = () => {
       >
         {t({
           english: "Generate My Referral Link",
-          vietnamese: "Tạo Liên kết Giới thiệu"
+          vietnamese: "Tạo Liên kết Giới thiệu Của Tôi"
         })}
       </Button>
     </motion.section>
