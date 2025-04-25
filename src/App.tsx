@@ -6,6 +6,7 @@ import { SalonProvider } from '@/context/salon';
 import { SubscriptionProvider } from '@/context/subscription';
 import { NotificationProvider } from '@/context/notification';
 import GlobalErrorBoundary from '@/components/error-handling/GlobalErrorBoundary';
+import ErrorBoundary from '@/components/error-handling/ErrorBoundary';
 import routes from './routes';
 import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
 import ArtistInbox from "@/pages/dashboard/artist/Inbox";
