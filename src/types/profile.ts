@@ -70,6 +70,20 @@ export interface UserProfile {
   affiliate_code?: string;
   salon_name?: string;
   company_name?: string;
+  gender?: string;
+  account_type?: string;
+  bookings_count?: number;
+  reviews_count?: number;
+  last_booking_date?: string;
+  
+  // Salon specific fields
+  salon_type?: string;
+  phone_number?: string;
+  website_url?: string;
+  instagram_url?: string;
+  description?: string;
+  accepts_walk_ins?: boolean;
+  salonName?: string; // Added for backward compatibility
 }
 
 // Helper function to safely get location as a string for display

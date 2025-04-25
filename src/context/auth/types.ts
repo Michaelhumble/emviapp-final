@@ -40,8 +40,10 @@ export interface UserProfile {
   custom_role?: string;
   profile_completion?: number;
   
-  // Fields needed by components but not in Supabase schema
-  // These should be handled with fallbacks in components
+  // Additional fields needed by components
+  username?: string;
+  salon_name?: string;
+  company_name?: string;
   skills?: string[];
   years_experience?: number;
   independent?: boolean;
@@ -54,9 +56,20 @@ export interface UserProfile {
   profile_views?: number;
   user_id?: string;
   affiliate_code?: string;
-  username?: string;
-  salon_name?: string;
-  company_name?: string;
+  gender?: string;
+  account_type?: string;
+  bookings_count?: number;
+  reviews_count?: number;
+  last_booking_date?: string;
+  
+  // Salon specific fields
+  salon_type?: string;
+  phone_number?: string;
+  website_url?: string;
+  instagram_url?: string;
+  description?: string;
+  accepts_walk_ins?: boolean;
+  salonName?: string;  // Added for backward compatibility
 }
 
 export interface AuthContextType {

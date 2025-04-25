@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
@@ -20,9 +21,9 @@ const CustomerDashboard: React.FC = () => {
   // Safely get first name
   const firstName = userProfile?.full_name?.split(" ")[0] || "Beautiful";
 
-  // Demo stats – replace with actual logic if available
-  const totalBookings = userProfile?.bookings_count ?? null;
-  const totalReviews = userProfile?.reviews_count ?? null;
+  // Demo stats – with fallback values
+  const totalBookings = userProfile?.bookings_count ?? 0;
+  const totalReviews = userProfile?.reviews_count ?? 0;
 
   // Referral link logic
   const referralLink = userProfile?.referral_code
@@ -35,8 +36,9 @@ const CustomerDashboard: React.FC = () => {
     toast.success("Referral link copied!");
   };
 
-  // Check if user needs a booking reminder
+  // Check if user needs a booking reminder with fallback
   const showBookingReminder = () => {
+    // Fallback to a mock date if last_booking_date is not available
     const lastBookingDate = userProfile?.last_booking_date 
       ? new Date(userProfile.last_booking_date)
       : new Date('2024-03-15'); // Mock date for testing - remove in production

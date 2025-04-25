@@ -34,14 +34,15 @@ const SalonProfileSetup = () => {
 
   useEffect(() => {
     if (userProfile) {
+      // Use the correct field names with fallbacks
       setSalonName(userProfile.salon_name || "");
       setLocation(userProfile.location || "");
       setSalonType(userProfile.salon_type || "");
-      setPhoneNumber(userProfile.phone_number || "");
-      setWebsiteUrl(userProfile.website_url || "");
-      setInstagramUrl(userProfile.instagram_url || "");
-      setDescription(userProfile.description || "");
-      setAcceptsWalkIns(userProfile.accepts_walk_ins || false);
+      setPhoneNumber(userProfile.phone || userProfile.phone_number || ""); // Prefer phone over phone_number
+      setWebsiteUrl(userProfile.website || userProfile.website_url || ""); // Prefer website over website_url
+      setInstagramUrl(userProfile.instagram || userProfile.instagram_url || ""); // Prefer instagram over instagram_url
+      setDescription(userProfile.bio || userProfile.description || ""); // Prefer bio over description
+      setAcceptsWalkIns(userProfile.accepts_walk_ins || userProfile.accepts_bookings || false); // Fallback to accepts_bookings
     }
   }, [userProfile]);
 
@@ -62,11 +63,11 @@ const SalonProfileSetup = () => {
           salon_name: salonName,
           location: location,
           salon_type: salonType,
-          phone_number: phoneNumber,
-          website_url: websiteUrl,
-          instagram_url: instagramUrl,
-          description: description,
-          accepts_walk_ins: acceptsWalkIns,
+          phone: phoneNumber, // Use standard field
+          website: websiteUrl, // Use standard field
+          instagram: instagramUrl, // Use standard field
+          bio: description, // Use standard field
+          accepts_bookings: acceptsWalkIns, // Use standard field
           updated_at: new Date().toISOString()
         })
         .eq('id', user?.id);
