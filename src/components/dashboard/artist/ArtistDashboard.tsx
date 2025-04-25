@@ -3,7 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import ArtistDashboardContent from './ArtistDashboardContent';
 import { ArtistDataProvider } from './context/ArtistDataContext';
-import { ProfileCompletionGuard } from '@/components/profile/ProfileCompletionGuard';
+import ProfileCompletionGuard from '@/components/profile/ProfileCompletionGuard';
 
 const ArtistDashboard = () => {
   return (

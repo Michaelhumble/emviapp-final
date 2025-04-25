@@ -1,11 +1,12 @@
 
+import React from 'react';
 import { useAuth } from '@/context/auth';
 import { useProfileCompletion } from '@/hooks/useProfileCompletion';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Palette } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function ProfileCompletionGuard({ children }: { children: React.ReactNode }) {
+const ProfileCompletionGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { userRole } = useAuth();
   const { completionStatus } = useProfileCompletion();
   
@@ -29,4 +30,6 @@ export default function ProfileCompletionGuard({ children }: { children: React.R
       {children}
     </>
   );
-}
+};
+
+export default ProfileCompletionGuard;
