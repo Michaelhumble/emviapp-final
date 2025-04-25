@@ -1,69 +1,32 @@
 
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/auth';
 import { useProfileCompletion } from '@/hooks/useProfileCompletion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Palette } from 'lucide-react';
+import { motion } from 'framer-motion';
 
-interface ProfileCompletionGuardProps {
-  children: React.ReactNode;
-}
-
-export default function ProfileCompletionGuard({ children }: ProfileCompletionGuardProps) {
+export default function ProfileCompletionGuard({ children }: { children: React.ReactNode }) {
   const { userRole } = useAuth();
-  const { completionStatus, isLoading, isProfileComplete } = useProfileCompletion();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!isLoading && completionStatus && !completionStatus.isComplete) {
-      // Redirect to appropriate setup page based on role
-      if (userRole) {
-        navigate(`/profile/${userRole}/setup`);
-      }
-    }
-  }, [completionStatus, isLoading, userRole, navigate]);
-
-  if (isLoading) {
-    return (
-      <Card className="max-w-md mx-auto my-8">
-        <CardContent className="p-6">
-          <div className="animate-pulse space-y-4">
-            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-            <div className="h-2 bg-gray-200 rounded"></div>
-            <div className="h-8 bg-gray-200 rounded"></div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (!completionStatus?.isComplete) {
-    return (
-      <Card className="max-w-md mx-auto my-8">
-        <CardHeader>
-          <CardTitle>Complete Your Profile</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Progress 
-            value={completionStatus?.completionPercentage || 0} 
-            className="w-full"
-          />
-          <p className="text-sm text-gray-600">
-            Please complete your profile to access all features.
-            Required: {completionStatus?.minCompletionPercentage}% completion.
-          </p>
-          <Button 
-            className="w-full" 
-            onClick={() => navigate(`/profile/${userRole}/setup`)}
-          >
-            Complete Profile
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return <>{children}</>;
+  const { completionStatus } = useProfileCompletion();
+  
+  return (
+    <>
+      {completionStatus && !completionStatus.isComplete && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-4"
+        >
+          <Alert className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100">
+            <Palette className="h-4 w-4 text-purple-500" />
+            <AlertDescription className="text-purple-800">
+              🎨 Tip: Complete your profile to attract more clients!
+            </AlertDescription>
+          </Alert>
+        </motion.div>
+      )}
+      {children}
+    </>
+  );
 }

@@ -2,29 +2,23 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import ArtistDashboardContent from './ArtistDashboardContent';
-import { useArtistData } from './context/ArtistDataContext';
 import { ArtistDataProvider } from './context/ArtistDataContext';
+import { ProfileCompletionGuard } from '@/components/profile/ProfileCompletionGuard';
 
 const ArtistDashboard = () => {
   return (
     <ArtistDataProvider>
-      <ArtistDashboardInner />
+      <ProfileCompletionGuard>
+        <motion.div
+          className="w-full"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <ArtistDashboardContent />
+        </motion.div>
+      </ProfileCompletionGuard>
     </ArtistDataProvider>
-  );
-};
-
-const ArtistDashboardInner = () => {
-  const { loading } = useArtistData();
-  
-  return (
-    <motion.div
-      className="w-full"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      <ArtistDashboardContent />
-    </motion.div>
   );
 };
 

@@ -1,4 +1,3 @@
-
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -26,26 +25,17 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
     }
 
     try {
-      // 1. First check auth metadata (most accurate source)
       const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
       
       if (!authError) {
-        // Get role from user metadata
         const metadataRole = authUser?.user_metadata?.role as UserRole | null;
         
         if (metadataRole) {
           const normalizedRole = normalizeRole(metadataRole);
           localStorage.setItem('emviapp_user_role', normalizedRole || '');
           
-          // Before navigating, check if user is a manager
-          const { data: userData, error: userError } = await supabase
-            .from('users')
-            .select('manager_for_salon_id')
-            .eq('id', user.id)
-            .single();
-            
-          if (!userError && userData && userData.manager_for_salon_id) {
-            navigate('/dashboard/manager');
+          if (normalizedRole === 'artist' || normalizedRole === 'nail technician/artist') {
+            navigate('/dashboard/artist');
             return;
           }
           
@@ -54,9 +44,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         }
       }
       
-      // 2. Then try the context if available
       if (userRole) {
-        // Before navigating, check if user is a manager
         const { data: userData, error: userError } = await supabase
           .from('users')
           .select('manager_for_salon_id')
@@ -72,12 +60,10 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         return;
       }
       
-      // 3. Check for cached role in localStorage
       const cachedRole = localStorage.getItem('emviapp_user_role');
       if (cachedRole) {
         const normalizedRole = normalizeRole(cachedRole as UserRole);
         
-        // Update auth metadata to match localStorage (fix desync)
         try {
           await supabase.auth.updateUser({
             data: { role: normalizedRole }
@@ -86,7 +72,6 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
           // Silent error - continue anyway
         }
         
-        // Before navigating, check if user is a manager
         const { data: userData, error: userError } = await supabase
           .from('users')
           .select('manager_for_salon_id')
@@ -102,7 +87,6 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         return;
       }
       
-      // 4. If all else fails, fetch it directly from the database
       const { data: profile, error } = await supabase
         .from('users')
         .select('role, manager_for_salon_id')
@@ -121,13 +105,11 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         return;
       }
       
-      // Check if user is a manager
       if (profile.manager_for_salon_id) {
         navigate('/dashboard/manager');
         return;
       }
       
-      // 5. If we have a role from the database, update auth metadata
       try {
         const normalizedRole = normalizeRole(profile.role as UserRole);
         await supabase.auth.updateUser({
@@ -137,7 +119,6 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         // Silent error - continue anyway
       }
       
-      // If we have a role, save it to localStorage and redirect
       const normalizedRole = normalizeRole(profile.role as UserRole);
       localStorage.setItem('emviapp_user_role', normalizedRole || '');
       navigateToRoleDashboard(navigate, normalizedRole);
@@ -156,7 +137,6 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
 
   return (
     <>
-      {/* Role selection modal for new users */}
       {user && showRoleModal && (
         <RoleSelectionModal
           open={showRoleModal}
