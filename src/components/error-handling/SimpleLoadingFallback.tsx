@@ -1,25 +1,15 @@
 
-import React from 'react';
 import { Loader2 } from 'lucide-react';
 
 interface SimpleLoadingFallbackProps {
   message?: string;
-  className?: string;
 }
 
-/**
- * A simple loading fallback component to use when data is being loaded
- */
-const SimpleLoadingFallback: React.FC<SimpleLoadingFallbackProps> = ({ 
-  message = "Loading...", 
-  className = "" 
-}) => {
+const SimpleLoadingFallback = ({ message = "Loading..." }: SimpleLoadingFallbackProps) => {
   return (
-    <div className={`flex items-center justify-center p-6 ${className}`}>
-      <div className="flex flex-col items-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        <p className="mt-2 text-sm text-muted-foreground">{message}</p>
-      </div>
+    <div className="flex flex-col items-center justify-center p-6 min-h-[120px]">
+      <Loader2 className="h-5 w-5 text-primary animate-spin mb-2" />
+      <p className="text-sm text-gray-500">{message}</p>
     </div>
   );
 };
