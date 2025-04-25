@@ -8,25 +8,28 @@ import { useAuth } from '@/context/auth';
 import { useNavigate } from 'react-router-dom';
 import ArtistLoadingState from './components/ArtistLoadingState';
 import ArtistErrorState from './components/ArtistErrorState';
+import ErrorBoundary from '@/components/error-handling/ErrorBoundary';
 
 const ArtistDashboard = () => {
   return (
-    <ArtistDataProvider>
-      <ArtistDashboardInner />
-    </ArtistDataProvider>
+    <ErrorBoundary>
+      <ArtistDataProvider>
+        <ArtistDashboardInner />
+      </ArtistDataProvider>
+    </ErrorBoundary>
   );
 };
 
 const ArtistDashboardInner = () => {
-  const { loading, error } = useArtistData();
-  const { user, loading: authLoading } = useAuth();
+  const { loading, error } = useArtistData() || { loading: true, error: null };
+  const { user, loading: authLoading } = useAuth() || { user: null, loading: true };
   const navigate = useNavigate();
   const [loadingTimeout, setLoadingTimeout] = useState(false);
 
   // Redirect to sign in if not authenticated
   useEffect(() => {
     if (!authLoading && !user) {
-      navigate('/auth/signin');
+      navigate('/sign-in');
     }
   }, [user, authLoading, navigate]);
 
@@ -81,14 +84,16 @@ const ArtistDashboardInner = () => {
   }
   
   return (
-    <motion.div
-      className="w-full"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      <ArtistDashboardContent />
-    </motion.div>
+    <ErrorBoundary>
+      <motion.div
+        className="w-full"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <ArtistDashboardContent />
+      </motion.div>
+    </ErrorBoundary>
   );
 };
 

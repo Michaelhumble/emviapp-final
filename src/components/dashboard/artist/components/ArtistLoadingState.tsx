@@ -1,13 +1,12 @@
 
-import { Loader } from "lucide-react";
+import React from 'react';
+import { Loader2 } from 'lucide-react';
 
 const ArtistLoadingState = () => {
   return (
-    <div className="container mx-auto px-4 py-12 flex items-center justify-center">
-      <div className="text-center">
-        <Loader className="h-8 w-8 animate-spin text-purple-600 mx-auto mb-4" />
-        <p className="text-gray-600">Loading your dashboard...</p>
-      </div>
+    <div className="flex flex-col items-center justify-center p-12 h-64">
+      <Loader2 className="h-8 w-8 text-primary animate-spin mb-4" />
+      <p className="text-muted-foreground">Loading your dashboard...</p>
     </div>
   );
 };
