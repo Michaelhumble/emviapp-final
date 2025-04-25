@@ -2,14 +2,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/auth";
-import { Menu, X, Home, Users, Briefcase, Search, DollarSign, Award, Globe, User } from "lucide-react";
+import { Menu, X, Home, Users, Briefcase, Search, Store, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import LanguageToggle from "@/components/layout/LanguageToggle";
-import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { getLanguagePreference } from "@/utils/languagePreference";
+import { NavigationItem } from "../navbar/types";
+import { mainNavigationItems } from "./config/navigationItems";
 
 interface MobileMenuProps {
   user: any;
@@ -20,35 +20,6 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const { userRole } = useAuth();
-  
-  // Navigation items organized by sections
-  const exploreItems = [
-    { icon: Home, label: "Home", path: "/" },
-    { icon: Users, label: "Find Artists", path: "/artists" },
-    { icon: Briefcase, label: "Search Jobs", path: "/jobs" },
-    { icon: Search, label: "Browse Salons", path: "/salons" },
-    { icon: DollarSign, label: "Pricing", path: "/pricing" },
-  ];
-  
-  const vipItems = [
-    { 
-      icon: Award, 
-      label: "Early Access", 
-      path: "/early-access-dashboard", 
-      highlight: true 
-    },
-    { 
-      icon: Users, 
-      label: "Referral Program", 
-      path: "/referrals", 
-      highlight: true 
-    },
-  ];
-  
-  const accountItems = user ? [
-    { icon: Home, label: "Dashboard", path: getDashboardPath() },
-    { icon: User, label: "Profile", path: "/profile" },
-  ] : [];
   
   function getDashboardPath() {
     if (!userRole) return "/dashboard";
@@ -67,115 +38,117 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
     navigate(path);
   };
   
-  // Get current language
-  const language = getLanguagePreference();
-  
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden relative">
+        <Button variant="ghost" size="icon" className="md:hidden">
           <Menu className="h-5 w-5" />
           <span className="sr-only">Toggle menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="mobile-glass-drawer p-0 overflow-y-auto flex flex-col h-full w-full max-w-[80%] sm:max-w-[350px]">
+      <SheetContent side="right" className="p-0 w-full max-w-[320px] border-l border-gray-100 shadow-xl bg-white">
         <div className="flex flex-col h-full">
           {/* Header with close button and language toggle */}
-          <div className="flex items-center justify-between p-4 border-b border-white/10">
-            <h2 className="text-xl font-playfair text-white">Menu</h2>
-            <div className="flex items-center space-x-1">
-              <LanguageToggle minimal className="text-white" />
-              <Button variant="ghost" size="icon" onClick={() => setOpen(false)} className="text-white hover:bg-white/10 rounded-full">
-                <X className="h-5 w-5" />
-                <span className="sr-only">Close</span>
-              </Button>
+          <div className="flex items-center justify-between p-4 border-b border-gray-100">
+            <div className="flex items-center gap-2">
+              <Globe className="h-4 w-4 text-gray-500" />
+              <LanguageToggle minimal className="text-gray-700" />
             </div>
+            <Button variant="ghost" size="icon" onClick={() => setOpen(false)} className="rounded-full">
+              <X className="h-5 w-5" />
+              <span className="sr-only">Close</span>
+            </Button>
           </div>
           
-          {/* Menu sections */}
-          <div className="flex-1 py-2 px-2 overflow-y-auto">
+          {/* Menu content */}
+          <div className="flex-1 py-4 px-2 overflow-y-auto">
             {/* Explore Section */}
             <div className="mb-6">
-              <h3 className="px-3 py-2 text-xs font-semibold text-white/60 uppercase tracking-wider">
+              <h3 className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                 Explore
               </h3>
               <ul className="space-y-1">
-                {exploreItems.map((item) => (
-                  <li key={item.label}>
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start text-base font-medium text-white hover:bg-white/10"
-                      onClick={() => handleMenuItemClick(item.path)}
-                    >
-                      <item.icon className="mr-3 h-5 w-5" />
-                      {item.label}
-                    </Button>
-                  </li>
+                <MenuButton 
+                  icon={Home} 
+                  label="Home" 
+                  path="/" 
+                  onClick={() => handleMenuItemClick("/")} 
+                />
+                
+                {/* Map through navigation items */}
+                {mainNavigationItems.map((item) => (
+                  <MenuButton 
+                    key={item.path}
+                    icon={item.icon || Users} 
+                    label={item.title} 
+                    path={item.path} 
+                    onClick={() => handleMenuItemClick(item.path)} 
+                  />
                 ))}
+                
+                <MenuButton 
+                  icon={DollarSign} 
+                  label="Pricing" 
+                  path="/pricing" 
+                  onClick={() => handleMenuItemClick("/pricing")} 
+                />
               </ul>
             </div>
             
-            {/* VIP Access Section with special styling */}
+            {/* VIP Access Section */}
             <div className="mb-6">
-              <h3 className="px-3 py-2 text-xs font-semibold text-white/60 uppercase tracking-wider">
+              <h3 className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                 VIP Access
               </h3>
               <ul className="space-y-1">
-                {vipItems.map((item) => (
-                  <li key={item.label}>
-                    <motion.div
-                      initial={{ opacity: 0.9 }}
-                      animate={{ opacity: 1 }}
-                      className={item.highlight ? "glow-effect" : ""}
-                    >
-                      <Button
-                        variant="ghost"
-                        className={cn(
-                          "w-full justify-start text-base font-medium text-white hover:bg-white/10 relative overflow-hidden",
-                          item.highlight && "bg-emvi-accent/10"
-                        )}
-                        onClick={() => handleMenuItemClick(item.path)}
-                      >
-                        <item.icon className="mr-3 h-5 w-5" />
-                        {item.label}
-                      </Button>
-                    </motion.div>
-                  </li>
-                ))}
+                <MenuButton 
+                  icon={Award} 
+                  label="Early Access" 
+                  path="/early-access-dashboard" 
+                  onClick={() => handleMenuItemClick("/early-access-dashboard")} 
+                  highlight
+                />
+                <MenuButton 
+                  icon={Users} 
+                  label="Referral Program" 
+                  path="/referrals" 
+                  onClick={() => handleMenuItemClick("/referrals")} 
+                  highlight
+                />
               </ul>
             </div>
             
             {/* Account Section (conditional) */}
             {user && (
               <div className="mb-6">
-                <h3 className="px-3 py-2 text-xs font-semibold text-white/60 uppercase tracking-wider">
+                <h3 className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   Account
                 </h3>
                 <ul className="space-y-1">
-                  {accountItems.map((item) => (
-                    <li key={item.label}>
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start text-base font-medium text-white hover:bg-white/10"
-                        onClick={() => handleMenuItemClick(item.path)}
-                      >
-                        <item.icon className="mr-3 h-5 w-5" />
-                        {item.label}
-                      </Button>
-                    </li>
-                  ))}
+                  <MenuButton 
+                    icon={Home} 
+                    label="Dashboard" 
+                    path={getDashboardPath()} 
+                    onClick={() => handleMenuItemClick(getDashboardPath())} 
+                  />
+                  <MenuButton 
+                    icon={User} 
+                    label="Profile" 
+                    path="/profile" 
+                    onClick={() => handleMenuItemClick("/profile")} 
+                  />
                 </ul>
               </div>
             )}
           </div>
           
           {/* Footer with sign in/out and CTA */}
-          <div className="p-4 space-y-4 border-t border-white/10">
+          <div className="p-4 space-y-2 border-t border-gray-100">
             {user ? (
               <>
                 <Button 
-                  variant="destructive" 
-                  className="w-full justify-center text-white bg-red-600 hover:bg-red-700"
+                  variant="outline" 
+                  className="w-full justify-center border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
                   onClick={() => {
                     setOpen(false);
                     handleSignOut();
@@ -184,7 +157,7 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
                   Sign Out
                 </Button>
                 <Button 
-                  className="w-full justify-center bg-emvi-accent hover:bg-emvi-accent/95"
+                  className="w-full justify-center bg-emvi-accent hover:bg-emvi-accent/90"
                   onClick={() => handleMenuItemClick(getDashboardPath())}
                 >
                   Go to Dashboard
@@ -192,21 +165,19 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
               </>
             ) : (
               <>
-                <div className="flex flex-col space-y-2">
-                  <Button 
-                    variant="outline" 
-                    className="w-full justify-center border-white/20 text-white hover:bg-white/10 hover:text-white"
-                    onClick={() => handleMenuItemClick("/sign-in")}
-                  >
-                    Sign In
-                  </Button>
-                  <Button 
-                    className="w-full justify-center bg-emvi-accent hover:bg-emvi-accent/95"
-                    onClick={() => handleMenuItemClick("/early-access-dashboard")}
-                  >
-                    Unlock Early Access
-                  </Button>
-                </div>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-center"
+                  onClick={() => handleMenuItemClick("/sign-in")}
+                >
+                  Sign In
+                </Button>
+                <Button 
+                  className="w-full justify-center bg-emvi-accent hover:bg-emvi-accent/90"
+                  onClick={() => handleMenuItemClick("/early-access-dashboard")}
+                >
+                  Unlock Early Access
+                </Button>
               </>
             )}
           </div>
@@ -215,5 +186,64 @@ const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
     </Sheet>
   );
 };
+
+// Helper component for menu buttons
+const MenuButton = ({ 
+  icon: Icon, 
+  label, 
+  path, 
+  onClick, 
+  highlight = false 
+}: { 
+  icon: any; 
+  label: string; 
+  path: string; 
+  onClick: () => void; 
+  highlight?: boolean;
+}) => {
+  const isActive = window.location.pathname === path;
+  
+  return (
+    <li>
+      <Button
+        variant="ghost"
+        className={cn(
+          "w-full justify-start text-base font-medium",
+          isActive ? "text-emvi-accent" : "text-gray-700",
+          highlight && "bg-emvi-accent/5"
+        )}
+        onClick={onClick}
+      >
+        <div className={cn(
+          "mr-2 h-5 w-5",
+          highlight && "text-emvi-accent"
+        )}>
+          <Icon size={20} />
+        </div>
+        <span className={highlight ? "text-emvi-accent font-semibold" : ""}>
+          {label}
+        </span>
+        {highlight && (
+          <motion.div
+            className="ml-2 w-1.5 h-1.5 rounded-full bg-emvi-accent"
+            initial={{ scale: 0.8, opacity: 0.8 }}
+            animate={{ 
+              scale: [0.8, 1.2, 0.8], 
+              opacity: [0.8, 1, 0.8] 
+            }}
+            transition={{ 
+              duration: 2,
+              repeat: Infinity,
+              repeatType: "loop"
+            }}
+          />
+        )}
+      </Button>
+    </li>
+  );
+};
+
+// Import missing icons
+import { Award, DollarSign } from "lucide-react";
 
 export default MobileMenu;
