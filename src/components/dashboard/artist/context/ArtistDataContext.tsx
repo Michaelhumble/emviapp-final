@@ -60,11 +60,11 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
       console.error('Error loading artist data:', err);
       setError(err instanceof Error ? err : String(err));
       
-      // Show toast for errors
+      // Show toast for errors - Fix the variant property
       toast({
-        variant: "destructive",
         title: "Error loading dashboard data",
-        description: "Please try again or contact support if the issue persists."
+        description: "Please try again or contact support if the issue persists.",
+        variant: "destructive" // Changed from 'error' to 'destructive'
       });
     } finally {
       setLoading(false);
@@ -109,7 +109,20 @@ export const useArtistData = () => {
       stats: {},
       loading: false,
       error: new Error('ArtistDataContext used outside of provider'),
-      refresh: () => {}
+      refresh: () => {},
+      
+      // Add missing properties to the default value
+      artistProfile: {},
+      refreshArtistProfile: async () => {},
+      portfolioImages: [],
+      loadingPortfolio: false,
+      bookingCount: { toString: () => "0" },
+      reviewCount: 0,
+      averageRating: { toString: () => "0" },
+      firstName: "",
+      userCredits: 0,
+      copied: false,
+      handleCopyReferralLink: () => {}
     };
   }
   

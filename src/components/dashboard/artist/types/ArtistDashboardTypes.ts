@@ -1,3 +1,4 @@
+
 export interface Booking {
   id: string;
   sender_id: string;
@@ -87,24 +88,30 @@ export interface ArtistProfileState {
   preferred_language?: string;
   accepts_bookings?: boolean;
   preferences?: string[];
-  avatar_url?: string; // Add the avatar_url property
-  profile_completion?: number; // Add the profile_completion property
-  independent?: boolean; // Add the independent property
+  avatar_url?: string;
+  profile_completion?: number;
+  independent?: boolean;
 }
 
 export interface ArtistDataContextType {
-  artistProfile: ArtistProfileState;
+  profile: any;
+  stats: any;
   loading: boolean;
-  error: Error | null;
-  updateProfile: (data: Partial<ArtistProfileState>) => Promise<void>;
+  error: Error | string | null;
+  refresh: () => void;
   
-  // Add missing properties 
-  refreshProfile: () => void;
+  // Add missing properties used by components
+  artistProfile: ArtistProfileState;
   refreshArtistProfile: () => Promise<void>;
+  portfolioImages: PortfolioImage[];
+  loadingPortfolio: boolean;
   handleCopyReferralLink?: () => void;
   copied?: boolean;
   firstName?: string;
   userCredits?: number;
-  portfolioImages: PortfolioImage[];
-  loadingPortfolio: boolean;
+  
+  // Add properties used in ArtistMetrics
+  bookingCount: { toString: () => string };
+  reviewCount: number;
+  averageRating: { toString: () => string };
 }
