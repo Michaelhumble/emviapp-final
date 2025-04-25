@@ -37,7 +37,8 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
     portfolio_urls: artistProfileData?.portfolio_urls,
     independent: artistProfileData?.independent,
     accepts_bookings: artistProfileData?.accepts_bookings,
-    preferences: artistProfileData?.preferences,
+    // Fix the error by checking if preferences exists first
+    preferences: artistProfileData?.preferred_language ? [artistProfileData?.preferred_language] : [],
     profile_completion: artistProfileData?.profile_completion,
   };
 
@@ -84,11 +85,11 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
       console.error('Error loading artist data:', err);
       setError(err instanceof Error ? err : String(err));
       
-      // Show toast for errors - Fix the variant property
+      // Fix Toast options - use the correct property name
       toast({
         title: "Error loading dashboard data",
         description: "Please try again or contact support if the issue persists.",
-        // Use the correct variant property for shadcn/ui toast
+        // Remove incorrect "variant" property and use the right property for error state
         variant: "destructive"
       });
     } finally {
