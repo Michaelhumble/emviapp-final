@@ -8,6 +8,7 @@ import ReferralRewards from '@/components/pricing/ReferralRewards';
 import ClientManagementSection from '@/components/pricing/ClientManagementSection';
 import PricingFAQ from '@/components/pricing/PricingFAQ';
 import FinalCTA from '@/components/pricing/FinalCTA';
+import HeroSection from '@/components/pricing/HeroSection';
 
 const PricingPage = () => {
   return (
@@ -17,10 +18,11 @@ const PricingPage = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 space-y-24">
+        <HeroSection />
         <FoundingMemberOffer />
         <DepositOptions />
-        <ReferralRewards />
         <ClientManagementSection />
+        <ReferralRewards />
         <PricingFAQ />
         <FinalCTA />
       </div>
