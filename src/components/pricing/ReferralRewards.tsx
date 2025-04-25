@@ -10,47 +10,47 @@ const ReferralRewards = () => {
 
   const features = [
     {
-      icon: Gift,
-      title: {
-        english: "100 Credits Per Referral",
-        vietnamese: "100 Tín dụng cho mỗi giới thiệu"
-      },
-      description: {
-        english: "Earn 100 credits for every friend who joins",
-        vietnamese: "Nhận 100 tín dụng cho mỗi người bạn tham gia"
-      }
-    },
-    {
       icon: Star,
       title: {
-        english: "Premium Features Access",
-        vietnamese: "Truy cập tính năng cao cấp"
+        english: "EmviApp Credits",
+        vietnamese: "Tín dụng EmviApp"
       },
       description: {
-        english: "Use credits for profile boosts, premium features, and discounts",
-        vietnamese: "Sử dụng tín dụng để tăng cường hồ sơ, tính năng cao cấp và giảm giá"
+        english: "Get EmviApp Credits for every friend who signs up",
+        vietnamese: "Nhận tín dụng EmviApp cho mỗi người bạn đăng ký"
       }
     },
     {
       icon: ArrowUp,
       title: {
-        english: "Unlock VIP Perks",
-        vietnamese: "Mở khóa đặc quyền VIP"
+        english: "Premium Perks Access",
+        vietnamese: "Truy cập đặc quyền cao cấp"
       },
       description: {
-        english: "The more you share, the more you unlock — including free months and VIP perks",
-        vietnamese: "Chia sẻ càng nhiều, bạn càng mở khóa nhiều — bao gồm các tháng miễn phí và đặc quyền VIP"
+        english: "Use credits for profile boosts, premium features, and special discounts",
+        vietnamese: "Sử dụng tín dụng để tăng cường hồ sơ, tính năng cao cấp và giảm giá đặc biệt"
+      }
+    },
+    {
+      icon: Star,
+      title: {
+        english: "VIP Rewards",
+        vietnamese: "Phần thưởng VIP"
+      },
+      description: {
+        english: "The more friends you invite, the more VIP rewards you unlock",
+        vietnamese: "Càng mời nhiều bạn bè, bạn càng mở khóa nhiều phần thưởng VIP"
       }
     },
     {
       icon: Gift,
       title: {
-        english: "Special Recognition",
-        vietnamese: "Công nhận đặc biệt"
+        english: "Surprise Bonuses",
+        vietnamese: "Thưởng bất ngờ"
       },
       description: {
-        english: "Top referrers get special recognition and bonuses",
-        vietnamese: "Người giới thiệu hàng đầu nhận được sự công nhận và thưởng đặc biệt"
+        english: "Top referrers receive surprise bonuses and recognition!",
+        vietnamese: "Người giới thiệu hàng đầu nhận được thưởng bất ngờ và sự công nhận!"
       }
     }
   ];
@@ -77,8 +77,8 @@ const ReferralRewards = () => {
 
           <h2 className="text-3xl md:text-4xl font-bold font-playfair bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
             {t({
-              english: "Share EmviApp — Get Rewards, Free Upgrades & Exclusive Bonuses!",
-              vietnamese: "Chia sẻ EmviApp — Nhận Phần thưởng, Nâng cấp Miễn phí & Ưu đãi Độc quyền!"
+              english: "Invite Friends. Earn Credits. Unlock Exclusive Perks!",
+              vietnamese: "Mời bạn bè. Kiếm tín dụng. Mở khóa đặc quyền!"
             })}
           </h2>
         </div>
@@ -109,8 +109,8 @@ const ReferralRewards = () => {
         <div className="text-center space-y-6">
           <p className="text-lg text-gray-600 italic">
             {t({
-              english: "Turn your network into rewards — start sharing before we launch publicly!",
-              vietnamese: "Biến mạng lưới của bạn thành phần thưởng — bắt đầu chia sẻ trước khi chúng tôi ra mắt công khai!"
+              english: "There's no limit — grow your network and enjoy exclusive benefits before anyone else.",
+              vietnamese: "Không có giới hạn — phát triển mạng lưới của bạn và tận hưởng lợi ích độc quyền trước mọi người."
             })}
           </p>
 
@@ -120,8 +120,8 @@ const ReferralRewards = () => {
             onClick={() => {}} // Mock function for now
           >
             {t({
-              english: "Generate My Referral Link & Start Earning",
-              vietnamese: "Tạo Liên kết Giới thiệu & Bắt đầu Kiếm thưởng"
+              english: "Get My Referral Link",
+              vietnamese: "Nhận Liên kết Giới thiệu của Tôi"
             })}
           </Button>
         </div>
