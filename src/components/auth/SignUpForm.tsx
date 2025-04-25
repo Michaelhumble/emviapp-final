@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { useRoleBasedSignUp } from "@/hooks/useRoleBasedSignUp";
 import { UserRole } from "@/context/auth/types";
 import RoleSelectionCards from "./RoleSelectionCards";
+import { toast } from "sonner"; // Added toast import from sonner
 
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
