@@ -1,11 +1,15 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MessageSquareReply } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
+import { motion } from "framer-motion";
+import { useToast } from "@/hooks/use-toast";
 
 export default function MessagesPreview() {
   const { userProfile } = useAuth();
+  const { toast } = useToast();
   const isNewArtist = !userProfile?.profile_completion || userProfile.profile_completion < 20;
 
   const welcomeMessages = [
@@ -14,14 +18,16 @@ export default function MessagesPreview() {
       name: "EmviApp Team",
       avatar: "/lovable-uploads/emvi-team-avatar.png",
       message: "Welcome to EmviApp! We're excited to have you join our community of talented artists.",
-      time: "just now"
+      time: "just now",
+      unread: true
     },
     {
       id: 2,
       name: "EmviApp Support",
       avatar: "/lovable-uploads/emvi-support-avatar.png",
       message: "Need help getting started? Reach out anytime - we're here to help you succeed!",
-      time: "just now"
+      time: "just now",
+      unread: false
     }
   ];
 
@@ -49,7 +55,8 @@ export default function MessagesPreview() {
                 message.unread ? "bg-purple-50 border border-purple-100" : "bg-gray-50 border border-gray-100"
               }`}
               onClick={() => {
-                toast.info("Message feature coming soon", { 
+                toast({
+                  title: "Message feature coming soon",
                   description: "Full messaging functionality is under development.",
                   duration: 3000
                 });
@@ -74,7 +81,8 @@ export default function MessagesPreview() {
             variant="outline" 
             className="w-full mt-4" 
             onClick={() => {
-              toast.info("Messages feature coming soon", {
+              toast({
+                title: "Messages feature coming soon",
                 description: "Complete messaging system is in development.",
                 duration: 3000
               });
