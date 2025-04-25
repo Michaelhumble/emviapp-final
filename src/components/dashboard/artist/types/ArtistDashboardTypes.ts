@@ -62,8 +62,9 @@ export interface PortfolioImage {
   url: string;
   title?: string;
   description?: string;
-  name?: string; // Add name property
+  name?: string;
   created_at?: string;
+  featured?: boolean;
 }
 
 export interface ArtistProfileState {
@@ -78,7 +79,6 @@ export interface ArtistProfileState {
   portfolio?: PortfolioImage[];
   services?: any[];
   
-  // Add missing properties
   full_name?: string;
   user_id?: string;
   credits?: number;
@@ -91,6 +91,10 @@ export interface ArtistProfileState {
   avatar_url?: string;
   profile_completion?: number;
   independent?: boolean;
+  years_experience?: number;
+  skills?: string[];
+  instagram?: string;
+  website?: string;
 }
 
 export interface ArtistDataContextType {
@@ -100,7 +104,7 @@ export interface ArtistDataContextType {
   error: Error | string | null;
   refresh: () => void;
   
-  // Add missing properties used by components
+  // Properties used by components
   artistProfile: ArtistProfileState;
   refreshArtistProfile: () => Promise<void>;
   portfolioImages: PortfolioImage[];
@@ -110,7 +114,7 @@ export interface ArtistDataContextType {
   firstName?: string;
   userCredits?: number;
   
-  // Add properties used in ArtistMetrics
+  // Properties used in ArtistMetrics
   bookingCount: { toString: () => string };
   reviewCount: number;
   averageRating: { toString: () => string };

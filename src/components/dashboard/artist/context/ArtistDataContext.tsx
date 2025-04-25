@@ -3,15 +3,8 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { useAuth } from '@/context/auth';
 import { useArtistProfile } from '@/hooks/artist/useArtistProfile';
 import { useToast } from '@/components/ui/use-toast';
-
-// Define types for context data
-interface ArtistDataContextType {
-  profile: any;
-  stats: any;
-  loading: boolean;
-  error: Error | string | null;
-  refresh: () => void;
-}
+import { ArtistDataContextType, ArtistProfileState, PortfolioImage } from '../types/ArtistDashboardTypes';
+import { usePortfolioImages } from '@/hooks/artist/usePortfolioImages';
 
 // Create context with default values
 const ArtistDataContext = createContext<ArtistDataContextType | undefined>(undefined);
@@ -19,11 +12,42 @@ const ArtistDataContext = createContext<ArtistDataContextType | undefined>(undef
 // Provider component
 export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { user } = useAuth();
-  const { profile, isLoading: profileLoading } = useArtistProfile();
+  const { profile: artistProfileData, isLoading: profileLoading } = useArtistProfile();
+  const { images: portfolioImages, isLoading: loadingPortfolio } = usePortfolioImages();
   const [stats, setStats] = useState<any>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | string | null>(null);
+  const [copied, setCopied] = useState(false);
   const { toast } = useToast();
+
+  // Map artist profile data to the expected structure
+  const artistProfile: ArtistProfileState = {
+    id: artistProfileData?.id,
+    user_id: artistProfileData?.user_id,
+    name: artistProfileData?.full_name,
+    full_name: artistProfileData?.full_name,
+    avatar: artistProfileData?.avatar_url,
+    avatar_url: artistProfileData?.avatar_url,
+    bio: artistProfileData?.bio,
+    location: artistProfileData?.location,
+    specialty: artistProfileData?.specialty,
+    experience: artistProfileData?.years_experience,
+    rating: artistProfileData?.rating,
+    portfolio: portfolioImages,
+    portfolio_urls: artistProfileData?.portfolio_urls,
+    independent: artistProfileData?.independent,
+    accepts_bookings: artistProfileData?.accepts_bookings,
+    preferences: artistProfileData?.preferences,
+    profile_completion: artistProfileData?.profile_completion,
+  };
+
+  const firstName = artistProfile?.full_name?.split(' ')[0] || '';
+  const userCredits = artistProfile?.credits || 0;
+  
+  // Mock values for metrics
+  const bookingCount = { toString: () => "12" };
+  const reviewCount = 8;
+  const averageRating = { toString: () => "4.8" };
 
   const fetchArtistStats = async () => {
     // Simulate fetching artist stats - replace with actual stats fetching
@@ -64,10 +88,34 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
       toast({
         title: "Error loading dashboard data",
         description: "Please try again or contact support if the issue persists.",
-        variant: "destructive" // Changed from 'error' to 'destructive'
+        // Use the correct variant property for shadcn/ui toast
+        variant: "destructive"
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Function to refresh artist profile
+  const refreshArtistProfile = async () => {
+    try {
+      setLoading(true);
+      await loadData();
+    } catch (error) {
+      console.error("Error refreshing artist profile:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle copy referral link
+  const handleCopyReferralLink = () => {
+    if (artistProfile?.affiliate_code) {
+      navigator.clipboard.writeText(
+        `${window.location.origin}/signup?ref=${artistProfile.affiliate_code}`
+      );
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
@@ -82,12 +130,25 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
   }, [profileLoading]);
 
   // Context value
-  const value = {
-    profile,
+  const value: ArtistDataContextType = {
+    profile: artistProfileData,
     stats,
     loading,
     error,
-    refresh: loadData
+    refresh: loadData,
+    
+    // Add all required properties to match the interface
+    artistProfile,
+    refreshArtistProfile,
+    portfolioImages,
+    loadingPortfolio,
+    bookingCount,
+    reviewCount,
+    averageRating,
+    firstName,
+    userCredits,
+    copied,
+    handleCopyReferralLink,
   };
 
   return (
@@ -112,9 +173,9 @@ export const useArtistData = () => {
       refresh: () => {},
       
       // Add missing properties to the default value
-      artistProfile: {},
+      artistProfile: {} as ArtistProfileState,
       refreshArtistProfile: async () => {},
-      portfolioImages: [],
+      portfolioImages: [] as PortfolioImage[],
       loadingPortfolio: false,
       bookingCount: { toString: () => "0" },
       reviewCount: 0,
@@ -123,7 +184,7 @@ export const useArtistData = () => {
       userCredits: 0,
       copied: false,
       handleCopyReferralLink: () => {}
-    };
+    } as ArtistDataContextType;
   }
   
   return context;
