@@ -1,110 +1,107 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Gift, Lock } from "lucide-react";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2, Gift } from "lucide-react";
 import { Link } from "react-router-dom";
-import { toast } from "sonner";
+import { useRoleBasedSignUp } from "@/hooks/useRoleBasedSignUp";
+import { UserRole } from "@/context/auth/types";
+import RoleSelectionCards from "./RoleSelectionCards";
 
-interface SignUpFormProps {
-  email: string;
-  setEmail: (email: string) => void;
-  password: string;
-  setPassword: (password: string) => void;
-  confirmPassword: string;
-  setConfirmPassword: (confirmPassword: string) => void;
-  isSubmitting: boolean;
-  referralCode: string | null;
-  handleSubmit: (e: React.FormEvent) => Promise<void>;
-}
+const SignUpForm = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
+  const { signUp, loading } = useRoleBasedSignUp();
 
-const SignUpForm = ({
-  email,
-  setEmail,
-  password,
-  setPassword,
-  confirmPassword,
-  setConfirmPassword,
-  isSubmitting,
-  referralCode,
-  handleSubmit
-}: SignUpFormProps) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (password !== confirmPassword) {
+      toast.error("Passwords don't match");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    await signUp(email, password, selectedRole);
+  };
+
   return (
-    <Card className="border-0 shadow-xl bg-gradient-to-b from-white to-indigo-50/30 rounded-2xl overflow-hidden">
+    <Card className="border-0 shadow-xl bg-gradient-to-b from-white to-indigo-50/30 rounded-2xl overflow-hidden max-w-lg w-full mx-auto">
       <CardHeader className="space-y-1 pb-6">
         <CardTitle className="text-3xl font-bold text-center font-serif text-indigo-900">
           Create an Account
         </CardTitle>
-        <CardDescription className="text-center text-indigo-700/70">
-          Tạo tài khoản miễn phí để bắt đầu hành trình làm đẹp của bạn.
-        </CardDescription>
-        {referralCode && (
-          <div className="mt-4 bg-indigo-50 p-4 rounded-xl text-center border border-indigo-100">
-            <div className="flex items-center justify-center text-indigo-700 mb-1">
-              <Gift className="h-4 w-4 mr-2" />
-              <span className="text-sm font-medium">You were invited!</span>
-            </div>
-            <p className="text-xs text-indigo-600">
-              Signing up with a referral gives you a bonus start.
-            </p>
-          </div>
-        )}
       </CardHeader>
+
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm font-normal text-gray-600">Email</Label>
+            <Label htmlFor="email" className="text-sm font-medium text-gray-600">Email</Label>
             <Input
               id="email"
               type="email"
-              placeholder="your@email.com"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              disabled={isSubmitting}
-              className="py-3 px-4 bg-white border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-300 transition-all shadow-sm"
+              disabled={loading}
+              className="py-3 px-4"
+              placeholder="your@email.com"
             />
           </div>
+          
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-sm font-normal text-gray-600">Password</Label>
+            <Label htmlFor="password" className="text-sm font-medium text-gray-600">Password</Label>
             <Input
               id="password"
               type="password"
-              placeholder="••••••••"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              disabled={isSubmitting}
-              className="py-3 px-4 bg-white border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-300 transition-all shadow-sm"
+              disabled={loading}
+              className="py-3 px-4"
+              placeholder="••••••••"
             />
           </div>
+
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="text-sm font-normal text-gray-600">Confirm Password</Label>
+            <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-600">
+              Confirm Password
+            </Label>
             <Input
               id="confirmPassword"
               type="password"
-              placeholder="••••••••"
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              disabled={isSubmitting}
-              className="py-3 px-4 bg-white border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-300 transition-all shadow-sm"
+              disabled={loading}
+              className="py-3 px-4"
+              placeholder="••••••••"
             />
-            <div className="flex items-center mt-2 text-xs text-gray-500">
-              <Lock className="h-3 w-3 mr-1 text-gray-400" />
-              Your password is encrypted and private 🔒
-            </div>
+          </div>
+
+          <div className="pt-4">
+            <RoleSelectionCards
+              selectedRole={selectedRole}
+              onChange={setSelectedRole}
+            />
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col space-y-5 pt-2 pb-6">
+
+        <CardFooter className="flex flex-col space-y-4 pt-2 pb-6">
           <Button 
             type="submit" 
-            className="w-full py-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium text-base transition-all duration-200 shadow-md hover:shadow-lg"
-            disabled={isSubmitting}
+            className="w-full py-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+            disabled={loading}
           >
-            {isSubmitting ? (
+            {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Creating Account...
@@ -113,14 +110,12 @@ const SignUpForm = ({
               "Sign Up"
             )}
           </Button>
-          <div className="text-sm text-center text-gray-500 mt-4">
+
+          <div className="text-sm text-center text-gray-500">
             Already have an account?{" "}
-            <Link to="/auth/signin" className="text-indigo-600 hover:text-indigo-800 font-medium hover:underline transition-colors">
+            <Link to="/auth/signin" className="text-indigo-600 hover:text-indigo-800 font-medium">
               Sign in
             </Link>
-          </div>
-          <div className="text-xs text-center text-gray-400 italic mt-4 px-8">
-            "Behind every beauty empire is a powerful login form."
           </div>
         </CardFooter>
       </form>
