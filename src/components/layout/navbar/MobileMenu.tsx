@@ -1,28 +1,14 @@
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { 
-  Menu, 
-  X, 
-  Home, 
-  User, 
-  Users, 
-  Store, 
-  Briefcase, 
-  DollarSign, 
-  Gift, 
-  Award, 
-  Globe,
-  LogOut,
-  ChevronRight,
-  Rocket
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { NavItem } from "@/components/layout/navbar/NavItem";
-import { mainNavigationItems } from "@/components/layout/navbar/config/navigationItems";
+import { useAuth } from "@/context/auth";
+import { Menu, X, Home, User, Search, Store, Briefcase, DollarSign, Gift, Globe } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { mainNavigationItems } from "./config/navigationItems";
+import { NavigationItem } from "./types";
 import LanguageToggle from "@/components/layout/LanguageToggle";
-import { Separator } from "@/components/ui/separator";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 
 interface MobileMenuProps {
   user: any;
@@ -32,290 +18,263 @@ interface MobileMenuProps {
 const MobileMenu = ({ user, handleSignOut }: MobileMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
+  // Define icon mapping for navigation items
+  const getIcon = (path: string) => {
+    switch (path) {
+      case "/":
+        return <Home className="h-5 w-5 mr-2" />;
+      case "/artists":
+        return <User className="h-5 w-5 mr-2" />;
+      case "/salons":
+        return <Store className="h-5 w-5 mr-2" />;
+      case "/jobs":
+        return <Briefcase className="h-5 w-5 mr-2" />;
+      case "/pricing":
+        return <DollarSign className="h-5 w-5 mr-2" />;
+      case "/early-access-dashboard":
+        return <Gift className="h-5 w-5 mr-2" />;
+      case "/referral-program":
+        return <Gift className="h-5 w-5 mr-2" />;
+      default:
+        return <Home className="h-5 w-5 mr-2" />;
+    }
   };
 
-  const closeMenu = () => {
-    setIsOpen(false);
+  // Menu backdrop variants
+  const backdropVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 }
+  };
+
+  // Menu variants
+  const menuVariants = {
+    hidden: { x: "100%", opacity: 0.5 },
+    visible: { x: 0, opacity: 1, transition: { type: "spring", stiffness: 300, damping: 30 } }
+  };
+
+  // Menu items stagger animation
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+        delayChildren: 0.1
+      }
+    }
+  };
+
+  // Individual menu item animation
+  const itemVariants = {
+    hidden: { x: 20, opacity: 0 },
+    visible: { x: 0, opacity: 1, transition: { type: "spring", stiffness: 300, damping: 20 } }
   };
 
   return (
-    <div className="md:hidden">
-      <Button 
-        onClick={toggleMenu} 
-        variant="ghost" 
-        size="icon"
-        className="rounded-full w-10 h-10"
-        aria-label="Menu"
-      >
-        <Menu className="h-5 w-5" />
-      </Button>
-
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            {/* Overlay */}
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
-              onClick={closeMenu}
-            />
-
-            {/* Menu Panel */}
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="fixed inset-y-0 right-0 w-[85%] max-w-xs mobile-glass-drawer z-50 overflow-y-auto pb-16"
-            >
-              {/* Header with close button */}
-              <div className="flex items-center justify-between p-4">
-                <div className="flex items-center gap-2">
-                  <Globe className="h-4 w-4" />
-                  <LanguageToggle minimal={true} className="mr-1" />
-                </div>
-                <Button 
-                  onClick={closeMenu} 
-                  variant="ghost" 
-                  size="icon"
-                  className="rounded-full w-9 h-9"
+    <Drawer>
+      <DrawerTrigger asChild>
+        <button 
+          aria-label="Menu"
+          className="p-2 -mr-1 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary/30"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+      </DrawerTrigger>
+      <DrawerContent className="mobile-glass-drawer h-[calc(100vh-2rem)] rounded-t-xl overflow-hidden">
+        <div className="px-6 py-4 h-full flex flex-col">
+          {/* Header with close button and language toggle */}
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold text-white">Menu</h2>
+            <div className="flex items-center gap-3">
+              <div className="mr-2">
+                <LanguageToggle minimal={true} className="text-white" />
+              </div>
+              <DrawerTrigger asChild>
+                <button 
+                  aria-label="Close menu"
+                  className="p-2 rounded-full bg-white/10 hover:bg-white/20"
                 >
-                  <X className="h-5 w-5" />
-                </Button>
-              </div>
-
-              <Separator className="mb-4" />
-
-              {/* Menu Content */}
-              <div className="px-5 py-2 space-y-6">
-                {/* Explore Section */}
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-500 mb-2.5">EXPLORE</h3>
-                  <ul className="space-y-2">
-                    <li>
-                      <Link 
-                        to="/" 
-                        className="flex items-center px-3 py-2 rounded-md hover:bg-gray-100"
-                        onClick={closeMenu}
-                      >
-                        <Home className="h-4 w-4 mr-3" />
-                        <span>Home</span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link 
-                        to="/artists" 
-                        className="flex items-center px-3 py-2 rounded-md hover:bg-gray-100"
-                        onClick={closeMenu}
-                      >
-                        <Users className="h-4 w-4 mr-3" />
-                        <span>Find Artists</span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link 
-                        to="/jobs" 
-                        className="flex items-center px-3 py-2 rounded-md hover:bg-gray-100"
-                        onClick={closeMenu}
-                      >
-                        <Briefcase className="h-4 w-4 mr-3" />
-                        <span>Search Jobs</span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link 
-                        to="/salons" 
-                        className="flex items-center px-3 py-2 rounded-md hover:bg-gray-100"
-                        onClick={closeMenu}
-                      >
-                        <Store className="h-4 w-4 mr-3" />
-                        <span>Browse Salons</span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link 
-                        to="/pricing" 
-                        className="flex items-center px-3 py-2 rounded-md hover:bg-gray-100"
-                        onClick={closeMenu}
-                      >
-                        <DollarSign className="h-4 w-4 mr-3" />
-                        <span>Pricing</span>
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-
-                {/* VIP Access Section */}
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-500 mb-2.5">VIP ACCESS</h3>
-                  <ul className="space-y-2">
-                    <li>
-                      <Link 
-                        to="/early-access-dashboard" 
-                        className="flex items-center px-3 py-2 rounded-md bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-100"
-                        onClick={closeMenu}
-                      >
-                        <Rocket className="h-4 w-4 mr-3 text-purple-600" />
-                        <span className="text-purple-700">Early Access</span>
-                        <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-yellow-100 text-yellow-800 font-medium">
-                          VIP
-                        </span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link 
-                        to="/referral-program" 
-                        className="flex items-center px-3 py-2 rounded-md bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-100"
-                        onClick={closeMenu}
-                      >
-                        <Gift className="h-4 w-4 mr-3 text-purple-600" />
-                        <span className="text-purple-700">Referral Program</span>
-                        <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-yellow-100 text-yellow-800 font-medium">
-                          VIP
-                        </span>
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-
-                {/* Quick Actions */}
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-500 mb-2.5">QUICK ACTIONS</h3>
-                  <ul className="grid gap-2">
-                    <li>
-                      <Link 
-                        to="/dashboard" 
-                        className="flex items-center px-3 py-2 rounded-md bg-gray-50 hover:bg-gray-100"
-                        onClick={closeMenu}
-                      >
-                        <span className="mr-2">🚀</span>
-                        <span>Go to Dashboard</span>
-                        <ChevronRight className="h-4 w-4 ml-auto" />
-                      </Link>
-                    </li>
-                    <li>
-                      <Link 
-                        to="/rewards" 
-                        className="flex items-center px-3 py-2 rounded-md bg-gray-50 hover:bg-gray-100"
-                        onClick={closeMenu}
-                      >
-                        <span className="mr-2">🎁</span>
-                        <span>Claim Rewards</span>
-                        <ChevronRight className="h-4 w-4 ml-auto" />
-                      </Link>
-                    </li>
-                    <li>
-                      <Link 
-                        to="/vip-access" 
-                        className="flex items-center px-3 py-2 rounded-md bg-gray-50 hover:bg-gray-100"
-                        onClick={closeMenu}
-                      >
-                        <span className="mr-2">⭐</span>
-                        <span>My VIP Access</span>
-                        <ChevronRight className="h-4 w-4 ml-auto" />
-                      </Link>
-                    </li>
-                    <li>
-                      <Link 
-                        to="/referrals" 
-                        className="flex items-center px-3 py-2 rounded-md bg-gray-50 hover:bg-gray-100"
-                        onClick={closeMenu}
-                      >
-                        <span className="mr-2">📈</span>
-                        <span>Track Referrals</span>
-                        <ChevronRight className="h-4 w-4 ml-auto" />
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-
-                {/* Account Section */}
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-500 mb-2.5">ACCOUNT</h3>
-                  <ul className="space-y-2">
-                    {user ? (
-                      <>
-                        <li>
-                          <Link 
-                            to="/dashboard" 
-                            className="flex items-center px-3 py-2 rounded-md hover:bg-gray-100"
-                            onClick={closeMenu}
-                          >
-                            <Award className="h-4 w-4 mr-3" />
-                            <span>Dashboard</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link 
-                            to="/profile" 
-                            className="flex items-center px-3 py-2 rounded-md hover:bg-gray-100"
-                            onClick={closeMenu}
-                          >
-                            <User className="h-4 w-4 mr-3" />
-                            <span>Profile</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <button 
-                            onClick={() => {
-                              handleSignOut();
-                              closeMenu();
-                            }}
-                            className="flex w-full items-center px-3 py-2 rounded-md hover:bg-red-50 text-red-600"
-                          >
-                            <LogOut className="h-4 w-4 mr-3" />
-                            <span>Sign Out</span>
-                          </button>
-                        </li>
-                      </>
-                    ) : (
-                      <>
-                        <li>
-                          <Link 
-                            to="/login" 
-                            className="flex items-center px-3 py-2 rounded-md hover:bg-gray-100"
-                            onClick={closeMenu}
-                          >
-                            <User className="h-4 w-4 mr-3" />
-                            <span>Login</span>
-                          </Link>
-                        </li>
-                        <li>
-                          <Link 
-                            to="/signup" 
-                            className="flex w-full items-center justify-center px-4 py-2 rounded-md bg-primary text-white"
-                            onClick={closeMenu}
-                          >
-                            Sign Up
-                          </Link>
-                        </li>
-                      </>
-                    )}
-                  </ul>
-                </div>
-              </div>
-
-              {/* Sticky VIP Upgrade Footer */}
-              <div className="sticky bottom-0 mt-auto bg-gradient-to-r from-purple-600 to-indigo-600 p-3 text-white">
+                  <X className="h-4 w-4 text-white" />
+                </button>
+              </DrawerTrigger>
+            </div>
+          </div>
+          
+          {/* Menu content */}
+          <div className="flex flex-col space-y-6 flex-grow overflow-y-auto">
+            {/* Explore section */}
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Explore</h3>
+              <div className="space-y-1">
                 <Link 
-                  to="/early-access-dashboard"
-                  onClick={closeMenu}
-                  className="flex items-center justify-center gap-2 text-center font-medium"
+                  to="/" 
+                  className="flex items-center px-2 py-2 text-base font-medium rounded-md text-white hover:bg-white/10"
+                  onClick={() => setIsOpen(false)}
                 >
-                  <span className="text-lg">🌟</span> 
-                  <span>Upgrade to VIP — Limited Time Offer</span>
+                  <Home size={18} className="mr-3 text-gray-300" />
+                  Home
+                </Link>
+                
+                {mainNavigationItems.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className="flex items-center px-2 py-2 text-base font-medium rounded-md text-white hover:bg-white/10"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {getIcon(item.path)}
+                    {item.title || item.label}
+                  </Link>
+                ))}
+                
+                <Link 
+                  to="/pricing" 
+                  className="flex items-center px-2 py-2 text-base font-medium rounded-md text-white hover:bg-white/10"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <DollarSign size={18} className="mr-3 text-gray-300" />
+                  Pricing
                 </Link>
               </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </div>
+            </div>
+
+            {/* VIP Access section */}
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">VIP Access</h3>
+              <div className="space-y-2">
+                <Link 
+                  to="/early-access-dashboard" 
+                  className="flex items-center px-3 py-3 text-base font-medium rounded-md bg-gradient-to-r from-purple-600/40 to-pink-600/40 text-white hover:from-purple-600/50 hover:to-pink-600/50 relative overflow-hidden group"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {/* Animated background effect */}
+                  <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
+                  <Gift size={18} className="mr-3 text-pink-300" />
+                  <span>Early Access</span>
+                  <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded-sm text-xs font-bold bg-yellow-500/30 text-yellow-200">
+                    VIP
+                  </span>
+                </Link>
+                
+                <Link 
+                  to="/referral-program" 
+                  className="flex items-center px-3 py-3 text-base font-medium rounded-md bg-gradient-to-r from-indigo-600/40 to-blue-600/40 text-white hover:from-indigo-600/50 hover:to-blue-600/50 relative overflow-hidden group"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {/* Animated background effect */}
+                  <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
+                  <Gift size={18} className="mr-3 text-blue-300" />
+                  <span>Referral Program</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Quick Actions</h3>
+              <div className="grid grid-cols-2 gap-2">
+                <Link
+                  to="/dashboard"
+                  className="flex flex-col items-center justify-center p-3 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm text-center"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <span className="text-xl mb-1">🚀</span>
+                  <span>Go to Dashboard</span>
+                </Link>
+                
+                <Link
+                  to="/rewards"
+                  className="flex flex-col items-center justify-center p-3 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm text-center"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <span className="text-xl mb-1">🎁</span>
+                  <span>Claim Rewards</span>
+                </Link>
+                
+                <Link
+                  to="/vip-access"
+                  className="flex flex-col items-center justify-center p-3 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm text-center"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <span className="text-xl mb-1">⭐</span>
+                  <span>My VIP Access</span>
+                </Link>
+                
+                <Link
+                  to="/referrals"
+                  className="flex flex-col items-center justify-center p-3 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm text-center"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <span className="text-xl mb-1">📈</span>
+                  <span>Track Referrals</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Account section */}
+            {user && (
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Account</h3>
+                <div className="space-y-1">
+                  <Link
+                    to="/dashboard"
+                    className="flex items-center px-2 py-2 text-base font-medium rounded-md text-white hover:bg-white/10"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <User size={18} className="mr-3 text-gray-300" />
+                    Dashboard
+                  </Link>
+                  <Link
+                    to="/profile"
+                    className="flex items-center px-2 py-2 text-base font-medium rounded-md text-white hover:bg-white/10"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <User size={18} className="mr-3 text-gray-300" />
+                    Profile
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleSignOut();
+                      setIsOpen(false);
+                    }}
+                    className="flex w-full items-center px-2 py-2 text-base font-medium rounded-md text-red-300 hover:bg-red-500/20"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      className="h-5 w-5 mr-3"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                      />
+                    </svg>
+                    Sign out
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          {/* Sticky footer with VIP upgrade CTA */}
+          <div className="pt-4 mt-4 border-t border-white/10">
+            <Link 
+              to="/pricing" 
+              className="block py-3 px-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-md text-center text-white font-medium shadow-lg relative overflow-hidden group animate-subtle-pulse"
+            >
+              <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
+              <span className="flex items-center justify-center gap-2">
+                🌟 Upgrade to VIP — Limited Time Offer
+              </span>
+            </Link>
+          </div>
+        </div>
+      </DrawerContent>
+    </Drawer>
   );
 };
 
