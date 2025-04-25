@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/hooks/useTranslation';
-import { Check } from 'lucide-react';
+import { Check, Lock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const FoundersEarlyAccess = () => {
@@ -70,6 +70,7 @@ const FoundersEarlyAccess = () => {
         vietnamese: 'Đảm Bảo Vị Trí Salon Của Tôi'
       },
       link: '/early-access',
+      clientGrowth: true
     },
     {
       id: 'freelancer',
@@ -151,6 +152,18 @@ const FoundersEarlyAccess = () => {
                     <span className="text-gray-700">{t(benefit)}</span>
                   </div>
                 ))}
+                
+                {plan.clientGrowth && (
+                  <div className="flex items-center gap-2 mt-4 pt-3 border-t border-gray-100">
+                    <Lock className="h-4 w-4 text-emvi-accent mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-800 font-medium">
+                      {t({
+                        english: "Client Growth System Included",
+                        vietnamese: "Đã Bao Gồm Hệ Thống Phát Triển Khách Hàng"
+                      })}
+                    </span>
+                  </div>
+                )}
               </div>
             </CardContent>
 

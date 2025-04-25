@@ -4,8 +4,11 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRightIcon, ChevronLeft } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const EarlyAccess: React.FC = () => {
+  const { t } = useTranslation();
+  
   // Refs for scroll animations
   const heroRef = useRef<HTMLDivElement>(null);
   const socialProofRef = useRef<HTMLDivElement>(null);
@@ -135,12 +138,41 @@ const EarlyAccess: React.FC = () => {
         </div>
       </section>
 
+      {/* Coming Soon Teaser */}
+      <section className="py-10 px-4">
+        <div className="max-w-3xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-100"
+          >
+            <h4 className="text-xl font-playfair mb-1 text-gray-900">
+              {t({
+                english: "Coming Soon: The Smartest Way to Keep Your Clients",
+                vietnamese: "Sắp Ra Mắt: Cách Thông Minh Nhất để Giữ Chân Khách Hàng của Bạn"
+              })}
+            </h4>
+            <p className="text-gray-600 text-sm">
+              {t({
+                english: "Our AI-driven client retention system is in final testing",
+                vietnamese: "Hệ thống giữ chân khách hàng dựa trên AI của chúng tôi đang trong giai đoạn thử nghiệm cuối cùng"
+              })}
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Return to Homepage Button */}
       <div className="pb-16 text-center">
         <Link to="/">
           <Button variant="ghost" className="text-gray-600 hover:text-gray-900 font-playfair flex items-center gap-2">
             <ChevronLeft className="h-4 w-4" />
-            Return to EmviApp Homepage
+            {t({
+              english: "Return to EmviApp Homepage",
+              vietnamese: "Quay lại Trang chủ EmviApp"
+            })}
           </Button>
         </Link>
       </div>
