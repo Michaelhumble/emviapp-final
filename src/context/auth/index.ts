@@ -1,4 +1,4 @@
 
+export * from './AuthProvider';
+export * from './useAuth';
 export * from './types';
-export * from './ReliableAuthProvider';
-export { useAuth } from './useAuth';

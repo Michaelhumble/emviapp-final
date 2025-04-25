@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -20,7 +19,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ profile }) => {
     if (profile.role === 'artist' || profile.role === 'nail technician/artist') {
       return profile.specialty || 'Beauty Artist';
     } else if (profile.role === 'salon' || profile.role === 'owner') {
-      return profile.salon_name || 'Salon Owner';
+      return profile.salon_name || profile.salonName || 'Salon Owner';
     } else if (profile.role === 'vendor' || profile.role === 'supplier' || profile.role === 'beauty supplier') {
       return profile.company_name || 'Beauty Supplier';
     } else if (profile.role === 'freelancer') {

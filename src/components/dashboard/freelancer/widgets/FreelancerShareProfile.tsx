@@ -10,11 +10,8 @@ export default function FreelancerShareProfile() {
   const { userProfile } = useAuth();
   const [copied, setCopied] = useState(false);
 
-  // Use optional chaining and provide multiple fallbacks for profile URL
   const profileUrl = userProfile?.username
     ? `${window.location.origin}/a/${userProfile.username}`
-    : userProfile?.id
-    ? `${window.location.origin}/a/${userProfile.id}`
     : "";
 
   const handleCopy = () => {

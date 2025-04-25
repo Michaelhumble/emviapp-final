@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -42,7 +43,7 @@ const SalonProfileCompletionCard = ({
   
   // Get next incomplete field to highlight, with improved detection for salon name
   const getNextAction = () => {
-    const hasSalonName = userProfile?.full_name || false;
+    const hasSalonName = userProfile?.salon_name || userProfile?.full_name;
     
     if (incompleteFields.includes('Salon Name') && !hasSalonName) {
       return "Add your salon name";

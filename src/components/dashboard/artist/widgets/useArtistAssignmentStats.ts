@@ -33,8 +33,8 @@ export function useArtistAssignmentStats() {
   useEffect(() => {
     let cancelled = false;
     async function fetchStats() {
-      // Only for in-salon artists - using optional chaining and default values
-      if (!user?.id || userProfile?.role !== "artist" || userProfile?.independent === true) {
+      // Only for in-salon artists
+      if (!user?.id || userProfile?.role !== "artist" || userProfile?.independent) {
         setStats(s => ({ ...s, loading: false }));
         return;
       }

@@ -1,4 +1,3 @@
-
 export interface Booking {
   id: string;
   sender_id: string;
@@ -62,9 +61,8 @@ export interface PortfolioImage {
   url: string;
   title?: string;
   description?: string;
-  name?: string;
+  name?: string; // Add name property
   created_at?: string;
-  featured?: boolean;
 }
 
 export interface ArtistProfileState {
@@ -79,6 +77,7 @@ export interface ArtistProfileState {
   portfolio?: PortfolioImage[];
   services?: any[];
   
+  // Add missing properties
   full_name?: string;
   user_id?: string;
   credits?: number;
@@ -88,34 +87,24 @@ export interface ArtistProfileState {
   preferred_language?: string;
   accepts_bookings?: boolean;
   preferences?: string[];
-  avatar_url?: string;
-  profile_completion?: number;
-  independent?: boolean;
-  years_experience?: number;
-  skills?: string[];
-  instagram?: string;
-  website?: string;
+  avatar_url?: string; // Add the avatar_url property
+  profile_completion?: number; // Add the profile_completion property
+  independent?: boolean; // Add the independent property
 }
 
 export interface ArtistDataContextType {
-  profile: any;
-  stats: any;
-  loading: boolean;
-  error: Error | string | null;
-  refresh: () => void;
-  
-  // Properties used by components
   artistProfile: ArtistProfileState;
+  loading: boolean;
+  error: Error | null;
+  updateProfile: (data: Partial<ArtistProfileState>) => Promise<void>;
+  
+  // Add missing properties 
+  refreshProfile: () => void;
   refreshArtistProfile: () => Promise<void>;
-  portfolioImages: PortfolioImage[];
-  loadingPortfolio: boolean;
   handleCopyReferralLink?: () => void;
   copied?: boolean;
   firstName?: string;
   userCredits?: number;
-  
-  // Properties used in ArtistMetrics
-  bookingCount: { toString: () => string };
-  reviewCount: number;
-  averageRating: { toString: () => string };
+  portfolioImages: PortfolioImage[];
+  loadingPortfolio: boolean;
 }

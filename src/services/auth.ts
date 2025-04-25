@@ -43,11 +43,9 @@ export async function signOut() {
   try {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
-    window.location.href = '/'; // Redirect to homepage after successful logout
     return { success: true };
   } catch (error) {
     console.error("Sign out error:", error);
-    toast.error("Failed to sign out. Please try again.");
     return { success: false, error };
   }
 }

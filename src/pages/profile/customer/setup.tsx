@@ -41,21 +41,16 @@ const CustomerSetup = () => {
     setLoading(true);
     
     try {
-      const profileData = {
+      const success = await updateProfile({
         full_name: formData.fullName,
+        gender: formData.gender,
         location: formData.location,
         phone: formData.phone,
         preferences: formData.preferences,
-        // Custom fields can be stored in metadata or accepted by backend
-        gender: formData.gender, // This will be handled by backend or ignored
-      };
+      });
       
-      const result = await updateProfile(profileData);
-      
-      if (result.success) {
+      if (success) {
         navigate('/dashboard/customer');
-      } else {
-        throw new Error(result.error?.message || "Failed to save profile");
       }
     } catch (error) {
       console.error("Error saving profile:", error);

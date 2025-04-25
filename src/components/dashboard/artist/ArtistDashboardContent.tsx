@@ -14,7 +14,6 @@ import EarningsSnapshot from './EarningsSnapshot';
 import { Button } from "@/components/ui/button";
 import { Image } from "lucide-react";
 import ArtistPortfolioSection from './sections/ArtistPortfolioSection';
-import ErrorBoundary from '@/components/error-handling/ErrorBoundary';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -47,7 +46,7 @@ const MOCK_EXPIRY = "May 31, 2025";
 const ArtistDashboardContent = () => {
   const [hasBoost, setHasBoost] = useState(false);
 
-  const { loading } = useArtistData() || { loading: true };
+  const { loading } = useArtistData();
   const location = useLocation();
   const navigate = useNavigate();
   const query = useQuery();
@@ -88,9 +87,7 @@ const ArtistDashboardContent = () => {
       initial="hidden"
       animate="visible"
     >
-      <ErrorBoundary>
-        <ProfileBoostBanner hasBoost={hasBoost} boostExpiry={MOCK_EXPIRY} onBoostClick={handleUpgrade} />
-      </ErrorBoundary>
+      <ProfileBoostBanner hasBoost={hasBoost} boostExpiry={MOCK_EXPIRY} onBoostClick={handleUpgrade} />
 
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 mb-8">
         <div />
@@ -106,64 +103,50 @@ const ArtistDashboardContent = () => {
         </button>
       </div>
 
-      <ErrorBoundary>
-        <motion.div variants={itemVariants}>
-          <ArtistHero />
-        </motion.div>
-      </ErrorBoundary>
+      <motion.div variants={itemVariants}>
+        <ArtistHero />
+      </motion.div>
       
-      <ErrorBoundary>
-        <motion.div variants={itemVariants}>
-          <ArtistMetrics />
-        </motion.div>
-      </ErrorBoundary>
+      <motion.div variants={itemVariants}>
+        <ArtistMetrics />
+      </motion.div>
 
-      <ErrorBoundary>
-        <motion.div variants={itemVariants}>
-          <EarningsSnapshot />
-        </motion.div>
-      </ErrorBoundary>
+      <motion.div variants={itemVariants}>
+        <EarningsSnapshot />
+      </motion.div>
 
-      <ErrorBoundary>
-        <motion.div variants={itemVariants}>
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center gap-2">
-              <Image className="h-5 w-5 text-purple-500" />
-              <h2 className="text-xl font-playfair font-semibold">My Portfolio</h2>
-            </div>
-            <Link to="/dashboard/artist/portfolio">
-              <Button 
-                variant="outline" 
-                className="flex items-center gap-2 bg-white/80 border-purple-200 hover:bg-purple-50"
-              >
-                <Image className="h-4 w-4 text-purple-500" />
-                Manage Portfolio
-              </Button>
-            </Link>
+      <motion.div variants={itemVariants}>
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center gap-2">
+            <Image className="h-5 w-5 text-purple-500" />
+            <h2 className="text-xl font-playfair font-semibold">My Portfolio</h2>
           </div>
-        </motion.div>
-      </ErrorBoundary>
+          <Link to="/dashboard/artist/portfolio">
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2 bg-white/80 border-purple-200 hover:bg-purple-50"
+            >
+              <Image className="h-4 w-4 text-purple-500" />
+              Manage Portfolio
+            </Button>
+          </Link>
+        </div>
+      </motion.div>
       
-      <ErrorBoundary>
-        <motion.div variants={itemVariants}>
-          <ArtistPortfolioSection />
-        </motion.div>
-      </ErrorBoundary>
+      <motion.div variants={itemVariants}>
+        <ArtistPortfolioSection />
+      </motion.div>
       
       <div className="h-2 md:h-4" />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <ErrorBoundary>
-          <motion.div variants={itemVariants}>
-            <ArtistActivityFeed />
-          </motion.div>
-        </ErrorBoundary>
+        <motion.div variants={itemVariants}>
+          <ArtistActivityFeed />
+        </motion.div>
         
-        <ErrorBoundary>
-          <motion.div variants={itemVariants}>
-            <ArtistAppointments />
-          </motion.div>
-        </ErrorBoundary>
+        <motion.div variants={itemVariants}>
+          <ArtistAppointments />
+        </motion.div>
       </div>
     </motion.div>
   );

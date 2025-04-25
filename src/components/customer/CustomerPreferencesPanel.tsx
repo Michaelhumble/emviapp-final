@@ -82,12 +82,12 @@ const CustomerPreferencesPanel: React.FC = () => {
     setForm(f => ({
       ...f,
       preferences: userProfile.preferences || [],
-      artistTypes: (userProfile.artistTypes || []) as string[],
-      favorite_artist_types: (userProfile.favorite_artist_types || []) as string[],
+      artistTypes: (userProfile.artistTypes || userProfile.favorite_artist_types || []) as string[],
+      favorite_artist_types: (userProfile.favorite_artist_types || userProfile.artistTypes || []) as string[],
       preferred_language: userProfile.preferred_language || "en",
-      birthday: "",
-      commPrefs: [] as string[],
-      communication_preferences: [] as string[],
+      birthday: userProfile.birthday as string || "",
+      commPrefs: (userProfile.commPrefs || userProfile.communication_preferences || []) as string[],
+      communication_preferences: (userProfile.communication_preferences || userProfile.commPrefs || []) as string[],
       avatar_url: userProfile.avatar_url || "",
     }));
   }, [userProfile, user]);
@@ -130,7 +130,12 @@ const CustomerPreferencesPanel: React.FC = () => {
     setSaving(true);
     const updateObj: any = {
       preferences: form.preferences,
+      artistTypes: form.artistTypes,
+      favorite_artist_types: form.favorite_artist_types,
       preferred_language: form.preferred_language,
+      birthday: form.birthday,
+      commPrefs: form.commPrefs,
+      communication_preferences: form.communication_preferences,
       avatar_url: form.avatar_url,
     };
     const { error } = await supabase

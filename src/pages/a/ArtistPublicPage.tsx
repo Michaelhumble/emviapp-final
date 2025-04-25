@@ -1,108 +1,190 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { getLocationString } from "@/types/profile";
 import Layout from "@/components/layout/Layout";
-import ErrorBoundary from "@/components/error-handling/ErrorBoundary";
-import { Card, CardContent } from "@/components/ui/card";
-import { Loader2, AlertOctagon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
-const ArtistPublicPage: React.FC = () => {
+// Import the components
+import ArtistProfileLoading from "./artist-profile/ArtistProfileLoading";
+import ArtistProfileError from "./artist-profile/ArtistProfileError";
+import ArtistProfileContent from "./artist-profile/ArtistProfileContent";
+import { PortfolioImage, Service } from "./artist-profile/types";
+import ArtistProfileSEO from "@/components/seo/ArtistProfileSEO";
+
+const ArtistPublicPage = () => {
   const { username } = useParams<{ username: string }>();
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
-  
-  // Mock data loading - replace with actual data loading
+  const [profile, setProfile] = useState<any | null>(null);
+  const [portfolioImages, setPortfolioImages] = useState<PortfolioImage[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [viewCount, setViewCount] = useState<number | null>(null);
+  const [isSalonOwner] = useState(false);
+
+  const fadeInAnimation = useScrollAnimation({
+    animation: 'fade-in',
+    threshold: 0.1,
+    rootMargin: '0px 0px -100px 0px'
+  });
+
   useEffect(() => {
-    // Simulate loading time
-    const timer = setTimeout(() => {
-      if (!username) {
-        setError("Username not provided");
+    const fetchArtistProfile = async () => {
+      try {
+        setLoading(true);
+        
+        let { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('instagram', username)
+          .single();
+        
+        if (userError || !userData) {
+          const { data: idData, error: idError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', username)
+            .single();
+            
+          if (idError) {
+            setError("Artist not found");
+            setLoading(false);
+            return;
+          }
+          
+          userData = idData;
+        }
+        
+        if (userData.role !== 'artist' && userData.role !== 'nail technician/artist' && userData.role !== 'freelancer') {
+          setError("This user is not an artist");
+          setLoading(false);
+          return;
+        }
+        
+        // Convert database user to profile format
+        const artistProfile = {
+          id: userData.id,
+          email: userData.email || '',
+          full_name: userData.full_name,
+          avatar_url: userData.avatar_url,
+          role: userData.role,
+          bio: userData.bio,
+          specialty: userData.specialty,
+          location: userData.location,
+          instagram: userData.instagram,
+          website: userData.website,
+          phone: userData.phone,
+          // Using any type for properties that might not exist in the database schema
+          profile_views: typeof (userData as any).profile_views === 'number' ? (userData as any).profile_views : 0,
+          boosted_until: userData.boosted_until,
+          badges: Array.isArray(userData.badges) ? userData.badges : [],
+          accepts_bookings: userData.accepts_bookings,
+          booking_url: userData.booking_url,
+          contact_link: userData.contact_link,
+          completed_profile_tasks: Array.isArray(userData.completed_profile_tasks) 
+            ? userData.completed_profile_tasks 
+            : [],
+          preferences: Array.isArray(userData.preferences) ? userData.preferences : [],
+          preferred_language: userData.preferred_language,
+          years_experience: typeof (userData as any).years_experience === 'number' ? (userData as any).years_experience : 0,
+          created_at: userData.created_at,
+          updated_at: userData.updated_at
+        };
+        
+        setProfile(artistProfile);
+        
+        if (userData.id) {
+          const newCount = (typeof (userData as any).profile_views === 'number' ? (userData as any).profile_views : 0) + 1;
+          await supabase
+            .from('users')
+            .update({ profile_views: newCount } as any)
+            .eq('id', userData.id);
+          setViewCount(newCount);
+        }
+        
+        if (userData.id) {
+          const { data: portfolioData } = await supabase
+            .from('portfolio_items')
+            .select('*')
+            .eq('user_id', userData.id)
+            .order('created_at', { ascending: false });
+            
+          if (portfolioData) {
+            setPortfolioImages(
+              portfolioData.map(item => ({
+                id: item.id,
+                url: item.image_url,
+                name: item.title || '' // Ensure name is always provided
+              }))
+            );
+          }
+          
+          const { data: servicesData } = await supabase
+            .from('services')
+            .select('*')
+            .eq('user_id', userData.id)
+            .eq('is_visible', true)
+            .order('price', { ascending: true });
+            
+          if (servicesData) {
+            // Map the services data to match the Service interface
+            const mappedServices = servicesData.map((service: any) => ({
+              id: service.id,
+              name: service.title || '', // Map title to name for compatibility
+              title: service.title || '',
+              description: service.description,
+              price: service.price,
+              price_type: service.price_type,
+              duration: service.duration,
+              duration_minutes: service.duration_minutes,
+              image_url: service.image_url,
+              category: service.category,
+              created_at: service.created_at,
+              updated_at: service.updated_at
+            }));
+            
+            setServices(mappedServices);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching artist profile:", err);
+        setError("Failed to load artist profile");
+      } finally {
+        setLoading(false);
       }
-      
-      setIsLoading(false);
-    }, 1000);
+    };
     
-    return () => clearTimeout(timer);
+    fetchArtistProfile();
   }, [username]);
-  
-  if (isLoading) {
-    return (
-      <Layout>
-        <div className="container max-w-5xl mx-auto py-12">
-          <div className="flex flex-col items-center justify-center p-12">
-            <Loader2 className="h-8 w-8 text-primary animate-spin mb-4" />
-            <p className="text-muted-foreground">Loading artist profile...</p>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-  
-  if (error) {
-    return (
-      <Layout>
-        <div className="container max-w-5xl mx-auto py-12">
-          <Card className="border-red-100 shadow-sm">
-            <CardContent className="p-12 text-center">
-              <div className="mb-4 inline-flex items-center justify-center p-3 bg-red-50 rounded-full">
-                <AlertOctagon className="h-8 w-8 text-red-500" />
-              </div>
-              <h2 className="text-xl font-medium mb-2">Artist Not Found</h2>
-              <p className="text-gray-600 mb-6">
-                {error || "We couldn't find the artist profile you're looking for."}
-              </p>
-              <Button asChild>
-                <a href="/explore/artists">Browse Artists</a>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </Layout>
-    );
-  }
-  
-  // Dynamically import the actual profile page to avoid circular dependencies
-  const ProfileComponent = React.lazy(() => import('./artist-profile/index'));
-  
+
   return (
     <Layout>
-      <ErrorBoundary
-        fallback={
-          <div className="container max-w-5xl mx-auto py-12">
-            <Card className="border-red-100 shadow-sm">
-              <CardContent className="p-12 text-center">
-                <div className="mb-4 inline-flex items-center justify-center p-3 bg-red-50 rounded-full">
-                  <AlertOctagon className="h-8 w-8 text-red-500" />
-                </div>
-                <h2 className="text-xl font-medium mb-2">Error Loading Profile</h2>
-                <p className="text-gray-600 mb-6">
-                  We encountered an error while loading this artist profile.
-                </p>
-                <Button 
-                  onClick={() => window.location.reload()}
-                  className="mr-2"
-                >
-                  Try Again
-                </Button>
-                <Button variant="outline" asChild>
-                  <a href="/explore/artists">Browse Other Artists</a>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        }
+      {profile && !loading && (
+        <ArtistProfileSEO 
+          profile={profile} 
+          portfolioImages={portfolioImages.map(img => img.url)} 
+        />
+      )}
+      <div 
+        ref={fadeInAnimation.ref as React.RefObject<HTMLDivElement>}
+        style={fadeInAnimation.style}
+        className={fadeInAnimation.isVisible ? fadeInAnimation.className : 'opacity-0'}
       >
-        <React.Suspense
-          fallback={
-            <div className="container max-w-5xl mx-auto py-12 flex items-center justify-center">
-              <Loader2 className="h-8 w-8 text-primary animate-spin" />
-            </div>
-          }
-        >
-          <ProfileComponent />
-        </React.Suspense>
-      </ErrorBoundary>
+        {loading ? (
+          <ArtistProfileLoading />
+        ) : error || !profile ? (
+          <ArtistProfileError errorMessage={error || "Artist not found"} />
+        ) : (
+          <ArtistProfileContent 
+            profile={profile}
+            portfolioImages={portfolioImages}
+            services={services}
+            viewCount={viewCount}
+            isSalonOwner={isSalonOwner}
+          />
+        )}
+      </div>
     </Layout>
   );
 };

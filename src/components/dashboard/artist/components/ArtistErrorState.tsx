@@ -1,39 +1,43 @@
 
 import React from 'react';
-import { AlertTriangle } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 
-interface ArtistErrorStateProps {
-  error: Error | string;
+export interface ArtistErrorStateProps {
+  error: Error;
 }
 
 const ArtistErrorState = ({ error }: ArtistErrorStateProps) => {
-  const errorMessage = typeof error === 'string' ? error : error.message;
-
   return (
-    <Card className="shadow-sm border-red-200">
-      <CardContent className="p-8 flex flex-col items-center text-center">
-        <div className="bg-red-100 p-3 rounded-full mb-4">
-          <AlertTriangle className="h-8 w-8 text-red-600" />
-        </div>
-        <h3 className="text-xl font-medium mb-2">Error Loading Dashboard</h3>
-        <p className="text-muted-foreground mb-6 max-w-md">
-          We encountered an error while loading your dashboard.
-        </p>
-        {errorMessage && (
-          <p className="text-sm text-red-600 mb-4 p-2 bg-red-50 rounded-md max-w-md">
-            {errorMessage}
-          </p>
-        )}
-        <Button 
-          onClick={() => window.location.reload()} 
-          className="px-6"
+    <div className="flex flex-col items-center justify-center min-h-[400px] p-8 text-center">
+      <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className="w-8 h-8 text-red-500"
         >
-          Try Again
-        </Button>
-      </CardContent>
-    </Card>
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+          />
+        </svg>
+      </div>
+      <h3 className="text-lg font-medium text-gray-900 mb-2">Something went wrong</h3>
+      <p className="text-sm text-gray-500 mb-4 max-w-md">
+        We encountered an error while loading your dashboard. Please try refreshing the page.
+      </p>
+      <p className="text-xs text-gray-400 bg-gray-50 p-2 rounded mb-4 max-w-md overflow-auto">
+        {error.message}
+      </p>
+      <button
+        onClick={() => window.location.reload()}
+        className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+      >
+        Refresh Page
+      </button>
+    </div>
   );
 };
 

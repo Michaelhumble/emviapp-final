@@ -1,40 +1,53 @@
 
-import React, { ReactNode, ErrorInfo } from 'react';
-import { AlertCircle } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import ErrorBoundary from './ErrorBoundary';
+import React, { Component, ErrorInfo, ReactNode } from 'react';
 
 interface FallbackBoundaryProps {
   children: ReactNode;
   fallback?: ReactNode;
-  onError?: (err: Error, errorInfo: ErrorInfo) => void;
+  onError?: (error: Error, errorInfo: ErrorInfo) => void;
   errorMessage?: string;
 }
 
-/**
- * A simplified boundary that simply wraps a component in an ErrorBoundary
- * with a clean minimal fallback UI. Useful for dashboard widgets.
- */
-const FallbackBoundary = ({ children, fallback, onError, errorMessage }: FallbackBoundaryProps) => {
-  const defaultFallback = (
-    <Card className="w-full border-gray-200 bg-white/50">
-      <CardContent className="p-4 flex items-center justify-center min-h-[120px]">
-        <div className="text-center flex flex-col items-center">
-          <AlertCircle className="h-5 w-5 text-amber-500 mb-2" />
-          <p className="text-sm text-gray-500">{errorMessage || "Unable to load this content"}</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
+interface FallbackBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
 
-  return (
-    <ErrorBoundary 
-      fallback={fallback || defaultFallback}
-      onError={onError}
-    >
-      {children}
-    </ErrorBoundary>
-  );
-};
+class FallbackBoundary extends Component<FallbackBoundaryProps, FallbackBoundaryState> {
+  constructor(props: FallbackBoundaryProps) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error): FallbackBoundaryState {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+    console.error("Error caught by FallbackBoundary:", error, errorInfo);
+    this.props.onError?.(error, errorInfo);
+  }
+
+  render(): ReactNode {
+    if (this.state.hasError) {
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
+      
+      return (
+        <div className="p-4 border border-red-300 bg-red-50 rounded-md m-2">
+          <h2 className="text-lg font-medium text-red-800 mb-2">
+            {this.props.errorMessage || "Something went wrong"}
+          </h2>
+          <p className="text-sm text-red-600">
+            {this.state.error?.message || "An unexpected error occurred"}
+          </p>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 export default FallbackBoundary;

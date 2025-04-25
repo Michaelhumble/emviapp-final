@@ -1,46 +1,49 @@
 
 /**
- * Get initials from a user's name
- * @param name - Full name of the user
- * @returns The first letter of the first name and the first letter of the last name
+ * Extract initials from a name (e.g., "John Doe" -> "JD")
  */
-export const getInitials = (name?: string): string => {
-  if (!name) return "?";
+export const getInitials = (name: string): string => {
+  if (!name) return '';
   
-  const names = name.trim().split(' ');
-  
-  // For a single name, return the first letter
-  if (names.length === 1) {
-    return names[0].charAt(0).toUpperCase();
-  }
-  
-  // For multiple names, return first letter of first and last name
-  return `${names[0].charAt(0)}${names[names.length - 1].charAt(0)}`.toUpperCase();
+  return name
+    .split(' ')
+    .map(part => part[0])
+    .join('')
+    .toUpperCase()
+    .substring(0, 2);
 };
 
 /**
- * Format a name for display 
- * @param name - Full name of the user
- * @returns Formatted name or fallback
+ * Format currency values
  */
-export const formatName = (name?: string, fallback = "User"): string => {
-  if (!name) return fallback;
-  
-  // If name is very long, truncate it
-  if (name.length > 20) {
-    return `${name.substring(0, 20)}...`;
-  }
-  
-  return name;
+export const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(amount);
 };
 
 /**
- * Safely get a user property with fallback
- * @param user - User object  
- * @param property - Property to get
- * @param fallback - Fallback value
+ * Get a user-friendly time string from a date
  */
-export const getUserProperty = <T>(user: any | null, property: string, fallback: T): T => {
-  if (!user) return fallback;
-  return user[property] !== undefined ? user[property] : fallback;
+export const getTimeAgo = (date: Date): string => {
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+  
+  if (diffInSeconds < 60) {
+    return 'just now';
+  } else if (diffInSeconds < 3600) {
+    const minutes = Math.floor(diffInSeconds / 60);
+    return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+  } else if (diffInSeconds < 86400) {
+    const hours = Math.floor(diffInSeconds / 3600);
+    return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+  } else if (diffInSeconds < 604800) {
+    const days = Math.floor(diffInSeconds / 86400);
+    return `${days} day${days > 1 ? 's' : ''} ago`;
+  } else {
+    return date.toLocaleDateString();
+  }
 };

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Index from './pages/Index';
 import Welcome from './pages/Welcome';
@@ -12,7 +11,7 @@ import Suppliers from './pages/Suppliers';
 import Freelancers from './pages/Freelancers';
 import Dashboard from './pages/dashboard';
 import ArtistDashboard from './pages/dashboard/Artist';
-import CustomerDashboard from './pages/dashboard/CustomerDashboard';
+import CustomerDashboard from './pages/dashboard/Customer';
 import SalonDashboard from './pages/dashboard/Salon';
 import OwnerDashboard from './pages/dashboard/Owner';
 import ManagerDashboard from './pages/dashboard/Manager';
@@ -181,10 +180,6 @@ const routes = [
   },
   {
     path: '/auth/signin',
-    element: <SignIn />,
-  },
-  {
-    path: '/sign-in',
     element: <SignIn />,
   },
   {

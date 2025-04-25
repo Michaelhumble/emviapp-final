@@ -2,7 +2,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
-import { useArtistProfileData } from "./hooks/useArtistProfileData";
+import useArtistProfileData from "./hooks/useArtistProfileData";
 import ArtistProfile from "@/components/artist-profile/ArtistProfile";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";

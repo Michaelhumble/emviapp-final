@@ -160,18 +160,6 @@ export const useAuthProvider = (): AuthContextType => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      
-      // Clear local state
-      setUser(null);
-      setUserProfile(null);
-      setUserRole(null);
-      setSession(null);
-      
-      // Clear localStorage role cache
-      localStorage.removeItem('emviapp_user_role');
-      
-      // Redirect to homepage
-      window.location.href = '/';
     } catch (error: any) {
       toast.error(error.message || 'Error signing out');
       throw error;
@@ -254,7 +242,6 @@ export const useAuthProvider = (): AuthContextType => {
     loading,
     isSignedIn: !!user,
     user,
-    session, // Make sure to include session in the return value
     userRole,
     userProfile,
     isError,

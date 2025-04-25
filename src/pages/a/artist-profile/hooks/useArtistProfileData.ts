@@ -67,6 +67,7 @@ export const useArtistProfileData = (username: string | undefined) => {
         instagram: userData.instagram,
         website: userData.website,
         phone: userData.phone,
+        profile_views: typeof (userData as any).profile_views === 'number' ? (userData as any).profile_views : 0,
         boosted_until: userData.boosted_until,
         badges: Array.isArray(userData.badges) ? userData.badges : [],
         accepts_bookings: userData.accepts_bookings,
@@ -84,8 +85,7 @@ export const useArtistProfileData = (username: string | undefined) => {
       };
       
       setProfile(artistProfile);
-      // Store view count separately without trying to merge it into profile
-      setViewCount((userData as any).profile_views || 0);
+      setViewCount(artistProfile.profile_views || 0);
       
       // Fetch portfolio images
       if (userData.id) {
@@ -171,6 +171,3 @@ export const useArtistProfileData = (username: string | undefined) => {
     incrementViewCount
   };
 };
-
-// Fix the import errors by adding a default export as well
-export default useArtistProfileData;

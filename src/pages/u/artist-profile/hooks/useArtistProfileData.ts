@@ -67,6 +67,7 @@ export const useArtistProfileData = (username: string | undefined) => {
         instagram: userData.instagram,
         website: userData.website,
         phone: userData.phone,
+        profile_views: typeof (userData as any).profile_views === 'number' ? (userData as any).profile_views : 0,
         boosted_until: userData.boosted_until,
         badges: Array.isArray(userData.badges) ? userData.badges : [],
         accepts_bookings: userData.accepts_bookings,
@@ -84,7 +85,7 @@ export const useArtistProfileData = (username: string | undefined) => {
       };
       
       setProfile(artistProfile);
-      setViewCount((userData as any).profile_views || 0);
+      setViewCount(artistProfile.profile_views || 0);
       
       // Fetch portfolio images
       if (userData.id) {
@@ -99,7 +100,8 @@ export const useArtistProfileData = (username: string | undefined) => {
             portfolioData.map(item => ({
               id: item.id,
               url: item.image_url,
-              name: item.title || ''
+              name: item.title || 'Portfolio Item', // Ensure name is always provided as a string
+              description: item.description || ''
             }))
           );
         }
@@ -118,10 +120,10 @@ export const useArtistProfileData = (username: string | undefined) => {
             id: service.id,
             name: service.title || '', // Map title to name for compatibility
             title: service.title || '',
-            description: service.description,
+            description: service.description || 'No description provided', // Ensure description is always a string
             price: service.price,
-            price_type: service.price_type,
-            duration: service.duration,
+            price_type: service.price_type || 'fixed', // Ensure price_type is always provided
+            duration: service.duration || 'N/A', // Ensure duration is always provided
             duration_minutes: service.duration_minutes,
             image_url: service.image_url,
             category: service.category,
@@ -147,14 +149,10 @@ export const useArtistProfileData = (username: string | undefined) => {
   const incrementViewCount = useCallback(async () => {
     if (profile?.id) {
       const newCount = (viewCount || 0) + 1;
-      
-      // Use a custom update approach that doesn't require profile_views in the type
+      // Using typecast as any for the update to avoid TypeScript errors
       const { error } = await supabase
         .from('users')
-        .update({ 
-          // Using any type to bypass type checking for this specific update
-          ...({"profile_views": newCount} as any)
-        })
+        .update({ profile_views: newCount } as any)
         .eq('id', profile.id);
         
       if (!error) {
@@ -175,5 +173,4 @@ export const useArtistProfileData = (username: string | undefined) => {
   };
 };
 
-// Add default export to fix import errors
 export default useArtistProfileData;
