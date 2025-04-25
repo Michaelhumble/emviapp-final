@@ -1,7 +1,7 @@
 
 /**
  * @file dashboardCore.ts
- * 🚨 CRITICAL: DO NOT REMOVE OR MODIFY WITHOUT APPROVAL
+ * 🚨 CRITICAL: DO NOT REMOVE OR MODIFY WITHOUT APPROVAL 
  * This file defines core components of the Artist Dashboard that must be preserved.
  */
 
@@ -17,7 +17,7 @@ export const CORE_FEATURES = {
 type CoreComponentList = readonly string[];
 
 export const CORE_COMPONENTS: {
-  [K in keyof typeof CORE_FEATURES]: CoreComponentList;
+  [key: string]: CoreComponentList;
 } = {
   [CORE_FEATURES.PORTFOLIO]: [
     'PortfolioShowcase',
