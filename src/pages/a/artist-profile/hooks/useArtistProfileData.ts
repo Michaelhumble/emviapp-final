@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile } from "@/types/profile";
@@ -66,7 +67,6 @@ export const useArtistProfileData = (username: string | undefined) => {
         instagram: userData.instagram,
         website: userData.website,
         phone: userData.phone,
-        profile_views: typeof (userData as any).profile_views === 'number' ? (userData as any).profile_views : 0,
         boosted_until: userData.boosted_until,
         badges: Array.isArray(userData.badges) ? userData.badges : [],
         accepts_bookings: userData.accepts_bookings,
@@ -84,7 +84,8 @@ export const useArtistProfileData = (username: string | undefined) => {
       };
       
       setProfile(artistProfile);
-      setViewCount((userData as any).view_count || 0);
+      // Store view count separately without trying to merge it into profile
+      setViewCount((userData as any).profile_views || 0);
       
       // Fetch portfolio images
       if (userData.id) {
@@ -170,3 +171,6 @@ export const useArtistProfileData = (username: string | undefined) => {
     incrementViewCount
   };
 };
+
+// Fix the import errors by adding a default export as well
+export default useArtistProfileData;

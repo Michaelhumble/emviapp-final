@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfile } from "@/types/profile";
@@ -169,3 +170,6 @@ export const useArtistProfileData = (username: string | undefined) => {
     incrementViewCount
   };
 };
+
+// Fix the import errors by adding a default export as well
+export default useArtistProfileData;
