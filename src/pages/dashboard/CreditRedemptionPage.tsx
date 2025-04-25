@@ -1,20 +1,16 @@
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Award, Gift, ChevronRight, TrendingUp } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/context/auth';
-import { UserProfile } from '@/context/auth/types';
-import { Json } from '@/integrations/supabase/types';
 import Layout from '@/components/layout/Layout';
+import { useAuth } from '@/context/auth';
+import { Card, CardContent } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
+import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
-// Define more specific interfaces for our data
+// Define proper interfaces for our data
 interface ReferredUser {
-  full_name?: string | null;
-  avatar_url?: string | null; 
+  full_name?: string;
+  avatar_url?: string;
 }
 
 interface Referral {
@@ -23,247 +19,252 @@ interface Referral {
   referred_id: string;
   created_at: string;
   status: string | null;
-  milestone_reached: boolean | null;
   milestone_type: string | null;
-  milestone_value: Json | null;
+  milestone_reached: boolean | null;
+  milestone_value: any;
   verified_at: string | null;
-  credits_awarded?: number;
   referred_user?: ReferredUser;
 }
 
 interface Reward {
   id: string;
-  name: string;
-  description: string;
-  creditCost: number;
-  icon: React.ReactNode;
+  user_id: string;
+  amount: number;
+  created_at: string;
+  type: string;
+  source_id: string | null;
+  status: string;
 }
 
-const CreditRedemptionPage: React.FC = () => {
-  const { userProfile } = useAuth();
+const CreditRedemptionPage = () => {
+  const { user, userProfile } = useAuth();
   const [referrals, setReferrals] = useState<Referral[]>([]);
+  const [rewards, setRewards] = useState<Reward[]>([]);
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  
-  // Function that gets correctly typed data from Supabase
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch referrals made by the user
   const fetchReferrals = async (): Promise<Referral[]> => {
-    // Using an explicit join approach instead of nested objects
-    const { data, error } = await supabase
-      .from('referrals')
-      .select(`
-        id, referrer_id, referred_id, created_at, status, 
-        milestone_reached, milestone_type, milestone_value, verified_at
-      `)
-      .eq('referrer_id', userProfile?.id || '')
-      .order('created_at', { ascending: false });
-      
-    if (error) {
-      console.error('Error fetching referrals:', error);
+    try {
+      if (!user) return [];
+
+      const { data, error } = await supabase
+        .from('referrals')
+        .select('*')
+        .eq('referrer_id', user.id);
+
+      if (error) throw error;
+
+      // Now fetch user info for each referred user
+      const referralsWithUsers = await Promise.all((data || []).map(async (referral) => {
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('full_name, avatar_url')
+          .eq('id', referral.referred_id)
+          .single();
+
+        return {
+          ...referral,
+          referred_user: userError ? {} : userData
+        };
+      }));
+
+      return referralsWithUsers as Referral[];
+    } catch (err) {
+      console.error('Error fetching referrals:', err);
+      setError('Failed to load referral data');
       return [];
     }
-    
-    // Get the referred users in a separate query to avoid the relationship issue
-    const referralsWithUsers = await Promise.all((data || []).map(async (referral) => {
-      // Get user details for each referred user
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('full_name, avatar_url')
-        .eq('id', referral.referred_id)
-        .single();
-      
-      return {
-        ...referral,
-        // Add a default credits amount based on status
-        credits_awarded: referral.status === 'completed' ? 10 : 0,
-        // Include the user data or a default empty object
-        referred_user: userError ? { full_name: 'Unknown User', avatar_url: null } : userData
-      } as Referral;
-    }));
-    
-    return referralsWithUsers;
   };
-  
+
+  // Fetch credit rewards earned by the user
+  const fetchRewards = async (): Promise<Reward[]> => {
+    try {
+      if (!user) return [];
+
+      const { data, error } = await supabase
+        .from('credit_earnings')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('status', 'approved');
+
+      if (error) throw error;
+      return data || [];
+    } catch (err) {
+      console.error('Error fetching rewards:', err);
+      return [];
+    }
+  };
+
   useEffect(() => {
-    const loadReferrals = async () => {
+    const loadData = async () => {
       setLoading(true);
       try {
-        const data = await fetchReferrals();
-        setReferrals(data);
+        const [fetchedReferrals, fetchedRewards] = await Promise.all([
+          fetchReferrals(),
+          fetchRewards(),
+        ]);
+        
+        setReferrals(fetchedReferrals);
+        setRewards(fetchedRewards);
       } catch (err) {
-        console.error('Error loading referral data:', err);
+        console.error('Error loading data:', err);
+        setError('Failed to load data');
       } finally {
         setLoading(false);
       }
     };
-    
-    if (userProfile?.id) {
-      loadReferrals();
+
+    if (user) {
+      loadData();
+    } else {
+      setLoading(false);
     }
-  }, [userProfile?.id]);
-  
-  const createReferralDemo = async () => {
-    setSubmitting(true);
+  }, [user]);
+
+  // Function to get rewards for a specific referral
+  const getRewardsForReferral = (referralId: string) => {
+    return rewards.filter(reward => reward.source_id === referralId);
+  };
+
+  // Format the reward amount
+  const formatRewardAmount = (rewards: Reward[]) => {
+    const total = rewards.reduce((sum, reward) => sum + reward.amount, 0);
+    return total > 0 ? `${total} credits` : 'Pending';
+  };
+
+  // Handle referral status
+  const handleReferralStatus = async (referralId: string, status: string) => {
     try {
-      // Use the correct column name: referrer_id instead of referrer_user_id
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('referrals')
-        .insert({
-          referrer_id: userProfile?.id,
-          referred_id: '00000000-0000-0000-0000-000000000000', // Demo user ID
-          status: 'pending'
-        });
-        
+        .update({ status })
+        .eq('id', referralId);
+
       if (error) throw error;
       
-      // Refresh referrals after creating a new one
+      // Refresh referrals
       const updatedReferrals = await fetchReferrals();
       setReferrals(updatedReferrals);
+      
+      toast.success(`Referral ${status} successfully`);
     } catch (err) {
-      console.error('Error creating demo referral:', err);
-    } finally {
-      setSubmitting(false);
+      console.error('Error updating referral:', err);
+      toast.error('Failed to update referral status');
     }
   };
 
-  // Available rewards for credit redemption
-  const availableRewards: Reward[] = [
-    {
-      id: 'profile-boost',
-      name: 'Profile Boost',
-      description: 'Boost your profile visibility for 30 days',
-      creditCost: 50,
-      icon: <TrendingUp className="h-5 w-5 text-blue-500" />
-    },
-    {
-      id: 'featured-listing',
-      name: 'Featured Listing',
-      description: 'Get your profile featured on the homepage',
-      creditCost: 100,
-      icon: <Award className="h-5 w-5 text-purple-500" />
+  // Render loading state
+  if (loading) {
+    return (
+      <Layout>
+        <div className="container mx-auto py-12 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <span className="ml-2">Loading your rewards...</span>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Handle error
+  if (error) {
+    return (
+      <Layout>
+        <div className="container mx-auto py-12">
+          <Card>
+            <CardContent className="py-6">
+              <div className="text-center text-red-500">
+                <p>{error}</p>
+                <button 
+                  onClick={() => window.location.reload()} 
+                  className="mt-4 px-4 py-2 bg-primary text-white rounded-md"
+                >
+                  Try Again
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </Layout>
+    );
+  }
+
+  // If user has badges, render them
+  let badges: any[] = [];
+  if (userProfile?.badges) {
+    if (Array.isArray(userProfile.badges)) {
+      badges = userProfile.badges;
+    } else if (typeof userProfile.badges === 'object') {
+      badges = Object.values(userProfile.badges);
     }
-  ];
-  
-  // Safely check if badges are an array
-  const hasBadges = Array.isArray(userProfile?.badges) && userProfile.badges.length > 0;
-  
+  }
+
   return (
     <Layout>
-      <div className="container max-w-4xl mx-auto py-8">
-        <h1 className="text-3xl font-bold mb-6">Credit Redemption Center</h1>
-        
-        {/* Credit Balance Card */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Gift className="h-5 w-5 text-pink-500" />
-              Your Credits
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+      <div className="container mx-auto py-12">
+        <h1 className="text-3xl font-bold mb-8">Your Referrals & Rewards</h1>
+
+        {/* Display user's current credit balance */}
+        <Card className="mb-8">
+          <CardContent className="py-6">
+            <div className="flex items-center justify-between">
               <div>
-                <div className="text-3xl font-bold text-pink-600">
-                  {userProfile?.credits || 0}
-                </div>
-                <p className="text-gray-500">Available credits</p>
+                <h2 className="text-2xl font-semibold">Current Credits</h2>
+                <p className="text-gray-500">Credits earned through referrals and activities</p>
               </div>
-              
-              <div className="flex gap-2">
-                {hasBadges && userProfile?.badges.map((badge: any, idx: number) => (
-                  <Badge key={idx} variant="outline" className="bg-pink-50 text-pink-700 border-pink-200">
-                    {typeof badge === 'string' ? badge : badge?.name || 'Badge'}
-                  </Badge>
-                ))}
-              </div>
+              <div className="text-4xl font-bold">{userProfile?.credits || 0}</div>
             </div>
           </CardContent>
         </Card>
-        
-        {/* Rewards Section */}
-        <h2 className="text-xl font-semibold mb-4">Available Rewards</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          {availableRewards.map((reward) => (
-            <Card key={reward.id} className="cursor-pointer hover:bg-gray-50 transition-colors">
-              <CardContent className="p-4 flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-50 rounded-full">
-                    {reward.icon}
-                  </div>
-                  <div>
-                    <h3 className="font-medium">{reward.name}</h3>
-                    <p className="text-sm text-gray-500">{reward.description}</p>
-                  </div>
-                </div>
-                <div className="flex flex-col items-end">
-                  <span className="font-bold text-blue-600">{reward.creditCost}</span>
-                  <span className="text-xs text-gray-500">credits</span>
-                  <ChevronRight className="h-4 w-4 text-gray-400 mt-1" />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-        
-        {/* Referrals Section */}
-        <h2 className="text-xl font-semibold mb-4">Your Referrals</h2>
-        <Card>
-          <CardContent className="p-4">
-            {loading ? (
-              <div className="py-4">Loading referrals...</div>
-            ) : referrals.length === 0 ? (
-              <div className="py-4 text-center">
-                <p className="text-gray-500 mb-4">You haven't referred anyone yet.</p>
-                <Button 
-                  variant="outline" 
-                  onClick={createReferralDemo}
-                  disabled={submitting}
-                >
-                  {submitting ? 'Creating...' : 'Create Demo Referral'}
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {referrals.map((referral) => (
-                  <div 
-                    key={referral.id} 
-                    className="flex justify-between items-center p-2 border-b last:border-0"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage 
-                          src={referral.referred_user?.avatar_url || ''} 
-                          alt={referral.referred_user?.full_name || 'User'} 
-                        />
-                        <AvatarFallback>
-                          {(referral.referred_user?.full_name || 'U').charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">{referral.referred_user?.full_name || 'Anonymous User'}</p>
-                        <p className="text-xs text-gray-500">
-                          Joined on {new Date(referral.created_at).toLocaleDateString()}
+
+        {/* Display referrals */}
+        <h2 className="text-2xl font-semibold mb-4">Your Referrals</h2>
+        {referrals.length === 0 ? (
+          <Card>
+            <CardContent className="py-6 text-center text-gray-500">
+              You haven't made any referrals yet. Invite friends to earn credits!
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {referrals.map((referral) => {
+              const referralRewards = getRewardsForReferral(referral.id);
+              return (
+                <Card key={referral.id}>
+                  <CardContent className="py-4">
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                        {referral.referred_user?.avatar_url ? (
+                          <img src={referral.referred_user.avatar_url} alt="User" className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-xl text-gray-500">
+                            {(referral.referred_user?.full_name || 'User')[0]?.toUpperCase()}
+                          </span>
+                        )}
+                      </div>
+                      <div className="ml-3 flex-grow">
+                        <p className="font-medium">{referral.referred_user?.full_name || 'User'}</p>
+                        <p className="text-sm text-gray-500">Joined {new Date(referral.created_at).toLocaleDateString()}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-medium">
+                          {formatRewardAmount(referralRewards)}
+                        </p>
+                        <p className={`text-sm ${
+                          referral.status === 'completed' ? 'text-green-500' :
+                          referral.status === 'pending' ? 'text-yellow-500' : 'text-gray-500'
+                        }`}>
+                          {referral.status === 'completed' ? 'Completed' :
+                          referral.status === 'pending' ? 'Pending' : referral.status}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center">
-                      <Badge 
-                        variant={referral.status === 'completed' ? 'default' : 'outline'}
-                        className={referral.status === 'completed' ? 'bg-green-100 text-green-800 border-green-200' : ''}
-                      >
-                        {referral.status === 'completed' ? 'Completed' : 'Pending'}
-                      </Badge>
-                      {referral.credits_awarded ? (
-                        <span className="ml-2 bg-pink-50 text-pink-700 text-sm px-2 py-1 rounded">
-                          +{referral.credits_awarded} credits
-                        </span>
-                      ) : null}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
       </div>
     </Layout>
   );

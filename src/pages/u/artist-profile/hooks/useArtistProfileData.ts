@@ -84,7 +84,7 @@ export const useArtistProfileData = (username: string | undefined) => {
       };
       
       setProfile(artistProfile);
-      setViewCount((userData as any).view_count || 0);
+      setViewCount((userData as any).profile_views || 0);
       
       // Fetch portfolio images
       if (userData.id) {
@@ -147,10 +147,14 @@ export const useArtistProfileData = (username: string | undefined) => {
   const incrementViewCount = useCallback(async () => {
     if (profile?.id) {
       const newCount = (viewCount || 0) + 1;
-      // Using typecast as any for the update to avoid TypeScript errors
+      
+      // Use a custom update approach that doesn't require profile_views in the type
       const { error } = await supabase
         .from('users')
-        .update({ profile_views: newCount } as any)
+        .update({ 
+          // Using any type to bypass type checking for this specific update
+          ...({"profile_views": newCount} as any)
+        })
         .eq('id', profile.id);
         
       if (!error) {
@@ -171,5 +175,5 @@ export const useArtistProfileData = (username: string | undefined) => {
   };
 };
 
-// Fix the import errors by adding a default export as well
+// Add default export to fix import errors
 export default useArtistProfileData;
