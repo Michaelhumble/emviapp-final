@@ -4,33 +4,41 @@ import { User } from '@supabase/supabase-js';
 export type UserRole = 'customer' | 'artist' | 'salon' | 'owner' | 'manager' | 'admin' | 'freelancer' | 'nail technician/artist' | 'beauty supplier' | 'supplier' | 'vendor' | 'renter' | 'other';
 
 export interface UserProfile {
+  // Required properties
   id: string;
-  email: string; 
+  email: string;
+  
+  // Optional user properties that exist in Supabase users table
   full_name?: string;
   role?: UserRole;
   avatar_url?: string;
   bio?: string;
   specialty?: string;
   location?: string;
-  referral_code?: string;
-  portfolio_urls?: string[];
-  phone?: string;
   instagram?: string;
   website?: string;
-  credits?: number;
-  badges?: Record<string, any> | any[];
+  phone?: string;
+  
+  // Timestamps
+  created_at?: string;
+  updated_at?: string;
+  
+  // Special fields
   boosted_until?: string;
+  badges?: Record<string, any> | any[];
   accepts_bookings?: boolean;
   booking_url?: string;
+  contact_link?: string;
   completed_profile_tasks?: string[];
   preferences?: string[];
   preferred_language?: string;
+  referral_code?: string;
+  referred_by?: string;
   referral_count?: number;
-  contact_link?: string;
+  credits?: number;
+  portfolio_urls?: string[];
   custom_role?: string;
-  updated_at?: string;
-  created_at?: string;
-  [key: string]: any;
+  profile_completion?: number;
 }
 
 export interface AuthContextType {
