@@ -45,6 +45,11 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
       }
       
       if (userRole) {
+        if (userRole === 'artist' || userRole === 'nail technician/artist') {
+          navigate('/dashboard/artist');
+          return;
+        }
+
         const { data: userData, error: userError } = await supabase
           .from('users')
           .select('manager_for_salon_id')
