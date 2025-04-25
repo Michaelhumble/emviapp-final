@@ -17,44 +17,36 @@ const ArtistDashboard = () => {
 
 const ArtistDashboardInner = () => {
   const { loading, error } = useArtistData();
-  const [loadingTimeout, setLoadingTimeout] = useState(false);
+  const [showTimeoutError, setShowTimeoutError] = useState(false);
   
-  // Add timeout detection for loading
   useEffect(() => {
-    let timeoutId: number | null = null;
+    let timeoutId: NodeJS.Timeout;
     
     if (loading) {
-      // Set a timeout of 10 seconds to prevent infinite loading
-      timeoutId = window.setTimeout(() => {
-        setLoadingTimeout(true);
+      timeoutId = setTimeout(() => {
+        setShowTimeoutError(true);
       }, 10000);
-    } else {
-      setLoadingTimeout(false);
     }
     
     return () => {
-      if (timeoutId !== null) {
-        window.clearTimeout(timeoutId);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
       }
     };
   }, [loading]);
   
-  // Show loading timeout error
-  if (loadingTimeout && loading) {
+  if (showTimeoutError && loading) {
     return (
       <ArtistErrorState 
-        error={new Error("Dashboard is taking too long to load. Please try refreshing the page.")} 
-        retryAction={() => window.location.reload()}
+        error={new Error("We're having trouble loading your dashboard. Please refresh.")}
       />
     );
   }
   
-  // Show error state if there's an error
   if (error) {
     return <ArtistErrorState error={error} />;
   }
   
-  // Show loading state
   if (loading) {
     return <ArtistLoadingState />;
   }
