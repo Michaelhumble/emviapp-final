@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useAuth } from '@/context/auth';
 import { useArtistProfile } from '@/hooks/artist/useArtistProfile';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import { ArtistDataContextType, ArtistProfileState, PortfolioImage } from '../types/ArtistDashboardTypes';
 import { usePortfolioImages } from '@/hooks/artist/usePortfolioImages';
 
@@ -15,7 +15,6 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | string | null>(null);
   const [copied, setCopied] = useState(false);
-  const { toast } = useToast();
 
   const artistProfile: ArtistProfileState = {
     id: artistProfileData?.id,
@@ -77,10 +76,10 @@ export const ArtistDataProvider: React.FC<{ children: ReactNode }> = ({ children
       console.error('Error loading artist data:', err);
       setError(err instanceof Error ? err : String(err));
       
-      toast({
-        title: "Error loading dashboard data",
+      toast.error("Error loading dashboard data", {
         description: "Please try again or contact support if the issue persists.",
-        variant: "destructive"
+        duration: 5000,
+        className: "error-toast"
       });
     } finally {
       setLoading(false);
