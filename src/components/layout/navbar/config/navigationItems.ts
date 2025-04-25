@@ -1,26 +1,10 @@
 
-export interface NavigationItem {
-  path: string;
-  label: string;
-  isPrimary?: boolean;
-}
+import { NavigationItem } from "../types";
 
 export const mainNavigationItems: NavigationItem[] = [
-  {
-    path: "/salons",
-    label: "Salons"
-  },
-  {
-    path: "/artists",
-    label: "Artists"
-  },
-  {
-    path: "/jobs",
-    label: "Jobs"
-  },
-  {
-    path: "/pricing",
-    label: "Pricing",
-    isPrimary: true
-  }
+  { label: "Home", path: "/", isPrimary: false },
+  { label: "Artists", path: "/artists", isPrimary: false },
+  { label: "Salons", path: "/salons", isPrimary: false },
+  { label: "Jobs", path: "/jobs", isPrimary: false },
+  { label: "Early Access", path: "/early-access-dashboard", isPrimary: true }
 ];

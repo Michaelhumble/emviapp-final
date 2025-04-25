@@ -63,7 +63,7 @@ const Navbar = () => {
             )}
           </div>
           
-          {/* Mobile menu button - enhanced premium version */}
+          {/* Enhanced premium mobile menu */}
           <MobileMenu 
             user={user}
             handleSignOut={handleSignOut}
