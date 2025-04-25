@@ -3,10 +3,20 @@ import React, { useEffect } from 'react';
 import { AuthContext } from './context';
 import { useAuthProvider } from './hooks/useAuthProvider';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 export const ReliableAuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Use the auth provider hook to handle authentication logic
   const auth = useAuthProvider();
+  // Use navigate for redirecting on auth failures
+  let navigate;
+  
+  try {
+    navigate = useNavigate();
+  } catch (error) {
+    // This component might be used outside Router context
+    console.warn('ReliableAuthProvider used outside Router context');
+  }
   
   useEffect(() => {
     // Monitor for critical auth errors and provide user feedback
@@ -15,8 +25,13 @@ export const ReliableAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         description: "We're having trouble connecting to our authentication service. Please try refreshing.",
         duration: 8000,
       });
+      
+      // Only redirect if navigate is available (inside Router context)
+      if (navigate && !auth.loading && !auth.isSignedIn) {
+        setTimeout(() => navigate('/auth/signin'), 1000);
+      }
     }
-  }, [auth.isError]);
+  }, [auth.isError, auth.loading, auth.isSignedIn, navigate]);
 
   // Add state recovery attempt if session data seems corrupted
   useEffect(() => {

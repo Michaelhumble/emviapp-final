@@ -14,9 +14,10 @@ import { Button } from "@/components/ui/button";
 import ErrorBoundary from "@/components/error-handling/ErrorBoundary";
 
 const CustomerDashboardPage = () => {
-  const { userProfile, userRole, loading, isError } = useAuth();
+  const { userProfile, userRole, loading, isError, session } = useAuth();
   const navigate = useNavigate();
   const [loadingTimeout, setLoadingTimeout] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   
   // Set up referral notifications listener
   useReferralNotifications();
@@ -29,7 +30,7 @@ const CustomerDashboardPage = () => {
       timeoutId = setTimeout(() => {
         console.log("Loading timeout reached for customer dashboard");
         setLoadingTimeout(true);
-      }, 8000); // 8 second timeout
+      }, 6000); // 6 second timeout for better UX
     }
     
     return () => {
@@ -41,6 +42,15 @@ const CustomerDashboardPage = () => {
     document.title = "Customer Dashboard | EmviApp";
     
     if (loading) return;
+
+    // Check authentication first
+    if (!session && !loading && !isError) {
+      console.log("No authenticated session found, redirecting to sign in");
+      setIsRedirecting(true);
+      toast.info("Please sign in to access your dashboard");
+      navigate("/auth/signin");
+      return;
+    }
 
     const allowedRoles: UserRole[] = ['customer'];
     
@@ -59,7 +69,7 @@ const CustomerDashboardPage = () => {
     if (userRole !== 'customer') {
       toast.info("You're currently viewing the Customer dashboard, but your role is set as " + userRole);
     }
-  }, [userProfile, userRole, loading, navigate]);
+  }, [userProfile, userRole, session, loading, isError, navigate]);
   
   // Handle loading timeout
   if (loadingTimeout) {
@@ -94,7 +104,8 @@ const CustomerDashboardPage = () => {
     );
   }
   
-  if (loading) {
+  // Loading state with improved visual feedback
+  if (loading || isRedirecting) {
     return (
       <Layout>
         <div className="min-h-screen flex items-center justify-center">
@@ -113,7 +124,7 @@ const CustomerDashboardPage = () => {
           </div>
         </div>
       </Layout>
-    )
+    );
   }
   
   return (

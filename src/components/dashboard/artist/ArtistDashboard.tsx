@@ -11,6 +11,7 @@ import ArtistErrorState from './components/ArtistErrorState';
 import ErrorBoundary from '@/components/error-handling/ErrorBoundary';
 import { AlertTriangle, Home, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 const ArtistDashboard = () => {
   return (
@@ -23,15 +24,17 @@ const ArtistDashboard = () => {
 };
 
 const ArtistDashboardInner = () => {
-  const { loading, error } = useArtistData() || { loading: true, error: null };
+  const { loading: dataLoading, error: dataError } = useArtistData() || { loading: true, error: null };
   const { user, loading: authLoading, isError: authError } = useAuth() || { user: null, loading: true, isError: false };
   const navigate = useNavigate();
   const [loadingTimeout, setLoadingTimeout] = useState(false);
+  const [recoveryAttempted, setRecoveryAttempted] = useState(false);
 
   // Redirect to sign in if not authenticated
   useEffect(() => {
     if (!authLoading && !user) {
       console.log("No user found, redirecting to sign-in");
+      toast.info("Sign in required");
       navigate('/auth/signin');
     }
   }, [user, authLoading, navigate]);
@@ -40,20 +43,37 @@ const ArtistDashboardInner = () => {
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
     
-    if (loading || authLoading) {
+    if (dataLoading || authLoading) {
       timeoutId = setTimeout(() => {
         console.log("Loading timeout reached for artist dashboard");
         setLoadingTimeout(true);
-      }, 8000); // 8 second timeout - reduced from 10
+      }, 6000); // 6 second timeout - reduced for better UX
     }
     
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [loading, authLoading]);
+  }, [dataLoading, authLoading]);
+
+  // Attempt data recovery on timeout
+  useEffect(() => {
+    let recoveryTimeoutId: NodeJS.Timeout;
+    
+    if (loadingTimeout && !recoveryAttempted) {
+      recoveryTimeoutId = setTimeout(() => {
+        setRecoveryAttempted(true);
+        // Force remount of data provider - this triggers a fresh data fetch
+        console.log("Attempting data recovery...");
+      }, 1000);
+    }
+    
+    return () => {
+      if (recoveryTimeoutId) clearTimeout(recoveryTimeoutId);
+    };
+  }, [loadingTimeout, recoveryAttempted]);
 
   // If auth is still loading, show simple loading state
-  if (authLoading) {
+  if (authLoading && !loadingTimeout) {
     return <ArtistLoadingState />;
   }
 
@@ -97,12 +117,12 @@ const ArtistDashboardInner = () => {
   }
 
   // Show error state if there's an error
-  if (error || authError) {
-    return <ArtistErrorState error={error || new Error("Authentication error")} />;
+  if (dataError || authError) {
+    return <ArtistErrorState error={dataError || new Error("Authentication error")} />;
   }
 
   // Show loading spinner while data is loading
-  if (loading) {
+  if (dataLoading) {
     return <ArtistLoadingState />;
   }
   

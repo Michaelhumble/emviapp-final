@@ -12,36 +12,56 @@ import ErrorBoundary from "@/components/error-handling/ErrorBoundary";
 import DashboardRedirector from "@/components/dashboard/DashboardRedirector";
 
 const DashboardPage = () => {
-  const { user, userRole, userProfile, loading, isError } = useAuth();
+  const { user, userRole, userProfile, loading, isError, session } = useAuth();
   const [redirectError, setRedirectError] = useState<string | null>(null);
   const [localLoading, setLocalLoading] = useState(true);
   const [loadTimeout, setLoadTimeout] = useState(false);
+  const [sessionChecked, setSessionChecked] = useState(false);
 
+  // Add safety timeout
   useEffect(() => {
     // Set loading timeout to prevent infinite loading
     if (loading || localLoading) {
       const timeoutId = setTimeout(() => {
         setLoadTimeout(true);
-      }, 10000); // 10 second timeout
+      }, 8000); // 8 second timeout (reduced from 10)
       
       return () => clearTimeout(timeoutId);
     }
   }, [loading, localLoading]);
 
+  // Check for session and mark when checked
+  useEffect(() => {
+    // Mark session as checked when auth loading is complete
+    if (!loading) {
+      setSessionChecked(true);
+      
+      // Auto redirect to signin if no session
+      if (!user && !session && !isError) {
+        console.log("No user session found, auto-redirecting to signin");
+        window.location.href = '/auth/signin';
+      }
+    }
+  }, [loading, user, session, isError]);
+
   useEffect(() => {
     // If user exists and is a salon owner, check if we need to migrate
-    if (user && userRole === "owner") {
-      migrateSingleToMultiSalon(user.id)
-        .then((salonId) => {
-          if (salonId) {
-            console.log("Salon migrated successfully, ID:", salonId);
-          }
-        })
-        .catch((error) => {
-          console.error("Error during migration:", error);
-        });
+    if (user && userRole === "owner" && !loadTimeout) {
+      try {
+        migrateSingleToMultiSalon(user.id)
+          .then((salonId) => {
+            if (salonId) {
+              console.log("Salon migrated successfully, ID:", salonId);
+            }
+          })
+          .catch((error) => {
+            console.error("Error during migration:", error);
+          });
+      } catch (error) {
+        console.error("Migration attempt failed:", error);
+      }
     }
-  }, [user, userRole]);
+  }, [user, userRole, loadTimeout]);
 
   // Handle auth error state
   if (isError) {
@@ -124,7 +144,25 @@ const DashboardPage = () => {
 
   // Redirect based on user role
   if (user) {
-    return <DashboardRedirector setRedirectError={setRedirectError} setLocalLoading={setLocalLoading} />;
+    return (
+      <ErrorBoundary fallback={
+        <Layout>
+          <div className="container mx-auto p-6 text-center">
+            <AlertTriangle size={40} className="mx-auto text-amber-500 mb-4" />
+            <h2 className="text-xl font-semibold mb-4">Error during dashboard redirection</h2>
+            <Button 
+              onClick={() => window.location.reload()}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Try Again
+            </Button>
+          </div>
+        </Layout>
+      }>
+        <DashboardRedirector setRedirectError={setRedirectError} setLocalLoading={setLocalLoading} />
+      </ErrorBoundary>
+    );
   }
 
   // Return default dashboard for non-authenticated users
