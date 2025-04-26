@@ -51,68 +51,152 @@ const salonListings: Job[] = [
   },
   {
     id: "4",
-    title: "BOOTH RENTAL AVAILABLE",
-    company: "Elite Beauty Studio",
-    location: "Los Angeles, CA",
-    description: "Premium booth space in upscale salon. High-end clientele, flexible schedule. Great location.",
-    specialties: ["Hair", "Nails", "Spa"],
-    monthly_rent: "$800",
-    created_at: new Date().toISOString()
-  },
-  {
-    id: "5",
-    title: "EXPERIENCED NAIL TECHS",
-    company: "VIP Nails & Spa",
-    location: "Houston, TX",
-    description: "Looking for experienced nail technicians. $1,200-1,600/week + tips. Housing available.",
-    vietnamese_description: "Cần thợ nail có kinh nghiệm. Lương $1,200-1,600/tuần + tips. Có chỗ ở.",
-    has_housing: true,
-    weekly_pay: true,
+    title: "CẦN THỢ NAIL",
+    company: "Jacksonville Nails & Spa",
+    location: "Jacksonville, FL",
+    description: "Full-time + part-time. Bao lương, ăn chia.",
     contact_info: {
-      phone: "832-555-0123"
+      owner_name: "Sương",
+      phone: "904-338-8648"
     },
     created_at: new Date().toISOString()
   },
   {
+    id: "5",
+    title: "HIRING NAIL TECH",
+    company: "Highlands Ranch Nail Spa",
+    location: "Highlands Ranch, CO",
+    description: "Part-time, ưu tiên thợ bột & dip.",
+    vietnamese_description: "Part-time, ưu tiên thợ bột & dip.",
+    contact_info: {
+      owner_name: "Mary",
+      phone: "(303) 683-5083"
+    },
+    specialties: ["Powder", "Dip"],
+    created_at: new Date().toISOString()
+  },
+  {
     id: "6",
-    title: "LUXURY SPA FOR SALE",
-    company: "Serenity Day Spa",
-    location: "Miami Beach, FL",
-    description: "Established luxury day spa in prime location. 10 treatment rooms, steady clientele. Owner retiring.",
+    title: "TIỆM NAIL CẦN BÁN",
+    company: "Fresno Beauty Salon",
+    location: "Fresno, CA",
+    description: "20 bàn, 20 ghế, khu đông đúc. Income ổn định $70K/tháng.",
+    vietnamese_description: "20 bàn, 20 ghế, khu đông đúc. Income ổn định $70K/tháng.",
     for_sale: true,
-    asking_price: "$380,000",
-    square_feet: "2,800",
+    asking_price: "$450,000",
+    contact_info: {
+      owner_name: "Jen",
+      phone: "(408) 614-9332"
+    },
     created_at: new Date().toISOString()
   },
   {
     id: "7",
-    title: "HAIR SALON MANAGER",
-    company: "Scissors & Style",
-    location: "Seattle, WA",
-    description: "Seeking experienced salon manager. Full benefits, competitive salary, growth opportunity.",
-    salary_range: "$65,000 - $80,000",
-    benefits: ["Health Insurance", "401k", "Paid Time Off"],
+    title: "CẦN THỢ NAIL GẤP",
+    company: "Silver Spring Nails",
+    location: "Silver Spring, MD",
+    description: "Khách Mỹ, tip cao. Cần thợ bột, dip, tay chân nước.",
+    specialties: ["Powder", "Dip", "Manicure", "Pedicure"],
+    contact_info: {
+      phone: "980-267-5013"
+    },
     created_at: new Date().toISOString()
   },
   {
     id: "8",
-    title: "BEAUTY SUPPLY STORE",
-    company: "Beauty Essentials",
-    location: "Atlanta, GA",
-    description: "Profitable beauty supply store for sale. Prime location, loyal customer base. Includes inventory.",
-    for_sale: true,
-    asking_price: "$175,000",
+    title: "TIỆM NAIL BAO LƯƠNG",
+    company: "Wheeling Nail Spa",
+    location: "Wheeling, WV",
+    description: "Lương $7,000 - $12,000/tháng tùy tay nghề. Có chỗ ở miễn phí.",
+    has_housing: true,
+    contact_info: {
+      owner_name: "Hương",
+      phone: "(916) 402-0100"
+    },
     created_at: new Date().toISOString()
   },
   {
     id: "9",
+    title: "CẦN THỢ NAIL",
+    company: "Fontana Nails",
+    location: "Fontana, CA",
+    description: "Tiệm plaza lớn, cần thợ everything. Chia 6/4 hoặc bao lương $1,200-$1,500/tuần.",
+    weekly_pay: true,
+    contact_info: {
+      owner_name: "Henry",
+      phone: "(909) 997-9953"
+    },
+    created_at: new Date().toISOString()
+  },
+  {
+    id: "10",
     title: "NAIL SALON FOR SALE",
-    company: "Five Star Nails",
-    location: "San Diego, CA",
-    description: "8 stations, 6 pedicure chairs. Established 12 years. Great location, loyal clientele.",
-    vietnamese_description: "8 bàn, 6 ghế pedichaire. Tiệm 12 năm, khu tốt, khách quen đông.",
+    company: "Daniel Island Nails",
+    location: "Daniel Island, SC",
+    description: "10 bàn, 10 ghế, khu Mỹ trắng 100%.",
     for_sale: true,
-    asking_price: "$220,000",
+    contact_info: {
+      owner_name: "John",
+      phone: "(803) 447-9999"
+    },
+    created_at: new Date().toISOString()
+  },
+  {
+    id: "11",
+    title: "CẦN THỢ Ở TAMPA",
+    company: "Tampa Nails & Spa",
+    location: "Tampa, FL",
+    description: "Cần thợ giỏi + người dọn dẹp cả ngày.",
+    contact_info: {
+      owner_name: "Định",
+      phone: "(408) 590-7500"
+    },
+    created_at: new Date().toISOString()
+  },
+  {
+    id: "12",
+    title: "CẦN THỢ NAIL",
+    company: "Ontario Nail Bar",
+    location: "Ontario, CA",
+    description: "Khu shopping lớn. Giá nail cao, tip hậu. Chia 6/4 hoặc bao lương $1,400/tuần.",
+    weekly_pay: true,
+    contact_info: {
+      phone: "(909) 997-9953"
+    },
+    created_at: new Date().toISOString()
+  },
+  {
+    id: "13",
+    title: "CẦN THỢ BỘT + DIP",
+    company: "Charlotte Nails",
+    location: "Charlotte, NC",
+    description: "Thu nhập ổn định. Môi trường vui vẻ, sạch sẽ.",
+    specialties: ["Powder", "Dip"],
+    contact_info: {
+      phone: "980-267-5013"
+    },
+    created_at: new Date().toISOString()
+  },
+  {
+    id: "14",
+    title: "CẦN SANG TIỆM NAIL",
+    company: "Kennesaw Nail Spa",
+    location: "Kennesaw, GA",
+    description: "10 ghế, 10 bàn. Income $28K/tháng.",
+    for_sale: true,
+    contact_info: {},
+    created_at: new Date().toISOString()
+  },
+  {
+    id: "15",
+    title: "LUXE NAIL BAR HIRING",
+    company: "Luxe Nail Bar",
+    location: "San Antonio, TX",
+    description: "Cần thợ everything hoặc tay chân nước. Giá cao, tip nhiều.",
+    contact_info: {
+      owner_name: "Phillip",
+      phone: "(412) 251-1778"
+    },
     created_at: new Date().toISOString()
   }
 ];
