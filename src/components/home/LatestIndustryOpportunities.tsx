@@ -1,23 +1,42 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, ChevronRight, Briefcase } from 'lucide-react';
+import { MapPin, ChevronRight, Briefcase, Building } from 'lucide-react';
 import { getFeaturedJobs } from '@/utils/featuredContent';
 import { Job } from '@/types/job';
+import { useAuth } from '@/context/auth';
 import AuthAction from '@/components/common/AuthAction';
 
 const LatestIndustryOpportunities = () => {
   const [featuredJobs, setFeaturedJobs] = React.useState<Job[]>([]);
+  const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     // Get featured job listings
     const jobs = getFeaturedJobs(3);
     setFeaturedJobs(jobs);
   }, []);
+
+  const handleViewDetails = (jobId: string, forSale?: boolean) => {
+    if (!isSignedIn) {
+      // If not signed in, redirect to sign-in with redirect back to this job
+      const redirectPath = forSale ? `/salons/${jobId}` : `/jobs/${jobId}`;
+      navigate(`/sign-in?redirect=${encodeURIComponent(redirectPath)}`);
+      return;
+    }
+    
+    // If signed in, navigate directly
+    if (forSale) {
+      navigate(`/salons/${jobId}`);
+    } else {
+      navigate(`/jobs/${jobId}`);
+    }
+  };
 
   return (
     <section className="py-20 bg-gradient-to-b from-white to-gray-50">
@@ -67,6 +86,7 @@ const LatestIndustryOpportunities = () => {
                   </div>
                   
                   <div className="flex items-center text-gray-500 mb-2 text-sm">
+                    <Building className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
                     <span className="font-medium mr-2">{job.company || "Business"}</span>
                   </div>
                   
@@ -79,9 +99,20 @@ const LatestIndustryOpportunities = () => {
                     {job.description || "Contact for more details about this opportunity."}
                   </p>
                   
-                  <Link to={`/jobs/${job.id}`} className="text-primary hover:text-primary/80 text-sm font-medium inline-flex items-center">
-                    View details <ChevronRight className="h-4 w-4" />
-                  </Link>
+                  {!isSignedIn && (
+                    <div className="text-xs text-gray-500 italic mb-4">
+                      Sign up or log in to view contact details
+                    </div>
+                  )}
+                  
+                  <AuthAction 
+                    onAction={() => true}
+                    redirectPath={job.for_sale ? `/salons/${job.id}` : `/jobs/${job.id}`}
+                  >
+                    <div className="text-primary hover:text-primary/80 text-sm font-medium inline-flex items-center cursor-pointer">
+                      View details <ChevronRight className="h-4 w-4" />
+                    </div>
+                  </AuthAction>
                 </CardContent>
               </Card>
             </motion.div>

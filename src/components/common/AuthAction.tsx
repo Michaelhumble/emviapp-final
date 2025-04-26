@@ -16,13 +16,15 @@ interface AuthActionProps {
   onAction: () => Promise<boolean> | boolean;
   creditMessage?: string; // Optional message about credits for this action
   redirectPath?: string; // Optional redirect path
+  customTitle?: string; // Optional custom title for the dialog
 }
 
 const AuthAction: React.FC<AuthActionProps> = ({ 
   children, 
   onAction,
   creditMessage,
-  redirectPath 
+  redirectPath,
+  customTitle = "Sign in to continue"
 }) => {
   const { isSignedIn } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
@@ -32,7 +34,10 @@ const AuthAction: React.FC<AuthActionProps> = ({
 
   const handleAction = async () => {
     if (isSignedIn) {
-      await onAction();
+      const result = await onAction();
+      if (redirectPath && result) {
+        navigate(redirectPath);
+      }
     } else {
       setShowAuthDialog(true);
     }
@@ -52,7 +57,7 @@ const AuthAction: React.FC<AuthActionProps> = ({
       <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Sign in to continue</DialogTitle>
+            <DialogTitle>{customTitle}</DialogTitle>
             <DialogDescription>
               Create a free Emvi account to connect with top artists near you.
               {creditMessage && (
