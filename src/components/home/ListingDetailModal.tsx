@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Job } from "@/types/job";
 import { SalonSale } from "@/types/salonSale";
+import { getLocationString } from "@/utils/location";
 
 // Define a more flexible listing type that can work with our sample data
 export interface BasicListing {
@@ -74,9 +75,10 @@ const ListingDetailModal = ({ isOpen, onClose, listing, listingType }: ListingDe
     } else {
       const salonListing = listing as (SalonSale | BasicListing);
       
-      // Extract title
-      // Get location from either the location property directly, or construct it from city/state
-      const displayLocation = salonListing.location || 
+      // Get location by constructing it from city/state or using a helper function
+      // This handles both SalonSale (which has city/state) and BasicListing (which might have location directly)
+      const displayLocation = 'location' in salonListing && salonListing.location ? 
+        salonListing.location : 
         ((salonListing.city || salonListing.state) ? 
           [salonListing.city, salonListing.state].filter(Boolean).join(', ') : 
           'Unknown Location');
