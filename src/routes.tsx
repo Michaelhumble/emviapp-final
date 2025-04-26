@@ -92,6 +92,10 @@ const routes = [
     element: <JobsPage />,
   },
   {
+    path: '/jobs/:id',
+    element: <JobsPage />,
+  },
+  {
     path: '/salons',
     element: <SalonsPage />,
   },

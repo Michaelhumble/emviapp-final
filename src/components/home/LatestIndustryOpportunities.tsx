@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { MapPin, ChevronRight } from 'lucide-react';
 import { getFeaturedJobs } from '@/utils/featuredContent';
 import { Job } from '@/types/job';
+import AuthAction from '@/components/common/AuthAction';
 
 const LatestIndustryOpportunities = () => {
   const [featuredJobs, setFeaturedJobs] = React.useState<Job[]>([]);

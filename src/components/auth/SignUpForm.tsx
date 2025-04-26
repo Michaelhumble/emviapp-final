@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Gift } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Loader2 } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useRoleBasedSignUp } from "@/hooks/useRoleBasedSignUp";
 import { UserRole } from "@/context/auth/types";
 import RoleSelectionCards from "./RoleSelectionCards";
-import { toast } from "sonner"; // Added toast import from sonner
+import { toast } from "sonner";
 
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
@@ -17,6 +17,12 @@ const SignUpForm = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
   const { signUp, loading } = useRoleBasedSignUp();
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get redirect URL from query params if available
+  const queryParams = new URLSearchParams(location.search);
+  const redirectUrl = queryParams.get('redirect') || '/dashboard';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +37,13 @@ const SignUpForm = () => {
       return;
     }
 
-    await signUp(email, password, selectedRole);
+    const result = await signUp(email, password, selectedRole);
+    
+    if (result?.success) {
+      // Decode the redirect URL if it exists
+      const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
+      navigate(decodedRedirect);
+    }
   };
 
   return (
@@ -114,7 +126,7 @@ const SignUpForm = () => {
 
           <div className="text-sm text-center text-gray-500">
             Already have an account?{" "}
-            <Link to="/auth/signin" className="text-indigo-600 hover:text-indigo-800 font-medium">
+            <Link to={`/sign-in${redirectUrl ? `?redirect=${redirectUrl}` : ''}`} className="text-indigo-600 hover:text-indigo-800 font-medium">
               Sign in
             </Link>
           </div>

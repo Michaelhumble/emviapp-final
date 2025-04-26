@@ -1,5 +1,6 @@
+
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -26,6 +27,7 @@ const AuthGuard = ({
   const [isVerified, setIsVerified] = useState<boolean | null>(null);
   const [checking, setChecking] = useState(true);
   const [sendingVerification, setSendingVerification] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     async function checkAuthStatus() {
@@ -86,9 +88,10 @@ const AuthGuard = ({
     </div>;
   }
 
-  // Not logged in, redirect to sign-in
+  // Not logged in, redirect to sign-in with current path for redirect after login
   if (!user) {
-    return <Navigate to="/auth/signin" replace />;
+    const currentPath = encodeURIComponent(location.pathname + location.search);
+    return <Navigate to={`/sign-in?redirect=${currentPath}`} replace />;
   }
 
   // User is logged in but email is not verified

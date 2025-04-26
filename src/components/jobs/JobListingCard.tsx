@@ -15,7 +15,7 @@ import { Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
 import AuthAction from "@/components/common/AuthAction";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface JobListingCardProps {
   job: Job;
@@ -38,6 +38,7 @@ const JobListingCard = ({
   const { isSignedIn } = useAuth();
   const { t, isVietnamese } = useTranslation();
   const isOwner = currentUserId === job.user_id;
+  const navigate = useNavigate();
 
   // Determine appropriate fallback image based on job type
   const getFallbackImage = () => {
@@ -62,6 +63,15 @@ const JobListingCard = ({
     return isVietnamese 
       ? "🔒 Đăng ký để xem chi tiết liên hệ"
       : "🔒 Sign up to view contact details";
+  };
+
+  const handleViewDetails = () => {
+    if (isOwner || isSignedIn) {
+      onViewDetails();
+    } else {
+      // Use AuthAction component to handle authentication flow
+      navigate(`/sign-in?redirect=/jobs/${job.id}`);
+    }
   };
 
   const getCtaButton = () => {

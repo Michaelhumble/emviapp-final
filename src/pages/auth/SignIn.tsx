@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,11 +23,20 @@ const SignIn = () => {
   const [showVerificationAlert, setShowVerificationAlert] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get redirect URL from query params if available
+  const queryParams = new URLSearchParams(location.search);
+  const redirectUrl = queryParams.get('redirect') || '/dashboard';
 
   // Redirect if already logged in
-  if (user) {
-    return <Navigate to="/dashboard" replace />;
-  }
+  useEffect(() => {
+    if (user) {
+      // Decode the redirect URL if it exists
+      const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
+      navigate(decodedRedirect, { replace: true });
+    }
+  }, [user, navigate, redirectUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +48,9 @@ const SignIn = () => {
       const result = await signInWithEmail(email, password);
       
       if (result.success) {
-        navigate("/dashboard");
+        // Decode the redirect URL if it exists
+        const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
+        navigate(decodedRedirect);
       } else if (result.error?.message?.includes("Email not confirmed")) {
         setShowVerificationAlert(true);
       } else {
@@ -76,6 +87,11 @@ const SignIn = () => {
       setSendingVerification(false);
     }
   };
+
+  // Don't show the sign-in form if already logged in
+  if (user) {
+    return null;
+  }
 
   return (
     <Layout>
@@ -171,7 +187,7 @@ const SignIn = () => {
               
               <div className="text-sm text-center text-gray-500">
                 Don't have an account?{" "}
-                <Link to="/auth/signup" className="text-primary hover:underline">
+                <Link to={`/sign-up${redirectUrl ? `?redirect=${redirectUrl}` : ''}`} className="text-primary hover:underline">
                   Sign up
                 </Link>
               </div>
