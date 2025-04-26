@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -27,6 +28,10 @@ import SalonGrowthSection from "@/components/home/SalonGrowthSection";
 import SalonClientGrowthSystem from "@/components/home/SalonClientGrowthSystem";
 import WhyTrustSection from "@/components/home/sections/WhyTrustSection";
 import WhatYouCanDoSection from "@/components/home/sections/WhatYouCanDoSection";
+
+// New homepage sections
+import TopBeautyJobs from "@/components/home/TopBeautyJobs";
+import SalonsForSale from "@/components/home/SalonsForSale";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -58,6 +63,12 @@ const Index = () => {
       
       {/* Replace EmotionalClosingSection with HiringSalonsShowcase */}
       <HiringSalonsShowcase />
+      
+      {/* Add new Top Beauty Jobs section */}
+      <TopBeautyJobs />
+      
+      {/* Add new Salons for Sale section */}
+      <SalonsForSale />
       
       {/* Combine AI Features and What You Can Do sections */}
       <EnhancedAIFeatures />
