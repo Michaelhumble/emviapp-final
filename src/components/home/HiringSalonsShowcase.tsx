@@ -3,9 +3,11 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { MapPin, Star } from "lucide-react";
+import { MapPin, Star, Building } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/context/auth";
 
 // Sample salon data
 const hiringSalons = [
@@ -16,14 +18,16 @@ const hiringSalons = [
     rating: "4.9",
     image: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60",
     isHiring: true,
+    specialty: "Full Service Salon"
   },
   {
     id: "2",
     name: "Luxe Beauty Bar",
     location: "Los Angeles, CA",
     rating: "4.8",
-    image: "https://images.unsplash.com/photo-1487412947147-5cdbfcfbc095?auto=format&fit=crop&w=800&q=60",
+    image: null, // No image for this one
     isHiring: true,
+    specialty: "Nail Spa"
   },
   {
     id: "3",
@@ -32,6 +36,7 @@ const hiringSalons = [
     rating: "5.0",
     image: "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=800&q=60",
     isHiring: true,
+    specialty: "Nail Art Studio"
   }
 ];
 
@@ -52,6 +57,7 @@ const item = {
 
 const HiringSalonsShowcase = () => {
   const isMobile = useIsMobile();
+  const { isSignedIn } = useAuth();
   
   return (
     <section className="py-24 bg-white">
@@ -78,7 +84,7 @@ const HiringSalonsShowcase = () => {
         >
           {hiringSalons.map((salon) => (
             <motion.div key={salon.id} variants={item}>
-              <Card className="overflow-hidden h-full transition-shadow hover:shadow-lg">
+              <Card className="overflow-hidden h-full transition-shadow hover:shadow-lg border-gray-100">
                 {salon.image && (
                   <div className="relative h-48 overflow-hidden">
                     <img 
@@ -88,7 +94,7 @@ const HiringSalonsShowcase = () => {
                     />
                   </div>
                 )}
-                <CardContent className="pt-6">
+                <CardContent className={`${salon.image ? 'pt-6' : 'pt-5'}`}>
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-xl font-semibold">{salon.name}</h3>
                     <div className="flex items-center text-amber-500">
@@ -100,14 +106,27 @@ const HiringSalonsShowcase = () => {
                     <MapPin className="w-4 h-4 mr-1" />
                     <span className="text-sm">{salon.location}</span>
                   </div>
-                  <p className="text-primary font-medium">
+                  
+                  {salon.specialty && (
+                    <Badge variant="outline" className="mb-3 bg-blue-50 text-blue-700 border-blue-200">
+                      {salon.specialty}
+                    </Badge>
+                  )}
+                  
+                  <p className="text-primary font-medium mt-2">
                     {salon.isHiring ? "Currently Hiring" : "Contact for Opportunities"}
                   </p>
                 </CardContent>
                 <CardFooter className="pt-0">
-                  <Link to={`/salons/${salon.id}`} className="text-primary hover:text-primary/80 text-sm font-medium">
-                    View details →
-                  </Link>
+                  {isSignedIn ? (
+                    <Link to={`/salons/${salon.id}`} className="text-primary hover:text-primary/80 text-sm font-medium">
+                      View details →
+                    </Link>
+                  ) : (
+                    <Link to={`/sign-in?redirect=/salons/${salon.id}`} className="text-primary hover:text-primary/80 text-sm font-medium">
+                      Sign in to view details →
+                    </Link>
+                  )}
                 </CardFooter>
               </Card>
             </motion.div>
@@ -117,6 +136,7 @@ const HiringSalonsShowcase = () => {
         <div className="mt-14 text-center">
           <Link to="/salons">
             <Button size="lg" variant="outline" className="font-medium">
+              <Building className="mr-2 h-4 w-4" />
               Explore All Salons
             </Button>
           </Link>

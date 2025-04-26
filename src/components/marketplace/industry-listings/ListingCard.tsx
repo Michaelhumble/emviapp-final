@@ -1,240 +1,110 @@
+
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { 
-  Card, CardContent, CardHeader, CardTitle, CardDescription,
-  CardFooter 
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { 
-  MapPin, Phone, DollarSign, Calendar, MessageSquare, 
-  CheckCircle2, Building, Clock, Heart 
-} from "lucide-react";
-import { Job } from "@/types/job";
-import { useState } from "react";
-import ImageWithFallback from "@/components/ui/ImageWithFallback";
+import { Link } from "react-router-dom";
+import { MapPin, Building, Star, Lock } from "lucide-react";
+import { useAuth } from "@/context/auth";
+import AuthAction from "@/components/common/AuthAction";
 
 interface ListingCardProps {
-  listing: Job;
+  listing: any;
   index: number;
 }
 
 const ListingCard = ({ listing, index }: ListingCardProps) => {
+  const { isSignedIn } = useAuth();
   const [isHovered, setIsHovered] = useState(false);
-  const [isFavorited, setIsFavorited] = useState(false);
   
-  const isForSale = listing.employment_type === "For Sale";
-  
-  const getPerks = (listing: Job) => {
-    const perks = [];
-    
-    if (listing.weekly_pay) perks.push("Weekly Pay");
-    if (listing.owner_will_train) perks.push("Training Provided");
-    if (listing.has_housing) perks.push("Housing Available");
-    if (listing.no_supply_deduction) perks.push("No Supply Deduction");
-    
-    if (listing.salon_features && listing.salon_features.length > 0) {
-      perks.push(...listing.salon_features.slice(0, 2));
+  // Get the redirect path based on listing type
+  const getListingPath = () => {
+    if (listing.for_sale) {
+      return `/salons/${listing.id}`;
     }
-    
-    if (listing.benefits && listing.benefits.length > 0) {
-      perks.push(...listing.benefits.slice(0, 2));
-    }
-    
-    if (listing.features && listing.features.length > 0) {
-      perks.push(...listing.features.slice(0, 2));
-    }
-    
-    return perks;
-  };
-  
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
-  };
-
-  const perks = getPerks(listing);
-  
-  const toggleFavorite = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsFavorited(!isFavorited);
-  };
-  
-  const getFallbackImage = () => {
-    if (isForSale) {
-      return "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800";
-    } else if (listing.employment_type?.toLowerCase().includes('part-time')) {
-      return "https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=800";
-    } else if (listing.title?.toLowerCase().includes('wax') || listing.company?.toLowerCase().includes('spa')) {
-      return "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=800";
-    } else if (listing.title?.toLowerCase().includes('hair') || listing.company?.toLowerCase().includes('hair')) {
-      return "https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=800";
-    }
-    
-    return "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=800";
+    return `/jobs/${listing.id}`;
   };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.1 }}
-      className="h-full"
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
+      transition={{ duration: 0.3, delay: index * 0.05 }}
     >
       <Card 
-        className={`h-full flex flex-col transition-all duration-300 ${isHovered ? 'shadow-lg transform translate-y-[-4px]' : 'shadow'}`}
+        className={`overflow-hidden border-gray-100 h-full flex flex-col transition-all duration-200 ${
+          isHovered ? "shadow-md" : "shadow-sm"
+        }`}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
         {listing.image && (
-          <div className="relative overflow-hidden">
-            <div className="h-48">
-              <ImageWithFallback 
-                src={listing.image} 
-                alt={listing.title || "Listing"} 
-                className="h-full w-full object-cover transition-transform duration-500"
-                style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }}
-                fallbackImage={getFallbackImage()}
-                businessName={listing.company}
-              />
-            </div>
-            
-            <div className="absolute top-2 right-2">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className={`rounded-full ${isFavorited ? 'bg-red-100' : 'bg-white/80'} hover:bg-red-100 backdrop-blur-sm`}
-                onClick={toggleFavorite}
-              >
-                <Heart className={`h-5 w-5 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
-              </Button>
-            </div>
-            
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent h-1/3" />
+          <div className="aspect-video w-full overflow-hidden">
+            <img
+              src={listing.image}
+              alt={listing.title || listing.company || "Industry listing"}
+              className="w-full h-full object-cover"
+            />
           </div>
         )}
         
-        <CardHeader className="pb-2">
-          <div className="flex justify-between items-start">
-            <div>
-              <CardTitle className="text-lg font-serif line-clamp-1">
-                {listing.title}
-              </CardTitle>
-              <CardDescription className="font-medium text-base line-clamp-1">
-                {listing.company}
-              </CardDescription>
-            </div>
-            <Badge className={`${isForSale ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'} font-medium whitespace-nowrap`}>
-              {listing.employment_type}
-            </Badge>
-          </div>
-        </CardHeader>
-        
-        <CardContent className="flex-grow">
-          <div className="flex items-center text-sm text-gray-600 mb-2">
-            <MapPin className="h-4 w-4 mr-1.5 flex-shrink-0" /> 
-            <span className="line-clamp-1">{listing.location}</span>
+        <CardContent className={`p-5 flex-1 flex flex-col ${!listing.image ? 'pt-6' : 'pt-5'}`}>
+          <div className="flex justify-between mb-2">
+            <h3 className="font-semibold text-lg">{listing.title || listing.company}</h3>
+            {listing.is_featured && (
+              <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                Featured
+              </Badge>
+            )}
           </div>
           
-          {listing.salary_range && (
-            <div className="flex items-center text-sm text-gray-600 mb-2">
-              <DollarSign className="h-4 w-4 mr-1.5 flex-shrink-0" /> 
-              <span className="line-clamp-1">{listing.salary_range}</span>
-            </div>
-          )}
-          
-          {listing.compensation_details && !listing.salary_range && (
-            <div className="flex items-center text-sm text-gray-600 mb-2">
-              <DollarSign className="h-4 w-4 mr-1.5 flex-shrink-0" /> 
-              <span className="line-clamp-1">{listing.compensation_details}</span>
-            </div>
-          )}
-          
-          {listing.price && (
-            <div className="flex items-center text-sm text-gray-700 mb-2">
-              <DollarSign className="h-4 w-4 mr-1.5 flex-shrink-0" /> 
-              <span className="font-medium">{listing.price}</span>
-              {listing.monthly_rent && <span className="text-gray-500 ml-2 line-clamp-1">| Rent: {listing.monthly_rent}</span>}
-            </div>
-          )}
-          
-          {isForSale && listing.reason_for_selling && (
-            <div className="flex items-start text-sm text-gray-600 mb-2">
-              <Building className="h-4 w-4 mr-1.5 mt-0.5 flex-shrink-0" /> 
-              <span className="line-clamp-2">Reason: {listing.reason_for_selling}</span>
-            </div>
-          )}
-          
-          <div className="flex items-center text-sm text-gray-600 mb-3">
-            <Calendar className="h-4 w-4 mr-1.5 flex-shrink-0" /> 
-            <span>Posted: {formatDate(listing.created_at)}</span>
+          <div className="flex items-center text-gray-500 mb-2 text-sm">
+            {listing.company && (
+              <>
+                <Building className="h-3.5 w-3.5 mr-1" />
+                <span className="mr-3">{listing.company}</span>
+              </>
+            )}
+            <MapPin className="h-3.5 w-3.5 mr-1" />
+            <span>{listing.location}</span>
           </div>
-          
-          {listing.description && (
-            <p className="text-sm text-gray-700 mb-4 line-clamp-3">
-              {listing.description}
-            </p>
-          )}
-          
-          {listing.vietnamese_description && (
-            <p className="text-sm text-gray-700 italic mb-4 line-clamp-2">
-              {listing.vietnamese_description}
-            </p>
-          )}
           
           {listing.specialties && listing.specialties.length > 0 && (
-            <div className="mb-3">
-              <div className="text-xs font-medium text-gray-500 mb-1">SPECIALTIES:</div>
-              <div className="flex flex-wrap gap-1.5">
-                {listing.specialties.slice(0, 2).map((specialty, i) => (
-                  <Badge key={i} variant="outline" className="text-xs bg-gray-50">
-                    {specialty}
-                  </Badge>
-                ))}
-                {listing.specialties.length > 2 && (
-                  <Badge variant="outline" className="text-xs bg-gray-50">
-                    +{listing.specialties.length - 2} more
-                  </Badge>
-                )}
-              </div>
+            <div className="flex flex-wrap gap-1 mb-3">
+              {listing.specialties.slice(0, 2).map((specialty: string, idx: number) => (
+                <Badge key={idx} variant="secondary" className="text-xs">
+                  {specialty}
+                </Badge>
+              ))}
+              {listing.specialties.length > 2 && (
+                <Badge variant="secondary" className="text-xs">
+                  +{listing.specialties.length - 2} more
+                </Badge>
+              )}
             </div>
           )}
           
-          {perks.length > 0 && (
-            <div className="mb-4">
-              <div className="text-xs font-medium text-gray-500 mb-1">PERKS & FEATURES:</div>
-              <div className="flex flex-wrap gap-1.5">
-                {perks.slice(0, 2).map((perk, i) => (
-                  <Badge key={i} variant="outline" className="text-xs bg-green-50 text-green-800 border-green-100">
-                    <CheckCircle2 className="h-3 w-3 mr-1" /> {perk}
-                  </Badge>
-                ))}
-                {perks.length > 2 && (
-                  <Badge variant="outline" className="text-xs bg-green-50 text-green-800 border-green-100">
-                    +{perks.length - 2} more
-                  </Badge>
-                )}
-              </div>
-            </div>
-          )}
+          <p className="text-gray-600 text-sm line-clamp-2 mb-auto">
+            {listing.description || "Contact for more information about this opportunity."}
+          </p>
+          
+          <div className="mt-4">
+            {isSignedIn ? (
+              <Link to={getListingPath()}>
+                <Button variant="outline" className="w-full">
+                  View Details
+                </Button>
+              </Link>
+            ) : (
+              <AuthAction onAction={() => true}>
+                <Button variant="outline" className="w-full">
+                  <Lock className="h-4 w-4 mr-1" /> Sign in to View
+                </Button>
+              </AuthAction>
+            )}
+          </div>
         </CardContent>
-        
-        <CardFooter className="pt-1 pb-4 flex justify-between">
-          {listing.contact_info?.phone ? (
-            <Button variant="outline" size="sm" className="gap-1">
-              <Phone className="h-4 w-4" />
-              {listing.contact_info.phone}
-            </Button>
-          ) : (
-            <Button variant="outline" size="sm" className="gap-1">
-              <MessageSquare className="h-4 w-4" />
-              Message
-            </Button>
-          )}
-          
-          <Button size="sm" className="bg-primary hover:bg-primary/90">
-            View Details
-          </Button>
-        </CardFooter>
       </Card>
     </motion.div>
   );

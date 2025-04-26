@@ -8,9 +8,11 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getFeaturedSalons } from "@/utils/featuredContent";
 import { Salon } from "@/types/salon";
+import { useAuth } from "@/context/auth";
 
 const SalonJobListingsShowcase = () => {
   const [salons, setSalons] = React.useState<Salon[]>([]);
+  const { isSignedIn } = useAuth();
   
   React.useEffect(() => {
     const featuredSalons = getFeaturedSalons(3);
@@ -91,9 +93,15 @@ const SalonJobListingsShowcase = () => {
                   </p>
                 </CardContent>
                 <CardFooter className="pt-0">
-                  <Link to={`/salons/${salon.id}`} className="text-primary hover:text-primary/80 text-sm font-medium">
-                    View details →
-                  </Link>
+                  {isSignedIn ? (
+                    <Link to={`/salons/${salon.id}`} className="text-primary hover:text-primary/80 text-sm font-medium">
+                      View details →
+                    </Link>
+                  ) : (
+                    <Link to={`/sign-in?redirect=/salons/${salon.id}`} className="text-primary hover:text-primary/80 text-sm font-medium">
+                      Sign in to view details →
+                    </Link>
+                  )}
                 </CardFooter>
               </Card>
             </motion.div>
