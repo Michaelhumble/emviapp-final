@@ -18,7 +18,7 @@ import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 
 // Enhanced homepage components
 import DynamicListingGrid from "@/components/home/DynamicListingGrid";
-import EmotionalClosingSection from "@/components/home/EmotionalClosingSection";
+import HiringSalonsShowcase from "@/components/home/HiringSalonsShowcase";
 import FounderMessage from "@/components/home/FounderMessage";
 import MissingPieceSection from "@/components/home/missing-piece";
 import EnhancedAIFeatures from "@/components/home/EnhancedAIFeatures";
@@ -56,8 +56,8 @@ const Index = () => {
       {/* Replace ArtistTestimonials with ClientSuccessStories */}
       <ClientSuccessStories />
       
-      {/* Keep Let's Experience EmviApp Together section */}
-      <EmotionalClosingSection />
+      {/* Replace EmotionalClosingSection with HiringSalonsShowcase */}
+      <HiringSalonsShowcase />
       
       {/* Combine AI Features and What You Can Do sections */}
       <EnhancedAIFeatures />
