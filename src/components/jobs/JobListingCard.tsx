@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Job } from "@/types/job";
@@ -40,7 +39,6 @@ const JobListingCard = ({
   const isOwner = currentUserId === job.user_id;
   const navigate = useNavigate();
 
-  // Determine appropriate fallback image based on job type
   const getFallbackImage = () => {
     if (job.employment_type?.toLowerCase().includes('sale')) {
       return "https://images.unsplash.com/photo-1613843351058-1dd06fccdc6a?q=80&w=2070&auto=format&fit=crop";
@@ -58,7 +56,6 @@ const JobListingCard = ({
     return "https://images.unsplash.com/photo-1607008829749-c0f284a49841?q=80&w=2070&auto=format&fit=crop";
   };
 
-  // Function to get the appropriate contact message based on language
   const getContactMessage = () => {
     return isVietnamese 
       ? "🔒 Đăng ký để xem chi tiết liên hệ"
@@ -69,14 +66,12 @@ const JobListingCard = ({
     if (isOwner || isSignedIn) {
       onViewDetails();
     } else {
-      // Use AuthAction component to handle authentication flow
-      navigate(`/sign-in?redirect=/jobs/${job.id}`);
+      navigate(`/sign-in?redirect=${encodeURIComponent(`/jobs/${job.id}`)}`);
     }
   };
 
   const getCtaButton = () => {
     if (isOwner) {
-      // Owner can always see details
       return (
         <Button 
           variant="default"
@@ -101,18 +96,14 @@ const JobListingCard = ({
     }
     
     return (
-      <AuthAction onAction={() => {
-        console.log("Auth action triggered");
-        return true;
-      }}>
-        <Button 
-          variant="default"
-          className="w-full" 
-        >
-          <Lock className="h-4 w-4 mr-1" /> 
-          {isVietnamese ? "Đăng Ký" : "Sign Up"}
-        </Button>
-      </AuthAction>
+      <Button 
+        variant="default"
+        className="w-full" 
+        onClick={handleViewDetails}
+      >
+        <Lock className="h-4 w-4 mr-1" /> 
+        {isVietnamese ? "Đăng Ký" : "Sign Up"}
+      </Button>
     );
   };
 
@@ -152,7 +143,6 @@ const JobListingCard = ({
         
         <JobSpecialties specialties={job.specialties} />
         
-        {/* Job description - show Vietnamese if available */}
         {job.vietnamese_description ? (
           <div className="mb-4 flex-grow">
             <p className="text-gray-600 line-clamp-2 mb-1">

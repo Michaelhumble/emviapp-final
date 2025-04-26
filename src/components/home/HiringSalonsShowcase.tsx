@@ -2,7 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MapPin, Star, Building } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -58,6 +58,15 @@ const item = {
 const HiringSalonsShowcase = () => {
   const isMobile = useIsMobile();
   const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
+  
+  const handleViewDetails = (salonId: string) => {
+    if (isSignedIn) {
+      navigate(`/salons/${salonId}`);
+    } else {
+      navigate(`/sign-in?redirect=${encodeURIComponent(`/salons/${salonId}`)}`);
+    }
+  };
   
   return (
     <section className="py-24 bg-white">
@@ -118,15 +127,12 @@ const HiringSalonsShowcase = () => {
                   </p>
                 </CardContent>
                 <CardFooter className="pt-0">
-                  {isSignedIn ? (
-                    <Link to={`/salons/${salon.id}`} className="text-primary hover:text-primary/80 text-sm font-medium">
-                      View details →
-                    </Link>
-                  ) : (
-                    <Link to={`/sign-in?redirect=/salons/${salon.id}`} className="text-primary hover:text-primary/80 text-sm font-medium">
-                      Sign in to view details →
-                    </Link>
-                  )}
+                  <button 
+                    onClick={() => handleViewDetails(salon.id)} 
+                    className="text-primary hover:text-primary/80 text-sm font-medium cursor-pointer flex items-center"
+                  >
+                    {isSignedIn ? "View details →" : "Sign in to view details →"}
+                  </button>
                 </CardFooter>
               </Card>
             </motion.div>

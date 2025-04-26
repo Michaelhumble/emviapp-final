@@ -9,21 +9,26 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 interface AuthActionProps {
   children: React.ReactNode;
   onAction: () => Promise<boolean> | boolean;
   creditMessage?: string; // Optional message about credits for this action
+  redirectPath?: string; // Optional redirect path
 }
 
 const AuthAction: React.FC<AuthActionProps> = ({ 
   children, 
   onAction,
-  creditMessage 
+  creditMessage,
+  redirectPath 
 }) => {
   const { isSignedIn } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const currentPath = redirectPath || location.pathname + location.search;
 
   const handleAction = async () => {
     if (isSignedIn) {
@@ -31,6 +36,11 @@ const AuthAction: React.FC<AuthActionProps> = ({
     } else {
       setShowAuthDialog(true);
     }
+  };
+
+  const handleNavigation = (path: string) => {
+    navigate(`${path}?redirect=${encodeURIComponent(currentPath)}`);
+    setShowAuthDialog(false);
   };
 
   return (
@@ -53,11 +63,11 @@ const AuthAction: React.FC<AuthActionProps> = ({
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col sm:flex-row gap-3 mt-4">
-            <Button className="w-full" asChild>
-              <Link to="/auth/signin">Sign In</Link>
+            <Button className="w-full" onClick={() => handleNavigation('/sign-in')}>
+              Sign In
             </Button>
-            <Button variant="secondary" className="w-full" asChild>
-              <Link to="/auth/signup">Create Account</Link>
+            <Button variant="secondary" className="w-full" onClick={() => handleNavigation('/sign-up')}>
+              Create Account
             </Button>
           </div>
         </DialogContent>

@@ -8,7 +8,7 @@ import { Job } from "@/types/job";
 import { Separator } from "@/components/ui/separator";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { useAuth } from "@/context/auth";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface JobDetailModalProps {
   job: Job | null;
@@ -18,8 +18,14 @@ interface JobDetailModalProps {
 
 const JobDetailModal = ({ job, isOpen, onClose }: JobDetailModalProps) => {
   const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
   
   if (!job) return null;
+  
+  const handleSignUp = () => {
+    navigate(`/sign-up?redirect=${encodeURIComponent(`/jobs/${job.id}`)}`);
+    onClose();
+  };
   
   // Convert created_at to a Date object if it exists
   const createdAt = job.created_at ? new Date(job.created_at) : new Date();
@@ -190,18 +196,16 @@ const JobDetailModal = ({ job, isOpen, onClose }: JobDetailModalProps) => {
             <DialogClose asChild>
               <Button variant="outline">Close</Button>
             </DialogClose>
-            <AuthGuard
-              fallback={
-                <Button asChild>
-                  <Link to="/auth/signup">Sign Up to Apply</Link>
-                </Button>
-              }
-            >
+            {!isSignedIn ? (
+              <Button onClick={handleSignUp}>
+                Sign Up to Apply
+              </Button>
+            ) : (
               <Button>
                 <Phone className="h-4 w-4 mr-2" />
                 Contact Employer
               </Button>
-            </AuthGuard>
+            )}
           </div>
         </DialogFooter>
       </DialogContent>

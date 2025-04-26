@@ -1,29 +1,27 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useRoleBasedSignUp } from "@/hooks/useRoleBasedSignUp";
 import { UserRole } from "@/context/auth/types";
 import RoleSelectionCards from "./RoleSelectionCards";
 import { toast } from "sonner";
 
-const SignUpForm = () => {
+interface SignUpFormProps {
+  redirectUrl?: string | null;
+}
+
+const SignUpForm = ({ redirectUrl }: SignUpFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [selectedRole, setSelectedRole] = useState<UserRole>("customer");
   const { signUp, loading } = useRoleBasedSignUp();
   const navigate = useNavigate();
-  const location = useLocation();
   
-  // Get redirect URL from query params if available
-  const queryParams = new URLSearchParams(location.search);
-  const redirectUrl = queryParams.get('redirect') || '/dashboard';
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     

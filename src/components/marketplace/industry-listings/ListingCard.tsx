@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MapPin, Building, Star, Lock } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import AuthAction from "@/components/common/AuthAction";
@@ -17,6 +17,7 @@ interface ListingCardProps {
 const ListingCard = ({ listing, index }: ListingCardProps) => {
   const { isSignedIn } = useAuth();
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
   
   // Get the redirect path based on listing type
   const getListingPath = () => {
@@ -24,6 +25,16 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
       return `/salons/${listing.id}`;
     }
     return `/jobs/${listing.id}`;
+  };
+
+  // Handle view details click with proper redirect
+  const handleViewDetails = () => {
+    const path = getListingPath();
+    if (!isSignedIn) {
+      navigate(`/sign-in?redirect=${encodeURIComponent(path)}`);
+      return;
+    }
+    navigate(path);
   };
 
   return (
@@ -91,17 +102,13 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
           
           <div className="mt-4">
             {isSignedIn ? (
-              <Link to={getListingPath()}>
-                <Button variant="outline" className="w-full">
-                  View Details
-                </Button>
-              </Link>
+              <Button variant="outline" className="w-full" onClick={handleViewDetails}>
+                View Details
+              </Button>
             ) : (
-              <AuthAction onAction={() => true}>
-                <Button variant="outline" className="w-full">
-                  <Lock className="h-4 w-4 mr-1" /> Sign in to View
-                </Button>
-              </AuthAction>
+              <Button variant="outline" className="w-full" onClick={handleViewDetails}>
+                <Lock className="h-4 w-4 mr-1" /> Sign in to View
+              </Button>
             )}
           </div>
         </CardContent>

@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from "react";
-import { Link, Navigate, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,14 +24,11 @@ const SignIn = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Get redirect URL from query params if available
   const queryParams = new URLSearchParams(location.search);
   const redirectUrl = queryParams.get('redirect') || '/dashboard';
 
-  // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      // Decode the redirect URL if it exists
       const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
       navigate(decodedRedirect, { replace: true });
     }
@@ -48,7 +44,6 @@ const SignIn = () => {
       const result = await signInWithEmail(email, password);
       
       if (result.success) {
-        // Decode the redirect URL if it exists
         const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
         navigate(decodedRedirect);
       } else if (result.error?.message?.includes("Email not confirmed")) {
@@ -88,7 +83,6 @@ const SignIn = () => {
     }
   };
 
-  // Don't show the sign-in form if already logged in
   if (user) {
     return null;
   }

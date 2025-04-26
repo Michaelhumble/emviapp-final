@@ -2,7 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MapPin, Star, Building } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,7 @@ import { useAuth } from "@/context/auth";
 const SalonJobListingsShowcase = () => {
   const [salons, setSalons] = React.useState<Salon[]>([]);
   const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
   
   React.useEffect(() => {
     const featuredSalons = getFeaturedSalons(3);
@@ -32,6 +33,14 @@ const SalonJobListingsShowcase = () => {
   const item = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0 }
+  };
+  
+  const handleViewDetails = (salonId: string) => {
+    if (isSignedIn) {
+      navigate(`/salons/${salonId}`);
+    } else {
+      navigate(`/sign-in?redirect=${encodeURIComponent(`/salons/${salonId}`)}`);
+    }
   };
   
   return (
@@ -93,15 +102,12 @@ const SalonJobListingsShowcase = () => {
                   </p>
                 </CardContent>
                 <CardFooter className="pt-0">
-                  {isSignedIn ? (
-                    <Link to={`/salons/${salon.id}`} className="text-primary hover:text-primary/80 text-sm font-medium">
-                      View details →
-                    </Link>
-                  ) : (
-                    <Link to={`/sign-in?redirect=/salons/${salon.id}`} className="text-primary hover:text-primary/80 text-sm font-medium">
-                      Sign in to view details →
-                    </Link>
-                  )}
+                  <button 
+                    onClick={() => handleViewDetails(salon.id)}
+                    className="text-primary hover:text-primary/80 text-sm font-medium cursor-pointer flex items-center"
+                  >
+                    {isSignedIn ? "View details →" : "Sign in to view details →"}
+                  </button>
                 </CardFooter>
               </Card>
             </motion.div>
