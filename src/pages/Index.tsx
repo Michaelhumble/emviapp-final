@@ -56,7 +56,7 @@ const Index = () => {
       {/* Keep Hero section as first */}
       <Hero />
       
-      {/* Add Latest Industry Opportunities section */}
+      {/* Replace with Latest Industry Opportunities section */}
       <LatestIndustryOpportunities />
       
       {/* Move Client Growth System section here */}
