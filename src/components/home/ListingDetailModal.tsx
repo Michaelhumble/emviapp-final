@@ -75,10 +75,11 @@ const ListingDetailModal = ({ isOpen, onClose, listing, listingType }: ListingDe
       const salonListing = listing as (SalonSale | BasicListing);
       
       // Extract title
-      const city = 'city' in salonListing ? salonListing.city : '';
-      const state = 'state' in salonListing ? salonListing.state : '';
-      // Use location directly if it exists, otherwise build from city/state
-      const displayLocation = salonListing.location || (city || state ? `${city}, ${state}` : '');
+      // Get location from either the location property directly, or construct it from city/state
+      const displayLocation = salonListing.location || 
+        ((salonListing.city || salonListing.state) ? 
+          [salonListing.city, salonListing.state].filter(Boolean).join(', ') : 
+          'Unknown Location');
       
       setTitle({
         en: `Salon for Sale | ${displayLocation}`,
