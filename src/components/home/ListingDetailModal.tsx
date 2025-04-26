@@ -49,8 +49,8 @@ const ListingDetailModal = ({ isOpen, onClose, listing, listingType }: ListingDe
       
       // Extract title
       setTitle({
-        en: jobListing.title || `Hiring ${jobListing.role || 'Nail Tech'} | ${jobListing.location}`,
-        vi: `Cần Thợ ${jobListing.role?.includes('Powder') ? 'Bột' : 'Nails'} | ${jobListing.location}`
+        en: jobListing.title || `Hiring ${jobListing.role || 'Nail Tech'} | ${jobListing.location || ''}`,
+        vi: `Cần Thợ ${jobListing.role?.includes('Powder') ? 'Bột' : 'Nails'} | ${jobListing.location || ''}`
       });
       
       // Extract details
@@ -76,12 +76,15 @@ const ListingDetailModal = ({ isOpen, onClose, listing, listingType }: ListingDe
       const salonListing = listing as (SalonSale | BasicListing);
       
       // Get location by constructing it from city/state or using a helper function
-      // This handles both SalonSale (which has city/state) and BasicListing (which might have location directly)
-      const displayLocation = 'location' in salonListing && salonListing.location ? 
-        salonListing.location : 
-        ((salonListing.city || salonListing.state) ? 
-          [salonListing.city, salonListing.state].filter(Boolean).join(', ') : 
-          'Unknown Location');
+      let displayLocation = '';
+      
+      if ('location' in salonListing && salonListing.location) {
+        displayLocation = salonListing.location;
+      } else if (salonListing.city || salonListing.state) {
+        displayLocation = getLocationString(salonListing.city, salonListing.state);
+      } else {
+        displayLocation = 'Unknown Location';
+      }
       
       setTitle({
         en: `Salon for Sale | ${displayLocation}`,
@@ -139,6 +142,16 @@ const ListingDetailModal = ({ isOpen, onClose, listing, listingType }: ListingDe
               {isVietnamese ? details.en : details.vi}
             </div>
           </div>
+          
+          {/* Description section */}
+          {listing.description && (
+            <div className="space-y-2 py-2">
+              <h4 className="text-sm font-medium text-gray-700">
+                {isVietnamese ? 'Mô Tả' : 'Description'}
+              </h4>
+              <p className="text-sm text-gray-600">{listing.description}</p>
+            </div>
+          )}
           
           {/* Locked contact info message */}
           <div className="bg-gray-50 border border-gray-100 p-4 rounded-md text-center">

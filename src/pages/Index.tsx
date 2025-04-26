@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -19,7 +18,7 @@ import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 
 // Enhanced homepage components
 import DynamicListingGrid from "@/components/home/DynamicListingGrid";
-import HiringSalonsShowcase from "@/components/home/HiringSalonsShowcase";
+import SalonJobListingsShowcase from "@/components/home/SalonJobListingsShowcase";
 import FounderMessage from "@/components/home/FounderMessage";
 import MissingPieceSection from "@/components/home/missing-piece";
 import EnhancedAIFeatures from "@/components/home/EnhancedAIFeatures";
@@ -59,20 +58,20 @@ const Index = () => {
       {/* Replace with Latest Industry Opportunities section */}
       <LatestIndustryOpportunities />
       
+      {/* Use our new SalonJobListingsShowcase component */}
+      <SalonJobListingsShowcase />
+      
       {/* Move Client Growth System section here */}
       <SalonClientGrowthSystem />
       
       {/* Replace ArtistTestimonials with ClientSuccessStories */}
       <ClientSuccessStories />
       
-      {/* Replace EmotionalClosingSection with HiringSalonsShowcase */}
-      <HiringSalonsShowcase />
+      {/* Add new Salons for Sale section */}
+      <SalonsForSale />
       
       {/* Add new Top Beauty Jobs section */}
       <TopBeautyJobs />
-      
-      {/* Add new Salons for Sale section */}
-      <SalonsForSale />
       
       {/* Combine AI Features and What You Can Do sections */}
       <EnhancedAIFeatures />
