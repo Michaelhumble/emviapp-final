@@ -10,6 +10,12 @@ import { JobTipInfo } from "./card-sections/JobTipInfo";
 import { JobExpirationInfo } from "./card-sections/JobExpirationInfo";
 import { JobCardActions } from "./card-sections/JobCardActions";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
+import { useTranslation } from "@/hooks/useTranslation";
+import { Lock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/auth";
+import AuthAction from "@/components/common/AuthAction";
+import { Link } from "react-router-dom";
 
 interface JobListingCardProps {
   job: Job;
@@ -29,6 +35,8 @@ const JobListingCard = ({
   isRenewing
 }: JobListingCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const { isSignedIn } = useAuth();
+  const { t, isVietnamese } = useTranslation();
   const isOwner = currentUserId === job.user_id;
 
   // Determine appropriate fallback image based on job type
@@ -47,6 +55,55 @@ const JobListingCard = ({
       return "https://images.unsplash.com/photo-1587909209111-5097ee578ec3?q=80&w=2070&auto=format&fit=crop";
     }
     return "https://images.unsplash.com/photo-1607008829749-c0f284a49841?q=80&w=2070&auto=format&fit=crop";
+  };
+
+  // Function to get the appropriate contact message based on language
+  const getContactMessage = () => {
+    return isVietnamese 
+      ? "🔒 Đăng ký để xem chi tiết liên hệ"
+      : "🔒 Sign up to view contact details";
+  };
+
+  const getCtaButton = () => {
+    if (isOwner) {
+      // Owner can always see details
+      return (
+        <Button 
+          variant="default"
+          className="w-full" 
+          onClick={onViewDetails}
+        >
+          {isVietnamese ? "Xem Chi Tiết" : "View Details"}
+        </Button>
+      );
+    }
+    
+    if (isSignedIn) {
+      return (
+        <Button 
+          variant="default"
+          className="w-full" 
+          onClick={onViewDetails}
+        >
+          {isVietnamese ? "Xem Chi Tiết" : "View Details"}
+        </Button>
+      );
+    }
+    
+    return (
+      <AuthAction onAction={() => {
+        console.log("Auth action triggered");
+        return true;
+      }}>
+        <Button 
+          variant="default"
+          className="w-full" 
+        >
+          <Lock className="h-4 w-4 mr-1" /> 
+          {isVietnamese ? "Đăng Ký" : "Sign Up"}
+        </Button>
+      </AuthAction>
+    );
   };
 
   return (
@@ -85,26 +142,49 @@ const JobListingCard = ({
         
         <JobSpecialties specialties={job.specialties} />
         
-        {/* Job description - truncated */}
-        <p className="text-gray-600 line-clamp-3 mb-4 flex-grow">
-          {job.vietnamese_description || job.description}
-        </p>
+        {/* Job description - show Vietnamese if available */}
+        {job.vietnamese_description ? (
+          <div className="mb-4 flex-grow">
+            <p className="text-gray-600 line-clamp-2 mb-1">
+              {isVietnamese ? job.vietnamese_description : job.description}
+            </p>
+            <p className="text-xs text-gray-400">
+              {!isVietnamese && job.vietnamese_description ? "(Vietnamese description available)" : ""}
+            </p>
+          </div>
+        ) : (
+          <p className="text-gray-600 line-clamp-3 mb-4 flex-grow">
+            {job.description}
+          </p>
+        )}
         
         <JobTipInfo tipRange={job.tip_range} />
+        
+        {!isExpired && !isSignedIn && !isOwner && (
+          <div className="text-sm text-gray-500 italic mb-4">
+            {getContactMessage()}
+          </div>
+        )}
         
         <JobExpirationInfo 
           isExpired={isExpired}
           createdAt={job.created_at}
-          contactInfo={!isExpired ? job.contact_info : undefined}
+          contactInfo={isSignedIn && !isExpired ? job.contact_info : undefined}
         />
         
-        <JobCardActions 
-          isExpired={isExpired}
-          isOwner={isOwner}
-          onViewDetails={onViewDetails}
-          onRenew={onRenew}
-          isRenewing={isRenewing}
-        />
+        {isExpired ? (
+          <JobCardActions 
+            isExpired={isExpired}
+            isOwner={isOwner}
+            onViewDetails={onViewDetails}
+            onRenew={onRenew}
+            isRenewing={isRenewing}
+          />
+        ) : (
+          <div className="mt-4">
+            {getCtaButton()}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

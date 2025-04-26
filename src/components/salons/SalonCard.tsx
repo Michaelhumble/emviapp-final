@@ -1,11 +1,15 @@
-import { Job } from "@/types/job";
+
+import { MapPin, DollarSign, Clock, Grid, ExternalLink, Info, Home, Building, Lock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, DollarSign, Clock, Grid, ExternalLink, Info, Home, Building, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
 import AuthGuard from "@/components/auth/AuthGuard";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
+import { Job } from "@/types/job";
+import { useTranslation } from "@/hooks/useTranslation";
+import AuthAction from "@/components/common/AuthAction";
+import { Link } from "react-router-dom";
 
 export interface SalonCardProps {
   salon: Job;
@@ -43,6 +47,7 @@ const sanitizeBusinessName = (name: string): string => {
 
 const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCardProps) => {
   const { isSignedIn } = useAuth();
+  const { t, isVietnamese } = useTranslation();
   
   const sanitizedCompany = sanitizeBusinessName(salon.company || "");
   const sanitizedLocation = sanitizeBusinessName(salon.location || "");
@@ -76,6 +81,17 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
     }
     return "https://images.unsplash.com/photo-1607008829749-c0f284a49841?q=80&w=2070&auto=format&fit=crop";
   };
+  
+  const getContactMessage = () => {
+    return isVietnamese 
+      ? "🔒 Đăng ký để xem chi tiết liên hệ"
+      : "🔒 Sign up to view contact details";
+  };
+
+  const handleAction = () => {
+    console.log("Auth action triggered");
+    return true;
+  };
 
   return (
     <Card 
@@ -99,7 +115,7 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
           <div className="flex justify-between items-start">
             <h3 className="font-medium text-lg font-serif line-clamp-1">{sanitizedCompany || "Salon listing"}</h3>
             <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-200 whitespace-nowrap">
-              For Sale
+              {isVietnamese ? "Đang Bán" : "For Sale"}
             </Badge>
           </div>
           
@@ -112,14 +128,14 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
             {salon.asking_price && (
               <div className="flex items-center text-gray-600">
                 <DollarSign className="h-4 w-4 mr-2 flex-shrink-0 text-gray-400" />
-                <span>Asking: {formatCurrency(salon.asking_price)}</span>
+                <span>{isVietnamese ? "Giá:" : "Asking:"} {formatCurrency(salon.asking_price)}</span>
               </div>
             )}
             
             <div className="flex flex-wrap gap-2">
               {salon.number_of_stations && (
                 <div className="flex items-center text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                  <span>{salon.number_of_stations} stations</span>
+                  <span>{salon.number_of_stations} {isVietnamese ? "bàn" : "stations"}</span>
                 </div>
               )}
               
@@ -131,59 +147,65 @@ const SalonCard = ({ salon, onViewDetails, index, isExpired = false }: SalonCard
               
               {salon.has_wax_room && (
                 <div className="flex items-center text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
-                  <span>Wax Room</span>
+                  <span>{isVietnamese ? "Phòng Wax" : "Wax Room"}</span>
                 </div>
               )}
               
               {salon.has_housing && (
                 <div className="flex items-center text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">
                   <Home className="h-3 w-3 mr-1" />
-                  <span>Housing</span>
+                  <span>{isVietnamese ? "Có nhà ở" : "Housing"}</span>
                 </div>
               )}
             </div>
           </div>
           
           {isVietnameseSalon && salon.vietnamese_description ? (
-            <div className="mt-3 italic text-sm text-gray-700 line-clamp-2 bg-amber-50 px-2 py-1 rounded">
-              {salon.vietnamese_description.split('.')[0]}.
+            <div className="mt-3 text-sm text-gray-700 line-clamp-2 bg-amber-50 px-2 py-1 rounded">
+              {isVietnamese 
+                ? salon.vietnamese_description.split('.')[0] + "."
+                : salon.description?.split('.')[0] + "."
+              }
             </div>
           ) : (
             <p className="mt-3 line-clamp-3 text-gray-600 text-sm">
               {salon.description}
             </p>
           )}
+          
+          {!isSignedIn && !isExpired && (
+            <div className="mt-3 text-xs italic text-gray-500">
+              {getContactMessage()}
+            </div>
+          )}
         </div>
         
         <div className="mt-4 pt-4 border-t border-gray-100">
           {isExpired ? (
             <div className="text-center text-amber-600 text-sm font-medium">
-              This listing has expired
+              {isVietnamese ? "Bài đăng này đã hết hạn" : "This listing has expired"}
             </div>
-          ) : (
-            <AuthGuard
-              requiresAuth={false}
-              blurContent={false}
-              fallback={
-                <Button 
-                  variant="outline" 
-                  className="w-full flex items-center justify-center"
-                  onClick={() => onViewDetails(salon)}
-                >
-                  <Lock className="h-4 w-4 mr-2" />
-                  <span>Sign in to view details</span>
-                </Button>
-              }
+          ) : isSignedIn ? (
+            <Button 
+              variant="outline" 
+              className="w-full" 
+              onClick={() => onViewDetails(salon)}
             >
+              <ExternalLink className="h-4 w-4 mr-2" />
+              <span className="font-medium">
+                {isVietnamese ? "Xem Chi Tiết" : "View Details"}
+              </span>
+            </Button>
+          ) : (
+            <AuthAction onAction={handleAction} creditMessage={isVietnamese ? "Xem tất cả thông tin liên hệ miễn phí" : "View all contact information for free"}>
               <Button 
                 variant="outline" 
-                className="w-full" 
-                onClick={() => onViewDetails(salon)}
+                className="w-full flex items-center justify-center"
               >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                <span className="font-medium">View Details</span>
+                <Lock className="h-4 w-4 mr-2" />
+                <span>{isVietnamese ? "Đăng Ký" : "Sign Up"}</span>
               </Button>
-            </AuthGuard>
+            </AuthAction>
           )}
         </div>
       </CardContent>

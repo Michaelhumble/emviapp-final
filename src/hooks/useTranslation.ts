@@ -1,5 +1,6 @@
 
-import { getLanguagePreference } from "@/utils/languagePreference";
+import { useEffect, useState } from 'react';
+import { getLanguagePreference, setLanguagePreference, addLanguageChangeListener } from "@/utils/languagePreference";
 
 type Language = 'en' | 'vi';
 
@@ -9,7 +10,18 @@ export type Translation = {
 } | string; // Allow string as a valid type for backward compatibility
 
 export const useTranslation = () => {
-  const lang = getLanguagePreference();
+  const [lang, setLang] = useState<Language>(getLanguagePreference());
+  
+  useEffect(() => {
+    // Listen for language changes from other components
+    const unsubscribe = addLanguageChangeListener((newLang) => {
+      setLang(newLang);
+    });
+    
+    return () => {
+      unsubscribe();
+    };
+  }, []);
   
   const t = (translation: Translation): string => {
     if (typeof translation === 'string') {
@@ -25,5 +37,21 @@ export const useTranslation = () => {
   // Helper to detect if the current language is Vietnamese
   const isVietnamese = lang === 'vi';
   
-  return { t, lang, isVietnamese };
+  // Function to toggle between languages
+  const toggleLanguage = () => {
+    const newLang = lang === 'en' ? 'vi' : 'en';
+    setLanguagePreference(newLang);
+    setLang(newLang);
+  };
+  
+  return { 
+    t, 
+    lang, 
+    isVietnamese, 
+    toggleLanguage,
+    setLanguage: (newLang: Language) => {
+      setLanguagePreference(newLang);
+      setLang(newLang);
+    }
+  };
 };
