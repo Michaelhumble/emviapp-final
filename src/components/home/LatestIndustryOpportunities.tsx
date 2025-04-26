@@ -1,25 +1,112 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, ChevronRight, Briefcase, Building } from 'lucide-react';
-import { getFeaturedJobs } from '@/utils/featuredContent';
+import { getFeaturedJobs, getAllJobs, getAllBooths, getSalonsForSale } from '@/utils/featuredContent';
 import { Job } from '@/types/job';
 import { useAuth } from '@/context/auth';
 import AuthAction from '@/components/common/AuthAction';
 
 const LatestIndustryOpportunities = () => {
-  const [featuredJobs, setFeaturedJobs] = React.useState<Job[]>([]);
+  const [diverseListings, setDiverseListings] = useState<Job[]>([]);
   const { isSignedIn } = useAuth();
   const navigate = useNavigate();
 
-  React.useEffect(() => {
-    // Get featured job listings
-    const jobs = getFeaturedJobs(3);
-    setFeaturedJobs(jobs);
+  useEffect(() => {
+    // Get a diverse mix of listings
+    const loadDiverseListings = async () => {
+      // Get all types of listings
+      const featuredJobs = getFeaturedJobs(2);
+      const booths = getAllBooths(2);
+      const salonsForSale = getSalonsForSale(2);
+      const allJobs = getAllJobs(10);
+      
+      // Create a diverse mix by combining different listing types
+      let mixed: Job[] = [];
+      
+      // Add a hair salon job
+      const hairSalon = allJobs.find(job => 
+        job.specialties?.some(s => s.toLowerCase().includes('hair')) || 
+        job.title?.toLowerCase().includes('hair') ||
+        job.company?.toLowerCase().includes('hair')
+      );
+      if (hairSalon) mixed.push(hairSalon);
+      
+      // Add a nail salon job
+      const nailSalon = allJobs.find(job => 
+        job.specialties?.some(s => s.toLowerCase().includes('nail')) || 
+        job.title?.toLowerCase().includes('nail') ||
+        job.company?.toLowerCase().includes('nail')
+      );
+      if (nailSalon) mixed.push(nailSalon);
+      
+      // Add a spa or wellness listing
+      const spa = allJobs.find(job => 
+        job.specialties?.some(s => s.toLowerCase().includes('spa') || s.toLowerCase().includes('wellness')) || 
+        job.title?.toLowerCase().includes('spa') ||
+        job.company?.toLowerCase().includes('spa') || 
+        job.company?.toLowerCase().includes('wellness')
+      );
+      if (spa) mixed.push(spa);
+      
+      // Add a business for sale
+      if (salonsForSale.length > 0) {
+        mixed.push(salonsForSale[0]);
+      }
+      
+      // Add a booth rental
+      if (booths.length > 0) {
+        mixed.push(booths[0]);
+      }
+      
+      // Add a tattoo or beauty supply store listing
+      const other = allJobs.find(job => 
+        job.specialties?.some(s => 
+          s.toLowerCase().includes('tattoo') || 
+          s.toLowerCase().includes('supply') ||
+          s.toLowerCase().includes('makeup')
+        ) || 
+        job.title?.toLowerCase().includes('tattoo') ||
+        job.company?.toLowerCase().includes('tattoo') ||
+        job.title?.toLowerCase().includes('supply') ||
+        job.company?.toLowerCase().includes('supply')
+      );
+      if (other) mixed.push(other);
+      
+      // If we don't have enough yet, add from featured jobs
+      while (mixed.length < 6 && featuredJobs.length > 0) {
+        // Make sure we don't add duplicates
+        const nextJob = featuredJobs.shift();
+        if (nextJob && !mixed.some(item => item.id === nextJob.id)) {
+          mixed.push(nextJob);
+        }
+      }
+      
+      // If still not enough, add from general listings
+      while (mixed.length < 6) {
+        // Add some variety in locations and business types
+        const remainingJobs = allJobs.filter(job => !mixed.some(item => item.id === job.id));
+        if (remainingJobs.length > 0) {
+          mixed.push(remainingJobs[Math.floor(Math.random() * remainingJobs.length)]);
+        } else {
+          break;
+        }
+      }
+      
+      // Ensure we have exactly 6 listings
+      mixed = mixed.slice(0, 6);
+      
+      // Randomize the order for variety
+      mixed.sort(() => Math.random() - 0.5);
+      
+      setDiverseListings(mixed);
+    };
+    
+    loadDiverseListings();
   }, []);
 
   const handleViewDetails = (jobId: string, forSale?: boolean) => {
@@ -56,8 +143,8 @@ const LatestIndustryOpportunities = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {featuredJobs.map((job, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {diverseListings.map((job, index) => (
             <motion.div
               key={job.id}
               initial={{ opacity: 0, y: 20 }}
