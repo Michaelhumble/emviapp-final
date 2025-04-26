@@ -32,6 +32,7 @@ import WhatYouCanDoSection from "@/components/home/sections/WhatYouCanDoSection"
 // New homepage sections
 import TopBeautyJobs from "@/components/home/TopBeautyJobs";
 import SalonsForSale from "@/components/home/SalonsForSale";
+import LatestIndustryOpportunities from "@/components/home/LatestIndustryOpportunities";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -54,6 +55,9 @@ const Index = () => {
     <Layout>
       {/* Keep Hero section as first */}
       <Hero />
+      
+      {/* Add new Latest Industry Opportunities section */}
+      <LatestIndustryOpportunities />
       
       {/* Move Client Growth System section here */}
       <SalonClientGrowthSystem />
