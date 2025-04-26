@@ -1,9 +1,7 @@
-
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
 import ClientSuccessStories from "@/components/home/ClientSuccessStories";
-import FeaturedSalons from "@/components/home/FeaturedSalons";
 import Testimonials from "@/components/home/Testimonials";
 import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
@@ -46,32 +44,29 @@ const Index = () => {
       {/* Hero section as first */}
       <Hero />
       
-      {/* Latest Industry Opportunities */}
+      {/* 1️⃣ Latest Industry Opportunities */}
       <LatestIndustryOpportunities />
       
-      {/* Job Listings Showcase */}
+      {/* 2️⃣ Nail & Beauty Salons Hiring Now */}
       <SalonJobListingsShowcase />
       
-      {/* Client Growth System section */}
-      <SalonClientGrowthSystem />
-      
-      {/* Success stories */}
-      <ClientSuccessStories />
-      
-      {/* Restored: Missing Piece Section with bilingual support */}
-      <MissingPieceSection />
-      
-      {/* Enhanced AI Features section */}
-      <EnhancedAIFeatures />
-      
-      {/* What You Can Do section */}
-      <WhatYouCanDoSection />
-      
-      {/* Trust section */}
+      {/* 3️⃣ Why Artists & Salons Trust Us */}
       <WhyTrustSection />
       
-      {/* Featured Salons - clean spacing */}
-      <FeaturedSalons />
+      {/* 4️⃣ What You Can Do With EmviApp */}
+      <WhatYouCanDoSection />
+      
+      {/* 5️⃣ Let AI Do the Hard Work */}
+      <EnhancedAIFeatures />
+      
+      {/* 6️⃣ Let's Experience EmviApp Together */}
+      <MissingPieceSection />
+      
+      {/* 7️⃣ No Matter Your Craft — We Know the Struggle */}
+      <ClientSuccessStories />
+      
+      {/* 8️⃣ What's Really Keeping Your Salon From Growing? */}
+      <SalonClientGrowthSystem />
       
       {/* Trust First Panel */}
       <TrustFirstPanel />
