@@ -13,7 +13,7 @@ const listeners: Array<(lang: Language) => void> = [];
  * Get the current language preference from localStorage or default to English
  */
 export const getLanguagePreference = (): Language => {
-  const savedPreference = localStorage.getItem('emvi_language');
+  const savedPreference = localStorage.getItem('emvi_language_preference');
   return (savedPreference as Language) || 'en';
 };
 
@@ -21,17 +21,22 @@ export const getLanguagePreference = (): Language => {
  * Check if a language preference has been set
  */
 export const hasLanguagePreference = (): boolean => {
-  return localStorage.getItem('emvi_language') !== null;
+  return localStorage.getItem('emvi_language_preference') !== null;
 };
 
 /**
  * Set language preference and notify all listeners
  */
 export const setLanguagePreference = (language: Language): void => {
-  localStorage.setItem('emvi_language', language);
+  localStorage.setItem('emvi_language_preference', language);
   
   // Notify all listeners about the language change
   listeners.forEach(listener => listener(language));
+  
+  // Also dispatch a custom event for components that might not have direct access to listeners
+  window.dispatchEvent(new CustomEvent('languageChanged', { 
+    detail: { language } 
+  }));
 };
 
 /**
@@ -64,4 +69,3 @@ export const getTranslation = (
   const lang = getLanguagePreference();
   return translations[lang]?.[key] || translations['en']?.[key] || fallback || key;
 };
-

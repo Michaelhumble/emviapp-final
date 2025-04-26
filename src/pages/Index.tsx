@@ -12,6 +12,7 @@ import { useRoleSelection } from "@/hooks/useRoleSelection";
 import AIPowerhouse from "@/components/home/AIPowerhouse";
 import AITeam from "@/components/home/AITeam";
 import TrustFirstPanel from "@/components/home/TrustFirstPanel";
+import MissingPieceSection from "@/components/home/missing-piece";
 
 // Enhanced homepage components
 import LatestIndustryOpportunities from "@/components/home/LatestIndustryOpportunities";
@@ -56,6 +57,9 @@ const Index = () => {
       
       {/* Success stories */}
       <ClientSuccessStories />
+      
+      {/* Restored: Missing Piece Section with bilingual support */}
+      <MissingPieceSection />
       
       {/* Enhanced AI Features section */}
       <EnhancedAIFeatures />
