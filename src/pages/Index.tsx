@@ -3,9 +3,6 @@ import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
 import ClientSuccessStories from "@/components/home/ClientSuccessStories";
 import FeaturedSalons from "@/components/home/FeaturedSalons";
-import JobsHighlight from "@/components/home/JobsHighlight";
-import ArtistCallout from "@/components/home/ArtistCallout";
-import FreelancersHighlight from "@/components/home/FreelancersHighlight";
 import Testimonials from "@/components/home/Testimonials";
 import CallToAction from "@/components/home/CallToAction";
 import { useAuth } from "@/context/auth";
@@ -29,8 +26,6 @@ import WhyTrustSection from "@/components/home/sections/WhyTrustSection";
 import WhatYouCanDoSection from "@/components/home/sections/WhatYouCanDoSection";
 
 // New homepage sections
-import TopBeautyJobs from "@/components/home/TopBeautyJobs";
-import SalonsForSale from "@/components/home/SalonsForSale";
 import LatestIndustryOpportunities from "@/components/home/LatestIndustryOpportunities";
 
 const Index = () => {
@@ -58,7 +53,7 @@ const Index = () => {
       {/* Replace with Latest Industry Opportunities section */}
       <LatestIndustryOpportunities />
       
-      {/* Use our new SalonJobListingsShowcase component */}
+      {/* Use our SalonJobListingsShowcase component */}
       <SalonJobListingsShowcase />
       
       {/* Move Client Growth System section here */}
@@ -66,12 +61,6 @@ const Index = () => {
       
       {/* Replace ArtistTestimonials with ClientSuccessStories */}
       <ClientSuccessStories />
-      
-      {/* Add new Salons for Sale section */}
-      <SalonsForSale />
-      
-      {/* Add new Top Beauty Jobs section */}
-      <TopBeautyJobs />
       
       {/* Combine AI Features and What You Can Do sections */}
       <EnhancedAIFeatures />
@@ -83,11 +72,8 @@ const Index = () => {
       {/* Final CTA buttons */}
       <CallToAction />
       
-      {/* Related components that should stay in relative position */}
+      {/* Keep only core sections */}
       <FeaturedSalons />
-      <JobsHighlight />
-      <ArtistCallout />
-      <FreelancersHighlight />
       <TrustFirstPanel />
       
       {/* Move From The Founder to the very bottom */}

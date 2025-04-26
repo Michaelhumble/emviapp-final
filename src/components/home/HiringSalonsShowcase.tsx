@@ -54,10 +54,10 @@ const HiringSalonsShowcase = () => {
   const isMobile = useIsMobile();
   
   return (
-    <section className="py-20 bg-white">
+    <section className="py-24 bg-white">
       <div className="container mx-auto px-4">
         <motion.div 
-          className="text-center max-w-3xl mx-auto mb-12"
+          className="text-center max-w-3xl mx-auto mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -112,7 +112,7 @@ const HiringSalonsShowcase = () => {
           ))}
         </motion.div>
 
-        <div className="mt-12 text-center">
+        <div className="mt-14 text-center">
           <Link to="/salons">
             <Button size="lg" variant="outline" className="font-medium">
               Explore All Salons
