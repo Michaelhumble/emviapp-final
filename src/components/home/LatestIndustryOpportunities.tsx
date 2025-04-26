@@ -48,7 +48,7 @@ const LatestIndustryOpportunities = () => {
               <Card className="h-full hover:shadow-md transition-shadow">
                 <CardContent className="p-5">
                   <div className="flex justify-between items-start mb-3">
-                    <h3 className="font-semibold text-lg line-clamp-1">{job.title || job.position}</h3>
+                    <h3 className="font-semibold text-lg line-clamp-1">{job.title || job.role}</h3>
                     {job.is_featured && (
                       <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
                         Featured
