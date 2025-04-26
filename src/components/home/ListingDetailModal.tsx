@@ -77,11 +77,12 @@ const ListingDetailModal = ({ isOpen, onClose, listing, listingType }: ListingDe
       // Extract title
       const city = 'city' in salonListing ? salonListing.city : '';
       const state = 'state' in salonListing ? salonListing.state : '';
-      const location = city || state ? `${city}, ${state}` : (salonListing.location || '');
+      // Use location directly if it exists, otherwise build from city/state
+      const displayLocation = salonListing.location || (city || state ? `${city}, ${state}` : '');
       
       setTitle({
-        en: `Salon for Sale | ${location}`,
-        vi: `Cần Sang Tiệm Nail | ${location}`
+        en: `Salon for Sale | ${displayLocation}`,
+        vi: `Cần Sang Tiệm Nail | ${displayLocation}`
       });
       
       // Extract details

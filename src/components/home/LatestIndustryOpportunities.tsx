@@ -1,500 +1,391 @@
 
-import React, { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Briefcase, Building, MapPin } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Link } from "react-router-dom";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { motion, useAnimation } from "framer-motion";
 import { useAuth } from "@/context/auth";
-import ListingDetailModal from "./ListingDetailModal";
+import ListingDetailModal, { BasicListing } from "./ListingDetailModal";
+import { Job } from "@/types/job";
+import { SalonSale } from "@/types/salonSale";
 
-// Define mock data types
-interface JobListing {
-  id: string;
+interface JobListing extends BasicListing {
   type: 'job';
-  title: {
-    en: string;
-    vi: string;
-  };
+  title: string;
   location: string;
-  details: {
-    en: string;
-    vi: string;
-  };
-  tag: {
-    en: string;
-    vi: string;
-    type: 'urgent' | 'salon';
-  };
-  // Fields mirroring the Job type for better compatibility
-  role?: string;
-  employment_type?: string;
-  salary_range?: string;
+  employment_type: string;
+  salary_range: string;
+  description?: string;
   has_housing?: boolean;
   weekly_pay?: boolean;
-  benefits?: string[];
+  urgent?: boolean;
+  vietnamese_title?: string;
+  vietnamese_description?: string;
 }
 
-interface SalonListing {
-  id: string;
+interface SalonListing extends BasicListing {
   type: 'salon';
-  title: {
-    en: string;
-    vi: string;
-  };
+  title: string;
   location: string;
-  details: {
-    en: string;
-    vi: string;
-  };
-  tag: {
-    en: string;
-    vi: string;
-    type: 'urgent' | 'salon';
-  };
-  // Fields mirroring the SalonSale type for better compatibility
-  city: string;
-  state: string;
-  asking_price: number;
   size?: string;
-  business_type?: string;
+  asking_price: string | number;
+  description?: string;
   is_urgent?: boolean;
+  business_type?: string;
+  vietnamese_title?: string;
+  vietnamese_description?: string;
 }
 
 type Listing = JobListing | SalonListing;
 
+// Sample data - jobs and salons for sale
 const listings: Listing[] = [
   {
-    id: "1",
     type: 'job',
-    title: {
-      en: "Hiring Nail Techs | Jacksonville, FL",
-      vi: "Cần Thợ Nails | Jacksonville, FL"
-    },
-    location: "Jacksonville, FL",
-    role: "Nail Tech",
-    employment_type: "Full-time",
-    salary_range: "$7,000-$12,000/month",
+    title: 'Hiring Nail Techs',
+    vietnamese_title: 'Cần Thợ Nails',
+    location: 'Jacksonville, FL',
+    employment_type: 'Full-time + Part-time',
+    salary_range: 'High Salary',
+    description: 'High Salary • Housing Provided • Flexible Hours',
+    vietnamese_description: 'Bao lương cao • Có nhà cho thợ ở',
     has_housing: true,
     weekly_pay: true,
-    benefits: ["Flexible Hours", "High Tips", "Paid Training"],
-    details: {
-      en: "High Salary • Housing Provided • Flexible Hours",
-      vi: "Bao lương cao • Có nhà cho thợ ở • Giờ linh động"
-    },
-    tag: {
-      en: "Urgent Hire",
-      vi: "Tuyển Gấp",
-      type: "urgent"
-    }
+    urgent: true,
+    created_at: new Date().toISOString()
   },
   {
-    id: "2",
     type: 'salon',
-    title: {
-      en: "Salon for Sale | Fresno, CA",
-      vi: "Cần Sang Tiệm Nail | Fresno, CA"
-    },
-    location: "Fresno, CA",
-    city: "Fresno",
-    state: "CA",
-    asking_price: 450000,
-    size: "2700",
-    business_type: "Nail Salon",
+    title: 'Salon for Sale',
+    vietnamese_title: 'Cần Sang Tiệm Nail',
+    location: 'Fresno, CA',
+    size: '2700 sqft',
+    asking_price: '450000',
+    description: '2700 sqft • 20 Tables • Busy Location • $450K Negotiable',
+    vietnamese_description: '2700 sqft • 20 Bàn 20 Ghế • Khu Đông Khách • $450K Thương Lượng',
     is_urgent: true,
-    details: {
-      en: "2700 sqft • 20 Tables • Busy Location • $450K Negotiable",
-      vi: "2700 sqft • 20 Bàn 20 Ghế • Khu Đông Khách • $450K Thương Lượng"
-    },
-    tag: {
-      en: "Salon for Sale",
-      vi: "Sang Tiệm",
-      type: "salon"
-    }
+    business_type: 'Nail Salon',
+    created_at: new Date().toISOString()
   },
   {
-    id: "3",
     type: 'job',
-    title: {
-      en: "Hiring Powder & Full Tech | Charlotte, NC",
-      vi: "Cần Thợ Bột & Everything | Charlotte, NC"
-    },
-    location: "Charlotte, NC",
-    role: "Powder & Full Tech",
-    employment_type: "Full-time",
-    salary_range: "$1,800/week",
-    has_housing: false,
+    title: 'Hiring Powder & Full Tech',
+    vietnamese_title: 'Cần Thợ Bột & Everything',
+    location: 'Charlotte, NC',
+    employment_type: 'Full-time',
+    salary_range: '$1,800/week',
+    description: '$1,800/week • Friendly Environment • Salary Guarantee',
+    vietnamese_description: '$1,800/tuần • Môi trường vui vẻ • Bao lương',
     weekly_pay: true,
-    benefits: ["Friendly Environment", "Salary Guarantee"],
-    details: {
-      en: "$1,800/week • Friendly Environment • Salary Guarantee",
-      vi: "$1,800/tuần • Môi trường vui vẻ • Bao lương"
-    },
-    tag: {
-      en: "Urgent Hire",
-      vi: "Tuyển Gấp",
-      type: "urgent"
-    }
+    urgent: true,
+    created_at: new Date().toISOString()
   },
   {
-    id: "4",
     type: 'salon',
-    title: {
-      en: "Salon for Sale | Kennesaw, GA",
-      vi: "Tiệm Nail Cần Bán | Kennesaw, GA"
-    },
-    location: "Kennesaw, GA",
-    city: "Kennesaw",
-    state: "GA",
-    asking_price: 280000,
-    business_type: "Nail Salon",
+    title: 'Salon for Sale',
+    vietnamese_title: 'Tiệm Nail Cần Bán',
+    location: 'Kennesaw, GA',
+    asking_price: '25000',
+    description: '$20K–28K Monthly Income • 10 Chairs • Fully Equipped',
+    vietnamese_description: 'Thu nhập $20K–28K/tháng • 10 ghế spa • Đầy đủ đồ nghề',
+    business_type: 'Nail Salon',
+    created_at: new Date().toISOString()
+  },
+  {
+    type: 'job',
+    title: 'Urgent Nail Tech Hiring',
+    vietnamese_title: 'Cần Thợ Nails',
+    location: 'Silver Spring, MD',
+    employment_type: 'Full-time + Part-time',
+    salary_range: 'High Tips',
+    description: 'Stable Clients • High Tips • Drama-Free',
+    vietnamese_description: 'Khách ổn định • Tip cao • Không drama',
+    urgent: true,
+    created_at: new Date().toISOString()
+  },
+  {
+    type: 'salon',
+    title: 'Salon for Sale',
+    vietnamese_title: 'Sang Tiệm Nail',
+    location: 'Daniel Island, SC',
+    asking_price: '180000',
+    description: '10 Stations • Prime Shopping Center • White Neighborhood',
+    vietnamese_description: '10 Bàn 10 Ghế • Khu Mỹ Trắng 100% • Khu shopping lớn',
     is_urgent: false,
-    details: {
-      en: "$20K–28K Monthly Income • 10 Chairs • Fully Equipped",
-      vi: "Thu nhập $20K–28K/tháng • 10 ghế spa • Đầy đủ đồ nghề"
-    },
-    tag: {
-      en: "Salon for Sale",
-      vi: "Sang Tiệm",
-      type: "salon"
-    }
+    business_type: 'Nail Salon',
+    created_at: new Date().toISOString()
   },
   {
-    id: "5",
     type: 'job',
-    title: {
-      en: "Urgent Nail Tech Hiring | Silver Spring, MD",
-      vi: "Cần Thợ Nails | Silver Spring, MD"
-    },
-    location: "Silver Spring, MD",
-    role: "Nail Tech",
-    employment_type: "Full-time",
-    salary_range: "$1,500-$2,000/week",
-    has_housing: false,
-    weekly_pay: true,
-    benefits: ["Stable Clients", "High Tips", "Drama-Free"],
-    details: {
-      en: "Stable Clients • High Tips • Drama-Free",
-      vi: "Khách ổn định • Tip cao • Không drama"
-    },
-    tag: {
-      en: "Urgent Hire",
-      vi: "Tuyển Gấp",
-      type: "urgent"
-    }
-  },
-  {
-    id: "6",
-    type: 'salon',
-    title: {
-      en: "Salon for Sale | Daniel Island, SC",
-      vi: "Sang Tiệm Nail | Daniel Island, SC"
-    },
-    location: "Daniel Island, SC",
-    city: "Daniel Island",
-    state: "SC",
-    asking_price: 350000,
-    business_type: "Nail Salon",
-    is_urgent: true,
-    details: {
-      en: "10 Stations • Prime Shopping Center • White Neighborhood",
-      vi: "10 Bàn 10 Ghế • Khu Mỹ Trắng 100% • Khu shopping lớn"
-    },
-    tag: {
-      en: "Salon for Sale",
-      vi: "Sang Tiệm",
-      type: "salon"
-    }
-  },
-  {
-    id: "7",
-    type: 'job',
-    title: {
-      en: "Need Dip & Powder Techs | Tampa, FL",
-      vi: "Tuyển Thợ Dip & Bột | Tampa, FL"
-    },
-    location: "Tampa, FL",
-    role: "Dip & Powder Tech",
-    employment_type: "Full-time",
-    salary_range: "$1,800/week",
+    title: 'Need Dip & Powder Techs',
+    vietnamese_title: 'Tuyển Thợ Dip & Bột',
+    location: 'Tampa, FL',
+    employment_type: 'Full-time',
+    salary_range: '$1,800/6 days',
+    description: '$1,800/6 days • Free Housing',
+    vietnamese_description: '$1,800/6 ngày • Có chỗ ở miễn phí',
     has_housing: true,
-    weekly_pay: false,
-    benefits: ["Free Housing", "6-day work week"],
-    details: {
-      en: "$1,800/6 days • Free Housing",
-      vi: "$1,800/6 ngày • Có chỗ ở miễn phí"
-    },
-    tag: {
-      en: "Urgent Hire",
-      vi: "Tuyển Gấp",
-      type: "urgent"
-    }
+    urgent: true,
+    created_at: new Date().toISOString()
   },
   {
-    id: "8",
     type: 'salon',
-    title: {
-      en: "Salon for Sale | Fontana, CA",
-      vi: "Bán Tiệm Nail | Fontana, CA"
-    },
-    location: "Fontana, CA",
-    city: "Fontana",
-    state: "CA",
-    asking_price: 90000,
-    size: "1173",
-    business_type: "Nail Salon",
-    is_urgent: false,
-    details: {
-      en: "1173 sqft • Renovated Plaza • $90K",
-      vi: "1173 sqft • Plaza mới nâng cấp • Giá $90K"
-    },
-    tag: {
-      en: "Salon for Sale",
-      vi: "Sang Tiệm",
-      type: "salon"
-    }
-  },
+    title: 'Salon for Sale',
+    vietnamese_title: 'Bán Tiệm Nail',
+    location: 'Fontana, CA',
+    size: '1173 sqft',
+    asking_price: '90000',
+    description: '1173 sqft • Renovated Plaza • $90K',
+    vietnamese_description: '1173 sqft • Plaza mới nâng cấp • Giá $90K',
+    business_type: 'Nail Salon',
+    created_at: new Date().toISOString()
+  }
 ];
 
 const LatestIndustryOpportunities = () => {
-  const isMobile = useIsMobile();
   const { isVietnamese } = useTranslation();
   const { isSignedIn } = useAuth();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
+  const [visibleListings, setVisibleListings] = useState<Listing[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const slideControls = useAnimation();
+  const isMobile = window.innerWidth < 768;
+  const visibleCount = isMobile ? 1 : Math.min(4, listings.length);
+  const [selectedListing, setSelectedListing] = useState<Job | SalonSale | BasicListing | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [listingType, setListingType] = useState<'job' | 'salon'>('job');
 
-  // Container animation variants
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  // Item animation variants
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
-  };
-
-  // Auto-rotate listings
+  // Set number of visible listings based on screen size
   useEffect(() => {
-    if (!isPaused) {
-      timerRef.current = setInterval(() => {
-        setActiveIndex(prevIndex => (prevIndex + 1) % listings.length);
-      }, 5000);
+    function updateVisibleListings() {
+      const isMobileView = window.innerWidth < 768;
+      const count = isMobileView ? 1 : Math.min(4, listings.length);
+      
+      // Get current listings based on activeIndex
+      let items: Listing[] = [];
+      
+      if (isMobileView) {
+        // On mobile we only show 1 item
+        items = [listings[activeIndex]];
+      } else {
+        // On desktop we show 4 items in a row, with proper wrapping
+        for (let i = 0; i < count; i++) {
+          const idx = (activeIndex + i) % listings.length;
+          items.push(listings[idx]);
+        }
+      }
+      
+      setVisibleListings(items);
     }
 
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
+    updateVisibleListings();
+    
+    const handleResize = () => {
+      updateVisibleListings();
     };
-  }, [isPaused, listings.length]);
 
-  // Function to handle opening the modal
-  const handleViewDetails = (listing: Listing) => {
-    setSelectedListing(listing);
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [activeIndex]);
+
+  // Auto-rotate carousel every 5 seconds
+  useEffect(() => {
+    if (isPaused) return;
+    
+    const interval = setInterval(() => {
+      goToNext();
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, [activeIndex, isPaused]);
+
+  const goToPrevious = () => {
+    slideControls.start({ x: '100%', transition: { duration: 0.3 } })
+      .then(() => {
+        setActiveIndex(prev => (prev === 0 ? listings.length - 1 : prev - 1));
+        slideControls.set({ x: '-100%' });
+        slideControls.start({ x: 0, transition: { duration: 0.3 } });
+      });
+  };
+
+  const goToNext = () => {
+    slideControls.start({ x: '-100%', transition: { duration: 0.3 } })
+      .then(() => {
+        setActiveIndex(prev => (prev === listings.length - 1 ? 0 : prev + 1));
+        slideControls.set({ x: '100%' });
+        slideControls.start({ x: 0, transition: { duration: 0.3 } });
+      });
+  };
+
+  const handleDetailView = (listing: Listing) => {
+    // Create a compatible listing object for the modal
+    const modalListing: BasicListing = {
+      ...listing,
+      // Map properties from Listing to properties expected by the modal
+      title: listing.title,
+      description: listing.description,
+      role: listing.type === 'job' ? listing.title.split('|')[0].trim() : undefined,
+      employment_type: listing.type === 'job' ? listing.employment_type : undefined,
+      salary_range: listing.type === 'job' ? listing.salary_range : undefined,
+      has_housing: listing.type === 'job' ? listing.has_housing : undefined,
+      weekly_pay: listing.type === 'job' ? listing.weekly_pay : undefined,
+      asking_price: listing.type === 'salon' ? listing.asking_price : undefined,
+      size: listing.type === 'salon' ? listing.size : undefined,
+      is_urgent: listing.type === 'salon' ? listing.is_urgent : undefined,
+      business_type: listing.type === 'salon' ? listing.business_type : undefined,
+      location: listing.location,
+      created_at: listing.created_at,
+    };
+    
+    setSelectedListing(modalListing);
+    setListingType(listing.type);
     setIsModalOpen(true);
   };
 
-  // Function to get tag style based on type
-  const getTagStyle = (type: 'urgent' | 'salon') => {
-    if (type === 'urgent') {
-      return 'bg-orange-100 text-orange-800';
-    }
-    return 'bg-purple-100 text-purple-800';
+  const onCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedListing(null);
   };
 
-  // Function to get icon based on type
-  const getIcon = (type: 'urgent' | 'salon') => {
-    if (type === 'urgent') {
-      return <Briefcase className="h-3 w-3 mr-1" />;
-    }
-    return <Building className="h-3 w-3 mr-1" />;
-  };
-
-  const renderListingCard = (listing: Listing) => (
-    <Card 
-      className="h-full flex flex-col overflow-hidden hover:shadow-md transition-shadow"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-    >
-      <CardContent className="p-5 flex flex-col h-full">
-        {/* Tag */}
-        <div className={`inline-flex items-center text-xs px-2 py-1 rounded-full self-start mb-2 ${getTagStyle(listing.tag.type)}`}>
-          {getIcon(listing.tag.type)}
-          <span>{isVietnamese ? listing.tag.vi : listing.tag.en}</span>
-        </div>
-        
-        {/* Title */}
-        <h3 className="text-lg font-semibold mb-1">
-          {isVietnamese ? listing.title.vi : listing.title.en}
-        </h3>
-        <div className="text-xs text-gray-500 mb-2">
-          {isVietnamese ? listing.title.en : listing.title.vi}
-        </div>
-        
-        {/* Location */}
-        <div className="flex items-center text-gray-500 text-sm mb-3">
-          <MapPin className="h-4 w-4 mr-1" /> {listing.location}
-        </div>
-        
-        {/* Details */}
-        <p className="text-sm text-gray-600 mb-2">
-          {isVietnamese ? listing.details.vi : listing.details.en}
-        </p>
-        <p className="text-xs text-gray-400 mb-4">
-          {isVietnamese ? listing.details.en : listing.details.vi}
-        </p>
-        
-        {/* Contact Info - Gated */}
-        <div className="text-sm text-gray-500 italic mb-4 mt-auto">
-          {isVietnamese ? "🔒 Đăng ký để xem chi tiết liên hệ" : "🔒 Sign up to view contact details"}
-        </div>
-        
-        {/* CTA Button */}
-        <Button 
-          className="w-full" 
-          onClick={() => handleViewDetails(listing)}
-        >
-          {listing.type === 'job' 
-            ? (isVietnamese ? "Ứng Tuyển Ngay" : "Apply Now") 
-            : (isVietnamese ? "Xem Chi Tiết" : "View Details")}
-        </Button>
-      </CardContent>
-    </Card>
-  );
-
-  // Render the listings as a carousel on mobile
-  if (isMobile) {
-    return (
-      <section className="py-16 px-4 bg-white">
-        <div className="container mx-auto">
-          <motion.div 
-            className="text-center max-w-3xl mx-auto mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-          >
-            <h2 className="text-2xl md:text-3xl font-bold mb-2">
-              {isVietnamese ? "Cơ Hội Mới Trong Ngành Làm Đẹp" : "Latest Beauty Industry Opportunities"}
-            </h2>
-            <p className="text-gray-600">
-              {isVietnamese 
-                ? "Công việc và tiệm nails thật — được cập nhật mỗi ngày." 
-                : "Real jobs, real salons for sale, real people — updated daily."}
-            </p>
-          </motion.div>
-
-          <div 
-            className="mt-8" 
-            onTouchStart={() => setIsPaused(true)}
-            onTouchEnd={() => setIsPaused(false)}
-          >
-            <Carousel className="w-full">
-              <CarouselContent>
-                {listings.map((listing) => (
-                  <CarouselItem key={listing.id}>
-                    {renderListingCard(listing)}
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious />
-              <CarouselNext />
-            </Carousel>
-          </div>
-
-          <div className="mt-10 flex justify-center gap-4">
-            <Button variant="outline" asChild>
-              <Link to="/jobs">
-                {isVietnamese ? "Xem Tất Cả Việc Làm" : "See All Jobs"}
-              </Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link to="/salons">
-                {isVietnamese ? "Xem Tất Cả Tiệm Bán" : "See All Salons for Sale"}
-              </Link>
-            </Button>
-          </div>
-        </div>
-        
-        {/* Modal for showing listing details */}
-        <ListingDetailModal 
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          listing={selectedListing}
-          listingType={selectedListing?.type || 'job'}
-        />
-      </section>
-    );
-  }
-
-  // Render the listings as a grid on desktop
   return (
-    <section className="py-20 px-4 bg-white">
-      <div className="container mx-auto">
-        <motion.div 
-          className="text-center max-w-3xl mx-auto mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-        >
+    <section className="py-16 px-4 bg-white">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-3">
-            {isVietnamese ? "Cơ Hội Mới Trong Ngành Làm Đẹp" : "Latest Beauty Industry Opportunities"}
+            Latest Beauty Industry Opportunities
           </h2>
-          <p className="text-lg text-gray-600">
+          <p className="text-gray-600 max-w-3xl mx-auto">
             {isVietnamese 
-              ? "Công việc và tiệm nails thật — được cập nhật mỗi ngày." 
+              ? "Công việc và tiệm nails thật — được cập nhật mỗi ngày."
               : "Real jobs, real salons for sale, real people — updated daily."}
           </p>
-        </motion.div>
+        </div>
 
-        <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8"
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
+        <div 
+          ref={containerRef} 
+          className="relative"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
         >
-          {listings.map((listing) => (
-            <motion.div key={listing.id} variants={item}>
-              {renderListingCard(listing)}
+          <div className="relative overflow-hidden">
+            <motion.div 
+              animate={slideControls}
+              initial={{ x: 0 }}
+              className="flex flex-row"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full">
+                {visibleListings.map((listing, index) => (
+                  <div 
+                    key={`${listing.type}-${index}-${listing.location}`}
+                    className="bg-white rounded-lg p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div className={`text-xs font-medium rounded-full px-2 py-0.5 ${listing.type === 'job' ? 'bg-red-100 text-red-600' : 'bg-violet-100 text-violet-600'}`}>
+                        {listing.type === 'job' ? '🔥 Tuyển Gấp / Urgent Hire' : '🏢 Sang Tiệm / Salon for Sale'}
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-3 mb-4">
+                      {/* Vietnamese title */}
+                      <h3 className="font-bold">
+                        {listing.vietnamese_title} | {listing.location}
+                      </h3>
+                      
+                      {/* English title */}
+                      <p className="text-gray-600 text-sm italic">
+                        {listing.title} | {listing.location}
+                      </p>
+                      
+                      {/* Vietnamese Description */}
+                      <div className="text-sm text-gray-800">
+                        {listing.vietnamese_description}
+                      </div>
+                      
+                      {/* English Description */}
+                      <div className="text-xs text-gray-600">
+                        {listing.description}
+                      </div>
+                    </div>
+                    
+                    {/* Contact info - gated */}
+                    <div className="text-sm text-gray-500 italic mb-4">
+                      {isVietnamese 
+                        ? "🔒 Đăng ký để xem chi tiết liên hệ"
+                        : "🔒 Sign up to view contact details"}
+                    </div>
+                    
+                    <Button 
+                      className="w-full" 
+                      onClick={() => handleDetailView(listing)}
+                    >
+                      {listing.type === 'job' 
+                        ? (isVietnamese ? "Ứng Tuyển Ngay" : "Apply Now")
+                        : (isVietnamese ? "Xem Chi Tiết" : "View Details")
+                      }
+                    </Button>
+                  </div>
+                ))}
+              </div>
             </motion.div>
-          ))}
-        </motion.div>
+          </div>
 
-        <div className="mt-12 flex justify-center gap-6">
-          <Button variant="outline" size="lg" asChild>
+          {/* Navigation buttons for mobile and desktop */}
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 hidden md:flex rounded-full border shadow-sm" 
+            onClick={goToPrevious}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 hidden md:flex rounded-full border shadow-sm" 
+            onClick={goToNext}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+
+          {/* Mobile indicators */}
+          <div className="flex justify-center gap-1 mt-4 md:hidden">
+            {listings.map((_, i) => (
+              <button 
+                key={`indicator-${i}`} 
+                className={`w-2 h-2 rounded-full ${i === activeIndex ? 'bg-primary' : 'bg-gray-200'}`}
+                onClick={() => setActiveIndex(i)}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Call to action buttons at the bottom */}
+        <div className="mt-12 flex flex-col md:flex-row gap-4 justify-center">
+          <Button asChild>
             <Link to="/jobs">
-              {isVietnamese ? "Xem Tất Cả Việc Làm" : "See All Jobs"}
+              {isVietnamese ? "Xem Tất Cả Việc Làm" : "See All Jobs"} <ArrowRight className="ml-1 h-4 w-4" />
             </Link>
           </Button>
-          <Button variant="outline" size="lg" asChild>
-            <Link to="/salons">
-              {isVietnamese ? "Xem Tất Cả Tiệm Bán" : "See All Salons for Sale"}
+          
+          <Button variant="outline" asChild>
+            <Link to="/sell-salon">
+              {isVietnamese ? "Xem Tất Cả Tiệm Bán" : "See All Salons for Sale"} <ArrowRight className="ml-1 h-4 w-4" />
             </Link>
           </Button>
         </div>
       </div>
       
-      {/* Modal for showing listing details */}
-      <ListingDetailModal 
+      <ListingDetailModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={onCloseModal}
         listing={selectedListing}
-        listingType={selectedListing?.type || 'job'}
+        listingType={listingType}
       />
     </section>
   );
