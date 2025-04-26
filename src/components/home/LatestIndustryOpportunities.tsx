@@ -9,80 +9,114 @@ const LatestIndustryOpportunities = () => {
 
   useEffect(() => {
     const loadDiverseListings = async () => {
-      // Get all types of listings
       const booths = getAllBooths(3);
       const salonsForSale = getSalonsForSale(3);
       const allJobs = getAllJobs(15);
       
-      let mixed: Job[] = [];
-      
-      // Add a hair salon position
-      const hairSalon = allJobs.find(job => 
-        job.specialties?.some(s => s.toLowerCase().includes('hair')) || 
-        job.title?.toLowerCase().includes('hair stylist')
-      );
-      if (hairSalon) mixed.push(hairSalon);
-      
-      // Add a nail technician position
-      const nailTech = allJobs.find(job => 
-        job.specialties?.some(s => s.toLowerCase().includes('nail')) && 
-        !mixed.some(item => item.id === job.id)
-      );
-      if (nailTech) mixed.push(nailTech);
-      
-      // Add a spa or wellness position
-      const spa = allJobs.find(job => 
-        (job.specialties?.some(s => 
-          s.toLowerCase().includes('spa') || 
-          s.toLowerCase().includes('massage')
-        ) ||
-        job.title?.toLowerCase().includes('spa manager')) &&
-        !mixed.some(item => item.id === job.id)
-      );
-      if (spa) mixed.push(spa);
-      
-      // Add a booth rental
-      if (booths.length > 0) {
-        const booth = booths.find(b => !mixed.some(item => item.id === b.id));
-        if (booth) mixed.push(booth);
-      }
-      
-      // Add a salon for sale
-      if (salonsForSale.length > 0) {
-        const salonSale = salonsForSale.find(s => !mixed.some(item => item.id === s.id));
-        if (salonSale) mixed.push(salonSale);
-      }
-      
-      // Add a tattoo artist or beauty supply position
-      const other = allJobs.find(job => 
-        (job.specialties?.some(s => 
-          s.toLowerCase().includes('tattoo') || 
-          s.toLowerCase().includes('beauty supply')
-        ) ||
-        job.title?.toLowerCase().includes('tattoo artist')) &&
-        !mixed.some(item => item.id === job.id)
-      );
-      if (other) mixed.push(other);
-      
-      // Fill remaining slots with diverse positions
-      while (mixed.length < 9) {
-        const remaining = allJobs.filter(job => 
-          !mixed.some(item => item.id === job.id) &&
-          !job.specialties?.some(s => 
-            mixed.some(m => m.specialties?.includes(s))
-          )
-        );
-        
-        if (remaining.length === 0) break;
-        mixed.push(remaining[Math.floor(Math.random() * remaining.length)]);
-      }
-      
-      // Ensure exactly 9 listings
-      mixed = mixed.slice(0, 9);
-      
-      // Randomize order for variety
-      mixed.sort(() => Math.random() - 0.5);
-      
+      let mixed: Job[] = [
+        // Hair industry position
+        {
+          id: '1',
+          title: "Senior Hair Stylist",
+          company: "Luxe Hair Studio",
+          location: "Denver, CO",
+          description: "Seeking experienced hair stylist with color expertise. Base + commission structure, flexible schedule.",
+          specialties: ["Hair", "Color", "Styling"],
+          for_sale: false,
+          created_at: new Date().toISOString()
+        },
+        // Nail position
+        {
+          id: '2',
+          title: "Nail Tech - Private Suite",
+          company: "The Nail Collective",
+          location: "Austin, TX",
+          description: "Private suite available for experienced nail technician. High-end clientele, modern facility.",
+          specialties: ["Nails", "Manicure", "Pedicure"],
+          for_sale: false,
+          created_at: new Date().toISOString()
+        },
+        // Spa position
+        {
+          id: '3',
+          title: "Spa Manager",
+          company: "Serenity Wellness Center",
+          location: "Seattle, WA",
+          description: "Leading luxury day spa seeking experienced manager. Full benefits package.",
+          specialties: ["Management", "Spa", "Wellness"],
+          for_sale: false,
+          created_at: new Date().toISOString()
+        },
+        // Salon for sale
+        {
+          id: '4',
+          title: "Established Hair Salon For Sale",
+          company: "Premier Salon",
+          location: "Phoenix, AZ",
+          description: "10-year established salon, prime location, 8 stations, strong clientele base.",
+          specialties: ["Business", "Salon"],
+          for_sale: true,
+          asking_price: "$175,000",
+          created_at: new Date().toISOString()
+        },
+        // Booth rental
+        {
+          id: '5',
+          title: "Luxury Booth Rental",
+          company: "The Style House",
+          location: "Miami, FL",
+          description: "Premium booth space available in upscale salon. High foot traffic area.",
+          specialties: ["Booth Rental", "Hair"],
+          for_sale: false,
+          created_at: new Date().toISOString()
+        },
+        // Tattoo artist
+        {
+          id: '6',
+          title: "Experienced Tattoo Artist",
+          company: "Black Iris Tattoo",
+          location: "Portland, OR",
+          description: "Seeking professional tattoo artist for established studio. Commission-based position.",
+          specialties: ["Tattoo", "Art"],
+          for_sale: false,
+          created_at: new Date().toISOString()
+        },
+        // Beauty supply business
+        {
+          id: '7',
+          title: "Beauty Supply Store For Sale",
+          company: "Beauty Essentials",
+          location: "Atlanta, GA",
+          description: "Profitable beauty supply store with loyal customer base. Includes inventory.",
+          specialties: ["Retail", "Beauty Supply"],
+          for_sale: true,
+          asking_price: "$220,000",
+          created_at: new Date().toISOString()
+        },
+        // Esthetician
+        {
+          id: '8',
+          title: "Licensed Esthetician",
+          company: "Glow Skincare",
+          location: "San Diego, CA",
+          description: "Full-time position for licensed esthetician. Medical spa environment.",
+          specialties: ["Skincare", "Esthetics"],
+          for_sale: false,
+          created_at: new Date().toISOString()
+        },
+        // Wellness studio
+        {
+          id: '9',
+          title: "Wellness Studio Partnership",
+          company: "Balance Wellness",
+          location: "Chicago, IL",
+          description: "Seeking partner for established wellness studio. Ideal for licensed massage therapist.",
+          specialties: ["Wellness", "Massage", "Partnership"],
+          for_sale: true,
+          created_at: new Date().toISOString()
+        }
+      ];
+
       setDiverseListings(mixed);
     };
     

@@ -1,12 +1,11 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Building, ChevronRight } from 'lucide-react';
 import { Job } from '@/types/job';
 import { useAuth } from '@/context/auth';
-import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import AuthAction from '@/components/common/AuthAction';
 
 interface OpportunityCardProps {
@@ -34,35 +33,14 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {listing.image && (
-          <div className="aspect-video w-full overflow-hidden">
-            <ImageWithFallback
-              src={listing.image}
-              alt={listing.title || listing.company || "Business opportunity"}
-              className="w-full h-full object-cover"
-              fallbackImage="https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60"
-              businessName={listing.company}
-            />
-          </div>
-        )}
-        
-        <CardContent className={`p-5 flex flex-col h-full ${!listing.image ? 'pt-6' : 'pt-5'}`}>
+        <CardContent className="p-5 flex flex-col h-full">
           <div className="flex justify-between mb-2">
-            <h3 className="font-semibold text-lg line-clamp-1">{listing.title || listing.company}</h3>
-            {listing.is_featured && (
-              <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
-                Featured
-              </Badge>
-            )}
+            <h3 className="font-semibold text-lg line-clamp-1">{listing.title}</h3>
           </div>
           
           <div className="flex items-center text-gray-500 mb-2 text-sm">
-            {listing.company && (
-              <>
-                <Building className="h-3.5 w-3.5 mr-1" />
-                <span className="mr-3 line-clamp-1">{listing.company}</span>
-              </>
-            )}
+            <Building className="h-3.5 w-3.5 mr-1" />
+            <span className="mr-3 line-clamp-1">{listing.company}</span>
             <MapPin className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
             <span className="line-clamp-1">{listing.location}</span>
           </div>
@@ -78,8 +56,14 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
           )}
           
           <p className="text-gray-600 text-sm line-clamp-2 mb-4 flex-grow">
-            {listing.description || "Contact for more details about this opportunity."}
+            {listing.description}
           </p>
+
+          {listing.for_sale && listing.asking_price && (
+            <p className="text-sm font-medium text-primary mb-4">
+              Asking Price: {listing.asking_price}
+            </p>
+          )}
           
           {!isSignedIn && (
             <p className="text-sm text-gray-500 italic mb-4">
