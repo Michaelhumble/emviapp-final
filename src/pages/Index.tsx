@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -11,7 +12,6 @@ import { useRoleSelection } from "@/hooks/useRoleSelection";
 import AIPowerhouse from "@/components/home/AIPowerhouse";
 import AITeam from "@/components/home/AITeam";
 import TrustFirstPanel from "@/components/home/TrustFirstPanel";
-import CallToAction from "@/components/home/CallToAction";
 
 // Enhanced homepage components
 import DynamicListingGrid from "@/components/home/DynamicListingGrid";
