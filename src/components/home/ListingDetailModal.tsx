@@ -8,10 +8,30 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { Job } from "@/types/job";
 import { SalonSale } from "@/types/salonSale";
 
+// Define a more flexible listing type that can work with our sample data
+export interface BasicListing {
+  title?: string;
+  description?: string;
+  location?: string;
+  role?: string;
+  employment_type?: string;
+  salary_range?: string;
+  has_housing?: boolean;
+  weekly_pay?: boolean;
+  benefits?: string[];
+  city?: string;
+  state?: string;
+  asking_price?: number | string;
+  size?: string;
+  is_urgent?: boolean;
+  business_type?: string;
+  created_at?: string;
+}
+
 interface ListingDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  listing: Job | SalonSale | null;
+  listing: Job | SalonSale | BasicListing | null;
   listingType: 'job' | 'salon';
 }
 
@@ -24,7 +44,7 @@ const ListingDetailModal = ({ isOpen, onClose, listing, listingType }: ListingDe
     if (!listing) return;
     
     if (listingType === 'job') {
-      const jobListing = listing as Job;
+      const jobListing = listing as (Job | BasicListing);
       
       // Extract title
       setTitle({
@@ -52,25 +72,37 @@ const ListingDetailModal = ({ isOpen, onClose, listing, listingType }: ListingDe
       
       setDetails({ en: enDetails, vi: viDetails });
     } else {
-      const salonListing = listing as SalonSale;
+      const salonListing = listing as (SalonSale | BasicListing);
       
       // Extract title
+      const city = 'city' in salonListing ? salonListing.city : '';
+      const state = 'state' in salonListing ? salonListing.state : '';
+      const location = city || state ? `${city}, ${state}` : (salonListing.location || '');
+      
       setTitle({
-        en: `Salon for Sale | ${salonListing.city}, ${salonListing.state}`,
-        vi: `Cần Sang Tiệm Nail | ${salonListing.city}, ${salonListing.state}`
+        en: `Salon for Sale | ${location}`,
+        vi: `Cần Sang Tiệm Nail | ${location}`
       });
       
       // Extract details
+      const askingPrice = salonListing.asking_price ? 
+        (typeof salonListing.asking_price === 'string' ? 
+          salonListing.asking_price : 
+          `$${new Intl.NumberFormat('en-US').format(salonListing.asking_price as number)}`
+        ) : 'Contact for price';
+      
+      const isUrgent = 'is_urgent' in salonListing ? salonListing.is_urgent : false;
+      
       const enDetails = [
         salonListing.size ? `${salonListing.size} sqft` : '',
-        salonListing.asking_price ? `$${new Intl.NumberFormat('en-US').format(salonListing.asking_price)} ${salonListing.is_urgent ? 'Negotiable' : ''}` : 'Contact for price',
+        askingPrice + (isUrgent ? ' Negotiable' : ''),
         'Prime Location',
         salonListing.business_type
       ].filter(Boolean).join(' • ');
       
       const viDetails = [
         salonListing.size ? `${salonListing.size} sqft` : '',
-        salonListing.asking_price ? `$${new Intl.NumberFormat('en-US').format(salonListing.asking_price)} ${salonListing.is_urgent ? 'Thương Lượng' : ''}` : 'Liên hệ để biết giá',
+        askingPrice + (isUrgent ? ' Thương Lượng' : ''),
         'Khu Đông Khách',
         salonListing.business_type
       ].filter(Boolean).join(' • ');
