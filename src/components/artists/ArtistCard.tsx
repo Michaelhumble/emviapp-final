@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Sparkles } from "lucide-react";
 import { UserProfile } from "@/types/profile";
-import { getLocationString } from "@/utils/location";
+import { formatLocation } from "@/utils/location";
 import ArtistAvatar from "./ArtistAvatar";
 
 interface ArtistCardProps {
@@ -14,7 +14,7 @@ interface ArtistCardProps {
 
 const ArtistCard = ({ artist, size = "md" }: ArtistCardProps) => {
   const isBoosted = artist.boosted_until && new Date(artist.boosted_until) > new Date();
-  const locationString = getLocationString(artist.location);
+  const locationString = formatLocation(artist.location);
 
   const sizeClasses = {
     sm: "gap-3 p-3",

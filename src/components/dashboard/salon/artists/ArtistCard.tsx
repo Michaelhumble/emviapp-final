@@ -2,7 +2,8 @@
 import { Award, Sparkles } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { UserProfile, getLocationString } from "@/types/profile";
+import { UserProfile } from "@/types/profile";
+import { formatLocation } from "@/utils/location";
 
 interface ArtistCardProps {
   artist: UserProfile;
@@ -11,7 +12,7 @@ interface ArtistCardProps {
 
 const ArtistCard = ({ artist, getArtistRating }: ArtistCardProps) => {
   // Get location string
-  const locationString = getLocationString(artist.location);
+  const locationString = formatLocation(artist.location);
   
   return (
     <div className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/50 transition-colors">
