@@ -79,13 +79,15 @@ const HiringSalonsShowcase = () => {
           {hiringSalons.map((salon) => (
             <motion.div key={salon.id} variants={item}>
               <Card className="overflow-hidden h-full transition-shadow hover:shadow-lg">
-                <div className="relative h-48 overflow-hidden">
-                  <img 
-                    src={salon.image} 
-                    alt={salon.name} 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                {salon.image && (
+                  <div className="relative h-48 overflow-hidden">
+                    <img 
+                      src={salon.image} 
+                      alt={salon.name} 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
                 <CardContent className="pt-6">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-xl font-semibold">{salon.name}</h3>
