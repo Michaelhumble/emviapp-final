@@ -1,67 +1,40 @@
 
-import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Heart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 const FinalFounderCTA = () => {
-  const [language, setLanguage] = useState<"en" | "vi">("en");
-
-  // Listen for language change event
-  useEffect(() => {
-    const handleLanguageChange = (event: CustomEvent) => {
-      if (event.detail && event.detail.language) {
-        setLanguage(event.detail.language);
-      }
-    };
-    
-    window.addEventListener('languageChanged', handleLanguageChange as EventListener);
-    
-    // Get initial language preference
-    const storedLanguage = localStorage.getItem('emvi_language_preference');
-    if (storedLanguage === 'vi' || storedLanguage === 'en') {
-      setLanguage(storedLanguage as "en" | "vi");
-    }
-    
-    return () => {
-      window.removeEventListener('languageChanged', handleLanguageChange as EventListener);
-    };
-  }, []);
-
   return (
-    <section className="py-16 bg-white">
-      <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          viewport={{ once: true }}
-          className="max-w-3xl mx-auto text-center"
-        >
-          <div className="mb-6 flex justify-center">
-            <Heart className="h-10 w-10 text-red-500" />
-          </div>
-          
+    <section className="py-20 bg-gradient-to-br from-violet-50 to-white">
+      <motion.div 
+        className="container mx-auto px-4"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7 }}
+      >
+        <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6">
-            {language === "en" 
-              ? "This is the system we all needed" 
-              : "Đây là hệ thống mà tất cả chúng ta đều cần"}
+            Ready to Transform Your Beauty Career?
           </h2>
-          
-          <p className="text-lg text-gray-700 mb-8">
-            {language === "en" 
-              ? "One platform, for everyone — built by the industry, for the industry." 
-              : "Một nền tảng, cho tất cả mọi người — được xây dựng bởi ngành, cho ngành."}
+          <p className="text-lg text-gray-600 mb-8">
+            Join thousands of artists, salon owners, and beauty enthusiasts who've found success with EmviApp.
           </p>
-          
-          <Link to="/auth/signup">
-            <Button size="lg" className="font-medium px-8 py-6 text-base">
-              {language === "en" ? "Join Our Community Today" : "Tham Gia Cộng Đồng Của Chúng Tôi Ngay Hôm Nay"}
-            </Button>
-          </Link>
-        </motion.div>
-      </div>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link to="/auth/signup">
+              <Button size="lg" className="font-medium px-6">
+                Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+            <Link to="/salon-owners">
+              <Button size="lg" variant="outline" className="font-medium">
+                I'm a Salon Owner
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </motion.div>
     </section>
   );
 };

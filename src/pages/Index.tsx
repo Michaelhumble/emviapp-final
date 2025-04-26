@@ -14,19 +14,14 @@ import AITeam from "@/components/home/AITeam";
 import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 
 // Enhanced homepage components
-import DynamicListingGrid from "@/components/home/DynamicListingGrid";
+import LatestIndustryOpportunities from "@/components/home/LatestIndustryOpportunities";
 import SalonJobListingsShowcase from "@/components/home/SalonJobListingsShowcase";
 import FounderMessage from "@/components/home/FounderMessage";
-import MissingPieceSection from "@/components/home/missing-piece";
 import EnhancedAIFeatures from "@/components/home/EnhancedAIFeatures";
 import FinalFounderCTA from "@/components/home/FinalFounderCTA";
-import SalonGrowthSection from "@/components/home/SalonGrowthSection";
 import SalonClientGrowthSystem from "@/components/home/SalonClientGrowthSystem";
 import WhyTrustSection from "@/components/home/sections/WhyTrustSection";
 import WhatYouCanDoSection from "@/components/home/sections/WhatYouCanDoSection";
-
-// New homepage sections
-import LatestIndustryOpportunities from "@/components/home/LatestIndustryOpportunities";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -47,33 +42,37 @@ const Index = () => {
   
   return (
     <Layout>
-      {/* Keep Hero section as first */}
+      {/* Hero section as first */}
       <Hero />
       
-      {/* Replace with Latest Industry Opportunities section */}
+      {/* Latest Industry Opportunities */}
       <LatestIndustryOpportunities />
       
-      {/* Use our SalonJobListingsShowcase component */}
+      {/* Job Listings Showcase */}
       <SalonJobListingsShowcase />
       
-      {/* Move Client Growth System section here */}
+      {/* Client Growth System section */}
       <SalonClientGrowthSystem />
       
-      {/* Replace ArtistTestimonials with ClientSuccessStories */}
+      {/* Success stories */}
       <ClientSuccessStories />
       
-      {/* Combine AI Features and What You Can Do sections */}
+      {/* Enhanced AI Features section */}
       <EnhancedAIFeatures />
+      
+      {/* What You Can Do section */}
       <WhatYouCanDoSection />
       
-      {/* Add Trust Section */}
+      {/* Trust section */}
       <WhyTrustSection />
       
-      {/* Keep only core sections */}
+      {/* Featured Salons - clean spacing */}
       <FeaturedSalons />
+      
+      {/* Trust First Panel */}
       <TrustFirstPanel />
       
-      {/* Move From The Founder to the very bottom */}
+      {/* Founder sections at bottom */}
       <FounderMessage />
       <FinalFounderCTA />
       

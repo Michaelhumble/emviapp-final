@@ -32,18 +32,18 @@ const FeaturedSalons = () => {
   }, []);
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-24 bg-white">
       <div className="container mx-auto px-4">
         <motion.div 
-          className="text-center max-w-3xl mx-auto mb-12"
+          className="text-center max-w-3xl mx-auto mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Nail & Beauty Salons Hiring Now</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Featured Beauty Salons</h2>
           <p className="text-lg text-gray-600">
-            Connect with top salons looking for talented beauty professionals like you
+            Discover exceptional salons with opportunities for talented beauty professionals
           </p>
         </motion.div>
 
@@ -69,7 +69,7 @@ const FeaturedSalons = () => {
                     <h3 className="text-xl font-semibold">{salon.name}</h3>
                     <div className="flex items-center text-amber-500">
                       <Star className="w-4 h-4 fill-current mr-1" />
-                      <span className="text-sm font-medium">{salon.rating}</span>
+                      <span className="text-sm font-medium">{salon.rating.toFixed(1)}</span>
                     </div>
                   </div>
                   <div className="flex items-center text-gray-500 mb-4">
@@ -90,7 +90,7 @@ const FeaturedSalons = () => {
           ))}
         </motion.div>
 
-        <div className="mt-12 text-center">
+        <div className="mt-14 text-center">
           <Link to="/salons">
             <Button size="lg" variant="outline" className="font-medium">
               Explore All Salons
