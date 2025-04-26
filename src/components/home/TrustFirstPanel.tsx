@@ -2,9 +2,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import WhatYouCanDoSection from "./sections/WhatYouCanDoSection";
 import WhyTrustSection from "./sections/WhyTrustSection";
-import SimpleTransparentSection from "./sections/SimpleTransparentSection";
 import PricingDialog from "./dialogs/PricingDialog";
 
 const TrustFirstPanel: React.FC = () => {
@@ -23,9 +21,7 @@ const TrustFirstPanel: React.FC = () => {
   
   return (
     <>
-      <WhatYouCanDoSection />
       <WhyTrustSection />
-      <SimpleTransparentSection />
 
       {/* Sticky button for mobile */}
       {showStickyButton && (

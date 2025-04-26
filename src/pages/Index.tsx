@@ -53,11 +53,11 @@ const Index = () => {
       {/* 3️⃣ Why Artists & Salons Trust Us */}
       <WhyTrustSection />
       
+      {/* Let AI Do the Hard Work (moved here) */}
+      <EnhancedAIFeatures />
+      
       {/* 4️⃣ What You Can Do With EmviApp */}
       <WhatYouCanDoSection />
-      
-      {/* 5️⃣ Let AI Do the Hard Work */}
-      <EnhancedAIFeatures />
       
       {/* 6️⃣ Let's Experience EmviApp Together */}
       <MissingPieceSection />
