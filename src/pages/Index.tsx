@@ -4,7 +4,6 @@ import Hero from "@/components/home/Hero";
 import ClientSuccessStories from "@/components/home/ClientSuccessStories";
 import FeaturedSalons from "@/components/home/FeaturedSalons";
 import Testimonials from "@/components/home/Testimonials";
-import CallToAction from "@/components/home/CallToAction";
 import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
@@ -12,6 +11,7 @@ import { useRoleSelection } from "@/hooks/useRoleSelection";
 import AIPowerhouse from "@/components/home/AIPowerhouse";
 import AITeam from "@/components/home/AITeam";
 import TrustFirstPanel from "@/components/home/TrustFirstPanel";
+import CallToAction from "@/components/home/CallToAction";
 
 // Enhanced homepage components
 import DynamicListingGrid from "@/components/home/DynamicListingGrid";
@@ -68,9 +68,6 @@ const Index = () => {
       
       {/* Add Trust Section */}
       <WhyTrustSection />
-      
-      {/* Final CTA buttons */}
-      <CallToAction />
       
       {/* Keep only core sections */}
       <FeaturedSalons />
