@@ -158,7 +158,7 @@ const SalonContactSection: React.FC<SalonContactSectionProps> = ({ salon }) => {
                   <span className="font-medium text-purple-700">Today's Hours</span>
                 </div>
                 <p className="text-purple-800">
-                  {openingHours[new Date().toLocaleDateString('en-US', { weekday: 'lowercase' })] || 'Call for hours'}
+                  {openingHours[new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()] || 'Call for hours'}
                 </p>
               </div>
             </div>

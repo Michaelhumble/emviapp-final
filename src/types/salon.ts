@@ -71,4 +71,6 @@ export interface Salon {
   virtualTours?: string[];
   beforeAfterGallery?: string[];
   established?: number;
+  priceRange?: string;
+  featured?: boolean;
 }
