@@ -15,6 +15,7 @@ export const defaultFilters: SalonFilters = {
 };
 
 export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
+  // Change state types to accept both SalonListing and Job
   const [salons, setSalons] = useState<(SalonListing | Job)[]>([]);
   const [allSalons, setAllSalons] = useState<(SalonListing | Job)[]>([]);
   const [loading, setLoading] = useState(true);
