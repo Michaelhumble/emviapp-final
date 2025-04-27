@@ -351,10 +351,6 @@ const routes = [
     element: <SignIn />,
   },
   {
-    path: '/salons',
-    element: <SalonsListingsPage />,
-  },
-  {
     path: '/listing/:id',
     element: <SalonsListingsPage />, // This will be replaced with a universal listing detail page later
   },

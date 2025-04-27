@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import { SalonFilters } from "@/components/salons/types";
 import salonData from "@/data/salonData";
 
 // Simple default filters
@@ -13,8 +12,15 @@ export const defaultFilters: SalonFilters = {
   sortBy: "Newest"
 };
 
-// Export the SalonFilters type here so it can be imported elsewhere
-export type { SalonFilters };
+// Define the SalonFilters type and export it
+export interface SalonFilters {
+  searchTerm: string;
+  category: string;
+  priceRange: number[];
+  location: string;
+  features: string[];
+  sortBy: string;
+}
 
 // Simplified salon hook with minimal functionality
 export const useSalonsData = () => {
