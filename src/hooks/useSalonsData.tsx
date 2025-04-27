@@ -1,37 +1,31 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { differenceInDays } from 'date-fns';
+import { SalonListing, SalonFilters } from "@/types/salon";
 
 // Use mock data for now
 import { salonsForSaleJobs } from "@/utils/jobs/mockJobData";
 import { getSalonsForSale } from "@/utils/featuredContent";
 
-export interface SalonFilters {
-  featured?: boolean;
-  location: string;
-  priceRange: [number, number];
-  showExpired: boolean;
-  hasHousing: boolean;
-  industry?: string;
-  stations?: number;
-  squareFeet?: [number, number];
-}
+export const defaultFilters: SalonFilters = {
+  location: 'all',
+  priceRange: [0, 500000],
+  listingType: 'all',
+  searchTerm: ''
+};
 
 export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
-  const [salons, setSalons] = useState<any[]>([]);
+  const [salons, setSalons] = useState<SalonListing[]>([]);
+  const [allSalons, setAllSalons] = useState<SalonListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [filters, setFilters] = useState<SalonFilters>({
-    location: 'all',
-    priceRange: [0, 500000],
-    showExpired: false,
-    hasHousing: false,
+    ...defaultFilters,
     ...initialFilters
   });
   const [searchTerm, setSearchTerm] = useState("");
-  const [featuredSalons, setFeaturedSalons] = useState<any[]>([]);
+  const [featuredSalons, setFeaturedSalons] = useState<SalonListing[]>([]);
   const [suggestedKeywords, setSuggestedKeywords] = useState<string[]>([
     "7 Years Established", 
     "High Traffic Area", 
@@ -135,16 +129,12 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
 
   const resetFilters = () => {
     setSearchTerm("");
-    setFilters({
-      location: 'all',
-      priceRange: [0, 500000],
-      showExpired: false,
-      hasHousing: false,
-    });
+    setFilters(defaultFilters);
   };
 
   return { 
     salons, 
+    allSalons,
     loading, 
     error, 
     filters, 

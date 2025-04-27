@@ -1,8 +1,9 @@
 
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Search, RefreshCw } from "lucide-react";
 
-interface EmptyStateProps {
+export interface EmptyStateProps {
   resetFilters: () => void;
 }
 

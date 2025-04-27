@@ -10,7 +10,7 @@ import SalonsLoadingState from "@/components/salons/SalonsLoadingState";
 import FeaturedSalonsSection from "@/components/salons/FeaturedSalonsSection";
 import SalonPromotion from "@/components/salons/SalonPromotion";
 import { useSalonsData } from '@/hooks/useSalonsData';
-import { SalonFilters } from '@/types/salon'; 
+import { SalonFilters, SalonListing } from '@/types/salon';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
