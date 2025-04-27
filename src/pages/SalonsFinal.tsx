@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
@@ -42,7 +41,7 @@ const SalonsFinal: React.FC = () => {
   
   // Apply tab filtering to salons
   const filteredSalons = salons.filter(salon => {
-    if (activeTab === "featured" && !salon.isFeatured) {
+    if (activeTab === "featured" && !salon.isFeatured && !salon.is_featured) {
       return false;
     }
     
