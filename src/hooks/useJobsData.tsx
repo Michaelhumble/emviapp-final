@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
@@ -19,7 +20,7 @@ export interface JobFilters {
   noSupplyDeduction?: boolean;
   industry?: string;
   language?: string;
-  payType?: string; // Added payType filter
+  payType?: 'commission' | 'hourly' | 'salary' | 'all'; // Add payType with specific allowed values
 }
 
 export const useJobsData = (initialFilters: JobFilters = {}) => {
