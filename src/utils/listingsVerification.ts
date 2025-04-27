@@ -61,6 +61,11 @@ export const verifyOpportunityListings = (listings: Job[]): {
 } => {
   const issues: string[] = [];
   
+  if (!Array.isArray(listings) || listings.length === 0) {
+    issues.push("No valid listings provided");
+    return { isValid: false, issues, totalListings: 0 };
+  }
+  
   // Check for unique IDs
   const ids = listings.map(listing => listing.id);
   const uniqueIds = new Set(ids);
@@ -79,6 +84,14 @@ export const verifyOpportunityListings = (listings: Job[]): {
   const nonStringIds = listings.filter(listing => listing.id && typeof listing.id !== 'string');
   if (nonStringIds.length > 0) {
     issues.push(`Found ${nonStringIds.length} opportunity listings with non-string IDs`);
+  }
+  
+  // Check for required fields
+  const missingRequiredFields = listings.filter(listing => 
+    !listing.title && !listing.company
+  );
+  if (missingRequiredFields.length > 0) {
+    issues.push(`Found ${missingRequiredFields.length} listings missing required fields (title or company)`);
   }
   
   // Log the verification results

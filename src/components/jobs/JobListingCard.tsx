@@ -66,7 +66,7 @@ const JobListingCard = ({
     if (isOwner || isSignedIn) {
       onViewDetails();
     } else {
-      navigate(`/sign-in?redirect=${encodeURIComponent(`/jobs/${job.id}`)}`);
+      navigate(`/sign-in?redirect=${encodeURIComponent(`/opportunities/${job.id}`)}`);
     }
   };
 
@@ -78,7 +78,7 @@ const JobListingCard = ({
           className="w-full" 
           onClick={onViewDetails}
         >
-          {isVietnamese ? "Xem Chi Tiết" : "View Details"}
+          {isVietnamese ? "Xem Chi Tiết" : "View Full Details"}
         </Button>
       );
     }
@@ -90,7 +90,7 @@ const JobListingCard = ({
           className="w-full" 
           onClick={onViewDetails}
         >
-          {isVietnamese ? "Xem Chi Tiết" : "View Details"}
+          {isVietnamese ? "Xem Chi Tiết" : "View Full Details"}
         </Button>
       );
     }
@@ -102,7 +102,7 @@ const JobListingCard = ({
         onClick={handleViewDetails}
       >
         <Lock className="h-4 w-4 mr-1" /> 
-        {isVietnamese ? "Đăng Ký" : "Sign Up"}
+        {isVietnamese ? "Đăng Ký Để Xem" : "Sign Up To View"}
       </Button>
     );
   };

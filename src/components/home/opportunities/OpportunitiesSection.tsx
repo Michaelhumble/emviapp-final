@@ -4,12 +4,26 @@ import { motion } from 'framer-motion';
 import { Job } from '@/types/job';
 import OpportunityCard from './OpportunityCard';
 import AuthAction from '@/components/common/AuthAction';
+import { verifyOpportunityListings } from '@/utils/listingsVerification';
 
 interface OpportunitiesSectionProps {
   diverseListings: Job[];
 }
 
 const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) => {
+  // Verify listings have valid IDs before rendering
+  const { isValid, issues } = verifyOpportunityListings(diverseListings);
+  
+  if (!isValid) {
+    console.error("Invalid opportunity listings:", issues);
+    return null;
+  }
+  
+  // Filter out any invalid listings
+  const validListings = diverseListings.filter(listing => 
+    listing && listing.id && (listing.title || listing.company)
+  );
+
   return (
     <section className="py-24 bg-gradient-to-b from-white to-gray-50">
       <div className="container mx-auto px-4">
@@ -29,11 +43,13 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {diverseListings.map((listing, index) => (
+          {validListings.map((listing, index) => (
             <AuthAction
               key={listing.id}
               onAction={() => true}
               redirectPath={`/opportunities/${listing.id}`}
+              customTitle="Sign in to view full details"
+              creditMessage="Create a free account to access contact information and more details."
             >
               <OpportunityCard 
                 key={listing.id} 
