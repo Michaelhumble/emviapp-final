@@ -10,7 +10,9 @@ export interface SalonListing {
   contact_hidden: boolean;
   is_featured?: boolean;
   image_url?: string;
-  // Add properties needed by components
+  created_at: string;
+  
+  // Additional properties that are being used
   image?: string;
   type?: string;
   priceUnit?: string;
@@ -21,9 +23,9 @@ export interface SalonListing {
   contactEmail?: string;
   website?: string;
   tags?: string[];
-  created_at: string;
+  squareFeet?: number;
   square_feet?: string;
-  squareFeet?: number; // For backward compatibility
+  established?: number;
   company?: string;
   contact_info?: {
     name?: string;
@@ -33,6 +35,7 @@ export interface SalonListing {
   monthly_rent?: number;
   number_of_stations?: number;
   revenue?: number;
+  chairs?: number;
   has_wax_room?: boolean;
   has_dining_room?: boolean;
   has_laundry?: boolean;
@@ -43,7 +46,6 @@ export interface SalonListing {
   has_housing?: boolean;
   vietnamese_description?: string;
   status?: string;
-  established?: number;
   isFeatured?: boolean; // Alternate naming for compatibility
 }
 
@@ -122,4 +124,12 @@ export interface Job extends SalonListing {
   status?: 'active' | 'expired';
   weekly_pay?: boolean;
   benefits?: string[];
+}
+
+// Add SalonSale type for backward compatibility
+export interface SalonSale extends SalonListing {
+  salon_name?: string;
+  city?: string;
+  state?: string;
+  business_type?: string;
 }

@@ -44,7 +44,14 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
       console.log("Fetching salons with filters:", filters);
       
       // Use the new getSalonsForSale function to get more salon listings
-      let filteredSalons = getSalonsForSale(30);
+      let filteredSalons = getSalonsForSale(30).map(salon => {
+        return {
+          ...salon,
+          listing_type: salon.listing_type || 'For Sale', // Default value
+          contact_hidden: salon.contact_hidden || false, // Default value
+          created_at: salon.created_at || new Date().toISOString(), // Default value
+        } as SalonListing;
+      });
       
       // Apply keyword search
       if (searchTerm) {
@@ -100,7 +107,15 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
 
       // Set featured salons
       const featured = getSalonsForSale(3)
-        .filter(salon => (salon.is_featured || salon.isFeatured) && salon.status !== 'expired');
+        .filter(salon => (salon.is_featured || salon.isFeatured) && salon.status !== 'expired')
+        .map(salon => {
+          return {
+            ...salon,
+            listing_type: salon.listing_type || 'For Sale',
+            contact_hidden: salon.contact_hidden || false,
+            created_at: salon.created_at || new Date().toISOString(),
+          } as SalonListing;
+        });
       
       setFeaturedSalons(featured);
       setSalons(filteredSalons);

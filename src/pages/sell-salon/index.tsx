@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { SalonSale } from "@/types/salonSale";
+import { SalonSale } from "@/types/salon";
 import { fetchSalonSales } from "@/utils/salonSales";
 import SalonListingDetail from "@/components/sell-salon/SalonListingDetail";
 import { SalonSalesFilters } from "@/components/sell-salon/SalonSalesFilters";
@@ -47,8 +47,18 @@ const SalonSalesPage = () => {
       setIsLoading(true);
       try {
         const data = await fetchSalonSales();
-        setSalonSales(data);
-        setFilteredSales(data);
+        // Ensure all required fields are present
+        const salonSalesWithDefaults = data.map((salon: any) => ({
+          ...salon,
+          // Required SalonListing fields with defaults if missing
+          name: salon.salon_name || '',
+          location: `${salon.city || ''}, ${salon.state || ''}`,
+          listing_type: 'For Sale',
+          price: salon.asking_price ? parseFloat(salon.asking_price.replace(/[^\d.-]/g, '')) : 0,
+          contact_hidden: false
+        }));
+        setSalonSales(salonSalesWithDefaults);
+        setFilteredSales(salonSalesWithDefaults);
       } catch (error) {
         console.error("Error loading salon sales:", error);
       } finally {
