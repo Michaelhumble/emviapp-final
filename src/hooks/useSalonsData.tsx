@@ -47,7 +47,7 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
       let filteredSalons = getSalonsForSale(30).map(salon => {
         return {
           ...salon,
-          listing_type: salon.listing_type || 'For Sale', // Default value
+          listing_type: salon.type || 'For Sale', // Default value
           contact_hidden: salon.contact_hidden || false, // Default value
           created_at: salon.created_at || new Date().toISOString(), // Default value
         } as SalonListing;
@@ -75,8 +75,7 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
       // Apply price range filter
       if (filters.priceRange) {
         filteredSalons = filteredSalons.filter(salon => {
-          const priceString = salon.asking_price || "";
-          const price = parseInt(priceString.replace(/[^0-9]/g, ""));
+          const price = typeof salon.price === 'number' ? salon.price : 0;
           return price >= filters.priceRange![0] && price <= filters.priceRange![1];
         });
       }
@@ -111,7 +110,7 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
         .map(salon => {
           return {
             ...salon,
-            listing_type: salon.listing_type || 'For Sale',
+            listing_type: salon.type || 'For Sale',
             contact_hidden: salon.contact_hidden || false,
             created_at: salon.created_at || new Date().toISOString(),
           } as SalonListing;

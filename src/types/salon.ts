@@ -42,7 +42,7 @@ export interface SalonListing {
   owner_will_train?: boolean;
   reason_for_selling?: string;
   salon_features?: string[];
-  asking_price?: string;
+  asking_price?: string | number;
   has_housing?: boolean;
   vietnamese_description?: string;
   status?: string;

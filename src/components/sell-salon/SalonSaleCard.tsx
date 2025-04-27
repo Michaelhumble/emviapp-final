@@ -22,7 +22,7 @@ const SalonSaleCard = ({ salon, onViewDetails }: SalonSaleCardProps) => {
         {salon.asking_price && (
           <div className="flex items-center text-green-700 font-medium mb-2">
             <DollarSign className="h-3.5 w-3.5 mr-1" />
-            ${salon.asking_price.toLocaleString()}
+            ${typeof salon.asking_price === 'number' ? salon.asking_price.toLocaleString() : salon.asking_price}
           </div>
         )}
         <div className="flex justify-between mt-4">
