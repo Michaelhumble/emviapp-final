@@ -38,6 +38,23 @@ export interface ISalon {
   featured?: boolean;
 }
 
+// For backward compatibility - extend ISalon with additional properties
+export interface Salon extends ISalon {
+  // Additional properties used in salon components
+  owner?: string;
+  email?: string;
+  phone?: string;
+  website?: string;
+  teamSize?: number;
+  certifications?: string[];
+  awards?: string[];
+  paymentMethods?: string[];
+  languages?: string[];
+  accessibilityFeatures?: string[];
+  virtualTours?: string[];
+  beforeAfterGallery?: string[];
+}
+
 // Listing specific interface
 export interface SalonListing {
   id: string;
@@ -68,6 +85,11 @@ export interface SalonListing {
   created_at?: string;
 }
 
+// Define Job type for compatibility
+export interface Job extends SalonListing {
+  created_at: string; // Make this required for Job type
+}
+
 export interface SalonFilters {
   location: string;
   priceRange: [number, number];
@@ -76,4 +98,3 @@ export interface SalonFilters {
   hasHousing?: boolean;
   showExpired?: boolean;
 }
-

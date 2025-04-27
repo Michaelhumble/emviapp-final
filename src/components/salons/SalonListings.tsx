@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Job } from "@/types/job";
+import { SalonListing, Job } from "@/types/salon";
 import SalonDetailModal from "./SalonDetailModal";
 import FilterSection from "./FilterSection";
 import PricingInfoCard from "./PricingInfoCard";
@@ -81,10 +81,10 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
           filteredSalons.map((salon, index) => (
             <SalonCard 
               key={salon.id}
-              salon={salon}
+              salon={salon as unknown as SalonListing}
               index={index}
               isExpired={isExpired(salon)}
-              onViewDetails={handleViewDetails}
+              onViewDetails={handleViewDetails as unknown as (salon: SalonListing) => void}
             />
           ))
         ) : (
@@ -94,7 +94,7 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
       
       {/* Salon detail modal */}
       <SalonDetailModal
-        salon={selectedSalon}
+        salon={selectedSalon as unknown as SalonListing}
         isOpen={!!selectedSalon}
         onClose={handleCloseModal}
       />
