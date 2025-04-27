@@ -66,6 +66,8 @@ const Messages = React.lazy(() => import('./pages/messages/index'));
 import PortfolioManagerPage from './pages/dashboard/artist/portfolio/index';
 
 import OpportunityDetailPage from './pages/opportunities/OpportunityDetailPage';
+import SimpleSalonPage from './pages/salons/SimpleSalonPage';
+import SalonsPage from './pages/salons/index';
 
 const routes = [
   {
@@ -98,7 +100,7 @@ const routes = [
   },
   {
     path: '/salons',
-    element: <SimpleSalonPage />,
+    element: <SalonsPage />,
   },
   {
     path: '/salons/:id',
@@ -345,6 +347,14 @@ const routes = [
   {
     path: '/sign-in', // Explicitly define the /sign-in route
     element: <SignIn />,
+  },
+  {
+    path: '/salons',
+    element: <SalonsPage />,
+  },
+  {
+    path: '/listing/:id',
+    element: <SalonsPage />, // This will be replaced with a universal listing detail page later
   },
 ];
 
