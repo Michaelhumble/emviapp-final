@@ -1,38 +1,14 @@
 
-// Salon listing type definition
-export interface SalonListing {
-  id: string;
-  name: string;
-  location: string;
-  listing_type: 'For Sale' | 'Booth Rental' | 'Partnership';
-  description: string;
-  price: number;
-  contact_hidden: boolean;
-  created_at: string;
-  is_featured?: boolean;
-  image_url?: string;
-  tags?: string[];
-  // Extended properties
-  squareFeet?: number;
-  chairs?: number;
-  established?: number;
-  shortDescription?: string;
-  features?: string[];
-  contactName?: string;
-  contactPhone?: string;
-  contactEmail?: string;
-}
-
-// Base Salon type definition (for salon profiles rather than listings)
+// Salon type definition
 export interface Salon {
   id: string;
   name: string;
-  image?: string;
+  image: string;
   logo?: string;
-  specialty?: string;
-  city?: string;
+  specialty: string;
+  city: string;
   neighborhood?: string;
-  hours?: {
+  hours: {
     monday: string;
     tuesday: string;
     wednesday: string;
@@ -41,12 +17,14 @@ export interface Salon {
     saturday: string;
     sunday: string;
   };
-  bio?: string;
+  bio: string;
   shortBio?: string;
-  rating?: number;
-  reviewCount?: number;
+  rating: number;
+  reviewCount: number;
+  priceRange: string;
+  established: number;
   services: string[];
-  amenities?: string[];
+  amenities: string[];
   socialMedia?: {
     instagram?: string;
     facebook?: string;
@@ -57,11 +35,12 @@ export interface Salon {
   };
   bookingLink?: string;
   isHiring?: boolean;
+  featured?: boolean;
+  // Additional properties for salon listings
+  owner?: string;
   email?: string;
   phone?: string;
   website?: string;
-  location?: string;
-  // Additional properties
   teamSize?: number;
   certifications?: string[];
   awards?: string[];
@@ -70,7 +49,4 @@ export interface Salon {
   accessibilityFeatures?: string[];
   virtualTours?: string[];
   beforeAfterGallery?: string[];
-  established?: number;
-  priceRange?: string;
-  featured?: boolean;
 }

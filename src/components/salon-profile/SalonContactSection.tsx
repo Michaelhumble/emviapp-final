@@ -2,95 +2,63 @@
 import React from 'react';
 import { Salon } from '@/types/salon';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { MapPin, Phone, Globe, Mail, Clock, ArrowUpRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { 
-  Phone, 
-  Mail, 
-  Globe, 
-  MapPin, 
-  Clock, 
-  Instagram, 
-  Facebook 
-} from 'lucide-react';
 
 interface SalonContactSectionProps {
   salon: Salon;
 }
 
 const SalonContactSection: React.FC<SalonContactSectionProps> = ({ salon }) => {
-  const openingHours = salon.hours ? salon.hours : {
-    monday: '10:00 AM - 7:00 PM',
-    tuesday: '10:00 AM - 7:00 PM',
-    wednesday: '10:00 AM - 7:00 PM',
-    thursday: '10:00 AM - 7:00 PM',
-    friday: '10:00 AM - 8:00 PM',
-    saturday: '9:00 AM - 6:00 PM',
-    sunday: 'Closed'
-  };
-  
-  const address = salon.location || '123 Main Street, Denver, CO 80202';
-  
-  // Format phone number for display
-  const formatPhone = (phone: string) => {
-    if (!phone) return '';
-    const cleaned = phone.replace(/\D/g, '');
-    if (cleaned.length === 10) {
-      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
-    }
-    return phone;
-  };
-  
-  // Open Google Maps with the salon's location
-  const openInMaps = () => {
-    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
-  };
-  
   return (
-    <section className="max-w-4xl mx-auto">
+    <section className="max-w-5xl mx-auto">
       <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200">
         <CardHeader className="pb-2 border-b border-gray-50">
           <CardTitle className="flex items-center text-xl font-serif">
             <MapPin className="h-5 w-5 mr-2 text-purple-600" />
-            Location & Contact
+            Find Us
           </CardTitle>
         </CardHeader>
         
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Map Preview */}
             <div>
-              <div className="mb-6">
-                <h3 className="font-medium mb-2">Address</h3>
-                <p className="text-gray-600">{address}</p>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="mt-2"
-                  onClick={openInMaps}
-                >
-                  Get Directions
-                </Button>
+              <div className="rounded-lg overflow-hidden mb-4 aspect-video shadow-sm">
+                <img 
+                  src={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-s+9b87f5(${-73.856077},${40.848447})/${-73.856077},${40.848447},14,0/600x300?access_token=pk.eyJ1IjoibG92YWJsZSIsImEiOiJjbG9ta2JoZXkwYm80MmtwZ2RibjZiNGplIn0.SXjj3MdIiEVvrQYKjN2XFA`} 
+                  alt={`Map of ${salon.name}`} 
+                  className="w-full h-full object-cover"
+                />
               </div>
               
-              <div className="space-y-3">
-                <h3 className="font-medium mb-2">Contact Information</h3>
+              <div className="space-y-2">
+                <div className="flex items-start">
+                  <MapPin className="h-4 w-4 text-gray-500 mr-2 mt-1 shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium">{salon.neighborhood || salon.city}</p>
+                    <p className="text-xs text-gray-500">{salon.city}</p>
+                  </div>
+                </div>
+                
                 {salon.phone && (
                   <div className="flex items-center">
-                    <Phone className="h-4 w-4 text-gray-500 mr-3" />
+                    <Phone className="h-4 w-4 text-gray-500 mr-2 shrink-0" />
                     <a 
                       href={`tel:${salon.phone}`} 
-                      className="text-gray-600 hover:text-purple-600 transition-colors"
+                      className="text-sm hover:text-purple-700 transition-colors"
                     >
-                      {formatPhone(salon.phone)}
+                      {salon.phone}
                     </a>
                   </div>
                 )}
                 
                 {salon.email && (
                   <div className="flex items-center">
-                    <Mail className="h-4 w-4 text-gray-500 mr-3" />
+                    <Mail className="h-4 w-4 text-gray-500 mr-2 shrink-0" />
                     <a 
                       href={`mailto:${salon.email}`} 
-                      className="text-gray-600 hover:text-purple-600 transition-colors"
+                      className="text-sm hover:text-purple-700 transition-colors"
                     >
                       {salon.email}
                     </a>
@@ -99,68 +67,84 @@ const SalonContactSection: React.FC<SalonContactSectionProps> = ({ salon }) => {
                 
                 {salon.website && (
                   <div className="flex items-center">
-                    <Globe className="h-4 w-4 text-gray-500 mr-3" />
+                    <Globe className="h-4 w-4 text-gray-500 mr-2 shrink-0" />
                     <a 
-                      href={salon.website} 
-                      target="_blank" 
+                      href={salon.website.startsWith('http') ? salon.website : `https://${salon.website}`} 
+                      target="_blank"
                       rel="noopener noreferrer"
-                      className="text-gray-600 hover:text-purple-600 transition-colors"
+                      className="text-sm hover:text-purple-700 transition-colors flex items-center"
                     >
-                      {salon.website.replace(/^https?:\/\//i, '')}
+                      {salon.website.replace(/^https?:\/\//, '')}
+                      <ArrowUpRight className="h-3 w-3 ml-1" />
                     </a>
                   </div>
                 )}
+                
+                <Button 
+                  className="mt-4 w-full sm:w-auto"
+                  onClick={() => {
+                    // Open in Google Maps
+                    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(salon.name + ' ' + salon.city)}`, '_blank');
+                  }}
+                >
+                  Get Directions
+                </Button>
               </div>
-              
-              {salon.socialMedia && (
-                <div className="mt-6">
-                  <h3 className="font-medium mb-3">Follow Us</h3>
-                  <div className="flex space-x-3">
-                    {salon.socialMedia.instagram && (
-                      <a 
-                        href={salon.socialMedia.instagram} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="bg-gray-100 p-2 rounded-full hover:bg-purple-100 transition-colors"
-                      >
-                        <Instagram className="h-5 w-5 text-gray-700" />
-                      </a>
-                    )}
-                    {salon.socialMedia.facebook && (
-                      <a 
-                        href={salon.socialMedia.facebook} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="bg-gray-100 p-2 rounded-full hover:bg-purple-100 transition-colors"
-                      >
-                        <Facebook className="h-5 w-5 text-gray-700" />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              )}
             </div>
             
+            {/* Hours */}
             <div>
-              <h3 className="font-medium mb-3">Hours of Operation</h3>
-              <div className="space-y-2">
-                {Object.entries(openingHours).map(([day, hours]) => (
-                  <div key={day} className="flex justify-between py-1 border-b border-gray-100 last:border-0">
-                    <span className="capitalize">{day}</span>
-                    <span className="text-gray-600">{hours}</span>
+              <div className="flex items-center mb-4">
+                <Clock className="h-5 w-5 mr-2 text-purple-600" />
+                <h3 className="font-semibold">Opening Hours</h3>
+              </div>
+              
+              <div className="space-y-3">
+                {Object.entries(salon.hours).map(([day, hours]) => (
+                  <div key={day} className="flex justify-between border-b border-gray-100 pb-2">
+                    <div className="font-medium capitalize text-sm">{day}</div>
+                    <div className="text-sm">
+                      {hours === 'Closed' ? (
+                        <span className="text-red-500">Closed</span>
+                      ) : (
+                        hours
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
               
-              <div className="mt-6 p-3 bg-purple-50 rounded-md">
-                <div className="flex items-center mb-1">
-                  <Clock className="h-4 w-4 text-purple-700 mr-2" />
-                  <span className="font-medium text-purple-700">Today's Hours</span>
+              {/* Amenities */}
+              <div className="mt-8">
+                <h3 className="font-semibold mb-3">Amenities</h3>
+                <div className="flex flex-wrap gap-2">
+                  {salon.amenities.map((amenity, index) => (
+                    <span 
+                      key={index}
+                      className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-medium"
+                    >
+                      {amenity}
+                    </span>
+                  ))}
                 </div>
-                <p className="text-purple-800">
-                  {openingHours[new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()] || 'Call for hours'}
-                </p>
               </div>
+              
+              {/* Payment Methods */}
+              {salon.paymentMethods && salon.paymentMethods.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="font-semibold text-sm mb-2">We Accept</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {salon.paymentMethods.map((method, index) => (
+                      <span 
+                        key={index}
+                        className="bg-blue-50 text-blue-800 px-2 py-1 rounded text-xs"
+                      >
+                        {method}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </CardContent>
