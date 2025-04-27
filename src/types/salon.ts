@@ -51,7 +51,7 @@ export interface Salon {
   beforeAfterGallery?: string[];
 }
 
-// Salon listing for marketplace
+// Simplified SalonListing interface to fix type errors
 export interface SalonListing {
   id: string;
   name: string;
@@ -74,7 +74,7 @@ export interface SalonListing {
   vietnamese_description?: string;
 }
 
-// Filters for salon search
+// Simplified SalonFilters interface to fix type errors
 export interface SalonFilters {
   searchTerm?: string;
   category?: string;
