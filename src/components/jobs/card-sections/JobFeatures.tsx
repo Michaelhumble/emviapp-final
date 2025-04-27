@@ -18,22 +18,22 @@ export const JobFeatures = ({
   return (
     <div className="flex flex-wrap gap-2 mb-4">
       {weeklyPay && (
-        <Badge className="bg-green-100 text-green-800 border-green-200">
+        <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium transition-colors hover:bg-emerald-100">
           Weekly Pay 💰
         </Badge>
       )}
       {ownerWillTrain && (
-        <Badge className="bg-amber-100 text-amber-800 border-amber-200">
+        <Badge className="bg-amber-50 text-amber-700 border border-amber-200 font-medium transition-colors hover:bg-amber-100">
           Owner Will Train ✨
         </Badge>
       )}
       {hasHousing && (
-        <Badge className="bg-indigo-100 text-indigo-800 border-indigo-200 flex items-center gap-1">
+        <Badge className="bg-indigo-50 text-indigo-700 border border-indigo-200 font-medium transition-colors hover:bg-indigo-100 flex items-center gap-1">
           <Home className="h-3 w-3" /> Housing 🏠
         </Badge>
       )}
       {noSupplyDeduction && (
-        <Badge className="bg-teal-100 text-teal-800 border-teal-200 flex items-center gap-1">
+        <Badge className="bg-teal-50 text-teal-700 border border-teal-200 font-medium transition-colors hover:bg-teal-100 flex items-center gap-1">
           <Shield className="h-3 w-3" /> No Supply Fee ✅
         </Badge>
       )}

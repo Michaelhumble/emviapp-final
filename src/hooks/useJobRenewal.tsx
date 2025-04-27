@@ -4,25 +4,29 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 interface UseJobRenewalProps {
-  jobId: string;
-  expiresAt: string | null;
+  jobId?: string;
+  expiresAt?: string | null;
   onSuccess?: () => void;
 }
 
-export const useJobRenewal = ({ jobId, expiresAt, onSuccess }: UseJobRenewalProps) => {
+export const useJobRenewal = ({ jobId, expiresAt, onSuccess }: UseJobRenewalProps = {}) => {
   const [isRenewing, setIsRenewing] = useState(false);
+  const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
 
-  const renewJob = async () => {
-    if (!jobId) {
+  const renewJob = async (targetJobId?: string) => {
+    const idToUse = targetJobId || jobId;
+    
+    if (!idToUse) {
       toast.error("Job ID is missing");
       return;
     }
 
+    setRenewalJobId(idToUse);
+    setIsRenewing(true);
+
     // Calculate new expiration date (30 days from now)
     const newExpiresAt = new Date();
     newExpiresAt.setDate(newExpiresAt.getDate() + 30);
-
-    setIsRenewing(true);
 
     try {
       const { error } = await supabase
@@ -32,7 +36,7 @@ export const useJobRenewal = ({ jobId, expiresAt, onSuccess }: UseJobRenewalProp
           status: "active",
           updated_at: new Date().toISOString(),
         })
-        .eq("id", jobId);
+        .eq("id", idToUse);
 
       if (error) throw error;
 
@@ -47,6 +51,8 @@ export const useJobRenewal = ({ jobId, expiresAt, onSuccess }: UseJobRenewalProp
       toast.error("Failed to renew job listing");
     } finally {
       setIsRenewing(false);
+      // Reset the renewal job ID after a slight delay
+      setTimeout(() => setRenewalJobId(null), 500);
     }
   };
 
@@ -71,5 +77,6 @@ export const useJobRenewal = ({ jobId, expiresAt, onSuccess }: UseJobRenewalProp
     daysRemaining,
     isExpired,
     isExpiringSoon,
+    renewalJobId
   };
 };

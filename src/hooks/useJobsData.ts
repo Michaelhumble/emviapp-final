@@ -1,23 +1,6 @@
 
 import { useState, useEffect } from "react";
-import useSampleJobsData from "./useSampleJobsData";
-
-export interface JobFilters {
-  featured?: boolean;
-  remote?: boolean;
-  fullTime?: boolean;
-  partTime?: boolean;
-  location?: string;
-  weeklyPay?: boolean;
-  ownerWillTrain?: boolean;
-  employmentType?: string;
-  showExpired?: boolean;
-  hasHousing?: boolean;
-  noSupplyDeduction?: boolean;
-  industry?: string;
-  language?: string;
-  payType?: 'commission' | 'hourly' | 'salary' | 'all';
-}
+import useSampleJobsData, { JobFilters } from "./useSampleJobsData";
 
 // This is a wrapper hook that will eventually use real data from an API
 // For now, it uses our sample data
@@ -30,6 +13,7 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
   // Add advanced filtering, sorting, etc.
   const [sortOption, setSortOption] = useState("recent");
   const [filteredResults, setFilteredResults] = useState(sampleData.jobs);
+  const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
   
   // Apply additional sorting when sort option changes
   useEffect(() => {
@@ -50,12 +34,19 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
     setFilteredResults(sortedResults);
   }, [sortOption, sampleData.jobs]);
   
+  const setActiveRenewalJobId = (jobId: string | null) => {
+    setRenewalJobId(jobId);
+  };
+  
   return {
     ...sampleData,
     jobs: filteredResults,
     sortOption,
-    setSortOption
+    setSortOption,
+    renewalJobId,
+    setActiveRenewalJobId
   };
 };
 
 export default useJobsData;
+export type { JobFilters };

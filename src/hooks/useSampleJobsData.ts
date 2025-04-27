@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import sampleJobs from "@/data/sampleJobs";
 
-interface JobFilters {
+export interface JobFilters {
   featured?: boolean;
   remote?: boolean;
   fullTime?: boolean;
@@ -15,6 +15,8 @@ interface JobFilters {
   employmentType?: string;
   industry?: string;
   language?: string;
+  showExpired?: boolean;
+  payType?: 'commission' | 'hourly' | 'salary' | 'all';
 }
 
 export const useSampleJobsData = (initialFilters: JobFilters = {}) => {
@@ -35,6 +37,8 @@ export const useSampleJobsData = (initialFilters: JobFilters = {}) => {
     employmentType: 'all',
     industry: 'all',
     language: 'all',
+    showExpired: false,
+    payType: 'all',
     ...initialFilters
   });
   const [searchTerm, setSearchTerm] = useState("");
@@ -123,6 +127,26 @@ export const useSampleJobsData = (initialFilters: JobFilters = {}) => {
       if (filters.employmentType && filters.employmentType !== 'all') {
         result = result.filter(job => job.employment_type === filters.employmentType);
       }
+
+      // Apply pay type filter
+      if (filters.payType && filters.payType !== 'all') {
+        if (filters.payType === 'commission') {
+          result = result.filter(job => 
+            job.compensation_type === 'commission' || 
+            (job.salary_range && job.salary_range.toLowerCase().includes('commission'))
+          );
+        } else if (filters.payType === 'hourly') {
+          result = result.filter(job => 
+            job.compensation_type === 'hourly' || 
+            (job.salary_range && job.salary_range.toLowerCase().includes('hour'))
+          );
+        } else if (filters.payType === 'salary') {
+          result = result.filter(job => 
+            job.compensation_type === 'salary' || 
+            (job.salary_range && job.salary_range.toLowerCase().includes('salary'))
+          );
+        }
+      }
       
       // Apply industry filter
       if (filters.industry && filters.industry !== 'all') {
@@ -140,6 +164,11 @@ export const useSampleJobsData = (initialFilters: JobFilters = {}) => {
         if (filters.language === 'vietnamese') {
           result = result.filter(job => job.vietnamese_description && job.vietnamese_description.length > 0);
         }
+      }
+      
+      // Apply show expired filter
+      if (!filters.showExpired) {
+        result = result.filter(job => job.status !== 'expired');
       }
       
       setFilteredJobs(result);

@@ -9,7 +9,8 @@ import SalonsEmptyState from "@/components/salons/SalonsEmptyState";
 import SalonsLoadingState from "@/components/salons/SalonsLoadingState";
 import FeaturedSalonsSection from "@/components/salons/FeaturedSalonsSection";
 import SalonPromotion from "@/components/salons/SalonPromotion";
-import { useSalonsData, SalonFilters } from '@/hooks/useSalonsData';
+import { useSalonsData } from '@/hooks/useSalonsData';
+import { SalonFilters, SalonListing } from '@/types/salon';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -25,8 +26,8 @@ const SalonsFinal: React.FC = () => {
     loading, 
     error, 
     filters, 
-    searchTerm, 
-    setSearchTerm, 
+    searchTerm,
+    setSearchTerm,
     updateFilters, 
     resetFilters,
     featuredSalons,
@@ -42,7 +43,7 @@ const SalonsFinal: React.FC = () => {
   
   // Apply tab filtering to salons
   const filteredSalons = salons.filter(salon => {
-    if (activeTab === "featured" && !salon.is_featured) {
+    if (activeTab === "featured" && !salon.isFeatured) {
       return false;
     }
     
@@ -59,7 +60,7 @@ const SalonsFinal: React.FC = () => {
   };
   
   // Update this function to navigate to the salon detail page
-  const handleViewSalonDetails = (salon: Job) => {
+  const handleViewSalonDetails = (salon: any) => {
     console.log("Navigating to salon details:", salon.id);
     navigate(`/salons/${salon.id}`);
   };

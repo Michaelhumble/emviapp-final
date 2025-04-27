@@ -2,12 +2,11 @@
 import { SalonListing } from "@/types/salon";
 import SalonCard from "./SalonCard";
 
-interface FeaturedSalonsSectionProps {
+interface FeaturedSalonsProps {
   featuredSalons: SalonListing[];
-  onViewDetails?: (salon: SalonListing) => void;
 }
 
-const FeaturedSalonsSection = ({ featuredSalons, onViewDetails }: FeaturedSalonsSectionProps) => {
+const FeaturedSalons = ({ featuredSalons }: FeaturedSalonsProps) => {
   if (!featuredSalons.length) return null;
   
   return (
@@ -20,7 +19,6 @@ const FeaturedSalonsSection = ({ featuredSalons, onViewDetails }: FeaturedSalons
             salon={salon} 
             featured={true} 
             index={index}
-            onViewDetails={onViewDetails}
           />
         ))}
       </div>
@@ -28,4 +26,4 @@ const FeaturedSalonsSection = ({ featuredSalons, onViewDetails }: FeaturedSalons
   );
 };
 
-export default FeaturedSalonsSection;
+export default FeaturedSalons;

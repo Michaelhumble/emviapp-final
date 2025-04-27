@@ -47,7 +47,7 @@ const SalonServicesSection: React.FC<SalonServicesSectionProps> = ({
   // Extract unique categories
   const categories = useMemo(() => {
     const uniqueCategories = Array.from(new Set(services.map(service => service.category)));
-    return uniqueCategories;
+    return uniqueCategories as string[];
   }, [services]);
   
   // Filter services by category
@@ -75,7 +75,7 @@ const SalonServicesSection: React.FC<SalonServicesSectionProps> = ({
                 All
               </Button>
               
-              {categories.map(category => (
+              {categories.map((category) => (
                 <Button
                   key={category}
                   variant={selectedCategory === category ? "default" : "outline"}

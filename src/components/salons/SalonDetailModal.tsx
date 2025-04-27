@@ -1,17 +1,8 @@
-
-import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import React from 'react';
+import { Job } from "@/types/salon";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { 
-  MapPin, Phone, DollarSign, Users, Building, Ruler, 
-  Mail, Home, Calendar, Check, Clock, Info, Lock
-} from "lucide-react";
-import { Job } from "@/types/job";
-import { Separator } from "@/components/ui/separator";
-import AuthGuard from "@/components/auth/AuthGuard";
-import { Link } from "react-router-dom";
-import { useTranslation } from "@/hooks/useTranslation";
-import AuthAction from "@/components/common/AuthAction";
+import { X, MapPin, DollarSign, Phone, Mail, Link as LinkIcon } from "lucide-react";
 
 interface SalonDetailModalProps {
   salon: Job | null;
@@ -20,9 +11,9 @@ interface SalonDetailModalProps {
 }
 
 const SalonDetailModal = ({ salon, isOpen, onClose }: SalonDetailModalProps) => {
-  const { t, isVietnamese } = useTranslation();
-  
   if (!salon) return null;
+
+  const { t, isVietnamese } = useTranslation();
   
   const isExpired = false; // This would be determined by checking dates in a real implementation
   

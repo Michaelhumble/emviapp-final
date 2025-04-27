@@ -1,11 +1,11 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 
-interface SalonsLoadingStateProps {
+interface LoadingStateProps {
   count?: number;
 }
 
-const SalonsLoadingState = ({ count = 6 }: SalonsLoadingStateProps) => {
+const LoadingState = ({ count = 6 }: LoadingStateProps) => {
   return (
     <>
       {Array.from({ length: count }).map((_, index) => (
@@ -27,4 +27,4 @@ const SalonsLoadingState = ({ count = 6 }: SalonsLoadingStateProps) => {
   );
 };
 
-export default SalonsLoadingState;
+export default LoadingState;
