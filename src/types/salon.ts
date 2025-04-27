@@ -8,9 +8,11 @@ export interface SalonListing {
   description: string;
   price: number;
   contact_hidden: boolean;
+  created_at: string;
+  
+  // Optional fields
   is_featured?: boolean;
   image_url?: string;
-  created_at: string;
   
   // Additional properties that are being used
   image?: string;
@@ -24,7 +26,7 @@ export interface SalonListing {
   website?: string;
   tags?: string[];
   squareFeet?: number;
-  square_feet?: string;
+  square_feet?: string | number;
   established?: number;
   company?: string;
   contact_info?: {

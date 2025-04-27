@@ -47,9 +47,47 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
       let filteredSalons = getSalonsForSale(30).map(salon => {
         return {
           ...salon,
+          // Required SalonListing fields with defaults if missing
+          id: salon.id || '',
+          name: salon.salon_name || salon.name || '',
+          location: salon.location || `${salon.city || ''}, ${salon.state || ''}`,
           listing_type: salon.type || 'For Sale', // Default value
+          description: salon.description || '',
+          price: typeof salon.price === 'number' ? salon.price : 
+                 typeof salon.asking_price === 'number' ? salon.asking_price :
+                 parseFloat((salon.asking_price || '0').toString().replace(/[^0-9.-]+/g, '') || '0'),
           contact_hidden: salon.contact_hidden || false, // Default value
           created_at: salon.created_at || new Date().toISOString(), // Default value
+          
+          // Optional fields with proper typing
+          is_featured: salon.is_featured || salon.isFeatured || false,
+          image_url: salon.image_url || salon.image || undefined,
+          image: salon.image || undefined,
+          type: salon.type || 'For Sale',
+          priceUnit: salon.priceUnit || 'one-time',
+          shortDescription: salon.shortDescription || salon.description?.substring(0, 100) || '',
+          features: salon.features || salon.salon_features || [],
+          contactName: salon.contactName || salon.contact_info?.name || '',
+          contactPhone: salon.contactPhone || salon.contact_info?.phone || '',
+          contactEmail: salon.contactEmail || salon.contact_info?.email || '',
+          website: salon.website || '',
+          tags: salon.tags || [],
+          squareFeet: salon.squareFeet || 
+                     (salon.square_feet ? (typeof salon.square_feet === 'string' ? 
+                     parseInt(salon.square_feet, 10) : salon.square_feet) : 0),
+          established: salon.established || 0,
+          chairs: salon.chairs || salon.number_of_stations || 0,
+          has_wax_room: salon.has_wax_room || false,
+          has_dining_room: salon.has_dining_room || false,
+          has_laundry: salon.has_laundry || false,
+          owner_will_train: salon.owner_will_train || false,
+          reason_for_selling: salon.reason_for_selling || '',
+          salon_features: salon.salon_features || [],
+          asking_price: salon.asking_price || 0,
+          has_housing: salon.has_housing || false,
+          vietnamese_description: salon.vietnamese_description || '',
+          status: salon.status || 'active',
+          isFeatured: salon.isFeatured || salon.is_featured || false
         } as SalonListing;
       });
       
@@ -110,9 +148,21 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
         .map(salon => {
           return {
             ...salon,
+            // Required SalonListing fields
+            id: salon.id || '',
+            name: salon.salon_name || salon.name || '',
+            location: salon.location || `${salon.city || ''}, ${salon.state || ''}`,
             listing_type: salon.type || 'For Sale',
+            description: salon.description || '',
+            price: typeof salon.price === 'number' ? salon.price : 
+                 typeof salon.asking_price === 'number' ? salon.asking_price :
+                 parseFloat((salon.asking_price || '0').toString().replace(/[^0-9.-]+/g, '') || '0'),
             contact_hidden: salon.contact_hidden || false,
             created_at: salon.created_at || new Date().toISOString(),
+            
+            // Optional fields
+            is_featured: true,
+            image: salon.image || undefined,
           } as SalonListing;
         });
       

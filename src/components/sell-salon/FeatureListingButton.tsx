@@ -1,8 +1,6 @@
 
-import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
-import { SalonListing } from '@/types/salon';
 
 interface FeatureListingButtonProps {
   salonId: string;
@@ -13,24 +11,26 @@ interface FeatureListingButtonProps {
 
 const FeatureListingButton = ({ 
   salonId, 
-  currentlyFeatured = false,
+  currentlyFeatured = false, 
   onFeature,
   disabled = false
 }: FeatureListingButtonProps) => {
-  const handleClick = () => {
-    if (onFeature) onFeature(salonId);
+  const handleFeatureClick = () => {
+    if (onFeature) {
+      onFeature(salonId);
+    }
   };
-  
+
   return (
-    <Button 
-      variant={currentlyFeatured ? "default" : "outline"}
+    <Button
       size="sm"
-      onClick={handleClick}
+      variant={currentlyFeatured ? "default" : "outline"}
+      className={currentlyFeatured ? "bg-amber-500 hover:bg-amber-600" : ""}
+      onClick={handleFeatureClick}
       disabled={disabled}
-      className="flex items-center gap-1"
     >
-      <Star className={`h-4 w-4 ${currentlyFeatured ? 'fill-current' : ''}`} />
-      {currentlyFeatured ? 'Featured' : 'Feature Listing'}
+      <Star className={`h-4 w-4 mr-1 ${currentlyFeatured ? "fill-white" : ""}`} />
+      {currentlyFeatured ? "Featured" : "Feature"}
     </Button>
   );
 };

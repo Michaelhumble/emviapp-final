@@ -14,11 +14,14 @@ interface SalonDetailModalProps {
 const SalonDetailModal = ({ salon, isOpen, onClose }: SalonDetailModalProps) => {
   if (!isOpen || !salon) return null;
 
-  const formatPrice = (price?: string) => {
+  const formatPrice = (price?: string | number) => {
     if (!price) return "Price not available";
     
+    // Convert to string if it's a number
+    const priceStr = typeof price === 'number' ? price.toString() : price;
+    
     // Simple formatting for now
-    return price;
+    return priceStr;
   };
 
   return (
