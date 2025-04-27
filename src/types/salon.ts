@@ -55,14 +55,10 @@ export interface Salon extends ISalon {
   beforeAfterGallery?: string[];
 }
 
-// Listing specific interface
-export interface SalonListing {
+// Listing specific interface with common properties for SalonListing and Job
+export interface BaseListingType {
   id: string;
-  name: string;
   location: string;
-  type: 'For Sale' | 'Booth Rental' | 'Full Salon';
-  price?: number;
-  priceUnit?: 'one-time' | 'monthly' | 'weekly';
   description: string;
   shortDescription?: string;
   image?: string;
@@ -74,6 +70,7 @@ export interface SalonListing {
   isFeatured?: boolean;
   is_featured?: boolean;
   squareFeet?: number;
+  square_feet?: string; // Added for backward compatibility
   established?: number;
   chairs?: number;
   status?: string;
@@ -82,13 +79,58 @@ export interface SalonListing {
   vietnamese_description?: string;
   asking_price?: string;
   has_housing?: boolean;
-  square_feet?: string;  // Added for backward compatibility
-  created_at: string;    // Changed from optional to required to match Job type
+  created_at: string;
+  title?: string; // Added to support both Job and SalonListing
+  name?: string; // Made optional since Job might use title instead
+}
+
+// Listing specific interface
+export interface SalonListing extends BaseListingType {
+  name: string; // SalonListing requires name
+  type: 'For Sale' | 'Booth Rental' | 'Full Salon';
+  price?: number;
+  priceUnit?: 'one-time' | 'monthly' | 'weekly';
 }
 
 // Define Job type compatibility with SalonListing
-export interface Job extends SalonListing {
-  // Additional Job-specific fields are defined in src/types/job.ts
+export interface Job extends BaseListingType {
+  // Job-specific fields
+  role?: string;
+  employment_type?: string;
+  compensation_details?: string;
+  compensation_type?: string;
+  contact_info?: {
+    owner_name?: string;
+    phone?: string;
+    email?: string;
+    notes?: string;
+  };
+  for_sale?: boolean;
+  number_of_stations?: string;
+  reason_for_selling?: string;
+  specialties?: string[];
+  weekly_pay?: boolean;
+  has_wax_room?: boolean;
+  has_dining_room?: boolean;
+  has_laundry?: boolean;
+  no_supply_deduction?: boolean;
+  owner_will_train?: boolean;
+  tip_range?: string;
+  salary_range?: string;
+  salon_type?: string;
+  expires_at?: string;
+  boosted_until?: string;
+  user_id?: string;
+  requirements?: string[] | string;
+  preferred_languages?: string[];
+  benefits?: string[];
+  revenue?: string;
+  experience_level?: string;
+  is_remote?: boolean;
+  role_normalized?: string;
+  is_urgent?: boolean;
+  type?: string;
+  monthly_rent?: string;
 }
 
 export interface SalonFilters {

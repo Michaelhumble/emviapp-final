@@ -67,6 +67,20 @@ const SalonCard = ({ salon, featured = false, index = 0, isExpired = false, onVi
   // Add animation delay for staggered entry
   const animationDelay = `${index * 150}ms`;
 
+  // Get display name from either name or title property
+  const getDisplayName = (): string => {
+    if ('name' in salon && salon.name) {
+      return salon.name;
+    }
+    if ('title' in salon && salon.title) {
+      return salon.title;
+    }
+    if (salon.company) {
+      return salon.company;
+    }
+    return "Salon Listing";
+  };
+
   return (
     <Card 
       className={`overflow-hidden transition-all duration-300 hover:shadow-md ${
@@ -79,7 +93,7 @@ const SalonCard = ({ salon, featured = false, index = 0, isExpired = false, onVi
           <div className="aspect-video w-full overflow-hidden">
             <img
               src={salon.image}
-              alt={salon.name || "Salon"}
+              alt={getDisplayName()}
               className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
             />
           </div>
@@ -116,7 +130,7 @@ const SalonCard = ({ salon, featured = false, index = 0, isExpired = false, onVi
             className="font-playfair text-lg font-semibold mb-1 line-clamp-2 hover:cursor-pointer"
             onClick={handleViewDetails}
           >
-            {salon.name || salon.title || salon.company || "Salon Listing"}
+            {getDisplayName()}
           </h3>
           <div className="flex items-center text-gray-500 text-sm mb-2">
             <MapPin className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
@@ -125,7 +139,7 @@ const SalonCard = ({ salon, featured = false, index = 0, isExpired = false, onVi
           {(salon.price || salon.asking_price) && (
             <div className="flex items-center text-green-700 font-medium">
               <DollarSign className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
-              <span>{formatPrice(salon.price || salon.asking_price, salon.priceUnit)}</span>
+              <span>{formatPrice(salon.price || salon.asking_price, 'priceUnit' in salon ? salon.priceUnit : undefined)}</span>
             </div>
           )}
         </div>

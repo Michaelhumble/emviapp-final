@@ -1,8 +1,9 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { differenceInDays } from 'date-fns';
-import { SalonListing, SalonFilters } from "@/types/salon";
+import { SalonListing, SalonFilters, Job, BaseListingType } from "@/types/salon";
 
 // Use mock data for now
 import { salonsForSaleJobs } from "@/utils/jobs/mockJobData";
@@ -16,8 +17,8 @@ export const defaultFilters: SalonFilters = {
 };
 
 export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
-  const [salons, setSalons] = useState<SalonListing[]>([]);
-  const [allSalons, setAllSalons] = useState<SalonListing[]>([]);
+  const [salons, setSalons] = useState<(SalonListing | Job)[]>([]);
+  const [allSalons, setAllSalons] = useState<(SalonListing | Job)[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [filters, setFilters] = useState<SalonFilters>({
@@ -25,7 +26,7 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
     ...initialFilters
   });
   const [searchTerm, setSearchTerm] = useState("");
-  const [featuredSalons, setFeaturedSalons] = useState<SalonListing[]>([]);
+  const [featuredSalons, setFeaturedSalons] = useState<(SalonListing | Job)[]>([]);
   const [suggestedKeywords, setSuggestedKeywords] = useState<string[]>([
     "7 Years Established", 
     "High Traffic Area", 
@@ -43,7 +44,18 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
       console.log("Fetching salons with filters:", filters);
       
       // Use the new getSalonsForSale function to get more salon listings
-      let filteredSalons = getSalonsForSale(30);
+      let filteredSalons: (SalonListing | Job)[] = getSalonsForSale(30);
+
+      // Make sure all items have created_at property
+      filteredSalons = filteredSalons.map(salon => {
+        if (!salon.created_at) {
+          return {
+            ...salon,
+            created_at: new Date().toISOString()
+          };
+        }
+        return salon;
+      });
       
       // Apply keyword search
       if (searchTerm) {
@@ -97,7 +109,17 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
 
       // Set featured salons
       const featured = getSalonsForSale(3)
-        .filter(salon => salon.is_featured && salon.status !== 'expired');
+        .filter(salon => salon.is_featured && salon.status !== 'expired')
+        .map(salon => {
+          // Ensure created_at exists
+          if (!salon.created_at) {
+            return {
+              ...salon,
+              created_at: new Date().toISOString()
+            };
+          }
+          return salon;
+        });
       
       setFeaturedSalons(featured);
       setSalons(filteredSalons);
