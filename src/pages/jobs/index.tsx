@@ -1,25 +1,28 @@
-
-import { useState, useEffect, useMemo } from "react";
-import { Layout } from "@/components/layout";
-import JobListingCard from "@/components/jobs/JobListingCard";
-import JobDetailModal from "@/components/jobs/JobDetailModal";
-import { useJobsData, JobFilters } from "@/hooks/useJobsData";
-import { Job } from "@/types/job";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Search, Filter, MapPin, X, DollarSign, Star, CheckCircle } from "lucide-react";
-import JobEmptyState from "@/components/jobs/JobEmptyState";
-import { Badge } from "@/components/ui/badge";
-import { motion } from "framer-motion";
-import { useAuth } from "@/context/auth";
-import FeaturedJobsSection from "@/components/jobs/FeaturedJobsSection";
-import VietnameseJobSection from "@/components/jobs/VietnameseJobSection";
-import { useJobRenewal } from "@/hooks/useJobRenewal";
-import { JobsGrid } from "@/components/jobs/JobsGrid";
+import React, { useState, useEffect } from 'react';
+import { useJobsData } from '@/hooks/useJobsData';
+import { Job } from '@/types/job';
+import JobListingCard from '@/components/jobs/JobListingCard';
+import JobDetailModal from '@/components/jobs/JobDetailModal';
+import JobEmptyState from '@/components/jobs/JobEmptyState';
+import { useJobRenewal } from '@/hooks/useJobRenewal';
+import { useAuth } from '@/context/auth';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Search, Filter, X, MapPin } from 'lucide-react';
+import FeaturedJobsSection from '@/components/jobs/FeaturedJobsSection';
+import VietnameseJobSection from '@/components/jobs/VietnameseJobSection';
+import JobsGrid from '@/components/jobs/JobsGrid';
 
 const JobsPage = () => {
   const { 
@@ -45,7 +48,6 @@ const JobsPage = () => {
     renewalJobId
   } = useJobRenewal({
     onSuccess: () => {
-      // Update expired status after renewal
       if (selectedJob) {
         setExpiredJobs(prev => ({
           ...prev,
@@ -55,19 +57,16 @@ const JobsPage = () => {
     }
   });
 
-  // Check for expired jobs
   useEffect(() => {
     const checkExpirations = () => {
       const expirations: Record<string, boolean> = {};
       
       jobs.forEach(job => {
-        // If already marked as expired
         if (job.status === 'expired') {
           expirations[job.id] = true;
           return;
         }
         
-        // Check by date (30 days from posting)
         const createdDate = new Date(job.created_at);
         const today = new Date();
         const diffTime = today.getTime() - createdDate.getTime();
@@ -82,7 +81,6 @@ const JobsPage = () => {
     checkExpirations();
   }, [jobs]);
 
-  // Filter for Vietnamese jobs
   const vietnameseJobs = useMemo(() => {
     return jobs.filter(job => 
       job.vietnamese_description && 
@@ -91,27 +89,22 @@ const JobsPage = () => {
     ).slice(0, 4);
   }, [jobs, expiredJobs]);
 
-  // Handle opening job details
   const viewJobDetails = (job: Job) => {
     setSelectedJob(job);
   };
 
-  // Handle closing job details
   const closeJobDetails = () => {
     setSelectedJob(null);
   };
 
-  // Handle renewing a job
   const handleRenewJob = async (job: Job) => {
     await renewJob(job.id);
   };
 
-  // Toggle showing filters on mobile
   const toggleFilters = () => {
     setShowFilters(prev => !prev);
   };
 
-  // Reset all filters
   const resetFilters = () => {
     updateFilters({
       featured: false,
@@ -132,13 +125,10 @@ const JobsPage = () => {
     updateSearchTerm("");
   };
 
-  // Handle search submission
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // Search is already handled by updateSearchTerm
   };
 
-  // Search keyword suggestion click
   const handleSuggestionClick = (keyword: string) => {
     updateSearchTerm(keyword);
   };
@@ -163,7 +153,6 @@ const JobsPage = () => {
           </Button>
         </div>
 
-        {/* Search bar */}
         <form onSubmit={handleSearch} className="mb-6">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -203,7 +192,6 @@ const JobsPage = () => {
         </form>
 
         <div className="grid grid-cols-12 gap-6">
-          {/* Filters sidebar */}
           <div className={`col-span-12 lg:col-span-3 ${showFilters ? 'block' : 'hidden'} lg:block`}>
             <Card className="sticky top-20">
               <CardHeader className="pb-3">
@@ -222,7 +210,6 @@ const JobsPage = () => {
                 </div>
               </CardHeader>
               <CardContent className="space-y-5">
-                {/* Job Type Filters */}
                 <div className="space-y-3">
                   <h4 className="font-medium text-sm">Job Type</h4>
                   <div className="flex items-center space-x-2">
@@ -251,7 +238,6 @@ const JobsPage = () => {
                   </div>
                 </div>
 
-                {/* Pay Type Filter */}
                 <div className="space-y-3">
                   <h4 className="font-medium text-sm">Payment Type</h4>
                   <Select 
@@ -270,7 +256,6 @@ const JobsPage = () => {
                   </Select>
                 </div>
 
-                {/* Job Benefits */}
                 <div className="space-y-3">
                   <h4 className="font-medium text-sm">Benefits</h4>
                   <div className="flex items-center space-x-2">
@@ -307,7 +292,6 @@ const JobsPage = () => {
                   </div>
                 </div>
 
-                {/* Featured Filter */}
                 <div className="space-y-3">
                   <h4 className="font-medium text-sm">Other Filters</h4>
                   <div className="flex items-center space-x-2">
@@ -331,19 +315,15 @@ const JobsPage = () => {
             </Card>
           </div>
 
-          {/* Main content */}
           <div className="col-span-12 lg:col-span-9">
-            {/* Featured jobs section */}
             {!searchTerm && featuredJobs.length > 0 && !filters.featured && (
               <FeaturedJobsSection featuredJobs={featuredJobs} onViewDetails={viewJobDetails} />
             )}
 
-            {/* Vietnamese jobs section */}
             {!searchTerm && vietnameseJobs.length > 0 && !filters.language && (
               <VietnameseJobSection vietnameseJobs={vietnameseJobs} onViewDetails={viewJobDetails} />
             )}
 
-            {/* Active filters */}
             {Object.values(filters).some(val => val === true || (typeof val === 'string' && val !== 'all')) && (
               <div className="mb-6 flex flex-wrap gap-2">
                 {filters.featured && (
@@ -470,7 +450,6 @@ const JobsPage = () => {
               </div>
             )}
 
-            {/* Results stats */}
             {!loading && (
               <div className="mb-6">
                 <p className="text-gray-600">
@@ -480,7 +459,6 @@ const JobsPage = () => {
               </div>
             )}
             
-            {/* Job listings */}
             {loading ? (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {[1, 2, 3, 4].map(i => (
@@ -511,7 +489,6 @@ const JobsPage = () => {
           </div>
         </div>
 
-        {/* Job detail modal */}
         {selectedJob && (
           <JobDetailModal 
             job={selectedJob}

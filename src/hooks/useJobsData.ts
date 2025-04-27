@@ -42,4 +42,4 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
 };
 
 export default useJobsData;
-export { JobFilters };
+export type { JobFilters };

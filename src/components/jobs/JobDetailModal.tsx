@@ -76,7 +76,10 @@ const JobDetailModal = ({
               ? 'Đăng ký để xem thông tin liên lạc và ứng tuyển công việc này.'
               : 'Sign in to view contact details and apply for this job.'}
           </p>
-          <AuthAction type="signUp">
+          <AuthAction 
+            onAction={() => Promise.resolve(true)}
+            customTitle={isVietnamese ? 'Đăng ký để liên hệ' : 'Sign up to contact'}
+          >
             <Button variant="default" className="w-full">
               {isVietnamese ? 'Đăng ký' : 'Sign Up'}
             </Button>
