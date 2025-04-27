@@ -25,16 +25,16 @@ const SalonCard = ({ salon, featured = false, index = 0, isExpired = false, onVi
     }
   };
   
-  const formatPrice = (price?: number | string, unit?: string) => {
-    if (!price) return "Not for sale";
+  const formatPrice = (priceValue?: number | string, unit?: string) => {
+    if (!priceValue) return "Not for sale";
     
     // Handle both string and number types
     let numericPrice: number;
-    if (typeof price === 'string') {
+    if (typeof priceValue === 'string') {
       // Extract numeric value from string
-      numericPrice = parseFloat(price.replace(/[^0-9.-]+/g, "") || "0");
+      numericPrice = parseFloat(priceValue.replace(/[^0-9.-]+/g, "") || "0");
     } else {
-      numericPrice = price;
+      numericPrice = priceValue;
     }
     
     const formattedPrice = new Intl.NumberFormat('en-US', {
@@ -75,10 +75,29 @@ const SalonCard = ({ salon, featured = false, index = 0, isExpired = false, onVi
     if ('title' in salon && salon.title) {
       return salon.title;
     }
-    if (salon.company) {
+    if ('company' in salon && salon.company) {
       return salon.company;
     }
     return "Salon Listing";
+  };
+
+  // Get price from either price or asking_price property
+  const getPrice = (): string | number | undefined => {
+    if ('price' in salon && salon.price !== undefined) {
+      return salon.price;
+    }
+    if ('asking_price' in salon && salon.asking_price) {
+      return salon.asking_price;
+    }
+    return undefined;
+  };
+  
+  // Get price unit if available
+  const getPriceUnit = (): string | undefined => {
+    if ('priceUnit' in salon && typeof salon.priceUnit === 'string') {
+      return salon.priceUnit;
+    }
+    return undefined;
   };
 
   return (
@@ -136,10 +155,10 @@ const SalonCard = ({ salon, featured = false, index = 0, isExpired = false, onVi
             <MapPin className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
             <span>{salon.location}</span>
           </div>
-          {(salon.price || salon.asking_price) && (
+          {getPrice() && (
             <div className="flex items-center text-green-700 font-medium">
               <DollarSign className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
-              <span>{formatPrice(salon.price || salon.asking_price, 'priceUnit' in salon ? salon.priceUnit : undefined)}</span>
+              <span>{formatPrice(getPrice(), getPriceUnit())}</span>
             </div>
           )}
         </div>

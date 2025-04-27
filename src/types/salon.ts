@@ -78,17 +78,25 @@ export interface BaseListingType {
   company?: string;
   vietnamese_description?: string;
   asking_price?: string;
+  price?: number | string; // Added for compatibility across both types
   has_housing?: boolean;
   created_at: string;
   title?: string; // Added to support both Job and SalonListing
   name?: string; // Made optional since Job might use title instead
+  monthly_rent?: string; // Added for Job type compatibility
+  number_of_stations?: string;
+  revenue?: string;
+  has_wax_room?: boolean;
+  has_dining_room?: boolean;
+  has_laundry?: boolean;
+  owner_will_train?: boolean;
+  reason_for_selling?: string;
 }
 
 // Listing specific interface
 export interface SalonListing extends BaseListingType {
   name: string; // SalonListing requires name
   type: 'For Sale' | 'Booth Rental' | 'Full Salon';
-  price?: number;
   priceUnit?: 'one-time' | 'monthly' | 'weekly';
 }
 
@@ -130,7 +138,6 @@ export interface Job extends BaseListingType {
   role_normalized?: string;
   is_urgent?: boolean;
   type?: string;
-  monthly_rent?: string;
 }
 
 export interface SalonFilters {
