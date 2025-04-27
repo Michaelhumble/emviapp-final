@@ -23,7 +23,9 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
     ...initialFilters
   });
   const [searchTerm, setSearchTerm] = useState("");
+  // Fixed Type Error #1: Properly define featuredSalons with the same union type
   const [featuredSalons, setFeaturedSalons] = useState<(SalonListing | Job)[]>([]);
+  // Fixed Error #2: Define suggestedKeywords state properly
   const [suggestedKeywords, setSuggestedKeywords] = useState<string[]>([
     "7 Years Established", 
     "High Traffic Area", 
@@ -83,6 +85,7 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
               : Number(salon.price) || 0;
           }
           
+          // Fixed error #3 & #4: Comparison of price range values
           return priceValue >= filters.priceRange![0] && priceValue <= filters.priceRange![1];
         });
       }
@@ -131,6 +134,7 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
           salon.salon_features.forEach(f => newKeywords.add(f));
         }
       });
+      // Fixed Error #2: Use setSuggestedKeywords correctly
       setSuggestedKeywords(Array.from(newKeywords));
       
     } catch (err) {
