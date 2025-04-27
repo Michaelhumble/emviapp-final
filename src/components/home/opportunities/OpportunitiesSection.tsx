@@ -16,7 +16,7 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
   const navigate = useNavigate();
   
   const handleViewDetails = async (job: Job): Promise<boolean> => {
-    // Navigate to the dedicated opportunity detail page
+    // Navigate to the dedicated opportunity detail page with the specific job ID
     navigate(`/opportunities/${job.id}`);
     return true; // Return true to indicate successful navigation
   };

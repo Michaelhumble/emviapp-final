@@ -31,6 +31,17 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
 
   return (
     <Card className="overflow-hidden h-full flex flex-col transition-all duration-200 hover:shadow-lg cursor-pointer">
+      {/* Add image if available */}
+      {listing.image && (
+        <div className="aspect-video w-full overflow-hidden">
+          <img 
+            src={listing.image}
+            alt={listing.title || listing.company || "Opportunity"}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
+      
       <CardContent className="p-5 flex flex-col h-full">
         <div className="flex justify-between mb-2">
           <h3 className="font-semibold text-lg line-clamp-1">{listing.title || listing.company}</h3>

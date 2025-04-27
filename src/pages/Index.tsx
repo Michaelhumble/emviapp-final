@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -11,6 +12,7 @@ import AIPowerhouse from "@/components/home/AIPowerhouse";
 import AITeam from "@/components/home/AITeam";
 import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 import MissingPieceSection from "@/components/home/missing-piece";
+import { runListingsVerification } from "@/utils/listingsVerification";
 
 // Enhanced homepage components
 import LatestIndustryOpportunities from "@/components/home/LatestIndustryOpportunities";
@@ -37,6 +39,9 @@ const Index = () => {
   useEffect(() => {
     document.title = "EmviApp | The Beauty Industry Platform";
     console.log("Index page loaded");
+    
+    // Run verification to ensure all listings have proper routing
+    runListingsVerification();
   }, []);
   
   return (

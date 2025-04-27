@@ -206,6 +206,7 @@ const SalonJobListingsShowcase = () => {
   const navigate = useNavigate();
 
   const handleViewDetails = async (job: Job): Promise<boolean> => {
+    // Always navigate to the specific opportunity detail page using the job's ID
     navigate(`/opportunities/${job.id}`);
     return true;
   };
