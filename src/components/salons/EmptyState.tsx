@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Search, RefreshCw } from "lucide-react";
 
 export interface EmptyStateProps {
-  resetFilters: () => void;
+  resetFilters?: () => void;
 }
 
 const EmptyState = ({ resetFilters }: EmptyStateProps) => {
@@ -17,10 +17,12 @@ const EmptyState = ({ resetFilters }: EmptyStateProps) => {
       <p className="text-gray-600 max-w-md mb-6">
         We couldn't find any salons matching your current filters. Try adjusting your search criteria or browse all listings.
       </p>
-      <Button onClick={resetFilters} className="flex items-center">
-        <RefreshCw className="h-4 w-4 mr-2" />
-        Reset Filters
-      </Button>
+      {resetFilters && (
+        <Button onClick={resetFilters} className="flex items-center">
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Reset Filters
+        </Button>
+      )}
     </div>
   );
 };
