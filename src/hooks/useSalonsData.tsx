@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -91,13 +92,15 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
 
       // Sort by featured status - featured listings first
       filteredSalons.sort((a, b) => {
-        if (a.is_featured === b.is_featured) return 0;
-        return a.is_featured ? -1 : 1;
+        const aFeatured = a.is_featured || a.isFeatured;
+        const bFeatured = b.is_featured || b.isFeatured;
+        if (aFeatured === bFeatured) return 0;
+        return aFeatured ? -1 : 1;
       });
 
       // Set featured salons
       const featured = getSalonsForSale(3)
-        .filter(salon => salon.is_featured && salon.status !== 'expired');
+        .filter(salon => (salon.is_featured || salon.isFeatured) && salon.status !== 'expired');
       
       setFeaturedSalons(featured);
       setSalons(filteredSalons);
@@ -109,6 +112,7 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
           salon.salon_features.forEach(f => keywords.add(f));
         }
       });
+      // Use the state setter directly here
       setSuggestedKeywords(Array.from(keywords));
     } catch (err) {
       console.error("Error fetching salons:", err);

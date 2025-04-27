@@ -71,6 +71,7 @@ export interface SalonListing {
   contactPhone?: string;
   contactEmail?: string;
   website?: string;
+  // Added both property names for compatibility
   isFeatured?: boolean;
   is_featured?: boolean;
   squareFeet?: number;
@@ -82,8 +83,11 @@ export interface SalonListing {
   vietnamese_description?: string;
   asking_price?: string;
   has_housing?: boolean;
-  square_feet?: string;  // Added for backward compatibility
-  created_at: string;    // Changed from optional to required to match Job type
+  square_feet?: string;
+  created_at: string;
+  // Add the missing properties
+  listing_type?: string;
+  contact_hidden?: boolean;
 }
 
 // Define Job type for compatibility
