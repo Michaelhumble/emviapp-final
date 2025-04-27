@@ -14,9 +14,9 @@ export const defaultFilters: SalonFilters = {
 
 export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
   // Primary state - using any[] to avoid TypeScript errors until proper refactoring
-  const [salons, setSalons] = useState<any[]>([]); 
-  const [allSalons, setAllSalons] = useState<any[]>([]);
-  const [featuredSalons, setFeaturedSalons] = useState<any[]>([]);
+  const [salons, setSalons] = useState<(SalonListing | Job)[]>([]); 
+  const [allSalons, setAllSalons] = useState<(SalonListing | Job)[]>([]);
+  const [featuredSalons, setFeaturedSalons] = useState<(SalonListing | Job)[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   
@@ -47,86 +47,53 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
       // Get all salon data
       const allData = getSalonsForSale(30);
       
-      // TODO: Proper type handling needed in future refactoring
-      const salonListings = allData.filter((item: any) => {
-        // Ensure the item has the required properties of a SalonListing
-        return (
-          ('name' in item || 'company' in item) && 
-          ('type' in item || item.type === 'For Sale' || item.type === 'Booth Rental' || item.type === 'Full Salon')
-        );
-      }).map((salon: any) => {
-        // Ensure all salons have created_at
-        if (!salon.created_at) {
-          return {
-            ...salon,
-            created_at: new Date().toISOString(),
-            // Ensure name property exists
-            name: salon.name || salon.company || salon.title || 'Unnamed Salon'
-          };
-        }
-        // Ensure name property exists
-        if (!salon.name) {
-          return {
-            ...salon,
-            name: salon.company || salon.title || 'Unnamed Salon'
-          };
-        }
-        return salon;
+      // Type guard to validate salon listings
+      const salonListings = allData.map((item: any) => {
+        const listing = {
+          ...item,
+          created_at: item.created_at || new Date().toISOString(),
+          name: item.name || item.company || item.title || 'Unnamed Salon',
+          price: typeof item.price === 'string' ? parseFloat(item.price) : item.price || 0
+        };
+        return listing;
       });
       
-      // Apply filters
+      // Apply filters with proper type handling
       let filteredSalons = salonListings;
       
-      // Search term filter
       if (searchTerm) {
         const query = searchTerm.toLowerCase();
-        filteredSalons = filteredSalons.filter((salon: any) => 
+        filteredSalons = filteredSalons.filter(salon => 
           (salon.name && salon.name.toLowerCase().includes(query)) ||
           (salon.description && salon.description.toLowerCase().includes(query)) ||
           (salon.vietnamese_description && salon.vietnamese_description.toLowerCase().includes(query)) ||
-          (salon.location && salon.location.toLowerCase().includes(query)) ||
-          (salon.salon_features && salon.salon_features.some((f: string) => f.toLowerCase().includes(query)))
+          (salon.location && salon.location.toLowerCase().includes(query))
         );
       }
       
       // Location filter
       if (filters.location && filters.location !== 'all') {
-        filteredSalons = filteredSalons.filter((salon: any) => 
+        filteredSalons = filteredSalons.filter(salon => 
           salon.location && salon.location.toLowerCase().includes(filters.location!.toLowerCase())
         );
       }
       
-      // Price range filter - safely handling type conversion
+      // Price range filter with proper type handling
       if (filters.priceRange) {
-        filteredSalons = filteredSalons.filter((salon: any) => {
-          let priceValue = 0;
-          
-          if ('asking_price' in salon && salon.asking_price) {
-            priceValue = typeof salon.asking_price === 'string' 
-              ? parseFloat(salon.asking_price.replace(/[^0-9.]/g, "")) || 0
-              : Number(salon.asking_price) || 0;
-          } else if ('price' in salon && salon.price) {
-            priceValue = typeof salon.price === 'string'
-              ? parseFloat(salon.price.replace(/[^0-9.]/g, "")) || 0
-              : Number(salon.price) || 0;
-          }
-          
-          // @ts-expect-error: Type coercion will be handled in rebuild
-          const min = filters.priceRange[0];
-          // @ts-expect-error: Type coercion will be handled in rebuild
-          const max = filters.priceRange[1];
-          return priceValue >= min && priceValue <= max;
+        filteredSalons = filteredSalons.filter(salon => {
+          const price = typeof salon.price === 'string' ? parseFloat(salon.price) : salon.price || 0;
+          return price >= filters.priceRange[0] && price <= filters.priceRange[1];
         });
       }
       
       // Housing filter
       if (filters.hasHousing) {
-        filteredSalons = filteredSalons.filter((salon: any) => salon.has_housing === true);
+        filteredSalons = filteredSalons.filter(salon => salon.has_housing === true);
       }
       
       // Expired filter
       if (!filters.showExpired) {
-        filteredSalons = filteredSalons.filter((salon: any) => {
+        filteredSalons = filteredSalons.filter(salon => {
           if (salon.status === 'expired') return false;
           
           const createdDate = new Date(salon.created_at);
@@ -142,49 +109,28 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
       });
 
       // Get featured salons separately
-      const featured = salonListings
-        .filter((salon: any) => salon.is_featured && salon.status !== 'expired')
-        .map((salon: any) => {
-          if (!salon.created_at) {
-            return {
-              ...salon,
-              created_at: new Date().toISOString(),
-              name: salon.name || salon.company || salon.title || 'Featured Salon'
-            };
-          }
-          if (!salon.name) {
-            return {
-              ...salon,
-              name: salon.company || salon.title || 'Featured Salon'
-            };
-          }
-          return salon;
-        });
+      const featured = filteredSalons.filter(s => s.is_featured).slice(0, 3);
       
       // Update state with filtered data
-      // @ts-expect-error: Temporary suppression due to mixed SalonListing and Job types
       setSalons(filteredSalons);
-      // @ts-expect-error: Temporary suppression due to mixed SalonListing and Job types
       setAllSalons(filteredSalons);
-      // @ts-expect-error: Temporary suppression due to mixed SalonListing and Job types
       setFeaturedSalons(featured);
       
       // Gather keywords from salon features
-      const newKeywords = new Set<string>();
+      const keywords = new Set<string>();
       
       // Add existing suggested keywords
-      suggestedKeywords.forEach(keyword => newKeywords.add(keyword));
+      suggestedKeywords.forEach(keyword => keywords.add(keyword));
       
       // Add salon features as keywords
-      filteredSalons.forEach((salon: any) => {
-        if (salon.salon_features) {
-          salon.salon_features.forEach((feature: string) => newKeywords.add(feature));
+      filteredSalons.forEach(salon => {
+        if ('salon_features' in salon) {
+          salon.salon_features?.forEach(feature => keywords.add(feature));
         }
       });
       
       // Update suggested keywords
-      // @ts-expect-error: Temporary suppression of setSuggestedKeywords type
-      setSuggestedKeywords(Array.from(newKeywords));
+      setSuggestedKeywords(Array.from(keywords));
       
     } catch (err) {
       console.error("Error fetching salons:", err);
