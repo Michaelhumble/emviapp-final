@@ -1,10 +1,10 @@
 
-import { SalonListing } from "@/types/salon";
+import { SalonListing, Job } from "@/types/salon";
 import SalonCard from "./SalonCard";
 
 interface FeaturedSalonsSectionProps {
-  featuredSalons: SalonListing[];
-  onViewDetails?: (salon: SalonListing) => void;
+  featuredSalons: (SalonListing | Job)[];
+  onViewDetails?: (salon: SalonListing | Job) => void;
 }
 
 const FeaturedSalonsSection = ({ featuredSalons, onViewDetails }: FeaturedSalonsSectionProps) => {

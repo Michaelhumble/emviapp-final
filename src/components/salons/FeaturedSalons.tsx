@@ -1,9 +1,9 @@
 
-import { SalonListing } from "@/types/salon";
+import { SalonListing, Job } from "@/types/salon";
 import SalonCard from "./SalonCard";
 
 interface FeaturedSalonsProps {
-  featuredSalons: SalonListing[];
+  featuredSalons: (SalonListing | Job)[];
 }
 
 const FeaturedSalons = ({ featuredSalons }: FeaturedSalonsProps) => {
