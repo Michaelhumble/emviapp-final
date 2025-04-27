@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SalonListing } from "@/types/salon";
@@ -16,15 +17,24 @@ const SalonDetail = ({ salon }: SalonDetailProps) => {
   const { user } = useAuth();
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   
-  const formatPrice = (price?: number, unit?: string) => {
-    if (!price) return "Not for sale";
+  const formatPrice = (priceValue?: number | string, unit?: string) => {
+    if (!priceValue) return "Not for sale";
+    
+    // Handle both string and number types
+    let numericPrice: number;
+    if (typeof priceValue === 'string') {
+      // Extract numeric value from string
+      numericPrice = parseFloat(priceValue.replace(/[^0-9.-]+/g, "") || "0");
+    } else {
+      numericPrice = priceValue;
+    }
     
     const formattedPrice = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(price);
+    }).format(numericPrice);
     
     if (unit === 'one-time') return formattedPrice;
     if (unit === 'monthly') return `${formattedPrice}/month`;
@@ -185,3 +195,4 @@ const SalonDetail = ({ salon }: SalonDetailProps) => {
 };
 
 export default SalonDetail;
+

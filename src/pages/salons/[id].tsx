@@ -6,7 +6,7 @@ import SalonDetail from "@/components/salons/SalonDetail";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from "lucide-react";
-import { SalonListing } from "@/types/salon";
+import { SalonListing, Job } from "@/types/salon";
 import { useSalonsData } from "@/hooks/useSalonsData";
 import { Helmet } from "react-helmet";
 
@@ -31,8 +31,19 @@ const SalonDetailPage = () => {
         const foundSalon = allSalons.find(s => s.id === id);
         
         if (foundSalon) {
-          setSalon(foundSalon);
-          document.title = `${foundSalon.name} | EmviApp Salons`;
+          // Make sure the found salon has all required properties for SalonListing
+          const preparedSalon: SalonListing = {
+            ...foundSalon,
+            // Ensure required properties are present
+            name: 'name' in foundSalon && foundSalon.name ? foundSalon.name : 
+                 'title' in foundSalon && foundSalon.title ? foundSalon.title as string : 
+                 'company' in foundSalon && foundSalon.company ? foundSalon.company : 'Salon Listing',
+            // Ensure required SalonListing properties are set
+            type: foundSalon.type as 'For Sale' | 'Booth Rental' | 'Full Salon' || 'For Sale'
+          };
+            
+          setSalon(preparedSalon);
+          document.title = `${preparedSalon.name} | EmviApp Salons`;
         } else {
           setNotFound(true);
           document.title = "Salon Not Found | EmviApp";

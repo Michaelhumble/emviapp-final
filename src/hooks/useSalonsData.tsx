@@ -79,8 +79,20 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
       // Apply price range filter
       if (filters.priceRange) {
         filteredSalons = filteredSalons.filter(salon => {
-          const priceString = salon.asking_price || "";
+          // Handle price from either asking_price or price properties
+          let priceString: string = "";
+          if ('asking_price' in salon && salon.asking_price) {
+            priceString = salon.asking_price.toString();
+          } else if ('price' in salon && salon.price) {
+            priceString = salon.price.toString();
+          } else {
+            return false; // No price available
+          }
+          
+          // Parse the numeric value from the string
           const price = parseInt(priceString.replace(/[^0-9]/g, ""));
+          
+          // Now compare numbers with numbers
           return price >= filters.priceRange![0] && price <= filters.priceRange![1];
         });
       }
@@ -123,6 +135,7 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
       
       setFeaturedSalons(featured);
       setSalons(filteredSalons);
+      setAllSalons(filteredSalons);
       
       // Generate suggested keywords from actual data
       const keywords = new Set<string>(suggestedKeywords);
