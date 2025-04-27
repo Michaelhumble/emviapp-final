@@ -20,6 +20,7 @@ export interface JobFilters {
   noSupplyDeduction?: boolean;
   industry?: string;
   language?: string;
+  payType?: string; // Added payType filter
 }
 
 export const useJobsData = (initialFilters: JobFilters = {}) => {
@@ -91,6 +92,26 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
       
       if (filters.employmentType && filters.employmentType !== 'all') {
         filteredJobs = filteredJobs.filter(job => job.employment_type === filters.employmentType);
+      }
+      
+      // Pay Type filter
+      if (filters.payType && filters.payType !== 'all') {
+        if (filters.payType === 'commission') {
+          filteredJobs = filteredJobs.filter(job => 
+            job.compensation_type === 'commission' || 
+            (job.salary_range && job.salary_range.toLowerCase().includes('commission'))
+          );
+        } else if (filters.payType === 'hourly') {
+          filteredJobs = filteredJobs.filter(job => 
+            job.compensation_type === 'hourly' || 
+            (job.salary_range && job.salary_range.toLowerCase().includes('hour'))
+          );
+        } else if (filters.payType === 'salary') {
+          filteredJobs = filteredJobs.filter(job => 
+            job.compensation_type === 'salary' || 
+            (job.salary_range && job.salary_range.toLowerCase().includes('salary'))
+          );
+        }
       }
       
       // New filters
