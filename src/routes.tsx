@@ -4,7 +4,8 @@ import Welcome from './pages/Welcome';
 import NotFound from './pages/NotFound';
 import Artists from './pages/Artists';
 import JobsPage from './pages/jobs';
-import SalonsPage from './pages/salons/SalonsFinal';
+import SalonsPage from './pages/salons/index';
+import SalonDetailPage from './pages/salons/[id]';
 import SellSalon from './pages/salons/SellSalon';
 import Customers from './pages/Customers';
 import Suppliers from './pages/Suppliers';
@@ -26,11 +27,6 @@ import ResetPassword from './pages/auth/ResetPassword';
 import UserProfilePage from './pages/profile/UserProfilePage';
 import SalonOwners from './pages/SalonOwners';
 import Settings from './pages/Settings';
-import SalonDetail from './pages/salons/SalonDetail';
-import ProfileRedirect from './pages/profile/ProfileRedirect';
-import Profile from './pages/Profile';
-import ArtistPublicPage from './pages/a/ArtistPublicPage';
-import ArtistExplore from './pages/explore/artists';
 import SalonMarketplace from './pages/SalonMarketplace';
 import CommandCenter from './pages/CommandCenter';
 import BookingPage from './pages/BookingPage';
@@ -102,7 +98,7 @@ const routes = [
   },
   {
     path: '/salons/:id',
-    element: <SalonDetail />,
+    element: <SalonDetailPage />,
   },
   {
     path: '/sell-salon',
