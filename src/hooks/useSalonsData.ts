@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { SalonFilters, SalonListing } from "@/types/salon";
+import { SalonFilters } from "@/components/salons/types";
 import salonData from "@/data/salonData";
 
 // Simple default filters
@@ -13,6 +13,9 @@ export const defaultFilters: SalonFilters = {
   sortBy: "Newest"
 };
 
+// Export the SalonFilters type here so it can be imported elsewhere
+export type { SalonFilters };
+
 // Simplified salon hook with minimal functionality
 export const useSalonsData = () => {
   const [salons, setSalons] = useState<any[]>(salonData || []);
@@ -23,6 +26,13 @@ export const useSalonsData = () => {
   const [featuredSalons, setFeaturedSalons] = useState<any[]>(
     salonData?.filter(salon => salon.is_featured) || []
   );
+  // Add suggestedKeywords state
+  const [suggestedKeywords] = useState<string[]>([
+    "Nail Salon", 
+    "Hair Salon", 
+    "Day Spa", 
+    "High Traffic"
+  ]);
 
   // Simplified reset function
   const resetFilters = () => {
@@ -44,7 +54,8 @@ export const useSalonsData = () => {
     updateFilters, 
     setSearchTerm, 
     resetFilters,
-    featuredSalons
+    featuredSalons,
+    suggestedKeywords
   };
 };
 

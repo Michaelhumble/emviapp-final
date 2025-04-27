@@ -4,7 +4,7 @@ import Welcome from './pages/Welcome';
 import NotFound from './pages/NotFound';
 import Artists from './pages/Artists';
 import JobsPage from './pages/jobs';
-import SalonsPage from './pages/salons/SalonsFinal';
+import SalonsFinalsPage from './pages/salons/SalonsFinal';
 import SellSalon from './pages/salons/SellSalon';
 import Customers from './pages/Customers';
 import Suppliers from './pages/Suppliers';
@@ -67,7 +67,9 @@ import PortfolioManagerPage from './pages/dashboard/artist/portfolio/index';
 
 import OpportunityDetailPage from './pages/opportunities/OpportunityDetailPage';
 import SimpleSalonPage from './pages/salons/SimpleSalonPage';
-import SalonsPage from './pages/salons/index';
+
+// Import the new unified listings salons page
+import SalonsListingsPage from './pages/salons/index';
 
 const routes = [
   {
@@ -100,7 +102,7 @@ const routes = [
   },
   {
     path: '/salons',
-    element: <SalonsPage />,
+    element: <SalonsListingsPage />,
   },
   {
     path: '/salons/:id',
@@ -350,11 +352,11 @@ const routes = [
   },
   {
     path: '/salons',
-    element: <SalonsPage />,
+    element: <SalonsListingsPage />,
   },
   {
     path: '/listing/:id',
-    element: <SalonsPage />, // This will be replaced with a universal listing detail page later
+    element: <SalonsListingsPage />, // This will be replaced with a universal listing detail page later
   },
 ];
 
