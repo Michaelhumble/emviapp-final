@@ -1,28 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { useJobsData } from '@/hooks/useJobsData';
-import { Job } from '@/types/job';
-import JobListingCard from '@/components/jobs/JobListingCard';
-import JobDetailModal from '@/components/jobs/JobDetailModal';
-import JobEmptyState from '@/components/jobs/JobEmptyState';
-import { useJobRenewal } from '@/hooks/useJobRenewal';
-import { useAuth } from '@/context/auth';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Search, Filter, X, MapPin } from 'lucide-react';
-import FeaturedJobsSection from '@/components/jobs/FeaturedJobsSection';
-import VietnameseJobSection from '@/components/jobs/VietnameseJobSection';
-import JobsGrid from '@/components/jobs/JobsGrid';
+import React, { useState, useEffect, useMemo } from "react";
+import { useJobsData, type JobFilters } from "@/hooks/useJobsData";
+import { useJobRenewal } from "@/hooks/useJobRenewal";
+import FeaturedJobsSection from "@/components/jobs/FeaturedJobsSection";
+import VietnameseJobSection from "@/components/jobs/VietnameseJobSection";
+import JobsGrid from "@/components/jobs/JobsGrid";
+import JobEmptyState from "@/components/jobs/JobEmptyState";
+import JobDetailModal from "@/components/jobs/JobDetailModal";
+import JobLoadingState from "@/components/jobs/JobLoadingState";
+import { Job } from "@/types/job";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useAuth } from "@/context/auth";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Star, DollarSign, MapPin, Search, X, Filter, RefreshCw } from "lucide-react";
+import Layout from "@/components/layout/Layout";
 
 const JobsPage = () => {
   const { 
