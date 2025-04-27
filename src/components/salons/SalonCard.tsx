@@ -1,17 +1,17 @@
 
 import { useNavigate } from "react-router-dom";
-import { SalonListing } from "@/types/salon";
+import { SalonListing, Job } from "@/types/salon";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { MapPin, DollarSign, ArrowRight, Star } from "lucide-react";
 
 interface SalonCardProps {
-  salon: SalonListing;
+  salon: Job | SalonListing;
   featured?: boolean;
   index?: number;
   isExpired?: boolean;
-  onViewDetails?: (salon: SalonListing) => void;
+  onViewDetails?: (salon: Job | SalonListing) => void;
 }
 
 const SalonCard = ({ salon, featured = false, index = 0, isExpired = false, onViewDetails }: SalonCardProps) => {

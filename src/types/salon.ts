@@ -82,12 +82,13 @@ export interface SalonListing {
   vietnamese_description?: string;
   asking_price?: string;
   has_housing?: boolean;
-  created_at?: string;
+  square_feet?: string;  // Added for backward compatibility
+  created_at: string;    // Changed from optional to required to match Job type
 }
 
 // Define Job type for compatibility
 export interface Job extends SalonListing {
-  created_at: string; // Make this required for Job type
+  // Additional Job-specific fields can go here if needed
 }
 
 export interface SalonFilters {

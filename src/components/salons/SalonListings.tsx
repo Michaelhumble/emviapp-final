@@ -33,7 +33,10 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
     const priceValue = parseFloat(salon.asking_price?.replace(/[^0-9.-]+/g, "") || "0");
     const matchesPrice = priceValue >= priceRange[0] && priceValue <= priceRange[1];
     
-    const sizeValue = parseFloat(salon.square_feet?.replace(/[^0-9.-]+/g, "") || "0");
+    // Handle both square_feet and squareFeet properties
+    const sizeValue = parseFloat(
+      (salon.square_feet || (salon.squareFeet?.toString())) || "0"
+    );
     const matchesSize = sizeValue >= sizeRange[0] && sizeValue <= sizeRange[1];
     
     const matchesStatus = statusFilter === "all" || 
@@ -81,10 +84,10 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
           filteredSalons.map((salon, index) => (
             <SalonCard 
               key={salon.id}
-              salon={salon as unknown as SalonListing}
+              salon={salon}
               index={index}
               isExpired={isExpired(salon)}
-              onViewDetails={handleViewDetails as unknown as (salon: SalonListing) => void}
+              onViewDetails={handleViewDetails}
             />
           ))
         ) : (
@@ -94,7 +97,7 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
       
       {/* Salon detail modal */}
       <SalonDetailModal
-        salon={selectedSalon as unknown as SalonListing}
+        salon={selectedSalon}
         isOpen={!!selectedSalon}
         onClose={handleCloseModal}
       />
