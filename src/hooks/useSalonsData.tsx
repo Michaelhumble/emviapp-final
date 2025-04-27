@@ -15,7 +15,7 @@ export const defaultFilters: SalonFilters = {
 };
 
 export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
-  // Change state types to accept both SalonListing and Job
+  // Explicitly define state types to accept both SalonListing and Job
   const [salons, setSalons] = useState<(SalonListing | Job)[]>([]);
   const [allSalons, setAllSalons] = useState<(SalonListing | Job)[]>([]);
   const [loading, setLoading] = useState(true);
@@ -124,6 +124,7 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
       setSalons(filteredSalons);
       setAllSalons(filteredSalons);
       
+      // Fix: use the setSuggestedKeywords function instead of suggestedKeywords variable
       const newKeywords = new Set<string>(suggestedKeywords);
       filteredSalons.forEach(salon => {
         if (salon.salon_features) {
