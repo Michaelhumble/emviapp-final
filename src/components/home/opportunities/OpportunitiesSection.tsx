@@ -2,16 +2,25 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Briefcase } from 'lucide-react';
 import { Job } from '@/types/job';
 import OpportunityCard from './OpportunityCard';
+import AuthAction from '@/components/common/AuthAction';
 
 interface OpportunitiesSectionProps {
   diverseListings: Job[];
 }
 
 const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) => {
+  const navigate = useNavigate();
+  
+  const handleViewDetails = async (job: Job): Promise<boolean> => {
+    // Navigate to the dedicated opportunity detail page
+    navigate(`/opportunities/${job.id}`);
+    return true; // Return true to indicate successful navigation
+  };
+  
   return (
     <section className="py-20 bg-gradient-to-b from-white to-gray-50">
       <div className="container mx-auto px-4">
@@ -32,11 +41,17 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {diverseListings.map((listing, index) => (
-            <OpportunityCard 
-              key={listing.id} 
-              listing={listing} 
-              index={index}
-            />
+            <AuthAction
+              key={listing.id}
+              onAction={() => handleViewDetails(listing)}
+              redirectPath={`/opportunities/${listing.id}`}
+            >
+              <OpportunityCard 
+                key={listing.id} 
+                listing={listing} 
+                index={index}
+              />
+            </AuthAction>
           ))}
         </div>
         

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,7 @@ import OpportunityCard from './opportunities/OpportunityCard';
 import { Job } from '@/types/job';
 import AuthAction from '@/components/common/AuthAction';
 
-const salonListings: Job[] = [
+export const salonListings: Job[] = [
   {
     id: "1",
     title: "CẦN GẤP THỢ NAIL",
@@ -206,12 +205,8 @@ const SalonJobListingsShowcase = () => {
   const navigate = useNavigate();
 
   const handleViewDetails = async (job: Job): Promise<boolean> => {
-    if (job.for_sale) {
-      navigate(`/salons/${job.id}`);
-    } else {
-      navigate(`/jobs/${job.id}`);
-    }
-    return true; // Return true to indicate successful navigation
+    navigate(`/opportunities/${job.id}`);
+    return true;
   };
 
   return (
@@ -241,7 +236,7 @@ const SalonJobListingsShowcase = () => {
             <AuthAction
               key={listing.id}
               onAction={() => handleViewDetails(listing)}
-              redirectPath={listing.for_sale ? `/salons/${listing.id}` : `/jobs/${listing.id}`}
+              redirectPath={`/opportunities/${listing.id}`}
             >
               <OpportunityCard 
                 listing={listing}
@@ -252,7 +247,7 @@ const SalonJobListingsShowcase = () => {
         </motion.div>
 
         <div className="text-center">
-          <Link to="/jobs">
+          <Link to={listing => listing.for_sale ? "/salons" : "/jobs"}>
             <Button variant="outline" size="lg" className="font-medium">
               <Building className="mr-2 h-4 w-4" />
               Browse All Opportunities

@@ -65,6 +65,8 @@ const Messages = React.lazy(() => import('./pages/messages/index'));
 
 import PortfolioManagerPage from './pages/dashboard/artist/portfolio/index';
 
+import OpportunityDetailPage from './pages/opportunities/OpportunityDetailPage';
+
 const routes = [
   {
     path: '/auth/redirect',
@@ -317,6 +319,10 @@ const routes = [
   {
     path: '/dashboard/artist/portfolio',
     element: <PortfolioManagerPage />
+  },
+  {
+    path: '/opportunities/:id',
+    element: <OpportunityDetailPage />,
   },
   {
     path: '*',
