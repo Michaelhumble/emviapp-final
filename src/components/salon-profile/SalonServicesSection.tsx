@@ -1,21 +1,10 @@
 
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import { Salon } from '@/types/salon';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Scissors, ArrowRight, Sparkles, Clock } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-
-interface SalonServiceItem {
-  id: string;
-  name: string;
-  price: string;
-  duration: string;
-  description?: string;
-  isPopular?: boolean;
-  isNew?: boolean;
-  category?: string;
-}
+import { Scissors } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { motion } from 'framer-motion';
 
 interface SalonServicesSectionProps {
   salon: Salon;
@@ -25,134 +14,93 @@ interface SalonServicesSectionProps {
 
 const SalonServicesSection: React.FC<SalonServicesSectionProps> = ({ 
   salon, 
-  selectedCategory,
-  onCategoryChange
+  selectedCategory, 
+  onCategoryChange 
 }) => {
-  const [expandedService, setExpandedService] = useState<string | null>(null);
+  // Group services into categories (in a real app, this would come from the API)
+  const serviceCategories = {
+    'Popular': ['Gel Manicure', 'Regular Pedicure', 'Full Set Acrylics'],
+    'Manicures': ['Regular Manicure', 'Gel Manicure', 'Gel Polish Change', 'Regular Polish Change'],
+    'Pedicures': ['Regular Pedicure', 'Deluxe Pedicure', 'Gel Pedicure', 'Spa Pedicure'],
+    'Nail Enhancements': ['Full Set Acrylics', 'Fill-In Acrylics', 'Dip Powder', 'Nail Designs']
+  };
   
-  // Mock services data (in a real app, this would come from the API)
-  const services = useMemo(() => {
-    return salon.services.map((service, index) => ({
-      id: `service-${index}`,
-      name: service,
-      price: `$${Math.floor(Math.random() * 100) + 30}`,
-      duration: `${Math.floor(Math.random() * 60) + 30} min`,
-      description: index % 3 === 0 ? `Premium ${service} with special care and attention to detail.` : undefined,
-      isPopular: index % 5 === 0,
-      isNew: index % 7 === 0,
-      category: ['Hair', 'Nails', 'Spa', 'Facial'][Math.floor(Math.random() * 4)]
-    }));
-  }, [salon.services]);
-  
-  // Extract unique categories
-  const categories = useMemo(() => {
-    const uniqueCategories = Array.from(new Set(services.map(service => service.category)));
-    return uniqueCategories;
-  }, [services]);
-  
-  // Filter services by category
-  const filteredServices = selectedCategory
-    ? services.filter(service => service.category === selectedCategory)
-    : services;
+  // Sort services alphabetically within each category
+  Object.keys(serviceCategories).forEach(category => {
+    serviceCategories[category] = serviceCategories[category].sort();
+  });
   
   return (
-    <section className="max-w-5xl mx-auto">
+    <section className="max-w-4xl mx-auto">
       <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200">
         <CardHeader className="pb-2 border-b border-gray-50">
           <CardTitle className="flex items-center text-xl font-serif">
             <Scissors className="h-5 w-5 mr-2 text-purple-600" />
-            Services
+            Services & Pricing
           </CardTitle>
-          
-          {/* Category filters */}
-          {categories.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-4">
-              <Button
-                variant={selectedCategory === null ? "default" : "outline"}
-                size="sm"
-                onClick={() => onCategoryChange(null)}
-              >
-                All
-              </Button>
-              
-              {categories.map(category => (
-                <Button
-                  key={category}
-                  variant={selectedCategory === category ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => onCategoryChange(category)}
-                >
-                  {category}
-                </Button>
-              ))}
-            </div>
-          )}
         </CardHeader>
         
         <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filteredServices.map((service) => (
-              <Card 
-                key={service.id}
-                className={`relative overflow-hidden hover:shadow-md transition-all duration-200 ${
-                  expandedService === service.id ? 'border-purple-200 bg-purple-50/30' : 'border-gray-100'
-                }`}
+          <Tabs 
+            defaultValue="Popular" 
+            value={selectedCategory || 'Popular'} 
+            onValueChange={onCategoryChange}
+            className="w-full"
+          >
+            <TabsList className="mb-6 flex flex-wrap gap-2">
+              {Object.keys(serviceCategories).map((category) => (
+                <TabsTrigger 
+                  key={category} 
+                  value={category}
+                  className="px-4 py-2 data-[state=active]:bg-purple-100 data-[state=active]:text-purple-800"
+                >
+                  {category}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            
+            {Object.entries(serviceCategories).map(([category, services]) => (
+              <TabsContent 
+                key={category} 
+                value={category}
+                className="mt-0"
               >
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-medium text-base flex items-center">
-                        {service.name}
-                        {service.isNew && (
-                          <Badge className="ml-2 bg-green-100 text-green-800 hover:bg-green-200">New</Badge>
-                        )}
-                        {service.isPopular && (
-                          <Badge className="ml-2 bg-amber-100 text-amber-800 hover:bg-amber-200">
-                            <Sparkles className="h-3 w-3 mr-1" />
-                            Popular
-                          </Badge>
-                        )}
-                      </h3>
-                      <div className="flex items-center text-sm text-gray-500 mt-1">
-                        <Clock className="h-3 w-3 mr-1" /> {service.duration}
+                <div className="space-y-4">
+                  {services.map((service, index) => (
+                    <motion.div 
+                      key={`${category}-${index}`}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      className="flex justify-between py-2 border-b border-gray-100 last:border-0"
+                    >
+                      <div>
+                        <h3 className="font-medium">{service}</h3>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {service === 'Gel Manicure' 
+                            ? 'Includes nail shaping, cuticle care, and gel polish application' 
+                            : service === 'Deluxe Pedicure' 
+                            ? 'Includes exfoliation, massage, mask, and polish' 
+                            : 'Standard service with our premium products'}
+                        </p>
                       </div>
-                      
-                      {(expandedService === service.id && service.description) && (
-                        <p className="text-sm text-gray-600 mt-3">{service.description}</p>
-                      )}
-                    </div>
-                    
-                    <div className="text-right">
-                      <div className="font-semibold">{service.price}</div>
-                      <Button 
-                        size="sm" 
-                        className="mt-2"
-                        onClick={() => {
-                          // If service has description, toggle expand, else direct to booking
-                          if (service.description) {
-                            setExpandedService(expandedService === service.id ? null : service.id);
-                          } else {
-                            // Booking functionality would go here
-                            console.log('Book service:', service.name);
-                          }
-                        }}
-                      >
-                        {service.description && expandedService !== service.id ? (
-                          'Details'
-                        ) : service.description && expandedService === service.id ? (
-                          'Book Now'
-                        ) : (
-                          <>
-                            Book
-                            <ArrowRight className="h-4 w-4 ml-1" />
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                      <div className="text-right">
+                        <span className="font-medium text-purple-700">
+                          ${Math.floor(Math.random() * 30) + 30}
+                        </span>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {Math.floor(Math.random() * 30) + 15} min
+                        </p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </TabsContent>
             ))}
+          </Tabs>
+          
+          <div className="mt-8 text-sm text-gray-500 bg-gray-50 p-3 rounded-md">
+            * Prices may vary depending on length, design complexity, and additional services requested.
           </div>
         </CardContent>
       </Card>

@@ -23,5 +23,52 @@ export interface SalonListing {
   contactEmail?: string;
 }
 
-// Re-export existing types
-export type { Salon } from '@/types/salon';
+// Base Salon type definition (for salon profiles rather than listings)
+export interface Salon {
+  id: string;
+  name: string;
+  image?: string;
+  logo?: string;
+  specialty?: string;
+  city?: string;
+  neighborhood?: string;
+  hours?: {
+    monday: string;
+    tuesday: string;
+    wednesday: string;
+    thursday: string;
+    friday: string;
+    saturday: string;
+    sunday: string;
+  };
+  bio?: string;
+  shortBio?: string;
+  rating?: number;
+  reviewCount?: number;
+  services: string[];
+  amenities?: string[];
+  socialMedia?: {
+    instagram?: string;
+    facebook?: string;
+    tiktok?: string;
+    twitter?: string;
+    pinterest?: string;
+    youtube?: string;
+  };
+  bookingLink?: string;
+  isHiring?: boolean;
+  email?: string;
+  phone?: string;
+  website?: string;
+  location?: string;
+  // Additional properties
+  teamSize?: number;
+  certifications?: string[];
+  awards?: string[];
+  paymentMethods?: string[];
+  languages?: string[];
+  accessibilityFeatures?: string[];
+  virtualTours?: string[];
+  beforeAfterGallery?: string[];
+  established?: number;
+}
