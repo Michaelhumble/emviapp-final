@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -204,11 +205,13 @@ const salonListings: Job[] = [
 const SalonJobListingsShowcase = () => {
   const navigate = useNavigate();
 
-  const handleViewDetails = async (job: Job) => {
+  const handleViewDetails = async (job: Job): Promise<boolean> => {
     if (job.for_sale) {
-      return navigate(`/salons/${job.id}`);
+      navigate(`/salons/${job.id}`);
+    } else {
+      navigate(`/jobs/${job.id}`);
     }
-    return navigate(`/jobs/${job.id}`);
+    return true; // Return true to indicate successful navigation
   };
 
   return (
