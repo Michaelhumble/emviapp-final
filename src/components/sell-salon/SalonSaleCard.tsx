@@ -1,150 +1,43 @@
 
-import React from "react";
+import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, DollarSign, Store, Star } from "lucide-react";
-import { SalonSale } from "@/types/salonSale";
-import { formatCurrency } from "@/utils/salonSales";
-import { FeatureListingButton } from "@/components/sell-salon/FeatureListingButton";
-import { useAuth } from "@/context/auth";
-import ImageWithFallback from "@/components/ui/ImageWithFallback";
+import { MapPin, DollarSign } from "lucide-react";
+import FeatureListingButton from "@/components/sell-salon/FeatureListingButton";
 
 interface SalonSaleCardProps {
-  salon: SalonSale;
-  onViewDetails: (salon: SalonSale) => void;
-  showFeatureButton?: boolean;
-  onFeatureSuccess?: () => void;
+  salon: any;
+  onViewDetails: (salon: any) => void;
 }
 
-export const SalonSaleCard = ({ 
-  salon, 
-  onViewDetails, 
-  showFeatureButton = false,
-  onFeatureSuccess
-}: SalonSaleCardProps) => {
-  const { user } = useAuth();
-  const isOwner = user?.id === salon.user_id;
-  
-  const getBusinessTypeIcon = (type?: string) => {
-    switch (type) {
-      case "Nails":
-        return <Store className="h-4 w-4" />;
-      case "Hair":
-        return <Store className="h-4 w-4" />;
-      case "Spa":
-        return <Store className="h-4 w-4" />;
-      case "Barbershop":
-        return <Store className="h-4 w-4" />;
-      default:
-        return <Store className="h-4 w-4" />;
-    }
-  };
-
-  const isActive = salon.status === 'active';
-  
-  const getThumbnailUrl = () => {
-    if (salon.photos && Array.isArray(salon.photos) && salon.photos.length > 0) {
-      return salon.photos[0].photo_url;
-    }
-    return null;
-  };
-
-  // Determine the appropriate fallback image based on business type
-  const getFallbackImage = () => {
-    const businessType = (salon.business_type || '').toLowerCase();
-    
-    if (businessType.includes('nail')) {
-      return "https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=2070&auto=format&fit=crop";
-    } else if (businessType.includes('hair')) {
-      return "https://images.unsplash.com/photo-1633681926022-84c23e8cb3d6?q=80&w=1976&auto=format&fit=crop";
-    } else if (businessType.includes('spa')) {
-      return "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=2070&auto=format&fit=crop";
-    } else if (businessType.includes('barber')) {
-      return "https://images.unsplash.com/photo-1587909209111-5097ee578ec3?q=80&w=2070&auto=format&fit=crop";
-    } else if (businessType.includes('restaurant') || businessType.includes('food')) {
-      return "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=2074&auto=format&fit=crop";
-    } else if (businessType.includes('coffee') || businessType.includes('cafe')) {
-      return "https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?q=80&w=2070&auto=format&fit=crop";
-    }
-    
-    return "https://images.unsplash.com/photo-1613843351058-1dd06fccdc6a?q=80&w=2070&auto=format&fit=crop";
-  };
-
+const SalonSaleCard = ({ salon, onViewDetails }: SalonSaleCardProps) => {
   return (
-    <Card 
-      className={`overflow-hidden transition-shadow hover:shadow-md h-full flex flex-col ${
-        salon.is_urgent ? "border-amber-400" : ""
-      } ${
-        salon.is_featured ? "border-2 border-amber-300 bg-amber-50" : ""
-      }`}
-    >
-      <div className="aspect-video bg-gray-200 relative">
-        {!isActive && (
-          <div className="absolute inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-10">
-            <div className="bg-white px-3 py-1 rounded-md text-gray-800 font-medium text-sm">
-              Inactive Listing
-            </div>
-          </div>
-        )}
-        {salon.is_urgent && (
-          <div className="absolute top-2 right-2 bg-amber-400 text-white py-1 px-2 rounded-md text-xs font-medium z-20">
-            Urgent
-          </div>
-        )}
-        {salon.is_featured && (
-          <div className="absolute top-2 left-2 bg-gradient-to-r from-amber-400 to-yellow-400 text-amber-900 py-1 px-2 rounded-md text-xs font-medium flex items-center shadow-sm z-20">
-            <Star className="h-3 w-3 mr-1 fill-amber-900" /> Featured
-          </div>
-        )}
-        <ImageWithFallback
-          src={getThumbnailUrl()}
-          alt={salon.salon_name || "Salon for sale"}
-          className="w-full h-full object-cover"
-          fallbackImage={getFallbackImage()}
-          businessName={salon.salon_name || salon.business_type || "Salon"}
-          loading="lazy"
-        />
-      </div>
-      <CardContent className="p-4 flex-1 flex flex-col">
-        <h3 className="text-xl font-semibold mb-2 line-clamp-1">
-          {salon.salon_name || "Salon for sale"}
-        </h3>
-        <div className="flex items-center text-gray-500 mb-1">
-          <MapPin className="h-4 w-4 mr-1 shrink-0" />
-          <span className="text-sm truncate">
-            {salon.city}{salon.state ? `, ${salon.state}` : ''}
-          </span>
+    <Card className="overflow-hidden">
+      <CardContent className="p-4">
+        <h3 className="font-semibold text-lg mb-1">{salon.salon_name}</h3>
+        <div className="flex items-center text-sm text-gray-500 mb-2">
+          <MapPin className="h-3.5 w-3.5 mr-1" />
+          {salon.city}, {salon.state}
         </div>
-        <div className="flex items-center text-gray-500 mb-3">
-          {getBusinessTypeIcon(salon.business_type)}
-          <span className="text-sm ml-1">{salon.business_type || 'Salon'}</span>
-        </div>
-        <div className="flex justify-between items-center mt-auto">
-          <div className="flex items-center text-primary font-semibold">
-            <DollarSign className="h-4 w-4 shrink-0" />
-            {formatCurrency(salon.asking_price)}
+        {salon.asking_price && (
+          <div className="flex items-center text-green-700 font-medium mb-2">
+            <DollarSign className="h-3.5 w-3.5 mr-1" />
+            ${salon.asking_price.toLocaleString()}
           </div>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => onViewDetails(salon)}
-            className="min-h-[38px] min-w-[100px]"
-          >
+        )}
+        <div className="flex justify-between mt-4">
+          <Button variant="outline" size="sm" onClick={() => onViewDetails(salon)}>
             View Details
           </Button>
+          <FeatureListingButton 
+            salonId={salon.id}
+            currentlyFeatured={salon.is_featured}
+            disabled
+          />
         </div>
-        
-        {showFeatureButton && isOwner && (
-          <div className="mt-3 pt-3 border-t border-gray-100">
-            <FeatureListingButton 
-              salonSaleId={salon.id} 
-              isFeatured={salon.is_featured || false}
-              onFeatureSuccess={onFeatureSuccess}
-              isOwner={true}
-            />
-          </div>
-        )}
       </CardContent>
     </Card>
   );
 };
+
+export default SalonSaleCard;

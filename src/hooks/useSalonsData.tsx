@@ -104,6 +104,7 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
       
       setFeaturedSalons(featured);
       setSalons(filteredSalons);
+      setAllSalons(filteredSalons);
       
       // Generate suggested keywords from actual data
       const keywords = new Set<string>(suggestedKeywords);
@@ -112,7 +113,7 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
           salon.salon_features.forEach(f => keywords.add(f));
         }
       });
-      // Use the state setter directly here
+      
       setSuggestedKeywords(Array.from(keywords));
     } catch (err) {
       console.error("Error fetching salons:", err);

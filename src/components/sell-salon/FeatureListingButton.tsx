@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import { SalonListing } from '@/types/salon';
 
-// Stub component for FeatureListingButton
 interface FeatureListingButtonProps {
   salonId: string;
   currentlyFeatured?: boolean;
