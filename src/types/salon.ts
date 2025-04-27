@@ -1,5 +1,35 @@
 
-// Base interfaces
+// Base salon listing interface
+export interface SalonListing {
+  id: string;
+  name: string;
+  location: string;
+  listing_type: 'For Sale' | 'Booth Rental' | 'Partnership';
+  description: string;
+  price: number;
+  contact_hidden: boolean;
+  is_featured?: boolean;
+  image_url?: string;
+  tags?: string[];
+  created_at: string;
+  square_feet?: string;
+  company?: string;
+  contact_info?: {
+    name?: string;
+    phone?: string;
+    email?: string;
+  };
+  monthly_rent?: number;
+  number_of_stations?: number;
+  revenue?: number;
+  has_wax_room?: boolean;
+  has_dining_room?: boolean;
+  has_laundry?: boolean;
+  owner_will_train?: boolean;
+  reason_for_selling?: string;
+}
+
+// For backward compatibility with existing ISalon interface
 export interface ISalon {
   id: string;
   name: string;
@@ -33,14 +63,13 @@ export interface ISalon {
     pinterest?: string;
     youtube?: string;
   };
+  featured?: boolean;
   bookingLink?: string;
   isHiring?: boolean;
-  featured?: boolean;
 }
 
-// For backward compatibility - extend ISalon with additional properties
+// Extended Salon interface
 export interface Salon extends ISalon {
-  // Additional properties used in salon components
   owner?: string;
   email?: string;
   phone?: string;
@@ -55,46 +84,7 @@ export interface Salon extends ISalon {
   beforeAfterGallery?: string[];
 }
 
-// Listing specific interface
-export interface SalonListing {
-  id: string;
-  name: string;
-  location: string;
-  type: 'For Sale' | 'Booth Rental' | 'Full Salon';
-  price?: number;
-  priceUnit?: 'one-time' | 'monthly' | 'weekly';
-  description: string;
-  shortDescription?: string;
-  image?: string;
-  features?: string[];
-  contactName?: string;
-  contactPhone?: string;
-  contactEmail?: string;
-  website?: string;
-  // Added both property names for compatibility
-  isFeatured?: boolean;
-  is_featured?: boolean;
-  squareFeet?: number;
-  established?: number;
-  chairs?: number;
-  status?: string;
-  salon_features?: string[];
-  company?: string;
-  vietnamese_description?: string;
-  asking_price?: string;
-  has_housing?: boolean;
-  square_feet?: string;
-  created_at: string;
-  // Add the missing properties
-  listing_type?: string;
-  contact_hidden?: boolean;
-}
-
-// Define Job type for compatibility
-export interface Job extends SalonListing {
-  // Additional Job-specific fields can go here if needed
-}
-
+// SalonFilters interface for search/filter functionality
 export interface SalonFilters {
   location: string;
   priceRange: [number, number];
@@ -103,3 +93,16 @@ export interface SalonFilters {
   hasHousing?: boolean;
   showExpired?: boolean;
 }
+
+// Re-export Job type for backward compatibility
+export interface Job extends SalonListing {
+  role?: string;
+  title?: string;
+  employment_type?: string;
+  salary_range?: string;
+  posted_at?: string;
+  status?: 'active' | 'expired';
+  weekly_pay?: boolean;
+  benefits?: string[];
+}
+
