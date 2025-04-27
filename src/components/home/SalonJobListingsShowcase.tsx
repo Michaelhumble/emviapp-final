@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -232,7 +233,7 @@ const SalonJobListingsShowcase = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          {salonListings.map((listing, index) => (
+          {salonListings.slice(0, 6).map((listing, index) => (
             <AuthAction
               key={listing.id}
               onAction={() => handleViewDetails(listing)}
@@ -247,7 +248,7 @@ const SalonJobListingsShowcase = () => {
         </motion.div>
 
         <div className="text-center">
-          <Link to={listing => listing.for_sale ? "/salons" : "/jobs"}>
+          <Link to="/jobs">
             <Button variant="outline" size="lg" className="font-medium">
               <Building className="mr-2 h-4 w-4" />
               Browse All Opportunities
