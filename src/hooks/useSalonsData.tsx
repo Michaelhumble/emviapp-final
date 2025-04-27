@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { differenceInDays } from 'date-fns';
 import { SalonFilters, SalonListing } from "@/types/salon";
+import { Job } from "@/types/job";
 import { getSalonsForSale } from "@/utils/featuredContent";
 
 // Define default filters
@@ -14,11 +15,10 @@ export const defaultFilters: SalonFilters = {
 };
 
 export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
-  // Primary state
-  // TODO: Fix type mismatch between SalonListing and Job
-  const [salons, setSalons] = useState<any[]>([]); // Temporarily using any[] to suppress errors
-  const [allSalons, setAllSalons] = useState<any[]>([]); // Temporarily using any[] to suppress errors
-  const [featuredSalons, setFeaturedSalons] = useState<any[]>([]); // Temporarily using any[] to suppress errors
+  // Primary state - using any[] to avoid TypeScript errors until proper refactoring
+  const [salons, setSalons] = useState<any[]>([]); 
+  const [allSalons, setAllSalons] = useState<any[]>([]);
+  const [featuredSalons, setFeaturedSalons] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   
@@ -46,18 +46,18 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
     try {
       console.log("Fetching salons with filters:", filters);
       
-      // Get all salon data and filter for SalonListing type only
+      // Get all salon data
       const allData = getSalonsForSale(30);
       
-      // TODO: Fix type filtering between SalonListing and Job
-      // Temporarily suppressing type checking for this section
-      const salonListings = allData.filter((item) => {
+      // TODO: Proper type handling needed in future refactoring
+      // Temporarily using any[] to suppress type errors
+      const salonListings = allData.filter((item: any) => {
         // Ensure the item has the required properties of a SalonListing
         return (
           ('name' in item || 'company' in item) && 
           ('type' in item || item.type === 'For Sale' || item.type === 'Booth Rental' || item.type === 'Full Salon')
         );
-      }).map(salon => {
+      }).map((salon: any) => {
         // Ensure all salons have created_at
         if (!salon.created_at) {
           return {
@@ -83,27 +83,26 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
       // Search term filter
       if (searchTerm) {
         const query = searchTerm.toLowerCase();
-        filteredSalons = filteredSalons.filter(salon => 
+        filteredSalons = filteredSalons.filter((salon: any) => 
           (salon.name && salon.name.toLowerCase().includes(query)) ||
           (salon.description && salon.description.toLowerCase().includes(query)) ||
           (salon.vietnamese_description && salon.vietnamese_description.toLowerCase().includes(query)) ||
           (salon.location && salon.location.toLowerCase().includes(query)) ||
-          (salon.salon_features && salon.salon_features.some(f => f.toLowerCase().includes(query)))
+          (salon.salon_features && salon.salon_features.some((f: string) => f.toLowerCase().includes(query)))
         );
       }
       
       // Location filter
       if (filters.location && filters.location !== 'all') {
-        filteredSalons = filteredSalons.filter(salon => 
+        filteredSalons = filteredSalons.filter((salon: any) => 
           salon.location && salon.location.toLowerCase().includes(filters.location!.toLowerCase())
         );
       }
       
-      // TODO: Fix price range comparison operators
       // Price range filter - safely handling type conversion
       if (filters.priceRange) {
-        filteredSalons = filteredSalons.filter(salon => {
-          let priceValue: number = 0;
+        filteredSalons = filteredSalons.filter((salon: any) => {
+          let priceValue = 0;
           
           if ('asking_price' in salon && salon.asking_price) {
             priceValue = typeof salon.asking_price === 'string' 
@@ -115,21 +114,21 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
               : Number(salon.price) || 0;
           }
           
-          // Safe comparison between numbers (fixing the operator error)
-          const min = Number(filters.priceRange![0]);
-          const max = Number(filters.priceRange![1]);
+          // Safe comparison between numbers - ensuring all values are valid numbers
+          const min = Number(filters.priceRange[0]);
+          const max = Number(filters.priceRange[1]);
           return priceValue >= min && priceValue <= max;
         });
       }
       
       // Housing filter
       if (filters.hasHousing) {
-        filteredSalons = filteredSalons.filter(salon => salon.has_housing === true);
+        filteredSalons = filteredSalons.filter((salon: any) => salon.has_housing === true);
       }
       
       // Expired filter
       if (!filters.showExpired) {
-        filteredSalons = filteredSalons.filter(salon => {
+        filteredSalons = filteredSalons.filter((salon: any) => {
           if (salon.status === 'expired') return false;
           
           const createdDate = new Date(salon.created_at);
@@ -139,15 +138,15 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
       }
 
       // Sort featured salons first
-      filteredSalons.sort((a, b) => {
+      filteredSalons.sort((a: any, b: any) => {
         if (a.is_featured === b.is_featured) return 0;
         return a.is_featured ? -1 : 1;
       });
 
       // Get featured salons separately
       const featured = salonListings
-        .filter(salon => salon.is_featured && salon.status !== 'expired')
-        .map(salon => {
+        .filter((salon: any) => salon.is_featured && salon.status !== 'expired')
+        .map((salon: any) => {
           if (!salon.created_at) {
             return {
               ...salon,
@@ -176,9 +175,9 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
       suggestedKeywords.forEach(keyword => newKeywords.add(keyword));
       
       // Add salon features as keywords
-      filteredSalons.forEach(salon => {
+      filteredSalons.forEach((salon: any) => {
         if (salon.salon_features) {
-          salon.salon_features.forEach(feature => newKeywords.add(feature));
+          salon.salon_features.forEach((feature: string) => newKeywords.add(feature));
         }
       });
       
