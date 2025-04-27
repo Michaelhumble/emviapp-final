@@ -2,9 +2,26 @@
 import { useState, useEffect } from "react";
 import useSampleJobsData from "./useSampleJobsData";
 
+export interface JobFilters {
+  featured?: boolean;
+  remote?: boolean;
+  fullTime?: boolean;
+  partTime?: boolean;
+  location?: string;
+  weeklyPay?: boolean;
+  ownerWillTrain?: boolean;
+  employmentType?: string;
+  showExpired?: boolean;
+  hasHousing?: boolean;
+  noSupplyDeduction?: boolean;
+  industry?: string;
+  language?: string;
+  payType?: 'commission' | 'hourly' | 'salary' | 'all';
+}
+
 // This is a wrapper hook that will eventually use real data from an API
 // For now, it uses our sample data
-export const useJobsData = (initialFilters = {}) => {
+export const useJobsData = (initialFilters: JobFilters = {}) => {
   const sampleData = useSampleJobsData(initialFilters);
   
   // Here we can add any additional logic or transformations

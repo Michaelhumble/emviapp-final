@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
@@ -36,10 +35,8 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
   const fetchJobs = useCallback(async () => {
     setLoading(true);
     try {
-      // Use mock data for now instead of Supabase
       let filteredJobs = [...mockJobs];
       
-      // Apply keyword search
       if (searchTerm) {
         const query = searchTerm.toLowerCase();
         filteredJobs = filteredJobs.filter(job => 
@@ -51,7 +48,6 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
         );
       }
       
-      // Apply filters in JavaScript
       if (filters.featured) {
         filteredJobs = filteredJobs.filter(job => job.is_featured);
       }
@@ -94,7 +90,6 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
         filteredJobs = filteredJobs.filter(job => job.employment_type === filters.employmentType);
       }
       
-      // Pay Type filter
       if (filters.payType && filters.payType !== 'all') {
         if (filters.payType === 'commission') {
           filteredJobs = filteredJobs.filter(job => 
@@ -114,7 +109,6 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
         }
       }
       
-      // New filters
       if (filters.industry && filters.industry !== 'all') {
         filteredJobs = filteredJobs.filter(job => 
           job.specialties?.some(s => s.toLowerCase() === filters.industry!.toLowerCase())
@@ -131,16 +125,13 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
         }
       }
       
-      // Only show active jobs unless showExpired is true
       if (!filters.showExpired) {
         filteredJobs = filteredJobs.filter(job => job.status !== 'expired');
       }
 
-      // Set featured jobs (top 3 jobs that are featured)
       const featured = mockJobs.filter(job => job.is_featured).slice(0, 3);
       setFeaturedJobs(featured);
       
-      // Generate suggested keywords based on job data
       const keywords = new Set<string>();
       mockJobs.forEach(job => {
         if (job.specialties) {
