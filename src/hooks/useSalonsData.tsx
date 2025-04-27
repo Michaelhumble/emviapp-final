@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { differenceInDays } from 'date-fns';
 import { SalonFilters, SalonListing, Job, BaseListingType } from "@/types/salon";
-import { salonsForSaleJobs } from "@/utils/jobs/mockJobData";
 import { getSalonsForSale } from "@/utils/featuredContent";
 
 export const defaultFilters: SalonFilters = {
@@ -15,7 +14,6 @@ export const defaultFilters: SalonFilters = {
 };
 
 export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
-  // Explicitly define state types to accept both SalonListing and Job
   const [salons, setSalons] = useState<(SalonListing | Job)[]>([]);
   const [allSalons, setAllSalons] = useState<(SalonListing | Job)[]>([]);
   const [loading, setLoading] = useState(true);
@@ -103,11 +101,13 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
         });
       }
 
+      // Sort featured salons first
       filteredSalons.sort((a, b) => {
         if (a.is_featured === b.is_featured) return 0;
         return a.is_featured ? -1 : 1;
       });
 
+      // Get featured salons separately
       const featured = getSalonsForSale(3)
         .filter(salon => salon.is_featured && salon.status !== 'expired')
         .map(salon => {
