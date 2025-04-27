@@ -1,11 +1,11 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Building } from 'lucide-react';
 import OpportunityCard from './opportunities/OpportunityCard';
 import { Job } from '@/types/job';
+import AuthAction from '@/components/common/AuthAction';
 
 const salonListings: Job[] = [
   {
@@ -202,6 +202,15 @@ const salonListings: Job[] = [
 ];
 
 const SalonJobListingsShowcase = () => {
+  const navigate = useNavigate();
+
+  const handleViewDetails = async (job: Job) => {
+    if (job.for_sale) {
+      return navigate(`/salons/${job.id}`);
+    }
+    return navigate(`/jobs/${job.id}`);
+  };
+
   return (
     <section className="py-24 bg-white">
       <div className="container mx-auto px-4">
@@ -226,11 +235,16 @@ const SalonJobListingsShowcase = () => {
           transition={{ duration: 0.5 }}
         >
           {salonListings.map((listing, index) => (
-            <OpportunityCard 
-              key={listing.id} 
-              listing={listing}
-              index={index}
-            />
+            <AuthAction
+              key={listing.id}
+              onAction={() => handleViewDetails(listing)}
+              redirectPath={listing.for_sale ? `/salons/${listing.id}` : `/jobs/${listing.id}`}
+            >
+              <OpportunityCard 
+                listing={listing}
+                index={index}
+              />
+            </AuthAction>
           ))}
         </motion.div>
 
