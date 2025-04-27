@@ -1,9 +1,9 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { differenceInDays } from 'date-fns';
 import type { SalonFilters } from "@/components/salons/types";
+import { SalonListing } from "@/types/salon";
 
 // Use mock data for now
 import { salonsForSaleJobs } from "@/utils/jobs/mockJobData";
@@ -21,6 +21,39 @@ export const defaultFilters: SalonFilters = {
   features: [],
   sortBy: "Newest"
 };
+
+const mockListings: SalonListing[] = [
+  {
+    id: "1",
+    name: "Luxury Nail Spa",
+    location: "Denver, CO",
+    listing_type: "For Sale",
+    description: "Established nail salon in prime location",
+    price: 250000,
+    contact_hidden: false,
+    created_at: new Date().toISOString(),
+    image_url: "/images/salon1.jpg",
+    features: ["10 Stations", "Prime Location", "Parking"],
+    chairs: 10,
+    established: 2015,
+    contactName: "John Smith",
+    contactPhone: "(303) 555-0123",
+    contactEmail: "john@example.com"
+  },
+  {
+    id: "2",
+    name: "Modern Beauty Studio",
+    location: "Aurora, CO",
+    listing_type: "For Sale",
+    description: "Modern beauty salon with steady clientele",
+    price: 180000,
+    contact_hidden: false,
+    created_at: new Date().toISOString(),
+    is_featured: true,
+    squareFeet: 1200,
+    features: ["8 Stations", "Recently Renovated"]
+  }
+];
 
 export const useSalonsData = () => {
   const [salons, setSalons] = useState<any[]>([]);
