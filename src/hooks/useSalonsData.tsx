@@ -120,7 +120,6 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
           return salon;
         });
       
-      // Fix Type Error #1: Convert array to the correct type for featured salons
       setFeaturedSalons(featured);
       setSalons(filteredSalons);
       setAllSalons(filteredSalons);
