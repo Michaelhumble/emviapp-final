@@ -106,6 +106,16 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
   });
   const [filteredSalons, setFilteredSalons] = useState<SalonListing[]>([]);
   const [featuredSalons, setFeaturedSalons] = useState<SalonListing[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [suggestedKeywords] = useState<string[]>([
+    "Turnkey Business", 
+    "High Traffic Area", 
+    "Recently Renovated", 
+    "Established Clientele",
+    "Premium Location",
+    "Modern Design",
+    "Utilities Included"
+  ]);
 
   // Fetch salons data (simulated with timeout)
   useEffect(() => {
@@ -133,8 +143,8 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
     let result = [...salons];
 
     // Apply search term filter
-    if (filters.searchTerm) {
-      const term = filters.searchTerm.toLowerCase();
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
       result = result.filter(salon => 
         salon.name.toLowerCase().includes(term) || 
         salon.location.toLowerCase().includes(term) ||
@@ -166,7 +176,7 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
     setFeaturedSalons(featured);
 
     setFilteredSalons(result);
-  }, [salons, filters]);
+  }, [salons, filters, searchTerm]);
 
   const updateFilters = (newFilters: Partial<SalonFilters>) => {
     setFilters(prev => ({
@@ -177,6 +187,7 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
 
   const resetFilters = () => {
     setFilters(defaultFilters);
+    setSearchTerm('');
   };
 
   return { 
@@ -185,10 +196,14 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
     loading, 
     error, 
     filters, 
+    searchTerm,
+    setSearchTerm,
     updateFilters, 
     resetFilters,
-    featuredSalons
+    featuredSalons,
+    suggestedKeywords
   };
 };
 
 export default useSalonsData;
+export type { SalonFilters };

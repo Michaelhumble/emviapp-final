@@ -17,6 +17,8 @@ export interface SalonListing {
   squareFeet?: number;
   established?: number;
   chairs?: number;
+  status?: string;
+  is_featured?: boolean;
 }
 
 export interface SalonFilters {

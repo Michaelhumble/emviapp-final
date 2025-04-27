@@ -23,23 +23,26 @@ interface SalonFilterProps {
   filters: SalonFilters;
   updateFilters: (filters: Partial<SalonFilters>) => void;
   resetFilters: () => void;
+  searchTerm?: string;
+  setSearchTerm?: (term: string) => void;
+  suggestedKeywords?: string[];
 }
 
-const SalonFilter = ({ filters, updateFilters, resetFilters }: SalonFilterProps) => {
+const SalonFilter = ({ filters, updateFilters, resetFilters, searchTerm = '', setSearchTerm, suggestedKeywords = [] }: SalonFilterProps) => {
   const [priceRange, setPriceRange] = useState<[number, number]>(filters.priceRange);
-  const [searchValue, setSearchValue] = useState(filters.searchTerm);
+  const [searchValue, setSearchValue] = useState(searchTerm);
   const [activeFiltersCount, setActiveFiltersCount] = useState(0);
   
   // Calculate how many active filters are set
   useEffect(() => {
     let count = 0;
-    if (filters.searchTerm) count++;
+    if (searchTerm) count++;
     if (filters.location !== 'all') count++;
     if (filters.listingType !== 'all') count++;
     if (filters.priceRange[0] > 0 || filters.priceRange[1] < 250000) count++;
     
     setActiveFiltersCount(count);
-  }, [filters]);
+  }, [filters, searchTerm]);
   
   // Format price for display
   const formatPrice = (price: number) => {
@@ -54,11 +57,15 @@ const SalonFilter = ({ filters, updateFilters, resetFilters }: SalonFilterProps)
   // Update search on input change with debounce
   useEffect(() => {
     const timer = setTimeout(() => {
-      updateFilters({ searchTerm: searchValue });
+      if (setSearchTerm) {
+        setSearchTerm(searchValue);
+      } else {
+        updateFilters({ searchTerm: searchValue });
+      }
     }, 300);
     
     return () => clearTimeout(timer);
-  }, [searchValue, updateFilters]);
+  }, [searchValue, setSearchTerm, updateFilters]);
   
   // Apply price range when slider changes
   const handlePriceRangeChange = (value: [number, number]) => {
@@ -71,7 +78,11 @@ const SalonFilter = ({ filters, updateFilters, resetFilters }: SalonFilterProps)
   
   const handleClearSearch = () => {
     setSearchValue('');
-    updateFilters({ searchTerm: '' });
+    if (setSearchTerm) {
+      setSearchTerm('');
+    } else {
+      updateFilters({ searchTerm: '' });
+    }
   };
   
   return (
@@ -177,9 +188,9 @@ const SalonFilter = ({ filters, updateFilters, resetFilters }: SalonFilterProps)
       {activeFiltersCount > 0 && (
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm text-gray-500">Active filters:</span>
-          {filters.searchTerm && (
+          {searchTerm && (
             <Badge variant="secondary" className="flex items-center gap-1">
-              Search: {filters.searchTerm}
+              Search: {searchTerm}
               <button onClick={handleClearSearch}>
                 <X className="h-3 w-3 ml-1" />
               </button>

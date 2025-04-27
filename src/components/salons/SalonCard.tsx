@@ -10,13 +10,19 @@ interface SalonCardProps {
   salon: SalonListing;
   featured?: boolean;
   index?: number;
+  isExpired?: boolean;
+  onViewDetails?: (salon: SalonListing) => void;
 }
 
-const SalonCard = ({ salon, featured = false, index = 0 }: SalonCardProps) => {
+const SalonCard = ({ salon, featured = false, index = 0, isExpired = false, onViewDetails }: SalonCardProps) => {
   const navigate = useNavigate();
   
   const handleViewDetails = () => {
-    navigate(`/salons/${salon.id}`);
+    if (onViewDetails) {
+      onViewDetails(salon);
+    } else {
+      navigate(`/salons/${salon.id}`);
+    }
   };
   
   const formatPrice = (price?: number, unit?: string) => {
@@ -56,7 +62,7 @@ const SalonCard = ({ salon, featured = false, index = 0 }: SalonCardProps) => {
     <Card 
       className={`overflow-hidden transition-all duration-300 hover:shadow-md ${
         featured ? 'border-amber-200 shadow-amber-100/20' : ''
-      }`}
+      } ${isExpired ? 'opacity-70' : ''}`}
       style={{ animationDelay }}
     >
       <div className="relative">
@@ -79,6 +85,12 @@ const SalonCard = ({ salon, featured = false, index = 0 }: SalonCardProps) => {
             <Badge className="bg-amber-500 text-white flex items-center gap-1 px-2 py-1">
               <Star className="h-3 w-3 fill-current" /> Featured
             </Badge>
+          </div>
+        )}
+        
+        {isExpired && (
+          <div className="absolute inset-0 bg-gray-700 bg-opacity-40 flex items-center justify-center">
+            <Badge className="bg-gray-800 text-white px-3 py-1">Expired</Badge>
           </div>
         )}
         

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Index from './pages/Index';
 import Welcome from './pages/Welcome';
@@ -62,6 +63,12 @@ const Messages = React.lazy(() => import('./pages/messages/index'));
 import PortfolioManagerPage from './pages/dashboard/artist/portfolio/index';
 
 import OpportunityDetailPage from './pages/opportunities/OpportunityDetailPage';
+
+// Temporary placeholder components for missing references
+const ArtistExplore = () => <div>Artist Explore Page (Placeholder)</div>;
+const Profile = () => <div>Profile Page (Placeholder)</div>;
+const ProfileRedirect = () => <div>Profile Redirect Page (Placeholder)</div>;
+const ArtistPublicPage = () => <div>Artist Public Page (Placeholder)</div>;
 
 const routes = [
   {
