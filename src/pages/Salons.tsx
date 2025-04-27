@@ -10,7 +10,7 @@ import SalonsLoadingState from "@/components/salons/SalonsLoadingState";
 import FeaturedSalonsSection from "@/components/salons/FeaturedSalonsSection";
 import SalonPromotion from "@/components/salons/SalonPromotion";
 import { useSalonsData } from '@/hooks/useSalonsData';
-import { SalonFilters, SalonListing } from '@/types/salon';
+import { SalonFilters, SalonListing, Job } from '@/types/salon';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -42,7 +42,7 @@ const SalonsPage: React.FC = () => {
   
   // Apply tab filtering to salons
   const filteredSalons = salons.filter(salon => {
-    if (activeTab === "featured" && salon.isFeatured) {
+    if (activeTab === "featured" && salon.is_featured) {
       return false;
     }
     
@@ -54,12 +54,11 @@ const SalonsPage: React.FC = () => {
   });
   
   // Helper function to determine if a salon is expired based on status
-  const isExpired = (salon: any) => {
+  const isExpired = (salon: SalonListing | Job) => {
     return salon.status === "expired";
   };
   
-  // Update this function to handle both SalonListing and Job types
-  const handleViewSalonDetails = (salon: SalonListing) => {
+  const handleViewSalonDetails = (salon: SalonListing | Job) => {
     console.log("Navigating to salon details:", salon.id);
     navigate(`/salons/${salon.id}`);
   };
@@ -98,7 +97,7 @@ const SalonsPage: React.FC = () => {
             {/* Featured Salons Section */}
             {featuredSalons.length > 0 && (
               <FeaturedSalonsSection 
-                featuredSalons={featuredSalons as SalonListing[]} 
+                featuredSalons={featuredSalons} 
                 onViewDetails={handleViewSalonDetails} 
               />
             )}
@@ -136,10 +135,10 @@ const SalonsPage: React.FC = () => {
                   filteredSalons.map((salon, index) => (
                     <SalonCard 
                       key={salon.id} 
-                      salon={salon as SalonListing} 
+                      salon={salon} 
                       index={index} 
                       isExpired={isExpired(salon)} 
-                      onViewDetails={() => handleViewSalonDetails(salon as SalonListing)} 
+                      onViewDetails={() => handleViewSalonDetails(salon)} 
                     />
                   ))
                 ) : (

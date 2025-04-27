@@ -47,7 +47,7 @@ const SalonDetail = ({ salon }: SalonDetailProps) => {
     if (navigator.share) {
       navigator.share({
         title: salon.name,
-        text: salon.shortDescription || salon.description,
+        text: (salon as any).shortDescription || salon.description,
         url: window.location.href,
       })
       .then(() => console.log('Successful share'))
@@ -74,9 +74,9 @@ const SalonDetail = ({ salon }: SalonDetailProps) => {
     <div className="max-w-5xl mx-auto">
       {/* Hero Section */}
       <div className="relative rounded-lg overflow-hidden shadow-xl mb-6">
-        {salon.image ? (
+        {(salon as any).image || salon.image_url ? (
           <img
-            src={salon.image}
+            src={(salon as any).image || salon.image_url}
             alt={salon.name}
             className="w-full h-80 object-cover object-center"
           />
@@ -86,7 +86,7 @@ const SalonDetail = ({ salon }: SalonDetailProps) => {
           </div>
         )}
         <div className="absolute top-4 left-4">
-          <Badge className="bg-blue-500 text-white">{salon.type}</Badge>
+          <Badge className="bg-blue-500 text-white">{(salon as any).type || salon.listing_type}</Badge>
         </div>
       </div>
       
@@ -101,7 +101,7 @@ const SalonDetail = ({ salon }: SalonDetailProps) => {
         {salon.price && (
           <div className="flex items-center text-green-700 font-medium mb-4">
             <DollarSign className="h-4 w-4 mr-2" />
-            <span>{formatPrice(salon.price, salon.priceUnit)}</span>
+            <span>{formatPrice(salon.price, (salon as any).priceUnit)}</span>
           </div>
         )}
         
@@ -122,31 +122,31 @@ const SalonDetail = ({ salon }: SalonDetailProps) => {
         <div className="mb-8">
           <h3 className="font-semibold mb-2">Contact Information:</h3>
           <div className="text-gray-600">
-            {salon.contactName && (
+            {(salon as any).contactName && (
               <div className="flex items-center mb-1">
                 <User className="h-4 w-4 mr-2" />
-                {salon.contactName}
+                {(salon as any).contactName}
               </div>
             )}
-            {salon.contactPhone && (
+            {(salon as any).contactPhone && (
               <div className="flex items-center mb-1">
                 <Phone className="h-4 w-4 mr-2" />
-                {salon.contactPhone}
+                {(salon as any).contactPhone}
               </div>
             )}
-            {salon.contactEmail && (
+            {(salon as any).contactEmail && (
               <div className="flex items-center mb-1">
                 <Mail className="h-4 w-4 mr-2" />
-                <a href={`mailto:${salon.contactEmail}`} className="hover:text-blue-500">
-                  {salon.contactEmail}
+                <a href={`mailto:${(salon as any).contactEmail}`} className="hover:text-blue-500">
+                  {(salon as any).contactEmail}
                 </a>
               </div>
             )}
-            {salon.website && (
+            {(salon as any).website && (
               <div className="flex items-center mb-1">
                 <ExternalLink className="h-4 w-4 mr-2" />
-                <a href={salon.website} target="_blank" rel="noopener noreferrer" className="hover:text-blue-500">
-                  {salon.website}
+                <a href={(salon as any).website} target="_blank" rel="noopener noreferrer" className="hover:text-blue-500">
+                  {(salon as any).website}
                 </a>
               </div>
             )}
@@ -195,4 +195,3 @@ const SalonDetail = ({ salon }: SalonDetailProps) => {
 };
 
 export default SalonDetail;
-

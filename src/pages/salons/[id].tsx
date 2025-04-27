@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -32,13 +33,16 @@ const SalonDetailPage = () => {
         if (foundSalon) {
           // Make sure the found salon has all required properties for SalonListing
           const preparedSalon: SalonListing = {
-            ...foundSalon,
+            ...foundSalon as any,
             // Ensure required properties are present
-            name: 'name' in foundSalon && foundSalon.name ? foundSalon.name : 
-                 'title' in foundSalon && foundSalon.title ? foundSalon.title as string : 
-                 'company' in foundSalon && foundSalon.company ? foundSalon.company : 'Salon Listing',
+            name: foundSalon.name || 
+                 ('title' in foundSalon ? foundSalon.title as string : '') || 
+                 ('company' in foundSalon ? (foundSalon as Job).company || '' : '') || 
+                 'Salon Listing',
             // Ensure required SalonListing properties are set
-            type: foundSalon.type as 'For Sale' | 'Booth Rental' | 'Full Salon' || 'For Sale'
+            listing_type: (foundSalon as any).type === 'For Sale' ? 'For Sale' : 
+                          (foundSalon as any).type === 'Booth Rental' ? 'Booth Rental' : 'Partnership',
+            contact_hidden: false
           };
             
           setSalon(preparedSalon);
@@ -68,7 +72,7 @@ const SalonDetailPage = () => {
             <title>{salon.name} | Salon Details | EmviApp</title>
             <meta 
               name="description" 
-              content={salon.shortDescription || salon.description.substring(0, 160)} 
+              content={(salon as any).shortDescription || salon.description.substring(0, 160)} 
             />
           </>
         ) : (

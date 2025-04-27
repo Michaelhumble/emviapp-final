@@ -7,11 +7,11 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { MapPin, DollarSign, ArrowRight, Star } from "lucide-react";
 
 interface SalonCardProps {
-  salon: Job | SalonListing;
+  salon: SalonListing | Job;
   featured?: boolean;
   index?: number;
   isExpired?: boolean;
-  onViewDetails?: (salon: Job | SalonListing) => void;
+  onViewDetails?: (salon: SalonListing | Job) => void;
 }
 
 const SalonCard = ({ salon, featured = false, index = 0, isExpired = false, onViewDetails }: SalonCardProps) => {
@@ -75,8 +75,8 @@ const SalonCard = ({ salon, featured = false, index = 0, isExpired = false, onVi
     if ('title' in salon && salon.title) {
       return salon.title;
     }
-    if ('company' in salon && salon.company) {
-      return salon.company;
+    if ('company' in salon && 'company' in salon) {
+      return salon.company || '';
     }
     return "Salon Listing";
   };
@@ -94,10 +94,26 @@ const SalonCard = ({ salon, featured = false, index = 0, isExpired = false, onVi
   
   // Get price unit if available
   const getPriceUnit = (): string | undefined => {
-    if ('priceUnit' in salon && typeof salon.priceUnit === 'string') {
-      return salon.priceUnit;
+    if ('priceUnit' in salon && typeof (salon as any).priceUnit === 'string') {
+      return (salon as any).priceUnit;
     }
     return undefined;
+  };
+
+  const getType = (): string => {
+    return (salon as any).type || 'Salon';
+  };
+
+  const getImage = (): string | undefined => {
+    return (salon as any).image || salon.image_url;
+  };
+
+  const getFeatures = (): string[] | undefined => {
+    return (salon as any).features || [];
+  };
+
+  const getShortDescription = (): string => {
+    return (salon as any).shortDescription || salon.description || '';
   };
 
   return (
@@ -108,10 +124,10 @@ const SalonCard = ({ salon, featured = false, index = 0, isExpired = false, onVi
       style={{ animationDelay }}
     >
       <div className="relative">
-        {salon.image ? (
+        {getImage() ? (
           <div className="aspect-video w-full overflow-hidden">
             <img
-              src={salon.image}
+              src={getImage()}
               alt={getDisplayName()}
               className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
             />
@@ -137,9 +153,9 @@ const SalonCard = ({ salon, featured = false, index = 0, isExpired = false, onVi
         )}
         
         <Badge 
-          className={`absolute top-2 left-2 border ${getTypeColor(salon.type || '')}`}
+          className={`absolute top-2 left-2 border ${getTypeColor(getType())}`}
         >
-          {salon.type || 'Salon'}
+          {getType()}
         </Badge>
       </div>
       
@@ -164,12 +180,12 @@ const SalonCard = ({ salon, featured = false, index = 0, isExpired = false, onVi
         </div>
         
         <p className="text-gray-600 text-sm line-clamp-2 mb-3">
-          {salon.shortDescription || salon.description}
+          {getShortDescription()}
         </p>
         
-        {salon.features && salon.features.length > 0 && (
+        {getFeatures() && getFeatures()!.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-2">
-            {salon.features.slice(0, 3).map((feature, idx) => (
+            {getFeatures()!.slice(0, 3).map((feature, idx) => (
               <Badge 
                 key={idx} 
                 variant="outline" 
@@ -178,12 +194,12 @@ const SalonCard = ({ salon, featured = false, index = 0, isExpired = false, onVi
                 {feature}
               </Badge>
             ))}
-            {salon.features.length > 3 && (
+            {getFeatures()!.length > 3 && (
               <Badge 
                 variant="outline" 
                 className="text-xs font-normal bg-gray-50 py-0"
               >
-                +{salon.features.length - 3} more
+                +{getFeatures()!.length - 3} more
               </Badge>
             )}
           </div>
