@@ -51,13 +51,13 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
           id: salon.id || '',
           name: salon.salon_name || salon.name || '',
           location: salon.location || `${salon.city || ''}, ${salon.state || ''}`,
-          listing_type: salon.type || 'For Sale', // Default value
+          listing_type: salon.type as 'For Sale' | 'Booth Rental' | 'Partnership' || 'For Sale',
           description: salon.description || '',
           price: typeof salon.price === 'number' ? salon.price : 
                  typeof salon.asking_price === 'number' ? salon.asking_price :
                  parseFloat((salon.asking_price || '0').toString().replace(/[^0-9.-]+/g, '') || '0'),
-          contact_hidden: salon.contact_hidden || false, // Default value
-          created_at: salon.created_at || new Date().toISOString(), // Default value
+          contact_hidden: salon.contact_hidden || false,
+          created_at: salon.created_at || new Date().toISOString(),
           
           // Optional fields with proper typing
           is_featured: salon.is_featured || salon.isFeatured || false,
@@ -152,7 +152,7 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
             id: salon.id || '',
             name: salon.salon_name || salon.name || '',
             location: salon.location || `${salon.city || ''}, ${salon.state || ''}`,
-            listing_type: salon.type || 'For Sale',
+            listing_type: salon.type as 'For Sale' | 'Booth Rental' | 'Partnership' || 'For Sale',
             description: salon.description || '',
             price: typeof salon.price === 'number' ? salon.price : 
                  typeof salon.asking_price === 'number' ? salon.asking_price :
