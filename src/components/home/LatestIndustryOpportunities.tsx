@@ -1,22 +1,20 @@
 
 import React, { useState, useEffect } from 'react';
 import { Job } from '@/types/job';
-import { getFeaturedJobs, getAllJobs, getAllBooths, getSalonsForSale } from '@/utils/featuredContent';
 import OpportunitiesSection from './opportunities/OpportunitiesSection';
+import { v4 as uuidv4 } from 'uuid';
+import { verifyOpportunityListings } from '@/utils/listingsVerification';
 
 const LatestIndustryOpportunities = () => {
   const [diverseListings, setDiverseListings] = useState<Job[]>([]);
 
   useEffect(() => {
     const loadDiverseListings = async () => {
-      const booths = getAllBooths(3);
-      const salonsForSale = getSalonsForSale(3);
-      const allJobs = getAllJobs(15);
-      
+      // Create a diverse set of listings with unique IDs
       let mixed: Job[] = [
         // Hair industry position
         {
-          id: '1',
+          id: 'op-hair-' + uuidv4().slice(0, 8),
           title: "Senior Hair Stylist",
           company: "Luxe Hair Studio",
           location: "Denver, CO",
@@ -27,7 +25,7 @@ const LatestIndustryOpportunities = () => {
         },
         // Nail position
         {
-          id: '2',
+          id: 'op-nail-' + uuidv4().slice(0, 8),
           title: "Nail Tech - Private Suite",
           company: "The Nail Collective",
           location: "Austin, TX",
@@ -38,7 +36,7 @@ const LatestIndustryOpportunities = () => {
         },
         // Spa position
         {
-          id: '3',
+          id: 'op-spa-' + uuidv4().slice(0, 8),
           title: "Spa Manager",
           company: "Serenity Wellness Center",
           location: "Seattle, WA",
@@ -49,7 +47,7 @@ const LatestIndustryOpportunities = () => {
         },
         // Salon for sale
         {
-          id: '4',
+          id: 'op-sale-' + uuidv4().slice(0, 8),
           title: "Established Hair Salon For Sale",
           company: "Premier Salon",
           location: "Phoenix, AZ",
@@ -61,7 +59,7 @@ const LatestIndustryOpportunities = () => {
         },
         // Booth rental
         {
-          id: '5',
+          id: 'op-booth-' + uuidv4().slice(0, 8),
           title: "Luxury Booth Rental",
           company: "The Style House",
           location: "Miami, FL",
@@ -72,7 +70,7 @@ const LatestIndustryOpportunities = () => {
         },
         // Tattoo artist
         {
-          id: '6',
+          id: 'op-tattoo-' + uuidv4().slice(0, 8),
           title: "Experienced Tattoo Artist",
           company: "Black Iris Tattoo",
           location: "Portland, OR",
@@ -83,7 +81,7 @@ const LatestIndustryOpportunities = () => {
         },
         // Beauty supply business
         {
-          id: '7',
+          id: 'op-supply-' + uuidv4().slice(0, 8),
           title: "Beauty Supply Store For Sale",
           company: "Beauty Essentials",
           location: "Atlanta, GA",
@@ -95,7 +93,7 @@ const LatestIndustryOpportunities = () => {
         },
         // Esthetician
         {
-          id: '8',
+          id: 'op-esth-' + uuidv4().slice(0, 8),
           title: "Licensed Esthetician",
           company: "Glow Skincare",
           location: "San Diego, CA",
@@ -106,7 +104,7 @@ const LatestIndustryOpportunities = () => {
         },
         // Wellness studio
         {
-          id: '9',
+          id: 'op-well-' + uuidv4().slice(0, 8),
           title: "Wellness Studio Partnership",
           company: "Balance Wellness",
           location: "Chicago, IL",
@@ -116,6 +114,23 @@ const LatestIndustryOpportunities = () => {
           created_at: new Date().toISOString()
         }
       ];
+
+      // Verify each listing has a valid ID
+      mixed = mixed.map(listing => {
+        if (!listing.id) {
+          console.warn('Found listing without ID, generating one:', listing);
+          return { ...listing, id: 'op-' + uuidv4().slice(0, 8) };
+        }
+        return listing;
+      });
+
+      // Run verification to ensure all listings have proper routing
+      const verificationResults = verifyOpportunityListings(mixed);
+      if (!verificationResults.isValid) {
+        console.error("⚠️ Opportunity listings verification failed:", verificationResults.issues);
+      } else {
+        console.log(`✅ All ${verificationResults.totalListings} opportunity listings verified successfully`);
+      }
 
       setDiverseListings(mixed);
     };

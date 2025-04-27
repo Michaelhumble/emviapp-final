@@ -6,6 +6,7 @@ import { MapPin, Building, Lock, Calendar } from 'lucide-react';
 import { Job } from '@/types/job';
 import { useAuth } from '@/context/auth';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 interface OpportunityCardProps {
   listing: Job;
@@ -14,6 +15,7 @@ interface OpportunityCardProps {
 
 const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
   const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
   
   // Format the created date to a more readable format
   const formatDate = (dateString: string) => {
@@ -29,8 +31,20 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
     return `${Math.floor(diffDays / 30)} months ago`;
   };
 
+  const handleViewDetails = () => {
+    // Ensure we have a valid ID before navigating
+    if (listing.id) {
+      navigate(`/opportunities/${listing.id}`);
+    } else {
+      console.error("Listing is missing an ID", listing);
+    }
+  };
+
   return (
-    <Card className="overflow-hidden h-full flex flex-col transition-all duration-200 hover:shadow-lg cursor-pointer">
+    <Card 
+      className="overflow-hidden h-full flex flex-col transition-all duration-200 hover:shadow-lg cursor-pointer"
+      onClick={handleViewDetails}
+    >
       {/* Add image if available */}
       {listing.image && (
         <div className="aspect-video w-full overflow-hidden">
@@ -87,12 +101,28 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
             <div className="flex items-center text-sm text-gray-500 w-full justify-between">
               <Lock className="h-3.5 w-3.5 mr-1" />
               <span className="flex-grow">Sign in to view contact details</span>
-              <Button variant="ghost" size="sm" className="text-primary ml-2">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-primary ml-2"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent card onClick from firing
+                  handleViewDetails();
+                }}
+              >
                 View Details
               </Button>
             </div>
           ) : (
-            <Button variant="ghost" size="sm" className="text-primary ml-auto">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-primary ml-auto"
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent card onClick from firing
+                handleViewDetails();
+              }}
+            >
               View Details
             </Button>
           )}

@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Briefcase } from 'lucide-react';
 import { Job } from '@/types/job';
 import OpportunityCard from './OpportunityCard';
@@ -13,14 +13,6 @@ interface OpportunitiesSectionProps {
 }
 
 const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) => {
-  const navigate = useNavigate();
-  
-  const handleViewDetails = async (job: Job): Promise<boolean> => {
-    // Navigate to the dedicated opportunity detail page with the specific job ID
-    navigate(`/opportunities/${job.id}`);
-    return true; // Return true to indicate successful navigation
-  };
-  
   return (
     <section className="py-20 bg-gradient-to-b from-white to-gray-50">
       <div className="container mx-auto px-4">
@@ -43,7 +35,7 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
           {diverseListings.map((listing, index) => (
             <AuthAction
               key={listing.id}
-              onAction={() => handleViewDetails(listing)}
+              onAction={() => true}
               redirectPath={`/opportunities/${listing.id}`}
             >
               <OpportunityCard 
