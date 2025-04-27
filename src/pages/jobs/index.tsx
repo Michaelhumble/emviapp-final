@@ -1,256 +1,318 @@
 
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Filter, MapPin, Briefcase, PlusCircle } from 'lucide-react';
-import { motion } from 'framer-motion';
-import Layout from '@/components/layout/Layout';
-import JobsGrid from '@/components/jobs/JobsGrid';
-import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { useJobsData } from '@/hooks/useJobsData';
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useJobsData, JobFilters } from "@/hooks/useJobsData";
+import { Job } from "@/types/job";
+import JobsGrid from "@/components/jobs/JobsGrid";
+import JobDetailModal from "@/components/jobs/JobDetailModal";
+import JobFiltersComponent from "@/components/jobs/JobFilters";
+import { differenceInDays } from "date-fns";
+import { v4 as uuidv4 } from "uuid";
+import Layout from "@/components/layout/Layout";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/auth";
+import { ArrowRight, MailCheck } from "lucide-react";
+import { useJobRenewal } from "@/hooks/useJobRenewal";
+import { useTranslation } from "@/hooks/useTranslation";
+import { FeaturedJobsSection } from "@/components/jobs/FeaturedJobsSection";
+import VietnameseJobsSection from "@/components/jobs/VietnameseJobSection";
+import JobEmptyState from "@/components/jobs/JobEmptyState";
+import JobLoadingState from "@/components/jobs/JobLoadingState";
 
+// Main component
 const JobsPage = () => {
   const navigate = useNavigate();
-  const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
-  const [isRenewing, setIsRenewing] = useState(false);
+  const location = useLocation();
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [showAlert, setShowAlert] = useState<boolean>(false);
+  const [alertMessage, setAlertMessage] = useState<string>("");
+  const { user } = useAuth();
+  const { isVietnamese } = useTranslation();
+  const { renewJob, isRenewing, renewalJobId } = useJobRenewal();
+  const [expirations, setExpirations] = useState<Record<string, boolean>>({});
   
-  const { 
-    jobs, 
-    loading, 
-    error, 
-    filters, 
-    updateFilters,
-    featuredJobs,
-  } = useJobsData({
-    showExpired: false
-  });
+  // Get search params and create initial filters
+  const searchParams = new URLSearchParams(location.search);
   
-  // Mock expirations since we don't have real data yet
-  const expirations: Record<string, boolean> = {};
-  jobs.forEach(job => {
-    expirations[job.id] = false;
-  });
-  
-  // Handle job renewal (placeholder for now)
-  const handleRenewJob = (job: any) => {
-    setRenewalJobId(job.id);
-    setIsRenewing(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsRenewing(false);
-      setRenewalJobId(null);
-    }, 1500);
+  const initialFilters: JobFilters = {
+    featured: searchParams.get('featured') === 'true',
+    remote: searchParams.get('remote') === 'true',
+    fullTime: searchParams.get('fullTime') === 'true',
+    partTime: searchParams.get('partTime') === 'true',
+    location: searchParams.get('location') || undefined,
+    weeklyPay: searchParams.get('weeklyPay') === 'true',
+    ownerWillTrain: searchParams.get('ownerWillTrain') === 'true',
+    employmentType: searchParams.get('employmentType') || undefined,
+    industry: searchParams.get('industry') || undefined,
+    language: searchParams.get('language') || undefined,
+    showExpired: searchParams.get('showExpired') === 'true',
+    hasHousing: searchParams.get('hasHousing') === 'true',
+    noSupplyDeduction: searchParams.get('noSupplyDeduction') === 'true',
+    payType: (searchParams.get('payType') as 'commission' | 'hourly' | 'salary' | 'all') || undefined,
   };
-  
+
+  const { jobs, loading, error, filters, updateFilters, featuredJobs, searchTerm, updateSearchTerm } = useJobsData(initialFilters);
+
+  // Handle job selection
+  const handleJobSelect = (job: Job) => {
+    setSelectedJob(job);
+  };
+
+  // Close job modal
+  const handleCloseModal = () => {
+    setSelectedJob(null);
+  };
+
+  // Update URL with filters
   useEffect(() => {
-    document.title = "Jobs & Opportunities | EmviApp";
-  }, []);
-  
-  if (error) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-12">
-          <div className="text-center py-16">
-            <h2 className="text-2xl font-medium text-gray-900 mb-4">
-              Error loading job listings
-            </h2>
-            <p className="text-gray-600">
-              Please try again later. If this problem persists, contact support.
-            </p>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
+    const params = new URLSearchParams();
+    
+    if (filters.featured) params.set('featured', 'true');
+    if (filters.remote) params.set('remote', 'true');
+    if (filters.fullTime) params.set('fullTime', 'true');
+    if (filters.partTime) params.set('partTime', 'true');
+    if (filters.location) params.set('location', filters.location);
+    if (filters.weeklyPay) params.set('weeklyPay', 'true');
+    if (filters.ownerWillTrain) params.set('ownerWillTrain', 'true');
+    if (filters.employmentType) params.set('employmentType', filters.employmentType);
+    if (filters.industry) params.set('industry', filters.industry);
+    if (filters.language) params.set('language', filters.language);
+    if (filters.showExpired) params.set('showExpired', 'true');
+    if (filters.hasHousing) params.set('hasHousing', 'true');
+    if (filters.noSupplyDeduction) params.set('noSupplyDeduction', 'true');
+    if (filters.payType) params.set('payType', filters.payType);
+    
+    if (searchTerm) params.set('search', searchTerm);
+    
+    const queryString = params.toString();
+    const newUrl = `${location.pathname}${queryString ? `?${queryString}` : ''}`;
+    
+    window.history.replaceState({}, '', newUrl);
+  }, [filters, searchTerm, location.pathname]);
+
+  // Check job expirations
+  useEffect(() => {
+    const checkExpirations = () => {
+      const expirationsMap: Record<string, boolean> = {};
+      
+      jobs.forEach(job => {
+        // If already marked as expired
+        if (job.status === 'expired') {
+          expirationsMap[job.id] = true;
+          return;
+        }
+        
+        // Calculate based on created_at
+        const createdDate = new Date(job.created_at);
+        const now = new Date();
+        const daysDifference = differenceInDays(now, createdDate);
+        
+        expirationsMap[job.id] = daysDifference >= 30;
+      });
+      
+      setExpirations(expirationsMap);
+    };
+    
+    if (jobs.length > 0) {
+      checkExpirations();
+    }
+  }, [jobs]);
+
+  // Handle job renewal
+  const handleRenewJob = async (job: Job) => {
+    try {
+      await renewJob(job);
+      setAlertMessage("Job renewed successfully!");
+      setShowAlert(true);
+    } catch (error) {
+      console.error("Error renewing job:", error);
+      setAlertMessage("Failed to renew job. Please try again.");
+      setShowAlert(true);
+    }
+  };
+
+  // Group Vietnamese jobs for special section
+  const vietnameseJobs = jobs.filter(job => job.vietnamese_description && !expirations[job.id]);
+
+  // Filter regular jobs (non-Vietnamese or explicitly included in both sections)
+  const displayJobs = jobs.filter(job => {
+    if (filters.language === 'vietnamese') {
+      return job.vietnamese_description;
+    }
+    
+    if (filters.language === 'english') {
+      return !job.vietnamese_description;
+    }
+    
+    // All jobs for "all" language filter
+    return true;
+  });
+
+  // Check if we should show empty state
+  const showEmptyState = !loading && displayJobs.length === 0;
+
+  // Handle alert dismissal
+  const onDismissAlert = () => {
+    setShowAlert(false);
+  };
+
+  const handleFilterChange = (filterName: string, value: any) => {
+    switch (filterName) {
+      case 'language':
+        updateFilters({ language: value });
+        break;
+      case 'industry':
+        updateFilters({ industry: value });
+        break;
+      case 'employmentType':
+        updateFilters({ employmentType: value });
+        break;
+      case 'location':
+        updateFilters({ location: value });
+        break;
+      case 'remote':
+        updateFilters({ remote: value });
+        break;
+      case 'fullTime':
+        updateFilters({ fullTime: value });
+        break;
+      case 'partTime':
+        updateFilters({ partTime: value });
+        break;
+      case 'weeklyPay':
+        updateFilters({ weeklyPay: value });
+        break;
+      case 'ownerWillTrain':
+        updateFilters({ ownerWillTrain: value });
+        break;
+      case 'hasHousing':
+        updateFilters({ hasHousing: value });
+        break;
+      case 'noSupplyDeduction':
+        updateFilters({ noSupplyDeduction: value });
+        break;
+      case 'showExpired':
+        updateFilters({ showExpired: value });
+        break;
+      case 'payType':
+        updateFilters({ payType: value });
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleSearch = (term: string) => {
+    updateSearchTerm(term);
+  };
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-12">
-        {/* Hero Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }} 
-          animate={{ opacity: 1, y: 0 }} 
-          transition={{ duration: 0.5 }}
-          className="text-center max-w-3xl mx-auto mb-10"
-        >
-          <h1 className="text-4xl md:text-5xl font-playfair font-bold mb-4 text-gray-900">
-            Beauty & Salon Jobs
-          </h1>
-          <p className="text-gray-600 text-lg mb-6">
-            Find your dream position or post open roles at top salons and spas across the country
-          </p>
-          <Button 
-            className="bg-primary hover:bg-primary/90 text-white font-medium px-8 py-6 h-auto text-base"
-            onClick={() => navigate('/post-job')}
-          >
-            <PlusCircle className="mr-2 h-5 w-5" /> Post a Job
-          </Button>
-        </motion.div>
-
-        {/* Filters Section */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="bg-white p-4 rounded-lg shadow-sm mb-10"
-        >
-          <div className="flex flex-col md:flex-row items-center gap-4">
-            <div className="flex items-center gap-2 w-full md:w-auto">
-              <Filter className="h-5 w-5 text-gray-500" />
-              <span className="text-gray-700 font-medium">Filters:</span>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-              {/* Location Filter */}
-              <div className="flex flex-col space-y-1 w-full">
-                <label className="text-sm text-gray-500 flex items-center">
-                  <MapPin className="h-4 w-4 mr-1" />
-                  Location
-                </label>
-                <Select
-                  value={filters.location || 'all'}
-                  onValueChange={(value) => updateFilters({ location: value })}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="All Locations" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Locations</SelectItem>
-                    <SelectItem value="los angeles">Los Angeles</SelectItem>
-                    <SelectItem value="new york">New York</SelectItem>
-                    <SelectItem value="dallas">Dallas</SelectItem>
-                    <SelectItem value="chicago">Chicago</SelectItem>
-                    <SelectItem value="denver">Denver</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Employment Type Filter */}
-              <div className="flex flex-col space-y-1">
-                <label className="text-sm text-gray-500 flex items-center">
-                  <Briefcase className="h-4 w-4 mr-1" />
-                  Position Type
-                </label>
-                <Select
-                  value={filters.employmentType || 'all'}
-                  onValueChange={(value) => updateFilters({ employmentType: value })}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="All Types" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="Full-Time">Full-Time</SelectItem>
-                    <SelectItem value="Part-Time">Part-Time</SelectItem>
-                    <SelectItem value="Commission">Commission</SelectItem>
-                    <SelectItem value="Booth Rental">Booth Rental</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Pay Type Filter */}
-              <div className="flex flex-col space-y-1">
-                <label className="text-sm text-gray-500 flex items-center">
-                  <MapPin className="h-4 w-4 mr-1" />
-                  Pay Type
-                </label>
-                <Select
-                  value={filters.payType || 'all'}
-                  onValueChange={(value) => {
-                    if (value === 'weekly_pay') {
-                      updateFilters({ weeklyPay: true });
-                    } else {
-                      updateFilters({ 
-                        weeklyPay: false,
-                        payType: value
-                      });
-                    }
-                  }}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="All Pay Types" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Pay Types</SelectItem>
-                    <SelectItem value="weekly_pay">Weekly Pay</SelectItem>
-                    <SelectItem value="commission">Commission</SelectItem>
-                    <SelectItem value="hourly">Hourly</SelectItem>
-                    <SelectItem value="salary">Salary</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Featured Jobs Section (if available) */}
-        {featuredJobs && featuredJobs.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className="mb-12"
-          >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-playfair font-semibold text-gray-900">Featured Opportunities</h2>
-            </div>
-            <JobsGrid
-              jobs={featuredJobs}
-              expirations={expirations}
-              onRenew={handleRenewJob}
-              isRenewing={isRenewing}
-              renewalJobId={renewalJobId}
-            />
-          </motion.div>
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Alert for job renewal */}
+        {showAlert && (
+          <Alert className="mb-6" variant="default">
+            <MailCheck className="h-4 w-4" />
+            <AlertTitle>Success</AlertTitle>
+            <AlertDescription className="flex justify-between items-center">
+              {alertMessage}
+              <Button variant="outline" onClick={onDismissAlert}>Dismiss</Button>
+            </AlertDescription>
+          </Alert>
         )}
-
-        {/* All Jobs Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-playfair font-semibold text-gray-900">All Available Positions</h2>
+        
+        {/* Page Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+          <div>
+            <h1 className="text-3xl font-playfair font-bold text-gray-900 mb-2">
+              {isVietnamese ? "Cơ Hội Việc Làm" : "Job Opportunities"}
+            </h1>
+            <p className="text-gray-600 max-w-xl">
+              {isVietnamese 
+                ? "Tìm kiếm cơ hội việc làm mới trong ngành làm đẹp"
+                : "Find your next opportunity in the beauty industry"
+              }
+            </p>
           </div>
           
-          {loading ? (
-            <div className="py-20 text-center">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
-                <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
-              </div>
-              <p className="mt-2 text-gray-600">Loading opportunities...</p>
+          <div className="mt-4 md:mt-0">
+            <Button 
+              onClick={() => navigate("/post/job")}
+              className="flex items-center gap-2"
+            >
+              {isVietnamese ? "Đăng Việc Làm" : "Post a Job"}
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+        
+        {/* Filters */}
+        <JobFiltersComponent 
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onSearch={handleSearch}
+          searchTerm={searchTerm}
+        />
+        
+        {/* Featured Jobs Section - Always visible */}
+        <FeaturedJobsSection jobs={featuredJobs} />
+        
+        {/* Show Vietnamese Job Section if applicable */}
+        {vietnameseJobs.length > 0 && !filters.language && (
+          <VietnameseJobsSection jobs={vietnameseJobs} />
+        )}
+        
+        {/* Main Content */}
+        <div className="my-8">
+          <h2 className="text-2xl font-semibold mb-6">
+            {isVietnamese ? "Danh Sách Việc Làm" : "Job Listings"}
+            {displayJobs.length > 0 && (
+              <Badge variant="secondary" className="ml-2">
+                {displayJobs.length}
+              </Badge>
+            )}
+          </h2>
+          
+          {/* Loading State */}
+          {loading && <JobLoadingState />}
+          
+          {/* Error State */}
+          {error && (
+            <div className="p-6 bg-red-50 rounded-lg border border-red-200">
+              <p className="text-red-700">{error.message}</p>
             </div>
-          ) : jobs.length > 0 ? (
-            <JobsGrid
-              jobs={jobs}
+          )}
+          
+          {/* Empty State */}
+          {showEmptyState && <JobEmptyState filters={filters} />}
+          
+          {/* Job Grid */}
+          {!loading && displayJobs.length > 0 && (
+            <JobsGrid 
+              jobs={displayJobs}
               expirations={expirations}
+              currentUserId={user?.id}
               onRenew={handleRenewJob}
               isRenewing={isRenewing}
               renewalJobId={renewalJobId}
             />
-          ) : (
-            <div className="text-center py-20 bg-gray-50 rounded-lg">
-              <h3 className="text-xl font-medium text-gray-700 mb-2">No jobs matching your criteria</h3>
-              <p className="text-gray-600 mb-6">Try adjusting your filters or check back soon for new opportunities</p>
-              <Button variant="outline" onClick={() => updateFilters({ 
-                location: 'all', 
-                employmentType: 'all',
-                payType: 'all',
-                weeklyPay: false
-              })}>
-                Reset Filters
-              </Button>
-            </div>
           )}
-        </motion.div>
+        </div>
+        
+        {/* Job Detail Modal */}
+        {selectedJob && (
+          <JobDetailModal
+            job={selectedJob}
+            isOpen={!!selectedJob}
+            onClose={handleCloseModal}
+            isExpired={expirations[selectedJob.id] || selectedJob.status === 'expired'}
+            onRenew={handleRenewJob}
+            isRenewing={isRenewing && renewalJobId === selectedJob.id}
+            isOwner={user?.id === selectedJob.user_id}
+          />
+        )}
       </div>
     </Layout>
   );
