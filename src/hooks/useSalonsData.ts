@@ -1,100 +1,111 @@
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { differenceInDays } from 'date-fns';
 import { SalonListing, SalonFilters } from "@/types/salon";
 
-// Sample data for salon listings
-const sampleSalonListings: SalonListing[] = [
-  {
-    id: "salon-1",
-    name: "Elegant Nails & Spa",
-    location: "Denver, CO",
-    type: "For Sale",
-    price: 125000,
-    priceUnit: "one-time",
-    description: "Established nail salon with strong clientele base. This turnkey business features 6 manicure stations, 6 pedicure chairs, and a dedicated waxing room. Located in a high-traffic shopping center with ample parking. Current owner retiring after 12 successful years. All equipment included and recently renovated interior. Perfect opportunity for an experienced nail technician looking to own their own business.",
-    shortDescription: "Established nail salon for sale in prime Denver location. 12 years in business with loyal clientele.",
-    image: "https://images.unsplash.com/photo-1607008829749-c0f284a49841?q=80&w=2070&auto=format&fit=crop",
-    features: ["Turnkey Business", "High Traffic Area", "Recently Renovated", "Established Clientele", "All Equipment Included"],
-    contactName: "Lisa Chen",
-    contactPhone: "(720) 555-8899",
-    contactEmail: "lisa.chen@example.com",
-    isFeatured: true,
-    squareFeet: 1200,
-    established: 2011,
-    chairs: 12
-  },
-  {
-    id: "salon-2",
-    name: "Modern Beauty Booths",
-    location: "Austin, TX",
-    type: "Booth Rental",
-    price: 350,
-    priceUnit: "weekly",
-    description: "Premium booth rental available in upscale salon located in trendy South Congress district. Our modern facility features high ceilings, natural lighting, and a sleek contemporary design. Booth rental includes access to premium salon software, towel service, and shared assistant. Build your business in this established location with walk-in traffic and collaborative atmosphere. Ideal for experienced professionals with existing clientele looking for an upscale environment.",
-    shortDescription: "Premium booth rental in upscale South Congress salon. Modern facilities with premium amenities.",
-    image: "https://images.unsplash.com/photo-1470259078422-826894b933aa?q=80&w=2074&auto=format&fit=crop",
-    features: ["Premium Location", "Modern Design", "Utilities Included", "Flexible Schedule", "High-End Products Available"],
-    contactName: "Michael Torres",
-    contactPhone: "(512) 555-3344",
-    contactEmail: "michael@modernbeauty.com",
-    isFeatured: true,
-    squareFeet: 80,
-  },
-  {
-    id: "salon-3",
-    name: "Serenity Day Spa",
-    location: "Atlanta, GA",
-    type: "For Sale",
-    price: 230000,
-    priceUnit: "one-time",
-    description: "Profitable day spa business for sale in affluent Atlanta suburb. This established spa includes 5 treatment rooms, relaxation lounge, and dedicated retail area. Offering massage therapy, facials, body treatments, and nail services. Strong local reputation built over 8 years with excellent online reviews (4.9 stars). Seller will assist with transition and staff is expected to remain. Sale includes all equipment, products, and custom booking software with 3,500+ client database.",
-    shortDescription: "Profitable day spa for sale in affluent Atlanta suburb. Established 8 years with excellent reputation.",
-    image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=2070&auto=format&fit=crop",
-    features: ["Profitable Business", "Excellent Reviews", "Established Clientele", "Full Staff in Place", "Premium Location"],
-    contactName: "Samantha Jenkins",
-    contactPhone: "(404) 555-7788",
-    contactEmail: "sam@serenityspa.com",
-    squareFeet: 2100,
-    established: 2015,
-  },
-  {
-    id: "salon-4",
-    name: "Hair Studio Booth",
-    location: "Chicago, IL",
-    type: "Booth Rental",
-    price: 250,
-    priceUnit: "weekly",
-    description: "Stylish booth available in downtown Chicago hair studio. Our welcoming space is perfect for hair stylists looking for independence with the support of an established salon. Month-to-month rental with no long-term commitment required. Space includes styling station, storage cabinet, and shared shampooing area. Great opportunity to grow your business in a central location with high foot traffic. WiFi, utilities, and basic supplies included.",
-    shortDescription: "Stylish booth available in downtown Chicago hair studio. No long-term commitment required.",
-    features: ["Downtown Location", "Month-to-Month", "Supplies Included", "Free WiFi", "New Equipment"],
-    contactName: "David Wilson",
-    contactPhone: "(312) 555-6677",
-    contactEmail: "david@hairstudio.com",
-  },
-  {
-    id: "salon-5",
-    name: "Luxe Nail Bar",
-    location: "Miami, FL",
-    type: "Full Salon",
-    description: "Upscale nail salon in Miami's trendy Wynwood district. Our salon specializes in luxury manicures, pedicures, nail art, and waxing services. Modern, Instagram-worthy interior with custom lighting and comfortable seating. Currently not for sale but accepting applications for skilled nail technicians and partnerships. Great opportunity to join an established brand with strong social media presence (over 15k followers) and celebrity clientele.",
-    shortDescription: "Upscale nail salon in Miami's trendy Wynwood district seeking skilled technicians and partnerships.",
-    image: "https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=2074&auto=format&fit=crop",
-    features: ["Trendy Location", "Strong Social Media", "Celebrity Clientele", "Modern Design", "High-End Products"],
-    contactName: "Isabella Rodriguez",
-    contactPhone: "(305) 555-1122",
-    contactEmail: "info@luxenailbar.com",
-    isFeatured: true,
-    established: 2019,
-    chairs: 8
-  }
-];
+// Use mock data for now
+import { salonsForSaleJobs } from "@/utils/jobs/mockJobData";
+import { getSalonsForSale } from "@/utils/featuredContent";
 
 export const defaultFilters: SalonFilters = {
   location: 'all',
-  priceRange: [0, 250000],
+  priceRange: [0, 500000],
   listingType: 'all',
   searchTerm: ''
 };
+
+// Mock salon data with required created_at property
+const mockSalonsData: SalonListing[] = [
+  {
+    id: "101",
+    name: "Luxe Nail Salon",
+    location: "San Francisco, CA",
+    type: "For Sale",
+    price: 240000,
+    priceUnit: "one-time",
+    description: "Established nail salon in prime location with 10 chairs, 3 pedicure stations, and loyal clientele. Perfect opportunity for an owner-operator. Modern décor, all equipment included, and current owner will assist with transition.",
+    shortDescription: "Established nail salon in prime San Francisco location",
+    image: "https://preview--emviapp-final.lovable.app/lovable-uploads/17345deef1120-salon1.jpeg",
+    features: ["10 Years Established", "Prime Location", "High Traffic Area", "All Equipment Included", "Owner Financing Available"],
+    contactName: "John Davis",
+    contactPhone: "415-555-7890",
+    contactEmail: "john@luxesalon.com",
+    website: "https://luxesalon.com",
+    squareFeet: 1200,
+    established: 2013,
+    chairs: 10,
+    created_at: "2023-06-15T08:00:00Z"
+  },
+  {
+    id: "102",
+    name: "Happy Nails Booth Rental",
+    location: "Los Angeles, CA",
+    type: "Booth Rental",
+    price: 250,
+    priceUnit: "weekly",
+    description: "Beautiful booth rental available in upscale salon. Includes your own dedicated space with storage, use of all salon amenities, and a relaxing atmosphere. High foot traffic area with established clientele.",
+    shortDescription: "Prime booth rental in upscale Los Angeles salon",
+    image: "https://preview--emviapp-final.lovable.app/lovable-uploads/17345deef51c5-salon2.jpeg",
+    features: ["Private Station", "Product Included", "Free WiFi", "Marketing Support", "Walk-in Clients"],
+    contactName: "Maria Lopez",
+    contactPhone: "213-555-1234",
+    contactEmail: "maria@happynails.com",
+    isFeatured: true,
+    squareFeet: 800,
+    created_at: "2023-09-22T10:30:00Z"
+  },
+  {
+    id: "103",
+    name: "Elite Nail Spa",
+    location: "Miami, FL",
+    type: "For Sale",
+    price: 175000,
+    priceUnit: "one-time",
+    description: "Profitable nail spa for sale in Miami's luxury shopping district. Turnkey operation with 8 manicure stations, 6 pedicure chairs, and full waxing room. Established 5 years with excellent reputation and loyal clients.",
+    shortDescription: "Turnkey nail spa in Miami's luxury shopping district",
+    image: "https://preview--emviapp-final.lovable.app/lovable-uploads/17345deef920d-salon3.jpeg",
+    features: ["Turnkey Operation", "Luxury Location", "Stable Revenue", "Loyal Clientele", "Training Available"],
+    contactName: "Sarah Johnson",
+    contactPhone: "305-555-9876",
+    contactEmail: "sarah@elitenailspa.com",
+    squareFeet: 1000,
+    established: 2018,
+    created_at: "2023-10-05T15:45:00Z"
+  },
+  {
+    id: "104",
+    name: "Nail Artist Station",
+    location: "Chicago, IL",
+    type: "Booth Rental",
+    price: 200,
+    priceUnit: "weekly",
+    description: "Join our team of professional nail artists! We have a booth available in our popular downtown Chicago location. Ideal for experienced nail techs with their own clientele looking for a welcoming, collaborative environment.",
+    shortDescription: "Nail artist booth in downtown Chicago",
+    features: ["Flexible Hours", "High-End Products", "Collaborative Environment", "Great Location", "No Supply Costs"],
+    contactName: "David Kim",
+    contactPhone: "312-555-4567",
+    contactEmail: "david@nailartistchicago.com",
+    created_at: "2023-04-18T12:00:00Z"
+  },
+  {
+    id: "105",
+    name: "Serenity Nail Lounge",
+    location: "Austin, TX",
+    type: "Full Salon",
+    description: "Full service nail salon available for lease takeover in growing Austin neighborhood. Beautiful space with 6 manicure tables, 4 pedicure thrones, and separate room for additional services. Established clientele and social media presence.",
+    shortDescription: "Full service nail salon for lease takeover in Austin",
+    image: "https://preview--emviapp-final.lovable.app/lovable-uploads/17345deefdb62-salon5.jpeg",
+    features: ["Lease Takeover", "Established Clientele", "Modern Design", "Growing Area", "Additional Service Room"],
+    contactName: "Jessica Martinez",
+    contactPhone: "512-555-3210",
+    contactEmail: "jessica@serenitynails.com",
+    isFeatured: true,
+    established: 2019,
+    chairs: 6,
+    created_at: "2023-09-30T09:15:00Z"
+  }
+];
 
 export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
   const [salons, setSalons] = useState<SalonListing[]>([]);
@@ -117,26 +128,104 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
     "Utilities Included"
   ]);
 
-  // Fetch salons data (simulated with timeout)
-  useEffect(() => {
-    const fetchSalons = async () => {
-      setLoading(true);
-      try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 800));
-        setSalons(sampleSalonListings);
-      } catch (err) {
-        console.error("Error fetching salons:", err);
-        setError(err instanceof Error ? err : new Error("Failed to fetch salons"));
-      } finally {
-        setLoading(false);
+  const fetchSalons = useCallback(async () => {
+    setLoading(true);
+    try {
+      console.log("Fetching salons with filters:", filters);
+      
+      // Use the new mockSalonsData with created_at property
+      let filteredSalons = mockSalonsData;
+      
+      // For development, also merge with getSalonsForSale function
+      const additionalSalons = getSalonsForSale(5).map(salon => {
+        // Ensure all salons have created_at
+        if (!salon.created_at) {
+          salon.created_at = new Date().toISOString();
+        }
+        return salon;
+      });
+      
+      filteredSalons = [...filteredSalons, ...additionalSalons];
+      
+      // Apply keyword search
+      if (searchTerm) {
+        const query = searchTerm.toLowerCase();
+        filteredSalons = filteredSalons.filter(salon => 
+          (salon.company && salon.company.toLowerCase().includes(query)) ||
+          (salon.description && salon.description.toLowerCase().includes(query)) ||
+          (salon.vietnamese_description && salon.vietnamese_description.toLowerCase().includes(query)) ||
+          (salon.location && salon.location.toLowerCase().includes(query)) ||
+          (salon.salon_features && salon.salon_features.some(f => f.toLowerCase().includes(query)))
+        );
       }
-    };
+      
+      // Apply location filter
+      if (filters.location && filters.location !== 'all') {
+        filteredSalons = filteredSalons.filter(salon => 
+          salon.location && salon.location.toLowerCase().includes(filters.location!.toLowerCase())
+        );
+      }
+      
+      // Apply price range filter
+      if (filters.priceRange) {
+        filteredSalons = filteredSalons.filter(salon => {
+          const priceString = salon.asking_price || "";
+          const price = parseInt(priceString.replace(/[^0-9]/g, ""));
+          return price >= filters.priceRange![0] && price <= filters.priceRange![1];
+        });
+      }
+      
+      // Filter by "has housing"
+      if (filters.hasHousing) {
+        filteredSalons = filteredSalons.filter(salon => salon.has_housing === true);
+      }
+      
+      // Only show active salons unless showExpired is true
+      if (!filters.showExpired) {
+        filteredSalons = filteredSalons.filter(salon => {
+          if (salon.status === 'expired') return false;
+          
+          const createdDate = new Date(salon.created_at);
+          const now = new Date();
+          return differenceInDays(now, createdDate) < 30;
+        });
+      }
 
+      // Sort by featured status - featured listings first
+      filteredSalons.sort((a, b) => {
+        if (a.is_featured === b.is_featured) return 0;
+        return a.is_featured ? -1 : 1;
+      });
+
+      // Set featured salons
+      const featured = filteredSalons
+        .filter(salon => salon.is_featured && salon.status !== 'expired')
+        .slice(0, 3);
+      
+      setFeaturedSalons(featured);
+      setSalons(filteredSalons);
+      
+      // Generate suggested keywords from actual data
+      const keywords = new Set<string>(suggestedKeywords);
+      filteredSalons.forEach(salon => {
+        if (salon.salon_features) {
+          salon.salon_features.forEach(f => keywords.add(f));
+        }
+      });
+      setSuggestedKeywords(Array.from(keywords));
+    } catch (err) {
+      console.error("Error fetching salons:", err);
+      setError(err instanceof Error ? err : new Error(String(err)));
+      toast.error("Failed to load salons. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  }, [filters, searchTerm, suggestedKeywords]);
+
+  useEffect(() => {
     fetchSalons();
   }, []);
 
-  // Apply filters whenever salons or filters change
   useEffect(() => {
     if (!salons.length) return;
 

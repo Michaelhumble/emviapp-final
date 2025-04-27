@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
@@ -13,7 +14,6 @@ import { SalonFilters, SalonListing } from '@/types/salon';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Job } from '@/types/job';
 
 // This is the locked, final version of the Salons Page
 const SalonsPage: React.FC = () => {
@@ -58,8 +58,8 @@ const SalonsPage: React.FC = () => {
     return salon.status === "expired";
   };
   
-  // Update this function to navigate to the salon detail page
-  const handleViewSalonDetails = (salon: Job | SalonListing) => {
+  // Update this function to handle both SalonListing and Job types
+  const handleViewSalonDetails = (salon: SalonListing) => {
     console.log("Navigating to salon details:", salon.id);
     navigate(`/salons/${salon.id}`);
   };
@@ -98,7 +98,7 @@ const SalonsPage: React.FC = () => {
             {/* Featured Salons Section */}
             {featuredSalons.length > 0 && (
               <FeaturedSalonsSection 
-                featuredSalons={featuredSalons} 
+                featuredSalons={featuredSalons as SalonListing[]} 
                 onViewDetails={handleViewSalonDetails} 
               />
             )}
@@ -136,10 +136,10 @@ const SalonsPage: React.FC = () => {
                   filteredSalons.map((salon, index) => (
                     <SalonCard 
                       key={salon.id} 
-                      salon={salon} 
+                      salon={salon as SalonListing} 
                       index={index} 
                       isExpired={isExpired(salon)} 
-                      onViewDetails={() => handleViewSalonDetails(salon)} 
+                      onViewDetails={() => handleViewSalonDetails(salon as SalonListing)} 
                     />
                   ))
                 ) : (

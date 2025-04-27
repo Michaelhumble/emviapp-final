@@ -86,9 +86,9 @@ export interface SalonListing {
   created_at: string;    // Changed from optional to required to match Job type
 }
 
-// Define Job type for compatibility
+// Define Job type compatibility with SalonListing
 export interface Job extends SalonListing {
-  // Additional Job-specific fields can go here if needed
+  // Additional Job-specific fields are defined in src/types/job.ts
 }
 
 export interface SalonFilters {

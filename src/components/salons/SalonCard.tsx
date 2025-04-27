@@ -25,15 +25,24 @@ const SalonCard = ({ salon, featured = false, index = 0, isExpired = false, onVi
     }
   };
   
-  const formatPrice = (price?: number, unit?: string) => {
+  const formatPrice = (price?: number | string, unit?: string) => {
     if (!price) return "Not for sale";
+    
+    // Handle both string and number types
+    let numericPrice: number;
+    if (typeof price === 'string') {
+      // Extract numeric value from string
+      numericPrice = parseFloat(price.replace(/[^0-9.-]+/g, "") || "0");
+    } else {
+      numericPrice = price;
+    }
     
     const formattedPrice = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(price);
+    }).format(numericPrice);
     
     if (unit === 'one-time') return formattedPrice;
     if (unit === 'monthly') return `${formattedPrice}/month`;
@@ -70,7 +79,7 @@ const SalonCard = ({ salon, featured = false, index = 0, isExpired = false, onVi
           <div className="aspect-video w-full overflow-hidden">
             <img
               src={salon.image}
-              alt={salon.name}
+              alt={salon.name || "Salon"}
               className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
             />
           </div>
@@ -95,9 +104,9 @@ const SalonCard = ({ salon, featured = false, index = 0, isExpired = false, onVi
         )}
         
         <Badge 
-          className={`absolute top-2 left-2 border ${getTypeColor(salon.type)}`}
+          className={`absolute top-2 left-2 border ${getTypeColor(salon.type || '')}`}
         >
-          {salon.type}
+          {salon.type || 'Salon'}
         </Badge>
       </div>
       
@@ -107,16 +116,16 @@ const SalonCard = ({ salon, featured = false, index = 0, isExpired = false, onVi
             className="font-playfair text-lg font-semibold mb-1 line-clamp-2 hover:cursor-pointer"
             onClick={handleViewDetails}
           >
-            {salon.name}
+            {salon.name || salon.title || salon.company || "Salon Listing"}
           </h3>
           <div className="flex items-center text-gray-500 text-sm mb-2">
             <MapPin className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
             <span>{salon.location}</span>
           </div>
-          {salon.price && (
+          {(salon.price || salon.asking_price) && (
             <div className="flex items-center text-green-700 font-medium">
               <DollarSign className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
-              <span>{formatPrice(salon.price, salon.priceUnit)}</span>
+              <span>{formatPrice(salon.price || salon.asking_price, salon.priceUnit)}</span>
             </div>
           )}
         </div>
