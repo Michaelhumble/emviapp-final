@@ -98,7 +98,7 @@ const routes = [
   },
   {
     path: '/salons',
-    element: <SalonsPage />,
+    element: <SimpleSalonPage />,
   },
   {
     path: '/salons/:id',
