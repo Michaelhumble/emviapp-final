@@ -42,7 +42,7 @@ const SalonsFinal: React.FC = () => {
   
   // Apply tab filtering to salons
   const filteredSalons = salons.filter(salon => {
-    if (activeTab === "featured" && !salon.isFeatured && !salon.is_featured) {
+    if (activeTab === "featured" && !salon.is_featured) {
       return false;
     }
     
