@@ -1,4 +1,3 @@
-
 import { salonListings } from '@/components/home/SalonJobListingsShowcase';
 import { Job } from '@/types/job';
 

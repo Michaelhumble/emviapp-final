@@ -1,12 +1,13 @@
 
 import React from 'react';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Building, Lock, Calendar } from 'lucide-react';
 import { Job } from '@/types/job';
 import { useAuth } from '@/context/auth';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 
 interface OpportunityCardProps {
   listing: Job;
@@ -17,7 +18,6 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
   const { isSignedIn } = useAuth();
   const navigate = useNavigate();
   
-  // Format the created date to a more readable format
   const formatDate = (dateString: string) => {
     const now = new Date();
     const created = new Date(dateString);
@@ -32,101 +32,110 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
   };
 
   const handleViewDetails = () => {
-    // Ensure we have a valid ID before navigating
     if (listing.id) {
       navigate(`/opportunities/${listing.id}`);
-    } else {
-      console.error("Listing is missing an ID", listing);
     }
   };
 
   return (
     <Card 
-      className="overflow-hidden h-full flex flex-col transition-all duration-200 hover:shadow-lg cursor-pointer"
+      className="group overflow-hidden h-full flex flex-col transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer bg-white"
       onClick={handleViewDetails}
     >
-      {/* Add image if available */}
       {listing.image && (
-        <div className="aspect-video w-full overflow-hidden">
+        <div className="aspect-[4/3] w-full overflow-hidden relative">
           <img 
             src={listing.image}
-            alt={listing.title || listing.company || "Opportunity"}
-            className="w-full h-full object-cover"
+            alt={listing.title || listing.company || "Business opportunity"}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
+          {listing.is_featured && (
+            <Badge 
+              variant="secondary" 
+              className="absolute top-3 left-3 bg-white/90 text-primary shadow-sm"
+            >
+              Featured
+            </Badge>
+          )}
         </div>
       )}
       
-      <CardContent className="p-5 flex flex-col h-full">
-        <div className="flex justify-between mb-2">
-          <h3 className="font-semibold text-lg line-clamp-1">{listing.title || listing.company}</h3>
+      <CardContent className="p-6 flex flex-col h-full">
+        <div className="flex justify-between items-start mb-3">
+          <h3 className="font-semibold text-xl text-gray-900 line-clamp-2 flex-grow">
+            {listing.title || listing.company}
+          </h3>
           {listing.for_sale && (
-            <Badge variant="secondary">For Sale</Badge>
+            <Badge variant="secondary" className="ml-2 bg-emvi-accent/10 text-emvi-accent whitespace-nowrap">
+              For Sale
+            </Badge>
           )}
         </div>
         
-        <div className="flex items-center text-gray-500 mb-2 text-sm">
-          <Building className="h-3.5 w-3.5 mr-1" />
-          <span className="mr-3 line-clamp-1">{listing.company}</span>
-          <MapPin className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
-          <span className="line-clamp-1">{listing.location}</span>
-        </div>
-        
-        <div className="flex items-center text-gray-500 mb-3 text-xs">
-          <Calendar className="h-3 w-3 mr-1" />
-          <span>Posted {formatDate(listing.created_at)}</span>
+        <div className="space-y-2 mb-4">
+          <div className="flex items-center text-gray-600 text-sm">
+            <Building className="h-4 w-4 mr-2 flex-shrink-0" />
+            <span className="line-clamp-1">{listing.company}</span>
+          </div>
+          
+          <div className="flex items-center text-gray-600 text-sm">
+            <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
+            <span className="line-clamp-1">{listing.location}</span>
+          </div>
+          
+          <div className="flex items-center text-gray-500 text-sm">
+            <Calendar className="h-4 w-4 mr-2" />
+            <span>Posted {formatDate(listing.created_at)}</span>
+          </div>
         </div>
         
         {listing.specialties && listing.specialties.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-3">
-            {listing.specialties.slice(0, 2).map((specialty, idx) => (
-              <Badge key={idx} variant="secondary" className="text-xs">
+          <div className="flex flex-wrap gap-2 mb-4">
+            {listing.specialties.slice(0, 3).map((specialty, idx) => (
+              <Badge 
+                key={idx} 
+                variant="outline" 
+                className="bg-gray-50/50 text-gray-600 border-gray-200"
+              >
                 {specialty}
               </Badge>
             ))}
-            
-            {listing.specialties.length > 2 && (
-              <Badge variant="secondary" className="text-xs">
-                +{listing.specialties.length - 2}
-              </Badge>
-            )}
           </div>
         )}
         
-        <p className="text-gray-600 text-sm line-clamp-2 mb-4 flex-grow">
+        <p className="text-gray-600 text-sm line-clamp-2 mb-6 flex-grow">
           {listing.vietnamese_description || listing.description}
         </p>
 
-        <CardFooter className="px-0 pt-3 pb-0 mt-auto border-t border-gray-50">
+        <div className="mt-auto pt-4 border-t border-gray-100">
           {!isSignedIn ? (
-            <div className="flex items-center text-sm text-gray-500 w-full justify-between">
-              <Lock className="h-3.5 w-3.5 mr-1" />
-              <span className="flex-grow">Sign in to view contact details</span>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-primary ml-2"
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevent card onClick from firing
-                  handleViewDetails();
-                }}
-              >
-                View Details
-              </Button>
-            </div>
+            <HoverCard>
+              <HoverCardTrigger>
+                <div className="flex items-center text-sm text-gray-500">
+                  <Lock className="h-4 w-4 mr-2" />
+                  <span>Sign in to view contact details</span>
+                </div>
+              </HoverCardTrigger>
+              <HoverCardContent className="w-80 p-4">
+                <p className="text-sm text-gray-600">
+                  Create a free account to access full listing details and contact information.
+                </p>
+              </HoverCardContent>
+            </HoverCard>
           ) : (
             <Button 
               variant="ghost" 
               size="sm" 
-              className="text-primary ml-auto"
+              className="text-primary hover:text-primary-dark w-full justify-center"
               onClick={(e) => {
-                e.stopPropagation(); // Prevent card onClick from firing
+                e.stopPropagation();
                 handleViewDetails();
               }}
             >
-              View Details
+              View Full Details
             </Button>
           )}
-        </CardFooter>
+        </div>
       </CardContent>
     </Card>
   );
