@@ -124,7 +124,7 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
       setSalons(filteredSalons);
       setAllSalons(filteredSalons);
       
-      // Fix: use the setSuggestedKeywords function instead of suggestedKeywords variable
+      // Create a new Set to store unique keywords
       const newKeywords = new Set<string>(suggestedKeywords);
       filteredSalons.forEach(salon => {
         if (salon.salon_features) {
