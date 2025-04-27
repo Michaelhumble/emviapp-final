@@ -128,12 +128,18 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
       setAllSalons(filteredSalons);
       
       // Create a new Set to store unique keywords
-      const newKeywords = new Set<string>(suggestedKeywords);
+      const newKeywords = new Set<string>();
+      
+      // Add existing suggested keywords first
+      suggestedKeywords.forEach(keyword => newKeywords.add(keyword));
+      
+      // Then add salon features
       filteredSalons.forEach(salon => {
         if (salon.salon_features) {
           salon.salon_features.forEach(f => newKeywords.add(f));
         }
       });
+      
       // Fix Error #2: Using the setSuggestedKeywords function correctly
       setSuggestedKeywords(Array.from(newKeywords));
       
