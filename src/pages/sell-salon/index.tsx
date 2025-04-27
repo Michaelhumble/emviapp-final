@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { SalonSale } from "@/types/salon";
+import { SalonSale } from "@/types/salonSale";
 import { fetchSalonSales } from "@/utils/salonSales";
 import SalonListingDetail from "@/components/sell-salon/SalonListingDetail";
 import { SalonSalesFilters } from "@/components/sell-salon/SalonSalesFilters";
@@ -47,19 +47,8 @@ const SalonSalesPage = () => {
       setIsLoading(true);
       try {
         const data = await fetchSalonSales();
-        // Ensure all required fields are present
-        const salonSalesWithDefaults = data.map((salon: any) => ({
-          ...salon,
-          // Required SalonListing fields with defaults if missing
-          name: salon.salon_name || '',
-          location: `${salon.city || ''}, ${salon.state || ''}`,
-          listing_type: 'For Sale',
-          price: parseFloat(salon.asking_price?.toString().replace(/[^\d.-]/g, '') || '0'),
-          contact_hidden: false,
-          created_at: salon.created_at || new Date().toISOString()
-        }));
-        setSalonSales(salonSalesWithDefaults);
-        setFilteredSales(salonSalesWithDefaults);
+        setSalonSales(data);
+        setFilteredSales(data);
       } catch (error) {
         console.error("Error loading salon sales:", error);
       } finally {
@@ -79,9 +68,9 @@ const SalonSalesPage = () => {
       const term = filters.searchTerm.toLowerCase();
       filtered = filtered.filter(
         (salon) =>
-          salon.salon_name?.toLowerCase().includes(term) ||
-          salon.city?.toLowerCase().includes(term) ||
-          salon.state?.toLowerCase().includes(term) ||
+          salon.salon_name.toLowerCase().includes(term) ||
+          salon.city.toLowerCase().includes(term) ||
+          salon.state.toLowerCase().includes(term) ||
           (salon.description && salon.description.toLowerCase().includes(term)) ||
           (salon.business_type && salon.business_type.toLowerCase().includes(term))
       );
@@ -95,22 +84,12 @@ const SalonSalesPage = () => {
     // Apply price range filter
     if (filters.priceRange.min) {
       const minPrice = parseFloat(filters.priceRange.min);
-      filtered = filtered.filter(salon => {
-        const price = typeof salon.asking_price === 'string' ? 
-          parseFloat(salon.asking_price.replace(/[^\d.-]/g, '') || '0') : 
-          (salon.asking_price || 0);
-        return !isNaN(price) && price >= minPrice;
-      });
+      filtered = filtered.filter(salon => salon.asking_price >= minPrice);
     }
     
     if (filters.priceRange.max) {
       const maxPrice = parseFloat(filters.priceRange.max);
-      filtered = filtered.filter(salon => {
-        const price = typeof salon.asking_price === 'string' ? 
-          parseFloat(salon.asking_price.replace(/[^\d.-]/g, '') || '0') : 
-          (salon.asking_price || 0);
-        return !isNaN(price) && price <= maxPrice;
-      });
+      filtered = filtered.filter(salon => salon.asking_price <= maxPrice);
     }
     
     // Apply sorting
@@ -119,26 +98,10 @@ const SalonSalesPage = () => {
         filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         break;
       case "lowest_price":
-        filtered.sort((a, b) => {
-          const priceA = typeof a.asking_price === 'string' ? 
-            parseFloat(a.asking_price.replace(/[^\d.-]/g, '') || '0') : 
-            (a.asking_price || 0);
-          const priceB = typeof b.asking_price === 'string' ? 
-            parseFloat(b.asking_price.replace(/[^\d.-]/g, '') || '0') : 
-            (b.asking_price || 0);
-          return priceA - priceB;
-        });
+        filtered.sort((a, b) => a.asking_price - b.asking_price);
         break;
       case "highest_price":
-        filtered.sort((a, b) => {
-          const priceA = typeof a.asking_price === 'string' ? 
-            parseFloat(a.asking_price.replace(/[^\d.-]/g, '') || '0') : 
-            (a.asking_price || 0);
-          const priceB = typeof b.asking_price === 'string' ? 
-            parseFloat(b.asking_price.replace(/[^\d.-]/g, '') || '0') : 
-            (b.asking_price || 0);
-          return priceB - priceA;
-        });
+        filtered.sort((a, b) => b.asking_price - a.asking_price);
         break;
       case "featured_first":
         filtered.sort((a, b) => {

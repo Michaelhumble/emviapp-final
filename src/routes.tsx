@@ -1,12 +1,10 @@
-
 import React from 'react';
 import Index from './pages/Index';
 import Welcome from './pages/Welcome';
 import NotFound from './pages/NotFound';
 import Artists from './pages/Artists';
 import JobsPage from './pages/jobs';
-import SalonsPage from './pages/salons/index';
-import SalonDetailPage from './pages/salons/[id]';
+import SalonsPage from './pages/salons/SalonsFinal';
 import SellSalon from './pages/salons/SellSalon';
 import Customers from './pages/Customers';
 import Suppliers from './pages/Suppliers';
@@ -28,6 +26,11 @@ import ResetPassword from './pages/auth/ResetPassword';
 import UserProfilePage from './pages/profile/UserProfilePage';
 import SalonOwners from './pages/SalonOwners';
 import Settings from './pages/Settings';
+import SalonDetail from './pages/salons/SalonDetail';
+import ProfileRedirect from './pages/profile/ProfileRedirect';
+import Profile from './pages/Profile';
+import ArtistPublicPage from './pages/a/ArtistPublicPage';
+import ArtistExplore from './pages/explore/artists';
 import SalonMarketplace from './pages/SalonMarketplace';
 import CommandCenter from './pages/CommandCenter';
 import BookingPage from './pages/BookingPage';
@@ -64,12 +67,6 @@ import PortfolioManagerPage from './pages/dashboard/artist/portfolio/index';
 
 import OpportunityDetailPage from './pages/opportunities/OpportunityDetailPage';
 
-// Temporary placeholder components for missing references
-const ArtistExplore = () => <div>Artist Explore Page (Placeholder)</div>;
-const Profile = () => <div>Profile Page (Placeholder)</div>;
-const ProfileRedirect = () => <div>Profile Redirect Page (Placeholder)</div>;
-const ArtistPublicPage = () => <div>Artist Public Page (Placeholder)</div>;
-
 const routes = [
   {
     path: '/auth/redirect',
@@ -105,7 +102,7 @@ const routes = [
   },
   {
     path: '/salons/:id',
-    element: <SalonDetailPage />,
+    element: <SalonDetail />,
   },
   {
     path: '/sell-salon',

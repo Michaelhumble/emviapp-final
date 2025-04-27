@@ -1,58 +1,6 @@
 
-// Base salon listing interface
-export interface SalonListing {
-  id: string;
-  name: string;
-  location: string;
-  listing_type: 'For Sale' | 'Booth Rental' | 'Partnership';
-  description: string;
-  price: number;
-  contact_hidden: boolean;
-  created_at: string;
-  
-  // Optional fields
-  is_featured?: boolean;
-  image_url?: string;
-  
-  // Additional properties that are being used
-  image?: string;
-  type?: string;
-  priceUnit?: string;
-  shortDescription?: string;
-  features?: string[];
-  contactName?: string;
-  contactPhone?: string;
-  contactEmail?: string;
-  website?: string;
-  tags?: string[];
-  squareFeet?: number;
-  square_feet?: string | number;
-  established?: number;
-  company?: string;
-  contact_info?: {
-    name?: string;
-    phone?: string;
-    email?: string;
-  };
-  monthly_rent?: number;
-  number_of_stations?: number;
-  revenue?: number;
-  chairs?: number;
-  has_wax_room?: boolean;
-  has_dining_room?: boolean;
-  has_laundry?: boolean;
-  owner_will_train?: boolean;
-  reason_for_selling?: string;
-  salon_features?: string[];
-  asking_price?: string | number;
-  has_housing?: boolean;
-  vietnamese_description?: string;
-  status?: string;
-  isFeatured?: boolean; // Alternate naming for compatibility
-}
-
-// For backward compatibility with existing ISalon interface
-export interface ISalon {
+// Salon type definition
+export interface Salon {
   id: string;
   name: string;
   image: string;
@@ -85,13 +33,10 @@ export interface ISalon {
     pinterest?: string;
     youtube?: string;
   };
-  featured?: boolean;
   bookingLink?: string;
   isHiring?: boolean;
-}
-
-// Extended Salon interface
-export interface Salon extends ISalon {
+  featured?: boolean;
+  // Additional properties for salon listings
   owner?: string;
   email?: string;
   phone?: string;
@@ -104,34 +49,4 @@ export interface Salon extends ISalon {
   accessibilityFeatures?: string[];
   virtualTours?: string[];
   beforeAfterGallery?: string[];
-}
-
-// SalonFilters interface for search/filter functionality
-export interface SalonFilters {
-  location: string;
-  priceRange: [number, number];
-  listingType: string;
-  searchTerm: string;
-  hasHousing?: boolean;
-  showExpired?: boolean;
-}
-
-// Re-export Job type for backward compatibility
-export interface Job extends SalonListing {
-  role?: string;
-  title?: string;
-  employment_type?: string;
-  salary_range?: string;
-  posted_at?: string;
-  status?: 'active' | 'expired';
-  weekly_pay?: boolean;
-  benefits?: string[];
-}
-
-// Add SalonSale type for backward compatibility
-export interface SalonSale extends SalonListing {
-  salon_name?: string;
-  city?: string;
-  state?: string;
-  business_type?: string;
 }

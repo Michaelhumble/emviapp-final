@@ -1,169 +1,220 @@
-import React, { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet';
-import Layout from '@/components/layout/Layout';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+import React, { useState, useEffect } from "react";
+import Layout from "@/components/layout/Layout";
 import SalonCard from "@/components/salons/SalonCard";
 import SalonFilter from "@/components/salons/SalonFilter";
-import SalonsEmptyState from "@/components/salons/SalonsEmptyState";
-import SalonsLoadingState from "@/components/salons/SalonsLoadingState";
-import FeaturedSalonsSection from "@/components/salons/FeaturedSalonsSection";
 import SalonPromotion from "@/components/salons/SalonPromotion";
-import { useSalonsData } from '@/hooks/useSalonsData';
-import { SalonFilters, SalonListing } from '@/types/salon';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Job } from '@/types/job';
+import SalonsEmptyState from "@/components/salons/SalonsEmptyState";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Search, Briefcase, MapPin, Store } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
+import { useSalonsData } from "@/hooks/useSalonsData";
+import { getSalonsForSale } from "@/utils/featuredContent";
+import { ensureSalonsForSale } from "@/utils/jobs/mockJobData";
+import { Job } from "@/types/job";
 
-// This is the locked, final version of the Salons Page
-const SalonsPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState("all");
-  const navigate = useNavigate();
-  
+const Salons = () => {
   const { 
     salons, 
     loading, 
     error, 
     filters, 
-    searchTerm,
-    setSearchTerm,
+    searchTerm, 
     updateFilters, 
+    setSearchTerm, 
     resetFilters,
     featuredSalons,
     suggestedKeywords
   } = useSalonsData();
 
+  const [salonsForSale, setSalonsForSale] = useState<Job[]>([]);
+  
   useEffect(() => {
-    document.title = "Salon Directory | EmviApp";
-    
-    // Log page view for analytics
-    console.log("SalonsFinal page loaded");
+    const forSaleSalons = ensureSalonsForSale(25);
+    setSalonsForSale(forSaleSalons);
   }, []);
-  
-  // Apply tab filtering to salons
-  const filteredSalons = salons.filter(salon => {
-    if (activeTab === "featured" && salon.isFeatured) {
-      return false;
-    }
-    
-    if (activeTab === "forSale" && salon.status !== "active") {
-      return false;
-    }
-    
-    return true;
-  });
-  
-  // Helper function to determine if a salon is expired based on status
-  const isExpired = (salon: any) => {
-    return salon.status === "expired";
-  };
-  
-  // Update this function to navigate to the salon detail page
-  const handleViewSalonDetails = (salon: Job | SalonListing) => {
-    console.log("Navigating to salon details:", salon.id);
-    navigate(`/salons/${salon.id}`);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
   };
 
-  // The component now receives the correct filter props
-  const salonFilterProps = {
-    searchTerm,
-    setSearchTerm,
-    filters,
-    updateFilters,
-    resetFilters,
-    suggestedKeywords
+  const isExpired = (salon: Job) => {
+    if (salon.id === "104") return true; // Sample expired salon
+    return false;
+  };
+
+  const handleViewDetails = (salon: Job) => {
+    console.log("View details for:", salon);
+    // Later this will navigate to the salon detail page
+    // history.push(`/salons/${salon.id}`)
   };
 
   return (
     <Layout>
-      <Helmet>
-        <title>Salon Directory | Find or List Nail Salons | EmviApp</title>
-        <meta 
-          name="description" 
-          content="Browse our comprehensive directory of nail salons. Find the perfect salon near you or list your own salon for potential clients and staff to discover." 
-        />
-        <meta name="keywords" content="salon directory, nail salon, beauty salon, sell salon, buy salon, salon for sale" />
-      </Helmet>
-      
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-serif font-bold mb-2">
-              Salon Directory
-            </h1>
-            <p className="text-gray-600 mb-6">
+      <div className="bg-gradient-to-b from-pink-50/50 via-white to-white">
+        <div className="container mx-auto px-4 pt-8 pb-12">
+          <div className="max-w-3xl mx-auto text-center mb-8">
+            <h1 className="text-3xl md:text-4xl font-serif font-semibold mb-3">Salon Directory</h1>
+            <p className="text-gray-600 text-lg">
               Find the perfect salon near you or list your own salon for potential clients and staff to discover.
             </p>
-            
-            {/* Featured Salons Section */}
-            {featuredSalons.length > 0 && (
-              <FeaturedSalonsSection 
-                featuredSalons={featuredSalons} 
-                onViewDetails={handleViewSalonDetails} 
+          </div>
+
+          <div className="max-w-2xl mx-auto mb-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="Search by salon name, location, or features"
+                className="pl-10 py-6 text-lg w-full shadow-sm"
+                value={searchTerm}
+                onChange={handleSearchChange}
               />
-            )}
-            
-            {/* Search and Filter System */}
-            <SalonFilter 
-              {...salonFilterProps}
-            />
-            
-            {/* Promotion Banner */}
-            <SalonPromotion />
-          </div>
-          
-          {/* Tab Navigation */}
-          <Tabs 
-            defaultValue="all" 
-            value={activeTab} 
-            onValueChange={setActiveTab}
-            className="mb-6"
-          >
-            <div className="sticky top-16 z-10 bg-white pb-2 border-b">
-              <TabsList className="mb-6">
-                <TabsTrigger value="all">All Salons</TabsTrigger>
-                <TabsTrigger value="featured">Featured</TabsTrigger>
-                <TabsTrigger value="forSale">For Sale</TabsTrigger>
-              </TabsList>
             </div>
-            
-            <TabsContent value={activeTab} className="mt-0">
-              {/* Salon Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                {loading ? (
-                  <SalonsLoadingState count={6} />
-                ) : filteredSalons.length > 0 ? (
-                  filteredSalons.map((salon, index) => (
-                    <SalonCard 
-                      key={salon.id} 
-                      salon={salon} 
-                      index={index} 
-                      isExpired={isExpired(salon)} 
-                      onViewDetails={() => handleViewSalonDetails(salon)} 
-                    />
-                  ))
-                ) : (
-                  <SalonsEmptyState resetFilters={resetFilters} />
-                )}
-              </div>
-            </TabsContent>
-          </Tabs>
-          
-          {/* Bottom CTA */}
-          <div className="text-center mb-8">
-            <Link to="/salons/list">
-              <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
-                List Your Salon
-              </Button>
-            </Link>
-            <p className="text-sm text-gray-500 mt-2">
-              Reach thousands of potential clients and staff
-            </p>
           </div>
-          
-          {/* Component version tag - Do not modify without approval */}
-          <div className="text-xs text-center text-gray-400 mt-8">
-            SalonsPage_FINAL v1.0 - Locked for stability. Contact administrator for changes.
+
+          <div className="max-w-5xl mx-auto mb-8">
+            <div className="flex flex-wrap gap-2 justify-center">
+              {suggestedKeywords.slice(0, 8).map((keyword) => (
+                <Badge 
+                  key={keyword}
+                  variant="outline" 
+                  className={`rounded-full cursor-pointer bg-white hover:bg-gray-50 py-1.5 px-3 border`}
+                  onClick={() => setSearchTerm(keyword)}
+                >
+                  {keyword}
+                </Badge>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-8">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+              <div className="col-span-1">
+                <SalonFilter 
+                  filters={filters} 
+                  updateFilters={updateFilters} 
+                  resetFilters={resetFilters}
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                  suggestedKeywords={suggestedKeywords}
+                />
+              </div>
+
+              <div className="col-span-1 lg:col-span-3">
+                <Tabs defaultValue="for-sale">
+                  <TabsList className="mb-6 w-full md:w-auto">
+                    <TabsTrigger value="all" className="flex-1 md:flex-none">
+                      <Briefcase className="h-4 w-4 mr-2" /> All Salons
+                    </TabsTrigger>
+                    <TabsTrigger value="featured" className="flex-1 md:flex-none">
+                      <MapPin className="h-4 w-4 mr-2" /> Featured
+                    </TabsTrigger>
+                    <TabsTrigger value="for-sale" className="flex-1 md:flex-none">
+                      <Store className="h-4 w-4 mr-2" /> For Sale
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="all">
+                    {loading ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {Array.from({ length: 6 }).map((_, index) => (
+                          <div 
+                            key={index} 
+                            className="animate-pulse bg-gray-100 rounded-lg h-64"
+                          ></div>
+                        ))}
+                      </div>
+                    ) : error ? (
+                      <div className="text-center py-10">
+                        <p className="text-red-500">Error loading salons. Please try again.</p>
+                      </div>
+                    ) : salons.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {salons.map((salon, index) => (
+                          <SalonCard 
+                            key={salon.id || index} 
+                            salon={salon}
+                            index={index}
+                            isExpired={isExpired(salon)} 
+                            onViewDetails={handleViewDetails}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <SalonsEmptyState resetFilters={resetFilters} />
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="featured">
+                    {loading ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {Array.from({ length: 3 }).map((_, index) => (
+                          <div 
+                            key={index} 
+                            className="animate-pulse bg-gray-100 rounded-lg h-64"
+                          ></div>
+                        ))}
+                      </div>
+                    ) : featuredSalons.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {featuredSalons.map((salon, index) => (
+                          <SalonCard 
+                            key={salon.id || index} 
+                            salon={salon}
+                            index={index}
+                            isExpired={isExpired(salon)}
+                            onViewDetails={handleViewDetails}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-12">
+                        <p className="text-gray-500">No featured salons at the moment.</p>
+                        <Button variant="outline" className="mt-4">See All Salons</Button>
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="for-sale">
+                    {loading ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {Array.from({ length: 6 }).map((_, index) => (
+                          <div 
+                            key={index} 
+                            className="animate-pulse bg-gray-100 rounded-lg h-64"
+                          ></div>
+                        ))}
+                      </div>
+                    ) : salonsForSale.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {salonsForSale.map((salon, index) => (
+                          <SalonCard 
+                            key={salon.id || index} 
+                            salon={salon}
+                            index={index}
+                            isExpired={isExpired(salon)}
+                            onViewDetails={handleViewDetails}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-12">
+                        <p className="text-gray-500">No salons for sale at the moment.</p>
+                        <Button variant="outline" className="mt-4">See All Salons</Button>
+                      </div>
+                    )}
+                  </TabsContent>
+                </Tabs>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-16">
+            <SalonPromotion />
           </div>
         </div>
       </div>
@@ -171,4 +222,4 @@ const SalonsPage: React.FC = () => {
   );
 };
 
-export default SalonsPage;
+export default Salons;

@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { SalonListing, Job } from "@/types/salon";
+import { Job } from "@/types/job";
 import SalonDetailModal from "./SalonDetailModal";
 import FilterSection from "./FilterSection";
 import PricingInfoCard from "./PricingInfoCard";
@@ -30,24 +30,10 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
     const matchesLocation = locationFilter === "" || 
       salon.location.toLowerCase().includes(locationFilter.toLowerCase());
     
-    // Handle price as either string or number
-    const priceValue = typeof salon.asking_price === 'string' ? 
-      parseFloat(salon.asking_price.replace(/[^0-9.-]+/g, "") || "0") : 
-      (salon.asking_price || 0);
-    
+    const priceValue = parseFloat(salon.asking_price?.replace(/[^0-9.-]+/g, "") || "0");
     const matchesPrice = priceValue >= priceRange[0] && priceValue <= priceRange[1];
     
-    // Handle both square_feet and squareFeet properties
-    let sizeValue = 0;
-    if (salon.square_feet) {
-      sizeValue = typeof salon.square_feet === 'string' ?
-        parseFloat(salon.square_feet.replace(/[^0-9.-]+/g, "") || "0") :
-        salon.square_feet;
-    } else if (salon.squareFeet) {
-      sizeValue = typeof salon.squareFeet === 'number' ?
-        salon.squareFeet : 0;
-    }
-    
+    const sizeValue = parseFloat(salon.square_feet?.replace(/[^0-9.-]+/g, "") || "0");
     const matchesSize = sizeValue >= sizeRange[0] && sizeValue <= sizeRange[1];
     
     const matchesStatus = statusFilter === "all" || 
@@ -63,13 +49,6 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
   
   const handleCloseModal = () => {
     setSelectedSalon(null);
-  };
-
-  const handleResetFilters = () => {
-    setLocationFilter("");
-    setPriceRange([0, 500000]);
-    setSizeRange([0, 5000]);
-    setStatusFilter("all");
   };
 
   return (
@@ -102,7 +81,7 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
             />
           ))
         ) : (
-          <EmptyState resetFilters={handleResetFilters} />
+          <EmptyState />
         )}
       </div>
       

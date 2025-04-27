@@ -1,24 +1,24 @@
 
+import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 
 interface SalonsLoadingStateProps {
   count?: number;
 }
 
-const SalonsLoadingState = ({ count = 6 }: SalonsLoadingStateProps) => {
+const SalonsLoadingState: React.FC<SalonsLoadingStateProps> = ({ count = 6 }) => {
   return (
     <>
-      {Array.from({ length: count }).map((_, index) => (
-        <Card key={index} className="overflow-hidden">
-          <div className="aspect-video bg-gray-200 animate-pulse" />
-          <CardContent className="p-4">
-            <div className="h-6 bg-gray-200 rounded animate-pulse mb-2" />
-            <div className="h-4 bg-gray-200 rounded animate-pulse w-2/3 mb-4" />
-            <div className="h-4 bg-gray-200 rounded animate-pulse mb-3" />
-            <div className="h-4 bg-gray-200 rounded animate-pulse w-4/5" />
-            <div className="flex gap-2 mt-4">
-              <div className="h-6 bg-gray-200 rounded animate-pulse w-1/4" />
-              <div className="h-6 bg-gray-200 rounded animate-pulse w-1/4" />
+      {Array(count).fill(0).map((_, i) => (
+        <Card key={i} className="overflow-hidden border border-gray-100">
+          <CardContent className="p-0">
+            <div className="h-48 bg-gray-100 animate-pulse" />
+            <div className="p-5 space-y-3">
+              <div className="h-5 bg-gray-100 rounded animate-pulse" />
+              <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
+              <div className="h-4 bg-gray-100 rounded animate-pulse" />
+              <div className="h-4 bg-gray-100 rounded animate-pulse w-1/2" />
+              <div className="h-8 bg-gray-100 rounded animate-pulse mt-4" />
             </div>
           </CardContent>
         </Card>
