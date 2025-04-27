@@ -86,7 +86,7 @@ const FeaturedSalonsShowcase = () => {
                     <Badge className="bg-white/90 text-primary hover:bg-white">
                       {salon.specialty}
                     </Badge>
-                    {salon.featured && (
+                    {(salon.featured || salon.is_featured) && (
                       <Badge className="bg-purple-600 text-white">
                         Featured
                       </Badge>

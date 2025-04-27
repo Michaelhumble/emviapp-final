@@ -50,11 +50,17 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
       
       // Type guard to validate salon listings
       const salonListings = allData.map((item: any) => {
-        const listing = {
+        const listing: SalonListing = {
           ...item,
           created_at: item.created_at || new Date().toISOString(),
-          name: item.name || item.company || item.title || 'Unnamed Salon',
-          price: typeof item.price === 'string' ? parseFloat(item.price) : item.price || 0
+          name: item.name || item.title || (item.company ? String(item.company) : '') || 'Unnamed Salon',
+          price: typeof item.price === 'string' ? parseFloat(item.price) : item.price || 0,
+          square_feet: item.squareFeet || item.square_feet,
+          listing_type: (item.type === 'For Sale' || item.type === 'Booth Rental' || item.type === 'Partnership') 
+            ? item.type as 'For Sale' | 'Booth Rental' | 'Partnership'
+            : 'For Sale',
+          contact_hidden: item.contact_hidden || false,
+          is_featured: item.is_featured || false
         };
         return listing;
       });
@@ -104,7 +110,7 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
       }
 
       // Sort featured salons first
-      filteredSalons.sort((a: any, b: any) => {
+      filteredSalons.sort((a: SalonListing | Job, b: SalonListing | Job) => {
         if (a.is_featured === b.is_featured) return 0;
         return a.is_featured ? -1 : 1;
       });
@@ -125,8 +131,8 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
       
       // Add salon features as keywords
       filteredSalons.forEach(salon => {
-        if ('salon_features' in salon) {
-          salon.salon_features?.forEach(feature => keywords.add(feature));
+        if ('salon_features' in salon && salon.salon_features) {
+          salon.salon_features.forEach(feature => keywords.add(feature));
         }
       });
       

@@ -26,7 +26,7 @@ export interface SalonListing extends ISalonBase {
   features?: string[];
   salon_features?: string[];
   square_feet?: number;
-  asking_price?: string; // For backward compatibility
+  asking_price?: string;
   vietnamese_description?: string;
   has_housing?: boolean;
   has_wax_room?: boolean;
@@ -35,7 +35,7 @@ export interface SalonListing extends ISalonBase {
   reason_for_selling?: string;
   revenue?: string;
   owner_will_train?: boolean;
-  // These were missing and causing errors in the components
+  // These were causing errors in some components
   image?: string;
   type?: string;
   shortDescription?: string;
@@ -45,6 +45,7 @@ export interface SalonListing extends ISalonBase {
   website?: string;
   priceUnit?: string;
   established?: number;
+  squareFeet?: number; // Alias for square_feet to prevent errors
 }
 
 // Job posting type
@@ -64,7 +65,7 @@ export interface Job extends ISalonBase {
   benefits?: string[];
   experience_level?: string;
   specialties?: string[];
-  // These were missing and causing errors in the components
+  // These were causing errors in the components
   features?: string[];
   image?: string;
   type?: string;
@@ -91,6 +92,7 @@ export interface Salon {
   reviewCount: number;
   established?: number;
   isHiring?: boolean;
+  featured?: boolean; // Added this property which was missing
   neighborhood?: string;
   services: string[];
   hours: {
@@ -112,6 +114,10 @@ export interface Salon {
   socialMedia?: {
     instagram?: string;
     facebook?: string;
+    twitter?: string;  // Added these additional social media platforms
+    youtube?: string;  // to fix the sample data errors
+    pinterest?: string;
+    tiktok?: string;
   };
 }
 

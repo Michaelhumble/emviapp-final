@@ -30,12 +30,12 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
     const matchesLocation = locationFilter === "" || 
       salon.location.toLowerCase().includes(locationFilter.toLowerCase());
     
-    const priceValue = parseFloat(salon.asking_price?.replace(/[^0-9.-]+/g, "") || "0");
+    const priceValue = parseFloat(String(salon.asking_price || "0").replace(/[^0-9.-]+/g, "") || "0");
     const matchesPrice = priceValue >= priceRange[0] && priceValue <= priceRange[1];
     
     // Handle both square_feet and squareFeet properties
     const sizeValue = parseFloat(
-      (salon.square_feet || (salon.squareFeet?.toString())) || "0"
+      String(salon.square_feet || salon.squareFeet || "0")
     );
     const matchesSize = sizeValue >= sizeRange[0] && sizeValue <= sizeRange[1];
     

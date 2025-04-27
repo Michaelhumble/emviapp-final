@@ -33,16 +33,22 @@ const SalonDetailPage = () => {
         if (foundSalon) {
           // Make sure the found salon has all required properties for SalonListing
           const preparedSalon: SalonListing = {
-            ...foundSalon as any,
+            ...foundSalon,
             // Ensure required properties are present
             name: foundSalon.name || 
                  ('title' in foundSalon ? foundSalon.title as string : '') || 
-                 ('company' in foundSalon ? (foundSalon as Job).company || '' : '') || 
+                 ('company' in foundSalon ? (foundSalon as unknown as Job).company || '' : '') || 
                  'Salon Listing',
             // Ensure required SalonListing properties are set
-            listing_type: (foundSalon as any).type === 'For Sale' ? 'For Sale' : 
-                          (foundSalon as any).type === 'Booth Rental' ? 'Booth Rental' : 'Partnership',
-            contact_hidden: false
+            listing_type: ('type' in foundSalon && 
+                          (foundSalon.type === 'For Sale' || 
+                           foundSalon.type === 'Booth Rental' || 
+                           foundSalon.type === 'Partnership'))
+              ? foundSalon.type as 'For Sale' | 'Booth Rental' | 'Partnership'
+              : 'For Sale',
+            contact_hidden: ('contact_hidden' in foundSalon) 
+              ? Boolean(foundSalon.contact_hidden) 
+              : false
           };
             
           setSalon(preparedSalon);
