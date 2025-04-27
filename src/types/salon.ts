@@ -50,3 +50,42 @@ export interface Salon {
   virtualTours?: string[];
   beforeAfterGallery?: string[];
 }
+
+// Salon listing for marketplace
+export interface SalonListing {
+  id: string;
+  name: string;
+  location: string;
+  listing_type: 'For Sale' | 'Booth Rental' | 'Partnership';
+  description: string;
+  price: number;
+  contact_hidden: boolean;
+  is_featured?: boolean;
+  image_url?: string;
+  tags?: string[];
+  company?: string;
+  salon_name?: string;
+  salon_features?: string[];
+  asking_price?: string;
+  status?: 'active' | 'expired' | 'pending';
+  created_at: string;
+  has_housing?: boolean;
+  square_feet?: string;
+  vietnamese_description?: string;
+}
+
+// Filters for salon search
+export interface SalonFilters {
+  searchTerm?: string;
+  category?: string;
+  priceRange: number[];
+  location: string;
+  features?: string[];
+  sortBy?: string;
+  featured?: boolean;
+  showExpired?: boolean;
+  hasHousing?: boolean;
+  industry?: string;
+  stations?: number;
+  squareFeet?: [number, number];
+}

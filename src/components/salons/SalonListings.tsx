@@ -51,6 +51,13 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
     setSelectedSalon(null);
   };
 
+  const resetFilters = () => {
+    setLocationFilter("");
+    setPriceRange([0, 500000]);
+    setSizeRange([0, 5000]);
+    setStatusFilter("all");
+  };
+
   return (
     <div className="space-y-6">
       {/* Smart filters section */}
@@ -81,7 +88,7 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
             />
           ))
         ) : (
-          <EmptyState />
+          <EmptyState resetFilters={resetFilters} />
         )}
       </div>
       
