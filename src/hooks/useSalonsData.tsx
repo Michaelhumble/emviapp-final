@@ -115,10 +115,10 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
               : Number(salon.price) || 0;
           }
           
-          // Safe comparison between numbers
-          const min = filters.priceRange![0];
-          const max = filters.priceRange![1];
-          return !isNaN(priceValue) && priceValue >= min && priceValue <= max;
+          // Safe comparison between numbers (fixing the operator error)
+          const min = Number(filters.priceRange![0]);
+          const max = Number(filters.priceRange![1]);
+          return priceValue >= min && priceValue <= max;
         });
       }
       
