@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from "react";
 import { useJobsData, type JobFilters } from "@/hooks/useJobsData";
 import { useJobRenewal } from "@/hooks/useJobRenewal";
@@ -14,6 +15,15 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { Star, DollarSign, MapPin, Search, X, Filter, RefreshCw } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 
