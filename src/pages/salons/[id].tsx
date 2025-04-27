@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
@@ -7,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from "lucide-react";
 import { SalonListing, Job } from "@/types/salon";
-import { useSalonsData } from "@/hooks/useSalonsData";
+import { useSalonsData } from '@/hooks/useSalonsData';
 import { Helmet } from "react-helmet";
 
 const SalonDetailPage = () => {

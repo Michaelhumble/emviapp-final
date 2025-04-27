@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { differenceInDays } from 'date-fns';
-import { SalonListing, SalonFilters, Job, BaseListingType } from "@/types/salon";
+import { SalonFilters, SalonListing, Job, BaseListingType } from "@/types/salon";
 import { salonsForSaleJobs } from "@/utils/jobs/mockJobData";
 import { getSalonsForSale } from "@/utils/featuredContent";
 
