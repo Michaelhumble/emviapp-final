@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
@@ -32,7 +31,6 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
   const [featuredJobs, setFeaturedJobs] = useState<Job[]>([]);
   const [suggestedKeywords, setSuggestedKeywords] = useState<string[]>([]);
   const { user } = useAuth();
-  const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
 
   const fetchJobs = useCallback(async () => {
     setLoading(true);
@@ -169,10 +167,6 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
     setSearchTerm(term);
   };
 
-  const setActiveRenewalJobId = (jobId: string | null) => {
-    setRenewalJobId(jobId);
-  };
-
   return { 
     jobs, 
     loading, 
@@ -183,8 +177,6 @@ export const useJobsData = (initialFilters: JobFilters = {}) => {
     updateSearchTerm, 
     fetchJobs, 
     featuredJobs,
-    suggestedKeywords,
-    renewalJobId,
-    setActiveRenewalJobId
+    suggestedKeywords 
   };
 };

@@ -7,7 +7,6 @@ export interface Job {
   location: string;
   posted_at?: string;
   created_at: string;
-  name?: string;
   description?: string;
   employment_type?: string;
   compensation_details?: string;
@@ -31,8 +30,6 @@ export interface Job {
   weekly_pay?: boolean;
   has_housing?: boolean;
   has_wax_room?: boolean;
-  has_dining_room?: boolean;
-  has_laundry?: boolean;
   no_supply_deduction?: boolean;
   owner_will_train?: boolean;
   tip_range?: string;
@@ -50,13 +47,10 @@ export interface Job {
   monthly_rent?: string;
   trust_indicators?: any;
   revenue?: string;
+  has_dining_room?: boolean;
+  has_laundry?: boolean;
   experience_level?: string;
   is_remote?: boolean;
   role_normalized?: string;
   is_urgent?: boolean;
-  type?: string; // Added for compatibility with SalonListing
-  shortDescription?: string; // Added for compatibility with SalonListing
-  squareFeet?: number; // Added for compatibility with SalonListing
-  established?: number; // Added for compatibility with SalonListing
-  chairs?: number; // Added for compatibility with SalonListing
 }

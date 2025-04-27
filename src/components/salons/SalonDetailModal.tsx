@@ -1,247 +1,224 @@
 
-import React from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { 
+  MapPin, Phone, DollarSign, Users, Building, Ruler, 
+  Mail, Home, Calendar, Check, Clock, Info, Lock
+} from "lucide-react";
+import { Job } from "@/types/job";
 import { Separator } from "@/components/ui/separator";
-import { Building, Ruler, Users, Home, Check, Info, Calendar, Lock } from "lucide-react";
+import AuthGuard from "@/components/auth/AuthGuard";
 import { Link } from "react-router-dom";
-import AuthAction from "@/components/common/AuthAction";
 import { useTranslation } from "@/hooks/useTranslation";
-import { Job, SalonListing } from "@/types/salon";
+import AuthAction from "@/components/common/AuthAction";
 
 interface SalonDetailModalProps {
-  salon: Job | SalonListing | null;
+  salon: Job | null;
   isOpen: boolean;
   onClose: () => void;
 }
 
 const SalonDetailModal = ({ salon, isOpen, onClose }: SalonDetailModalProps) => {
   const { t, isVietnamese } = useTranslation();
-
+  
   if (!salon) return null;
-
-  const formatPrice = (price?: number | string) => {
-    if (!price) return "Contact for price";
-    
-    // Handle string or number type
-    const numericPrice = typeof price === 'string' ? parseFloat(price.replace(/[^0-9.-]+/g, "")) : price;
-    
-    if (isNaN(numericPrice)) return "Contact for price";
-    
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(numericPrice);
+  
+  const isExpired = false; // This would be determined by checking dates in a real implementation
+  
+  const handleAction = () => {
+    console.log("Auth action triggered");
+    return true;
   };
-
-  // Helper method to safely access properties that might not exist on both types
-  const safeGet = (key: string): any => {
-    if (!salon) return null;
-    return (salon as any)[key];
-  };
-
+  
   return (
-    <Dialog open={isOpen} onOpenChange={() => onClose()}>
-      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <DialogTitle className="text-xl">{salon.name}</DialogTitle>
-          <DialogDescription className="text-base text-primary/80">{salon.location}</DialogDescription>
+          <DialogTitle className="text-2xl font-serif">{salon.company}</DialogTitle>
         </DialogHeader>
-
-        <div className="grid gap-4 py-2">
-          {/* Price and basic details */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center gap-2">
-              <Building className="h-4 w-4 opacity-70" /> 
-              <span className="font-medium">{formatPrice(safeGet('price') || safeGet('monthly_rent'))}</span>
-            </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <div 
+              className="h-64 rounded-md bg-center bg-cover"
+              style={{ backgroundImage: `url(${salon.image || ''})` }}
+            ></div>
             
-            <div className="flex items-center gap-2">
-              <Ruler className="h-4 w-4 opacity-70" /> 
-              <span>{safeGet('squareFeet') || safeGet('square_feet')} sqft</span>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 opacity-70" /> 
-              <span>{safeGet('chairs') || safeGet('number_of_stations')} Chairs/Stations</span>
-            </div>
-            
-            {safeGet('revenue') && (
-              <div className="flex items-center gap-2">
-                <span className="font-medium">Revenue: {formatPrice(safeGet('revenue'))}</span>
-              </div>
-            )}
-          </div>
-          
-          {/* Salon description */}
-          <div className="mt-4">
-            <h4 className="font-medium mb-2">{isVietnamese ? 'Mô Tả' : 'Description'}</h4>
-            <p className="text-gray-700 whitespace-pre-line">{salon.description}</p>
-          </div>
-          
-          {salon.shortDescription && (
-            <div className="text-sm text-gray-500 italic">
-              "{salon.shortDescription}"
-            </div>
-          )}
-          
-          <Separator className="my-2" />
-          
-          {/* Property features */}
-          <div className="grid grid-cols-2 gap-3">
-            {salon.type && (
-              <div className="flex items-center">
-                <Badge variant="outline" className="mr-2">{salon.type}</Badge>
-                <span className="text-sm">{isVietnamese ? 'Loại Danh Sách' : 'Listing Type'}</span>
-              </div>
-            )}
-            
-            {salon.established && (
-              <div className="flex items-center">
-                <Badge variant="outline" className="mr-2">Est. {salon.established}</Badge>
-                <span className="text-sm">{isVietnamese ? 'Năm Thành Lập' : 'Established'}</span>
-              </div>
-            )}
-            
-            {safeGet('has_housing') && (
-              <div className="flex items-center">
-                <Badge variant="outline" className="mr-2">
-                  <Home className="h-3 w-3 mr-1" />
-                  Housing
-                </Badge>
-                <span className="text-sm">{isVietnamese ? 'Có Chỗ Ở' : 'Housing Available'}</span>
-              </div>
-            )}
-            
-            {safeGet('has_wax_room') && (
-              <div className="flex items-center">
-                <Badge variant="outline" className="mr-2">
-                  <Check className="h-3 w-3 mr-1" />
-                  Wax Room
-                </Badge>
-                <span className="text-sm">{isVietnamese ? 'Phòng Wax' : 'Wax Room'}</span>
-              </div>
-            )}
-            
-            {safeGet('has_dining_room') && (
-              <div className="flex items-center">
-                <Badge variant="outline" className="mr-2">
-                  <Check className="h-3 w-3 mr-1" />
-                  Dining Area
-                </Badge>
-                <span className="text-sm">{isVietnamese ? 'Khu Vực Ăn Uống' : 'Dining Area'}</span>
-              </div>
-            )}
-            
-            {safeGet('has_laundry') && (
-              <div className="flex items-center">
-                <Badge variant="outline" className="mr-2">
-                  <Check className="h-3 w-3 mr-1" />
-                  Laundry
-                </Badge>
-                <span className="text-sm">{isVietnamese ? 'Máy Giặt' : 'Laundry'}</span>
-              </div>
-            )}
-            
-            {safeGet('owner_will_train') && (
-              <div className="flex items-center">
-                <Badge variant="outline" className="mr-2">
-                  <Check className="h-3 w-3 mr-1" />
-                  Training
-                </Badge>
-                <span className="text-sm">{isVietnamese ? 'Chủ Đào Tạo' : 'Owner Will Train'}</span>
-              </div>
-            )}
-          </div>
-          
-          <Separator className="my-2" />
-          
-          {/* Reason for selling */}
-          {safeGet('reason_for_selling') && (
-            <div className="bg-muted/30 p-4 rounded-md">
-              <div className="flex items-center mb-2">
-                <Info className="h-4 w-4 mr-2" />
-                <h4 className="font-medium">{isVietnamese ? 'Lý Do Bán' : 'Reason For Selling'}</h4>
-              </div>
-              <p className="text-sm">{safeGet('reason_for_selling')}</p>
-            </div>
-          )}
-          
-          <Separator className="my-2" />
-          
-          {/* Contact information - requires authentication */}
-          <div className="bg-muted p-4 rounded-lg">
-            <div className="flex items-center mb-2">
-              <AuthAction
-                onAction={() => Promise.resolve(true)}
-                customTitle={isVietnamese ? 'Đăng ký để xem thông tin liên lạc' : 'Sign up to view contact details'}
-              >
+            <div className="bg-gray-50 p-4 rounded-md">
+              <h3 className="font-medium mb-2">
+                {isVietnamese ? "Chi Tiết Tiệm" : "Salon Details"}
+              </h3>
+              <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="flex items-center">
-                  <Lock className="h-4 w-4 mr-2" />
-                  <h4 className="font-medium">{isVietnamese ? 'Thông Tin Liên Lạc' : 'Contact Information'}</h4>
+                  <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                  <span>{salon.location}</span>
                 </div>
-              </AuthAction>
-            </div>
-            
-            <p className="text-sm text-muted-foreground mb-3">
-              {isVietnamese 
-                ? 'Đăng ký tài khoản miễn phí để xem thông tin liên lạc và liên hệ với chủ sở hữu.'
-                : 'Sign up for a free account to view contact information and connect with the owner.'}
-            </p>
-            
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              <AuthAction 
-                onAction={() => Promise.resolve(true)}
-                customTitle={isVietnamese ? 'Đăng ký tài khoản miễn phí' : 'Sign up for a free account'}
-              >
-                <Button variant="default" className="w-full">
-                  <Link to="/auth/signup">
-                    {isVietnamese ? 'Đăng Ký' : 'Sign Up'}
-                  </Link>
-                </Button>
-              </AuthAction>
-              
-              <AuthAction
-                onAction={() => Promise.resolve(true)}
-                customTitle={isVietnamese ? 'Đăng nhập' : 'Log in'}
-              >
-                <Button variant="outline" className="w-full">
-                  <Link to="/auth/login">
-                    {isVietnamese ? 'Đăng Nhập' : 'Log In'}
-                  </Link>
-                </Button>
-              </AuthAction>
+                <div className="flex items-center">
+                  <DollarSign className="h-4 w-4 mr-2 text-gray-500" />
+                  <span>{isVietnamese ? "Giá:" : "Asking:"} {salon.asking_price}</span>
+                </div>
+                <div className="flex items-center">
+                  <Building className="h-4 w-4 mr-2 text-gray-500" />
+                  <span>{isVietnamese ? "Tiền thuê:" : "Rent:"} {salon.monthly_rent}</span>
+                </div>
+                <div className="flex items-center">
+                  <Ruler className="h-4 w-4 mr-2 text-gray-500" />
+                  <span>{salon.square_feet} sqft</span>
+                </div>
+                <div className="flex items-center">
+                  <Users className="h-4 w-4 mr-2 text-gray-500" />
+                  <span>{salon.number_of_stations} {isVietnamese ? "bàn" : "stations"}</span>
+                </div>
+                <div className="flex items-center">
+                  <DollarSign className="h-4 w-4 mr-2 text-gray-500" />
+                  <span>{isVietnamese ? "Doanh thu:" : "Rev:"} {salon.revenue}</span>
+                </div>
+              </div>
             </div>
           </div>
           
+          <div className="space-y-4">
+            <div>
+              <h3 className="font-medium mb-2">{isVietnamese ? "Mô Tả" : "Description"}</h3>
+              {salon.vietnamese_description && (
+                <div className={`${isVietnamese ? "" : "italic"} text-gray-700 mb-2`}>
+                  {salon.vietnamese_description}
+                </div>
+              )}
+              <div className={`text-gray-600 ${salon.vietnamese_description && !isVietnamese ? "mt-2 pt-2 border-t border-gray-100" : ""}`}>
+                {salon.description}
+              </div>
+            </div>
+            
+            <Separator />
+            
+            <div>
+              <h3 className="font-medium mb-2">{isVietnamese ? "Đặc Điểm" : "Features"}</h3>
+              <div className="flex flex-wrap gap-2">
+                {salon.salon_features?.map((feature, index) => (
+                  <Badge key={index} variant="outline" className="bg-purple-50">
+                    {feature}
+                  </Badge>
+                ))}
+                
+                {salon.has_housing && (
+                  <Badge variant="outline" className="bg-green-50 text-green-800">
+                    <Home className="w-3 h-3 mr-1" />
+                    {isVietnamese ? "Có nhà ở" : "Housing Available"}
+                  </Badge>
+                )}
+                
+                {salon.has_wax_room && (
+                  <Badge variant="outline" className="bg-blue-50 text-blue-800">
+                    <Check className="w-3 h-3 mr-1" />
+                    {isVietnamese ? "Phòng Wax" : "Wax Room"}
+                  </Badge>
+                )}
+                
+                {salon.has_dining_room && (
+                  <Badge variant="outline" className="bg-amber-50 text-amber-800">
+                    <Check className="w-3 h-3 mr-1" />
+                    {isVietnamese ? "Phòng Ăn" : "Dining Room"}
+                  </Badge>
+                )}
+                
+                {salon.has_laundry && (
+                  <Badge variant="outline" className="bg-indigo-50 text-indigo-800">
+                    <Check className="w-3 h-3 mr-1" />
+                    {isVietnamese ? "Máy Giặt/Sấy" : "Washer/Dryer"}
+                  </Badge>
+                )}
+                
+                {salon.owner_will_train && (
+                  <Badge variant="outline" className="bg-cyan-50 text-cyan-800">
+                    <Check className="w-3 h-3 mr-1" />
+                    {isVietnamese ? "Chủ Sẽ Đào Tạo" : "Owner Will Train"}
+                  </Badge>
+                )}
+              </div>
+            </div>
+            
+            <Separator />
+            
+            <div>
+              <h3 className="font-medium mb-2">
+                {isVietnamese ? "Lý Do Bán" : "Reason For Selling"}
+              </h3>
+              <div className="flex items-center">
+                <Info className="w-4 h-4 mr-2 text-gray-500" />
+                <span>{salon.reason_for_selling || (isVietnamese ? "Không xác định" : "Not specified")}</span>
+              </div>
+            </div>
+            
+            <Separator />
+            
+            {!isExpired && (
+              <div>
+                <h3 className="font-medium mb-2">
+                  {isVietnamese ? "Thông Tin Liên Hệ" : "Contact Information"}
+                </h3>
+                <AuthAction 
+                  onAction={handleAction}
+                  creditMessage={isVietnamese 
+                    ? "Xem thông tin liên hệ đầy đủ miễn phí" 
+                    : "View complete contact information for free"
+                  }
+                >
+                  <div className="bg-gray-50 p-4 rounded-md">
+                    <div className="flex items-center justify-center mb-2 text-gray-500">
+                      <Lock className="h-5 w-5 mr-2" />
+                      <p className="text-sm font-medium">
+                        {isVietnamese ? "Thông tin liên hệ bị ẩn" : "Contact info is hidden"}
+                      </p>
+                    </div>
+                    <p className="text-xs text-center text-gray-500 mb-3">
+                      {isVietnamese 
+                        ? "Thông tin này được ẩn để bảo vệ cộng đồng của chúng tôi."
+                        : "This information is hidden to protect our community."
+                      }
+                    </p>
+                    <div className="flex justify-center">
+                      <Link to="/auth/signup">
+                        <Button size="sm" variant="outline">
+                          {isVietnamese ? "Tạo Tài Khoản Miễn Phí" : "Create Free Account"}
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </AuthAction>
+              </div>
+            )}
+          </div>
         </div>
         
-        <DialogFooter className="flex items-center justify-between">
-          <div className="text-sm text-gray-500 flex items-center">
+        <DialogFooter className="flex-col sm:flex-row sm:justify-between gap-4">
+          <div className="flex items-center text-gray-500 text-sm">
             <Calendar className="h-4 w-4 mr-1" />
-            {salon.created_at ? new Date(salon.created_at).toLocaleDateString() : 'Recently posted'}
+            {isVietnamese ? "Đăng vào " : "Listed on "} {new Date().toLocaleDateString()}
           </div>
           
-          <AuthAction
-            onAction={() => Promise.resolve(true)}
-            customTitle={isVietnamese ? 'Lưu danh sách này' : 'Save this listing'}
-          >
-            <Button variant="outline" size="sm">
-              {isVietnamese ? 'Lưu Lại' : 'Save'}
-            </Button>
-          </AuthAction>
-          
-          <AuthAction
-            onAction={() => Promise.resolve(true)}
-            customTitle={isVietnamese ? 'Liên hệ chủ sở hữu' : 'Contact the owner'}
-          >
-            <Button size="sm">
-              {isVietnamese ? 'Liên Hệ' : 'Contact'}
-            </Button>
-          </AuthAction>
+          <div className="flex gap-2">
+            <DialogClose asChild>
+              <Button variant="outline">
+                {isVietnamese ? "Đóng" : "Close"}
+              </Button>
+            </DialogClose>
+            {!isExpired && (
+              <AuthAction
+                onAction={handleAction}
+                creditMessage={isVietnamese 
+                  ? "Tạo tài khoản miễn phí để liên hệ chủ tiệm" 
+                  : "Create a free account to contact the owner"
+                }
+              >
+                <Button>
+                  <Phone className="h-4 w-4 mr-2" />
+                  {isVietnamese ? "Liên Hệ Chủ Tiệm" : "Contact Owner"}
+                </Button>
+              </AuthAction>
+            )}
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

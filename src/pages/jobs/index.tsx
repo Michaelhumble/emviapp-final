@@ -1,315 +1,316 @@
 
-import React, { useState, useEffect } from 'react';
-import { Layout } from '@/components/layout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Search } from 'lucide-react';
-import JobsGrid from '@/components/jobs/JobsGrid';
-import useJobsData from '@/hooks/useJobsData';
-import JobDetailModal from '@/components/jobs/JobDetailModal';
-import JobEmptyState from '@/components/jobs/JobEmptyState';
-import { useAuth } from '@/context/auth';
-import { useJobRenewal } from '@/hooks/useJobRenewal';
-import { useTranslation } from '@/hooks/useTranslation';
-import { differenceInDays } from 'date-fns';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useJobsData, JobFilters } from "@/hooks/useJobsData";
+import { Job } from "@/types/job";
+import JobsGrid from "@/components/jobs/JobsGrid";
+import JobDetailModal from "@/components/jobs/JobDetailModal";
+import JobFiltersComponent from "@/components/jobs/JobFilters";
+import { differenceInDays } from "date-fns";
+import { v4 as uuidv4 } from "uuid";
+import Layout from "@/components/layout/Layout";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/auth";
+import { ArrowRight, MailCheck } from "lucide-react";
+import { useJobRenewal } from "@/hooks/useJobRenewal";
+import { useTranslation } from "@/hooks/useTranslation";
+import { FeaturedJobsSection } from "@/components/jobs/FeaturedJobsSection";
+import VietnameseJobsSection from "@/components/jobs/VietnameseJobSection";
+import JobEmptyState from "@/components/jobs/JobEmptyState";
+import JobLoadingState from "@/components/jobs/JobLoadingState";
 
+// Main component
 const JobsPage = () => {
-  const { t, isVietnamese } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [showAlert, setShowAlert] = useState<boolean>(false);
+  const [alertMessage, setAlertMessage] = useState<string>("");
   const { user } = useAuth();
-  const [selectedJob, setSelectedJob] = useState(null);
+  const { isVietnamese } = useTranslation();
+  const { renewJob, isRenewing, renewalJobId } = useJobRenewal();
+  const [expirations, setExpirations] = useState<Record<string, boolean>>({});
   
-  // Initialize with empty filters
-  const { 
-    jobs, 
-    loading, 
-    error, 
-    filters, 
-    updateFilters,
-    searchTerm,
-    updateSearchTerm,
-    featuredJobs,
-    suggestedKeywords,
-    renewalJobId,
-    setActiveRenewalJobId
-  } = useJobsData({
-    remote: false,
-    weeklyPay: false,
-    ownerWillTrain: false,
-    hasHousing: false,
-    noSupplyDeduction: false,
-  });
+  // Get search params and create initial filters
+  const searchParams = new URLSearchParams(location.search);
   
-  const { renewJob, isRenewing } = useJobRenewal({
-    onSuccess: () => {
-      toast.success("Job listing renewed successfully!");
-    }
-  });
-  
-  const [jobExpirations, setJobExpirations] = useState({});
-  
-  // Calculate which jobs are expired
-  useEffect(() => {
-    const expirations = {};
-    jobs.forEach(job => {
-      const createdDate = new Date(job.created_at);
-      const now = new Date();
-      const isExpired = differenceInDays(now, createdDate) >= 30;
-      expirations[job.id] = isExpired || job.status === 'expired';
-    });
-    setJobExpirations(expirations);
-  }, [jobs]);
-  
-  const handleRenewJob = async (job) => {
-    if (!user) {
-      toast.error("You need to sign in to renew a job listing");
-      return;
-    }
-    
-    setActiveRenewalJobId(job.id);
-    await renewJob(job.id);
-    setActiveRenewalJobId(null);
+  const initialFilters: JobFilters = {
+    featured: searchParams.get('featured') === 'true',
+    remote: searchParams.get('remote') === 'true',
+    fullTime: searchParams.get('fullTime') === 'true',
+    partTime: searchParams.get('partTime') === 'true',
+    location: searchParams.get('location') || undefined,
+    weeklyPay: searchParams.get('weeklyPay') === 'true',
+    ownerWillTrain: searchParams.get('ownerWillTrain') === 'true',
+    employmentType: searchParams.get('employmentType') || undefined,
+    industry: searchParams.get('industry') || undefined,
+    language: searchParams.get('language') || undefined,
+    showExpired: searchParams.get('showExpired') === 'true',
+    hasHousing: searchParams.get('hasHousing') === 'true',
+    noSupplyDeduction: searchParams.get('noSupplyDeduction') === 'true',
+    payType: (searchParams.get('payType') as 'commission' | 'hourly' | 'salary' | 'all') || undefined,
   };
-  
-  const handleResetFilters = () => {
-    updateFilters({
-      remote: false,
-      weeklyPay: false,
-      ownerWillTrain: false,
-      hasHousing: false,
-      noSupplyDeduction: false,
-      employmentType: 'all',
-      payType: 'all',
-      industry: 'all',
-      language: 'all'
-    });
-    updateSearchTerm('');
-  };
-  
-  const openJobDetails = (job) => {
+
+  const { jobs, loading, error, filters, updateFilters, featuredJobs, searchTerm, updateSearchTerm } = useJobsData(initialFilters);
+
+  // Handle job selection
+  const handleJobSelect = (job: Job) => {
     setSelectedJob(job);
   };
-  
-  const closeJobDetails = () => {
+
+  // Close job modal
+  const handleCloseModal = () => {
     setSelectedJob(null);
   };
-  
-  if (error) {
-    return (
-      <Layout>
-        <div className="container mx-auto py-12 px-4">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Jobs</h2>
-            <p className="mb-4">There was an error loading the job listings. Please try again later.</p>
-            <Button onClick={() => window.location.reload()}>Reload Page</Button>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-  
+
+  // Update URL with filters
+  useEffect(() => {
+    const params = new URLSearchParams();
+    
+    if (filters.featured) params.set('featured', 'true');
+    if (filters.remote) params.set('remote', 'true');
+    if (filters.fullTime) params.set('fullTime', 'true');
+    if (filters.partTime) params.set('partTime', 'true');
+    if (filters.location) params.set('location', filters.location);
+    if (filters.weeklyPay) params.set('weeklyPay', 'true');
+    if (filters.ownerWillTrain) params.set('ownerWillTrain', 'true');
+    if (filters.employmentType) params.set('employmentType', filters.employmentType);
+    if (filters.industry) params.set('industry', filters.industry);
+    if (filters.language) params.set('language', filters.language);
+    if (filters.showExpired) params.set('showExpired', 'true');
+    if (filters.hasHousing) params.set('hasHousing', 'true');
+    if (filters.noSupplyDeduction) params.set('noSupplyDeduction', 'true');
+    if (filters.payType) params.set('payType', filters.payType);
+    
+    if (searchTerm) params.set('search', searchTerm);
+    
+    const queryString = params.toString();
+    const newUrl = `${location.pathname}${queryString ? `?${queryString}` : ''}`;
+    
+    window.history.replaceState({}, '', newUrl);
+  }, [filters, searchTerm, location.pathname]);
+
+  // Check job expirations
+  useEffect(() => {
+    const checkExpirations = () => {
+      const expirationsMap: Record<string, boolean> = {};
+      
+      jobs.forEach(job => {
+        // If already marked as expired
+        if (job.status === 'expired') {
+          expirationsMap[job.id] = true;
+          return;
+        }
+        
+        // Calculate based on created_at
+        const createdDate = new Date(job.created_at);
+        const now = new Date();
+        const daysDifference = differenceInDays(now, createdDate);
+        
+        expirationsMap[job.id] = daysDifference >= 30;
+      });
+      
+      setExpirations(expirationsMap);
+    };
+    
+    if (jobs.length > 0) {
+      checkExpirations();
+    }
+  }, [jobs]);
+
+  // Handle job renewal
+  const handleRenewJob = async (job: Job) => {
+    try {
+      await renewJob(job);
+      setAlertMessage("Job renewed successfully!");
+      setShowAlert(true);
+    } catch (error) {
+      console.error("Error renewing job:", error);
+      setAlertMessage("Failed to renew job. Please try again.");
+      setShowAlert(true);
+    }
+  };
+
+  // Group Vietnamese jobs for special section
+  const vietnameseJobs = jobs.filter(job => job.vietnamese_description && !expirations[job.id]);
+
+  // Filter regular jobs (non-Vietnamese or explicitly included in both sections)
+  const displayJobs = jobs.filter(job => {
+    if (filters.language === 'vietnamese') {
+      return job.vietnamese_description;
+    }
+    
+    if (filters.language === 'english') {
+      return !job.vietnamese_description;
+    }
+    
+    // All jobs for "all" language filter
+    return true;
+  });
+
+  // Check if we should show empty state
+  const showEmptyState = !loading && displayJobs.length === 0;
+
+  // Handle alert dismissal
+  const onDismissAlert = () => {
+    setShowAlert(false);
+  };
+
+  const handleFilterChange = (filterName: string, value: any) => {
+    switch (filterName) {
+      case 'language':
+        updateFilters({ language: value });
+        break;
+      case 'industry':
+        updateFilters({ industry: value });
+        break;
+      case 'employmentType':
+        updateFilters({ employmentType: value });
+        break;
+      case 'location':
+        updateFilters({ location: value });
+        break;
+      case 'remote':
+        updateFilters({ remote: value });
+        break;
+      case 'fullTime':
+        updateFilters({ fullTime: value });
+        break;
+      case 'partTime':
+        updateFilters({ partTime: value });
+        break;
+      case 'weeklyPay':
+        updateFilters({ weeklyPay: value });
+        break;
+      case 'ownerWillTrain':
+        updateFilters({ ownerWillTrain: value });
+        break;
+      case 'hasHousing':
+        updateFilters({ hasHousing: value });
+        break;
+      case 'noSupplyDeduction':
+        updateFilters({ noSupplyDeduction: value });
+        break;
+      case 'showExpired':
+        updateFilters({ showExpired: value });
+        break;
+      case 'payType':
+        updateFilters({ payType: value });
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleSearch = (term: string) => {
+    updateSearchTerm(term);
+  };
+
   return (
     <Layout>
-      <div className="container mx-auto py-8 px-4">
-        {/* Hero Section */}
-        <div className="rounded-xl bg-gradient-to-r from-violet-100 to-blue-100 p-8 mb-8 relative overflow-hidden">
-          <div className="relative z-10">
-            <h1 className="font-playfair text-3xl md:text-4xl font-semibold mb-2 text-gray-800">
-              {isVietnamese ? 'Cơ Hội Việc Làm Nghề Nail' : 'Nail Industry Job Opportunities'}
-            </h1>
-            <p className="text-gray-700 mb-6 max-w-xl">
-              {isVietnamese 
-                ? 'Tìm kiếm công việc hoàn hảo cho sự nghiệp của bạn trong ngành nail. Hàng trăm cơ hội đang chờ đợi.'
-                : 'Find the perfect position for your career in the nail industry. Hundreds of opportunities waiting for you.'}
-            </p>
-            <div className="relative max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <Input
-                className="pl-10 py-6 border-2 focus:ring-2 focus:ring-blue-300 rounded-lg shadow-sm w-full"
-                placeholder={isVietnamese ? 'Tìm kiếm công việc...' : 'Search jobs...'}
-                value={searchTerm}
-                onChange={(e) => updateSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="absolute right-0 top-0 w-1/3 h-full bg-dots-pattern opacity-10"></div>
-        </div>
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Alert for job renewal */}
+        {showAlert && (
+          <Alert className="mb-6" variant="default">
+            <MailCheck className="h-4 w-4" />
+            <AlertTitle>Success</AlertTitle>
+            <AlertDescription className="flex justify-between items-center">
+              {alertMessage}
+              <Button variant="outline" onClick={onDismissAlert}>Dismiss</Button>
+            </AlertDescription>
+          </Alert>
+        )}
         
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Filter Panel */}
-          <div className="lg:col-span-1">
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 sticky top-20">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="font-playfair text-xl font-semibold">
-                  {isVietnamese ? 'Bộ lọc' : 'Filters'}
-                </h2>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={handleResetFilters}
-                  className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-                >
-                  {isVietnamese ? 'Đặt lại' : 'Reset'}
-                </Button>
-              </div>
-              
-              <div className="space-y-6">
-                {/* Remote Filter */}
-                <div className="flex items-start space-x-2">
-                  <Checkbox 
-                    id="remote" 
-                    checked={filters.remote} 
-                    onCheckedChange={(checked) => updateFilters({ remote: !!checked })}
-                  />
-                  <Label
-                    htmlFor="remote"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    <Label className="cursor-pointer">{isVietnamese ? 'Từ xa' : 'Remote'}</Label>
-                  </Label>
-                </div>
-                
-                {/* Weekly Pay Filter */}
-                <div className="flex items-start space-x-2">
-                  <Checkbox 
-                    id="weeklyPay" 
-                    checked={filters.weeklyPay}
-                    onCheckedChange={(checked) => updateFilters({ weeklyPay: !!checked })}
-                  />
-                  <Label
-                    htmlFor="weeklyPay"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    <Label className="cursor-pointer">{isVietnamese ? 'Trả lương hàng tuần' : 'Weekly Pay'}</Label>
-                  </Label>
-                </div>
-                
-                {/* Owner Will Train Filter */}
-                <div className="flex items-start space-x-2">
-                  <Checkbox 
-                    id="ownerWillTrain" 
-                    checked={filters.ownerWillTrain}
-                    onCheckedChange={(checked) => updateFilters({ ownerWillTrain: !!checked })}
-                  />
-                  <Label
-                    htmlFor="ownerWillTrain"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    <Label className="cursor-pointer">{isVietnamese ? 'Chủ sẽ đào tạo' : 'Owner Will Train'}</Label>
-                  </Label>
-                </div>
-                
-                {/* Employment Type Filter */}
-                <div className="space-y-2">
-                  <Label className="font-medium">{isVietnamese ? 'Loại việc làm' : 'Employment Type'}</Label>
-                  <Select 
-                    value={filters.employmentType || 'all'} 
-                    onValueChange={(value) => updateFilters({ employmentType: value })}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="All Types" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">{isVietnamese ? 'Tất cả' : 'All Types'}</SelectItem>
-                      <SelectItem value="Full-Time">{isVietnamese ? 'Toàn thời gian' : 'Full-Time'}</SelectItem>
-                      <SelectItem value="Part-Time">{isVietnamese ? 'Bán thời gian' : 'Part-Time'}</SelectItem>
-                      <SelectItem value="For Sale">{isVietnamese ? 'Bán salon' : 'For Sale'}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                {/* Has Housing Filter */}
-                <div className="flex items-start space-x-2">
-                  <Checkbox 
-                    id="hasHousing" 
-                    checked={filters.hasHousing}
-                    onCheckedChange={(checked) => updateFilters({ hasHousing: !!checked })}
-                  />
-                  <Label
-                    htmlFor="hasHousing"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    <Label className="cursor-pointer">{isVietnamese ? 'Có nhà ở' : 'Housing Available'}</Label>
-                  </Label>
-                </div>
-                
-                {/* No Supply Deduction Filter */}
-                <div className="flex items-start space-x-2">
-                  <Checkbox 
-                    id="noSupplyDeduction" 
-                    checked={filters.noSupplyDeduction}
-                    onCheckedChange={(checked) => updateFilters({ noSupplyDeduction: !!checked })}
-                  />
-                  <Label
-                    htmlFor="noSupplyDeduction"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    <Label className="cursor-pointer">{isVietnamese ? 'Không khấu trừ tiếp liệu' : 'No Supply Deduction'}</Label>
-                  </Label>
-                </div>
-                
-                {/* Pay Type Filter */}
-                <div className="flex items-start space-x-2">
-                  <Checkbox 
-                    id="commissionPay" 
-                    checked={filters.payType === 'commission'}
-                    onCheckedChange={(checked) => updateFilters({ payType: checked ? 'commission' : 'all' })}
-                  />
-                  <Label
-                    htmlFor="commissionPay"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    <Label className="cursor-pointer">{isVietnamese ? 'Hoa hồng' : 'Commission Pay'}</Label>
-                  </Label>
-                </div>
-              </div>
-            </div>
+        {/* Page Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+          <div>
+            <h1 className="text-3xl font-playfair font-bold text-gray-900 mb-2">
+              {isVietnamese ? "Cơ Hội Việc Làm" : "Job Opportunities"}
+            </h1>
+            <p className="text-gray-600 max-w-xl">
+              {isVietnamese 
+                ? "Tìm kiếm cơ hội việc làm mới trong ngành làm đẹp"
+                : "Find your next opportunity in the beauty industry"
+              }
+            </p>
           </div>
           
-          {/* Job Listings */}
-          <div className="lg:col-span-3">
-            <h2 className="font-playfair text-2xl font-semibold mb-6">
-              {searchTerm ? `${isVietnamese ? 'Kết quả tìm kiếm cho' : 'Search results for'} "${searchTerm}"` : 
-                isVietnamese ? 'Danh sách công việc' : 'Job Listings'}
-              {!loading && <span className="text-gray-500 font-normal ml-2 text-lg">({jobs.length})</span>}
-            </h2>
-            
-            {loading ? (
-              <div className="flex justify-center items-center p-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-              </div>
-            ) : jobs.length > 0 ? (
-              <JobsGrid 
-                jobs={jobs} 
-                expirations={jobExpirations}
-                currentUserId={user?.id}
-                onRenew={handleRenewJob}
-                isRenewing={isRenewing}
-                renewalJobId={renewalJobId}
-              />
-            ) : (
-              <JobEmptyState 
-                searchTerm={searchTerm} 
-                onClearFilters={handleResetFilters}
-                filters={filters}
-              />
-            )}
+          <div className="mt-4 md:mt-0">
+            <Button 
+              onClick={() => navigate("/post/job")}
+              className="flex items-center gap-2"
+            >
+              {isVietnamese ? "Đăng Việc Làm" : "Post a Job"}
+              <ArrowRight className="h-4 w-4" />
+            </Button>
           </div>
         </div>
         
+        {/* Filters */}
+        <JobFiltersComponent 
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onSearch={handleSearch}
+          searchTerm={searchTerm}
+        />
+        
+        {/* Featured Jobs Section - Always visible */}
+        <FeaturedJobsSection jobs={featuredJobs} />
+        
+        {/* Show Vietnamese Job Section if applicable */}
+        {vietnameseJobs.length > 0 && !filters.language && (
+          <VietnameseJobsSection jobs={vietnameseJobs} />
+        )}
+        
+        {/* Main Content */}
+        <div className="my-8">
+          <h2 className="text-2xl font-semibold mb-6">
+            {isVietnamese ? "Danh Sách Việc Làm" : "Job Listings"}
+            {displayJobs.length > 0 && (
+              <Badge variant="secondary" className="ml-2">
+                {displayJobs.length}
+              </Badge>
+            )}
+          </h2>
+          
+          {/* Loading State */}
+          {loading && <JobLoadingState />}
+          
+          {/* Error State */}
+          {error && (
+            <div className="p-6 bg-red-50 rounded-lg border border-red-200">
+              <p className="text-red-700">{error.message}</p>
+            </div>
+          )}
+          
+          {/* Empty State */}
+          {showEmptyState && <JobEmptyState filters={filters} />}
+          
+          {/* Job Grid */}
+          {!loading && displayJobs.length > 0 && (
+            <JobsGrid 
+              jobs={displayJobs}
+              expirations={expirations}
+              currentUserId={user?.id}
+              onRenew={handleRenewJob}
+              isRenewing={isRenewing}
+              renewalJobId={renewalJobId}
+            />
+          )}
+        </div>
+        
+        {/* Job Detail Modal */}
         {selectedJob && (
-          <JobDetailModal 
-            job={selectedJob} 
-            isOpen={!!selectedJob} 
-            onClose={closeJobDetails}
-            isOwner={user?.id === selectedJob.user_id}
-            isExpired={jobExpirations[selectedJob.id]}
+          <JobDetailModal
+            job={selectedJob}
+            isOpen={!!selectedJob}
+            onClose={handleCloseModal}
+            isExpired={expirations[selectedJob.id] || selectedJob.status === 'expired'}
             onRenew={handleRenewJob}
             isRenewing={isRenewing && renewalJobId === selectedJob.id}
+            isOwner={user?.id === selectedJob.user_id}
           />
         )}
       </div>
