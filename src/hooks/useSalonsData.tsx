@@ -76,12 +76,12 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
           
           if ('asking_price' in salon && salon.asking_price) {
             priceValue = typeof salon.asking_price === 'string' 
-              ? parseInt(salon.asking_price.replace(/[^0-9]/g, ""), 10)
-              : salon.asking_price;
+              ? parseInt(salon.asking_price.replace(/[^0-9]/g, ""), 10) || 0
+              : Number(salon.asking_price) || 0;
           } else if ('price' in salon && salon.price) {
             priceValue = typeof salon.price === 'string'
-              ? parseInt(salon.price.replace(/[^0-9]/g, ""), 10)
-              : salon.price;
+              ? parseInt(salon.price.replace(/[^0-9]/g, ""), 10) || 0
+              : Number(salon.price) || 0;
           }
           
           return priceValue >= filters.priceRange![0] && priceValue <= filters.priceRange![1];
