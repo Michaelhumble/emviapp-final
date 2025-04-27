@@ -9,26 +9,24 @@ interface JobCardHeaderProps {
 }
 
 export const JobCardHeader = ({ job }: JobCardHeaderProps) => {
-  // Check if it's a job for a salon that's for sale
   const isSalonForSale = job.employment_type === "For Sale";
   
   return (
     <div className="mb-3">
-      {/* If there's a job image or salon image, display it */}
       {job.image && (
-        <div className="h-40 rounded-md mb-4 overflow-hidden">
+        <div className="aspect-video rounded-md mb-4 overflow-hidden">
           <ImageWithFallback
             src={job.image}
             alt={job.title || "Job listing"}
-            className="h-full w-full object-cover"
-            fallbackImage="https://emvi.app/images/fallback-profile.jpg"
+            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            fallbackImage="https://images.unsplash.com/photo-1607008829749-c0f284a49841?q=80&w=2070&auto=format&fit=crop"
           />
         </div>
       )}
       
       <div className="flex justify-between items-start gap-2">
         <div>
-          <h3 className="font-semibold text-lg">
+          <h3 className="font-playfair font-semibold text-lg leading-tight">
             {job.title}
             {job.trust_indicators?.verified && (
               <Badge className="ml-2 bg-blue-100 text-blue-800 inline-flex items-center">
@@ -36,14 +34,13 @@ export const JobCardHeader = ({ job }: JobCardHeaderProps) => {
               </Badge>
             )}
           </h3>
-          <p className="text-gray-600">
+          <p className="text-gray-600 mt-1">
             {job.company}
           </p>
         </div>
         
-        {/* Only show a sale badge for salon sales */}
         {isSalonForSale && (
-          <Badge className="bg-purple-100 text-purple-800">
+          <Badge className="bg-purple-100 text-purple-800 font-medium">
             For Sale
           </Badge>
         )}

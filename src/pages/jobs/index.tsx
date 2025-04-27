@@ -1,506 +1,324 @@
-
 import React, { useState, useEffect, useMemo } from "react";
 import { useJobsData, type JobFilters } from "@/hooks/useJobsData";
 import { useJobRenewal } from "@/hooks/useJobRenewal";
+import { useTranslation } from "@/hooks/useTranslation";
+import { Job } from "@/types/job";
+import JobListingCard from "@/components/jobs/JobListingCard";
+import JobDetailModal from "@/components/jobs/JobDetailModal";
+import JobEmptyState from "@/components/jobs/JobEmptyState"; 
 import FeaturedJobsSection from "@/components/jobs/FeaturedJobsSection";
 import VietnameseJobSection from "@/components/jobs/VietnameseJobSection";
-import JobsGrid from "@/components/jobs/JobsGrid";
-import JobEmptyState from "@/components/jobs/JobEmptyState";
-import JobDetailModal from "@/components/jobs/JobDetailModal";
-import JobLoadingState from "@/components/jobs/JobLoadingState";
-import { Job } from "@/types/job";
-import { useTranslation } from "@/hooks/useTranslation";
 import { useAuth } from "@/context/auth";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { toast } from "sonner";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Star, DollarSign, MapPin, Search, X, Filter, RefreshCw } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 
 const JobsPage = () => {
-  const { 
-    jobs, 
-    loading,
-    filters,
-    updateFilters,
-    searchTerm,
-    updateSearchTerm,
-    suggestedKeywords,
-    featuredJobs
-  } = useJobsData();
-
-  const [showFilters, setShowFilters] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [expiredJobs, setExpiredJobs] = useState<Record<string, boolean>>({});
+  const [isFiltersVisible, setIsFiltersVisible] = useState(false);
+  const { t, isVietnamese } = useTranslation();
   const { user } = useAuth();
-  const currentUserId = user?.id;
-  
-  const { 
-    renewJob, 
-    isRenewing,
-    renewalJobId
-  } = useJobRenewal({
-    onSuccess: () => {
-      if (selectedJob) {
-        setExpiredJobs(prev => ({
-          ...prev,
-          [selectedJob.id]: false
-        }));
-      }
-    }
+
+  const [filters, setFilters] = useState<JobFilters>({
+    is_remote: false,
+    weekly_pay: false,
+    owner_will_train: false,
+    has_housing: false,
+    no_supply_deduction: false,
+    employment_type: '',
+    specialties: [],
   });
 
-  useEffect(() => {
-    const checkExpirations = () => {
-      const expirations: Record<string, boolean> = {};
-      
-      jobs.forEach(job => {
-        if (job.status === 'expired') {
-          expirations[job.id] = true;
-          return;
-        }
-        
-        const createdDate = new Date(job.created_at);
-        const today = new Date();
-        const diffTime = today.getTime() - createdDate.getTime();
-        const diffDays = diffTime / (1000 * 60 * 60 * 24);
-        
-        expirations[job.id] = diffDays >= 30;
-      });
-      
-      setExpiredJobs(expirations);
-    };
-    
-    checkExpirations();
-  }, [jobs]);
+  const {
+    jobs,
+    featuredJobs,
+    vietnameseJobs,
+    isLoading,
+    sortOption,
+    setSortOption
+  } = useJobsData(filters);
 
-  const vietnameseJobs = useMemo(() => {
-    return jobs.filter(job => 
-      job.vietnamese_description && 
-      job.vietnamese_description.length > 0 && 
-      !expiredJobs[job.id]
-    ).slice(0, 4);
-  }, [jobs, expiredJobs]);
+  const {
+    renewJob,
+    isRenewing,
+    renewalJobId
+  } = useJobRenewal();
 
-  const viewJobDetails = (job: Job) => {
+  const handleViewJobDetails = (job: Job) => {
     setSelectedJob(job);
   };
 
-  const closeJobDetails = () => {
-    setSelectedJob(null);
-  };
-
   const handleRenewJob = async (job: Job) => {
+    if (!job.id) {
+      toast.error("Job ID is missing");
+      return;
+    }
+
     await renewJob(job.id);
   };
 
-  const toggleFilters = () => {
-    setShowFilters(prev => !prev);
+  const handleFilterChange = (filterName: keyof JobFilters, value: any) => {
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      [filterName]: value,
+    }));
   };
 
-  const resetFilters = () => {
-    updateFilters({
-      featured: false,
-      remote: false,
-      fullTime: false,
-      partTime: false,
-      location: 'all',
-      weeklyPay: false,
-      ownerWillTrain: false,
-      hasHousing: false,
-      noSupplyDeduction: false,
-      employmentType: 'all',
-      industry: 'all',
-      language: 'all',
-      showExpired: false,
-      payType: 'all'
+  const handleClearFilters = () => {
+    setFilters({
+      is_remote: false,
+      weekly_pay: false,
+      owner_will_train: false,
+      has_housing: false,
+      no_supply_deduction: false,
+      employment_type: '',
+      specialties: [],
     });
-    updateSearchTerm("");
+    setSearchTerm('');
+    setIsFiltersVisible(false);
   };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleRemoveFilter = (filterName: string) => {
+    if (filterName === 'employment_type') {
+      setFilters(prevFilters => ({ ...prevFilters, employment_type: '' }));
+    } else if (filterName === 'specialties') {
+      setFilters(prevFilters => ({ ...prevFilters, specialties: [] }));
+    } else {
+      setFilters(prevFilters => ({ ...prevFilters, [filterName]: false }));
+    }
   };
 
-  const handleSuggestionClick = (keyword: string) => {
-    updateSearchTerm(keyword);
-  };
+  const hasActiveFilters = useMemo(() => {
+    return Object.values(filters).some(value => {
+      if (Array.isArray(value)) {
+        return value.length > 0;
+      }
+      return !!value;
+    });
+  }, [filters]);
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-          <h1 className="text-3xl font-serif font-bold mb-4 md:mb-0">Beauty Industry Jobs & Opportunities</h1>
-          <Button 
-            variant="outline" 
-            className="flex items-center gap-2"
-            onClick={toggleFilters}
-          >
-            <Filter className="h-4 w-4" />
-            Filters
-            {Object.values(filters).some(val => val === true || (typeof val === 'string' && val !== 'all')) && (
-              <Badge variant="secondary" className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center">
-                {Object.values(filters).filter(val => val === true || (typeof val === 'string' && val !== 'all')).length}
-              </Badge>
-            )}
-          </Button>
+      <div className="container max-w-7xl mx-auto px-4 py-8 min-h-screen">
+        {/* Hero Section with Background Image */}
+        <div className="relative rounded-2xl overflow-hidden mb-8 bg-gradient-to-r from-purple-900/90 to-indigo-900/90">
+          <img
+            src="https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=2070&auto=format&fit=crop"
+            alt="Jobs background"
+            className="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-20"
+          />
+          <div className="relative px-6 py-12 md:py-16 text-white z-10">
+            <h1 className="font-playfair text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-center">
+              Find Your Dream Beauty Career
+            </h1>
+            <p className="text-lg md:text-xl text-center mb-8 max-w-2xl mx-auto text-white/90">
+              Discover opportunities in salons, spas, and beauty businesses across the country
+            </p>
+            
+            {/* Search Bar */}
+            <div className="max-w-2xl mx-auto flex flex-col md:flex-row gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <Input
+                  type="text"
+                  placeholder={t("Search jobs...")}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 h-12 bg-white/10 border-white/20 text-white placeholder:text-white/60 backdrop-blur-sm w-full transition-all focus:bg-white/20"
+                />
+              </div>
+              <Button
+                variant="secondary"
+                onClick={() => setIsFiltersVisible(!isFiltersVisible)}
+                className="h-12 px-6 gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all duration-200"
+              >
+                <Filter className="h-5 w-5" />
+                Filters
+              </Button>
+            </div>
+          </div>
         </div>
 
-        <form onSubmit={handleSearch} className="mb-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              type="text"
-              placeholder="Search by job title, company, or location"
-              className="pl-10 h-12"
-              value={searchTerm}
-              onChange={(e) => updateSearchTerm(e.target.value)}
+        {/* Filters Panel */}
+        <Card className={`mb-8 transition-all duration-300 ${isFiltersVisible ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}>
+          <CardHeader className="pb-4">
+            <div className="flex justify-between items-center">
+              <CardTitle className="font-playfair">Refine Your Search</CardTitle>
+              <Button variant="ghost" size="sm" onClick={() => handleClearFilters()}>
+                Clear All
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="is_remote" className="text-sm font-medium">Remote</Label>
+              <Checkbox
+                id="is_remote"
+                checked={filters.is_remote || false}
+                onCheckedChange={(checked) => handleFilterChange('is_remote', checked)}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="weekly_pay" className="text-sm font-medium">Weekly Pay</Label>
+              <Checkbox
+                id="weekly_pay"
+                checked={filters.weekly_pay || false}
+                onCheckedChange={(checked) => handleFilterChange('weekly_pay', checked)}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="owner_will_train" className="text-sm font-medium">Owner Will Train</Label>
+              <Checkbox
+                id="owner_will_train"
+                checked={filters.owner_will_train || false}
+                onCheckedChange={(checked) => handleFilterChange('owner_will_train', checked)}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="has_housing" className="text-sm font-medium">Has Housing</Label>
+              <Checkbox
+                id="has_housing"
+                checked={filters.has_housing || false}
+                onCheckedChange={(checked) => handleFilterChange('has_housing', checked)}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="no_supply_deduction" className="text-sm font-medium">No Supply Deduction</Label>
+              <Checkbox
+                id="no_supply_deduction"
+                checked={filters.no_supply_deduction || false}
+                onCheckedChange={(checked) => handleFilterChange('no_supply_deduction', checked)}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="employment_type" className="text-sm font-medium">Employment Type</Label>
+              <Select onValueChange={(value) => handleFilterChange('employment_type', value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Any</SelectItem>
+                  <SelectItem value="Full-Time">Full-Time</SelectItem>
+                  <SelectItem value="Part-Time">Part-Time</SelectItem>
+                  <SelectItem value="Contract">Contract</SelectItem>
+                  <SelectItem value="Internship">Internship</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Featured Jobs Section */}
+        {featuredJobs.length > 0 && (
+          <div className="mb-12">
+            <FeaturedJobsSection 
+              featuredJobs={featuredJobs}
+              onViewDetails={(job) => handleViewJobDetails(job)}
             />
-            {searchTerm && (
-              <button 
-                type="button" 
-                onClick={() => updateSearchTerm("")}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2"
-              >
-                <X className="h-4 w-4 text-muted-foreground" />
-              </button>
-            )}
           </div>
-          
-          {!searchTerm && suggestedKeywords.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-3">
-              <span className="text-sm text-muted-foreground">Try:</span>
-              {suggestedKeywords.slice(0, 5).map((keyword, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  className="text-sm px-3 py-1 bg-muted rounded-full hover:bg-muted/80 transition-colors"
-                  onClick={() => handleSuggestionClick(keyword)}
+        )}
+
+        {/* Vietnamese Jobs Section */}
+        {vietnameseJobs.length > 0 && (
+          <div className="mb-12">
+            <VietnameseJobSection
+              vietnameseJobs={vietnameseJobs}
+              onViewDetails={(job) => handleViewJobDetails(job)}
+            />
+          </div>
+        )}
+
+        {/* Active Filters Display */}
+        {hasActiveFilters && (
+          <div className="flex flex-wrap gap-2 mb-6">
+            {Object.entries(filters).map(([key, value]) => {
+              if (!value) return null;
+              return (
+                <Badge
+                  key={key}
+                  variant="secondary"
+                  className="flex items-center gap-1 bg-primary/10 text-primary hover:bg-primary/20 transition-colors px-3 py-1"
                 >
-                  {keyword}
-                </button>
+                  {key.split('_').join(' ')}
+                  <X
+                    className="h-3 w-3 ml-1 cursor-pointer"
+                    onClick={() => handleRemoveFilter(key)}
+                  />
+                </Badge>
+              );
+            })}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleClearFilters}
+              className="text-sm"
+            >
+              Clear All
+            </Button>
+          </div>
+        )}
+
+        {/* Results Section */}
+        <div className="space-y-6">
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((n) => (
+                <Card key={n} className="animate-pulse">
+                  <div className="h-48 bg-gray-200 rounded-t-lg" />
+                  <CardContent className="p-4">
+                    <div className="h-6 bg-gray-200 rounded w-3/4 mb-4" />
+                    <div className="h-4 bg-gray-200 rounded w-1/2 mb-2" />
+                    <div className="h-4 bg-gray-200 rounded w-2/3" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : jobs.length === 0 ? (
+            <JobEmptyState
+              searchTerm={searchTerm}
+              onClearFilters={handleClearFilters}
+              filters={filters}
+            />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {jobs.map((job) => (
+                <JobListingCard
+                  key={job.id}
+                  job={job}
+                  isExpired={job.expires_at ? new Date(job.expires_at) < new Date() : false}
+                  currentUserId={user?.id}
+                  onViewDetails={() => handleViewJobDetails(job)}
+                  onRenew={() => handleRenewJob(job)}
+                  isRenewing={renewalJobId === job.id && isRenewing}
+                />
               ))}
             </div>
           )}
-        </form>
-
-        <div className="grid grid-cols-12 gap-6">
-          <div className={`col-span-12 lg:col-span-3 ${showFilters ? 'block' : 'hidden'} lg:block`}>
-            <Card className="sticky top-20">
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-center">
-                  <CardTitle className="text-lg">Filter Jobs</CardTitle>
-                  {Object.values(filters).some(val => val === true || (typeof val === 'string' && val !== 'all')) && (
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="h-8 text-xs"
-                      onClick={resetFilters}
-                    >
-                      Reset
-                    </Button>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-5">
-                <div className="space-y-3">
-                  <h4 className="font-medium text-sm">Job Type</h4>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="fullTime" 
-                      checked={filters.fullTime}
-                      onCheckedChange={(checked) => updateFilters({ fullTime: checked as boolean })}
-                    />
-                    <Label htmlFor="fullTime">Full Time</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="partTime" 
-                      checked={filters.partTime}
-                      onCheckedChange={(checked) => updateFilters({ partTime: checked as boolean })}
-                    />
-                    <Label htmlFor="partTime">Part Time</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="remote" 
-                      checked={filters.remote}
-                      onCheckedChange={(checked) => updateFilters({ remote: checked as boolean })}
-                    />
-                    <Label htmlFor="remote">Remote</Label>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <h4 className="font-medium text-sm">Payment Type</h4>
-                  <Select 
-                    value={filters.payType || 'all'} 
-                    onValueChange={(value) => updateFilters({ payType: value as 'commission' | 'hourly' | 'salary' | 'all' })}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="All Payment Types" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Payment Types</SelectItem>
-                      <SelectItem value="commission">Commission</SelectItem>
-                      <SelectItem value="hourly">Hourly</SelectItem>
-                      <SelectItem value="salary">Salary</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-3">
-                  <h4 className="font-medium text-sm">Benefits</h4>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="weeklyPay" 
-                      checked={filters.weeklyPay}
-                      onCheckedChange={(checked) => updateFilters({ weeklyPay: checked as boolean })}
-                    />
-                    <Label htmlFor="weeklyPay">Weekly Pay</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="ownerWillTrain" 
-                      checked={filters.ownerWillTrain}
-                      onCheckedChange={(checked) => updateFilters({ ownerWillTrain: checked as boolean })}
-                    />
-                    <Label htmlFor="ownerWillTrain">Owner Will Train</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="hasHousing" 
-                      checked={filters.hasHousing}
-                      onCheckedChange={(checked) => updateFilters({ hasHousing: checked as boolean })}
-                    />
-                    <Label htmlFor="hasHousing">Housing Available</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="noSupplyDeduction" 
-                      checked={filters.noSupplyDeduction}
-                      onCheckedChange={(checked) => updateFilters({ noSupplyDeduction: checked as boolean })}
-                    />
-                    <Label htmlFor="noSupplyDeduction">No Supply Deduction</Label>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <h4 className="font-medium text-sm">Other Filters</h4>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="featured" 
-                      checked={filters.featured}
-                      onCheckedChange={(checked) => updateFilters({ featured: checked as boolean })}
-                    />
-                    <Label htmlFor="featured">Featured Jobs</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="showExpired" 
-                      checked={filters.showExpired}
-                      onCheckedChange={(checked) => updateFilters({ showExpired: checked as boolean })}
-                    />
-                    <Label htmlFor="showExpired">Show Expired Listings</Label>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="col-span-12 lg:col-span-9">
-            {!searchTerm && featuredJobs.length > 0 && !filters.featured && (
-              <FeaturedJobsSection featuredJobs={featuredJobs} onViewDetails={viewJobDetails} />
-            )}
-
-            {!searchTerm && vietnameseJobs.length > 0 && !filters.language && (
-              <VietnameseJobSection vietnameseJobs={vietnameseJobs} onViewDetails={viewJobDetails} />
-            )}
-
-            {Object.values(filters).some(val => val === true || (typeof val === 'string' && val !== 'all')) && (
-              <div className="mb-6 flex flex-wrap gap-2">
-                {filters.featured && (
-                  <Badge variant="secondary" className="px-3 py-1">
-                    <Star className="h-3 w-3 mr-1" /> Featured
-                    <button 
-                      className="ml-1" 
-                      onClick={() => updateFilters({ featured: false })}
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                )}
-                {filters.remote && (
-                  <Badge variant="secondary" className="px-3 py-1">
-                    Remote
-                    <button 
-                      className="ml-1" 
-                      onClick={() => updateFilters({ remote: false })}
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                )}
-                {filters.fullTime && (
-                  <Badge variant="secondary" className="px-3 py-1">
-                    Full Time
-                    <button 
-                      className="ml-1" 
-                      onClick={() => updateFilters({ fullTime: false })}
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                )}
-                {filters.partTime && (
-                  <Badge variant="secondary" className="px-3 py-1">
-                    Part Time
-                    <button 
-                      className="ml-1" 
-                      onClick={() => updateFilters({ partTime: false })}
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                )}
-                {filters.weeklyPay && (
-                  <Badge variant="secondary" className="px-3 py-1">
-                    Weekly Pay
-                    <button 
-                      className="ml-1" 
-                      onClick={() => updateFilters({ weeklyPay: false })}
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                )}
-                {filters.ownerWillTrain && (
-                  <Badge variant="secondary" className="px-3 py-1">
-                    Owner Will Train
-                    <button 
-                      className="ml-1" 
-                      onClick={() => updateFilters({ ownerWillTrain: false })}
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                )}
-                {filters.hasHousing && (
-                  <Badge variant="secondary" className="px-3 py-1">
-                    Housing Available
-                    <button 
-                      className="ml-1" 
-                      onClick={() => updateFilters({ hasHousing: false })}
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                )}
-                {filters.noSupplyDeduction && (
-                  <Badge variant="secondary" className="px-3 py-1">
-                    No Supply Deduction
-                    <button 
-                      className="ml-1" 
-                      onClick={() => updateFilters({ noSupplyDeduction: false })}
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                )}
-                {filters.showExpired && (
-                  <Badge variant="secondary" className="px-3 py-1">
-                    Including Expired
-                    <button 
-                      className="ml-1" 
-                      onClick={() => updateFilters({ showExpired: false })}
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                )}
-                {filters.payType && filters.payType !== 'all' && (
-                  <Badge variant="secondary" className="px-3 py-1">
-                    <DollarSign className="h-3 w-3 mr-1" />
-                    {filters.payType === 'commission' ? 'Commission' : 
-                     filters.payType === 'hourly' ? 'Hourly' : 
-                     filters.payType === 'salary' ? 'Salary' : ''}
-                    <button 
-                      className="ml-1" 
-                      onClick={() => updateFilters({ payType: 'all' })}
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                )}
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="h-7"
-                  onClick={resetFilters}
-                >
-                  Clear All
-                </Button>
-              </div>
-            )}
-
-            {!loading && (
-              <div className="mb-6">
-                <p className="text-gray-600">
-                  {jobs.length} {jobs.length === 1 ? 'job' : 'jobs'} found
-                  {searchTerm ? ` for "${searchTerm}"` : ''}
-                </p>
-              </div>
-            )}
-            
-            {loading ? (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="border rounded-lg p-6 animate-pulse">
-                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/2 mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/4 mb-4"></div>
-                    <div className="h-24 bg-gray-200 rounded mb-4"></div>
-                    <div className="h-8 bg-gray-200 rounded w-full"></div>
-                  </div>
-                ))}
-              </div>
-            ) : jobs.length > 0 ? (
-              <JobsGrid 
-                jobs={jobs}
-                expirations={expiredJobs}
-                currentUserId={currentUserId}
-                onRenew={handleRenewJob}
-                isRenewing={isRenewing}
-                renewalJobId={renewalJobId || null}
-              />
-            ) : (
-              <JobEmptyState 
-                searchTerm={searchTerm} 
-                onClearFilters={resetFilters}
-              />
-            )}
-          </div>
         </div>
 
+        {/* Job Detail Modal */}
         {selectedJob && (
-          <JobDetailModal 
+          <JobDetailModal
             job={selectedJob}
             isOpen={!!selectedJob}
-            onClose={closeJobDetails}
-            isExpired={expiredJobs[selectedJob.id] || false}
+            onClose={() => setSelectedJob(null)}
+            isExpired={selectedJob.expires_at ? new Date(selectedJob.expires_at) < new Date() : false}
             onRenew={handleRenewJob}
-            isRenewing={isRenewing && renewalJobId === selectedJob.id}
-            isOwner={currentUserId === selectedJob.user_id}
+            isRenewing={renewalJobId === selectedJob.id && isRenewing}
+            isOwner={selectedJob.user_id === user?.id}
           />
         )}
       </div>
