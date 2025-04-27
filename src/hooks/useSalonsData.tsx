@@ -1,11 +1,11 @@
 
 import { useState, useEffect, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { differenceInDays } from 'date-fns';
-import { SalonFilters, SalonListing, Job, BaseListingType } from "@/types/salon";
+import { SalonFilters, SalonListing } from "@/types/salon";
 import { getSalonsForSale } from "@/utils/featuredContent";
 
+// Define default filters
 export const defaultFilters: SalonFilters = {
   location: 'all',
   priceRange: [0, 500000],
@@ -14,18 +14,21 @@ export const defaultFilters: SalonFilters = {
 };
 
 export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
-  const [salons, setSalons] = useState<(SalonListing | Job)[]>([]);
-  const [allSalons, setAllSalons] = useState<(SalonListing | Job)[]>([]);
+  // Primary state
+  const [salons, setSalons] = useState<SalonListing[]>([]);
+  const [allSalons, setAllSalons] = useState<SalonListing[]>([]);
+  const [featuredSalons, setFeaturedSalons] = useState<SalonListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  
+  // Filter state
   const [filters, setFilters] = useState<SalonFilters>({
     ...defaultFilters,
     ...initialFilters
   });
   const [searchTerm, setSearchTerm] = useState("");
-  // Fix Type Error #1: Use correct type that matches what getSalonsForSale returns
-  const [featuredSalons, setFeaturedSalons] = useState<(SalonListing | Job)[]>([]);
-  // Fix Error #2: Define suggestedKeywords state and setter properly
+  
+  // Keywords state
   const [suggestedKeywords, setSuggestedKeywords] = useState<string[]>([
     "7 Years Established", 
     "High Traffic Area", 
@@ -42,22 +45,44 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
     try {
       console.log("Fetching salons with filters:", filters);
       
-      let filteredSalons: (SalonListing | Job)[] = getSalonsForSale(30);
-
-      filteredSalons = filteredSalons.map(salon => {
+      // Get all salon data and filter for SalonListing type only
+      const allData = getSalonsForSale(30);
+      
+      // Filter to ensure we only have SalonListing types
+      const salonListings = allData.filter((item): item is SalonListing => {
+        // Ensure the item has the required properties of a SalonListing
+        return (
+          ('name' in item || 'company' in item) && 
+          ('type' in item || item.type === 'For Sale' || item.type === 'Booth Rental' || item.type === 'Full Salon')
+        );
+      }).map(salon => {
+        // Ensure all salons have created_at
         if (!salon.created_at) {
           return {
             ...salon,
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
+            // Ensure name property exists
+            name: salon.name || salon.company || salon.title || 'Unnamed Salon'
+          };
+        }
+        // Ensure name property exists
+        if (!salon.name) {
+          return {
+            ...salon,
+            name: salon.company || salon.title || 'Unnamed Salon'
           };
         }
         return salon;
       });
       
+      // Apply filters
+      let filteredSalons = salonListings;
+      
+      // Search term filter
       if (searchTerm) {
         const query = searchTerm.toLowerCase();
         filteredSalons = filteredSalons.filter(salon => 
-          (salon.company && salon.company.toLowerCase().includes(query)) ||
+          (salon.name && salon.name.toLowerCase().includes(query)) ||
           (salon.description && salon.description.toLowerCase().includes(query)) ||
           (salon.vietnamese_description && salon.vietnamese_description.toLowerCase().includes(query)) ||
           (salon.location && salon.location.toLowerCase().includes(query)) ||
@@ -65,35 +90,41 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
         );
       }
       
+      // Location filter
       if (filters.location && filters.location !== 'all') {
         filteredSalons = filteredSalons.filter(salon => 
           salon.location && salon.location.toLowerCase().includes(filters.location!.toLowerCase())
         );
       }
       
+      // Price range filter
       if (filters.priceRange) {
         filteredSalons = filteredSalons.filter(salon => {
-          let priceValue = 0;
+          let priceValue: number = 0;
           
           if ('asking_price' in salon && salon.asking_price) {
             priceValue = typeof salon.asking_price === 'string' 
-              ? parseInt(salon.asking_price.replace(/[^0-9]/g, ""), 10) || 0
+              ? parseFloat(salon.asking_price.replace(/[^0-9.]/g, "")) || 0
               : Number(salon.asking_price) || 0;
           } else if ('price' in salon && salon.price) {
             priceValue = typeof salon.price === 'string'
-              ? parseInt(salon.price.replace(/[^0-9]/g, ""), 10) || 0
+              ? parseFloat(salon.price.replace(/[^0-9.]/g, "")) || 0
               : Number(salon.price) || 0;
           }
           
-          // Fix errors #3 & #4: Ensure we're comparing numbers to numbers
-          return priceValue >= filters.priceRange![0] && priceValue <= filters.priceRange![1];
+          // Safe comparison between numbers
+          return !isNaN(priceValue) && 
+            priceValue >= filters.priceRange![0] && 
+            priceValue <= filters.priceRange![1];
         });
       }
       
+      // Housing filter
       if (filters.hasHousing) {
         filteredSalons = filteredSalons.filter(salon => salon.has_housing === true);
       }
       
+      // Expired filter
       if (!filters.showExpired) {
         filteredSalons = filteredSalons.filter(salon => {
           if (salon.status === 'expired') return false;
@@ -111,36 +142,44 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
       });
 
       // Get featured salons separately
-      const featured = getSalonsForSale(3)
+      const featured = salonListings
         .filter(salon => salon.is_featured && salon.status !== 'expired')
         .map(salon => {
           if (!salon.created_at) {
             return {
               ...salon,
-              created_at: new Date().toISOString()
+              created_at: new Date().toISOString(),
+              name: salon.name || salon.company || salon.title || 'Featured Salon'
+            };
+          }
+          if (!salon.name) {
+            return {
+              ...salon,
+              name: salon.company || salon.title || 'Featured Salon'
             };
           }
           return salon;
         });
       
-      setFeaturedSalons(featured);
+      // Update state with filtered data
       setSalons(filteredSalons);
       setAllSalons(filteredSalons);
+      setFeaturedSalons(featured);
       
-      // Create a new Set to store unique keywords
+      // Gather keywords from salon features
       const newKeywords = new Set<string>();
       
-      // Add existing suggested keywords first
+      // Add existing suggested keywords
       suggestedKeywords.forEach(keyword => newKeywords.add(keyword));
       
-      // Then add salon features
+      // Add salon features as keywords
       filteredSalons.forEach(salon => {
         if (salon.salon_features) {
-          salon.salon_features.forEach(f => newKeywords.add(f));
+          salon.salon_features.forEach(feature => newKeywords.add(feature));
         }
       });
       
-      // Fix Error #2: Using the setSuggestedKeywords function correctly
+      // Update suggested keywords
       setSuggestedKeywords(Array.from(newKeywords));
       
     } catch (err) {
@@ -152,10 +191,12 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
     }
   }, [filters, searchTerm, suggestedKeywords]);
 
+  // Initial fetch on mount and when dependencies change
   useEffect(() => {
     fetchSalons();
   }, [fetchSalons]);
 
+  // Filter updater functions
   const updateFilters = (newFilters: Partial<SalonFilters>) => {
     setFilters(prevFilters => ({ ...prevFilters, ...newFilters }));
   };
@@ -165,6 +206,7 @@ export const useSalonsData = (initialFilters: Partial<SalonFilters> = {}) => {
     setFilters(defaultFilters);
   };
 
+  // Return the hook's API
   return { 
     salons,
     allSalons,
