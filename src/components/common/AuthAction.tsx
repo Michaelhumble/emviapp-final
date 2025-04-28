@@ -17,6 +17,8 @@ interface AuthActionProps {
   creditMessage?: string;
   redirectPath?: string;
   customTitle?: string;
+  fallbackContent?: React.ReactNode;
+  authenticatedContent?: React.ReactNode;
 }
 
 const AuthAction: React.FC<AuthActionProps> = ({ 
@@ -24,7 +26,9 @@ const AuthAction: React.FC<AuthActionProps> = ({
   onAction,
   creditMessage,
   redirectPath,
-  customTitle = "Sign in to continue"
+  customTitle = "Sign in to continue",
+  fallbackContent,
+  authenticatedContent
 }) => {
   const { isSignedIn } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
@@ -49,6 +53,53 @@ const AuthAction: React.FC<AuthActionProps> = ({
     navigate(`${path}?redirect=${encodedRedirect}`);
     setShowAuthDialog(false);
   };
+
+  // If authenticated content is provided and user is signed in, render that instead
+  if (isSignedIn && authenticatedContent) {
+    return <>{authenticatedContent}</>;
+  }
+
+  // If fallback content is provided and user is not signed in, render that without click handler
+  if (!isSignedIn && fallbackContent) {
+    return (
+      <>
+        <div onClick={handleAction} className="cursor-pointer">
+          {fallbackContent}
+        </div>
+
+        <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>{customTitle}</DialogTitle>
+              <DialogDescription>
+                Create a free Emvi account to connect with top salons near you.
+                {creditMessage && (
+                  <span className="block mt-2 text-pink-600 font-medium">
+                    {creditMessage}
+                  </span>
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col sm:flex-row gap-3 mt-4">
+              <Button 
+                className="w-full" 
+                onClick={() => handleNavigation('/sign-in')}
+              >
+                Sign In
+              </Button>
+              <Button 
+                variant="secondary" 
+                className="w-full" 
+                onClick={() => handleNavigation('/sign-up')}
+              >
+                Create Account
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </>
+    );
+  }
 
   return (
     <>

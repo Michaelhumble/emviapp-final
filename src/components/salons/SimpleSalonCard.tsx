@@ -84,19 +84,22 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
         </div>
 
         {salon.contact_info?.phone && (
-          isSignedIn ? (
-            <div className={`text-sm py-2 px-3 rounded border mb-4 flex items-center gap-2 ${isVietnamese ? 'bg-purple-50 border-purple-200 text-purple-900' : 'bg-gray-50 border-gray-100 text-gray-600'}`}>
-              <Phone className="h-4 w-4" />
-              <span>{salon.contact_info.phone}</span>
-            </div>
-          ) : (
-            <AuthAction onAction={handleViewContact} redirectPath={`/salons/${salon.id}`}>
+          <AuthAction 
+            onAction={handleViewContact} 
+            redirectPath={`/salons/${salon.id}`}
+            authenticatedContent={
+              <div className={`text-sm py-2 px-3 rounded border mb-4 flex items-center gap-2 ${isVietnamese ? 'bg-purple-50 border-purple-200 text-purple-900' : 'bg-gray-50 border-gray-100 text-gray-600'}`}>
+                <Phone className="h-4 w-4" />
+                <span>{salon.contact_info.phone}</span>
+              </div>
+            }
+            fallbackContent={
               <div className={`text-sm py-2 px-3 rounded border mb-4 flex items-center gap-2 cursor-pointer ${isVietnamese ? 'bg-purple-50 border-purple-200 text-purple-900 hover:bg-purple-100' : 'bg-gray-50 border-gray-100 text-gray-600 hover:bg-gray-100'}`}>
                 <Phone className="h-4 w-4" />
                 <span>{isVietnamese ? "Đăng nhập để xem liên hệ" : "Sign in to view contact"}</span>
               </div>
-            </AuthAction>
-          )
+            }
+          />
         )}
 
         <Link to={`/salons/${salon.id}`}>

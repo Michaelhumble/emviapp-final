@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { useAuth } from '@/context/auth';
 const SimpleSalonDetailPage = () => {
   const { id } = useParams();
   const { isSignedIn } = useAuth();
+  const location = useLocation();
   
   // First check Vietnamese listings, then regular listings
   const salon = vietnameseSalonListings.find(s => s.id === id) || 
@@ -150,7 +151,7 @@ const SimpleSalonDetailPage = () => {
                     <p className="text-gray-500 text-sm mb-2">
                       {isVietnamese ? "Vui lòng đăng nhập để xem thông tin liên hệ" : "Please sign in to see contact details"}
                     </p>
-                    <Link to={`/sign-in?redirect=${encodeURIComponent(`/salons/${salon.id}`)}`}>
+                    <Link to={`/sign-in?redirect=${encodeURIComponent(location.pathname)}`}>
                       <Button size="sm">
                         {isVietnamese ? "Đăng nhập" : "Sign In"}
                       </Button>
