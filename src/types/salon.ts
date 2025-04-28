@@ -14,6 +14,7 @@ export interface Salon {
   city?: string;
   neighborhood?: string;
   teamSize?: number; // Added for sample salons data
+  certifications?: string[]; // Added for sample salons data
   hours?: {
     monday: string;
     tuesday: string;
