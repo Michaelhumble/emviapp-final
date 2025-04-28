@@ -10,6 +10,7 @@ import SimpleSalonsPage from "@/pages/salons/SimpleSalonsPage";
 import SimpleSalonDetailPage from "@/pages/salons/SimpleSalonDetailPage";
 import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
 import ArtistInbox from "@/pages/dashboard/artist/Inbox";
+import { Toaster } from "@/components/ui/toaster";
 
 function App() {
   const location = useLocation();
@@ -35,6 +36,7 @@ function App() {
               <Route path="/dashboard/artist/booking-calendar" element={<BookingCalendar />} />
               <Route path="/dashboard/artist/inbox" element={<ArtistInbox />} />
             </Routes>
+            <Toaster />
           </NotificationProvider>
         </SubscriptionProvider>
       </SalonProvider>
