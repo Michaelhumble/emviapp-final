@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import {
   Routes,
@@ -11,7 +12,7 @@ import { NotificationProvider } from '@/context/notification';
 import routes from './routes';
 import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
 import ArtistInbox from "@/pages/dashboard/artist/Inbox";
-import SimpleSalonPage from "@/pages/dashboard/salon/SimpleSalonPage";
+import SimpleSalonsPage from "@/pages/salons/SimpleSalonsPage";
 
 function App() {
   const location = useLocation();
@@ -27,7 +28,7 @@ function App() {
         <SubscriptionProvider>
           <NotificationProvider>
             <Routes>
-              <Route path="/salons" element={<SimpleSalonPage />} />
+              <Route path="/salons" element={<SimpleSalonsPage />} />
               {routes.map((route, index) => (
                 <Route 
                   key={index}
