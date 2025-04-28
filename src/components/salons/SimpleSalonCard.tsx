@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { MapPin, DollarSign, Building } from "lucide-react";
 import { Salon } from '@/types/salon';
 import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 
 interface SalonCardProps {
   salon: Salon;
@@ -14,7 +13,7 @@ interface SalonCardProps {
 
 const SimpleSalonCard = ({ salon }: SalonCardProps) => {
   const formatPrice = (price: number) => {
-    if (price === 0) return "Contact for Price";
+    if (price === 0) return "Giá thương lượng";
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -32,7 +31,7 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
       </div>
       
       <CardContent className="p-5">
-        <h3 className="font-playfair text-lg font-semibold mb-2 line-clamp-1">
+        <h3 className="font-playfair text-lg font-semibold mb-2 line-clamp-2">
           {salon.vietnamese_title || salon.name}
         </h3>
         
@@ -69,7 +68,7 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
 
         <div className="space-y-2 mb-4">
           {salon.vietnamese_description ? (
-            <p className="text-gray-600 text-sm">
+            <p className="text-gray-600 text-sm whitespace-pre-line">
               {salon.vietnamese_description}
             </p>
           ) : (
@@ -80,29 +79,16 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
         </div>
 
         <div className="space-y-4">
-          {salon.contact_info?.phone ? (
+          {salon.contact_info?.phone && (
             <div className="text-sm text-gray-600 py-2 px-3 bg-gray-50 rounded border border-gray-100">
               Liên hệ: {salon.contact_info.phone}
               {salon.contact_info.owner_name && ` (${salon.contact_info.owner_name})`}
             </div>
-          ) : (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="text-sm text-gray-400 py-2 px-3 bg-gray-50 rounded border border-gray-100 text-center cursor-default">
-                    Sign in to view contact details
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="text-xs">Login feature coming soon</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
           )}
 
           <Link to={`/salons/${salon.id}`}>
             <Button 
-              className="w-full bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white"
+              className="w-full bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white"
             >
               {salon.is_vietnamese_listing ? 'Xem Chi Tiết' : 'View Details'}
             </Button>

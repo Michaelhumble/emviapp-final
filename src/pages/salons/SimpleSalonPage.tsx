@@ -24,8 +24,11 @@ const SimpleSalonPage = () => {
           {/* Vietnamese Community Listings Section */}
           {vietnameseListings.length > 0 && (
             <div className="mb-16">
-              <h2 className="font-playfair text-2xl md:text-3xl font-bold mb-3 text-purple-800">
-                💅 Tin Rao Vặt Tiệm Nail - Cộng Đồng Người Việt
+              <h2 className="font-playfair text-2xl md:text-3xl font-bold mb-3 flex items-center gap-2">
+                <span>💅</span>
+                <span className="bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">
+                  Tin Rao Vặt Tiệm Nail - Cộng Đồng Người Việt
+                </span>
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                 {vietnameseListings.map((salon) => (
