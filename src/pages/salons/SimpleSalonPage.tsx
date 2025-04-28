@@ -3,10 +3,9 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
 import SimpleSalonCard from '@/components/salons/SimpleSalonCard';
-import { salonListings } from '@/data/salonData';
+import { salonListings, vietnameseSalonListings } from '@/data/salonData';
 
 const SimpleSalonPage = () => {
-  const vietnameseListings = salonListings.filter(salon => salon.is_vietnamese_listing);
   const regularListings = salonListings.filter(salon => !salon.is_vietnamese_listing);
 
   return (
@@ -22,21 +21,19 @@ const SimpleSalonPage = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-7xl mx-auto">
           {/* Vietnamese Community Listings Section */}
-          {vietnameseListings.length > 0 && (
-            <div className="mb-16">
-              <h2 className="font-playfair text-2xl md:text-3xl font-bold mb-3 flex items-center gap-2">
-                <span>💅</span>
-                <span className="bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">
-                  Tin Rao Vặt Tiệm Nail - Cộng Đồng Người Việt
-                </span>
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-                {vietnameseListings.map((salon) => (
-                  <SimpleSalonCard key={salon.id} salon={salon} />
-                ))}
-              </div>
+          <div className="mb-16">
+            <h2 className="font-playfair text-2xl md:text-3xl font-bold mb-3 flex items-center gap-2">
+              <span>💅</span>
+              <span className="bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">
+                Tin Rao Vặt Tiệm Nail - Cộng Đồng Người Việt
+              </span>
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+              {vietnameseSalonListings.map((salon) => (
+                <SimpleSalonCard key={salon.id} salon={salon} />
+              ))}
             </div>
-          )}
+          </div>
 
           {/* Regular Listings Section */}
           <div className="mb-10">

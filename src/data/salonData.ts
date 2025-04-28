@@ -1,6 +1,214 @@
 import { Salon } from '@/types/salon';
 
-export const salonListings: Salon[] = [
+// Vietnamese salon listings - PERMANENT CUSTOM ENTRIES
+export const vietnameseSalonListings: Salon[] = [
+  {
+    id: 'v1',
+    name: 'Nail Salon Rowlett',
+    vietnamese_title: 'Cần sang tiệm nail ở Rowlett',
+    location: 'Rowlett, TX',
+    price: 0, // Giá thương lượng
+    imageUrl: '/placeholder.svg',
+    description: 'Nail salon for sale in Rowlett area.',
+    vietnamese_description: 'Tiệm ở Rowlett cần sang lại, cách Garland 10", income 120-150K/tháng.\nIncome last year 1.7M.',
+    features: ['high_traffic', 'established'],
+    monthly_revenue: '120K-150K',
+    yearly_revenue: '1.7M',
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '(469)-438-5980',
+      owner_name: 'Chủ Tiệm'
+    }
+  },
+  {
+    id: 'v2',
+    name: 'Nail Salon Carrollton',
+    vietnamese_title: 'Bán tiệm nail ở Carrollton, GA',
+    location: 'Carrollton, GA',
+    price: 195000,
+    imageUrl: '/placeholder.svg',
+    description: 'Nail salon for sale in Carrollton area.',
+    vietnamese_description: 'Trong khu Walmart, giá 195K.',
+    features: ['high_traffic'],
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '404-543-0144',
+      owner_name: 'Chủ Tiệm'
+    }
+  },
+  {
+    id: 'v3',
+    name: 'Davi Nails',
+    vietnamese_title: 'Cần bán tiệm Davi Nails - Bismarck, ND',
+    location: 'Bismarck, ND',
+    price: 40000,
+    imageUrl: '/placeholder.svg',
+    description: 'Davi Nails salon for sale in Bismarck.',
+    vietnamese_description: '5 ghế, 5 bàn, phòng wax. Giá $40K.',
+    features: ['wax_room'],
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '(714) 787-8858',
+      owner_name: 'Chủ Tiệm'
+    }
+  },
+  {
+    id: 'v4',
+    name: 'Large Salon Terrell',
+    vietnamese_title: 'Sang tiệm lớn Terrell, TX',
+    location: 'Terrell, TX',
+    price: 0, // Giá thương lượng
+    imageUrl: '/placeholder.svg',
+    description: 'Large nail salon for sale in Terrell.',
+    vietnamese_description: '3,000 sqft, 24 ghế, 12 bàn. Giá thương lượng.',
+    features: ['high_traffic', 'spacious'],
+    square_feet: 3000,
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '971-407-0664',
+      owner_name: 'Chủ Tiệm'
+    }
+  },
+  {
+    id: 'v5',
+    name: 'Nail Salon Cumming',
+    vietnamese_title: 'Bán tiệm nail Cumming, GA',
+    location: 'Cumming, GA',
+    price: 85000,
+    imageUrl: '/placeholder.svg',
+    description: 'Nail salon for sale in Cumming area.',
+    vietnamese_description: '1200 sqft, rent $3,300. Giá $85K.',
+    features: ['established'],
+    square_feet: 1200,
+    monthly_rent: 3300,
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '404-455-5608',
+      owner_name: 'Chủ Tiệm'
+    }
+  },
+  {
+    id: 'v6',
+    name: 'Lv Nail Spa',
+    vietnamese_title: 'Sang Lv Nail Spa - Fort Collins, CO',
+    location: 'Fort Collins, CO',
+    price: 95000,
+    imageUrl: '/placeholder.svg',
+    description: 'Lv Nail Spa for sale in Fort Collins.',
+    vietnamese_description: '7 bàn, 7 ghế, 1,200 sqft. Giá $95K.',
+    features: ['established'],
+    square_feet: 1200,
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '206-489-7081',
+      owner_name: 'Chủ Tiệm'
+    }
+  },
+  {
+    id: 'v7',
+    name: 'Nail Salon Cornelia',
+    vietnamese_title: 'Cần sang tiệm Nails - Cornelia, GA',
+    location: 'Cornelia, GA',
+    price: 0, // Giá thương lượng
+    imageUrl: '/placeholder.svg',
+    description: 'Nail salon for sale in Cornelia.',
+    vietnamese_description: '1620 sqft, 10 ghế, 8 bàn. Giá thương lượng.',
+    features: ['spacious'],
+    square_feet: 1620,
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '832-441-0876',
+      owner_name: 'Chủ Tiệm'
+    }
+  },
+  {
+    id: 'v8',
+    name: 'Nail Salon Murrieta',
+    vietnamese_title: 'Sang tiệm Murrieta, CA',
+    location: 'Murrieta, CA',
+    price: 220000,
+    imageUrl: '/placeholder.svg',
+    description: 'Nail salon for sale in Murrieta area.',
+    vietnamese_description: '1400 sqft, 9 bàn, 9 ghế. Giá $220K.',
+    features: ['established'],
+    square_feet: 1400,
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '657-346-4466',
+      owner_name: 'Chủ Tiệm'
+    }
+  },
+  {
+    id: 'v9',
+    name: 'Nail Salon Arlington',
+    vietnamese_title: 'Bán tiệm Arlington, TX',
+    location: 'Arlington, TX',
+    price: 60000,
+    imageUrl: '/placeholder.svg',
+    description: 'Nail salon for sale in Arlington area.',
+    vietnamese_description: '1200 sqft, 8 ghế, 7 bàn. Giá $60K.',
+    features: ['established'],
+    square_feet: 1200,
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '903-245-6488',
+      owner_name: 'Chủ Tiệm'
+    }
+  },
+  {
+    id: 'v10',
+    name: 'Nail Salon Marietta',
+    vietnamese_title: 'Sang tiệm Marietta, Atlanta',
+    location: 'Marietta, Atlanta',
+    price: 450000,
+    imageUrl: '/placeholder.svg',
+    description: 'Nail salon for sale in Marietta, Atlanta area.',
+    vietnamese_description: '3000 sqft, 24 ghế, 14 bàn. Income >1M. Giá $450K.',
+    features: ['high_traffic', 'spacious'],
+    square_feet: 3000,
+    yearly_revenue: '>1M',
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '678-488-2583',
+      owner_name: 'Chủ Tiệm'
+    }
+  },
+  {
+    id: 'v11',
+    name: 'Nail Salon North Dakota',
+    vietnamese_title: 'Sang tiệm nail North Dakota',
+    location: 'North Dakota',
+    price: 40000,
+    imageUrl: '/placeholder.svg',
+    description: 'Nail salon for sale in North Dakota.',
+    vietnamese_description: 'Rent bao điện nước. Giá $40K.',
+    features: ['affordable'],
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '714-787-8858',
+      owner_name: 'Chủ Tiệm'
+    }
+  },
+  {
+    id: 'v12',
+    name: 'Newly Remodeled Nail Salon',
+    vietnamese_title: 'Bán tiệm nail Mới Remodel - California',
+    location: 'California',
+    price: 220000,
+    imageUrl: '/placeholder.svg',
+    description: 'Newly remodeled nail salon for sale in California.',
+    vietnamese_description: '9 bàn, 9 ghế, khu đông đúc. Giá $220K.',
+    features: ['newly_renovated', 'high_traffic'],
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '657-346-4466',
+      owner_name: 'Chủ Tiệm'
+    }
+  }
+];
+
+// Export other salon data (if any)
+export const salonListings = [
   {
     id: "vn-1",
     name: "Nail Salon Rowlett",

@@ -21,6 +21,11 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
     }).format(price);
   };
 
+  // Use Vietnamese content when available
+  const title = salon.vietnamese_title || salon.name;
+  const description = salon.vietnamese_description || salon.description;
+  const buttonText = salon.is_vietnamese_listing ? "Xem Chi Tiết" : "View Details";
+
   return (
     <Card className="overflow-hidden group hover:shadow-md transition-shadow duration-300">
       <div 
@@ -32,7 +37,7 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
       
       <CardContent className="p-5">
         <h3 className="font-playfair text-lg font-semibold mb-2 line-clamp-2">
-          {salon.vietnamese_title || salon.name}
+          {title}
         </h3>
         
         <div className="flex items-center text-gray-500 text-sm mb-2">
@@ -68,14 +73,14 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
 
         <div className="space-y-2 mb-4">
           <p className="text-gray-600 text-sm whitespace-pre-line">
-            {salon.vietnamese_description || salon.description}
+            {description}
           </p>
         </div>
 
         {salon.contact_info?.phone && (
           <div className="text-sm text-gray-600 py-2 px-3 bg-gray-50 rounded border border-gray-100 mb-4">
             Liên hệ: {salon.contact_info.phone}
-            {salon.contact_info.owner_name && ` (${salon.contact_info.owner_name})`}
+            {salon.contact_info.owner_name && salon.contact_info.owner_name !== "Chủ Tiệm" ? ` (${salon.contact_info.owner_name})` : ''}
           </div>
         )}
 
@@ -83,7 +88,7 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
           <Button 
             className="w-full bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white"
           >
-            {salon.is_vietnamese_listing ? "Xem Chi Tiết" : "View Details"}
+            {buttonText}
           </Button>
         </Link>
       </CardContent>
