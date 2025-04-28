@@ -70,6 +70,14 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({
     setIsAuthenticated(true);
   };
 
+  // Helper function to parse price string to number
+  const parsePriceString = (priceString: string | undefined): number => {
+    if (!priceString) return 0;
+    // Remove non-numeric characters and parse as float
+    const numericValue = priceString.replace(/[^0-9.-]+/g, "");
+    return parseFloat(numericValue) || 0;
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl overflow-y-auto max-h-[90vh] p-0">
@@ -103,7 +111,7 @@ const SalonDetailModal: React.FC<SalonDetailModalProps> = ({
             <div className="flex items-center space-x-2">
               <DollarSign className="h-5 w-5 text-purple-600" />
               <span className="text-xl font-semibold">
-                {formatCurrency(salon.asking_price || "0")}
+                {formatCurrency(parsePriceString(salon.asking_price))}
               </span>
             </div>
 
