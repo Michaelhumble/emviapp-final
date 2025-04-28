@@ -1,5 +1,55 @@
-
 import { Salon } from '@/types/salon';
+
+export const vietnameseSalonListings: Salon[] = [
+  {
+    id: 'vn-1',
+    name: 'Tiệm Nail Rowlett',
+    vietnamese_title: 'Cần sang tiệm nail ở Rowlett',
+    location: 'Rowlett, TX',
+    price: 0, // Contact for price
+    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
+    description: 'Nail salon in Rowlett, 10 minutes from Garland. Stable year-round clientele.',
+    vietnamese_description: 'Tiệm ở Rowlett cần sang lại, cách Garland 10", income 120-150K/tháng. Tiệm lâu năm, khách ổn định quanh năm. Income last year 1.7M.',
+    features: ['Established Business', 'High Income', 'Prime Location'],
+    monthly_revenue: '120000-150000',
+    yearly_revenue: '1700000',
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '(469)-438-5980'
+    }
+  },
+  {
+    id: 'vn-2',
+    name: 'Nail Salon - Carrollton',
+    vietnamese_title: 'Bán tiệm nail ở Carrollton, Georgia',
+    location: 'Carrollton, GA',
+    price: 195000,
+    imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80',
+    description: 'Nail salon near Walmart',
+    vietnamese_description: 'Tiệm trong khu Walmart, giá 195K.',
+    features: ['Near Walmart', 'Prime Location'],
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '404-543-0144'
+    }
+  },
+  {
+    id: 'vn-3',
+    name: 'Davi Nails',
+    vietnamese_title: 'Cần bán tiệm Davi Nails - Bismarck, North Dakota',
+    location: 'Bismarck, ND',
+    price: 40000,
+    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
+    description: '5 chairs, 5 tables, wax room. Rent includes utilities.',
+    vietnamese_description: '5 ghế, 5 bàn, phòng wax, bao rent (điện, nước, wifi...). Giá $40K.',
+    features: ['5 Stations', 'Wax Room', 'Utilities Included'],
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '(714) 787-8858',
+      owner_name: 'Thư'
+    }
+  }
+];
 
 export const salonListings: Salon[] = [
   {
@@ -135,3 +185,5 @@ export const salonListings: Salon[] = [
     }
   }
 ];
+
+export const salonListings: Salon[] = [...vietnameseSalonListings, ...salonListings];
