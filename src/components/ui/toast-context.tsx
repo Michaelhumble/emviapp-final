@@ -1,6 +1,6 @@
 
 import React, { createContext, useState, ReactNode } from 'react';
-import { Toast, ToastDescription, ToastTitle } from '@/components/ui/toast';
+import { Toast, ToastDescription, ToastTitle, ToastClose } from '@/components/ui/toast';
 
 export interface ToastOptions {
   title?: string;
@@ -38,12 +38,12 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
           <Toast
             key={toast.id}
             variant={toast.variant}
-            onClose={() => setToasts((prev) => prev.filter((t) => t.id !== toast.id))}
           >
             <div className="grid gap-1">
               {toast.title && <ToastTitle>{toast.title}</ToastTitle>}
               {toast.description && <ToastDescription>{toast.description}</ToastDescription>}
             </div>
+            <ToastClose onClick={() => setToasts((prev) => prev.filter((t) => t.id !== toast.id))} />
           </Toast>
         ))}
       </div>
