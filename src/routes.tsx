@@ -39,7 +39,6 @@ import BoothDetail from './pages/booths/BoothDetail';
 import BoothsIndex from './pages/booths/BoothsIndex';
 import AdminDashboard from './pages/admin/AdminDashboard';
 
-// Import the setup pages
 import ArtistProfileSetup from './pages/profile/artist/setup';
 import SalonProfileSetup from './pages/profile/salon/setup';
 import FreelancerSetup from './pages/profile/freelancer/setup';
@@ -48,7 +47,6 @@ import OtherRoleSetup from './pages/profile/other/setup';
 import BoothRenterSetup from './pages/profile/renter/setup';
 import SupplierSetup from './pages/profile/supplier/setup';
 
-// Import static pages
 import EarlyAccess from "./pages/EarlyAccess";
 import Contact from './pages/Contact';
 import Terms from './pages/Terms';
@@ -60,7 +58,6 @@ import { AuthRedirect } from './components/auth/AuthRedirect';
 import PricingPage from './pages/pricing/PricingPage';
 import InvitePage from './pages/invite/InvitePage';
 
-// Use React.lazy for code-splitting the Messages page
 const Messages = React.lazy(() => import('./pages/messages/index'));
 
 import PortfolioManagerPage from './pages/dashboard/artist/portfolio/index';
@@ -346,12 +343,12 @@ const routes = [
     element: <MyBookingsPage />,
   },
   {
-    path: '/sign-in', // Explicitly define the /sign-in route
+    path: '/sign-in',
     element: <SignIn />,
   },
   {
     path: '/listing/:id',
-    element: <SimpleSalonsPage />, // Changed from SalonsListingsPage to SimpleSalonsPage
+    element: <SimpleSalonsPage />,
   },
   {
     path: '/salon-listing',

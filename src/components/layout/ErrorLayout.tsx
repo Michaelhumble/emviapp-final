@@ -1,32 +1,19 @@
 
-import { ReactNode } from "react";
-import { motion } from "framer-motion";
-import Layout from "@/components/layout/Layout";
+import React from 'react';
 
 interface ErrorLayoutProps {
-  children: ReactNode;
-  hideNavbar?: boolean;
+  children: React.ReactNode;
 }
 
-const ErrorLayout = ({ children, hideNavbar = false }: ErrorLayoutProps) => {
+const ErrorLayout: React.FC<ErrorLayoutProps> = ({ children }) => {
   return (
-    <Layout hideNavbar={hideNavbar}>
-      <motion.div 
-        className="min-h-[80vh] flex flex-col items-center justify-center p-6"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <motion.div 
-          className="max-w-md w-full text-center"
-          initial={{ scale: 0.9 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.2, duration: 0.4 }}
-        >
+    <div className="min-h-screen bg-white flex flex-col">
+      <main className="flex-grow flex items-center justify-center">
+        <div className="container max-w-md mx-auto px-4 py-12 text-center">
           {children}
-        </motion.div>
-      </motion.div>
-    </Layout>
+        </div>
+      </main>
+    </div>
   );
 };
 

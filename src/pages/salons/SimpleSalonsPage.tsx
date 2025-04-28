@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
 import SalonCard from '@/components/salons/SalonCard';
@@ -10,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Search, Filter, X } from 'lucide-react';
 
 const SimpleSalonsPage = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [priceFilter, setPriceFilter] = useState<string | null>(null);
 
@@ -39,6 +41,11 @@ const SimpleSalonsPage = () => {
     if (a.featured === b.featured) return 0;
     return a.featured ? -1 : 1;
   });
+
+  // Handler for View Details button
+  const handleViewSalon = (salonId: string) => {
+    navigate(`/salons/${salonId}`);
+  };
 
   return (
     <Layout>
@@ -129,7 +136,11 @@ const SimpleSalonsPage = () => {
           {sortedSalons.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {sortedSalons.map((salon) => (
-                <SalonCard key={salon.id} salon={salon} />
+                <SalonCard 
+                  key={salon.id} 
+                  salon={salon} 
+                  onViewDetails={() => handleViewSalon(salon.id)}
+                />
               ))}
             </div>
           ) : (
