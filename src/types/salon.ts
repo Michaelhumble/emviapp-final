@@ -17,7 +17,7 @@ export interface Salon {
   certifications?: string[];
   awards?: string[];
   languages?: string[];
-  accessibilityFeatures?: string[]; // Added accessibility features
+  accessibilityFeatures?: string[];
   hours?: {
     monday: string;
     tuesday: string;
@@ -54,4 +54,14 @@ export interface Salon {
   website?: string;
   beforeAfterGallery?: string[];
   owner?: string;
+  features?: string[]; // Added for salon features like "Turnkey Business", etc.
+  photos?: string[]; // Added for gallery images
+  latitude?: number; // Added for Google Maps
+  longitude?: number; // Added for Google Maps
+  contactInfo?: {
+    name?: string;
+    phone?: string;
+    email?: string;
+    preferredContact?: string;
+  };
 }

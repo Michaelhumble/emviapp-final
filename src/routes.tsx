@@ -67,9 +67,9 @@ import PortfolioManagerPage from './pages/dashboard/artist/portfolio/index';
 
 import OpportunityDetailPage from './pages/opportunities/OpportunityDetailPage';
 import SimpleSalonsPage from './pages/salons/SimpleSalonsPage';
-import SimpleSalonDetailPage from './pages/salons/SimpleSalonDetailPage';
+import SalonDetailPage from './pages/salons/SalonDetailPage';
+import SalonListingForm from './pages/salons/SalonListingForm';
 
-// Import the new SimpleSalon pages instead of the missing index file
 const routes = [
   {
     path: '/auth/redirect',
@@ -105,7 +105,7 @@ const routes = [
   },
   {
     path: '/salons/:id',
-    element: <SimpleSalonDetailPage />,
+    element: <SalonDetailPage />,
   },
   {
     path: '/sell-salon',
@@ -352,6 +352,10 @@ const routes = [
   {
     path: '/listing/:id',
     element: <SimpleSalonsPage />, // Changed from SalonsListingsPage to SimpleSalonsPage
+  },
+  {
+    path: '/salon-listing',
+    element: <SalonListingForm />,
   },
 ];
 
