@@ -7,6 +7,7 @@ import SimpleSalonCard from '@/components/salons/SimpleSalonCard';
 import { salonListings } from '@/data/salonData';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { toast } from '@/hooks/use-toast';
 
 /**
  * Main Salon Listings Page Component
@@ -15,6 +16,9 @@ import { Link } from 'react-router-dom';
  */
 const SimpleSalonsPage = () => {
   const regularListings = salonListings.filter(salon => !salon.is_vietnamese_listing);
+  
+  // Add a console log to debug Vietnamese listings
+  console.log('Vietnamese salon listings:', vietnameseSalonListings);
 
   return (
     <Layout>
@@ -54,7 +58,7 @@ const SimpleSalonsPage = () => {
             </h2>
             <p className="text-gray-600 mb-6 text-lg">Danh sách các tiệm nail hiện đang bán, được cập nhật thường xuyên.</p>
             
-            {vietnameseSalonListings.length > 0 ? (
+            {vietnameseSalonListings && vietnameseSalonListings.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
                 {vietnameseSalonListings.map((salon) => (
                   <SimpleSalonCard key={salon.id} salon={salon} />
