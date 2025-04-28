@@ -1,4 +1,3 @@
-
 import { Job } from '@/types/job';
 import { salonListings } from '@/data/salonData';
 
@@ -29,7 +28,6 @@ export const fetchJob = async (id: string): Promise<Job> => {
       phone: "(555) 123-4567",
       email: "contact@emviapp.com"
     },
-    // Add any other fields needed
   };
 };
 

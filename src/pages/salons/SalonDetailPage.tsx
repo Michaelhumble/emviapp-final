@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import SalonDetailContent from '@/components/salons/SalonDetailContent';
 import SalonListingCta from '@/components/salons/SalonListingCta';
-import NotFound from '@/pages/NotFound';
+import SalonNotFound from '@/components/salon/SalonNotFound';
 import { fetchJob } from '@/utils/jobs';
 import { Job } from '@/types/job';
 
@@ -48,7 +48,7 @@ const SalonDetailPage = () => {
     );
   }
 
-  if (error) return <NotFound />;
+  if (error) return <SalonNotFound />;
 
   return (
     <Layout>

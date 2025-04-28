@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Home, Store, Search } from "lucide-react";
+import { Store, Home, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import ErrorLayout from "@/components/layout/ErrorLayout";
 import { logRouteAccess } from "@/utils/routeChecker";
