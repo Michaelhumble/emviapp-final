@@ -102,11 +102,11 @@ const routes = [
   },
   {
     path: '/salons',
-    element: <SalonsListingsPage />,
+    element: <SimpleSalonsPage />,
   },
   {
     path: '/salons/:id',
-    element: <SalonDetail />,
+    element: <SimpleSalonDetailPage />,
   },
   {
     path: '/sell-salon',

@@ -1,0 +1,58 @@
+
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { MapPin, DollarSign } from "lucide-react";
+import { Salon } from '@/types/salon';
+
+interface SalonCardProps {
+  salon: Salon;
+}
+
+const SimpleSalonCard = ({ salon }: SalonCardProps) => {
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+
+  return (
+    <Card className="overflow-hidden group hover:shadow-md transition-shadow duration-300">
+      <div 
+        className="h-48 bg-cover bg-center relative" 
+        style={{ backgroundImage: `url(${salon.imageUrl})` }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+      </div>
+      
+      <CardContent className="p-5">
+        <h3 className="font-playfair text-lg font-semibold mb-2 line-clamp-1">
+          {salon.name}
+        </h3>
+        
+        <div className="flex items-center text-gray-500 text-sm mb-2">
+          <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+          <span className="truncate">{salon.location}</span>
+        </div>
+        
+        <div className="flex items-center text-gray-800 font-medium mb-4">
+          <DollarSign className="h-4 w-4 mr-0.5 text-green-600" />
+          <span>{formatPrice(salon.price)}</span>
+        </div>
+
+        <Link to={`/salons/${salon.id}`}>
+          <Button 
+            className="w-full bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white"
+          >
+            View Details
+          </Button>
+        </Link>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default SimpleSalonCard;
