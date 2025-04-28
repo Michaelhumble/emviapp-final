@@ -4,8 +4,6 @@ import { salonListings } from '@/data/salonData';
 
 /**
  * Fetches a job or salon listing by ID
- * @param id The ID of the job or salon to fetch
- * @returns The job/salon data or null if not found
  */
 export const fetchJob = async (id: string): Promise<Job> => {
   // In a real app, this would be an API call
@@ -36,10 +34,15 @@ export const fetchJob = async (id: string): Promise<Job> => {
 };
 
 /**
- * Fetches a list of jobs with optional filtering
+ * Fetches a paginated list of jobs with optional filtering
  */
-export const fetchJobs = async (): Promise<Job[]> => {
-  // In a real app, this would be an API call with filters
+export const fetchJobs = async (page: number = 1, limit: number = 9): Promise<{
+  jobs: Job[];
+  totalPages: number;
+}> => {
+  // In a real app, this would be an API call with pagination params
+  const start = (page - 1) * limit;
+  const end = start + limit;
   const jobs = salonListings.map(listing => ({
     id: listing.id,
     title: listing.name,
@@ -49,8 +52,12 @@ export const fetchJobs = async (): Promise<Job[]> => {
     description: listing.description,
     price: listing.price.toString(),
     image: listing.imageUrl,
-    // Add any other fields needed
-  }));
+  })).slice(start, end);
   
-  return jobs;
+  const totalPages = Math.ceil(salonListings.length / limit);
+  
+  return {
+    jobs,
+    totalPages
+  };
 };

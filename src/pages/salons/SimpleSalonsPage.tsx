@@ -1,51 +1,83 @@
-
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
 import SalonCard from '@/components/salons/SalonCard';
-import { salonListings } from '@/data/salonData';
+import { fetchJobs } from '@/utils/jobs';
 import SalonListingCta from '@/components/salons/SalonListingCta';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, Filter, X } from 'lucide-react';
+import { Search, X } from 'lucide-react';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { Job } from '@/types/job';
+
+const ITEMS_PER_PAGE = 9;
 
 const SimpleSalonsPage = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = parseInt(searchParams.get('page') || '1', 10);
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [priceFilter, setPriceFilter] = useState<string | null>(null);
+  const [salons, setSalons] = useState<Job[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadSalons = async () => {
+      setLoading(true);
+      try {
+        const { jobs, totalPages } = await fetchJobs(currentPage, ITEMS_PER_PAGE);
+        setSalons(jobs);
+        setTotalPages(totalPages);
+      } catch (error) {
+        console.error('Error loading salons:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSalons();
+  }, [currentPage]);
 
   // Filter salons based on search term and price filter
-  const filteredSalons = salonListings.filter(salon => {
-    // Search filter
-    const matchesSearch = searchTerm === '' || 
-      salon.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      salon.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      salon.description.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredSalons = salons.filter(salon => {
+    const matchesSearch = !searchTerm || 
+      salon.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      salon.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      salon.description?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    // Price filter
     let matchesPrice = true;
     if (priceFilter === 'under200k') {
-      matchesPrice = salon.price < 200000;
+      matchesPrice = parseFloat(salon.price) < 200000;
     } else if (priceFilter === '200k-500k') {
-      matchesPrice = salon.price >= 200000 && salon.price <= 500000;
+      matchesPrice = parseFloat(salon.price) >= 200000 && parseFloat(salon.price) <= 500000;
     } else if (priceFilter === 'over500k') {
-      matchesPrice = salon.price > 500000;
+      matchesPrice = parseFloat(salon.price) > 500000;
     }
     
     return matchesSearch && matchesPrice;
   });
 
-  // Sort to show featured listings first
-  const sortedSalons = [...filteredSalons].sort((a, b) => {
-    if (a.featured === b.featured) return 0;
-    return a.featured ? -1 : 1;
-  });
+  const handlePageChange = (page: number) => {
+    setSearchParams({ page: page.toString() });
+    window.scrollTo(0, 0);
+  };
 
-  // Handler for View Details button
   const handleViewSalon = (salonId: string) => {
     navigate(`/salons/${salonId}`);
   };
+
+  // Generate page numbers array for pagination
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
     <Layout>
@@ -71,7 +103,6 @@ const SimpleSalonsPage = () => {
 
           <SalonListingCta />
           
-          {/* Search and Filter */}
           <div className="mb-8 flex flex-col md:flex-row gap-4">
             <div className="relative flex-grow">
               <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
@@ -133,16 +164,64 @@ const SimpleSalonsPage = () => {
             </div>
           </div>
 
-          {sortedSalons.length > 0 ? (
+          {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sortedSalons.map((salon) => (
-                <SalonCard 
-                  key={salon.id} 
-                  salon={salon} 
-                  onViewDetails={() => handleViewSalon(salon.id)}
-                />
+              {Array.from({ length: ITEMS_PER_PAGE }).map((_, index) => (
+                <div key={index} className="h-96 bg-gray-100 animate-pulse rounded-lg"></div>
               ))}
             </div>
+          ) : filteredSalons.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredSalons.map((salon) => (
+                  <SalonCard 
+                    key={salon.id} 
+                    salon={{
+                      id: salon.id,
+                      name: salon.title || '',
+                      location: salon.location || '',
+                      price: parseFloat(salon.price || '0'),
+                      imageUrl: salon.image || '',
+                      description: salon.description || ''
+                    }}
+                    onViewDetails={() => handleViewSalon(salon.id)}
+                  />
+                ))}
+              </div>
+              
+              {totalPages > 1 && (
+                <div className="mt-8">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious 
+                          onClick={() => handlePageChange(currentPage - 1)}
+                          className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                        />
+                      </PaginationItem>
+                      
+                      {pageNumbers.map((number) => (
+                        <PaginationItem key={number}>
+                          <PaginationLink
+                            onClick={() => handlePageChange(number)}
+                            isActive={currentPage === number}
+                          >
+                            {number}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+                      
+                      <PaginationItem>
+                        <PaginationNext 
+                          onClick={() => handlePageChange(currentPage + 1)}
+                          className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
+            </>
           ) : (
             <div className="text-center py-12 bg-gray-50 rounded-lg">
               <p className="text-gray-600 mb-2">No salons found matching your criteria.</p>
