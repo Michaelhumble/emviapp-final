@@ -1,20 +1,26 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
+import { useAuth } from '@/context/auth';
 
 const SalonListingCta = () => {
+  const { userProfile } = useAuth();
+  const isSeller = userProfile?.role === 'seller' || userProfile?.role === 'salon_owner';
+
+  if (isSeller) return null;
+
   return (
-    <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-6 mb-8">
-      <div className="flex flex-col md:flex-row items-center justify-between">
-        <div className="mb-4 md:mb-0 flex-1">
-          <h3 className="font-serif text-xl font-semibold mb-2">List Your Salon For Sale</h3>
-          <p className="text-gray-600 max-w-md">
-            Reach thousands of potential buyers and sell your salon faster on EmviApp's premium salon marketplace.
-          </p>
-        </div>
+    <div className="py-12 px-4 border-t mt-12">
+      <div className="max-w-3xl mx-auto text-center">
+        <h3 className="font-serif text-2xl mb-4">
+          Want to sell your salon or booth rental?
+        </h3>
+        <p className="text-gray-600 mb-6">
+          Get discovered by thousands of qualified buyers on EmviApp.
+        </p>
         <Link to="/salon-listing">
-          <Button size="lg" className="bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800">
+          <Button size="lg" className="bg-primary hover:bg-primary/90">
             List Your Salon Now
           </Button>
         </Link>
