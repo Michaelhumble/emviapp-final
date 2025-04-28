@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
@@ -194,7 +193,7 @@ const SalonsFinal: React.FC = () => {
           
           {/* Salon Detail Modal */}
           {selectedSalon && (
-            <SalonDetailModal
+            <SalonDetailsDialog
               salon={selectedSalon}
               isOpen={!!selectedSalon}
               onClose={handleCloseModal}

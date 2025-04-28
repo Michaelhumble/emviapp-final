@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Job } from "@/types/job";
 import SalonDetailsDialog from "./SalonDetailModal";
@@ -93,7 +92,7 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
       </div>
       
       {/* Salon detail modal */}
-      <SalonDetailModal
+      <SalonDetailsDialog
         salon={selectedSalon}
         isOpen={!!selectedSalon}
         onClose={handleCloseModal}
