@@ -50,6 +50,6 @@ export const vietnameseSalonListings: Salon[] = [
       email: 'luxuryspa@example.com'
     },
     square_feet: 1800,
-    is_featured: true,
+    featured: true,
   }
 ];
