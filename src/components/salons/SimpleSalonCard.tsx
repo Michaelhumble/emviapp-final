@@ -84,7 +84,7 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
           <AuthAction onAction={handleViewContact} redirectPath="/sign-in">
             <div className={`text-sm py-2 px-3 rounded border mb-4 flex items-center gap-2 cursor-pointer ${isVietnamese ? 'bg-purple-50 border-purple-200 text-purple-900 hover:bg-purple-100' : 'bg-gray-50 border-gray-100 text-gray-600 hover:bg-gray-100'}`}>
               <Phone className="h-4 w-4" />
-              <span>Sign in to view contact</span>
+              <span>{isVietnamese ? "Đăng nhập để xem liên hệ" : "Sign in to view contact"}</span>
             </div>
           </AuthAction>
         )}
