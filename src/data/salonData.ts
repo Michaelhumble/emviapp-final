@@ -1,3 +1,4 @@
+
 import { Salon } from '@/types/salon';
 
 export const vietnameseSalonListings: Salon[] = [
@@ -6,10 +7,11 @@ export const vietnameseSalonListings: Salon[] = [
     name: 'Tiệm Nail Rowlett',
     vietnamese_title: 'Cần sang tiệm nail ở Rowlett',
     location: 'Rowlett, TX',
-    price: 0,
+    price: 0, // Contact for price
     imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
-    vietnamese_description: 'Tiệm ở Rowlett cần sang lại, cách Garland 10", income 120-150K/tháng.\nIncome last year 1.7M.',
-    features: ['Income 120-150K/tháng', 'Income 1.7M/năm'],
+    description: 'Nail salon in Rowlett, 10 minutes from Garland. Stable year-round clientele.',
+    vietnamese_description: 'Tiệm ở Rowlett cần sang lại, cách Garland 10", income 120-150K/tháng. Tiệm lâu năm, khách ổn định quanh năm. Income last year 1.7M.',
+    features: ['Established Business', 'High Income', 'Prime Location'],
     monthly_revenue: '120000-150000',
     yearly_revenue: '1700000',
     is_vietnamese_listing: true,
@@ -19,13 +21,14 @@ export const vietnameseSalonListings: Salon[] = [
   },
   {
     id: 'vn-2',
-    name: 'Tiệm Nail Carrollton',
-    vietnamese_title: 'Bán tiệm nail ở Carrollton, GA',
+    name: 'Nail Salon - Carrollton',
+    vietnamese_title: 'Bán tiệm nail ở Carrollton, Georgia',
     location: 'Carrollton, GA',
     price: 195000,
     imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80',
+    description: 'Nail salon near Walmart',
     vietnamese_description: 'Trong khu Walmart, giá 195K.',
-    features: ['Khu Walmart'],
+    features: ['Near Walmart', 'Prime Location'],
     is_vietnamese_listing: true,
     contact_info: {
       phone: '404-543-0144'
@@ -34,26 +37,29 @@ export const vietnameseSalonListings: Salon[] = [
   {
     id: 'vn-3',
     name: 'Davi Nails',
-    vietnamese_title: 'Cần bán tiệm Davi Nails - Bismarck, ND',
+    vietnamese_title: 'Cần bán tiệm Davi Nails - Bismarck, North Dakota',
     location: 'Bismarck, ND',
     price: 40000,
     imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
-    vietnamese_description: '5 ghế, 5 bàn, phòng wax. Giá $40K.',
-    features: ['5 ghế', '5 bàn', 'Phòng wax'],
+    description: '5 chairs, 5 tables, wax room. Rent includes utilities.',
+    vietnamese_description: '5 ghế, 5 bàn, phòng wax, bao rent (điện, nước, wifi...). Giá $40K.',
+    features: ['5 Stations', 'Wax Room', 'Utilities Included'],
     is_vietnamese_listing: true,
     contact_info: {
-      phone: '(714) 787-8858'
+      phone: '(714) 787-8858',
+      owner_name: 'Thư'
     }
   },
   {
     id: 'vn-4',
-    name: 'Tiệm Nail Terrell',
+    name: 'Large Nail Salon - Terrell',
     vietnamese_title: 'Sang tiệm lớn Terrell, TX',
     location: 'Terrell, TX',
-    price: 0,
+    price: 0, // Contact for price
     imageUrl: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
+    description: 'Large salon with 24 chairs, 12 tables, and 3,000 sqft space.',
     vietnamese_description: '3,000 sqft, 24 ghế, 12 bàn. Giá thương lượng.',
-    features: ['3,000 sqft', '24 ghế', '12 bàn'],
+    features: ['3,000 sqft', '24 Chairs', '12 Tables'],
     square_feet: 3000,
     is_vietnamese_listing: true,
     contact_info: {
@@ -62,13 +68,14 @@ export const vietnameseSalonListings: Salon[] = [
   },
   {
     id: 'vn-5',
-    name: 'Tiệm Nail Cumming',
+    name: 'Nail Salon - Cumming',
     vietnamese_title: 'Bán tiệm nail Cumming, GA',
     location: 'Cumming, GA',
     price: 85000,
     imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
+    description: '1,200 sqft salon with monthly rent of $3,300.',
     vietnamese_description: '1200 sqft, rent $3,300. Giá $85K.',
-    features: ['1,200 sqft'],
+    features: ['1,200 sqft', 'Upscale Area'],
     square_feet: 1200,
     monthly_rent: 3300,
     is_vietnamese_listing: true,
@@ -83,8 +90,9 @@ export const vietnameseSalonListings: Salon[] = [
     location: 'Fort Collins, CO',
     price: 95000,
     imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80',
+    description: 'Nail spa with 7 tables, 7 chairs, and 1,200 sqft space.',
     vietnamese_description: '7 bàn, 7 ghế, 1,200 sqft. Giá $95K.',
-    features: ['7 bàn', '7 ghế', '1,200 sqft'],
+    features: ['7 Stations', '1,200 sqft'],
     square_feet: 1200,
     is_vietnamese_listing: true,
     contact_info: {
@@ -93,13 +101,14 @@ export const vietnameseSalonListings: Salon[] = [
   },
   {
     id: 'vn-7',
-    name: 'Tiệm Nail Cornelia',
+    name: 'Nail Salon - Cornelia',
     vietnamese_title: 'Cần sang tiệm Nails - Cornelia, GA',
     location: 'Cornelia, GA',
-    price: 0,
+    price: 0, // Price negotiable
     imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
+    description: '1,620 sqft salon with 10 chairs and 8 tables.',
     vietnamese_description: '1620 sqft, 10 ghế, 8 bàn. Giá thương lượng.',
-    features: ['1,620 sqft', '10 ghế', '8 bàn'],
+    features: ['1,620 sqft', '10 Chairs', '8 Tables'],
     square_feet: 1620,
     is_vietnamese_listing: true,
     contact_info: {
@@ -108,13 +117,14 @@ export const vietnameseSalonListings: Salon[] = [
   },
   {
     id: 'vn-8',
-    name: 'Tiệm Nail Murrieta',
+    name: 'Nail Salon - Murrieta',
     vietnamese_title: 'Sang tiệm Murrieta, CA',
     location: 'Murrieta, CA',
     price: 220000,
     imageUrl: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
+    description: '1,400 sqft salon with 9 tables and 9 chairs.',
     vietnamese_description: '1400 sqft, 9 bàn, 9 ghế. Giá $220K.',
-    features: ['1,400 sqft', '9 bàn', '9 ghế'],
+    features: ['1,400 sqft', '9 Stations'],
     square_feet: 1400,
     is_vietnamese_listing: true,
     contact_info: {
@@ -123,13 +133,14 @@ export const vietnameseSalonListings: Salon[] = [
   },
   {
     id: 'vn-9',
-    name: 'Tiệm Nail Arlington',
+    name: 'Nail Salon - Arlington',
     vietnamese_title: 'Bán tiệm Arlington, TX',
     location: 'Arlington, TX',
     price: 60000,
     imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
+    description: '1,200 sqft salon with 8 chairs and 7 tables.',
     vietnamese_description: '1200 sqft, 8 ghế, 7 bàn. Giá $60K.',
-    features: ['1,200 sqft', '8 ghế', '7 bàn'],
+    features: ['1,200 sqft', '8 Chairs', '7 Tables'],
     square_feet: 1200,
     is_vietnamese_listing: true,
     contact_info: {
@@ -138,13 +149,14 @@ export const vietnameseSalonListings: Salon[] = [
   },
   {
     id: 'vn-10',
-    name: 'Tiệm Nail Marietta',
+    name: 'Nail Salon - Marietta',
     vietnamese_title: 'Sang tiệm Marietta, Atlanta',
-    location: 'Marietta, Atlanta',
+    location: 'Marietta East Cobb, GA',
     price: 450000,
     imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80',
+    description: 'Large salon with 3,000 sqft, 24 chairs, and 14 tables. Annual income over $1M.',
     vietnamese_description: '3000 sqft, 24 ghế, 14 bàn. Income >1M. Giá $450K.',
-    features: ['3,000 sqft', '24 ghế', '14 bàn', 'Income >1M'],
+    features: ['3,000 sqft', '24 Chairs', '14 Tables', 'High Income'],
     square_feet: 3000,
     yearly_revenue: '1000000',
     is_vietnamese_listing: true,
@@ -154,13 +166,14 @@ export const vietnameseSalonListings: Salon[] = [
   },
   {
     id: 'vn-11',
-    name: 'Tiệm Nail North Dakota',
+    name: 'Nail Salon - North Dakota',
     vietnamese_title: 'Sang tiệm nail North Dakota',
     location: 'North Dakota',
     price: 40000,
     imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
+    description: 'Salon with all utilities included in rent.',
     vietnamese_description: 'Rent bao điện nước. Giá $40K.',
-    features: ['Rent bao điện nước'],
+    features: ['Utilities Included'],
     is_vietnamese_listing: true,
     contact_info: {
       phone: '714-787-8858'
@@ -168,13 +181,14 @@ export const vietnameseSalonListings: Salon[] = [
   },
   {
     id: 'vn-12',
-    name: 'Tiệm Nail California',
+    name: 'Newly Remodeled Nail Salon',
     vietnamese_title: 'Bán tiệm nail Mới Remodel - California',
     location: 'California',
     price: 220000,
     imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80',
+    description: 'Newly remodeled salon with 9 tables and 9 chairs in a busy area.',
     vietnamese_description: '9 bàn, 9 ghế, khu đông đúc. Giá $220K.',
-    features: ['9 bàn', '9 ghế', 'Khu đông đúc', 'Mới Remodel'],
+    features: ['9 Stations', 'Newly Remodeled', 'Busy Area'],
     is_vietnamese_listing: true,
     contact_info: {
       phone: '657-346-4466'
@@ -187,7 +201,7 @@ export const regularSalonListings: Salon[] = [
     id: '1',
     name: 'Nail Salon - Rowlett, TX',
     location: 'Rowlett, TX',
-    price: 0,
+    price: 0, // Price not listed
     imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
     description: 'Established nail salon with steady clientele. Monthly income: $120K - $150K. Last year income: $1.7M. Stable customer base, long-standing business.',
     features: ['Established Clientele', 'High Income Potential', 'Prime Location'],
@@ -225,7 +239,7 @@ export const regularSalonListings: Salon[] = [
     id: '4',
     name: 'Large Nail Salon',
     location: 'Terrell, TX',
-    price: 0,
+    price: 0, // Contact for price
     imageUrl: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
     description: 'Spacious 3,000 sqft salon with 24 chairs, 12 tables, lash & facial rooms. Ready for immediate operation with steady clientele.',
     features: ['3,000 sqft', '24 Chairs', '12 Tables', 'Lash Room', 'Facial Room'],
@@ -264,7 +278,7 @@ export const regularSalonListings: Salon[] = [
     id: '7',
     name: 'Nail Salon - Cornelia',
     location: 'Cornelia, GA',
-    price: 0,
+    price: 0, // Contact for price
     imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
     description: 'New salon in major shopping center. 10 chairs, 8 tables. Monthly rent: $1,905. Ready for immediate operation.',
     features: ['10 Chairs', '8 Tables', 'Shopping Center Location', 'New Setup'],
@@ -317,4 +331,4 @@ export const regularSalonListings: Salon[] = [
   }
 ];
 
-export const salonListings = [...vietnameseSalonListings, ...regularSalonListings];
+export const salonListings: Salon[] = [...vietnameseSalonListings, ...regularSalonListings];
