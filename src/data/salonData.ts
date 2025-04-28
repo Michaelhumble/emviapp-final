@@ -3,208 +3,184 @@ import { Salon } from '@/types/salon';
 // Vietnamese salon listings
 export const vietnameseSalonListings: Salon[] = [
   {
-    id: 'vn-1',
+    id: 'vn-001',
     name: 'Cần sang tiệm nail ở Rowlett',
-    description: 'Tiệm ở Rowlett cần sang lại, cách Garland 10", income 120-150K/tháng. Income last year 1.7M.',
-    vietnamese_title: 'Cần sang tiệm nail ở Rowlett',
-    vietnamese_description: 'Tiệm ở Rowlett cần sang lại, cách Garland 10", income 120-150K/tháng. Income last year 1.7M.',
     location: 'Rowlett, TX',
-    price: 0, // Price negotiable
-    imageUrl: '/placeholder.svg',
-    features: ['high_traffic'],
-    yearly_revenue: '1.7M',
-    monthly_revenue: '120-150K',
-    is_vietnamese_listing: true,
+    price: 0, // Price to be negotiated
+    imageUrl: 'https://images.unsplash.com/photo-1604654894611-6973b376cbde?q=80&w=2787&auto=format&fit=crop',
+    description: 'Tiệm ở Rowlett cần sang lại, cách Garland 10", income 120-150K/tháng. Income last year 1.7M.',
+    features: ['income-high', 'established'],
     contact_info: {
       phone: '(469)-438-5980',
       owner_name: 'Chủ Tiệm'
-    }
+    },
+    is_vietnamese_listing: true,
+    monthly_revenue: '120K-150K',
+    yearly_revenue: '1.7M'
   },
   {
-    id: 'vn-2',
+    id: 'vn-002',
     name: 'Bán tiệm nail ở Carrollton, GA',
-    description: 'Trong khu Walmart, giá 195K.',
-    vietnamese_title: 'Bán tiệm nail ở Carrollton, GA',
-    vietnamese_description: 'Trong khu Walmart, giá 195K.',
     location: 'Carrollton, GA',
     price: 195000,
-    imageUrl: '/placeholder.svg',
-    features: ['high_traffic'],
-    is_vietnamese_listing: true,
+    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=2940&auto=format&fit=crop',
+    description: 'Trong khu Walmart, giá 195K.',
+    features: ['good-location', 'walmart-area'],
     contact_info: {
       phone: '404-543-0144',
       owner_name: 'Chủ Tiệm'
-    }
+    },
+    is_vietnamese_listing: true
   },
   {
-    id: 'vn-3',
+    id: 'vn-003',
     name: 'Cần bán tiệm Davi Nails - Bismarck, ND',
-    description: '5 ghế, 5 bàn, phòng wax. Giá $40K.',
-    vietnamese_title: 'Cần bán tiệm Davi Nails - Bismarck, ND',
-    vietnamese_description: '5 ghế, 5 bàn, phòng wax. Giá $40K.',
     location: 'Bismarck, ND',
     price: 40000,
-    imageUrl: '/placeholder.svg',
-    features: ['wax_room'],
-    is_vietnamese_listing: true,
+    imageUrl: 'https://images.unsplash.com/photo-1610991149688-c1321006bcc1?q=80&w=2942&auto=format&fit=crop',
+    description: '5 ghế, 5 bàn, phòng wax. Giá $40K.',
+    features: ['wax_room', '5-chairs', '5-tables'],
     contact_info: {
       phone: '(714) 787-8858',
       owner_name: 'Chủ Tiệm'
-    }
+    },
+    is_vietnamese_listing: true
   },
   {
-    id: 'vn-4',
+    id: 'vn-004',
     name: 'Sang tiệm lớn Terrell, TX',
-    description: '3,000 sqft, 24 ghế, 12 bàn. Giá thương lượng.',
-    vietnamese_title: 'Sang tiệm lớn Terrell, TX',
-    vietnamese_description: '3,000 sqft, 24 ghế, 12 bàn. Giá thương lượng.',
     location: 'Terrell, TX',
-    price: 0, // Price negotiable
-    imageUrl: '/placeholder.svg',
-    features: [],
+    price: 0, // Price to be negotiated
+    imageUrl: 'https://images.unsplash.com/photo-1599559827712-3e9c2a8f903b?q=80&w=2940&auto=format&fit=crop',
+    description: '3,000 sqft, 24 ghế, 12 bàn. Giá thương lượng.',
+    features: ['large', '24-chairs', '12-tables'],
     square_feet: 3000,
-    is_vietnamese_listing: true,
     contact_info: {
       phone: '971-407-0664',
       owner_name: 'Chủ Tiệm'
-    }
+    },
+    is_vietnamese_listing: true
   },
   {
-    id: 'vn-5',
+    id: 'vn-005',
     name: 'Bán tiệm nail Cumming, GA',
-    description: '1200 sqft, rent $3,300. Giá $85K.',
-    vietnamese_title: 'Bán tiệm nail Cumming, GA',
-    vietnamese_description: '1200 sqft, rent $3,300. Giá $85K.',
     location: 'Cumming, GA',
     price: 85000,
-    imageUrl: '/placeholder.svg',
-    features: [],
+    imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=2787&auto=format&fit=crop',
+    description: '1200 sqft, rent $3,300. Giá $85K.',
+    features: ['medium-size'],
     square_feet: 1200,
     monthly_rent: 3300,
-    is_vietnamese_listing: true,
     contact_info: {
       phone: '404-455-5608',
       owner_name: 'Chủ Tiệm'
-    }
+    },
+    is_vietnamese_listing: true
   },
   {
-    id: 'vn-6',
+    id: 'vn-006',
     name: 'Sang Lv Nail Spa - Fort Collins, CO',
-    description: '7 bàn, 7 ghế, 1,200 sqft. Giá $95K.',
-    vietnamese_title: 'Sang Lv Nail Spa - Fort Collins, CO',
-    vietnamese_description: '7 bàn, 7 ghế, 1,200 sqft. Giá $95K.',
     location: 'Fort Collins, CO',
     price: 95000,
-    imageUrl: '/placeholder.svg',
-    features: [],
+    imageUrl: 'https://images.unsplash.com/photo-1632345031435-8727f6897d53?q=80&w=2830&auto=format&fit=crop',
+    description: '7 bàn, 7 ghế, 1,200 sqft. Giá $95K.',
+    features: ['7-chairs', '7-tables'],
     square_feet: 1200,
-    is_vietnamese_listing: true,
     contact_info: {
       phone: '206-489-7081',
       owner_name: 'Chủ Tiệm'
-    }
+    },
+    is_vietnamese_listing: true
   },
   {
-    id: 'vn-7',
+    id: 'vn-007',
     name: 'Cần sang tiệm Nails - Cornelia, GA',
-    description: '1620 sqft, 10 ghế, 8 bàn. Giá thương lượng.',
-    vietnamese_title: 'Cần sang tiệm Nails - Cornelia, GA',
-    vietnamese_description: '1620 sqft, 10 ghế, 8 bàn. Giá thương lượng.',
     location: 'Cornelia, GA',
-    price: 0, // Price negotiable
-    imageUrl: '/placeholder.svg',
-    features: [],
+    price: 0, // Price to be negotiated
+    imageUrl: 'https://images.unsplash.com/photo-1610992163376-4240bcc881c1?q=80&w=2940&auto=format&fit=crop',
+    description: '1620 sqft, 10 ghế, 8 bàn. Giá thương lượng.',
+    features: ['10-chairs', '8-tables'],
     square_feet: 1620,
-    is_vietnamese_listing: true,
     contact_info: {
       phone: '832-441-0876',
       owner_name: 'Chủ Tiệm'
-    }
+    },
+    is_vietnamese_listing: true
   },
   {
-    id: 'vn-8',
+    id: 'vn-008',
     name: 'Sang tiệm Murrieta, CA',
-    description: '1400 sqft, 9 bàn, 9 ghế. Giá $220K.',
-    vietnamese_title: 'Sang tiệm Murrieta, CA',
-    vietnamese_description: '1400 sqft, 9 bàn, 9 ghế. Giá $220K.',
     location: 'Murrieta, CA',
     price: 220000,
-    imageUrl: '/placeholder.svg',
-    features: [],
+    imageUrl: 'https://images.unsplash.com/photo-1604902396830-aca29cd43995?q=80&w=2787&auto=format&fit=crop',
+    description: '1400 sqft, 9 bàn, 9 ghế. Giá $220K.',
+    features: ['9-chairs', '9-tables'],
     square_feet: 1400,
-    is_vietnamese_listing: true,
     contact_info: {
       phone: '657-346-4466',
       owner_name: 'Chủ Tiệm'
-    }
+    },
+    is_vietnamese_listing: true
   },
   {
-    id: 'vn-9',
+    id: 'vn-009',
     name: 'Bán tiệm Arlington, TX',
-    description: '1200 sqft, 8 ghế, 7 bàn. Giá $60K.',
-    vietnamese_title: 'Bán tiệm Arlington, TX',
-    vietnamese_description: '1200 sqft, 8 ghế, 7 bàn. Giá $60K.',
     location: 'Arlington, TX',
     price: 60000,
-    imageUrl: '/placeholder.svg',
-    features: [],
+    imageUrl: 'https://images.unsplash.com/photo-1604327580129-0d702e952f5b?q=80&w=2940&auto=format&fit=crop',
+    description: '1200 sqft, 8 ghế, 7 bàn. Giá $60K.',
+    features: ['8-chairs', '7-tables'],
     square_feet: 1200,
-    is_vietnamese_listing: true,
     contact_info: {
       phone: '903-245-6488',
       owner_name: 'Chủ Tiệm'
-    }
+    },
+    is_vietnamese_listing: true
   },
   {
-    id: 'vn-10',
+    id: 'vn-010',
     name: 'Sang tiệm Marietta, Atlanta',
-    description: '3000 sqft, 24 ghế, 14 bàn. Income >1M. Giá $450K.',
-    vietnamese_title: 'Sang tiệm Marietta, Atlanta',
-    vietnamese_description: '3000 sqft, 24 ghế, 14 bàn. Income >1M. Giá $450K.',
-    location: 'Marietta, Atlanta',
+    location: 'Marietta, GA',
     price: 450000,
-    imageUrl: '/placeholder.svg',
-    features: [],
+    imageUrl: 'https://images.unsplash.com/photo-1594527564224-50c51b49d1fa?q=80&w=2874&auto=format&fit=crop',
+    description: '3000 sqft, 24 ghế, 14 bàn. Income >1M. Giá $450K.',
+    features: ['high-income', '24-chairs', '14-tables'],
     square_feet: 3000,
     yearly_revenue: '>1M',
-    is_vietnamese_listing: true,
     contact_info: {
       phone: '678-488-2583',
       owner_name: 'Chủ Tiệm'
-    }
+    },
+    is_vietnamese_listing: true
   },
   {
-    id: 'vn-11',
+    id: 'vn-011',
     name: 'Sang tiệm nail North Dakota',
-    description: 'Rent bao điện nước. Giá $40K.',
-    vietnamese_title: 'Sang tiệm nail North Dakota',
-    vietnamese_description: 'Rent bao điện nước. Giá $40K.',
     location: 'North Dakota',
     price: 40000,
-    imageUrl: '/placeholder.svg',
-    features: [],
-    is_vietnamese_listing: true,
+    imageUrl: 'https://images.unsplash.com/photo-1604654894611-6973b376cbde?q=80&w=2787&auto=format&fit=crop',
+    description: 'Rent bao điện nước. Giá $40K.',
+    features: ['utilities-included'],
     contact_info: {
       phone: '714-787-8858',
       owner_name: 'Chủ Tiệm'
-    }
+    },
+    is_vietnamese_listing: true
   },
   {
-    id: 'vn-12',
+    id: 'vn-012',
     name: 'Bán tiệm nail Mới Remodel - California',
-    description: '9 bàn, 9 ghế, khu đông đúc. Giá $220K.',
-    vietnamese_title: 'Bán tiệm nail Mới Remodel - California',
-    vietnamese_description: '9 bàn, 9 ghế, khu đông đúc. Giá $220K.',
     location: 'California',
     price: 220000,
-    imageUrl: '/placeholder.svg',
-    features: [],
-    is_vietnamese_listing: true,
+    imageUrl: 'https://images.unsplash.com/photo-1556740772-1a741367b93e?q=80&w=2942&auto=format&fit=crop',
+    description: '9 bàn, 9 ghế, khu đông đúc. Giá $220K.',
+    features: ['newly-remodeled', '9-chairs', '9-tables', 'busy-area'],
     contact_info: {
       phone: '657-346-4466',
       owner_name: 'Chủ Tiệm'
-    }
-  },
+    },
+    is_vietnamese_listing: true
+  }
 ];
 
 // Regular salon listings
