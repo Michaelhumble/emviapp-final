@@ -13,8 +13,9 @@ export interface Salon {
   specialty?: string;
   city?: string;
   neighborhood?: string;
-  teamSize?: number; // Added for sample salons data
-  certifications?: string[]; // Added for sample salons data
+  teamSize?: number; 
+  certifications?: string[];
+  awards?: string[]; // Added awards property
   hours?: {
     monday: string;
     tuesday: string;
@@ -52,3 +53,4 @@ export interface Salon {
   beforeAfterGallery?: string[];
   owner?: string;
 }
+
