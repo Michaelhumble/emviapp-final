@@ -53,4 +53,5 @@ export interface Job {
   is_remote?: boolean;
   role_normalized?: string;
   is_urgent?: boolean;
+  type?: 'salon' | 'job' | 'opportunity'; // Added type property
 }

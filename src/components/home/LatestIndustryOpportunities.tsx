@@ -21,7 +21,8 @@ const LatestIndustryOpportunities = () => {
           description: "Seeking experienced hair stylist with color expertise. Base + commission structure, flexible schedule.",
           specialties: ["Hair", "Color", "Styling"],
           for_sale: false,
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
+          type: 'job'
         },
         // Nail position
         {
@@ -32,7 +33,8 @@ const LatestIndustryOpportunities = () => {
           description: "Private suite available for experienced nail technician. High-end clientele, modern facility.",
           specialties: ["Nails", "Manicure", "Pedicure"],
           for_sale: false,
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
+          type: 'job'
         },
         // Spa position
         {
@@ -43,7 +45,8 @@ const LatestIndustryOpportunities = () => {
           description: "Leading luxury day spa seeking experienced manager. Full benefits package.",
           specialties: ["Management", "Spa", "Wellness"],
           for_sale: false,
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
+          type: 'opportunity'
         },
         // Salon for sale
         {
@@ -55,7 +58,8 @@ const LatestIndustryOpportunities = () => {
           specialties: ["Business", "Salon"],
           for_sale: true,
           asking_price: "$175,000",
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
+          type: 'salon'
         },
         // Booth rental
         {
@@ -66,7 +70,8 @@ const LatestIndustryOpportunities = () => {
           description: "Premium booth space available in upscale salon. High foot traffic area.",
           specialties: ["Booth Rental", "Hair"],
           for_sale: false,
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
+          type: 'salon'
         },
         // Tattoo artist
         {
@@ -77,7 +82,8 @@ const LatestIndustryOpportunities = () => {
           description: "Seeking professional tattoo artist for established studio. Commission-based position.",
           specialties: ["Tattoo", "Art"],
           for_sale: false,
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
+          type: 'opportunity'
         },
         // Beauty supply business
         {
@@ -89,7 +95,8 @@ const LatestIndustryOpportunities = () => {
           specialties: ["Retail", "Beauty Supply"],
           for_sale: true,
           asking_price: "$220,000",
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
+          type: 'opportunity'
         },
         // Esthetician
         {
@@ -100,7 +107,8 @@ const LatestIndustryOpportunities = () => {
           description: "Full-time position for licensed esthetician. Medical spa environment.",
           specialties: ["Skincare", "Esthetics"],
           for_sale: false,
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
+          type: 'job'
         },
         // Wellness studio
         {
@@ -111,7 +119,8 @@ const LatestIndustryOpportunities = () => {
           description: "Seeking partner for established wellness studio. Ideal for licensed massage therapist.",
           specialties: ["Wellness", "Massage", "Partnership"],
           for_sale: true,
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
+          type: 'opportunity'
         }
       ];
 

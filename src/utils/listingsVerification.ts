@@ -1,3 +1,4 @@
+
 import { salonListings } from '@/components/home/SalonJobListingsShowcase';
 import { Job } from '@/types/job';
 
@@ -92,6 +93,12 @@ export const verifyOpportunityListings = (listings: Job[]): {
   );
   if (missingRequiredFields.length > 0) {
     issues.push(`Found ${missingRequiredFields.length} listings missing required fields (title or company)`);
+  }
+
+  // Check for type field
+  const missingType = listings.filter(listing => !listing.type);
+  if (missingType.length > 0) {
+    issues.push(`Found ${missingType.length} listings without type field`);
   }
   
   // Log the verification results
