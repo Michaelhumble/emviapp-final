@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Job } from "@/types/job";
-import SalonDetailModal from "./SalonDetailModal";
+import SalonDetailsDialog from "./SalonDetailModal";
 import FilterSection from "./FilterSection";
 import PricingInfoCard from "./PricingInfoCard";
 import SalonCard from "./SalonCard";

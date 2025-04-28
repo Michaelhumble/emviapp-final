@@ -1,4 +1,5 @@
-import { DollarSign, MapPin, Calendar, SquareDot, Users, TrendingUp } from "lucide-react";
+
+import { DollarSign, MapPin, Calendar, SquareDot, Users, TrendingUp, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -100,7 +101,7 @@ export const SalonDetailsDialog = ({ isOpen, onOpenChange, salon }: SalonDetails
                 <div className="font-semibold">{formatPrice(salon.price)}</div>
                 
                 <div className="flex items-center">
-                  <Building className="h-4 w-4 mr-2" /> Monthly Rent
+                  <Building2 className="h-4 w-4 mr-2" /> Monthly Rent
                 </div>
                 <div>{formatPrice(salon.monthlyRent)}</div>
                 
@@ -151,3 +152,6 @@ export const SalonDetailsDialog = ({ isOpen, onOpenChange, salon }: SalonDetails
     </Dialog>
   );
 };
+
+// Add default export
+export default SalonDetailsDialog;

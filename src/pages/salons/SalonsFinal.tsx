@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
-import SalonDetailModal from "@/components/salons/SalonDetailModal";
+import SalonDetailsDialog from "@/components/salons/SalonDetailModal";
 import { Job } from "@/types/job";
 import SalonListingCta from "@/components/salons/SalonListingCta";
 import WhySellSection from "@/components/salons/WhySellSection";
