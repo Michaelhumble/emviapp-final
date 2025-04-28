@@ -3,7 +3,8 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
 import SimpleSalonCard from '@/components/salons/SimpleSalonCard';
-import { salonListings, vietnameseSalonListings } from '@/data/salonData';
+import { salonListings } from '@/data/salonData';
+import { vietnameseSalonListings } from '@/data/vietnameseSalonListings';
 
 const SimpleSalonPage = () => {
   const regularListings = salonListings.filter(salon => !salon.is_vietnamese_listing);

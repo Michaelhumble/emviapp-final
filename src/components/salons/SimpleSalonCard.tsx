@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, DollarSign, Building, Phone } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Salon } from '@/types/salon';
+import AuthAction from '@/components/common/AuthAction';
 
 interface SalonCardProps {
   salon: Salon;
@@ -26,6 +27,10 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
   const description = salon.vietnamese_description || salon.description;
   const buttonText = salon.is_vietnamese_listing ? "Xem Chi Tiết" : "View Details";
   const isVietnamese = salon.is_vietnamese_listing;
+
+  const handleViewContact = async () => {
+    return true; // This will trigger the auth redirect
+  };
 
   return (
     <Card className={`overflow-hidden group transition-shadow duration-300 ${isVietnamese ? 'hover:shadow-purple-100 shadow-sm border-purple-100' : 'hover:shadow-md'}`}>
@@ -70,10 +75,12 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
         </div>
 
         {salon.contact_info?.phone && (
-          <div className={`text-sm py-2 px-3 rounded border mb-4 flex items-center gap-2 ${isVietnamese ? 'bg-purple-50 border-purple-200 text-purple-900' : 'bg-gray-50 border-gray-100 text-gray-600'}`}>
-            <Phone className="h-4 w-4" />
-            {salon.contact_info.phone}
-          </div>
+          <AuthAction onAction={handleViewContact}>
+            <div className={`text-sm py-2 px-3 rounded border mb-4 flex items-center gap-2 cursor-pointer ${isVietnamese ? 'bg-purple-50 border-purple-200 text-purple-900 hover:bg-purple-100' : 'bg-gray-50 border-gray-100 text-gray-600 hover:bg-gray-100'}`}>
+              <Phone className="h-4 w-4" />
+              <span>Sign in to view contact</span>
+            </div>
+          </AuthAction>
         )}
 
         <Link to={`/salons/${salon.id}`}>
