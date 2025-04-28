@@ -1,464 +1,445 @@
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Helmet } from 'react-helmet';
-import { Loader2, Upload, DollarSign, Check, Star } from 'lucide-react';
-import Layout from '@/components/layout/Layout';
-import { useToast } from "@/components/ui/use-toast";
+import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+import { usePostPayment } from "@/hooks/payments/usePostPayment";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Check, ImagePlus, Info, Star, Upload, X } from "lucide-react";
 
-// Define salon features options
-const salonFeaturesOptions = [
-  { id: "turnkey", label: "Turnkey Business" },
-  { id: "parking", label: "Parking Available" },
-  { id: "loyalClients", label: "Loyal Client Base" },
-  { id: "equipment", label: "Equipment Included" },
-  { id: "goodLocation", label: "Great Location" },
-  { id: "renovated", label: "Recently Renovated" },
-  { id: "lowRent", label: "Low Rent" },
-  { id: "establishedBusiness", label: "Established Business" },
+// Define the form data structure
+interface SalonListingFormData {
+  salonName: string;
+  location: string;
+  price: string;
+  description: string;
+  features: string[];
+  listingType: "standard" | "featured";
+}
+
+// Features options for the form
+const FEATURES = [
+  "Turnkey Business",
+  "Parking Available",
+  "Loyal Client Base",
+  "High Foot Traffic",
+  "Recently Renovated",
+  "All Equipment Included",
+  "Staff Willing to Stay",
+  "Owner Will Train",
+  "Profitable",
+  "Good Lease Terms"
 ];
-
-// Form validation schema
-const formSchema = z.object({
-  salonName: z.string().min(3, { message: "Salon name must be at least 3 characters" }),
-  city: z.string().min(2, { message: "City is required" }),
-  state: z.string().min(2, { message: "State is required" }),
-  askingPrice: z.string().min(1, { message: "Asking price is required" }),
-  description: z.string().min(20, { message: "Description must be at least 20 characters" }),
-  features: z.array(z.string()).optional(),
-  listingType: z.enum(["standard", "featured"], { 
-    required_error: "Please select a listing type" 
-  }),
-  termsAccepted: z.boolean().refine(val => val === true, {
-    message: "You must accept the terms and conditions"
-  }),
-});
-
-type FormValues = z.infer<typeof formSchema>;
 
 const SalonListingForm = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [uploadedPhotos, setUploadedPhotos] = useState<File[]>([]);
+  const { initiatePayment, isLoading } = usePostPayment();
   
-  // Initialize form
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  // Form state management
+  const { register, handleSubmit, formState: { errors }, watch } = useForm<SalonListingFormData>({
     defaultValues: {
-      salonName: "",
-      city: "",
-      state: "",
-      askingPrice: "",
-      description: "",
-      features: [],
       listingType: "standard",
-      termsAccepted: false,
-    },
+      features: []
+    }
   });
   
-  // Handle form submission
-  const onSubmit = async (values: FormValues) => {
-    setIsSubmitting(true);
+  const [uploadedImages, setUploadedImages] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  
+  const selectedListingType = watch("listingType");
+  
+  // Handle image uploads
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
     
-    // In a real application, this would upload the images and save the form data
+    // Clear previous error
+    setUploadError(null);
+    
+    // Validate file count
+    if (uploadedImages.length + files.length > 5) {
+      setUploadError("You can upload a maximum of 5 images.");
+      return;
+    }
+    
+    // Process each file
+    const newFiles: File[] = [];
+    const newUrls: string[] = [];
+    
+    Array.from(files).forEach(file => {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setUploadError("Please upload only image files.");
+        return;
+      }
+      
+      // Validate file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        setUploadError("Images must be smaller than 5MB.");
+        return;
+      }
+      
+      newFiles.push(file);
+      newUrls.push(URL.createObjectURL(file));
+    });
+    
+    setUploadedImages([...uploadedImages, ...newFiles]);
+    setPreviewUrls([...previewUrls, ...newUrls]);
+  };
+  
+  // Remove an uploaded image
+  const removeImage = (index: number) => {
+    const updatedImages = [...uploadedImages];
+    const updatedUrls = [...previewUrls];
+    
+    // Release object URL to avoid memory leaks
+    URL.revokeObjectURL(updatedUrls[index]);
+    
+    updatedImages.splice(index, 1);
+    updatedUrls.splice(index, 1);
+    
+    setUploadedImages(updatedImages);
+    setPreviewUrls(updatedUrls);
+  };
+  
+  // Form submission handler
+  const onSubmit = async (data: SalonListingFormData) => {
+    // For demonstration purposes, we'll just show a toast and redirect
+    // In a real app, you would upload images and save form data
+    
     try {
-      // Simulate API call with timeout
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Initiate payment through Stripe
+      await initiatePayment(data.listingType === "featured" ? 'salon_featured' : 'salon_standard');
       
       // Show success message
-      toast({
-        title: "Listing submitted successfully!",
-        description: "Your salon listing has been created and is now live.",
+      toast.success("Salon listing submitted!", {
+        description: "Your listing will be visible after payment is confirmed."
       });
       
-      // Navigate to the listings page
-      navigate("/salons");
+      // Redirect to listing page after successful submission
+      navigate('/salons');
     } catch (error) {
-      toast({
-        title: "Error submitting listing",
-        description: "There was a problem submitting your listing. Please try again.",
-        variant: "destructive",
+      toast.error("There was an error processing your listing", {
+        description: "Please try again or contact support."
       });
-    } finally {
-      setIsSubmitting(false);
     }
   };
   
-  // Handle photo upload
-  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      // Add new files to the array
-      setUploadedPhotos(prev => [...prev, ...Array.from(files)]);
-    }
-  };
-  
-  // Remove uploaded photo
-  const removePhoto = (index: number) => {
-    setUploadedPhotos(prev => prev.filter((_, i) => i !== index));
-  };
-  
-  // Calculate price based on listing type
-  const listingPrice = form.watch("listingType") === "featured" ? 99 : 49;
-
   return (
     <Layout>
       <Helmet>
-        <title>List Your Salon For Sale | EmviApp</title>
+        <title>List Your Salon | EmviApp</title>
         <meta 
           name="description" 
-          content="Create a listing to sell your salon on EmviApp's Salon Marketplace." 
+          content="List your salon for sale on EmviApp's marketplace." 
         />
       </Helmet>
       
       <div className="container mx-auto px-4 py-12">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="font-playfair text-3xl font-bold mb-2">List Your Salon For Sale</h1>
-          <p className="text-gray-600 mb-8">
-            Complete the form below to create a listing for your salon on our marketplace.
-          </p>
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-8">
+            <h1 className="font-playfair text-3xl md:text-4xl font-bold mb-3">
+              List Your Salon For Sale
+            </h1>
+            <p className="text-gray-600 max-w-2xl">
+              Complete the form below to list your salon on the EmviApp marketplace. 
+              Choose between Standard and Featured listings for more visibility.
+            </p>
+          </div>
           
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              {/* Basic Information */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Basic Information</CardTitle>
-                  <CardDescription>
-                    Tell potential buyers about your salon.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="salonName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Salon Name</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle>Salon Details</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Salon Name */}
+                <div className="space-y-2">
+                  <Label htmlFor="salonName">Salon Name *</Label>
+                  <Input
+                    id="salonName"
+                    {...register("salonName", { 
+                      required: "Salon name is required" 
+                    })}
+                    placeholder="Enter your salon's name"
                   />
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="city"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>City</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                  {errors.salonName && (
+                    <p className="text-sm text-red-500">{errors.salonName.message}</p>
+                  )}
+                </div>
+                
+                {/* Location */}
+                <div className="space-y-2">
+                  <Label htmlFor="location">Location *</Label>
+                  <Input
+                    id="location"
+                    {...register("location", { 
+                      required: "Location is required" 
+                    })}
+                    placeholder="City, State"
+                  />
+                  {errors.location && (
+                    <p className="text-sm text-red-500">{errors.location.message}</p>
+                  )}
+                </div>
+                
+                {/* Price */}
+                <div className="space-y-2">
+                  <Label htmlFor="price">Asking Price *</Label>
+                  <Input
+                    id="price"
+                    {...register("price", { 
+                      required: "Asking price is required",
+                      pattern: {
+                        value: /^[0-9]+$/,
+                        message: "Please enter a valid number"
+                      }
+                    })}
+                    placeholder="e.g., 250000"
+                  />
+                  {errors.price && (
+                    <p className="text-sm text-red-500">{errors.price.message}</p>
+                  )}
+                </div>
+                
+                {/* Description */}
+                <div className="space-y-2">
+                  <Label htmlFor="description">Description *</Label>
+                  <Textarea
+                    id="description"
+                    {...register("description", { 
+                      required: "Description is required",
+                      minLength: {
+                        value: 50,
+                        message: "Description must be at least 50 characters"
+                      }
+                    })}
+                    placeholder="Provide detailed information about your salon..."
+                    rows={6}
+                  />
+                  {errors.description && (
+                    <p className="text-sm text-red-500">{errors.description.message}</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Photo Upload */}
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle>Salon Photos</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                    <input
+                      type="file"
+                      id="photos"
+                      multiple
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
                     />
-                    
-                    <FormField
-                      control={form.control}
-                      name="state"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>State</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    <label 
+                      htmlFor="photos" 
+                      className="cursor-pointer flex flex-col items-center justify-center"
+                    >
+                      <ImagePlus className="h-10 w-10 text-gray-400 mb-3" />
+                      <p className="text-lg font-medium mb-1">Upload Photos</p>
+                      <p className="text-sm text-gray-500">
+                        Upload up to 5 high-quality images (max 5MB each)
+                      </p>
+                    </label>
                   </div>
                   
-                  <FormField
-                    control={form.control}
-                    name="askingPrice"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Asking Price (USD)</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                            <Input className="pl-10" {...field} type="text" inputMode="numeric" />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {uploadError && (
+                    <p className="text-sm text-red-500">{uploadError}</p>
+                  )}
                   
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Description</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            {...field} 
-                            rows={5} 
-                            placeholder="Describe your salon, its history, why you're selling, and what makes it a good opportunity..."
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
-              
-              {/* Features */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Salon Features</CardTitle>
-                  <CardDescription>
-                    Select the features that apply to your salon.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <FormField
-                    control={form.control}
-                    name="features"
-                    render={() => (
-                      <FormItem>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {salonFeaturesOptions.map((feature) => (
-                            <FormField
-                              key={feature.id}
-                              control={form.control}
-                              name="features"
-                              render={({ field }) => {
-                                return (
-                                  <FormItem
-                                    key={feature.id}
-                                    className="flex flex-row items-start space-x-3 space-y-0"
-                                  >
-                                    <FormControl>
-                                      <Checkbox
-                                        checked={field.value?.includes(feature.id)}
-                                        onCheckedChange={(checked) => {
-                                          const currentValues = field.value || [];
-                                          return checked
-                                            ? field.onChange([...currentValues, feature.id])
-                                            : field.onChange(
-                                                currentValues.filter(
-                                                  (value) => value !== feature.id
-                                                )
-                                              );
-                                        }}
-                                      />
-                                    </FormControl>
-                                    <FormLabel className="font-normal">
-                                      {feature.label}
-                                    </FormLabel>
-                                  </FormItem>
-                                );
-                              }}
-                            />
-                          ))}
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
-              
-              {/* Photos */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Photos</CardTitle>
-                  <CardDescription>
-                    Upload photos of your salon (max 10).
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                      {uploadedPhotos.map((photo, index) => (
-                        <div 
-                          key={index} 
-                          className="relative aspect-square rounded-md overflow-hidden bg-gray-100 border"
-                        >
-                          <img 
-                            src={URL.createObjectURL(photo)} 
+                  {/* Preview uploaded images */}
+                  {previewUrls.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mt-4">
+                      {previewUrls.map((url, index) => (
+                        <div key={index} className="relative group">
+                          <img
+                            src={url}
                             alt={`Salon photo ${index + 1}`}
-                            className="w-full h-full object-cover"
+                            className="h-32 w-full object-cover rounded-md"
                           />
                           <button
                             type="button"
-                            onClick={() => removePhoto(index)}
-                            className="absolute top-1 right-1 bg-black/70 text-white h-6 w-6 rounded-full flex items-center justify-center hover:bg-black"
+                            onClick={() => removeImage(index)}
+                            className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                           >
-                            ×
+                            <X className="h-4 w-4" />
                           </button>
                         </div>
                       ))}
-                      
-                      {uploadedPhotos.length < 10 && (
-                        <label className="border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center p-4 aspect-square cursor-pointer hover:bg-gray-50 transition-colors">
-                          <Upload className="h-8 w-8 text-gray-400 mb-2" />
-                          <span className="text-sm text-gray-500">Upload Photo</span>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={handlePhotoUpload}
-                          />
-                        </label>
-                      )}
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Features Selection */}
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle>Salon Features</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {FEATURES.map((feature) => (
+                    <div key={feature} className="flex items-center space-x-2">
+                      <Checkbox 
+                        id={`feature-${feature}`}
+                        {...register("features")} 
+                        value={feature}
+                      />
+                      <Label htmlFor={`feature-${feature}`} className="text-sm">
+                        {feature}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Listing Type Selection */}
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle>Choose Listing Type</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Standard Listing */}
+                  <div className="border rounded-lg p-5 transition-all relative">
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="font-semibold text-lg">Standard Listing</h3>
+                      <div className="text-xl font-bold">$49</div>
                     </div>
                     
-                    <p className="text-sm text-gray-500">
-                      {uploadedPhotos.length}/10 photos uploaded
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              {/* Listing Options */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Listing Options</CardTitle>
-                  <CardDescription>
-                    Choose how you'd like to list your salon.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <FormField
-                    control={form.control}
-                    name="listingType"
-                    render={({ field }) => (
-                      <FormItem className="space-y-4">
-                        <FormControl>
-                          <RadioGroup
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            className="space-y-4"
-                          >
-                            <FormItem className="flex items-center space-x-3 space-y-0">
-                              <FormControl>
-                                <RadioGroupItem value="standard" />
-                              </FormControl>
-                              <FormLabel className="font-normal">
-                                <div className="flex flex-col">
-                                  <span className="font-medium">Standard Listing - $49</span>
-                                  <span className="text-sm text-gray-500">Basic listing with all features</span>
-                                </div>
-                              </FormLabel>
-                            </FormItem>
-                            
-                            <FormItem className="flex items-center space-x-3 space-y-0">
-                              <FormControl>
-                                <RadioGroupItem value="featured" />
-                              </FormControl>
-                              <FormLabel className="font-normal">
-                                <div className="flex flex-col">
-                                  <div className="flex items-center">
-                                    <span className="font-medium mr-2">Featured Listing - $99</span>
-                                    <Badge className="bg-amber-500 hover:bg-amber-500">Recommended</Badge>
-                                  </div>
-                                  <span className="text-sm text-gray-500">
-                                    Premium placement + highlighted with a badge + 3x more views
-                                  </span>
-                                </div>
-                              </FormLabel>
-                            </FormItem>
-                          </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+                    <ul className="space-y-2 mb-6">
+                      <li className="flex items-center text-gray-600">
+                        <Check className="h-4 w-4 mr-2 text-green-500" />
+                        30 days visibility
+                      </li>
+                      <li className="flex items-center text-gray-600">
+                        <Check className="h-4 w-4 mr-2 text-green-500" />
+                        Up to 5 photos
+                      </li>
+                      <li className="flex items-center text-gray-600">
+                        <Check className="h-4 w-4 mr-2 text-green-500" />
+                        Basic listing placement
+                      </li>
+                    </ul>
+                    
+                    <div className="mt-auto">
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          value="standard"
+                          {...register("listingType")}
+                          className="form-radio"
+                          checked={selectedListingType === 'standard'}
+                        />
+                        <span>Select Standard</span>
+                      </label>
+                    </div>
+                    
+                    {selectedListingType === 'standard' && (
+                      <Badge className="absolute top-3 right-3 bg-blue-500">Selected</Badge>
                     )}
-                  />
-                </CardContent>
-              </Card>
-              
-              {/* Terms & Review */}
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="space-y-4">
-                    <div className="bg-gray-50 p-4 rounded-lg flex items-start gap-4">
-                      <div className="rounded-full bg-purple-100 p-2 flex-shrink-0">
-                        <DollarSign className="h-5 w-5 text-purple-600" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium">Order Summary</h3>
-                        <p className="text-sm text-gray-600 mb-2">
-                          {form.watch("listingType") === "featured" 
-                            ? "Featured Salon Listing (30 days)" 
-                            : "Standard Salon Listing (30 days)"}
-                        </p>
-                        <div className="text-xl font-semibold">${listingPrice}</div>
-                      </div>
+                  </div>
+                  
+                  {/* Featured Listing */}
+                  <div className="border rounded-lg p-5 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 transition-all relative">
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="font-semibold text-lg">Featured Listing</h3>
+                      <div className="text-xl font-bold">$99</div>
                     </div>
                     
-                    <FormField
-                      control={form.control}
-                      name="termsAccepted"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <div className="space-y-1 leading-none">
-                            <FormLabel>
-                              I agree to the <a href="#" className="text-purple-600 hover:underline">Terms & Conditions</a> and <a href="#" className="text-purple-600 hover:underline">Privacy Policy</a>
-                            </FormLabel>
-                            <FormMessage />
-                          </div>
-                        </FormItem>
-                      )}
-                    />
+                    <ul className="space-y-2 mb-6">
+                      <li className="flex items-center text-gray-600">
+                        <Check className="h-4 w-4 mr-2 text-green-500" />
+                        30 days visibility
+                      </li>
+                      <li className="flex items-center text-gray-600">
+                        <Check className="h-4 w-4 mr-2 text-green-500" />
+                        Up to 5 photos
+                      </li>
+                      <li className="flex items-center text-gray-600">
+                        <Check className="h-4 w-4 mr-2 text-green-500" />
+                        <span className="font-medium">Priority placement at top of listings</span>
+                      </li>
+                      <li className="flex items-center text-gray-600">
+                        <Check className="h-4 w-4 mr-2 text-green-500" />
+                        <span className="font-medium">Featured badge</span>
+                      </li>
+                      <li className="flex items-center text-gray-600">
+                        <Check className="h-4 w-4 mr-2 text-green-500" />
+                        <span className="font-medium">Highlighted in weekly newsletter</span>
+                      </li>
+                    </ul>
                     
-                    <Button 
-                      type="submit" 
-                      disabled={isSubmitting}
-                      className="w-full"
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Processing...
-                        </>
-                      ) : (
-                        `Pay $${listingPrice} and Publish Listing`
-                      )}
-                    </Button>
+                    <div className="mt-auto">
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          value="featured"
+                          {...register("listingType")}
+                          className="form-radio"
+                          checked={selectedListingType === 'featured'}
+                        />
+                        <span>Select Featured</span>
+                      </label>
+                    </div>
                     
-                    <div className="text-center text-sm text-gray-500">
-                      Your listing will be active for 30 days.
+                    {selectedListingType === 'featured' ? (
+                      <Badge className="absolute top-3 right-3 bg-amber-500">
+                        <Star className="h-3 w-3 mr-1 fill-white" />
+                        Selected
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="absolute top-3 right-3 border-amber-500 text-amber-600">
+                        <Star className="h-3 w-3 mr-1" />
+                        Recommended
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="mt-4 bg-blue-50 border border-blue-100 p-4 rounded-md">
+                  <div className="flex items-start">
+                    <Info className="h-5 w-5 text-blue-600 mt-0.5 mr-2" />
+                    <div>
+                      <p className="text-sm text-blue-700">
+                        <strong>Pro Tip:</strong> Featured listings get 5x more views and sell 3x faster on average.
+                      </p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </form>
-          </Form>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Submit Button */}
+            <Button 
+              type="submit" 
+              size="lg" 
+              className="w-full md:w-auto"
+              disabled={isLoading}
+            >
+              {isLoading ? "Processing..." : "Submit & Proceed to Payment"}
+            </Button>
+          </form>
         </div>
       </div>
     </Layout>

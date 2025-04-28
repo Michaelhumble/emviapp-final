@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { Job } from "@/types/job";
+import { Salon } from "@/types/salon"; 
 import SalonDetailsDialog from "./SalonDetailModal";
 import FilterSection from "./FilterSection";
 import PricingInfoCard from "./PricingInfoCard";
@@ -10,6 +11,20 @@ import EmptyState from "./EmptyState";
 interface SalonListingsProps {
   salonsForSale: Job[];
 }
+
+// Create a conversion function to adapt Job type to Salon type
+const convertJobToSalon = (job: Job): Salon => {
+  return {
+    id: job.id,
+    name: job.company || 'Unnamed Salon',
+    location: job.location || '',
+    price: typeof job.price === 'string' ? parseFloat(job.price.replace(/[^0-9.-]+/g, "")) : 0,
+    imageUrl: job.image || '',
+    description: job.description || '',
+    image: job.image,
+    featured: job.is_featured
+  };
+};
 
 export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
   const [locationFilter, setLocationFilter] = useState<string>("");
@@ -81,7 +96,7 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
           filteredSalons.map((salon, index) => (
             <SalonCard 
               key={salon.id}
-              salon={salon}
+              salon={convertJobToSalon(salon)} // Convert Job to Salon
               index={index}
               isExpired={isExpired(salon)}
               onViewDetails={() => handleViewDetails(salon)}

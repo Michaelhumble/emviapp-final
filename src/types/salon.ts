@@ -16,8 +16,8 @@ export interface Salon {
   teamSize?: number; 
   certifications?: string[];
   awards?: string[];
-  languages?: string[];
-  accessibilityFeatures?: string[];
+  languages?: string[]; // Added languages property
+  accessibilityFeatures?: string[]; // Added accessibility features
   hours?: {
     monday: string;
     tuesday: string;
