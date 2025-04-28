@@ -1,4 +1,6 @@
 
+import { SalonCategory } from '@/utils/salonImageFallbacks';
+
 export interface Salon {
   id: string;
   name: string;
