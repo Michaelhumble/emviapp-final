@@ -1,4 +1,3 @@
-
 /**
  * Default Salon Images Library
  * 
@@ -6,7 +5,7 @@
  * that are used when a user doesn't upload their own image.
  */
 
-// Define the default salon images paths (these are the images uploaded by the user)
+// Define the default salon images paths (these are the high-quality uploaded images)
 export const defaultSalonImages = [
   "/lovable-uploads/1763ca30-ecb0-409f-8bb0-11b851ea743f.png",
   "/lovable-uploads/1f97f5e0-6b52-4ac6-925b-396bc0a1e585.png", 
@@ -15,12 +14,29 @@ export const defaultSalonImages = [
   "/lovable-uploads/5f4b0b9e-d1c2-43ad-a85c-92c4b6c61441.png",
   "/lovable-uploads/5f8eaed6-4a17-4992-a270-6394aad0f43b.png",
   "/lovable-uploads/67947adb-5754-4569-aa1c-228d8f9db461.png",
-  "/lovable-uploads/755e1db4-6ea5-40c4-8007-81b8beba6e2b.png"
+  "/lovable-uploads/755e1db4-6ea5-40c4-8007-81b8beba6e2b.png",
+  // Adding the newly uploaded images
+  "/lovable-uploads/70c8662a-4525-4854-a529-62616b5b6c81.png",
+  "/lovable-uploads/81e6d95d-e09b-45f0-a4bc-96358592e462.png",
+  "/lovable-uploads/89bafcff-30b0-441e-b557-6b5a6126cbdb.png",
+  "/lovable-uploads/9a7898e7-739c-4a79-8705-70090e25c10b.png",
+  "/lovable-uploads/a5e1f829-dd0a-445f-8fe8-1c02282b83aa.png",
+  "/lovable-uploads/e84078f4-339e-4231-b027-e8cd67c8e4ae.png",
+  "/lovable-uploads/f7ba1d82-2928-4e73-a61b-112e5aaf5b7e.png"
 ];
 
-// Define category-specific image sets
+// Define category-specific image sets with new images prioritized for nail salons
 export const salonImagesByCategory: Record<string, string[]> = {
   nail: [
+    // New nail salon images first
+    "/lovable-uploads/70c8662a-4525-4854-a529-62616b5b6c81.png",
+    "/lovable-uploads/81e6d95d-e09b-45f0-a4bc-96358592e462.png",
+    "/lovable-uploads/89bafcff-30b0-441e-b557-6b5a6126cbdb.png",
+    "/lovable-uploads/9a7898e7-739c-4a79-8705-70090e25c10b.png",
+    "/lovable-uploads/a5e1f829-dd0a-445f-8fe8-1c02282b83aa.png",
+    "/lovable-uploads/e84078f4-339e-4231-b027-e8cd67c8e4ae.png",
+    "/lovable-uploads/f7ba1d82-2928-4e73-a61b-112e5aaf5b7e.png",
+    // Keep some original nail images as backup
     "/lovable-uploads/1763ca30-ecb0-409f-8bb0-11b851ea743f.png",
     "/lovable-uploads/1f97f5e0-6b52-4ac6-925b-396bc0a1e585.png",
     "/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png"
@@ -85,4 +101,3 @@ export const getSalonImage = (imageUrl?: string, category?: string): string => {
   
   return getDefaultSalonImage(category);
 };
-
