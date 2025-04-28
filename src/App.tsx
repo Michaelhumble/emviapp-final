@@ -1,19 +1,14 @@
-
 import React, { useEffect } from 'react';
-import {
-  Routes,
-  Route,
-  useLocation,
-} from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
 import { SalonProvider } from '@/context/salon';
 import { SubscriptionProvider } from '@/context/subscription';
 import { NotificationProvider } from '@/context/notification';
 import routes from './routes';
-import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
-import ArtistInbox from "@/pages/dashboard/artist/Inbox";
 import SimpleSalonsPage from "@/pages/salons/SimpleSalonsPage";
 import SimpleSalonDetailPage from "@/pages/salons/SimpleSalonDetailPage";
+import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
+import ArtistInbox from "@/pages/dashboard/artist/Inbox";
 
 function App() {
   const location = useLocation();

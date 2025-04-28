@@ -1,12 +1,13 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, DollarSign, Building, Phone } from "lucide-react";
+import { MapPin, DollarSign, Building } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Salon } from '@/types/salon';
 import AuthAction from '@/components/common/AuthAction';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
+import { fallbackImage } from '@/utils/salonImageFallbacks';
 
 interface SalonCardProps {
   salon: Salon;
@@ -34,10 +35,14 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
 
   return (
     <Card className={`overflow-hidden group transition-shadow duration-300 ${isVietnamese ? 'hover:shadow-purple-100 shadow-sm border-purple-100' : 'hover:shadow-md'}`}>
-      <div 
-        className="h-48 bg-cover bg-center relative" 
-        style={{ backgroundImage: `url(${salon.imageUrl})` }}
-      >
+      <div className="relative">
+        <ImageWithFallback
+          src={salon.imageUrl}
+          alt={title}
+          fallbackImage={fallbackImage}
+          className="h-48 w-full object-cover"
+          loading="lazy"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         {isVietnamese && (
           <div className="absolute top-3 left-3">
