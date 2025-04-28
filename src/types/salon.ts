@@ -13,6 +13,7 @@ export interface Salon {
   specialty?: string;
   city?: string;
   neighborhood?: string;
+  teamSize?: number; // Added for sample salons data
   hours?: {
     monday: string;
     tuesday: string;

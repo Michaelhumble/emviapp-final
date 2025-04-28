@@ -37,7 +37,7 @@ export const getFeaturedSalons = (count: number = 3): Salon[] => {
     id: job.id,
     name: job.company || `Premium Salon ${index + 1}`,
     location: job.location || 'Unknown Location',
-    price: job.price || 0,
+    price: typeof job.price === 'string' ? parseFloat(job.price) : (job.price || 0), // Ensure price is always a number
     imageUrl: job.image || 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60',
     description: job.description || 'Premier beauty salon offering exceptional services.',
     // Additional fields:
