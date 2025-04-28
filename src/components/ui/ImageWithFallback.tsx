@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { CSSProperties } from 'react';
+import { getDefaultSalonImage } from '@/utils/defaultSalonImages';
 
 export interface ImageWithFallbackProps {
   src: string;
@@ -29,6 +30,16 @@ const ImageWithFallback = ({
   const [hasErrored, setHasErrored] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   
+  // Determine business category from name or alt text for better fallback selection
+  const getBusinessCategory = () => {
+    const text = (businessName || alt || '').toLowerCase();
+    if (text.includes('nail')) return 'nail';
+    if (text.includes('hair')) return 'hair';
+    if (text.includes('spa')) return 'spa';
+    if (text.includes('barber')) return 'barber';
+    return 'beauty';
+  };
+  
   // Reset loading state when image source changes
   useEffect(() => {
     setIsLoading(true);
@@ -38,7 +49,16 @@ const ImageWithFallback = ({
   
   const handleError = () => {
     if (!hasErrored) {
-      setImgSrc(fallbackImage);
+      // If the fallback image is not specified or is a placeholder, use our high-quality defaults
+      const businessCategory = getBusinessCategory();
+      const defaultImage = getDefaultSalonImage(businessCategory);
+      
+      // Use the provided fallback or our default image
+      const newSrc = (fallbackImage && !fallbackImage.includes('placeholder'))
+        ? fallbackImage
+        : defaultImage;
+        
+      setImgSrc(newSrc);
       setHasErrored(true);
     }
   };

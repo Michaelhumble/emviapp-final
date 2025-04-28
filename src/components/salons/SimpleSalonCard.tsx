@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Salon } from '@/types/salon';
 import AuthAction from '@/components/common/AuthAction';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
-import { fallbackImage, getDefaultSalonImage } from '@/utils/salonImageFallbacks';
+import { getSalonImage } from '@/utils/defaultSalonImages';
 import { useAuth } from '@/context/auth';
 
 interface SalonCardProps {
@@ -42,18 +41,28 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
     return true; // This will trigger the auth redirect
   };
 
-  // Determine the correct salon category for image fallback
-  const salonCategory = salon.category || 'beauty';
+  // Determine the correct salon category for image selection
+  const getSalonCategory = () => {
+    const name = salon.name?.toLowerCase() || '';
+    if (name.includes('nail')) return 'nail';
+    if (name.includes('hair') || name.includes('barber')) return 'hair';
+    if (name.includes('spa')) return 'spa';
+    return 'beauty';
+  };
+
+  // Get the appropriate image URL (user uploaded or default)
+  const imageUrl = getSalonImage(salon.imageUrl, getSalonCategory());
 
   return (
     <Card className={`overflow-hidden group transition-shadow duration-300 ${isVietnamese ? 'hover:shadow-purple-100 shadow-sm border-purple-100' : 'hover:shadow-md'}`}>
       <div className="relative">
         <ImageWithFallback
-          src={salon.imageUrl}
+          src={imageUrl}
           alt={title}
-          fallbackImage={getDefaultSalonImage(salonCategory)}
+          fallbackImage={getSalonImage(undefined, getSalonCategory())}
           className="h-48 w-full object-cover"
           loading="lazy"
+          businessName={salon.name}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         {isVietnamese && (
