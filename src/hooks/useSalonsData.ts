@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import salonData from "@/data/salonData";
 
 // Simple default filters
@@ -27,12 +26,11 @@ export const useSalonsData = () => {
   const [salons, setSalons] = useState<any[]>(salonData || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const [filters] = useState<SalonFilters>(defaultFilters);
+  const [filters, setFilters] = useState<SalonFilters>(defaultFilters);
   const [searchTerm, setSearchTerm] = useState("");
   const [featuredSalons, setFeaturedSalons] = useState<any[]>(
     salonData?.filter(salon => salon.is_featured) || []
   );
-  // Add suggestedKeywords state
   const [suggestedKeywords] = useState<string[]>([
     "Nail Salon", 
     "Hair Salon", 
@@ -40,15 +38,37 @@ export const useSalonsData = () => {
     "High Traffic"
   ]);
 
-  // Simplified reset function
+  useEffect(() => {
+    console.log("Salon filters updated:", filters);
+    console.log("Current search term:", searchTerm);
+    
+    try {
+      // Apply filters to salon data
+      const filtered = salonData.filter(salon => {
+        if (searchTerm && !salon.name?.toLowerCase().includes(searchTerm.toLowerCase())) {
+          return false;
+        }
+        // Add more filter logic here
+        return true;
+      });
+      
+      setSalons(filtered);
+      console.log(`Found ${filtered.length} salons matching current filters`);
+    } catch (err) {
+      console.error("Error filtering salons:", err);
+      setError(err as Error);
+    }
+  }, [filters, searchTerm]);
+
   const resetFilters = () => {
-    console.log("Filters reset");
+    console.log("Resetting all filters");
+    setFilters(defaultFilters);
     setSearchTerm("");
   };
 
-  // Simplified update function
-  const updateFilters = () => {
-    console.log("This function is temporarily disabled");
+  const updateFilters = (newFilters: Partial<SalonFilters>) => {
+    console.log("Updating filters:", newFilters);
+    setFilters(prev => ({ ...prev, ...newFilters }));
   };
 
   return { 
