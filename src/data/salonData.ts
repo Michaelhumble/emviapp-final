@@ -1,310 +1,299 @@
 import { Salon } from '@/types/salon';
 
-// Vietnamese salon listings
-export const vietnameseSalonListings: Salon[] = [
-  {
-    id: 'vn-001',
-    name: 'Cần sang tiệm nail ở Rowlett',
-    location: 'Rowlett, TX',
-    price: 0, // Price to be negotiated
-    imageUrl: 'https://images.unsplash.com/photo-1604654894611-6973b376cbde?q=80&w=2787&auto=format&fit=crop',
-    description: 'Tiệm ở Rowlett cần sang lại, cách Garland 10", income 120-150K/tháng. Income last year 1.7M.',
-    features: ['income-high', 'established'],
-    contact_info: {
-      phone: '(469)-438-5980',
-      owner_name: 'Chủ Tiệm'
-    },
-    is_vietnamese_listing: true,
-    monthly_revenue: '120K-150K',
-    yearly_revenue: '1.7M'
-  },
-  {
-    id: 'vn-002',
-    name: 'Bán tiệm nail ở Carrollton, GA',
-    location: 'Carrollton, GA',
-    price: 195000,
-    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=2940&auto=format&fit=crop',
-    description: 'Trong khu Walmart, giá 195K.',
-    features: ['good-location', 'walmart-area'],
-    contact_info: {
-      phone: '404-543-0144',
-      owner_name: 'Chủ Tiệm'
-    },
-    is_vietnamese_listing: true
-  },
-  {
-    id: 'vn-003',
-    name: 'Cần bán tiệm Davi Nails - Bismarck, ND',
-    location: 'Bismarck, ND',
-    price: 40000,
-    imageUrl: 'https://images.unsplash.com/photo-1610991149688-c1321006bcc1?q=80&w=2942&auto=format&fit=crop',
-    description: '5 ghế, 5 bàn, phòng wax. Giá $40K.',
-    features: ['wax_room', '5-chairs', '5-tables'],
-    contact_info: {
-      phone: '(714) 787-8858',
-      owner_name: 'Chủ Tiệm'
-    },
-    is_vietnamese_listing: true
-  },
-  {
-    id: 'vn-004',
-    name: 'Sang tiệm lớn Terrell, TX',
-    location: 'Terrell, TX',
-    price: 0, // Price to be negotiated
-    imageUrl: 'https://images.unsplash.com/photo-1599559827712-3e9c2a8f903b?q=80&w=2940&auto=format&fit=crop',
-    description: '3,000 sqft, 24 ghế, 12 bàn. Giá thương lượng.',
-    features: ['large', '24-chairs', '12-tables'],
-    square_feet: 3000,
-    contact_info: {
-      phone: '971-407-0664',
-      owner_name: 'Chủ Tiệm'
-    },
-    is_vietnamese_listing: true
-  },
-  {
-    id: 'vn-005',
-    name: 'Bán tiệm nail Cumming, GA',
-    location: 'Cumming, GA',
-    price: 85000,
-    imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=2787&auto=format&fit=crop',
-    description: '1200 sqft, rent $3,300. Giá $85K.',
-    features: ['medium-size'],
-    square_feet: 1200,
-    monthly_rent: 3300,
-    contact_info: {
-      phone: '404-455-5608',
-      owner_name: 'Chủ Tiệm'
-    },
-    is_vietnamese_listing: true
-  },
-  {
-    id: 'vn-006',
-    name: 'Sang Lv Nail Spa - Fort Collins, CO',
-    location: 'Fort Collins, CO',
-    price: 95000,
-    imageUrl: 'https://images.unsplash.com/photo-1632345031435-8727f6897d53?q=80&w=2830&auto=format&fit=crop',
-    description: '7 bàn, 7 ghế, 1,200 sqft. Giá $95K.',
-    features: ['7-chairs', '7-tables'],
-    square_feet: 1200,
-    contact_info: {
-      phone: '206-489-7081',
-      owner_name: 'Chủ Tiệm'
-    },
-    is_vietnamese_listing: true
-  },
-  {
-    id: 'vn-007',
-    name: 'Cần sang tiệm Nails - Cornelia, GA',
-    location: 'Cornelia, GA',
-    price: 0, // Price to be negotiated
-    imageUrl: 'https://images.unsplash.com/photo-1610992163376-4240bcc881c1?q=80&w=2940&auto=format&fit=crop',
-    description: '1620 sqft, 10 ghế, 8 bàn. Giá thương lượng.',
-    features: ['10-chairs', '8-tables'],
-    square_feet: 1620,
-    contact_info: {
-      phone: '832-441-0876',
-      owner_name: 'Chủ Tiệm'
-    },
-    is_vietnamese_listing: true
-  },
-  {
-    id: 'vn-008',
-    name: 'Sang tiệm Murrieta, CA',
-    location: 'Murrieta, CA',
-    price: 220000,
-    imageUrl: 'https://images.unsplash.com/photo-1604902396830-aca29cd43995?q=80&w=2787&auto=format&fit=crop',
-    description: '1400 sqft, 9 bàn, 9 ghế. Giá $220K.',
-    features: ['9-chairs', '9-tables'],
-    square_feet: 1400,
-    contact_info: {
-      phone: '657-346-4466',
-      owner_name: 'Chủ Tiệm'
-    },
-    is_vietnamese_listing: true
-  },
-  {
-    id: 'vn-009',
-    name: 'Bán tiệm Arlington, TX',
-    location: 'Arlington, TX',
-    price: 60000,
-    imageUrl: 'https://images.unsplash.com/photo-1604327580129-0d702e952f5b?q=80&w=2940&auto=format&fit=crop',
-    description: '1200 sqft, 8 ghế, 7 bàn. Giá $60K.',
-    features: ['8-chairs', '7-tables'],
-    square_feet: 1200,
-    contact_info: {
-      phone: '903-245-6488',
-      owner_name: 'Chủ Tiệm'
-    },
-    is_vietnamese_listing: true
-  },
-  {
-    id: 'vn-010',
-    name: 'Sang tiệm Marietta, Atlanta',
-    location: 'Marietta, GA',
-    price: 450000,
-    imageUrl: 'https://images.unsplash.com/photo-1594527564224-50c51b49d1fa?q=80&w=2874&auto=format&fit=crop',
-    description: '3000 sqft, 24 ghế, 14 bàn. Income >1M. Giá $450K.',
-    features: ['high-income', '24-chairs', '14-tables'],
-    square_feet: 3000,
-    yearly_revenue: '>1M',
-    contact_info: {
-      phone: '678-488-2583',
-      owner_name: 'Chủ Tiệm'
-    },
-    is_vietnamese_listing: true
-  },
-  {
-    id: 'vn-011',
-    name: 'Sang tiệm nail North Dakota',
-    location: 'North Dakota',
-    price: 40000,
-    imageUrl: 'https://images.unsplash.com/photo-1604654894611-6973b376cbde?q=80&w=2787&auto=format&fit=crop',
-    description: 'Rent bao điện nước. Giá $40K.',
-    features: ['utilities-included'],
-    contact_info: {
-      phone: '714-787-8858',
-      owner_name: 'Chủ Tiệm'
-    },
-    is_vietnamese_listing: true
-  },
-  {
-    id: 'vn-012',
-    name: 'Bán tiệm nail Mới Remodel - California',
-    location: 'California',
-    price: 220000,
-    imageUrl: 'https://images.unsplash.com/photo-1556740772-1a741367b93e?q=80&w=2942&auto=format&fit=crop',
-    description: '9 bàn, 9 ghế, khu đông đúc. Giá $220K.',
-    features: ['newly-remodeled', '9-chairs', '9-tables', 'busy-area'],
-    contact_info: {
-      phone: '657-346-4466',
-      owner_name: 'Chủ Tiệm'
-    },
-    is_vietnamese_listing: true
-  }
-];
-
 // Regular salon listings
 export const salonListings: Salon[] = [
   {
     id: '1',
-    name: 'Luxury Nail Salon in Prime Location',
+    name: 'Luxury Spa & Salon',
     location: 'Beverly Hills, CA',
-    price: 250000,
-    features: ['wax_room', 'parking', 'high_traffic'],
-    tags: ['established', 'luxury', 'turnkey'],
-    description: 'Well-established salon with 10 years of operation. 8 manicure stations, 6 pedicure chairs, and 2 treatment rooms.',
-    imageUrl: '/placeholder.svg',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    price: 75000,
+    imageUrl: 'https://images.unsplash.com/photo-1616226895723-81f46109e481?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
+    description: 'Upscale salon and spa in the heart of Beverly Hills. High-end clientele and experienced staff.',
+    features: ['Massage rooms', 'Facial services', 'Hair styling', 'Nail services'],
+    square_feet: 2500,
+    monthly_rent: 8000,
   },
   {
     id: '2',
-    name: 'Modern Nail Spa with Housing',
-    location: 'San Jose, CA',
-    price: 180000,
-    features: ['has_housing', 'laundry', 'parking'],
-    tags: ['housing-included', 'modern'],
-    description: 'Newly renovated space with included housing. 6 manicure stations and 4 pedicure chairs.',
-    imageUrl: '/placeholder.svg',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    name: 'Modern Hair Studio',
+    location: 'West Hollywood, CA',
+    price: 50000,
+    imageUrl: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
+    description: 'Chic hair studio with a modern aesthetic. Specializes in cutting-edge hair styling and coloring techniques.',
+    features: ['Hair styling', 'Coloring', 'Extensions', 'Bridal services'],
+    square_feet: 1800,
+    monthly_rent: 6000,
   },
   {
     id: '3',
-    name: 'High-Traffic Mall Location',
-    location: 'Houston, TX',
-    price: 320000,
-    features: ['high_traffic', 'wax_room'],
-    tags: ['mall-location', 'high-revenue'],
-    description: 'Premium mall location with steady client flow. 10 stations total and loyal customer base.',
-    imageUrl: '/placeholder.svg',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    name: 'Tranquil Day Spa',
+    location: 'Santa Monica, CA',
+    price: 60000,
+    imageUrl: 'https://images.unsplash.com/photo-1506905951942-1c84bec5919d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1471&q=80',
+    description: 'Relaxing day spa offering a variety of massage and skincare treatments. Serene atmosphere and loyal clientele.',
+    features: ['Massage therapy', 'Facials', 'Body wraps', 'Waxing'],
+    square_feet: 2000,
+    monthly_rent: 7000,
   },
   {
     id: '4',
-    name: 'Established Day Spa in Downtown',
-    location: 'Seattle, WA',
-    price: 275000,
-    features: ['wax_room', 'dining_room', 'laundry'],
-    tags: ['day-spa', 'established', 'downtown'],
-    description: 'Full-service day spa in prime downtown location. Includes massage rooms and facial treatment areas.',
-    imageUrl: '/placeholder.svg',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    name: 'Nail Salon & Spa',
+    location: 'Los Angeles, CA',
+    price: 40000,
+    imageUrl: 'https://images.unsplash.com/photo-1543791188-c85f89f139cd?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
+    description: 'Full-service nail salon and spa with a focus on providing high-quality manicures and pedicures.',
+    features: ['Manicures', 'Pedicures', 'Acrylics', 'Waxing'],
+    square_feet: 1500,
+    monthly_rent: 5000,
   },
   {
     id: '5',
-    name: 'Boutique Hair Salon with Loyal Clientele',
-    location: 'Portland, OR',
-    price: 150000,
-    features: ['parking'],
-    tags: ['hair-salon', 'boutique', 'established-clientele'],
-    description: '5-chair hair salon with steady business for over 8 years. Owner retiring.',
-    imageUrl: '/placeholder.svg',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    name: 'Barber Shop & Shave',
+    location: 'Downtown LA',
+    price: 35000,
+    imageUrl: 'https://images.unsplash.com/photo-1517433484932-9f060ca9192e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
+    description: 'Traditional barber shop offering classic haircuts and straight razor shaves. Experienced barbers and a loyal customer base.',
+    features: ['Haircuts', 'Shaves', 'Beard trims', 'Hot towel service'],
+    square_feet: 1200,
+    monthly_rent: 4000,
   },
   {
     id: '6',
-    name: 'Upscale Nail Salon in Shopping Center',
-    location: 'Dallas, TX',
-    price: 230000,
-    features: ['high_traffic', 'parking'],
-    tags: ['upscale', 'shopping-center', 'established'],
-    description: 'High-end nail salon with 12 stations in popular shopping center. Excellent reviews and loyal customers.',
-    imageUrl: '/placeholder.svg',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    name: 'Eyelash Extension Studio',
+    location: 'Hollywood, CA',
+    price: 45000,
+    imageUrl: 'https://images.unsplash.com/photo-1607954473544-399c89db297f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
+    description: 'Specialized studio offering a variety of eyelash extension services. Skilled technicians and a glamorous atmosphere.',
+    features: ['Classic lashes', 'Volume lashes', 'Hybrid lashes', 'Lash lifts'],
+    square_feet: 1000,
+    monthly_rent: 3500,
   },
   {
     id: '7',
-    name: 'Full-Service Beauty Salon with Apartment',
-    location: 'Miami, FL',
-    price: 295000,
-    features: ['has_housing', 'parking', 'laundry'],
-    tags: ['full-service', 'housing-included', 'profitable'],
-    description: 'Profitable salon with 2-bedroom apartment above. Hair, nails, and skincare services.',
-    imageUrl: '/placeholder.svg',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    name: 'Brow Bar & Waxing Studio',
+    location: 'Beverly Grove, CA',
+    price: 30000,
+    imageUrl: 'https://images.unsplash.com/photo-1588974269162-4c0d5ccc6094?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
+    description: 'Boutique studio specializing in brow shaping and waxing services. Experienced estheticians and a focus on customer satisfaction.',
+    features: ['Brow shaping', 'Waxing', 'Tinting', 'Threading'],
+    square_feet: 800,
+    monthly_rent: 3000,
   },
   {
     id: '8',
-    name: 'Cozy Neighborhood Salon',
-    location: 'Chicago, IL',
-    price: 120000,
-    features: ['parking'],
-    tags: ['neighborhood', 'cozy', 'affordable'],
-    description: 'Small but profitable neighborhood salon with loyal local clientele. 4 stations with room to expand.',
-    imageUrl: '/placeholder.svg',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    name: 'Massage Therapy Center',
+    location: 'Brentwood, CA',
+    price: 55000,
+    imageUrl: 'https://images.unsplash.com/photo-1544731612-de7f559b0744?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
+    description: 'Therapeutic massage center offering a variety of massage modalities. Licensed massage therapists and a calming environment.',
+    features: ['Swedish massage', 'Deep tissue massage', 'Sports massage', 'Prenatal massage'],
+    square_feet: 1600,
+    monthly_rent: 5500,
   },
   {
     id: '9',
-    name: 'High-End Spa with Premium Equipment',
-    location: 'Scottsdale, AZ',
-    price: 385000,
-    features: ['wax_room', 'dining_room', 'high_traffic'],
-    tags: ['luxury', 'high-end', 'premium-equipment'],
-    description: 'Luxury spa with top-of-the-line equipment and exclusive clientele. Includes multiple treatment rooms.',
-    imageUrl: '/placeholder.svg',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    name: 'Facial & Skincare Clinic',
+    location: 'Century City, CA',
+    price: 65000,
+    imageUrl: 'https://images.unsplash.com/photo-1596493862544-cde88b5e6d43?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
+    description: 'Advanced skincare clinic offering a range of facial treatments and skincare products. Experienced estheticians and a focus on results.',
+    features: ['Facials', 'Chemical peels', 'Microdermabrasion', 'Acne treatments'],
+    square_feet: 1400,
+    monthly_rent: 4500,
   },
   {
     id: '10',
-    name: 'Turnkey Nail Salon in Business District',
-    location: 'Denver, CO',
-    price: 175000,
-    features: ['high_traffic'],
-    tags: ['business-district', 'turnkey', 'profitable'],
-    description: 'Ready-to-operate nail salon in busy business district. Consistent revenue and established systems.',
-    imageUrl: '/placeholder.svg',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    name: 'Tattoo & Piercing Studio',
+    location: 'Venice, CA',
+    price: 40000,
+    imageUrl: 'https://images.unsplash.com/photo-1622543458731-a96a49195b14?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
+    description: 'Popular tattoo and piercing studio with a talented team of artists. Clean and sterile environment with a focus on safety.',
+    features: ['Tattoos', 'Piercings', 'Custom designs', 'Aftercare products'],
+    square_feet: 1100,
+    monthly_rent: 3800,
   }
 ];
 
-export const getSalonListings = () => salonListings.filter(listing => listing.type === 'salon');
+// Vietnamese salon listings
+export const vietnameseSalonListings: Salon[] = [
+  {
+    id: 'vn-001',
+    name: 'Tiệm Nail Đang Hoạt Động Cần Bán Gấp',
+    location: 'Westminster, California',
+    price: 45000,
+    imageUrl: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    description: 'Tiệm rộng 1,200sf, 6 ghế nail, 6 bàn, 2 phòng wax. Thu nhập ổn định, tiền rent rẻ. Cần bán gấp vì lý do sức khỏe. Giá thương lượng cho người mua thiện chí.',
+    features: ['6 ghế nail', '6 bàn', '2 phòng wax', 'Khu Mỹ trắng'],
+    square_feet: 1200,
+    monthly_rent: 2000,
+    is_vietnamese_listing: true,
+    vietnamese_title: 'Tiệm Nail Đang Hoạt Động Cần Bán Gấp',
+    vietnamese_description: 'Tiệm rộng 1,200sf, 6 ghế nail, 6 bàn, 2 phòng wax. Thu nhập ổn định, tiền rent rẻ. Cần bán gấp vì lý do sức khỏe. Giá thương lượng cho người mua thiện chí.',
+    contact_info: {
+      phone: '714-555-1234',
+      owner_name: 'Chủ Tiệm'
+    }
+  },
+  {
+    id: 'vn-002',
+    name: 'Cần Sang Tiệm Nails - Khu Mỹ Trắng',
+    location: 'Huntington Beach, California',
+    price: 85000,
+    imageUrl: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    description: 'Cần sang tiệm trong khu Mỹ trắng, income cao, 8 ghế 6 bàn, tiệm rộng 1500sqft, giá thuê rẻ. Tiệm hoạt động trên 10 năm, khách walk-in nhiều.',
+    features: ['8 ghế nail', '6 bàn', 'Khu Mỹ trắng', 'Income cao', 'Khách walk-in'],
+    square_feet: 1500,
+    monthly_rent: 3200,
+    is_vietnamese_listing: true,
+    vietnamese_title: 'Cần Sang Tiệm Nails - Khu Mỹ Trắng',
+    vietnamese_description: 'Cần sang tiệm trong khu Mỹ trắng, income cao, 8 ghế 6 bàn, tiệm rộng 1500sqft, giá thuê rẻ. Tiệm hoạt động trên 10 năm, khách walk-in nhiều.',
+    contact_info: {
+      phone: '714-555-2345',
+      owner_name: 'Anh Tuấn'
+    }
+  },
+  {
+    id: 'vn-003',
+    name: 'Sang Tiệm Nail - Vị Trí Đẹp',
+    location: 'Garden Grove, California',
+    price: 65000,
+    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    description: 'Sang tiệm nail vị trí đẹp, nằm trong khu shopping center sầm uất. Tiệm có 10 ghế nail, 8 bàn, 2 phòng wax/facial. Tiền rent hợp lý.',
+    features: ['10 ghế nail', '8 bàn', '2 phòng wax/facial', 'Khu shopping center'],
+    square_feet: 1800,
+    monthly_rent: 3500,
+    is_vietnamese_listing: true,
+    vietnamese_title: 'Sang Tiệm Nail - Vị Trí Đẹp',
+    vietnamese_description: 'Sang tiệm nail vị trí đẹp, nằm trong khu shopping center sầm uất. Tiệm có 10 ghế nail, 8 bàn, 2 phòng wax/facial. Tiền rent hợp lý.',
+    contact_info: {
+      phone: '714-555-3456',
+      owner_name: 'Chị Hương'
+    }
+  },
+  {
+    id: 'vn-004',
+    name: 'Cần Sang Gấp Tiệm Nails',
+    location: 'Santa Ana, California',
+    price: 35000,
+    imageUrl: 'https://images.unsplash.com/photo-1556740758-90de374c12ad?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    description: 'Cần sang gấp tiệm nails vì về Việt Nam. Tiệm 4 ghế, 4 bàn, 1 phòng wax. Income ổn định, đông khách. Giá thương lượng cho người thiện chí.',
+    features: ['4 ghế nail', '4 bàn', '1 phòng wax'],
+    square_feet: 900,
+    monthly_rent: 1800,
+    is_vietnamese_listing: true,
+    vietnamese_title: 'Cần Sang Gấp Tiệm Nails',
+    vietnamese_description: 'Cần sang gấp tiệm nails vì về Việt Nam. Tiệm 4 ghế, 4 bàn, 1 phòng wax. Income ổn định, đông khách. Giá thương lượng cho người thiện chí.',
+    contact_info: {
+      phone: '714-555-4567',
+      owner_name: 'Anh Hoàng'
+    }
+  },
+  {
+    id: 'vn-005',
+    name: 'Sang Tiệm Nails Khu Mỹ',
+    location: 'Irvine, California',
+    price: 120000,
+    imageUrl: 'https://images.unsplash.com/photo-1588974269162-4c0d5ccc6094?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    description: 'Sang tiệm khu Mỹ cao cấp, khách sang, tip cao. Tiệm 10 ghế, 12 bàn, 3 phòng wax/facial/massage. Income $45K-$55K/tháng, giá thuê $5K. Cơ hội đầu tư tốt.',
+    features: ['10 ghế nail', '12 bàn', '3 phòng wax/facial', 'Khu Mỹ cao cấp', 'Income $45K-55K/tháng'],
+    square_feet: 2200,
+    monthly_rent: 5000,
+    is_vietnamese_listing: true,
+    vietnamese_title: 'Sang Tiệm Nails Khu Mỹ',
+    vietnamese_description: 'Sang tiệm khu Mỹ cao cấp, khách sang, tip cao. Tiệm 10 ghế, 12 bàn, 3 phòng wax/facial/massage. Income $45K-$55K/tháng, giá thuê $5K. Cơ hội đầu tư tốt.',
+    contact_info: {
+      phone: '949-555-5678',
+      owner_name: 'Chị Lan'
+    }
+  },
+  {
+    id: 'vn-006',
+    name: 'Bán Tiệm Nails Thương Hiệu Đã Có Sẵn',
+    location: 'Fountain Valley, California',
+    price: 95000,
+    imageUrl: 'https://images.unsplash.com/photo-1610991149688-c1321006bcc1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    description: 'Bán tiệm nails thương hiệu đã có sẵn, hoạt động 5 năm. Tiệm 8 ghế, 8 bàn, 2 phòng wax. Tiệm rất đẹp, máy móc và trang thiết bị hiện đại.',
+    features: ['8 ghế nail', '8 bàn', '2 phòng wax', 'Thương hiệu 5 năm', 'Trang thiết bị hiện đại'],
+    square_feet: 1600,
+    monthly_rent: 3800,
+    is_vietnamese_listing: true,
+    vietnamese_title: 'Bán Tiệm Nails Thương Hiệu Đã Có Sẵn',
+    vietnamese_description: 'Bán tiệm nails thương hiệu đã có sẵn, hoạt động 5 năm. Tiệm 8 ghế, 8 bàn, 2 phòng wax. Tiệm rất đẹp, máy móc và trang thiết bị hiện đại.',
+    contact_info: {
+      phone: '714-555-6789',
+      owner_name: 'Anh Phong'
+    }
+  },
+  {
+    id: 'vn-007',
+    name: 'Sang Tiệm Nail Gấp - Giá Rẻ',
+    location: 'Anaheim, California',
+    price: 25000,
+    imageUrl: 'https://images.unsplash.com/photo-1610386715822-936b2f79d72f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    description: 'Cần sang gấp tiệm nail giá rẻ. Tiệm 5 ghế, 5 bàn, tiền rent chỉ $1,200/tháng. Sang trọn gói nội thất, máy móc.',
+    features: ['5 ghế nail', '5 bàn', 'Rent rẻ $1,200/tháng'],
+    square_feet: 1000,
+    monthly_rent: 1200,
+    is_vietnamese_listing: true,
+    vietnamese_title: 'Sang Tiệm Nail Gấp - Giá Rẻ',
+    vietnamese_description: 'Cần sang gấp tiệm nail giá rẻ. Tiệm 5 ghế, 5 bàn, tiền rent chỉ $1,200/tháng. Sang trọn gói nội thất, máy móc.',
+    contact_info: {
+      phone: '714-555-7890',
+      owner_name: 'Chị Ngọc'
+    }
+  },
+  {
+    id: 'vn-008',
+    name: 'Sang Tiệm Nails Khu Mỹ Đen',
+    location: 'Long Beach, California',
+    price: 40000,
+    imageUrl: 'https://images.unsplash.com/photo-1604902396830-aca29e19b067?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    description: 'Sang tiệm nails trong khu Mỹ đen. Tiệm 6 ghế, 6 bàn. Tiệm có lợi nhuận tốt, giá thuê thấp. Không gian rộng rãi, có chỗ để mở rộng thêm.',
+    features: ['6 ghế nail', '6 bàn', 'Khu Mỹ đen'],
+    square_feet: 1200,
+    monthly_rent: 1600,
+    is_vietnamese_listing: true,
+    vietnamese_title: 'Sang Tiệm Nails Khu Mỹ Đen',
+    vietnamese_description: 'Sang tiệm nails trong khu Mỹ đen. Tiệm 6 ghế, 6 bàn. Tiệm có lợi nhuận tốt, giá thuê thấp. Không gian rộng rãi, có chỗ để mở rộng thêm.',
+    contact_info: {
+      phone: '562-555-8901',
+      owner_name: 'Anh Lộc'
+    }
+  },
+  {
+    id: 'vn-009',
+    name: 'Cần Sang Tiệm Gấp Vì Lý Do Gia Đình',
+    location: 'Orange, California',
+    price: 55000,
+    imageUrl: 'https://images.unsplash.com/photo-1599559827712-3e9c12a998bb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    description: 'Vì lý do gia đình nên cần sang gấp tiệm nail. Tiệm đẹp, rộng 1,400sf, có 6 ghế, 6 bàn, 2 phòng spa. Địa điểm đẹp, khu shopping center.',
+    features: ['6 ghế nail', '6 bàn', '2 phòng spa', 'Khu shopping center'],
+    square_feet: 1400,
+    monthly_rent: 2800,
+    is_vietnamese_listing: true,
+    vietnamese_title: 'Cần Sang Tiệm Gấp Vì Lý Do Gia Đình',
+    vietnamese_description: 'Vì lý do gia đình nên cần sang gấp tiệm nail. Tiệm đẹp, rộng 1,400sf, có 6 ghế, 6 bàn, 2 phòng spa. Địa điểm đẹp, khu shopping center.',
+    contact_info: {
+      phone: '714-555-9012',
+      owner_name: 'Chị Thanh'
+    }
+  },
+  {
+    id: 'vn-010',
+    name: 'Sang Tiệm Nail Giá Thương Lượng',
+    location: 'Costa Mesa, California',
+    price: 0,
+    imageUrl: 'https://images.unsplash.com/photo-1588965208323-d78aafc31a1c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    description: 'Sang tiệm nail vì nghỉ hưu, giá thương lượng. Tiệm 5 ghế, 5 bàn, 1 phòng wax. Vị trí đẹp trong khu dân cư đông đúc. Khách quen ổn định.',
+    features: ['5 ghế nail', '5 bàn', '1 phòng wax', 'Khách quen'],
+    square_feet: 1100,
+    monthly_rent: 2500,
+    is_vietnamese_listing: true,
+    vietnamese_title: 'Sang Tiệm Nail Giá Thương Lượng',
+    vietnamese_description: 'Sang tiệm nail vì nghỉ hưu, giá thương lượng. Tiệm 5 ghế, 5 bàn, 1 phòng wax. Vị trí đẹp trong khu dân cư đông đúc. Khách quen ổn định.',
+    contact_info: {
+      phone: '714-555-0123',
+      owner_name: 'Bác Tâm'
+    }
+  }
+];
