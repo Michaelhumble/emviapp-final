@@ -36,6 +36,9 @@ const SimpleSalonDetailPage = () => {
   const isVietnamese = salon.is_vietnamese_listing;
   const backToListingsText = isVietnamese ? "← Trở lại danh sách" : "← Back to Listings";
 
+  // Construct the path to return to after login
+  const currentPath = location.pathname;
+
   return (
     <Layout>
       <Helmet>
@@ -151,7 +154,7 @@ const SimpleSalonDetailPage = () => {
                     <p className="text-gray-500 text-sm mb-2">
                       {isVietnamese ? "Vui lòng đăng nhập để xem thông tin liên hệ" : "Please sign in to see contact details"}
                     </p>
-                    <Link to={`/sign-in?redirect=${encodeURIComponent(location.pathname)}`}>
+                    <Link to={`/sign-in?redirect=${encodeURIComponent(currentPath)}`}>
                       <Button size="sm">
                         {isVietnamese ? "Đăng nhập" : "Sign In"}
                       </Button>

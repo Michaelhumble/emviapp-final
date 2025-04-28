@@ -12,6 +12,10 @@ export interface ImageWithFallbackProps {
   loading?: "eager" | "lazy";
 }
 
+/**
+ * Component that displays an image with fallback support
+ * If the primary image fails to load, it will switch to the fallback image
+ */
 const ImageWithFallback = ({ 
   src, 
   alt, 
@@ -19,12 +23,16 @@ const ImageWithFallback = ({
   className = '',
   businessName,
   style,
-  loading
+  loading = 'lazy'
 }: ImageWithFallbackProps) => {
-  const [imgSrc, setImgSrc] = useState(src);
+  const [imgSrc, setImgSrc] = useState(src || '');
+  const [hasErrored, setHasErrored] = useState(false);
   
   const handleError = () => {
-    setImgSrc(fallbackImage);
+    if (!hasErrored) {
+      setImgSrc(fallbackImage);
+      setHasErrored(true);
+    }
   };
   
   return (

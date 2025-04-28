@@ -25,8 +25,6 @@ function App() {
         <SubscriptionProvider>
           <NotificationProvider>
             <Routes>
-              <Route path="/salons" element={<SimpleSalonsPage />} />
-              <Route path="/salons/:id" element={<SimpleSalonDetailPage />} />
               {routes.map((route, index) => (
                 <Route 
                   key={index}

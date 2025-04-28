@@ -8,6 +8,11 @@ import { salonListings } from '@/data/salonData';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
+/**
+ * Main Salon Listings Page Component
+ * IMPORTANT: This component is locked as part of the salon listings stabilization.
+ * Do not modify the Vietnamese content or layout without explicit request.
+ */
 const SimpleSalonsPage = () => {
   const regularListings = salonListings.filter(salon => !salon.is_vietnamese_listing);
 

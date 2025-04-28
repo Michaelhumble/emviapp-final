@@ -102,7 +102,7 @@ const routes = [
   },
   {
     path: '/salons/:id',
-    element: <SalonDetailPage />,
+    element: <SimpleSalonDetailPage />,
   },
   {
     path: '/sell-salon',
@@ -348,7 +348,7 @@ const routes = [
   },
   {
     path: '/listing/:id',
-    element: <SimpleSalonsPage />,
+    element: <SimpleSalonDetailPage />, // Changed from SimpleSalonsPage to SimpleSalonDetailPage
   },
   {
     path: '/salon-listing',

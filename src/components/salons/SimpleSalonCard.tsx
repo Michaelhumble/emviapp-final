@@ -15,6 +15,11 @@ interface SalonCardProps {
   salon: Salon;
 }
 
+/**
+ * Component for displaying a salon card in the listings page
+ * IMPORTANT: This component is locked as part of the salon listings stabilization.
+ * Do not modify the Vietnamese content or sign-in logic without explicit request.
+ */
 const SimpleSalonCard = ({ salon }: SalonCardProps) => {
   const { isSignedIn } = useAuth();
   
@@ -37,13 +42,16 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
     return true; // This will trigger the auth redirect
   };
 
+  // Determine the correct salon category for image fallback
+  const salonCategory = salon.category || 'beauty';
+
   return (
     <Card className={`overflow-hidden group transition-shadow duration-300 ${isVietnamese ? 'hover:shadow-purple-100 shadow-sm border-purple-100' : 'hover:shadow-md'}`}>
       <div className="relative">
         <ImageWithFallback
           src={salon.imageUrl}
           alt={title}
-          fallbackImage={getDefaultSalonImage(salon.category)}
+          fallbackImage={getDefaultSalonImage(salonCategory)}
           className="h-48 w-full object-cover"
           loading="lazy"
         />
@@ -99,9 +107,7 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
                 <span>{isVietnamese ? "Đăng nhập để xem liên hệ" : "Sign in to view contact"}</span>
               </div>
             }
-          >
-            {/* Empty children prop added here */}
-          </AuthAction>
+          />
         )}
 
         <Link to={`/salons/${salon.id}`}>
