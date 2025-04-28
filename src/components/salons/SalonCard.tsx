@@ -4,13 +4,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, Clock, ArrowRight } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 interface SalonCardProps {
   salon: any;
   onClick?: () => void;
+  index?: number;
+  isExpired?: boolean;
+  onViewDetails?: () => void;
 }
 
-const SalonCard: React.FC<SalonCardProps> = ({ salon, onClick }) => {
+const SalonCard: React.FC<SalonCardProps> = ({ salon, onClick, onViewDetails, index, isExpired }) => {
   const formatPrice = (price: string) => {
     if (!price) return 'Contact for price';
     
@@ -23,8 +27,14 @@ const SalonCard: React.FC<SalonCardProps> = ({ salon, onClick }) => {
   const displayImage = salon.image || 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60';
   const displayName = salon.company || salon.name || 'Unnamed Salon';
 
+  // Use either onClick or onViewDetails, preferring onClick for backward compatibility
+  const handleClick = onClick || onViewDetails;
+
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow border-gray-200">
+    <Card className={cn(
+      "overflow-hidden hover:shadow-md transition-shadow border-gray-200",
+      isExpired && "opacity-70"
+    )}>
       <CardContent className="p-0">
         <div 
           className="h-48 bg-cover bg-center" 
@@ -51,7 +61,7 @@ const SalonCard: React.FC<SalonCardProps> = ({ salon, onClick }) => {
           </p>
           
           <Button 
-            onClick={onClick} 
+            onClick={handleClick} 
             variant="outline" 
             className="w-full"
           >
