@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Job } from "@/types/job";
 import SalonDetailsDialog from "./SalonDetailModal";
