@@ -49,6 +49,124 @@ export const vietnameseSalonListings: Salon[] = [
       phone: '(714) 787-8858',
       owner_name: 'Thư'
     }
+  },
+  {
+    id: 'vn-4',
+    name: 'Large Nail Salon - Terrell',
+    vietnamese_title: 'Sang tiệm lớn ở Terrell, TX',
+    location: 'Terrell, TX',
+    price: 0, // Contact for price
+    imageUrl: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
+    description: 'Large 3,000 sqft salon with 24 chairs, 12 tables, facial & lash rooms.',
+    vietnamese_description: '3,000 sqft, 24 ghế, 12 bàn, phòng facial & lash. Giá tốt, thương lượng.',
+    features: ['3,000 sqft', '24 Chairs', '12 Tables', 'Lash Room', 'Facial Room'],
+    square_feet: 3000,
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '971-407-0664'
+    }
+  },
+  {
+    id: 'vn-5',
+    name: 'Nail Salon - Cumming',
+    vietnamese_title: 'Bán tiệm nail Cumming, GA',
+    location: 'Cumming, GA',
+    price: 85000,
+    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
+    description: '1,200 sqft salon with 8 chairs, 7 tables. Monthly rent: $3,300.',
+    vietnamese_description: '1200 sqft, 8 ghế, 7 bàn, rent $3,300. Giá bán $85K (thương lượng).',
+    features: ['1,200 sqft', '8 Chairs', '7 Tables'],
+    square_feet: 1200,
+    monthly_rent: 3300,
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '404-455-5608'
+    }
+  },
+  {
+    id: 'vn-6',
+    name: 'Lv Nail Spa',
+    vietnamese_title: 'Sang Tiệm Lv Nail Spa - Fort Collins, CO',
+    location: 'Fort Collins, CO',
+    price: 95000,
+    imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80',
+    description: '1,200 sqft salon with 7 tables, 7 chairs. Established clientele.',
+    vietnamese_description: '7 bàn, 7 ghế, 1,200 sqft, khách ổn định. Giá $95K.',
+    features: ['7 Stations', 'Established Clientele'],
+    square_feet: 1200,
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '206-489-7081'
+    }
+  },
+  {
+    id: 'vn-7',
+    name: 'Nail Salon - Cornelia',
+    vietnamese_title: 'Cần sang tiệm Nails - Cornelia, GA',
+    location: 'Cornelia, GA',
+    price: 0, // Contact for price
+    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
+    description: '1,620 sqft salon with 10 chairs, 8 tables. Monthly rent: $1,905.',
+    vietnamese_description: '1620 sqft, 10 ghế, 8 bàn, rent $1,905. Giá thương lượng.',
+    features: ['10 Chairs', '8 Tables', '1,620 sqft'],
+    square_feet: 1620,
+    monthly_rent: 1905,
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '832-441-0876'
+    }
+  },
+  {
+    id: 'vn-8',
+    name: 'Nail Salon - Murrieta',
+    vietnamese_title: 'Sang tiệm nail Murrieta, CA',
+    location: 'Murrieta, CA',
+    price: 220000,
+    imageUrl: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
+    description: '1,400 sqft salon with 9 tables, 9 chairs. Monthly rent: $5,900.',
+    vietnamese_description: '1400 sqft, 9 bàn, 9 ghế, rent $5,900. Giá $220K (thương lượng).',
+    features: ['9 Stations', '1,400 sqft'],
+    square_feet: 1400,
+    monthly_rent: 5900,
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '657-346-4466',
+      owner_name: 'Ms Amy'
+    }
+  },
+  {
+    id: 'vn-9',
+    name: 'Nail Salon - Arlington',
+    vietnamese_title: 'Bán tiệm lâu năm Arlington, TX',
+    location: 'Arlington, TX',
+    price: 60000,
+    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
+    description: '1,200 sqft salon with 8 chairs, 7 tables. Monthly rent: $3,400. Established business.',
+    vietnamese_description: '1200 sqft, 8 ghế, 7 bàn, rent $3,400. Giá $60K.',
+    features: ['8 Chairs', '7 Tables', 'Established Business'],
+    square_feet: 1200,
+    monthly_rent: 3400,
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '903-245-6488'
+    }
+  },
+  {
+    id: 'vn-10',
+    name: 'Nail Salon - Marietta East Cobb',
+    vietnamese_title: 'Sang tiệm Marietta East Cobb, Atlanta',
+    location: 'Marietta East Cobb, GA',
+    price: 450000,
+    imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80',
+    description: '3,000 sqft salon with 24 chairs, 14 tables. Annual income over $1M.',
+    vietnamese_description: '3000 sqft, 24 ghế, 14 bàn, income >1M. Giá $450K.',
+    features: ['24 Chairs', '14 Tables', '3,000 sqft', 'High Income'],
+    square_feet: 3000,
+    yearly_revenue: '1000000',
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: '678-488-2583'
+    }
   }
 ];
 
