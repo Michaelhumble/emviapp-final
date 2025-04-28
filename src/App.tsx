@@ -13,6 +13,7 @@ import routes from './routes';
 import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
 import ArtistInbox from "@/pages/dashboard/artist/Inbox";
 import SimpleSalonsPage from "@/pages/salons/SimpleSalonsPage";
+import SimpleSalonDetailPage from "@/pages/salons/SimpleSalonDetailPage";
 
 function App() {
   const location = useLocation();
@@ -29,6 +30,7 @@ function App() {
           <NotificationProvider>
             <Routes>
               <Route path="/salons" element={<SimpleSalonsPage />} />
+              <Route path="/salons/:id" element={<SimpleSalonDetailPage />} />
               {routes.map((route, index) => (
                 <Route 
                   key={index}

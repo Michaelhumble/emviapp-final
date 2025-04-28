@@ -5,10 +5,14 @@ import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
 import { Button } from "@/components/ui/button";
 import { salonListings } from '@/data/salonData';
+import { vietnameseSalonListings } from '@/data/vietnameseSalonListings';
 
 const SimpleSalonDetailPage = () => {
   const { id } = useParams();
-  const salon = salonListings.find(s => s.id === id);
+  
+  // First check Vietnamese listings, then regular listings
+  const salon = vietnameseSalonListings.find(s => s.id === id) || 
+               salonListings.find(s => s.id === id);
 
   if (!salon) {
     return (
@@ -23,36 +27,98 @@ const SimpleSalonDetailPage = () => {
     );
   }
 
+  // Use Vietnamese content when available
+  const title = salon.vietnamese_title || salon.name;
+  const description = salon.vietnamese_description || salon.description;
+  const isVietnamese = salon.is_vietnamese_listing;
+  const backToListingsText = isVietnamese ? "← Trở lại danh sách" : "← Back to Listings";
+
   return (
     <Layout>
       <Helmet>
-        <title>{salon.name} | EmviApp</title>
-        <meta name="description" content={salon.description} />
+        <title>{title} | EmviApp</title>
+        <meta name="description" content={description} />
       </Helmet>
 
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <Link to="/salons" className="text-purple-600 hover:text-purple-700 mb-6 inline-block">
-            ← Back to Listings
+            {backToListingsText}
           </Link>
           
           <div className="bg-white rounded-xl overflow-hidden shadow-sm">
+            {/* Hero image */}
             <div 
               className="h-64 bg-cover bg-center"
               style={{ backgroundImage: `url(${salon.imageUrl})` }}
             />
             
+            {/* Content */}
             <div className="p-6">
-              <h1 className="font-playfair text-3xl font-bold mb-2">{salon.name}</h1>
+              {isVietnamese && (
+                <div className="inline-block bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium mb-4">
+                  🇻🇳 Vietnamese Listing
+                </div>
+              )}
+              
+              <h1 className="font-playfair text-3xl font-bold mb-2">{title}</h1>
               <p className="text-gray-600 mb-4">{salon.location}</p>
-              <p className="text-2xl font-semibold text-gray-800 mb-6">
-                {new Intl.NumberFormat('en-US', {
-                  style: 'currency',
-                  currency: 'USD',
-                  maximumFractionDigits: 0,
-                }).format(salon.price)}
-              </p>
-              <p className="text-gray-700">{salon.description}</p>
+              
+              <div className="flex items-center mb-6">
+                <p className="text-2xl font-semibold text-gray-800">
+                  {salon.price === 0 ? "Giá thương lượng" : new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    maximumFractionDigits: 0,
+                  }).format(salon.price)}
+                </p>
+                {salon.income_range && (
+                  <span className="ml-3 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                    Income: {salon.income_range}
+                  </span>
+                )}
+              </div>
+              
+              <div className="prose max-w-none">
+                <p className="text-gray-700 whitespace-pre-line">{description}</p>
+              </div>
+              
+              {/* Features */}
+              {salon.features && salon.features.length > 0 && (
+                <div className="mt-8">
+                  <h3 className="font-semibold text-lg mb-3">
+                    {isVietnamese ? "Thông tin chi tiết" : "Features"}
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {salon.features.map((feature, index) => (
+                      <span 
+                        key={index}
+                        className="bg-gray-100 rounded-full px-3 py-1 text-sm"
+                      >
+                        {feature}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Contact info */}
+              <div className="mt-8 pt-6 border-t">
+                <h3 className="font-semibold text-lg mb-3">
+                  {isVietnamese ? "Liên hệ" : "Contact Information"}
+                </h3>
+                
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-gray-500 text-sm mb-2">
+                    {isVietnamese ? "Vui lòng đăng nhập để xem thông tin liên hệ" : "Please sign in to see contact details"}
+                  </p>
+                  <Link to="/auth/signin?redirect=/salons">
+                    <Button size="sm">
+                      {isVietnamese ? "Đăng nhập" : "Sign In"}
+                    </Button>
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </div>
