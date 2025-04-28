@@ -1,80 +1,5 @@
 import { Salon } from '@/types/salon';
-
-export const vietnameseSalonListings: Salon[] = [
-  {
-    id: "vn-1",
-    name: "Cần sang tiệm nail ở Rowlett",
-    location: "Rowlett",
-    price: 0, // Giá thương lượng
-    imageUrl: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60",
-    description: "Tiệm lâu năm, income 120-150K/tháng.",
-    vietnamese_title: "Cần sang tiệm nail ở Rowlett",
-    vietnamese_description: "Tiệm lâu năm, income 120-150K/tháng.",
-    is_vietnamese_listing: true,
-    contact_info: {
-      phone: "(469)-438-5980"
-    }
-  },
-  {
-    id: "vn-2",
-    name: "Bán tiệm nail Carrollton, GA",
-    location: "Carrollton, GA",
-    price: 195000,
-    imageUrl: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=60",
-    description: "Trong Walmart, giá 195K.",
-    vietnamese_title: "Bán tiệm nail Carrollton, GA",
-    vietnamese_description: "Trong Walmart, giá 195K.",
-    is_vietnamese_listing: true,
-    contact_info: {
-      phone: "404-543-0144"
-    }
-  },
-  {
-    id: "vn-3",
-    name: "Sang tiệm lớn Terrell, TX",
-    location: "Terrell, TX",
-    price: 0, // Giá thương lượng
-    imageUrl: "https://images.unsplash.com/photo-1610451012045-34f6fad6b507?auto=format&fit=crop&w=800&q=60",
-    description: "3,000 sqft, 24 ghế. Giá thương lượng.",
-    vietnamese_title: "Sang tiệm lớn Terrell, TX",
-    vietnamese_description: "3,000 sqft, 24 ghế. Giá thương lượng.",
-    is_vietnamese_listing: true,
-    square_feet: 3000,
-    contact_info: {
-      phone: "971-407-0664"
-    }
-  },
-  {
-    id: "vn-4",
-    name: "Cần sang tiệm Murrieta, CA",
-    location: "Murrieta, CA",
-    price: 220000,
-    imageUrl: "https://images.unsplash.com/photo-1632345031435-8727f6897d53?auto=format&fit=crop&w=800&q=60",
-    description: "1400 sqft, 9 bàn, 9 ghế. Giá $220K.",
-    vietnamese_title: "Cần sang tiệm Murrieta, CA",
-    vietnamese_description: "1400 sqft, 9 bàn, 9 ghế. Giá $220K.",
-    is_vietnamese_listing: true,
-    square_feet: 1400,
-    contact_info: {
-      phone: "657-346-4466"
-    }
-  },
-  {
-    id: "vn-5",
-    name: "Bán tiệm Arlington, TX",
-    location: "Arlington, TX",
-    price: 60000,
-    imageUrl: "https://images.unsplash.com/photo-1635107510862-53886e926b74?auto=format&fit=crop&w=800&q=60",
-    description: "1200 sqft, 8 ghế, giá $60K.",
-    vietnamese_title: "Bán tiệm Arlington, TX",
-    vietnamese_description: "1200 sqft, 8 ghế, giá $60K.",
-    is_vietnamese_listing: true,
-    square_feet: 1200,
-    contact_info: {
-      phone: "903-245-6488"
-    }
-  }
-];
+import { vietnameseSalonListings } from './vietnameseSalonListings';
 
 export const salonListings: Salon[] = [
   {
@@ -188,3 +113,6 @@ export const salonListings: Salon[] = [
     is_vietnamese_listing: false
   },
 ];
+
+// Export vietnameseSalonListings too to keep them available
+export { vietnameseSalonListings };
