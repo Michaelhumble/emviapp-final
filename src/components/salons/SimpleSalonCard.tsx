@@ -21,6 +21,18 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
     }).format(price);
   };
 
+  const getVietnameseDescription = (description: string): string => {
+    if (description.toLowerCase().includes('nail salon')) {
+      return `Tiệm nail đã hoạt động lâu năm, có lượng khách hàng ổn định. ${
+        description.includes('monthly income') ? 'Thu nhập hàng tháng từ' : ''
+      } ${description.includes('last year') ? 'Doanh thu năm vừa qua:' : ''} ${
+        description.match(/\$[\d,]+K?/g)?.join(' - ') || ''
+      }. Vị trí thuận lợi, cơ hội tốt cho chủ mới.`;
+    }
+    
+    return 'Cơ hội kinh doanh tốt với vị trí đẹp và lượng khách ổn định. Liên hệ để biết thêm chi tiết.';
+  };
+
   return (
     <Card className="overflow-hidden group hover:shadow-md transition-shadow duration-300">
       <div 
@@ -66,9 +78,17 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
           </div>
         )}
 
-        <p className="text-gray-600 text-sm line-clamp-2 mb-4">
-          {salon.description}
-        </p>
+        <div className="space-y-2 mb-4">
+          <p className="text-gray-600 text-sm line-clamp-2">
+            {salon.description}
+          </p>
+          <div className="pt-2 border-t border-gray-100">
+            <p className="text-gray-600 text-sm line-clamp-3">
+              <span className="font-medium text-gray-500">Mô tả (Tiếng Việt):</span>{' '}
+              {getVietnameseDescription(salon.description)}
+            </p>
+          </div>
+        </div>
 
         <div className="space-y-4">
           <TooltipProvider>
