@@ -64,6 +64,7 @@ import PortfolioManagerPage from './pages/dashboard/artist/portfolio/index';
 
 import OpportunityDetailPage from './pages/opportunities/OpportunityDetailPage';
 import SimpleSalonsPage from './pages/salons/SimpleSalonsPage';
+import SimpleSalonDetailPage from './pages/salons/SimpleSalonDetailPage';
 import SalonDetailPage from './pages/salons/SalonDetailPage';
 import SalonListingForm from './pages/salons/SalonListingForm';
 
@@ -348,7 +349,7 @@ const routes = [
   },
   {
     path: '/listing/:id',
-    element: <SimpleSalonDetailPage />, // Changed from SimpleSalonsPage to SimpleSalonDetailPage
+    element: <SimpleSalonDetailPage />, // Fixed from SimpleSalonsPage
   },
   {
     path: '/salon-listing',
