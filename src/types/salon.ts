@@ -1,3 +1,4 @@
+
 export interface Salon {
   id: string;
   name: string;
@@ -16,6 +17,7 @@ export interface Salon {
     phone?: string;
     email?: string;
     owner_name?: string;
+    zalo?: string;
   };
   
   // Additional properties for salon profile components
@@ -54,15 +56,9 @@ export interface Salon {
   amenities?: string[];
   paymentMethods?: string[];
   
+  // Vietnamese listings properties
   vietnamese_title?: string;
   vietnamese_description?: string;
   income_range?: string;
-  monthly_rent?: number;
   is_vietnamese_listing?: boolean;
-  contact_info: {
-    phone?: string;
-    email?: string;
-    owner_name?: string;
-    zalo?: string;
-  };
 }

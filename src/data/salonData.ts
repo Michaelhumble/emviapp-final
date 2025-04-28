@@ -1,3 +1,4 @@
+
 import { Salon } from '@/types/salon';
 
 export const vietnameseSalonListings: Salon[] = [
@@ -51,7 +52,7 @@ export const vietnameseSalonListings: Salon[] = [
   }
 ];
 
-export const salonListings: Salon[] = [
+export const regularSalonListings: Salon[] = [
   {
     id: '1',
     name: 'Nail Salon - Rowlett, TX',
@@ -186,4 +187,5 @@ export const salonListings: Salon[] = [
   }
 ];
 
-export const salonListings: Salon[] = [...vietnameseSalonListings, ...salonListings];
+// Combine the Vietnamese and regular salon listings into a single array
+export const salonListings: Salon[] = [...vietnameseSalonListings, ...regularSalonListings];
