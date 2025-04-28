@@ -43,9 +43,9 @@ const AuthAction: React.FC<AuthActionProps> = ({
   };
 
   const handleNavigation = (path: string) => {
-    // Encode current location for redirect after login
-    const currentPath = redirectPath || location.pathname + location.search;
-    const encodedRedirect = encodeURIComponent(currentPath);
+    // Store the current path or redirectPath as the return destination
+    const returnPath = redirectPath || location.pathname + location.search;
+    const encodedRedirect = encodeURIComponent(returnPath);
     navigate(`${path}?redirect=${encodedRedirect}`);
     setShowAuthDialog(false);
   };

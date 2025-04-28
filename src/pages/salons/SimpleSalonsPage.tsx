@@ -5,6 +5,8 @@ import Layout from '@/components/layout/Layout';
 import { vietnameseSalonListings } from '@/data/vietnameseSalonListings';
 import SimpleSalonCard from '@/components/salons/SimpleSalonCard';
 import { salonListings } from '@/data/salonData';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const SimpleSalonsPage = () => {
   const regularListings = salonListings.filter(salon => !salon.is_vietnamese_listing);
@@ -21,6 +23,21 @@ const SimpleSalonsPage = () => {
 
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
+          {/* List Your Salon Banner - Vietnamese Version */}
+          <div className="mb-10 bg-gradient-to-r from-purple-600 to-purple-800 text-white p-6 rounded-xl shadow-md">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div>
+                <h2 className="text-2xl md:text-3xl font-bold mb-2">📝 Đăng Tin Bán Tiệm hoặc Cho Thuê Ghế</h2>
+                <p className="text-purple-100 mb-4 md:mb-0">Kết nối với hàng ngàn người mua tiềm năng trong cộng đồng làm đẹp.</p>
+              </div>
+              <Link to="/salon-listing">
+                <Button size="lg" className="bg-white text-purple-700 hover:bg-purple-50">
+                  Đăng Tin Ngay
+                </Button>
+              </Link>
+            </div>
+          </div>
+          
           {/* Vietnamese Community Listings Section */}
           <div className="mb-16 bg-gradient-to-r from-purple-50 to-white p-8 rounded-xl border border-purple-200 shadow-sm">
             <h2 className="font-playfair text-3xl md:text-4xl font-bold mb-3 flex items-center gap-2 text-purple-800">

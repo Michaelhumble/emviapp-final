@@ -6,9 +6,11 @@ import Layout from '@/components/layout/Layout';
 import { Button } from "@/components/ui/button";
 import { salonListings } from '@/data/salonData';
 import { vietnameseSalonListings } from '@/data/vietnameseSalonListings';
+import { useAuth } from '@/context/auth';
 
 const SimpleSalonDetailPage = () => {
   const { id } = useParams();
+  const { isSignedIn } = useAuth();
   
   // First check Vietnamese listings, then regular listings
   const salon = vietnameseSalonListings.find(s => s.id === id) || 
@@ -108,16 +110,53 @@ const SimpleSalonDetailPage = () => {
                   {isVietnamese ? "Liên hệ" : "Contact Information"}
                 </h3>
                 
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-gray-500 text-sm mb-2">
-                    {isVietnamese ? "Vui lòng đăng nhập để xem thông tin liên hệ" : "Please sign in to see contact details"}
-                  </p>
-                  <Link to="/auth/signin?redirect=/salons">
-                    <Button size="sm">
-                      {isVietnamese ? "Đăng nhập" : "Sign In"}
-                    </Button>
-                  </Link>
-                </div>
+                {isSignedIn && salon.contact_info ? (
+                  <div className="bg-white p-4 rounded-lg border">
+                    {salon.contact_info.owner_name && (
+                      <p className="mb-2">
+                        <span className="text-gray-500 mr-2">
+                          {isVietnamese ? "Người bán:" : "Owner:"}
+                        </span>
+                        {salon.contact_info.owner_name}
+                      </p>
+                    )}
+                    {salon.contact_info.phone && (
+                      <p className="mb-2">
+                        <span className="text-gray-500 mr-2">
+                          {isVietnamese ? "Điện thoại:" : "Phone:"}
+                        </span>
+                        <a href={`tel:${salon.contact_info.phone}`} className="text-purple-600 hover:text-purple-800">
+                          {salon.contact_info.phone}
+                        </a>
+                      </p>
+                    )}
+                    {salon.contact_info.email && (
+                      <p className="mb-2">
+                        <span className="text-gray-500 mr-2">Email:</span>
+                        <a href={`mailto:${salon.contact_info.email}`} className="text-purple-600 hover:text-purple-800">
+                          {salon.contact_info.email}
+                        </a>
+                      </p>
+                    )}
+                    {salon.contact_info.zalo && (
+                      <p>
+                        <span className="text-gray-500 mr-2">Zalo:</span>
+                        {salon.contact_info.zalo}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <p className="text-gray-500 text-sm mb-2">
+                      {isVietnamese ? "Vui lòng đăng nhập để xem thông tin liên hệ" : "Please sign in to see contact details"}
+                    </p>
+                    <Link to={`/sign-in?redirect=${encodeURIComponent(`/salons/${salon.id}`)}`}>
+                      <Button size="sm">
+                        {isVietnamese ? "Đăng nhập" : "Sign In"}
+                      </Button>
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           </div>
