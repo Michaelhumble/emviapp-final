@@ -84,7 +84,7 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
               salon={salon}
               index={index}
               isExpired={isExpired(salon)}
-              onViewDetails={handleViewDetails}
+              onViewDetails={() => handleViewDetails(salon)}
             />
           ))
         ) : (

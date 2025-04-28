@@ -14,9 +14,12 @@ import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { PremiumBadge } from '@/components/salons/PremiumBadge';
 import { cn } from "@/lib/utils";
+import SalonDetailModal from "@/components/salons/SalonDetailModal";
+import { Job } from "@/types/job";
 
 const SalonsFinal: React.FC = () => {
   const [activeTab, setActiveTab] = useState("all");
+  const [selectedSalon, setSelectedSalon] = useState<Job | null>(null);
   const navigate = useNavigate();
   
   const { 
@@ -44,6 +47,15 @@ const SalonsFinal: React.FC = () => {
     }
     return true;
   });
+
+  // Handle salon details view
+  const handleViewSalonDetails = (salon: Job) => {
+    setSelectedSalon(salon);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedSalon(null);
+  };
 
   if (error) {
     console.error("Error loading salons:", error);
@@ -133,7 +145,7 @@ const SalonsFinal: React.FC = () => {
                           )}
                           <SalonCard 
                             salon={salon}
-                            onClick={() => navigate(`/salons/${salon.id}`)}
+                            onClick={() => handleViewSalonDetails(salon)}
                           />
                         </div>
                       ))}
@@ -146,9 +158,18 @@ const SalonsFinal: React.FC = () => {
             </div>
           </div>
           
+          {/* Salon Detail Modal */}
+          {selectedSalon && (
+            <SalonDetailModal
+              salon={selectedSalon}
+              isOpen={!!selectedSalon}
+              onClose={handleCloseModal}
+            />
+          )}
+          
           {/* Component version tag */}
           <div className="text-xs text-center text-gray-400 mt-8">
-            SalonsPage_FINAL v1.0 - Locked for stability
+            SalonsPage_FINAL v1.0 - Phase 1 Complete
           </div>
         </div>
       </div>
