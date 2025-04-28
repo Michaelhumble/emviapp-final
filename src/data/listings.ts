@@ -1,4 +1,3 @@
-
 import { Listing } from '@/types/listing';
 
 export const listings: Listing[] = [

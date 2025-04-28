@@ -5,6 +5,9 @@ import { Job } from '@/types/job';
 import OpportunityCard from './OpportunityCard';
 import AuthAction from '@/components/common/AuthAction';
 import { verifyOpportunityListings } from '@/utils/listingsVerification';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import { Building } from 'lucide-react';
 
 interface OpportunitiesSectionProps {
   diverseListings: Job[];
@@ -47,7 +50,7 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
             <AuthAction
               key={listing.id}
               onAction={() => true}
-              redirectPath={`/opportunities/${listing.id}`}
+              redirectPath={listing.type === 'salon' ? `/salons/${listing.id}` : `/opportunities/${listing.id}`}
               customTitle="Sign in to view full details"
               creditMessage="Create a free account to access contact information and more details."
             >
@@ -58,6 +61,15 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
               />
             </AuthAction>
           ))}
+        </div>
+
+        <div className="mt-12 text-center">
+          <Link to="/salons">
+            <Button size="lg" variant="outline" className="font-medium">
+              <Building className="mr-2 h-4 w-4" />
+              Browse All Salons
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
