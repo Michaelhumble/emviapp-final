@@ -1,96 +1,81 @@
-
 import { Salon } from '@/types/salon';
 
-// Vietnamese salon listings with proper Vietnamese content
 export const vietnameseSalonListings: Salon[] = [
   {
-    id: "vn-nail-1",
-    name: "Nail Spa Garden",
-    vietnamese_title: "Cần Sang Tiệm Nail Gấp - Khu Mỹ Trắng",
-    location: "Westminster, CA",
-    price: 45000,
-    imageUrl: "https://images.unsplash.com/photo-1610992015732-2449b76344bc?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=80",
-    description: "Well-established nail salon in high traffic area.",
-    vietnamese_description: "Tiệm đông khách, khu mỹ trắng, income ổn định $25,000-$30,000/tháng. 6 ghế nail, 6 bàn spa. Tiền rent rẻ chỉ $2,500/tháng, có thể thương lượng. Có phòng wax riêng, tiệm rộng 1,500sqft.",
-    features: ["6 bàn nail", "6 ghế spa", "1,500 sqft", "Rent $2,500"],
-    square_feet: 1500,
+    id: "vn-1",
+    name: "Cần sang tiệm nail ở Rowlett",
+    location: "Rowlett",
+    price: 0, // Giá thương lượng
+    imageUrl: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60",
+    description: "Tiệm lâu năm, income 120-150K/tháng.",
+    vietnamese_title: "Cần sang tiệm nail ở Rowlett",
+    vietnamese_description: "Tiệm lâu năm, income 120-150K/tháng.",
     is_vietnamese_listing: true,
     contact_info: {
-      phone: "(714) 123-4567",
-      owner_name: "Chủ Tiệm"
+      phone: "(469)-438-5980"
     }
   },
   {
-    id: "vn-nail-2",
-    name: "Elegant Nails & Spa",
-    vietnamese_title: "Sang Tiệm Nail - Khu Mỹ Đen - Income Cao",
-    location: "Garden Grove, CA",
-    price: 75000,
-    imageUrl: "https://images.unsplash.com/photo-1604654894611-6973b376cbde?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=80",
-    description: "Prime location nail salon with loyal clientele.",
-    vietnamese_description: "Cần sang tiệm gấp vì lý do sức khỏe. Tiệm rộng 2,000 sqft, có 10 ghế và 8 bàn, income $40,000-$45,000/tháng. Địa điểm đẹp, khách quen đông. Giá thuê $3,200/tháng, còn hợp đồng 3 năm.",
-    features: ["10 ghế nail", "8 bàn spa", "Khu mỹ đen", "2,000 sqft"],
-    square_feet: 2000,
+    id: "vn-2",
+    name: "Bán tiệm nail Carrollton, GA",
+    location: "Carrollton, GA",
+    price: 195000,
+    imageUrl: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=60",
+    description: "Trong Walmart, giá 195K.",
+    vietnamese_title: "Bán tiệm nail Carrollton, GA",
+    vietnamese_description: "Trong Walmart, giá 195K.",
     is_vietnamese_listing: true,
     contact_info: {
-      phone: "(714) 555-8765",
-      owner_name: "Anh Tâm"
+      phone: "404-543-0144"
     }
   },
   {
-    id: "vn-nail-3",
-    name: "Luxury Nails",
-    vietnamese_title: "Bán Tiệm Nail Mới Remodel - Giá Rẻ",
-    location: "Santa Ana, CA",
-    price: 30000,
-    imageUrl: "https://images.unsplash.com/photo-1631541911432-8c7ccec18152?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=80",
-    description: "Recently remodeled nail salon for sale.",
-    vietnamese_description: "Tiệm mới remodel, đẹp, sạch sẽ. Có 5 bàn, 5 ghế, khu shopping center đông người qua lại. Rent chỉ $1,800/tháng, income ổn định khoảng $15,000-$18,000/tháng. Bán vì chủ về Việt Nam.",
-    features: ["5 bàn", "5 ghế", "Mới remodel", "Giá thuê thấp"],
-    square_feet: 1000,
+    id: "vn-3",
+    name: "Sang tiệm lớn Terrell, TX",
+    location: "Terrell, TX",
+    price: 0, // Giá thương lượng
+    imageUrl: "https://images.unsplash.com/photo-1610451012045-34f6fad6b507?auto=format&fit=crop&w=800&q=60",
+    description: "3,000 sqft, 24 ghế. Giá thương lượng.",
+    vietnamese_title: "Sang tiệm lớn Terrell, TX",
+    vietnamese_description: "3,000 sqft, 24 ghế. Giá thương lượng.",
     is_vietnamese_listing: true,
+    square_feet: 3000,
     contact_info: {
-      phone: "(657) 432-9876",
-      owner_name: "Chị Hương"
+      phone: "971-407-0664"
     }
   },
   {
-    id: "vn-nail-4",
-    name: "Crystal Nails & Spa",
-    vietnamese_title: "Sang Gấp Tiệm Nail - Giá Không Thể Tốt Hơn",
-    location: "Fountain Valley, CA",
-    price: 55000,
-    imageUrl: "https://images.unsplash.com/photo-1632345031435-8727f6897d53?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=80",
-    description: "Established nail salon in affluent area.",
-    vietnamese_description: "Cần sang tiệm ngay, giá không thể tốt hơn! Tiệm trong khu mỹ trắng cao cấp, income $35,000-$38,000/tháng. Có 8 bàn, 8 ghế, 2 phòng wax, tiệm rất rộng và đẹp. Rent $3,800/tháng, hợp đồng còn 5 năm.",
-    features: ["8 bàn", "8 ghế", "2 phòng wax", "Khu giàu"],
-    square_feet: 1800,
+    id: "vn-4",
+    name: "Cần sang tiệm Murrieta, CA",
+    location: "Murrieta, CA",
+    price: 220000,
+    imageUrl: "https://images.unsplash.com/photo-1632345031435-8727f6897d53?auto=format&fit=crop&w=800&q=60",
+    description: "1400 sqft, 9 bàn, 9 ghế. Giá $220K.",
+    vietnamese_title: "Cần sang tiệm Murrieta, CA",
+    vietnamese_description: "1400 sqft, 9 bàn, 9 ghế. Giá $220K.",
     is_vietnamese_listing: true,
+    square_feet: 1400,
     contact_info: {
-      phone: "(714) 888-3456",
-      owner_name: "Anh Tuấn"
+      phone: "657-346-4466"
     }
   },
   {
-    id: "vn-nail-5",
-    name: "Diamond Nails",
-    vietnamese_title: "Tiệm Nail Trong Mall Lớn - Vị Trí Đẹp",
-    location: "Huntington Beach, CA",
-    price: 65000,
-    imageUrl: "https://images.unsplash.com/photo-1571290274554-6a2eaa771e5f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=80",
-    description: "Mall-based nail salon with prime location.",
-    vietnamese_description: "Tiệm nằm trong mall lớn, vị trí đẹp, rất đông khách. 12 ghế, 10 bàn spa, 2 phòng wax. Income cao $50,000-$55,000/tháng. Rent $4,500/tháng. Bán vì chủ đi xa, không có người trông coi.",
-    features: ["12 ghế", "10 bàn spa", "2 phòng wax", "Trong mall"],
-    square_feet: 2200,
+    id: "vn-5",
+    name: "Bán tiệm Arlington, TX",
+    location: "Arlington, TX",
+    price: 60000,
+    imageUrl: "https://images.unsplash.com/photo-1635107510862-53886e926b74?auto=format&fit=crop&w=800&q=60",
+    description: "1200 sqft, 8 ghế, giá $60K.",
+    vietnamese_title: "Bán tiệm Arlington, TX",
+    vietnamese_description: "1200 sqft, 8 ghế, giá $60K.",
     is_vietnamese_listing: true,
+    square_feet: 1200,
     contact_info: {
-      phone: "(714) 777-9999",
-      owner_name: "Chị Lan"
+      phone: "903-245-6488"
     }
-  },
+  }
 ];
 
-// Regular salon listings
 export const salonListings: Salon[] = [
   {
     id: "salon-1",

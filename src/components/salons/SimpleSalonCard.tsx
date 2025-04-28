@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, DollarSign, Building, Phone } from "lucide-react";
-import { Salon } from '@/types/salon';
 import { Badge } from "@/components/ui/badge";
+import { Salon } from '@/types/salon';
 
 interface SalonCardProps {
   salon: Salon;
@@ -63,20 +63,6 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
           </div>
         )}
 
-        {salon.features && salon.features.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-3">
-            {salon.features.slice(0, 3).map((feature, index) => (
-              <Badge 
-                key={index} 
-                variant="secondary" 
-                className={`text-xs ${isVietnamese ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}`}
-              >
-                {feature}
-              </Badge>
-            ))}
-          </div>
-        )}
-
         <div className="space-y-2 mb-4">
           <p className="text-gray-600 text-sm whitespace-pre-line line-clamp-3">
             {description}
@@ -87,7 +73,6 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
           <div className={`text-sm py-2 px-3 rounded border mb-4 flex items-center gap-2 ${isVietnamese ? 'bg-purple-50 border-purple-200 text-purple-900' : 'bg-gray-50 border-gray-100 text-gray-600'}`}>
             <Phone className="h-4 w-4" />
             {salon.contact_info.phone}
-            {salon.contact_info.owner_name && ` (${salon.contact_info.owner_name})`}
           </div>
         )}
 
