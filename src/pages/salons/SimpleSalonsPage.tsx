@@ -28,10 +28,10 @@ const SimpleSalonsPage = () => {
 
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
-          {/* New Luxury Hero Banner */}
-          <div className="relative w-full mb-10 overflow-hidden rounded-lg" style={{ aspectRatio: '1792/1024' }}>
+          {/* Luxury Hero Banner */}
+          <div className="relative w-full mb-10 overflow-hidden rounded-lg" style={{ aspectRatio: '1920/1080' }}>
             <img 
-              src="/lovable-uploads/a4eaaa14-64e9-4bcd-bacb-e0cc9cbabaa3.png" 
+              src="/lovable-uploads/6aa31dbf-9e67-4034-b930-af170ecd98ea.png" 
               alt="Luxury Salon Background" 
               className="w-full h-full object-cover"
             />
@@ -41,8 +41,8 @@ const SimpleSalonsPage = () => {
                 <h1 className="font-playfair text-4xl md:text-5xl lg:text-6xl text-[#FDFDFD] font-medium tracking-wide">
                   List Your Salon
                 </h1>
-                <h2 className="font-playfair text-5xl md:text-6xl lg:text-7xl text-[#FDFDFD] font-medium italic tracking-wide">
-                  Confidence
+                <h2 className="font-playfair text-3xl md:text-4xl lg:text-5xl text-[#FDFDFD] font-medium tracking-wide">
+                  With Confidence
                 </h2>
                 <div className="pt-8">
                   <Link to="/salon-listing">
