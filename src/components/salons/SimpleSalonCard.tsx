@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, DollarSign, Building } from "lucide-react";
 import { Salon } from '@/types/salon';
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 
 interface SalonCardProps {
   salon: Salon;
@@ -70,13 +70,28 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
           {salon.description}
         </p>
 
-        <Link to={`/salons/${salon.id}`}>
-          <Button 
-            className="w-full bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white"
-          >
-            View Details
-          </Button>
-        </Link>
+        <div className="space-y-4">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="text-sm text-gray-400 py-2 px-3 bg-gray-50 rounded border border-gray-100 text-center cursor-default">
+                  Sign in to view contact details
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">Login feature coming soon</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <Link to={`/salons/${salon.id}`}>
+            <Button 
+              className="w-full bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white"
+            >
+              View Details
+            </Button>
+          </Link>
+        </div>
       </CardContent>
     </Card>
   );
