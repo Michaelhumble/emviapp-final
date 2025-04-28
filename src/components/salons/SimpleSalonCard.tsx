@@ -99,7 +99,9 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
                 <span>{isVietnamese ? "Đăng nhập để xem liên hệ" : "Sign in to view contact"}</span>
               </div>
             }
-          />
+          >
+            {/* Empty children prop added here */}
+          </AuthAction>
         )}
 
         <Link to={`/salons/${salon.id}`}>

@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
 
 interface AuthActionProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;  // Make children optional
   onAction: () => Promise<boolean> | boolean;
   creditMessage?: string;
   redirectPath?: string;
@@ -104,7 +104,7 @@ const AuthAction: React.FC<AuthActionProps> = ({
   return (
     <>
       <div onClick={handleAction} className="cursor-pointer">
-        {children}
+        {children || null}
       </div>
 
       <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
