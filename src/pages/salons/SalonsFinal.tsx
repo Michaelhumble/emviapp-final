@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { PremiumBadge } from '@/components/salons/PremiumBadge';
+import { cn } from "@/lib/utils";
 
 const SalonsFinal: React.FC = () => {
   const [activeTab, setActiveTab] = useState("all");
@@ -132,7 +133,7 @@ const SalonsFinal: React.FC = () => {
                           )}
                           <SalonCard 
                             salon={salon}
-                            onView={() => navigate(`/salons/${salon.id}`)}
+                            onClick={() => navigate(`/salons/${salon.id}`)}
                           />
                         </div>
                       ))}

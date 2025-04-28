@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import salonData from "@/data/salonData";
 
@@ -45,7 +46,7 @@ export const useSalonsData = () => {
     try {
       // Apply filters to salon data
       const filtered = salonData.filter(salon => {
-        if (searchTerm && !salon.name?.toLowerCase().includes(searchTerm.toLowerCase())) {
+        if (searchTerm && !salon.company?.toLowerCase().includes(searchTerm.toLowerCase())) {
           return false;
         }
         // Add more filter logic here
