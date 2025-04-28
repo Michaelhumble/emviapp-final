@@ -1,334 +1,376 @@
-
 import { Salon } from '@/types/salon';
 
-export const vietnameseSalonListings: Salon[] = [
+export const salonListings: Salon[] = [
   {
-    id: 'vn-1',
-    name: 'Tiệm Nail Rowlett',
-    vietnamese_title: 'Cần sang tiệm nail ở Rowlett',
-    location: 'Rowlett, TX',
-    price: 0, // Contact for price
-    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
-    description: 'Nail salon in Rowlett, 10 minutes from Garland. Stable year-round clientele.',
-    vietnamese_description: 'Tiệm ở Rowlett cần sang lại, cách Garland 10", income 120-150K/tháng. Tiệm lâu năm, khách ổn định quanh năm. Income last year 1.7M.',
-    features: ['Established Business', 'High Income', 'Prime Location'],
-    monthly_revenue: '120000-150000',
-    yearly_revenue: '1700000',
+    id: "vn-1",
+    name: "Nail Salon Rowlett",
+    vietnamese_title: "Cần sang tiệm nail ở Rowlett",
+    location: "Rowlett, TX",
+    price: 0, // Negotiable
+    description: "Nail salon in prime location",
+    imageUrl: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60",
+    vietnamese_description: "Tiệm ở Rowlett cần sang lại, cách Garland 10\", income 120-150K/tháng.\nIncome last year 1.7M.",
+    features: ["24 ghế", "12 bàn", "Income 120-150K/tháng"],
+    monthly_revenue: "120K-150K",
+    yearly_revenue: "1.7M",
     is_vietnamese_listing: true,
     contact_info: {
-      phone: '(469)-438-5980'
+      phone: "(469)-438-5980",
+      owner_name: "Chủ tiệm"
     }
   },
   {
-    id: 'vn-2',
-    name: 'Nail Salon - Carrollton',
-    vietnamese_title: 'Bán tiệm nail ở Carrollton, Georgia',
-    location: 'Carrollton, GA',
+    id: "vn-2",
+    name: "Nail Salon Carrollton",
+    vietnamese_title: "Bán tiệm nail ở Carrollton, GA",
+    location: "Carrollton, GA",
     price: 195000,
-    imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80',
-    description: 'Nail salon near Walmart',
-    vietnamese_description: 'Trong khu Walmart, giá 195K.',
-    features: ['Near Walmart', 'Prime Location'],
+    description: "Nail salon near Walmart",
+    imageUrl: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60",
+    vietnamese_description: "Trong khu Walmart, giá 195K.",
+    features: ["Khu Walmart", "Location đẹp"],
     is_vietnamese_listing: true,
     contact_info: {
-      phone: '404-543-0144'
+      phone: "404-543-0144"
     }
   },
   {
-    id: 'vn-3',
-    name: 'Davi Nails',
-    vietnamese_title: 'Cần bán tiệm Davi Nails - Bismarck, North Dakota',
-    location: 'Bismarck, ND',
+    id: "vn-3",
+    name: "Davi Nails",
+    vietnamese_title: "Cần bán tiệm Davi Nails - Bismarck, ND",
+    location: "Bismarck, ND",
     price: 40000,
-    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
-    description: '5 chairs, 5 tables, wax room. Rent includes utilities.',
-    vietnamese_description: '5 ghế, 5 bàn, phòng wax, bao rent (điện, nước, wifi...). Giá $40K.',
-    features: ['5 Stations', 'Wax Room', 'Utilities Included'],
+    description: "Davi Nails salon for sale",
+    imageUrl: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60",
+    vietnamese_description: "5 ghế, 5 bàn, phòng wax. Giá $40K.",
+    features: ["5 ghế", "5 bàn", "Phòng wax"],
     is_vietnamese_listing: true,
     contact_info: {
-      phone: '(714) 787-8858',
-      owner_name: 'Thư'
+      phone: "(714) 787-8858"
     }
   },
   {
-    id: 'vn-4',
-    name: 'Large Nail Salon - Terrell',
-    vietnamese_title: 'Sang tiệm lớn Terrell, TX',
-    location: 'Terrell, TX',
-    price: 0, // Contact for price
-    imageUrl: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
-    description: 'Large salon with 24 chairs, 12 tables, and 3,000 sqft space.',
-    vietnamese_description: '3,000 sqft, 24 ghế, 12 bàn. Giá thương lượng.',
-    features: ['3,000 sqft', '24 Chairs', '12 Tables'],
+    id: "vn-4",
+    name: "Terrell Nails",
+    vietnamese_title: "Sang tiệm lớn Terrell, TX",
+    location: "Terrell, TX",
+    price: 0, // Negotiable
+    description: "Large nail salon in Terrell",
+    imageUrl: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60",
+    vietnamese_description: "3,000 sqft, 24 ghế, 12 bàn. Giá thương lượng.",
+    features: ["24 ghế", "12 bàn"],
     square_feet: 3000,
     is_vietnamese_listing: true,
     contact_info: {
-      phone: '971-407-0664'
+      phone: "971-407-0664"
     }
   },
   {
-    id: 'vn-5',
-    name: 'Nail Salon - Cumming',
-    vietnamese_title: 'Bán tiệm nail Cumming, GA',
-    location: 'Cumming, GA',
+    id: "vn-5",
+    name: "Cumming Nails",
+    vietnamese_title: "Bán tiệm nail Cumming, GA",
+    location: "Cumming, GA",
     price: 85000,
-    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
-    description: '1,200 sqft salon with monthly rent of $3,300.',
-    vietnamese_description: '1200 sqft, rent $3,300. Giá $85K.',
-    features: ['1,200 sqft', 'Upscale Area'],
+    description: "Nail salon in Cumming",
+    imageUrl: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60",
+    vietnamese_description: "1200 sqft, rent $3,300. Giá $85K.",
+    features: ["Location đẹp"],
     square_feet: 1200,
     monthly_rent: 3300,
     is_vietnamese_listing: true,
     contact_info: {
-      phone: '404-455-5608'
+      phone: "404-455-5608"
     }
   },
   {
-    id: 'vn-6',
-    name: 'Lv Nail Spa',
-    vietnamese_title: 'Sang Lv Nail Spa - Fort Collins, CO',
-    location: 'Fort Collins, CO',
+    id: "vn-6",
+    name: "Lv Nail Spa",
+    vietnamese_title: "Sang Lv Nail Spa - Fort Collins, CO",
+    location: "Fort Collins, CO",
     price: 95000,
-    imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80',
-    description: 'Nail spa with 7 tables, 7 chairs, and 1,200 sqft space.',
-    vietnamese_description: '7 bàn, 7 ghế, 1,200 sqft. Giá $95K.',
-    features: ['7 Stations', '1,200 sqft'],
+    description: "Lv Nail Spa for sale",
+    imageUrl: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60",
+    vietnamese_description: "7 bàn, 7 ghế, 1,200 sqft. Giá $95K.",
+    features: ["7 bàn", "7 ghế"],
     square_feet: 1200,
     is_vietnamese_listing: true,
     contact_info: {
-      phone: '206-489-7081'
+      phone: "206-489-7081"
     }
   },
   {
-    id: 'vn-7',
-    name: 'Nail Salon - Cornelia',
-    vietnamese_title: 'Cần sang tiệm Nails - Cornelia, GA',
-    location: 'Cornelia, GA',
-    price: 0, // Price negotiable
-    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
-    description: '1,620 sqft salon with 10 chairs and 8 tables.',
-    vietnamese_description: '1620 sqft, 10 ghế, 8 bàn. Giá thương lượng.',
-    features: ['1,620 sqft', '10 Chairs', '8 Tables'],
+    id: "vn-7",
+    name: "Cornelia Nails",
+    vietnamese_title: "Cần sang tiệm Nails - Cornelia, GA",
+    location: "Cornelia, GA",
+    price: 0, // Negotiable
+    description: "Nail salon in Cornelia",
+    imageUrl: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60",
+    vietnamese_description: "1620 sqft, 10 ghế, 8 bàn. Giá thương lượng.",
+    features: ["10 ghế", "8 bàn"],
     square_feet: 1620,
     is_vietnamese_listing: true,
     contact_info: {
-      phone: '832-441-0876'
+      phone: "832-441-0876"
     }
   },
   {
-    id: 'vn-8',
-    name: 'Nail Salon - Murrieta',
-    vietnamese_title: 'Sang tiệm Murrieta, CA',
-    location: 'Murrieta, CA',
+    id: "vn-8",
+    name: "Murrieta Nails",
+    vietnamese_title: "Sang tiệm Murrieta, CA",
+    location: "Murrieta, CA",
     price: 220000,
-    imageUrl: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
-    description: '1,400 sqft salon with 9 tables and 9 chairs.',
-    vietnamese_description: '1400 sqft, 9 bàn, 9 ghế. Giá $220K.',
-    features: ['1,400 sqft', '9 Stations'],
+    description: "Nail salon in Murrieta",
+    imageUrl: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60",
+    vietnamese_description: "1400 sqft, 9 bàn, 9 ghế. Giá $220K.",
+    features: ["9 bàn", "9 ghế"],
     square_feet: 1400,
     is_vietnamese_listing: true,
     contact_info: {
-      phone: '657-346-4466'
+      phone: "657-346-4466"
     }
   },
   {
-    id: 'vn-9',
-    name: 'Nail Salon - Arlington',
-    vietnamese_title: 'Bán tiệm Arlington, TX',
-    location: 'Arlington, TX',
+    id: "vn-9",
+    name: "Arlington Nails",
+    vietnamese_title: "Bán tiệm Arlington, TX",
+    location: "Arlington, TX",
     price: 60000,
-    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
-    description: '1,200 sqft salon with 8 chairs and 7 tables.',
-    vietnamese_description: '1200 sqft, 8 ghế, 7 bàn. Giá $60K.',
-    features: ['1,200 sqft', '8 Chairs', '7 Tables'],
+    description: "Nail salon in Arlington",
+    imageUrl: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60",
+    vietnamese_description: "1200 sqft, 8 ghế, 7 bàn. Giá $60K.",
+    features: ["8 ghế", "7 bàn"],
     square_feet: 1200,
     is_vietnamese_listing: true,
     contact_info: {
-      phone: '903-245-6488'
+      phone: "903-245-6488"
     }
   },
   {
-    id: 'vn-10',
-    name: 'Nail Salon - Marietta',
-    vietnamese_title: 'Sang tiệm Marietta, Atlanta',
-    location: 'Marietta East Cobb, GA',
+    id: "vn-10",
+    name: "Marietta Nails",
+    vietnamese_title: "Sang tiệm Marietta, Atlanta",
+    location: "Marietta, Atlanta",
     price: 450000,
-    imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80',
-    description: 'Large salon with 3,000 sqft, 24 chairs, and 14 tables. Annual income over $1M.',
-    vietnamese_description: '3000 sqft, 24 ghế, 14 bàn. Income >1M. Giá $450K.',
-    features: ['3,000 sqft', '24 Chairs', '14 Tables', 'High Income'],
+    description: "High-income nail salon",
+    imageUrl: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60",
+    vietnamese_description: "3000 sqft, 24 ghế, 14 bàn. Income >1M. Giá $450K.",
+    features: ["24 ghế", "14 bàn"],
     square_feet: 3000,
-    yearly_revenue: '1000000',
+    yearly_revenue: ">1M",
     is_vietnamese_listing: true,
     contact_info: {
-      phone: '678-488-2583'
+      phone: "678-488-2583"
     }
   },
   {
-    id: 'vn-11',
-    name: 'Nail Salon - North Dakota',
-    vietnamese_title: 'Sang tiệm nail North Dakota',
-    location: 'North Dakota',
+    id: "vn-11",
+    name: "North Dakota Nails",
+    vietnamese_title: "Sang tiệm nail North Dakota",
+    location: "North Dakota",
     price: 40000,
-    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
-    description: 'Salon with all utilities included in rent.',
-    vietnamese_description: 'Rent bao điện nước. Giá $40K.',
-    features: ['Utilities Included'],
+    description: "Nail salon in North Dakota",
+    imageUrl: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60",
+    vietnamese_description: "Rent bao điện nước. Giá $40K.",
+    features: ["Rent bao điện nước"],
     is_vietnamese_listing: true,
     contact_info: {
-      phone: '714-787-8858'
+      phone: "714-787-8858"
     }
   },
   {
-    id: 'vn-12',
-    name: 'Newly Remodeled Nail Salon',
-    vietnamese_title: 'Bán tiệm nail Mới Remodel - California',
-    location: 'California',
+    id: "vn-12",
+    name: "California Remodeled Nails",
+    vietnamese_title: "Bán tiệm nail Mới Remodel - California",
+    location: "California",
     price: 220000,
-    imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80',
-    description: 'Newly remodeled salon with 9 tables and 9 chairs in a busy area.',
-    vietnamese_description: '9 bàn, 9 ghế, khu đông đúc. Giá $220K.',
-    features: ['9 Stations', 'Newly Remodeled', 'Busy Area'],
+    description: "Newly remodeled nail salon",
+    imageUrl: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60",
+    vietnamese_description: "9 bàn, 9 ghế, khu đông đúc. Giá $220K.",
+    features: ["9 bàn", "9 ghế", "Mới Remodel", "Khu đông đúc"],
     is_vietnamese_listing: true,
     contact_info: {
-      phone: '657-346-4466'
-    }
-  }
-];
-
-export const regularSalonListings: Salon[] = [
-  {
-    id: '1',
-    name: 'Nail Salon - Rowlett, TX',
-    location: 'Rowlett, TX',
-    price: 0, // Price not listed
-    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
-    description: 'Established nail salon with steady clientele. Monthly income: $120K - $150K. Last year income: $1.7M. Stable customer base, long-standing business.',
-    features: ['Established Clientele', 'High Income Potential', 'Prime Location'],
-    monthly_revenue: '120000-150000',
-    yearly_revenue: '1700000',
-    contact_info: {
-      phone: '(469)-438-5980'
+      phone: "657-346-4466"
     }
   },
   {
-    id: '2',
-    name: 'Nail Salon - Carrollton, GA',
-    location: 'Carrollton, GA',
-    price: 195000,
-    imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80',
-    description: 'Beautiful salon in prime location near Walmart, 1 hour from HK. Excellent location with established business.',
-    features: ['Near Walmart', 'Prime Location', 'Well-Maintained'],
+    id: "salon-1",
+    name: "Luxury Spa & Salon",
+    location: "New York, NY",
+    price: 250000,
+    imageUrl: "https://images.unsplash.com/photo-1560343090-f0409f92f93a?auto=format&fit=crop&w=800&q=60",
+    description: "A high-end salon and spa located in the heart of Manhattan.",
+    features: ["Spa", "Hair Salon", "Massage"],
+    square_feet: 2000,
+    monthly_rent: 10000,
+    monthly_revenue: "50000",
+    yearly_revenue: "600000",
     contact_info: {
-      phone: '404-543-0144'
+      phone: "(212) 555-1234",
+      email: "info@luxuryspa.com",
+      owner_name: "Jane Doe"
     }
   },
   {
-    id: '3',
-    name: 'Davi Nails',
-    location: 'Bismarck, ND',
-    price: 40000,
-    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
-    description: '5 chairs, 5 tables, wax room. Rent includes utilities. Supplies included. Stable income in upscale area.',
-    features: ['5 Stations', 'Wax Room', 'Utilities Included', 'Supplies Included'],
+    id: "salon-2",
+    name: "Modern Hair Studio",
+    location: "Los Angeles, CA",
+    price: 180000,
+    imageUrl: "https://images.unsplash.com/photo-1588995949339-2ca5828ca9e7?auto=format&fit=crop&w=800&q=60",
+    description: "A contemporary hair studio with a loyal clientele.",
+    features: ["Haircuts", "Coloring", "Styling"],
+    square_feet: 1500,
+    monthly_rent: 6000,
+    monthly_revenue: "35000",
+    yearly_revenue: "420000",
     contact_info: {
-      phone: '(714) 787-8858'
+      phone: "(310) 555-5678",
+      email: "info@modernstudio.com",
+      owner_name: "John Smith"
     }
   },
   {
-    id: '4',
-    name: 'Large Nail Salon',
-    location: 'Terrell, TX',
-    price: 0, // Contact for price
-    imageUrl: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
-    description: 'Spacious 3,000 sqft salon with 24 chairs, 12 tables, lash & facial rooms. Ready for immediate operation with steady clientele.',
-    features: ['3,000 sqft', '24 Chairs', '12 Tables', 'Lash Room', 'Facial Room'],
-    square_feet: 3000,
+    id: "salon-3",
+    name: "Nail & Beauty Lounge",
+    location: "Chicago, IL",
+    price: 120000,
+    imageUrl: "https://images.unsplash.com/photo-1597219784383-995977949244?auto=format&fit=crop&w=800&q=60",
+    description: "A popular nail and beauty lounge in a bustling neighborhood.",
+    features: ["Manicures", "Pedicures", "Facials"],
+    square_feet: 1000,
+    monthly_rent: 4000,
+    monthly_revenue: "25000",
+    yearly_revenue: "300000",
     contact_info: {
-      phone: '971-407-0664'
+      phone: "(312) 555-9012",
+      email: "info@nailbeautylounge.com",
+      owner_name: "Emily White"
     }
   },
   {
-    id: '5',
-    name: 'Nail Salon - Cumming',
-    location: 'Cumming, GA',
-    price: 85000,
-    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
-    description: '1,200 sqft salon in upscale area. 8 chairs, 7 tables. High-tip area. Monthly rent: $3,300.',
-    features: ['1,200 sqft', '8 Chairs', '7 Tables', 'Upscale Area'],
+    id: "salon-4",
+    name: "Barber Shop Classic",
+    location: "Houston, TX",
+    price: 90000,
+    imageUrl: "https://images.unsplash.com/photo-1517423440497-92a91294e201?auto=format&fit=crop&w=800&q=60",
+    description: "A traditional barber shop with a strong local following.",
+    features: ["Haircuts", "Shaving", "Beard Trims"],
+    square_feet: 800,
+    monthly_rent: 3000,
+    monthly_revenue: "20000",
+    yearly_revenue: "240000",
+    contact_info: {
+      phone: "(713) 555-3456",
+      email: "info@barbershopclassic.com",
+      owner_name: "David Green"
+    }
+  },
+  {
+    id: "salon-5",
+    name: "Eco-Friendly Salon",
+    location: "Seattle, WA",
+    price: 150000,
+    imageUrl: "https://images.unsplash.com/photo-1588421357569-839849758841?auto=format&fit=crop&w=800&q=60",
+    description: "An environmentally conscious salon using sustainable products.",
+    features: ["Organic Products", "Recycling", "Vegan Options"],
     square_feet: 1200,
-    monthly_rent: 3300,
+    monthly_rent: 5000,
+    monthly_revenue: "30000",
+    yearly_revenue: "360000",
     contact_info: {
-      phone: '404-455-5608'
+      phone: "(206) 555-7890",
+      email: "info@ecosalon.com",
+      owner_name: "Linda Brown"
     }
   },
   {
-    id: '6',
-    name: 'Lv Nail Spa',
-    location: 'Fort Collins, CO',
-    price: 95000,
-    imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80',
-    description: '7 tables, 7 chairs. Near schools with steady customer flow.',
-    features: ['7 Stations', 'Near Schools', 'Established Clientele'],
+    id: "salon-6",
+    name: "Lash & Brow Studio",
+    location: "Miami, FL",
+    price: 110000,
+    imageUrl: "https://images.unsplash.com/photo-1614988434205-df809e9a469f?auto=format&fit=crop&w=800&q=60",
+    description: "A specialized studio focusing on lash and brow services.",
+    features: ["Lash Extensions", "Brow Shaping", "Tinting"],
+    square_feet: 900,
+    monthly_rent: 3500,
+    monthly_revenue: "22000",
+    yearly_revenue: "264000",
     contact_info: {
-      phone: '206-489-7081'
+      phone: "(305) 555-4321",
+      email: "info@lashbrowstudio.com",
+      owner_name: "Susan Taylor"
     }
   },
   {
-    id: '7',
-    name: 'Nail Salon - Cornelia',
-    location: 'Cornelia, GA',
-    price: 0, // Contact for price
-    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
-    description: 'New salon in major shopping center. 10 chairs, 8 tables. Monthly rent: $1,905. Ready for immediate operation.',
-    features: ['10 Chairs', '8 Tables', 'Shopping Center Location', 'New Setup'],
-    monthly_rent: 1905,
+    id: "salon-7",
+    name: "Kids Hair Salon",
+    location: "Orlando, FL",
+    price: 80000,
+    imageUrl: "https://images.unsplash.com/photo-1628201537093-f0894ddb0d61?auto=format&fit=crop&w=800&q=60",
+    description: "A fun and friendly salon catering to children's haircuts.",
+    features: ["Kids Haircuts", "Parties", "Toys"],
+    square_feet: 700,
+    monthly_rent: 2500,
+    monthly_revenue: "18000",
+    yearly_revenue: "216000",
     contact_info: {
-      phone: '832-441-0876'
+      phone: "(407) 555-6789",
+      email: "info@kidshairsalon.com",
+      owner_name: "Karen Davis"
     }
   },
   {
-    id: '8',
-    name: 'Nail Salon - Murrieta',
-    location: 'Murrieta, CA',
-    price: 220000,
-    imageUrl: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
-    description: '1,400 sqft salon with prime location. 9 tables, 9 chairs. Annual income: $750,000.',
-    features: ['1,400 sqft', '9 Stations', 'Prime Location'],
-    square_feet: 1400,
-    yearly_revenue: '750000',
+    id: "salon-8",
+    name: "Mobile Pet Grooming",
+    location: "San Francisco, CA",
+    price: 130000,
+    imageUrl: "https://images.unsplash.com/photo-1562973747-b8c01092579f?auto=format&fit=crop&w=800&q=60",
+    description: "A mobile pet grooming service with a wide service area.",
+    features: ["Dog Grooming", "Cat Grooming", "Mobile Service"],
+    square_feet: 600,
+    monthly_rent: 4500,
+    monthly_revenue: "28000",
+    yearly_revenue: "336000",
     contact_info: {
-      phone: '657-346-4466'
+      phone: "(415) 555-2109",
+      email: "info@mobilepetgrooming.com",
+      owner_name: "Robert Wilson"
     }
   },
   {
-    id: '9',
-    name: 'Nail Salon - Arlington',
-    location: 'Arlington, TX',
-    price: 60000,
-    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
-    description: 'Established 20-year business. 8 chairs, 7 tables. Monthly rent: $3,400. Steady clientele.',
-    features: ['20 Years Established', '8 Chairs', '7 Tables'],
-    monthly_rent: 3400,
+    id: "salon-9",
+    name: "Tanning Studio",
+    location: "Denver, CO",
+    price: 70000,
+    imageUrl: "https://images.unsplash.com/photo-1576489571658-4b9439911c51?auto=format&fit=crop&w=800&q=60",
+    description: "A modern tanning studio with the latest equipment.",
+    features: ["Spray Tanning", "UV Tanning", "Skincare"],
+    square_feet: 850,
+    monthly_rent: 2800,
+    monthly_revenue: "19000",
+    yearly_revenue: "228000",
     contact_info: {
-      phone: '903-245-6488'
+      phone: "(303) 555-8765",
+      email: "info@tanningstudio.com",
+      owner_name: "Jennifer Moore"
     }
   },
   {
-    id: '10',
-    name: 'Nail Salon - Marietta East Cobb',
-    location: 'Marietta East Cobb, GA',
-    price: 450000,
-    imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80',
-    description: 'Large 3,000 sqft salon. 24 chairs, 14 tables. Annual income over $1M. Monthly rent: $10,200.',
-    features: ['3,000 sqft', '24 Chairs', '14 Tables', 'High Income'],
-    square_feet: 3000,
-    yearly_revenue: '1000000',
-    monthly_rent: 10200,
+    id: "salon-10",
+    name: "Permanent Makeup Clinic",
+    location: "Las Vegas, NV",
+    price: 160000,
+    imageUrl: "https://images.unsplash.com/photo-1605075419366-55c258955541?auto=format&fit=crop&w=800&q=60",
+    description: "A specialized clinic for permanent makeup and cosmetic tattooing.",
+    features: ["Microblading", "Lip Blush", "Eyeliner Tattoo"],
+    square_feet: 1100,
+    monthly_rent: 5500,
+    monthly_revenue: "32000",
+    yearly_revenue: "384000",
     contact_info: {
-      phone: '678-488-2583'
+      phone: "(702) 555-5432",
+      email: "info@permanentmakeupclinic.com",
+      owner_name: "Michael Clark"
     }
   }
 ];
-
-export const salonListings: Salon[] = [...vietnameseSalonListings, ...regularSalonListings];
