@@ -18,4 +18,40 @@ export interface Salon {
     email?: string;
     owner_name?: string;
   };
+  
+  // Additional properties for salon profile components
+  city?: string;
+  neighborhood?: string;
+  rating?: number;
+  reviewCount?: number;
+  specialty?: string;
+  logo?: string;
+  bio?: string;
+  shortBio?: string;
+  services?: string[];
+  established?: number | string;
+  isHiring?: boolean;
+  bookingLink?: string;
+  email?: string;
+  phone?: string;
+  website?: string;
+  beforeAfterGallery?: string[];
+  hours?: {
+    monday: string;
+    tuesday: string;
+    wednesday: string;
+    thursday: string;
+    friday: string;
+    saturday: string;
+    sunday: string;
+    [key: string]: string;
+  };
+  socialMedia?: {
+    instagram?: string;
+    facebook?: string;
+    twitter?: string;
+    tiktok?: string;
+  };
+  amenities?: string[];
+  paymentMethods?: string[];
 }
