@@ -15,7 +15,8 @@ export interface Salon {
   neighborhood?: string;
   teamSize?: number; 
   certifications?: string[];
-  awards?: string[]; // Added awards property
+  awards?: string[];
+  languages?: string[]; // Added languages property
   hours?: {
     monday: string;
     tuesday: string;
@@ -53,4 +54,3 @@ export interface Salon {
   beforeAfterGallery?: string[];
   owner?: string;
 }
-
