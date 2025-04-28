@@ -12,10 +12,12 @@ import { useSalonsData } from '@/hooks/useSalonsData';
 import { useNavigate } from 'react-router-dom';
 import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { PremiumBadge } from '@/components/salons/PremiumBadge';
 import { cn } from "@/lib/utils";
 import SalonDetailModal from "@/components/salons/SalonDetailModal";
 import { Job } from "@/types/job";
+import SalonListingCta from "@/components/salons/SalonListingCta";
+import WhySellSection from "@/components/salons/WhySellSection";
+import FeaturedListingsSection from "@/components/salons/FeaturedListingsSection";
 
 const SalonsFinal: React.FC = () => {
   const [activeTab, setActiveTab] = useState("all");
@@ -47,6 +49,20 @@ const SalonsFinal: React.FC = () => {
     }
     return true;
   });
+
+  // Get featured salons
+  const getFeaturedSalons = () => {
+    // Use explicit featured salons or mark some as featured
+    if (featuredSalons && featuredSalons.length > 0) {
+      return featuredSalons;
+    }
+    
+    // If no featured salons, use the first 3 salons with images as featured
+    return salons
+      .filter(salon => salon.image)
+      .slice(0, 3)
+      .map(salon => ({ ...salon, is_featured: true }));
+  };
 
   // Handle salon details view
   const handleViewSalonDetails = (salon: Job) => {
@@ -86,15 +102,37 @@ const SalonsFinal: React.FC = () => {
   return (
     <Layout>
       <Helmet>
-        <title>Premium Salon Directory | EmviApp</title>
+        <title>Premium Salon Marketplace | EmviApp</title>
         <meta 
           name="description" 
-          content="Browse our curated selection of premium nail salons. Find the perfect salon near you or list your own salon." 
+          content="Browse our curated selection of premium nail salons for sale. Find your next business opportunity or list your salon on EmviApp's exclusive marketplace." 
         />
       </Helmet>
       
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
+          <div className="mb-10">
+            <h1 className="font-playfair text-3xl md:text-4xl font-bold mb-3">
+              Salon Marketplace
+            </h1>
+            <p className="text-gray-600 max-w-2xl">
+              Browse premium salon listings or sell your beauty business to qualified buyers. 
+              EmviApp connects beauty professionals with their next opportunity.
+            </p>
+          </div>
+
+          {/* Featured Listings Section */}
+          {!loading && <FeaturedListingsSection 
+            featuredListings={getFeaturedSalons()} 
+            onViewDetails={handleViewSalonDetails} 
+          />}
+
+          {/* Salon Listing CTA */}
+          <SalonListingCta />
+          
+          {/* Why Sell Section */}
+          <WhySellSection />
+          
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Desktop Filter Sidebar */}
             <div className="hidden lg:block w-64 shrink-0">
@@ -107,11 +145,11 @@ const SalonsFinal: React.FC = () => {
             <div className="flex-1">
               <div className="flex items-center justify-between mb-8">
                 <div>
-                  <h1 className="text-3xl md:text-4xl font-serif font-bold mb-2">
-                    Salon Directory
-                  </h1>
+                  <h2 className="font-playfair text-2xl font-semibold mb-2">
+                    Browse Salon Listings
+                  </h2>
                   <p className="text-gray-600">
-                    Find the perfect salon near you
+                    Find the perfect salon opportunity
                   </p>
                 </div>
                 
@@ -138,14 +176,10 @@ const SalonsFinal: React.FC = () => {
                             salon.is_featured && "ring-1 ring-purple-200 rounded-lg shadow-lg"
                           )}
                         >
-                          {salon.is_featured && (
-                            <div className="flex justify-end p-2">
-                              <PremiumBadge />
-                            </div>
-                          )}
                           <SalonCard 
                             salon={salon}
-                            onClick={() => handleViewSalonDetails(salon)}
+                            isExpired={salon.status === "expired"}
+                            onViewDetails={() => handleViewSalonDetails(salon)}
                           />
                         </div>
                       ))}
@@ -169,7 +203,7 @@ const SalonsFinal: React.FC = () => {
           
           {/* Component version tag */}
           <div className="text-xs text-center text-gray-400 mt-8">
-            SalonsPage_FINAL v1.0 - Phase 1 Complete
+            SalonsPage_FINAL v2.0 - Premium Marketplace
           </div>
         </div>
       </div>
