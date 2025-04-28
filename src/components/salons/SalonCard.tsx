@@ -8,9 +8,11 @@ import { Salon } from '@/types/salon';
 
 interface SalonCardProps {
   salon: Salon;
+  isExpired?: boolean;
+  onViewDetails: () => void;
 }
 
-const SalonCard = ({ salon }: SalonCardProps) => {
+const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) => {
   // Use correct image property based on what's available
   const imageUrl = salon.imageUrl || salon.image || '';
 
@@ -60,11 +62,13 @@ const SalonCard = ({ salon }: SalonCardProps) => {
           {salon.description}
         </p>
         
-        <Link to={`/salons/${salon.id}`}>
-          <Button variant="outline" className="w-full">
-            View Details
-          </Button>
-        </Link>
+        <Button 
+          variant="outline" 
+          className="w-full"
+          onClick={onViewDetails}
+        >
+          View Details
+        </Button>
       </div>
     </div>
   );

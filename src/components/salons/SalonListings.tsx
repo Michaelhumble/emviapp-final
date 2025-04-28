@@ -93,11 +93,10 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
       {/* Salon listings grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {filteredSalons.length > 0 ? (
-          filteredSalons.map((salon, index) => (
+          filteredSalons.map((salon) => (
             <SalonCard 
               key={salon.id}
               salon={convertJobToSalon(salon)} // Convert Job to Salon
-              index={index}
               isExpired={isExpired(salon)}
               onViewDetails={() => handleViewDetails(salon)}
             />
