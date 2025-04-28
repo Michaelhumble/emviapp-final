@@ -22,8 +22,8 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
   };
 
   // Use Vietnamese content when available
-  const title = salon.vietnamese_title || salon.name;
-  const description = salon.vietnamese_description || salon.description;
+  const title = salon.is_vietnamese_listing ? salon.vietnamese_title || salon.name : salon.name;
+  const description = salon.is_vietnamese_listing ? salon.vietnamese_description || salon.description : salon.description;
   const buttonText = salon.is_vietnamese_listing ? "Xem Chi Tiết" : "View Details";
 
   return (
