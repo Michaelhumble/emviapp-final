@@ -1,13 +1,14 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, DollarSign, Building } from "lucide-react";
+import { MapPin, DollarSign, Building, Phone } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Salon } from '@/types/salon';
 import AuthAction from '@/components/common/AuthAction';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
-import { fallbackImage } from '@/utils/salonImageFallbacks';
+import { fallbackImage, getDefaultSalonImage } from '@/utils/salonImageFallbacks';
 
 interface SalonCardProps {
   salon: Salon;
@@ -39,7 +40,7 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
         <ImageWithFallback
           src={salon.imageUrl}
           alt={title}
-          fallbackImage={fallbackImage}
+          fallbackImage={getDefaultSalonImage(salon.category)}
           className="h-48 w-full object-cover"
           loading="lazy"
         />
@@ -80,7 +81,7 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
         </div>
 
         {salon.contact_info?.phone && (
-          <AuthAction onAction={handleViewContact}>
+          <AuthAction onAction={handleViewContact} redirectPath="/sign-in">
             <div className={`text-sm py-2 px-3 rounded border mb-4 flex items-center gap-2 cursor-pointer ${isVietnamese ? 'bg-purple-50 border-purple-200 text-purple-900 hover:bg-purple-100' : 'bg-gray-50 border-gray-100 text-gray-600 hover:bg-gray-100'}`}>
               <Phone className="h-4 w-4" />
               <span>Sign in to view contact</span>

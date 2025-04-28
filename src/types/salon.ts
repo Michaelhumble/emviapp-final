@@ -61,4 +61,7 @@ export interface Salon {
   vietnamese_description?: string;
   income_range?: string;
   is_vietnamese_listing?: boolean;
+  
+  // Category for appropriate fallback image selection
+  category?: SalonCategory;
 }
