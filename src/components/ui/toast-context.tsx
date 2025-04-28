@@ -5,7 +5,7 @@ import { Toast } from '@/components/ui/toast';
 export interface ToastOptions {
   title?: string;
   description?: string;
-  type?: 'default' | 'success' | 'error' | 'warning' | 'info';
+  variant?: 'default' | 'destructive' | 'success' | 'error' | 'warning' | 'info';
   duration?: number;
 }
 
@@ -39,7 +39,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
             key={toast.id}
             title={toast.title}
             description={toast.description}
-            variant={toast.type}
+            variant={toast.variant}
             onClose={() => setToasts((prev) => prev.filter((t) => t.id !== toast.id))}
           />
         ))}
