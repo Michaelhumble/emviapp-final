@@ -60,7 +60,7 @@ const SimpleSalonDetailPage = () => {
             <div className="p-6">
               {isVietnamese && (
                 <div className="inline-block bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium mb-4">
-                  🇻🇳 Vietnamese Listing
+                  Vietnamese Listing
                 </div>
               )}
               

@@ -50,7 +50,7 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         {isVietnamese && (
           <div className="absolute top-3 left-3">
-            <Badge className="bg-purple-600 hover:bg-purple-700 text-white">🇻🇳 Tiệm Nail</Badge>
+            <Badge className="bg-purple-600 hover:bg-purple-700 text-white">Tiệm Nail</Badge>
           </div>
         )}
       </div>
