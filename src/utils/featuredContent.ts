@@ -36,6 +36,11 @@ export const getFeaturedSalons = (count: number = 3): Salon[] => {
   const featuredSalons: Salon[] = notForSale.slice(0, count).map((job, index) => ({
     id: job.id,
     name: job.company || `Premium Salon ${index + 1}`,
+    location: job.location || 'Unknown Location',
+    price: job.price || 0,
+    imageUrl: job.image || 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60',
+    description: job.description || 'Premier beauty salon offering exceptional services.',
+    // Additional fields:
     image: job.image || 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60',
     logo: job.image || `https://via.placeholder.com/64x64?text=${job.company?.charAt(0) || 'S'}`,
     specialty: job.salon_type || job.specialties?.[0] || 'Beauty Salon',

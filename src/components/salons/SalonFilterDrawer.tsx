@@ -1,81 +1,98 @@
 
-import React from "react";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
-import { SlidersHorizontal } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import SalonFilter from "./SalonFilter";
-import { SalonFilters } from "@/hooks/useSalonsData";
+import React from 'react';
+import { 
+  Drawer, 
+  DrawerClose, 
+  DrawerContent, 
+  DrawerFooter, 
+  DrawerHeader, 
+  DrawerTitle 
+} from '@/components/ui/drawer';
+import { Button } from '@/components/ui/button';
+import { X } from 'lucide-react';
 
 interface SalonFilterDrawerProps {
-  searchTerm: string;
-  setSearchTerm: (term: string) => void;
-  filters: SalonFilters;
-  updateFilters: (filters: Partial<SalonFilters>) => void;
-  resetFilters: () => void;
-  suggestedKeywords?: string[];
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export const SalonFilterDrawer = ({
-  searchTerm,
-  setSearchTerm,
-  filters,
-  updateFilters,
-  resetFilters,
-  suggestedKeywords = [],
-}: SalonFilterDrawerProps) => {
-  // Count active filters (excluding empty ones)
-  const getActiveFilterCount = () => {
-    let count = 0;
-    if (searchTerm) count++;
-    if (filters.category) count++;
-    if (filters.location) count++;
-    if (filters.features && filters.features.length > 0) count++;
-    if (filters.priceRange && 
-        (filters.priceRange[0] > 0 || filters.priceRange[1] < 500000)) count++;
-    
-    return count;
+const SalonFilterDrawer = ({ isOpen, onClose }: SalonFilterDrawerProps) => {
+  // Simple placeholder filter state
+  const [priceRange, setPriceRange] = React.useState([0, 500000]);
+  const [location, setLocation] = React.useState('');
+
+  const handleApplyFilters = () => {
+    // Placeholder for filter application
+    console.log('Applying filters:', { priceRange, location });
+    onClose();
   };
 
-  const activeFilterCount = getActiveFilterCount();
+  const handleResetFilters = () => {
+    setPriceRange([0, 500000]);
+    setLocation('');
+  };
 
   return (
-    <Drawer>
-      <DrawerTrigger asChild>
-        <Button variant="outline" className="relative">
-          <SlidersHorizontal className="h-4 w-4 mr-2" />
-          Filters
-          {activeFilterCount > 0 && (
-            <Badge 
-              className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center bg-purple-600 text-white"
-            >
-              {activeFilterCount}
-            </Badge>
-          )}
-        </Button>
-      </DrawerTrigger>
-      <DrawerContent className="max-h-[85vh] overflow-y-auto px-4 py-6">
-        <div className="max-w-md mx-auto">
-          <h3 className="font-playfair font-semibold text-xl mb-6">Filter Salons</h3>
-          <SalonFilter
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            filters={filters}
-            updateFilters={updateFilters}
-            resetFilters={resetFilters}
-            suggestedKeywords={suggestedKeywords}
-          />
-          <div className="mt-4 flex justify-end">
-            <Button 
-              variant="default"
-              className="w-full bg-purple-600 hover:bg-purple-700"
-              onClick={() => document.querySelector('.drawer-close')?.dispatchEvent(new MouseEvent('click'))}
-            >
-              Apply Filters
+    <Drawer open={isOpen} onClose={onClose}>
+      <DrawerContent className="max-h-[90vh]">
+        <DrawerHeader className="flex items-center justify-between">
+          <DrawerTitle>Filter Salons</DrawerTitle>
+          <DrawerClose asChild>
+            <Button variant="ghost" size="icon">
+              <X className="h-4 w-4" />
             </Button>
+          </DrawerClose>
+        </DrawerHeader>
+        
+        <div className="px-4 pb-4">
+          <div className="space-y-6">
+            <div>
+              <label className="text-sm font-medium">Location</label>
+              <input
+                type="text"
+                placeholder="Enter city, state, or zip"
+                className="w-full mt-1 p-2 border rounded"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm font-medium">Price Range</label>
+              <div className="flex items-center gap-2 mt-1">
+                <input 
+                  type="number" 
+                  className="w-full p-2 border rounded"
+                  value={priceRange[0]}
+                  onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
+                  placeholder="Min"
+                />
+                <span>to</span>
+                <input 
+                  type="number" 
+                  className="w-full p-2 border rounded"
+                  value={priceRange[1]}
+                  onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                  placeholder="Max"
+                />
+              </div>
+            </div>
+            
+            {/* Additional filter options would be added here */}
           </div>
         </div>
+        
+        <DrawerFooter className="flex flex-row gap-2">
+          <Button variant="outline" onClick={handleResetFilters} className="flex-1">
+            Reset
+          </Button>
+          <Button onClick={handleApplyFilters} className="flex-1">
+            Apply Filters
+          </Button>
+        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   );
 };
+
+export default SalonFilterDrawer;

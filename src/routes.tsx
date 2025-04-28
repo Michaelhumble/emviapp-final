@@ -66,11 +66,10 @@ const Messages = React.lazy(() => import('./pages/messages/index'));
 import PortfolioManagerPage from './pages/dashboard/artist/portfolio/index';
 
 import OpportunityDetailPage from './pages/opportunities/OpportunityDetailPage';
-import SimpleSalonPage from './pages/salons/SimpleSalonPage';
+import SimpleSalonsPage from './pages/salons/SimpleSalonsPage';
+import SimpleSalonDetailPage from './pages/salons/SimpleSalonDetailPage';
 
-// Import the new unified listings salons page
-import SalonsListingsPage from './pages/salons/index';
-
+// Import the new SimpleSalon pages instead of the missing index file
 const routes = [
   {
     path: '/auth/redirect',
@@ -352,7 +351,7 @@ const routes = [
   },
   {
     path: '/listing/:id',
-    element: <SalonsListingsPage />, // This will be replaced with a universal listing detail page later
+    element: <SimpleSalonsPage />, // Changed from SalonsListingsPage to SimpleSalonsPage
   },
 ];
 

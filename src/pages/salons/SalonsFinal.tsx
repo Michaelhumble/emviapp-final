@@ -1,208 +1,71 @@
-import React, { useState, useEffect } from 'react';
+
+import React from 'react';
 import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import SalonCard from "@/components/salons/SalonCard";
-import { SalonFilterDrawer } from "@/components/salons/SalonFilterDrawer";
-import SalonFilter from "@/components/salons/SalonFilter";
-import SalonsEmptyState from "@/components/salons/SalonsEmptyState";
-import SalonsLoadingState from "@/components/salons/SalonsLoadingState";
-import { useSalonsData } from '@/hooks/useSalonsData';
-import { useNavigate } from 'react-router-dom';
-import { AlertCircle } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { cn } from "@/lib/utils";
-import SalonDetailsDialog from "@/components/salons/SalonDetailModal";
-import { Job } from "@/types/job";
-import SalonListingCta from "@/components/salons/SalonListingCta";
-import WhySellSection from "@/components/salons/WhySellSection";
-import FeaturedListingsSection from "@/components/salons/FeaturedListingsSection";
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import { salonListings } from '@/data/salonData';
+import SimpleSalonCard from '@/components/salons/SimpleSalonCard';
 
-const SalonsFinal: React.FC = () => {
-  const [activeTab, setActiveTab] = useState("all");
-  const [selectedSalon, setSelectedSalon] = useState<Job | null>(null);
-  const navigate = useNavigate();
-  
-  const { 
-    salons, 
-    loading, 
-    error, 
-    filters, 
-    searchTerm, 
-    setSearchTerm, 
-    updateFilters, 
-    resetFilters,
-    featuredSalons,
-    suggestedKeywords 
-  } = useSalonsData();
-
-  useEffect(() => {
-    console.log("Salons page mounted with filters:", filters);
-    console.log("Active tab:", activeTab);
-  }, [filters, activeTab]);
-
-  // Filter salons based on active tab
-  const filteredSalons = salons.filter(salon => {
-    if (activeTab === "featured" && !salon.is_featured) {
-      return false;
-    }
-    return true;
-  });
-
-  // Get featured salons
-  const getFeaturedSalons = () => {
-    // Use explicit featured salons or mark some as featured
-    if (featuredSalons && featuredSalons.length > 0) {
-      return featuredSalons;
-    }
-    
-    // If no featured salons, use the first 3 salons with images as featured
-    return salons
-      .filter(salon => salon.image)
-      .slice(0, 3)
-      .map(salon => ({ ...salon, is_featured: true }));
-  };
-
-  // Handle salon details view
-  const handleViewSalonDetails = (salon: Job) => {
-    setSelectedSalon(salon);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedSalon(null);
-  };
-
-  if (error) {
-    console.error("Error loading salons:", error);
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-12">
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Error Loading Salons</AlertTitle>
-            <AlertDescription>
-              We're having trouble loading the salon listings. Please try refreshing the page or come back later.
-            </AlertDescription>
-          </Alert>
-        </div>
-      </Layout>
-    );
-  }
-
-  const salonFilterProps = {
-    searchTerm,
-    setSearchTerm,
-    filters,
-    updateFilters,
-    resetFilters,
-    suggestedKeywords
-  };
-
+const SalonsFinalsPage = () => {
   return (
     <Layout>
       <Helmet>
-        <title>Premium Salon Marketplace | EmviApp</title>
+        <title>Premium Salon Listings | EmviApp</title>
         <meta 
           name="description" 
-          content="Browse our curated selection of premium nail salons for sale. Find your next business opportunity or list your salon on EmviApp's exclusive marketplace." 
+          content="Browse our curated selection of premium salons for sale. Find your next business opportunity with EmviApp." 
         />
       </Helmet>
-      
-      <div className="container mx-auto px-4 py-8">
+
+      <div className="container mx-auto px-4 py-12">
         <div className="max-w-7xl mx-auto">
           <div className="mb-10">
             <h1 className="font-playfair text-3xl md:text-4xl font-bold mb-3">
-              Salon Marketplace
+              Premium Salon Listings
             </h1>
             <p className="text-gray-600 max-w-2xl">
-              Browse premium salon listings or sell your beauty business to qualified buyers. 
-              EmviApp connects beauty professionals with their next opportunity.
+              Browse our curated selection of premium salons for sale. Each listing represents 
+              a unique opportunity in the beauty industry.
             </p>
           </div>
 
-          {/* Featured Listings Section */}
-          {!loading && <FeaturedListingsSection 
-            featuredListings={getFeaturedSalons()} 
-            onViewDetails={handleViewSalonDetails} 
-          />}
+          <div className="flex flex-wrap items-center gap-4 mb-8">
+            <Button variant="outline" className="rounded-full">
+              All Locations
+            </Button>
+            <Button variant="outline" className="rounded-full">
+              Under $200K
+            </Button>
+            <Button variant="outline" className="rounded-full">
+              $200K - $500K
+            </Button>
+            <Button variant="outline" className="rounded-full">
+              Over $500K
+            </Button>
+            <Button variant="outline" className="rounded-full">
+              Recently Added
+            </Button>
+          </div>
 
-          {/* Salon Listing CTA */}
-          <SalonListingCta />
-          
-          {/* Why Sell Section */}
-          <WhySellSection />
-          
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Desktop Filter Sidebar */}
-            <div className="hidden lg:block w-64 shrink-0">
-              <div className="sticky top-24">
-                <SalonFilter {...salonFilterProps} />
-              </div>
-            </div>
-
-            {/* Main Content */}
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <h2 className="font-playfair text-2xl font-semibold mb-2">
-                    Browse Salon Listings
-                  </h2>
-                  <p className="text-gray-600">
-                    Find the perfect salon opportunity
-                  </p>
-                </div>
-                
-                {/* Mobile Filter Drawer */}
-                <SalonFilterDrawer {...salonFilterProps} />
-              </div>
-
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-                <TabsList>
-                  <TabsTrigger value="all">All Salons</TabsTrigger>
-                  <TabsTrigger value="featured">Featured</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value={activeTab} className="mt-6">
-                  {loading ? (
-                    <SalonsLoadingState count={6} />
-                  ) : filteredSalons.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {filteredSalons.map((salon) => (
-                        <div 
-                          key={salon.id}
-                          className={cn(
-                            "transition-all duration-300",
-                            salon.is_featured && "ring-1 ring-purple-200 rounded-lg shadow-lg"
-                          )}
-                        >
-                          <SalonCard 
-                            salon={salon}
-                            isExpired={salon.status === "expired"}
-                            onViewDetails={() => handleViewSalonDetails(salon)}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <SalonsEmptyState resetFilters={resetFilters} />
-                  )}
-                </TabsContent>
-              </Tabs>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {salonListings.map((salon) => (
+              <SimpleSalonCard key={salon.id} salon={salon} />
+            ))}
           </div>
           
-          {/* Salon Detail Modal */}
-          {selectedSalon && (
-            <SalonDetailsDialog
-              salon={selectedSalon}
-              isOpen={!!selectedSalon}
-              onClose={handleCloseModal}
-            />
-          )}
-          
-          {/* Component version tag */}
-          <div className="text-xs text-center text-gray-400 mt-8">
-            SalonsPage_FINAL v2.0 - Premium Marketplace
+          <div className="mt-16 text-center">
+            <h2 className="font-playfair text-2xl font-semibold mb-4">
+              Have a salon you want to sell?
+            </h2>
+            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+              List your salon with EmviApp to reach thousands of potential buyers in the beauty industry.
+            </p>
+            <Link to="/sell-salon">
+              <Button size="lg" className="bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800">
+                List Your Salon
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
@@ -210,4 +73,4 @@ const SalonsFinal: React.FC = () => {
   );
 };
 
-export default SalonsFinal;
+export default SalonsFinalsPage;

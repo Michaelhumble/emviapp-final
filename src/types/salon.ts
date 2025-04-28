@@ -35,6 +35,10 @@ export interface Salon {
     instagram?: string;
     facebook?: string;
     twitter?: string;
+    pinterest?: string;
+    youtube?: string;
+    tiktok?: string;
+    [key: string]: string | undefined; // Allow additional social platforms
   };
   paymentMethods?: string[];
   bookingLink?: string;
@@ -44,4 +48,5 @@ export interface Salon {
   email?: string;
   website?: string;
   beforeAfterGallery?: string[];
+  owner?: string;
 }
