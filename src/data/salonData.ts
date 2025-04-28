@@ -4,98 +4,134 @@ import { Salon } from '@/types/salon';
 export const salonListings: Salon[] = [
   {
     id: '1',
-    name: 'Luminous Beauty Salon',
-    location: 'Beverly Hills, CA',
-    price: 250000,
-    imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80',
-    description: 'Exclusive beauty salon in prime location',
+    name: 'Nail Salon - Rowlett, TX',
+    location: 'Rowlett, TX',
+    price: 0, // Price not listed
+    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
+    description: 'Established nail salon with steady clientele. Monthly income: $120K - $150K. Last year income: $1.7M. Stable customer base, long-standing business.',
+    features: ['Established Clientele', 'High Income Potential', 'Prime Location'],
+    monthly_revenue: '120000-150000',
+    yearly_revenue: '1700000',
+    contact_info: {
+      phone: '(469)-438-5980'
+    }
   },
   {
     id: '2',
-    name: 'Elegance Nail Studio',
-    location: 'Manhattan, NY',
-    price: 180000,
-    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
-    description: 'Established nail salon with loyal clientele',
+    name: 'Nail Salon - Carrollton, GA',
+    location: 'Carrollton, GA',
+    price: 195000,
+    imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80',
+    description: 'Beautiful salon in prime location near Walmart, 1 hour from HK. Excellent location with established business.',
+    features: ['Near Walmart', 'Prime Location', 'Well-Maintained'],
+    contact_info: {
+      phone: '404-543-0144'
+    }
   },
   {
     id: '3',
-    name: 'Pure Serenity Spa',
-    location: 'Miami Beach, FL',
-    price: 320000,
-    imageUrl: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
-    description: 'Luxury spa and salon with ocean views',
+    name: 'Davi Nails',
+    location: 'Bismarck, ND',
+    price: 40000,
+    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
+    description: '5 chairs, 5 tables, wax room. Rent includes utilities. Supplies included. Stable income in upscale area.',
+    features: ['5 Stations', 'Wax Room', 'Utilities Included', 'Supplies Included'],
+    contact_info: {
+      phone: '(714) 787-8858'
+    }
   },
   {
     id: '4',
-    name: 'Modern Beauty Lab',
-    location: 'Seattle, WA',
-    price: 175000,
-    imageUrl: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=800&q=80',
-    description: 'Contemporary salon in tech district',
+    name: 'Large Nail Salon',
+    location: 'Terrell, TX',
+    price: 0, // Contact for price
+    imageUrl: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
+    description: 'Spacious 3,000 sqft salon with 24 chairs, 12 tables, lash & facial rooms. Ready for immediate operation with steady clientele.',
+    features: ['3,000 sqft', '24 Chairs', '12 Tables', 'Lash Room', 'Facial Room'],
+    square_feet: 3000,
+    contact_info: {
+      phone: '971-407-0664'
+    }
   },
   {
     id: '5',
-    name: 'Rose Gold Beauty',
-    location: 'Chicago, IL',
-    price: 230000,
-    imageUrl: 'https://images.unsplash.com/photo-1595476108010-b4d1db79bd01?auto=format&fit=crop&w=800&q=80',
-    description: 'Upscale salon with premium services',
+    name: 'Nail Salon - Cumming',
+    location: 'Cumming, GA',
+    price: 85000,
+    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
+    description: '1,200 sqft salon in upscale area. 8 chairs, 7 tables. High-tip area. Monthly rent: $3,300.',
+    features: ['1,200 sqft', '8 Chairs', '7 Tables', 'Upscale Area'],
+    square_feet: 1200,
+    monthly_rent: 3300,
+    contact_info: {
+      phone: '404-455-5608'
+    }
   },
   {
     id: '6',
-    name: 'The Beauty Collective',
-    location: 'Austin, TX',
-    price: 195000,
-    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
-    description: 'Trendy salon in vibrant downtown',
+    name: 'Lv Nail Spa',
+    location: 'Fort Collins, CO',
+    price: 95000,
+    imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80',
+    description: '7 tables, 7 chairs. Near schools with steady customer flow.',
+    features: ['7 Stations', 'Near Schools', 'Established Clientele'],
+    contact_info: {
+      phone: '206-489-7081'
+    }
   },
   {
     id: '7',
-    name: 'Glamour House',
-    location: 'Los Angeles, CA',
-    price: 275000,
-    imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80',
-    description: 'Celebrity favorite beauty destination',
+    name: 'Nail Salon - Cornelia',
+    location: 'Cornelia, GA',
+    price: 0, // Contact for price
+    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
+    description: 'New salon in major shopping center. 10 chairs, 8 tables. Monthly rent: $1,905. Ready for immediate operation.',
+    features: ['10 Chairs', '8 Tables', 'Shopping Center Location', 'New Setup'],
+    monthly_rent: 1905,
+    contact_info: {
+      phone: '832-441-0876'
+    }
   },
   {
     id: '8',
-    name: 'Urban Oasis Salon',
-    location: 'Portland, OR',
-    price: 165000,
-    imageUrl: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=800&q=80',
-    description: 'Eco-friendly salon with modern amenities',
+    name: 'Nail Salon - Murrieta',
+    location: 'Murrieta, CA',
+    price: 220000,
+    imageUrl: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
+    description: '1,400 sqft salon with prime location. 9 tables, 9 chairs. Annual income: $750,000.',
+    features: ['1,400 sqft', '9 Stations', 'Prime Location'],
+    square_feet: 1400,
+    yearly_revenue: '750000',
+    contact_info: {
+      phone: '657-346-4466'
+    }
   },
   {
     id: '9',
-    name: 'Crystal Beauty Bar',
-    location: 'Denver, CO',
-    price: 210000,
-    imageUrl: 'https://images.unsplash.com/photo-1595476108010-b4d1db79bd01?auto=format&fit=crop&w=800&q=80',
-    description: 'High-end salon with mountain views',
+    name: 'Nail Salon - Arlington',
+    location: 'Arlington, TX',
+    price: 60000,
+    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
+    description: 'Established 20-year business. 8 chairs, 7 tables. Monthly rent: $3,400. Steady clientele.',
+    features: ['20 Years Established', '8 Chairs', '7 Tables'],
+    monthly_rent: 3400,
+    contact_info: {
+      phone: '903-245-6488'
+    }
   },
   {
     id: '10',
-    name: 'Royal Treatment',
-    location: 'San Diego, CA',
-    price: 290000,
-    imageUrl: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80',
-    description: 'Luxury beachside beauty center',
-  },
-  {
-    id: '11',
-    name: 'The Glam Room',
-    location: 'Houston, TX',
-    price: 185000,
-    imageUrl: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80',
-    description: 'Modern salon with state-of-the-art equipment',
-  },
-  {
-    id: '12',
-    name: 'Luxe Beauty Lounge',
-    location: 'San Francisco, CA',
-    price: 345000,
+    name: 'Nail Salon - Marietta East Cobb',
+    location: 'Marietta East Cobb, GA',
+    price: 450000,
     imageUrl: 'https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80',
-    description: 'Premium salon in financial district',
-  },
+    description: 'Large 3,000 sqft salon. 24 chairs, 14 tables. Annual income over $1M. Monthly rent: $10,200.',
+    features: ['3,000 sqft', '24 Chairs', '14 Tables', 'High Income'],
+    square_feet: 3000,
+    yearly_revenue: '1000000',
+    monthly_rent: 10200,
+    contact_info: {
+      phone: '678-488-2583'
+    }
+  }
 ];

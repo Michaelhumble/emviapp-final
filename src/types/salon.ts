@@ -6,62 +6,16 @@ export interface Salon {
   price: number;
   imageUrl: string;
   description: string;
-  
-  // Additional properties needed by featured salon components
-  image?: string; // Used in featured components
-  logo?: string;
-  specialty?: string;
-  city?: string;
-  neighborhood?: string;
-  teamSize?: number; 
-  certifications?: string[];
-  awards?: string[];
-  languages?: string[]; // Added languages property
-  accessibilityFeatures?: string[]; // Added accessibility features
-  hours?: {
-    monday: string;
-    tuesday: string;
-    wednesday: string;
-    thursday: string;
-    friday: string;
-    saturday: string;
-    sunday: string;
-    [key: string]: string; // Allow dynamic day access
-  };
-  bio?: string;
-  shortBio?: string;
-  rating?: number;
-  reviewCount?: number;
-  priceRange?: string;
-  established?: number;
-  services?: string[];
-  amenities?: string[];
-  socialMedia?: {
-    instagram?: string;
-    facebook?: string;
-    twitter?: string;
-    pinterest?: string;
-    youtube?: string;
-    tiktok?: string;
-    [key: string]: string | undefined; // Allow additional social platforms
-  };
-  paymentMethods?: string[];
-  bookingLink?: string;
-  isHiring?: boolean;
+  features?: string[];
+  square_feet?: number;
+  monthly_rent?: number;
+  monthly_revenue?: string;
+  yearly_revenue?: string;
+  image?: string;
   featured?: boolean;
-  phone?: string;
-  email?: string;
-  website?: string;
-  beforeAfterGallery?: string[];
-  owner?: string;
-  features?: string[]; // Added for salon features like "Turnkey Business", etc.
-  photos?: string[]; // Added for gallery images
-  latitude?: number; // Added for Google Maps
-  longitude?: number; // Added for Google Maps
-  contactInfo?: {
-    name?: string;
+  contact_info?: {
     phone?: string;
     email?: string;
-    preferredContact?: string;
+    owner_name?: string;
   };
 }
