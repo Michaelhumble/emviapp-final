@@ -28,16 +28,16 @@ const SimpleSalonsPage = () => {
 
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
-          {/* List Your Salon Banner - Vietnamese Version */}
+          {/* List Your Salon Banner - Bilingual Version */}
           <div className="mb-10 bg-gradient-to-r from-purple-600 to-purple-800 text-white p-6 rounded-xl shadow-md">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div>
-                <h2 className="text-2xl md:text-3xl font-bold mb-2">📝 Đăng Tin Bán Tiệm hoặc Cho Thuê Ghế</h2>
-                <p className="text-purple-100 mb-4 md:mb-0">Kết nối với hàng ngàn người mua tiềm năng trong cộng đồng làm đẹp.</p>
+                <h2 className="text-2xl md:text-3xl font-bold mb-2">📢 List Your Salon for Sale or Booth Rental — 📝 Đăng Tin Bán Tiệm hoặc Cho Thuê Ghế</h2>
+                <p className="text-purple-100 mb-4 md:mb-0">Connect with buyers and renters in the beauty community. | Kết nối với hàng ngàn người mua tiềm năng trong cộng đồng làm đẹp.</p>
               </div>
               <Link to="/salon-listing">
                 <Button size="lg" className="bg-white text-purple-700 hover:bg-purple-50">
-                  Đăng Tin Ngay
+                  List Now | Đăng Tin Ngay
                 </Button>
               </Link>
             </div>
