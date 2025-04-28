@@ -6,7 +6,8 @@ import { useAuth } from '@/context/auth';
 
 const SalonListingCta = () => {
   const { userProfile } = useAuth();
-  const isSeller = userProfile?.role === 'seller' || userProfile?.role === 'salon_owner';
+  // Fix the role comparison to check against valid UserRole values
+  const isSeller = userProfile?.role === 'owner' || userProfile?.role === 'salon';
 
   if (isSeller) return null;
 
