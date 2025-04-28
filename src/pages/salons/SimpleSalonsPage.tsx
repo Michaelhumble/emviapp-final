@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
 import SimpleSalonCard from '@/components/salons/SimpleSalonCard';
 import { salonListings } from '@/data/salonData';
+import SalonListingCta from '@/components/salons/SalonListingCta';
 
 const SimpleSalonsPage = () => {
   return (
@@ -27,6 +28,8 @@ const SimpleSalonsPage = () => {
               a unique opportunity in the beauty industry.
             </p>
           </div>
+
+          <SalonListingCta />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {salonListings.map((salon) => (
