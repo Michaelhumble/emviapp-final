@@ -28,21 +28,32 @@ const SimpleSalonsPage = () => {
 
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
-          {/* List Your Salon Banner - Redesigned Luxury Version */}
-          <div className="mb-10 bg-gradient-to-r from-[#9A7B69]/20 to-[#CBBEB5]/30 text-gray-800 p-8 rounded-xl shadow-sm border border-[#9A7B69]/20">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-              <div className="text-center md:text-left mb-6 md:mb-0">
-                <h2 className="font-playfair text-2xl md:text-3xl font-medium tracking-tight mb-3">List Your Salon for Sale or Booth Rental — Đăng Tin Bán Tiệm hoặc Cho Thuê Ghế</h2>
-                <p className="text-gray-600 font-light max-w-xl">Connect with buyers and renters in the beauty community. | Kết nối với hàng ngàn người mua tiềm năng trong cộng đồng làm đẹp.</p>
+          {/* New Luxury Hero Banner */}
+          <div className="relative w-full mb-10 overflow-hidden rounded-lg" style={{ aspectRatio: '1792/1024' }}>
+            <img 
+              src="/lovable-uploads/a4eaaa14-64e9-4bcd-bacb-e0cc9cbabaa3.png" 
+              alt="Luxury Salon Background" 
+              className="w-full h-full object-cover"
+            />
+            
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <div className="text-center px-4 space-y-8">
+                <h1 className="font-playfair text-4xl md:text-5xl lg:text-6xl text-[#FDFDFD] font-medium tracking-wide">
+                  List Your Salon
+                </h1>
+                <h2 className="font-playfair text-5xl md:text-6xl lg:text-7xl text-[#FDFDFD] font-medium italic tracking-wide">
+                  Confidence
+                </h2>
+                <div className="pt-8">
+                  <Link to="/salon-listing">
+                    <Button 
+                      className="bg-transparent hover:bg-transparent/10 text-[#FDFDFD] border border-[#D4AF37] rounded-full px-10 py-6 text-lg font-medium transition-all hover:shadow-[0_0_15px_rgba(212,175,55,0.5)]"
+                    >
+                      List Now
+                    </Button>
+                  </Link>
+                </div>
               </div>
-              <Link to="/salon-listing">
-                <Button 
-                  size="lg" 
-                  className="bg-transparent hover:bg-[#9A7B69]/10 text-[#9A7B69] border border-[#9A7B69]/30 hover:border-[#9A7B69]/50 font-medium px-8 py-6 transition-all duration-300"
-                >
-                  List Now | Đăng Tin Ngay
-                </Button>
-              </Link>
             </div>
           </div>
           
