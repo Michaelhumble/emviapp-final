@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,8 @@ import { SalonSale } from "@/types/salonSale";
 import { formatCurrency } from "@/utils/salonSales";
 import { FeatureListingButton } from "@/components/sell-salon/FeatureListingButton";
 import { useAuth } from "@/context/auth";
+import { isNailSalon, getNailSalonImage } from "@/utils/nailSalonImages";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 interface SalonSaleCardProps {
   salon: SalonSale;
@@ -23,6 +24,12 @@ export const SalonSaleCard = ({
 }: SalonSaleCardProps) => {
   const { user } = useAuth();
   const isOwner = user?.id === salon.user_id;
+  
+  const isNail = isNailSalon(salon.salon_name || '', salon.description || '');
+  
+  const salonImage = isNail 
+    ? getNailSalonImage(false, salon.is_featured, salon.is_featured) 
+    : '';
   
   const getBusinessTypeIcon = (type?: string) => {
     switch (type) {
@@ -49,8 +56,18 @@ export const SalonSaleCard = ({
         salon.is_featured ? "border-2 border-amber-300 bg-amber-50" : ""
       }`}
     >
-      <div className="aspect-video bg-gray-100 relative flex items-center justify-center">
-        <Store className="h-12 w-12 text-gray-200" />
+      <div className="aspect-video relative">
+        {isNail ? (
+          <ImageWithFallback
+            src={salonImage}
+            alt={salon.salon_name || "Nail Salon"}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="h-full w-full bg-gray-100 flex items-center justify-center">
+            <Store className="h-12 w-12 text-gray-200" />
+          </div>
+        )}
         
         {!isActive && (
           <div className="absolute inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-10">

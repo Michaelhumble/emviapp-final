@@ -8,6 +8,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { MapPin, Building, Star, Lock } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import AuthAction from "@/components/common/AuthAction";
+import { isNailSalon, isNailJob, getNailSalonImage, getNailJobImage } from "@/utils/nailSalonImages";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 interface ListingCardProps {
   listing: any;
@@ -26,6 +28,16 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
     }
     return `/jobs/${listing.id}`;
   };
+
+  // Determine if this is a nail-related listing
+  const isNailListing = listing.for_sale 
+    ? isNailSalon(listing.title || listing.company || '', listing.description || '')
+    : isNailJob(listing.title || listing.company || '', listing.description || '');
+    
+  // Get appropriate image based on listing type
+  const listingImage = isNailListing 
+    ? (listing.for_sale ? getNailSalonImage() : getNailJobImage()) 
+    : '';
 
   // Handle view details click with proper redirect
   const handleViewDetails = () => {
@@ -50,14 +62,29 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {listing.image && (
+        {/* Image section - Use our high-quality nail images when appropriate */}
+        {isNailListing ? (
           <div className="aspect-video w-full overflow-hidden">
-            <img
-              src={listing.image}
+            <ImageWithFallback
+              src={listingImage}
               alt={listing.title || listing.company || "Industry listing"}
               className="w-full h-full object-cover"
             />
           </div>
+        ) : (
+          listing.image ? (
+            <div className="aspect-video w-full overflow-hidden">
+              <img
+                src={listing.image}
+                alt={listing.title || listing.company || "Industry listing"}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ) : (
+            <div className="aspect-video w-full bg-gray-100 flex items-center justify-center">
+              <Building className="h-12 w-12 text-gray-300" />
+            </div>
+          )
         )}
         
         <CardContent className={`p-5 flex-1 flex flex-col ${!listing.image ? 'pt-6' : 'pt-5'}`}>

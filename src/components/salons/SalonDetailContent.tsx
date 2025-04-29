@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Job } from '@/types/job';
 import { useAuth } from '@/context/auth';
+import { isNailSalon, isNailJob, getNailSalonImage } from '@/utils/nailSalonImages';
+import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 
 interface SalonDetailContentProps {
   salon: Job | null;
@@ -15,8 +17,12 @@ const SalonDetailContent: React.FC<SalonDetailContentProps> = ({ salon }) => {
 
   if (!salon) return null;
 
+  // Determine if this is a nail salon to use our high-quality nail images
+  const isNail = isNailSalon(salon.title || salon.company || '', salon.description || '') || 
+                 isNailJob(salon.title || salon.company || '', salon.description || '');
+  
   // Use correct image property based on what's available
-  const imageUrl = salon.image || '';
+  const imageUrl = isNail ? getNailSalonImage(false, true, true) : salon.image || '';
   
   // Format price as currency
   const formattedPrice = salon.price ? new Intl.NumberFormat('en-US', {
@@ -41,10 +47,14 @@ const SalonDetailContent: React.FC<SalonDetailContentProps> = ({ salon }) => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column: Photos and Details */}
         <div className="lg:col-span-2">
-          {/* Main Image */}
+          {/* Main Image - Use our high-quality nail salon images when appropriate */}
           <div className="bg-gray-200 rounded-xl overflow-hidden mb-6 aspect-video">
             {imageUrl ? (
-              <img src={imageUrl} alt={salon.company || 'Salon'} className="w-full h-full object-cover" />
+              <ImageWithFallback
+                src={imageUrl}
+                alt={salon.company || 'Nail Salon'}
+                className="w-full h-full object-cover"
+              />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
                 <span className="text-gray-400">No image available</span>

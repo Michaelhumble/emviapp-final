@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -8,6 +7,8 @@ import { Briefcase, MapPin } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { getFeaturedJobs } from "@/utils/featuredContent";
+import { isNailJob, getNailJobImage } from "@/utils/nailSalonImages";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 const TopBeautyJobs = () => {
   const isMobile = useIsMobile();
@@ -28,6 +29,11 @@ const TopBeautyJobs = () => {
   const item = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0 }
+  };
+  
+  // Check if a job is nail-related
+  const isNailTechJob = (job: any): boolean => {
+    return isNailJob(job.title || job.role || '', job.description || '');
   };
 
   // Render the jobs as a carousel on mobile
@@ -51,33 +57,47 @@ const TopBeautyJobs = () => {
           <div className="mt-8">
             <Carousel className="w-full">
               <CarouselContent>
-                {jobs.map((job) => (
-                  <CarouselItem key={job.id}>
-                    <Card className="h-full flex flex-col overflow-hidden hover:shadow-md transition-shadow">
-                      <CardContent className="pt-6 flex-grow">
-                        <div className="flex items-center gap-1 text-sm text-gray-500 mb-2">
-                          <Briefcase className="h-4 w-4" />
-                          <span>{job.employment_type || "Full-time"}</span>
-                        </div>
-                        <h3 className="text-lg font-semibold mb-1">{job.title || job.role}</h3>
-                        <div className="flex items-center text-gray-500 text-sm mb-3">
-                          <MapPin className="h-4 w-4 mr-1" /> {job.location}
-                        </div>
-                        <p className="text-primary font-medium mb-2">
-                          {job.salary_range || job.compensation_details || "$7,000 - $12,000/month"}
-                        </p>
-                        <p className="text-sm text-gray-600 line-clamp-3">
-                          {job.benefits?.join(", ") || "Free housing, busy plaza, high tips"}
-                        </p>
-                      </CardContent>
-                      <CardFooter className="pt-0">
-                        <Button className="w-full" asChild>
-                          <Link to="/jobs">Apply Now</Link>
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                  </CarouselItem>
-                ))}
+                {jobs.map((job) => {
+                  const isNail = isNailTechJob(job);
+                  
+                  return (
+                    <CarouselItem key={job.id}>
+                      <Card className="h-full flex flex-col overflow-hidden hover:shadow-md transition-shadow">
+                        {isNail && (
+                          <div className="aspect-video w-full overflow-hidden">
+                            <ImageWithFallback
+                              src={getNailJobImage()}
+                              alt={job.title || job.role || "Nail Technician Position"}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        
+                        <CardContent className="pt-6 flex-grow">
+                          <div className="flex items-center gap-1 text-sm text-gray-500 mb-2">
+                            <Briefcase className="h-4 w-4" />
+                            <span>{job.employment_type || "Full-time"}</span>
+                          </div>
+                          <h3 className="text-lg font-semibold mb-1">{job.title || job.role}</h3>
+                          <div className="flex items-center text-gray-500 text-sm mb-3">
+                            <MapPin className="h-4 w-4 mr-1" /> {job.location}
+                          </div>
+                          <p className="text-primary font-medium mb-2">
+                            {job.salary_range || job.compensation_details || "$7,000 - $12,000/month"}
+                          </p>
+                          <p className="text-sm text-gray-600 line-clamp-3">
+                            {job.benefits?.join(", ") || "Free housing, busy plaza, high tips"}
+                          </p>
+                        </CardContent>
+                        <CardFooter className="pt-0">
+                          <Button className="w-full" asChild>
+                            <Link to="/jobs">Apply Now</Link>
+                          </Button>
+                        </CardFooter>
+                      </Card>
+                    </CarouselItem>
+                  );
+                })}
               </CarouselContent>
               <CarouselPrevious className="hidden sm:flex left-0" />
               <CarouselNext className="hidden sm:flex right-0" />
@@ -120,35 +140,49 @@ const TopBeautyJobs = () => {
           whileInView="show"
           viewport={{ once: true }}
         >
-          {jobs.map((job) => (
-            <motion.div key={job.id} variants={item}>
-              <Card className="h-full flex flex-col overflow-hidden hover:shadow-md transition-shadow">
-                <CardContent className="pt-6 flex-grow">
-                  <div className="flex items-center gap-1 text-sm text-gray-500 mb-2">
-                    <Briefcase className="h-4 w-4" />
-                    <span>{job.employment_type || "Full-time"}</span>
-                  </div>
-                  <h3 className="text-lg font-semibold mb-1">{job.title || job.role}</h3>
-                  <div className="flex items-center text-gray-500 text-sm mb-3">
-                    <MapPin className="h-4 w-4 mr-1" /> {job.location}
-                  </div>
-                  <p className="text-primary font-medium mb-2">
-                    {job.salary_range || job.compensation_details || "$7,000 - $12,000/month"}
-                  </p>
-                  <p className="text-sm text-gray-600 line-clamp-3">
-                    {job.benefits?.join(", ") || "Free housing, busy plaza, high tips"}
-                  </p>
-                </CardContent>
-                <CardFooter className="pt-0">
-                  <Button className="w-full" asChild>
-                    <Link to="/jobs">Apply Now</Link>
-                  </Button>
-                </CardFooter>
-              </Card>
-            </motion.div>
-          ))}
+          {jobs.map((job) => {
+            const isNail = isNailTechJob(job);
+            
+            return (
+              <motion.div key={job.id} variants={item}>
+                <Card className="h-full flex flex-col overflow-hidden hover:shadow-md transition-shadow">
+                  {isNail && (
+                    <div className="aspect-video w-full overflow-hidden">
+                      <ImageWithFallback
+                        src={getNailJobImage()}
+                        alt={job.title || job.role || "Nail Technician Position"}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  
+                  <CardContent className="pt-6 flex-grow">
+                    <div className="flex items-center gap-1 text-sm text-gray-500 mb-2">
+                      <Briefcase className="h-4 w-4" />
+                      <span>{job.employment_type || "Full-time"}</span>
+                    </div>
+                    <h3 className="text-lg font-semibold mb-1">{job.title || job.role}</h3>
+                    <div className="flex items-center text-gray-500 text-sm mb-3">
+                      <MapPin className="h-4 w-4 mr-1" /> {job.location}
+                    </div>
+                    <p className="text-primary font-medium mb-2">
+                      {job.salary_range || job.compensation_details || "$7,000 - $12,000/month"}
+                    </p>
+                    <p className="text-sm text-gray-600 line-clamp-3">
+                      {job.benefits?.join(", ") || "Free housing, busy plaza, high tips"}
+                    </p>
+                  </CardContent>
+                  <CardFooter className="pt-0">
+                    <Button className="w-full" asChild>
+                      <Link to="/jobs">Apply Now</Link>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </motion.div>
+            );
+          })}
         </motion.div>
-
+        
         <div className="mt-10 text-center">
           <Link to="/jobs">
             <Button variant="outline" size="lg">

@@ -14,6 +14,8 @@ import { Lock, Building } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
+import { isNailJob, getNailJobImage } from "@/utils/nailSalonImages";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 interface JobListingCardProps {
   job: Job;
@@ -37,6 +39,12 @@ const JobListingCard = ({
   const { t, isVietnamese } = useTranslation();
   const isOwner = currentUserId === job.user_id;
   const navigate = useNavigate();
+
+  // Check if this is a nail job to use our high-quality nail images
+  const isNail = isNailJob(job.title || '', job.description || '');
+  
+  // Get the appropriate image for this job
+  const jobImage = isNail ? getNailJobImage() : '';
 
   const getContactMessage = () => {
     return isVietnamese 
@@ -97,8 +105,19 @@ const JobListingCard = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="aspect-video w-full overflow-hidden bg-gray-100 flex items-center justify-center">
-        <Building className="h-12 w-12 text-gray-200" />
+      {/* Image section - Use our high-quality nail salon images when appropriate */}
+      <div className="aspect-video w-full overflow-hidden">
+        {isNail ? (
+          <ImageWithFallback
+            src={jobImage}
+            alt={job.title || "Nail Technician Job"}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="bg-gray-100 h-full w-full flex items-center justify-center">
+            <Building className="h-12 w-12 text-gray-200" />
+          </div>
+        )}
       </div>
       
       <CardContent className="p-6 flex flex-col h-full">

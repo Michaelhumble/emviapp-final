@@ -14,6 +14,8 @@ import { Store, MapPin, DollarSign, Calendar, ArrowRight } from "lucide-react";
 import { SalonSale } from "@/types/salonSale";
 import { fetchSalonSaleById, formatCurrency } from "@/utils/salonSales";
 import { formatDistanceToNow } from "date-fns";
+import { isNailSalon, getNailSalonImage } from "@/utils/nailSalonImages";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 interface SalonListingDetailProps {
   salon: SalonSale;
@@ -23,6 +25,10 @@ interface SalonListingDetailProps {
 const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
   const [salonWithPhotos, setSalonWithPhotos] = useState<SalonSale | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Check if this is a nail salon to use our high-quality nail images
+  const isNail = isNailSalon(salon.salon_name || '', salon.description || '');
+  const nailSalonImage = isNail ? getNailSalonImage(false, salon.is_featured, true) : '';
 
   useEffect(() => {
     const loadSalonDetails = async () => {
@@ -47,6 +53,9 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
     return formatDistanceToNow(date, { addSuffix: true });
   };
 
+  const shouldUseNailImage = isNail || 
+    (salonWithPhotos?.business_type?.toLowerCase().includes('nail') ?? false);
+
   return (
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -59,9 +68,15 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
         </DialogHeader>
 
         <div className="grid grid-cols-1 gap-4">
-          {/* Gallery */}
+          {/* Gallery - Use our high-quality nail salon image when appropriate */}
           <div className="aspect-video bg-gray-200 rounded-md overflow-hidden">
-            {salonWithPhotos?.photos && salonWithPhotos.photos.length > 0 ? (
+            {shouldUseNailImage ? (
+              <ImageWithFallback
+                src={nailSalonImage}
+                alt={salon.salon_name || "Nail Salon"}
+                className="w-full h-full object-cover"
+              />
+            ) : salonWithPhotos?.photos && salonWithPhotos.photos.length > 0 ? (
               <img
                 src={salonWithPhotos.photos[0].photo_url}
                 alt={salon.salon_name}
@@ -74,8 +89,8 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
             )}
           </div>
 
-          {/* Thumbnail gallery if there are more photos */}
-          {salonWithPhotos?.photos && salonWithPhotos.photos.length > 1 && (
+          {/* Only show thumbnail gallery for actual uploaded photos, not our nail images */}
+          {!shouldUseNailImage && salonWithPhotos?.photos && salonWithPhotos.photos.length > 1 && (
             <div className="grid grid-cols-4 gap-2">
               {salonWithPhotos.photos.slice(0, 4).map((photo) => (
                 <div key={photo.id} className="aspect-square rounded-md overflow-hidden">

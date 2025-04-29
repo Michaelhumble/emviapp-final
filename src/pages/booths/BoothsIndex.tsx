@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -16,7 +15,7 @@ import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { MapPin, DollarSign } from 'lucide-react';
 import { getAllBooths } from '@/utils/featuredContent';
 import { Job } from '@/types/job';
-import { getDefaultSalonImage } from '@/utils/salonImageFallbacks';
+import { isNailJob, getNailBoothImage } from '@/utils/nailSalonImages';
 
 const BoothsIndex = () => {
   const [booths, setBooths] = useState<Job[]>([]);
@@ -38,19 +37,10 @@ const BoothsIndex = () => {
     fetchBooths();
   }, []);
 
-  // Determine appropriate salon category based on booth data
-  const getSalonCategory = (booth: Job) => {
-    if (booth.specialties?.some(s => s.toLowerCase().includes('nail'))) {
-      return 'nail';
-    } else if (booth.specialties?.some(s => s.toLowerCase().includes('hair'))) {
-      return 'hair';
-    } else if (booth.specialties?.some(s => s.toLowerCase().includes('spa'))) {
-      return 'spa';
-    } else if (booth.specialties?.some(s => s.toLowerCase().includes('barber'))) {
-      return 'barber';
-    } else {
-      return 'beauty';
-    }
+  // Determine if a booth is for nail services
+  const isNailBooth = (booth: Job): boolean => {
+    return isNailJob(booth.title || '', booth.description || '') || 
+           (booth.specialties?.some(s => s.toLowerCase().includes('nail')) ?? false);
   };
 
   return (
@@ -72,17 +62,25 @@ const BoothsIndex = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {booths.map(booth => {
-              const salonCategory = getSalonCategory(booth);
+              const isNail = isNailBooth(booth);
+              
               return (
                 <Card key={booth.id} className="overflow-hidden h-full flex flex-col">
                   <div className="aspect-video w-full overflow-hidden">
-                    <ImageWithFallback
-                      src={booth.image}
-                      alt={booth.title || "Booth Rental"}
-                      className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
-                      businessName={booth.company || "Salon Booth"}
-                      fallbackImage={getDefaultSalonImage(salonCategory)}
-                    />
+                    {isNail ? (
+                      <ImageWithFallback
+                        src={getNailBoothImage()}
+                        alt={booth.title || "Nail Booth Rental"}
+                        className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                      />
+                    ) : (
+                      <ImageWithFallback
+                        src={booth.image}
+                        alt={booth.title || "Booth Rental"}
+                        className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                        businessName={booth.company || "Salon Booth"}
+                      />
+                    )}
                   </div>
                   <CardHeader>
                     <div className="flex justify-between items-start">

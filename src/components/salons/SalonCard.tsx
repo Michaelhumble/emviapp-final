@@ -4,6 +4,8 @@ import { MapPin, Star, Building } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Salon } from '@/types/salon';
+import { isNailSalon, getNailSalonImage } from '@/utils/nailSalonImages';
+import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 
 interface SalonCardProps {
   salon: Salon;
@@ -19,13 +21,31 @@ const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) 
     maximumFractionDigits: 0,
   }).format(salon.price);
 
+  // Check if this is a nail salon to use our high-quality nail images
+  const isNail = isNailSalon(salon.name, salon.description);
+  
+  // Get the appropriate image for this salon
+  const salonImage = isNail 
+    ? getNailSalonImage(salon.is_vietnamese_listing, salon.isPremium, salon.featured) 
+    : '';
+
   return (
     <div className={`bg-white rounded-xl overflow-hidden shadow-sm border hover:shadow-md transition-shadow ${isExpired ? 'opacity-75' : ''}`}>
-      {/* Clean Image Placeholder */}
+      {/* Image section - Use our high-quality nail salon images when appropriate */}
       <div className="relative">
-        <div className="aspect-[16/9] bg-gray-100 flex items-center justify-center">
-          <Building className="h-12 w-12 text-gray-200" />
-        </div>
+        {isNail ? (
+          <div className="aspect-[16/9] overflow-hidden">
+            <ImageWithFallback
+              src={salonImage}
+              alt={salon.name || "Nail Salon"}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ) : (
+          <div className="aspect-[16/9] bg-gray-100 flex items-center justify-center">
+            <Building className="h-12 w-12 text-gray-200" />
+          </div>
+        )}
         
         {/* Featured badge */}
         {salon.featured && (

@@ -8,6 +8,8 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/context/auth";
+import { getNailSalonImage } from "@/utils/nailSalonImages";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 // Sample salon data with no images
 const hiringSalons = [
@@ -16,7 +18,7 @@ const hiringSalons = [
     name: "Salon Envy",
     location: "Atlanta, GA",
     rating: "4.9",
-    image: "",
+    isNail: true,
     isHiring: true,
     specialty: "Full Service Salon"
   },
@@ -25,7 +27,7 @@ const hiringSalons = [
     name: "Luxe Beauty Bar",
     location: "Los Angeles, CA",
     rating: "4.8",
-    image: "",
+    isNail: true,
     isHiring: true,
     specialty: "Nail Spa"
   },
@@ -34,7 +36,7 @@ const hiringSalons = [
     name: "The Nail Boutique",
     location: "New York, NY",
     rating: "5.0",
-    image: "",
+    isNail: true,
     isHiring: true,
     specialty: "Nail Art Studio"
   }
@@ -91,12 +93,23 @@ const HiringSalonsShowcase = () => {
           whileInView="show"
           viewport={{ once: true }}
         >
-          {hiringSalons.map((salon) => (
+          {hiringSalons.map((salon, index) => (
             <motion.div key={salon.id} variants={item}>
               <Card className="overflow-hidden h-full transition-shadow hover:shadow-lg border-gray-100">
-                <div className="h-48 bg-gray-100 flex items-center justify-center">
-                  <Building className="h-12 w-12 text-gray-300" />
-                </div>
+                {salon.isNail ? (
+                  <div className="h-48 w-full overflow-hidden">
+                    <ImageWithFallback
+                      src={getNailSalonImage(false, index === 0, index === 1)}
+                      alt={salon.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="h-48 bg-gray-100 flex items-center justify-center">
+                    <Building className="h-12 w-12 text-gray-300" />
+                  </div>
+                )}
+                
                 <CardContent className="pt-6">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-xl font-semibold">{salon.name}</h3>

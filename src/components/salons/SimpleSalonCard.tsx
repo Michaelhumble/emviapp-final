@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Salon } from '@/types/salon';
 import AuthAction from '@/components/common/AuthAction';
 import { useAuth } from '@/context/auth';
+import { isNailSalon, getNailSalonImage } from '@/utils/nailSalonImages';
+import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 
 interface SalonCardProps {
   salon: Salon;
@@ -34,6 +36,14 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
   const buttonText = salon.is_vietnamese_listing ? "Xem Chi Tiết" : "View Details";
   const isVietnamese = salon.is_vietnamese_listing;
 
+  // Determine if this is a nail salon to use our high-quality nail images
+  const isNail = isNailSalon(salon.name, salon.description);
+  
+  // Get the appropriate image for this salon
+  const salonImage = isNail 
+    ? getNailSalonImage(isVietnamese, salon.isPremium, salon.isPremium) 
+    : '';
+
   const handleViewContact = async () => {
     return true; // This will trigger the auth redirect
   };
@@ -41,9 +51,19 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
   return (
     <Card className={`overflow-hidden group transition-shadow duration-300 ${isVietnamese ? 'hover:shadow-purple-100 shadow-sm border-purple-100' : 'hover:shadow-md'}`}>
       <div className="relative">
-        <div className="h-48 bg-gray-100 flex items-center justify-center">
-          <Building className="h-14 w-14 text-gray-200" />
-        </div>
+        {isNail ? (
+          <div className="h-48 overflow-hidden">
+            <ImageWithFallback
+              src={salonImage}
+              alt={title || "Nail Salon"}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        ) : (
+          <div className="h-48 bg-gray-100 flex items-center justify-center">
+            <Building className="h-14 w-14 text-gray-200" />
+          </div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
         {isVietnamese && (
           <div className="absolute top-3 left-3">
