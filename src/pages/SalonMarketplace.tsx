@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Search, Frown, Star } from "lucide-react";
 import Layout from "@/components/layout/Layout";
@@ -18,10 +19,8 @@ const SalonMarketplace = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { user } = useAuth();
 
-  // Use the salon data with original images preserved - DON'T MODIFY IMAGES
-  const enhancedSalons = salons;
-
-  const filteredSalons = enhancedSalons.filter(salon => {
+  // Use salon data with all original images preserved
+  const filteredSalons = salons.filter(salon => {
     const matchesSearch = 
       salon.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       salon.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -50,7 +49,7 @@ const SalonMarketplace = () => {
   });
 
   const viewSalonDetails = (salon: Salon) => {
-    // Pass the salon with original image intact
+    // Pass the salon with original image intact - never modify it
     setSelectedSalon(salon);
     setIsDialogOpen(true);
   };

@@ -23,16 +23,16 @@ const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({
   const [isValid, setIsValid] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Convert Job to Salon if needed - PRESERVE IMAGE URLs
+  // Convert Job to Salon if needed - ALWAYS PRESERVE ALL ORIGINAL IMAGES
   const convertedSalon: Salon = 'company' in salon ? {
     id: salon.id,
     name: salon.company || salon.title || 'Unnamed Salon',
     location: salon.location || '',
     price: typeof salon.price === 'number' ? salon.price : 
            typeof salon.price === 'string' ? parseFloat(salon.price) || 0 : 0,
-    imageUrl: salon.image || '', // Preserve original image
+    imageUrl: salon.image || salon.imageUrl || '', // Preserve original image
     description: salon.description || '',
-    image: salon.image || '', // Preserve original image
+    image: salon.image || salon.imageUrl || '', // Preserve original image
     featured: 'is_featured' in salon ? salon.is_featured : false
   } as Salon : {
     ...salon as Salon,
