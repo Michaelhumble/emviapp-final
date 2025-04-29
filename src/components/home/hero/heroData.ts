@@ -1,4 +1,3 @@
-
 export const heroImages = [
   // All hero images have been removed as per cleanup request
   {

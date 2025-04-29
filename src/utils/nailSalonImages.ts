@@ -6,32 +6,23 @@
 
 // Define path constants for the uploaded nail salon images with explicit file paths
 export const NAIL_SALON_IMAGES = {
-  // Main featured images - using your uploaded images
-  luxury: "/lovable-uploads/e6f2407e-4402-42a5-b1eb-28761419c0cb.png", // Luxury nail salon with elegant displays
-  premium1: "/lovable-uploads/72875e23-d749-4521-989d-4ff82423de01.png", // Premium nail salon setup
-  premium2: "/lovable-uploads/3ef97ce8-eb62-44e0-842c-d10c54d23d81.png", // Another premium nail salon view
-  modern1: "/lovable-uploads/41732c75-4b6f-4629-8848-cdca464f4f6d.png", // Modern nail salon design
-  modern2: "/lovable-uploads/6fb96978-d78d-40c5-9ab7-59790e7d5e2d.png", // Another modern nail salon view
-  professional: "/lovable-uploads/9bdbde32-0578-4964-a428-25155aa09bca.png", // Professional nail salon setting
-  elegantWhite: "/lovable-uploads/2e44e40e-0338-42f9-add6-97d40eada906.png", // Elegant white-themed nail salon
-  vip: "/lovable-uploads/df6670ab-0854-4472-b6db-0c0e9c578a0f.png", // VIP nail salon experience
-  retail: "/lovable-uploads/4a4cb1e0-ae11-44c9-8c18-f77c351f9b18.png", // Nail salon with retail display
-  workstation: "/lovable-uploads/b6193e3c-9320-4f9f-8c18-f794545bf86e.png", // Close-up of nail salon workstation
-  luxuryLounge: "/lovable-uploads/c980bff9-c395-42ac-aa18-3f4784c9bc6d.png", // Luxury nail salon lounge area
-  
-  // Newly added luxury nail salon images
-  luxuryPink1: "/lovable-uploads/c288ca24-3a79-470f-8bc8-c3abf5371fc1.png", // Luxury pink nail salon with manicure stations
-  spaRoom: "/lovable-uploads/a598b74b-4a31-4c7b-a616-f21b9f157099.png", // Elegant spa room with neutral tones
-  luxuryBeige: "/lovable-uploads/1d1e2a21-2e5b-452d-a583-57240e114a67.png", // Luxury beige nail salon with wood accents
-  manicureStations: "/lovable-uploads/16e16a16-df62-4741-aec7-3364fdc958ca.png", // Multiple manicure stations in beige theme
-  pedicureArea: "/lovable-uploads/320a97df-a8f7-4ff3-90d8-8c7e63ba8caa.png", // Luxury pedicure area with comfortable chairs
+  // New premium luxury nail salon images (2025 edition)
+  luxuryLarge: "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png", // Large spacious nail salon with cream chairs
+  modernDeluxe: "/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png", // Modern salon with sitting area and large windows
+  artGallery: "/lovable-uploads/d1da4b24-248e-4e84-9289-06237e7d4458.png", // Nail salon with art gallery walls and hanging lights
+  executiveNails: "/lovable-uploads/e1ce1662-fb69-4ad9-995a-364ee16e42f6.png", // Clean cream interior with plenty of natural light
+  minimalist: "/lovable-uploads/7a58770c-404e-4259-b1a6-f044c8eefdc0.png", // Modern minimalist white interior with reception
+
+  // Additional legacy images as fallbacks (removed all external/unsecured URLs)
+  premium1: "/lovable-uploads/72875e23-d749-4521-989d-4ff82423de01.png",
+  premium2: "/lovable-uploads/3ef97ce8-eb62-44e0-842c-d10c54d23d81.png"
 };
 
 // Store all image keys to easily select random images
 const IMAGE_KEYS = Object.keys(NAIL_SALON_IMAGES);
 
 // Fallback image in case uploads fail - use the most reliable image
-const FALLBACK_IMAGE = "/lovable-uploads/e6f2407e-4402-42a5-b1eb-28761419c0cb.png";
+const FALLBACK_IMAGE = "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png";
 
 // Image rotation index to ensure variety across listings
 let imageRotationIndex = 0;
@@ -48,8 +39,16 @@ export const getNailSalonImage = (
   isLuxury: boolean = false,
   isPremium: boolean = false
 ): string => {
-  // Always get a valid image, no matter what - ensure no empty returns
-  // Rotate through all available images to provide variety and ensure equal distribution
+  // For luxury or premium nail salons, prioritize our best images
+  if (isLuxury || isPremium) {
+    const premiumImages = [
+      NAIL_SALON_IMAGES.luxuryLarge,
+      NAIL_SALON_IMAGES.modernDeluxe,
+      NAIL_SALON_IMAGES.executiveNails
+    ];
+    const randomIndex = Math.floor(Math.random() * premiumImages.length);
+    return premiumImages[randomIndex];
+  }
   
   // Use rotation index to select image, increment for next usage
   imageRotationIndex = (imageRotationIndex + 1) % IMAGE_KEYS.length;
@@ -68,10 +67,9 @@ export const getNailSalonImage = (
 export const getNailBoothImage = (): string => {
   // Select from luxury images that are appropriate for booth rentals
   const boothImages = [
-    NAIL_SALON_IMAGES.vip, 
-    NAIL_SALON_IMAGES.luxuryLounge,
-    NAIL_SALON_IMAGES.manicureStations,
-    NAIL_SALON_IMAGES.luxuryPink1
+    NAIL_SALON_IMAGES.luxuryLarge,
+    NAIL_SALON_IMAGES.executiveNails,
+    NAIL_SALON_IMAGES.modernDeluxe
   ].filter(Boolean);
   
   if (boothImages.length === 0) return FALLBACK_IMAGE;
@@ -88,10 +86,9 @@ export const getNailBoothImage = (): string => {
 export const getNailJobImage = (): string => {
   // Select from images that are appropriate for job listings
   const jobImages = [
-    NAIL_SALON_IMAGES.workstation,
-    NAIL_SALON_IMAGES.professional,
-    NAIL_SALON_IMAGES.luxuryBeige,
-    NAIL_SALON_IMAGES.pedicureArea
+    NAIL_SALON_IMAGES.artGallery,
+    NAIL_SALON_IMAGES.minimalist,
+    NAIL_SALON_IMAGES.modernDeluxe
   ].filter(Boolean);
   
   if (jobImages.length === 0) return FALLBACK_IMAGE;
@@ -128,8 +125,8 @@ export const isNailSalon = (name: string = '', description: string = ''): boolea
          combinedText.includes('pedicure') ||
          combinedText.includes('nails') ||
          combinedText.includes('tiệm nail') ||
-         combinedText.includes('salon') || // Most listings with "salon" are nail salons in this context
-         combinedText.includes('spa');     // Many nail businesses include "spa" in their name
+         combinedText.includes('salon') && !combinedText.includes('hair') && !combinedText.includes('lash') ||
+         combinedText.includes('spa') && !combinedText.includes('massage');
 };
 
 /**
@@ -145,8 +142,8 @@ export const isNailJob = (title: string = '', description: string = ''): boolean
          combinedText.includes('nail salon') ||
          combinedText.includes('nail artist') ||
          combinedText.includes('nail specialist') ||
-         combinedText.includes('beautician') || // Many beautician roles include nail services
-         combinedText.includes('thợ nail');     // Vietnamese term for nail technician
+         combinedText.includes('beautician') && !combinedText.includes('hair') && !combinedText.includes('lash') ||
+         combinedText.includes('thợ nail');
 };
 
 /**

@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { isLashBrowJob, getLashBrowJobImage } from '@/utils/lashBrowSalonImages';
 import { isMassageJob, getMassageJobImage } from '@/utils/massageSalonImages';
+import { isNailJob, NAIL_SALON_IMAGES } from '@/utils/nailSalonImages';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 
 interface OpportunityCardProps {
@@ -34,29 +35,41 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
     return `${Math.floor(diffDays / 30)} months ago`;
   };
   
-  // Check if this is a lash or brow job
-  const isLashJob = isLashBrowJob(listing.title || '', listing.description || '') && 
+  // IMPORTANT: First check if this is a nail job (PRIORITIZE nail detection per user's request)
+  const isNailTechJob = isNailJob(listing.title || '', listing.description || '');
+  
+  // Then check if this is a lash or brow job (only if not a nail job)
+  const isLashJob = !isNailTechJob && isLashBrowJob(listing.title || '', listing.description || '') && 
                    (listing.title || '').toLowerCase().includes('lash');
                    
-  const isBrowJob = isLashBrowJob(listing.title || '', listing.description || '') && 
+  const isBrowJob = !isNailTechJob && isLashBrowJob(listing.title || '', listing.description || '') && 
                    (listing.title || '').toLowerCase().includes('brow');
   
-  // Check if this is a massage job - IMPORTANT: Improved detection
-  const isMassageTherapistJob = isMassageJob(listing.title || '', listing.description || '');
+  // Then check if this is a massage job (only if not a nail job, lash job, or brow job)
+  const isMassageTherapistJob = !isNailTechJob && !isLashJob && !isBrowJob && isMassageJob(listing.title || '', listing.description || '');
   
-  // Get appropriate image for the job type
+  // Get appropriate image for the job type with nail jobs taking priority
   let jobImage = '';
-  if (isLashJob) {
+  
+  if (isNailTechJob) {
+    // For nail jobs, select a high-quality image based on index for variety
+    const nailJobImages = [
+      NAIL_SALON_IMAGES.artGallery,
+      NAIL_SALON_IMAGES.executiveNails,
+      NAIL_SALON_IMAGES.minimalist,
+      NAIL_SALON_IMAGES.modernDeluxe
+    ];
+    jobImage = nailJobImages[index % nailJobImages.length];
+  } else if (isLashJob) {
     jobImage = getLashBrowJobImage(true);
   } else if (isBrowJob) {
     jobImage = getLashBrowJobImage(false);
   } else if (isMassageTherapistJob) {
-    // Ensure we're getting a massage job image
     jobImage = getMassageJobImage(true); // Force randomization for variety
   }
 
   // Store the image URL in the job object for detail view consistency
-  if ((isLashJob || isBrowJob || isMassageTherapistJob) && jobImage && !listing.imageUrl) {
+  if ((isNailTechJob || isLashJob || isBrowJob || isMassageTherapistJob) && jobImage && !listing.imageUrl) {
     listing.imageUrl = jobImage;
   }
 
@@ -72,10 +85,11 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
       onClick={handleViewDetails}
     >
       <div className="aspect-[4/3] w-full bg-gray-100 flex items-center justify-center relative">
-        {(isLashJob || isBrowJob || isMassageTherapistJob) && jobImage ? (
+        {(isNailTechJob || isLashJob || isBrowJob || isMassageTherapistJob) && jobImage ? (
           <ImageWithFallback
             src={jobImage}
             alt={listing.title || (
+              isNailTechJob ? "Nail Technician Job" :
               isLashJob ? "Lash Artist Job" : 
               isBrowJob ? "Brow Specialist Job" : 
               isMassageTherapistJob ? "Massage Therapist Job" : 

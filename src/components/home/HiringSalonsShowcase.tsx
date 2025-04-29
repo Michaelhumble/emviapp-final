@@ -8,7 +8,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/context/auth";
-import { getNailSalonImage } from "@/utils/nailSalonImages";
+import { NAIL_SALON_IMAGES } from "@/utils/nailSalonImages";
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 // Sample salon data with no images
@@ -99,7 +99,9 @@ const HiringSalonsShowcase = () => {
                 {salon.isNail ? (
                   <div className="h-48 w-full overflow-hidden">
                     <ImageWithFallback
-                      src={getNailSalonImage(false, index === 0, index === 1)}
+                      src={index === 0 ? NAIL_SALON_IMAGES.luxuryLarge : 
+                           index === 1 ? NAIL_SALON_IMAGES.minimalist :
+                           NAIL_SALON_IMAGES.executiveNails}
                       alt={salon.name}
                       className="w-full h-full object-cover"
                     />

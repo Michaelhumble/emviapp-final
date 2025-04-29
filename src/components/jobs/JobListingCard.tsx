@@ -14,7 +14,7 @@ import { Lock, Building } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
-import { isNailJob, getNailJobImage } from "@/utils/nailSalonImages";
+import { isNailJob, getNailJobImage, NAIL_SALON_IMAGES } from "@/utils/nailSalonImages";
 import { isBarberJob, getBarberJobImage } from "@/utils/barberShopImages";
 import { isMassageJob, getMassageJobImage } from "@/utils/massageSalonImages";
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
@@ -42,27 +42,34 @@ const JobListingCard = ({
   const isOwner = currentUserId === job.user_id;
   const navigate = useNavigate();
 
-  // First check if this is a massage job (PRIORITIZE massage detection)
-  const isMassage = isMassageJob(job.title || '', job.description || '');
+  // IMPORTANT: First check if this is a nail job (PRIORITIZE nail detection per user's request)
+  const isNail = isNailJob(job.title || '', job.description || '');
   
-  // Then check if this is a barber job
-  const isBarber = !isMassage && isBarberJob(job.title || '', job.description || '');
+  // Then check if this is a massage job (only if not a nail job)
+  const isMassage = !isNail && isMassageJob(job.title || '', job.description || '');
   
-  // Then check if this is a nail job
-  const isNail = !isMassage && !isBarber && isNailJob(job.title || '', job.description || '');
+  // Then check if this is a barber job (only if not a nail job or massage job)
+  const isBarber = !isNail && !isMassage && isBarberJob(job.title || '', job.description || '');
   
   // Get the appropriate image for this job
   let jobImage = '';
-  if (isMassage) {
+  if (isNail) {
+    // For nail jobs, select randomly from our high-quality nail salon images
+    const nailJobImages = [
+      NAIL_SALON_IMAGES.artGallery,
+      NAIL_SALON_IMAGES.executiveNails,
+      NAIL_SALON_IMAGES.minimalist
+    ];
+    const randomIndex = Math.floor(Math.random() * nailJobImages.length);
+    jobImage = nailJobImages[randomIndex];
+  } else if (isMassage) {
     jobImage = getMassageJobImage(true); // Force randomization for variety
   } else if (isBarber) {
     jobImage = getBarberJobImage();
-  } else if (isNail) {
-    jobImage = getNailJobImage();
   }
       
   // Store the image URL in the job object for detail view consistency
-  if ((isMassage || isBarber || isNail) && jobImage && !job.imageUrl) {
+  if ((isNail || isMassage || isBarber) && jobImage && !job.imageUrl) {
     job.imageUrl = jobImage;
   }
 
@@ -127,13 +134,14 @@ const JobListingCard = ({
     >
       {/* Image section - Use appropriate industry images */}
       <div className="aspect-video w-full overflow-hidden">
-        {isMassage || isBarber || isNail ? (
+        {isNail || isMassage || isBarber ? (
           <ImageWithFallback
             src={job.imageUrl || jobImage}
             alt={job.title || (
+              isNail ? "Nail Technician Job" :
               isMassage ? "Massage Therapist Job" :
               isBarber ? "Barber Job" : 
-              "Nail Technician Job"
+              "Job Listing"
             )}
             className="w-full h-full object-cover"
             priority={true}

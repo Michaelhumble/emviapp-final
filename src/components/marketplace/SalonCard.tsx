@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
 import { determineSalonCategory } from "@/utils/salonImageFallbacks";
 import { getBarberShopImage, isBarberShop } from "@/utils/barberShopImages";
-import { getNailSalonImage, isNailSalon } from "@/utils/nailSalonImages";
+import { NAIL_SALON_IMAGES, isNailSalon } from "@/utils/nailSalonImages";
 import { isMassageSpa, getMassageSalonImage, isLuxuryMassageSpa } from "@/utils/massageSalonImages";
 
 interface SalonCardProps {
@@ -51,23 +51,44 @@ export const SalonCard = ({ salon, viewDetails }: SalonCardProps) => {
   // Check if this is a luxury massage salon
   const isLuxuryMassage = isMassageSalon && isLuxuryMassageSpa(salon.name, salon.description?.en || '');
 
-  // Choose an appropriate fallback image based on salon type
+  // Check if this is specifically a nail salon - direct check for better detection
+  const isNailSalonItem = isNailSalon(salon.name, salon.description?.en || '');
+
+  // Choose an appropriate fallback image based on salon type with priority for nail salons
   const getFallbackImage = () => {
-    // First, check if this is a massage/spa salon - PRIORITIZE massage detection
+    // First, check if this is a nail salon - PRIORITY FOR NAIL DETECTION
+    if (isNailSalonItem || salonCategory === 'nail') {
+      const nailImages = [
+        NAIL_SALON_IMAGES.luxuryLarge,
+        NAIL_SALON_IMAGES.modernDeluxe,
+        NAIL_SALON_IMAGES.artGallery,
+        NAIL_SALON_IMAGES.executiveNails,
+        NAIL_SALON_IMAGES.minimalist
+      ];
+      
+      // Select different image based on price point and features
+      if (salon.featured) {
+        return salon.price > 200000 ? NAIL_SALON_IMAGES.luxuryLarge : NAIL_SALON_IMAGES.modernDeluxe;
+      }
+      
+      return nailImages[Math.floor(Math.random() * nailImages.length)];
+    }
+    
+    // Then check if this is a massage/spa salon
     if (isMassageSalon || salonCategory === 'massage' || salonCategory === 'spa') {
       return getMassageSalonImage(isLuxuryMassage || salon.featured);
     }
+    
     // Then check if this is a barbershop
     if (salonCategory === 'barber' || isBarberShop(salon.name, salon.description?.en || '')) {
       return getBarberShopImage(false, salon.featured);
     }
-    // Then check other salon types
-    if (salonCategory === 'nail') {
-      return "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png";
-    } else if (salonCategory === 'hair') {
+    
+    // Then check other salon types (using default categories)
+    if (salonCategory === 'hair') {
       return "/lovable-uploads/0c68659d-ebd4-4091-aa1a-9329f3690d68.png";
     } else {
-      return "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800";
+      return "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png";
     }
   };
 
