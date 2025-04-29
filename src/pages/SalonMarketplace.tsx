@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+
+import { useState } from "react";
 import { Search, Frown, Star } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,10 +18,6 @@ const SalonMarketplace = () => {
   const [selectedSalon, setSelectedSalon] = useState<Salon | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { user } = useAuth();
-
-  useEffect(() => {
-    console.log('SalonMarketplace mounted - banner should display at top');
-  }, []);
 
   // Use salon data with all original images preserved
   const filteredSalons = salons.filter(salon => {
@@ -52,6 +49,7 @@ const SalonMarketplace = () => {
   });
 
   const viewSalonDetails = (salon: Salon) => {
+    // Pass the salon with original image intact - never modify it
     setSelectedSalon(salon);
     setIsDialogOpen(true);
   };
@@ -102,7 +100,7 @@ const SalonMarketplace = () => {
 
   return (
     <Layout>
-      {/* Premium Salon Banner - keep at the top */}
+      {/* Replace the old hero banner with our new premium banner */}
       <PremiumSalonBanner />
       
       <div className="container mx-auto px-4 py-8">

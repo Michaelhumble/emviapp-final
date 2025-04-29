@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
@@ -9,11 +9,6 @@ import ValidatedSalonCard from '@/components/salons/ValidatedSalonCard';
 import PremiumSalonBanner from '@/components/salons/PremiumSalonBanner';
 
 const SalonsFinalsPage = () => {
-  
-  useEffect(() => {
-    console.log('SalonsFinalsPage mounted - banner should appear at the top');
-  }, []);
-
   return (
     <Layout>
       <Helmet>
@@ -24,7 +19,7 @@ const SalonsFinalsPage = () => {
         />
       </Helmet>
 
-      {/* Premium Banner - explicitly rendered at the top */}
+      {/* Premium Banner */}
       <PremiumSalonBanner />
 
       <div className="container mx-auto px-4 py-12">

@@ -14,27 +14,22 @@ const PremiumSalonBanner = ({ className }: PremiumSalonBannerProps) => {
   useEffect(() => {
     // Set visible after a short delay for animation purposes
     const timer = setTimeout(() => setIsVisible(true), 100);
-    // Log when the banner renders
-    console.log('PremiumSalonBanner rendering...');
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div className={`relative w-full overflow-hidden ${className}`} style={{ height: '450px' }}>
-      {/* Banner image - Using an absolute path to the uploaded image */}
+    <div className={`relative w-full ${className}`} style={{ height: '450px' }}>
+      {/* Banner image - Updated to use the new image */}
       <div 
-        className="absolute inset-0 bg-cover bg-center z-0"
-        style={{ 
-          backgroundImage: 'url(/lovable-uploads/b60e5b1c-2863-45b5-b1c4-dfaa23deb96c.png)',
-          backgroundSize: 'cover'
-        }}
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: 'url(/lovable-uploads/d66c2458-7ed3-4f09-8713-75aef6b2c2a8.png)' }}
       />
       
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black opacity-40 z-10" />
+      <div className="absolute inset-0 bg-black opacity-35" />
       
       {/* Content container */}
-      <div className="absolute inset-0 flex items-center justify-center px-4 sm:px-6 z-20">
+      <div className="absolute inset-0 flex items-center justify-center px-4 sm:px-6">
         <div className="text-center max-w-3xl">
           {/* Headline with animation */}
           <motion.h1 
@@ -43,7 +38,7 @@ const PremiumSalonBanner = ({ className }: PremiumSalonBannerProps) => {
             animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 20 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            List Your Salon with Confidence
+            Premium Salons for Sale — Ready to Own
           </motion.h1>
           
           {/* Subheadline with animation */}
