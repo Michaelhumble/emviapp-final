@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Salon } from '@/types/salon';
 import { isNailSalon, getNailSalonImage } from '@/utils/nailSalonImages';
 import { isBarberShop, getBarberShopImage } from '@/utils/barberShopImages';
+import { isHairSalon, getHairSalonImage } from '@/utils/hairSalonImages';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 
 interface SalonCardProps {
@@ -24,18 +25,22 @@ const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) 
 
   // Check if this is a barbershop first (prioritize barber category for our test)
   const isBarber = isBarberShop(salon.name, salon.description);
+  // Check if this is a hair salon
+  const isHair = !isBarber && isHairSalon(salon.name, salon.description);
   // Then check if this is a nail salon 
-  const isNail = !isBarber && isNailSalon(salon.name, salon.description);
+  const isNail = !isBarber && !isHair && isNailSalon(salon.name, salon.description);
   
   // Get the appropriate image for this salon
   const salonImage = isBarber
     ? getBarberShopImage(salon.isPremium, salon.featured)
-    : isNail 
-      ? getNailSalonImage(salon.is_vietnamese_listing, salon.isPremium, salon.featured) 
-      : '';
+    : isHair
+      ? getHairSalonImage(salon.isPremium, salon.featured)
+      : isNail 
+        ? getNailSalonImage(salon.is_vietnamese_listing, salon.isPremium, salon.featured) 
+        : '';
 
   // IMPORTANT: Store the selected image URL in the salon object so it can be accessed in detail view
-  if ((isBarber || isNail) && salonImage) {
+  if ((isBarber || isHair || isNail) && salonImage) {
     salon.imageUrl = salonImage;
   }
 
@@ -43,11 +48,11 @@ const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) 
     <div className={`bg-white rounded-xl overflow-hidden shadow-sm border hover:shadow-md transition-shadow ${isExpired ? 'opacity-75' : ''}`}>
       {/* Image section - Use our high-quality salon images when appropriate */}
       <div className="relative">
-        {isBarber || isNail ? (
+        {isBarber || isHair || isNail ? (
           <div className="aspect-[16/9] overflow-hidden">
             <ImageWithFallback
               src={salonImage}
-              alt={salon.name || (isBarber ? "Barbershop" : "Nail Salon")}
+              alt={salon.name || (isBarber ? "Barbershop" : isHair ? "Hair Salon" : "Nail Salon")}
               className="w-full h-full object-cover"
               priority={true}
             />

@@ -12,6 +12,9 @@ export const HAIR_SALON_IMAGES = {
   premiumHair3: "/lovable-uploads/0fcc390c-fc2b-4e72-9fa9-055da1d97ad4.png", // Upscale salon with crystal chandelier and French-style decor
   premiumHair4: "/lovable-uploads/513e8703-1059-4ed5-aef3-9f9b4536b69d.png", // Modern luxury salon with city view and elegant furnishings
   premiumHair5: "/lovable-uploads/44afc5c7-fa4b-4e7c-86a3-3fa4486102ef.png", // Gold-accented salon with central styling island
+  premiumHair6: "/lovable-uploads/c8ad59e6-75a9-4a83-afd6-0f8a41ac93c0.png", // Modern minimalist salon with black sinks and large mirrors
+  premiumHair7: "/lovable-uploads/0bc39cbb-bdd3-4843-ace0-3cf730af576f.png", // Luxury black and gold product display area
+  premiumHair8: "/lovable-uploads/d1abc88d-ed4e-4e7f-91d7-04104efd6ce6.png", // Elegant cream and gold salon with crystal chandelier
 };
 
 // Store all image keys to easily select from available hair salon images
@@ -23,7 +26,10 @@ const PREMIUM_HAIR_SALON_IMAGE_KEYS = [
   'premiumHair2',
   'premiumHair3', 
   'premiumHair4',
-  'premiumHair5'
+  'premiumHair5',
+  'premiumHair6',
+  'premiumHair7',
+  'premiumHair8'
 ];
 
 // Fallback image in case uploads fail - use the most reliable image
@@ -55,7 +61,7 @@ export const getHairSalonImage = (
 export const getHairBoothImage = (): string => {
   // Alternate between the premium images for booth rentals
   // Booths should always look premium as they're marketing tools
-  const boothImageKeys = ['premiumHair1', 'premiumHair3', 'premiumHair5'];
+  const boothImageKeys = ['premiumHair1', 'premiumHair3', 'premiumHair5', 'premiumHair6', 'premiumHair8'];
   const boothIndex = hairSalonImageRotationIndex % boothImageKeys.length;
   const selectedKey = boothImageKeys[boothIndex];
   hairSalonImageRotationIndex = (hairSalonImageRotationIndex + 1) % HAIR_SALON_IMAGE_KEYS.length;
@@ -68,7 +74,7 @@ export const getHairBoothImage = (): string => {
  */
 export const getHairJobImage = (): string => {
   // For job listings, use one of the premium images to make the job postings look attractive
-  const jobImageKeys = ['premiumHair2', 'premiumHair4', 'premiumHair5'];
+  const jobImageKeys = ['premiumHair2', 'premiumHair4', 'premiumHair7', 'premiumHair8'];
   const jobIndex = hairSalonImageRotationIndex % jobImageKeys.length;
   const selectedKey = jobImageKeys[jobIndex];
   hairSalonImageRotationIndex = (hairSalonImageRotationIndex + 1) % HAIR_SALON_IMAGE_KEYS.length;
