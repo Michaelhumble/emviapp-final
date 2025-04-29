@@ -23,11 +23,11 @@ const PremiumSalonBanner = ({ className }: PremiumSalonBannerProps) => {
       className={`relative w-full ${className}`} 
       style={{ height: 'clamp(360px, 50vw, 450px)' }}
     >
-      {/* Banner image with your uploaded image */}
+      {/* Banner image with uploaded salon image */}
       <div 
         className="absolute inset-0"
         style={{
-          backgroundImage: "url('/salon-banner.png')",
+          backgroundImage: 'url(/salon-banner.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
