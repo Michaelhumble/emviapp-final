@@ -33,7 +33,7 @@ const HeroContent = ({
   
   return (
     <motion.div 
-      className={`text-center text-white z-20 max-w-5xl mx-auto px-4 ${isMobile ? 'py-8' : 'py-0'}`} // Added padding for mobile
+      className={`text-center text-white z-20 max-w-5xl mx-auto px-4 ${isMobile ? 'py-8' : 'py-0'}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -42,11 +42,11 @@ const HeroContent = ({
       {/* Main hero content */}
       <div className="space-y-6">
         {/* 
-          PERMANENT LOCKED TITLE - DO NOT MODIFY
+          ⚠️ PERMANENT LOCKED TITLE - DO NOT MODIFY ⚠️
           This title must remain exactly as written - core to EmviApp identity
         */}
         <motion.h1 
-          className={`font-serif font-bold tracking-tight text-white ${isMobile ? 'text-4xl md:text-5xl' : 'text-6xl'}`} // Improved responsive font sizing
+          className={`font-serif font-bold tracking-tight text-white ${isMobile ? 'text-4xl md:text-5xl' : 'text-6xl'}`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
@@ -55,7 +55,7 @@ const HeroContent = ({
         </motion.h1>
         
         {/* 
-          PERMANENT SUBHEADLINE - DO NOT MODIFY WITHOUT PERMISSION
+          ⚠️ PERMANENT SUBHEADLINE - DO NOT MODIFY WITHOUT PERMISSION ⚠️
         */}
         <motion.p 
           className={`${isMobile ? 'text-lg' : 'text-2xl'} max-w-2xl mx-auto text-white/90`}
@@ -72,7 +72,7 @@ const HeroContent = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.6 }}
         >
-          {/* Main CTA - Always ensure this exists and points to a valid route */}
+          {/* Main CTA Button */}
           <Link to={currentSlide.cta?.link || "/auth/signup"}>
             <Button 
               size="lg" 
@@ -82,7 +82,7 @@ const HeroContent = ({
             </Button>
           </Link>
           
-          {/* Secondary CTA */}
+          {/* Secondary CTA Button */}
           <Link to="/explore">
             <Button 
               variant="outline" 

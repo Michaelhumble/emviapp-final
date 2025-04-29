@@ -26,7 +26,7 @@ const Hero = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
-  // Change background image every 5 seconds
+  // Rotate background images every 5 seconds with smooth transitions
   useEffect(() => {
     const interval = setInterval(() => {
       setIsChanging(true);
@@ -54,8 +54,7 @@ const Hero = () => {
       className="relative overflow-hidden"
       style={{
         width: '100%',
-        // Ensure consistent height across all devices
-        height: '100vh',
+        height: '100vh', // Full viewport height for impressive hero display
         maxWidth: '100vw',
         maxHeight: '100vh',
         position: 'relative',
@@ -64,14 +63,14 @@ const Hero = () => {
         border: 'none'
       }}
     >
-      {/* Background image carousel */}
+      {/* Background image carousel with rotation */}
       <HeroCarousel 
         images={heroImages} 
         activeIndex={currentImageIndex} 
         isMobile={isMobile}
       />
       
-      {/* Main content */}
+      {/* Main hero content - locked title and subtitle */}
       <div className="relative z-10 w-full h-full flex items-center justify-center">
         <HeroContent 
           activeIndex={currentImageIndex}
