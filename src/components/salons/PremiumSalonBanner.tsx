@@ -19,10 +19,10 @@ const PremiumSalonBanner = ({ className }: PremiumSalonBannerProps) => {
 
   return (
     <div className={`relative w-full ${className}`} style={{ height: '450px' }}>
-      {/* Banner image - Updated to use the new image */}
+      {/* Banner image - Using the uploaded image */}
       <div 
         className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: 'url(/lovable-uploads/d66c2458-7ed3-4f09-8713-75aef6b2c2a8.png)' }}
+        style={{ backgroundImage: 'url(/lovable-uploads/66e70923-43d0-457e-bc77-4cee67cb6b0e.png)' }}
       />
       
       {/* Dark overlay */}
