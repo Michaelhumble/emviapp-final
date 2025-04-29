@@ -1,4 +1,3 @@
-
 import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
@@ -14,6 +13,7 @@ import { Toaster } from "@/components/ui/toaster";
 import GeneralErrorBoundary from '@/components/error-handling/GeneralErrorBoundary';
 import SimpleLoadingFallback from '@/components/error-handling/SimpleLoadingFallback';
 import RouteLogger from '@/components/common/RouteLogger';
+import SalonsFinal from "@/pages/salons/SalonsFinal";  // Import SalonsFinal directly
 
 function App() {
   const location = useLocation();
@@ -35,12 +35,18 @@ function App() {
               <RouteLogger />
               <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
                 <Routes>
+                  {/* Explicitly define the /salons route to use SalonsFinal directly */}
+                  <Route path="/salons" element={<SalonsFinal />} />
+                  
+                  {/* Keep existing routes */}
                   {routes.map((route, index) => (
-                    <Route 
-                      key={index}
-                      path={route.path}
-                      element={route.element}
-                    />
+                    route.path !== "/salons" && (
+                      <Route 
+                        key={index}
+                        path={route.path}
+                        element={route.element}
+                      />
+                    )
                   ))}
                   <Route path="/dashboard/artist/booking-calendar" element={<BookingCalendar />} />
                   <Route path="/dashboard/artist/inbox" element={<ArtistInbox />} />

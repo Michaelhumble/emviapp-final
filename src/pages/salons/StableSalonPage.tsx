@@ -26,7 +26,7 @@ const StableSalonPage: React.FC = () => {
   };
 
   return (
-    <Layout hideNavbar={true}>
+    <Layout>
       <Helmet>
         <title>Salons | EmviApp</title>
         <meta 

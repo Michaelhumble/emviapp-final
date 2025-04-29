@@ -10,8 +10,15 @@ import PremiumSalonBanner from '@/components/salons/PremiumSalonBanner';
 
 const SalonsFinalsPage = () => {
   useEffect(() => {
-    // For debugging - confirm banner is rendered
-    console.log('SalonsFinal page rendered with PremiumSalonBanner');
+    // Enhanced debugging - confirm this component is rendering properly
+    console.log('SalonsFinal page rendered directly with PremiumSalonBanner - timestamp:', new Date().toISOString());
+    
+    // Force a reflow/repaint to ensure banner renders correctly
+    const banner = document.querySelector('.bg-cover');
+    if (banner) {
+      banner.classList.add('force-repaint');
+      setTimeout(() => banner.classList.remove('force-repaint'), 100);
+    }
   }, []);
 
   return (
