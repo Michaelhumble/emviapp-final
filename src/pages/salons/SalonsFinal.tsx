@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { salonListings } from '@/data/salonData';
 import SimpleSalonCard from '@/components/salons/SimpleSalonCard';
+import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 
 const SalonsFinalsPage = () => {
   return (
@@ -20,14 +21,13 @@ const SalonsFinalsPage = () => {
 
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-10">
-            <h1 className="font-playfair text-3xl md:text-4xl font-bold mb-3">
-              Premium Salon Listings
-            </h1>
-            <p className="text-gray-600 max-w-2xl">
-              Browse our curated selection of premium salons for sale. Each listing represents 
-              a unique opportunity in the beauty industry.
-            </p>
+          {/* Luxury Hero Banner - Using new image */}
+          <div className="relative w-full mb-10 overflow-hidden rounded-lg">
+            <ImageWithFallback
+              src="/lovable-uploads/98f473d0-0359-4114-9bcc-c9aea3c6fcf6.png"
+              alt="Luxury beauty salon entrance with FOR SALE sign"
+              className="w-full h-auto object-cover"
+            />
           </div>
 
           <div className="flex flex-wrap items-center gap-4 mb-8">

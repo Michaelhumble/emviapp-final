@@ -9,6 +9,7 @@ import { SalonFilter } from "@/components/marketplace/SalonFilter";
 import { Salon, salons } from "@/components/marketplace/mockData";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/context/auth";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 const SalonMarketplace = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -109,6 +110,16 @@ const SalonMarketplace = () => {
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-serif font-bold mb-2 text-center">Salon Marketplace</h1>
         <p className="text-center text-gray-600 mb-8">Browse salons for sale across the country</p>
+        
+        {/* Luxury Hero Banner - Using new image */}
+        <div className="relative w-full mb-10 overflow-hidden rounded-lg">
+          <ImageWithFallback
+            src="/lovable-uploads/98f473d0-0359-4114-9bcc-c9aea3c6fcf6.png"
+            alt="Luxury beauty salon entrance with FOR SALE sign"
+            className="w-full h-auto object-cover"
+            priority={true}
+          />
+        </div>
         
         <SalonFilter
           searchTerm={searchTerm}

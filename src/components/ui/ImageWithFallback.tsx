@@ -19,7 +19,7 @@ export interface ImageWithFallbackProps {
  * Enhanced component that displays an image with fallback support and progressive loading
  * If the primary image is empty or fails to load, it will display a clean empty state
  */
-const ImageWithFallback = ({ 
+export const ImageWithFallback = ({ 
   src, 
   alt, 
   fallbackImage, 
@@ -34,7 +34,6 @@ const ImageWithFallback = ({
   const [imgSrc, setImgSrc] = useState<string>('');
   const [hasErrored, setHasErrored] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [isPremium, setIsPremium] = useState(false);
   
   // Reset loading state and set initial source when component mounts or source changes
   useEffect(() => {
