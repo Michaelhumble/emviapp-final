@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
@@ -36,35 +37,38 @@ const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
   };
   
   // Get formatted price for display
-  const getFormattedPrice = () => {
-    // Use the asking_price field if available (for consistency with the Job type)
-    if (salon.asking_price) {
-      // Check if it's a string and contains $ already
+  const getFormattedPrice = (): string => {
+    // First check asking_price (prioritize this field)
+    if (salon.asking_price !== undefined && salon.asking_price !== null) {
+      // Handle string type
       if (typeof salon.asking_price === 'string') {
-        return salon.asking_price.indexOf('$') !== -1 
-          ? salon.asking_price 
-          : `$${salon.asking_price}`;
-      } 
-      // Otherwise if it's a number
+        // Check if already has $ symbol
+        return salon.asking_price.includes('$') ? 
+          salon.asking_price : 
+          `$${salon.asking_price}`;
+      }
+      // Handle number type
       else if (typeof salon.asking_price === 'number') {
         return `$${salon.asking_price}`;
       }
     }
     
-    // Otherwise use the price field
-    if (salon.price) {
-      // If it's a string
+    // Then check price field if asking_price is not available
+    if (salon.price !== undefined && salon.price !== null) {
+      // Handle string type
       if (typeof salon.price === 'string') {
-        return salon.price.indexOf('$') !== -1 
-          ? salon.price 
-          : `$${salon.price}`;
+        // Check if already has $ symbol
+        return salon.price.includes('$') ? 
+          salon.price : 
+          `$${salon.price}`;
       }
-      // If it's a number
+      // Handle number type
       else if (typeof salon.price === 'number') {
         return `$${salon.price.toLocaleString()}`;
       }
     }
     
+    // Default fallback
     return 'Contact for Price';
   };
 
