@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Frown, Star } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,6 +17,11 @@ const SalonMarketplace = () => {
   const [selectedSalon, setSelectedSalon] = useState<Salon | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { user } = useAuth();
+
+  useEffect(() => {
+    // For debugging - confirm banner is rendered
+    console.log('SalonMarketplace page rendered with PremiumSalonBanner');
+  }, []);
 
   // Use salon data with all original images preserved
   const filteredSalons = salons.filter(salon => {
@@ -46,12 +51,6 @@ const SalonMarketplace = () => {
     if (a.featured === b.featured) return 0;
     return a.featured ? -1 : 1;
   });
-
-  const viewSalonDetails = (salon: Salon) => {
-    // Pass the salon with original image intact - never modify it
-    setSelectedSalon(salon);
-    setIsDialogOpen(true);
-  };
 
   // Component for displaying no results message
   const NoResults = () => (
@@ -97,15 +96,23 @@ const SalonMarketplace = () => {
     );
   };
 
+  // Function to view salon details
+  const viewSalonDetails = (salon: Salon) => {
+    // Pass the salon with original image intact - never modify it
+    setSelectedSalon(salon);
+    setIsDialogOpen(true);
+  };
+
   return (
     <Layout>
-      {/* Replace the old hero banner with our new premium banner */}
+      {/* Include the Premium Banner */}
       <PremiumSalonBanner />
       
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-serif font-bold mb-2 text-center">Salon Marketplace</h1>
         <p className="text-center text-gray-600 mb-8">Browse salons for sale across the country</p>
         
+        {/* ... keep existing code for filtering, tabs, etc. */}
         <SalonFilter
           searchTerm={searchTerm}
           locationFilter={locationFilter}

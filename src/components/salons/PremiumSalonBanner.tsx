@@ -18,14 +18,14 @@ const PremiumSalonBanner = ({ className }: PremiumSalonBannerProps) => {
   }, []);
 
   return (
-    <div className={`relative w-full ${className}`} style={{ height: '450px' }}>
-      {/* Banner image */}
+    <div className={`relative w-full ${className}`} style={{ height: 'clamp(360px, 50vw, 450px)' }}>
+      {/* Banner image - updated to use the new uploaded image */}
       <div 
         className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: 'url(/lovable-uploads/d66c2458-7ed3-4f09-8713-75aef6b2c2a8.png)' }}
+        style={{ backgroundImage: 'url(/lovable-uploads/generated-14.png)' }}
       />
       
-      {/* Dark overlay */}
+      {/* Dark overlay with 35% opacity */}
       <div className="absolute inset-0 bg-black opacity-35" />
       
       {/* Content container */}
@@ -41,7 +41,7 @@ const PremiumSalonBanner = ({ className }: PremiumSalonBannerProps) => {
             Premium Salons for Sale — Ready to Own
           </motion.h1>
           
-          {/* Subheadline with animation */}
+          {/* Subtitle with animation */}
           <motion.p 
             className="text-lg sm:text-xl text-white mb-8 sm:mb-10"
             initial={{ opacity: 0, y: 20 }}
