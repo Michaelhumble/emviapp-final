@@ -19,7 +19,10 @@ const PremiumSalonBanner = ({ className }: PremiumSalonBannerProps) => {
   }, []);
 
   return (
-    <div className={`relative w-full ${className}`} style={{ height: 'clamp(360px, 50vw, 450px)' }}>
+    <div 
+      className={`relative w-full ${className}`} 
+      style={{ height: 'clamp(360px, 50vw, 450px)' }}
+    >
       {/* Banner image with your uploaded image */}
       <div 
         className="absolute inset-0"

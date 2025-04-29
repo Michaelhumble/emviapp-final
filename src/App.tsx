@@ -1,3 +1,4 @@
+
 import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
@@ -14,6 +15,7 @@ import GeneralErrorBoundary from '@/components/error-handling/GeneralErrorBounda
 import SimpleLoadingFallback from '@/components/error-handling/SimpleLoadingFallback';
 import RouteLogger from '@/components/common/RouteLogger';
 import SalonsFinal from "@/pages/salons/SalonsFinal";  // Import SalonsFinal directly
+import StableSalonPage from "@/pages/salons/StableSalonPage"; // Import the stable wrapper
 
 function App() {
   const location = useLocation();
@@ -35,8 +37,8 @@ function App() {
               <RouteLogger />
               <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
                 <Routes>
-                  {/* Explicitly define the /salons route to use SalonsFinal directly */}
-                  <Route path="/salons" element={<SalonsFinal />} />
+                  {/* Explicitly define the /salons route to use StableSalonPage which includes SalonsFinal */}
+                  <Route path="/salons" element={<StableSalonPage />} />
                   
                   {/* Keep existing routes */}
                   {routes.map((route, index) => (
