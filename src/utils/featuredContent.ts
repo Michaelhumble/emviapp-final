@@ -125,4 +125,3 @@ export const getFeaturedJobs = (count?: number): Job[] => {
 export const getAllBooths = (): Job[] => {
   return boothlListings;
 };
-
