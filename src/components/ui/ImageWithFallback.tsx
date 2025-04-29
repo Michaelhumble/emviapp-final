@@ -40,26 +40,33 @@ export const ImageWithFallback = ({
     setIsLoading(true);
     setHasErrored(false);
     
-    // If src is empty or invalid, show clean empty state
+    // If src is empty or invalid, show clean empty state or fallback immediately
     if (!src || src === '') {
-      setHasErrored(true);
+      if (fallbackImage) {
+        setImgSrc(fallbackImage);
+      } else {
+        setHasErrored(true);
+      }
       setIsLoading(false);
       return;
     }
     
     setImgSrc(src);
-  }, [src]);
+  }, [src, fallbackImage]);
   
   const handleError = () => {
     console.log(`Image error loading: ${src}`);
-    if (!hasErrored) {
+    if (fallbackImage && !hasErrored) {
+      setImgSrc(fallbackImage);
+      setIsLoading(false);
+    } else {
       setHasErrored(true);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
   
   const handleLoad = () => {
-    console.log(`Image loaded successfully: ${src}`);
+    console.log(`Image loaded successfully: ${imgSrc}`);
     setIsLoading(false);
   };
   
@@ -69,6 +76,7 @@ export const ImageWithFallback = ({
       <div 
         className={`bg-gray-100 flex items-center justify-center ${className}`}
         style={style}
+        aria-label={`Image placeholder for ${alt || businessName || 'content'}`}
       />
     );
   }
@@ -78,26 +86,15 @@ export const ImageWithFallback = ({
       {isLoading && (
         <div className="absolute inset-0 bg-gray-100" />
       )}
-      {!hasErrored && (
-        <img 
-          src={imgSrc}
-          alt={alt || businessName || 'Image'}
-          className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'}`}
-          style={{ objectFit, ...style }}
-          loading={priority ? 'eager' : loading}
-          onError={handleError}
-          onLoad={handleLoad}
-        />
-      )}
-      {fallbackImage && hasErrored && (
-        <img 
-          src={fallbackImage}
-          alt={alt || businessName || 'Image'}
-          className={`${className} transition-opacity duration-300`}
-          style={{ objectFit, ...style }}
-          loading={priority ? 'eager' : loading}
-        />
-      )}
+      <img 
+        src={imgSrc}
+        alt={alt || businessName || 'Image'}
+        className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'}`}
+        style={{ objectFit, ...style }}
+        loading={priority ? 'eager' : loading}
+        onError={handleError}
+        onLoad={handleLoad}
+      />
     </div>
   );
 };

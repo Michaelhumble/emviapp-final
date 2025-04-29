@@ -20,6 +20,9 @@ const NAIL_SALON_IMAGES = {
   luxuryLounge: "/lovable-uploads/c980bff9-c395-42ac-aa18-3f4784c9bc6d.png", // Luxury nail salon lounge area
 };
 
+// Fallback image in case uploads fail
+const FALLBACK_IMAGE = "/lovable-uploads/e6f2407e-4402-42a5-b1eb-28761419c0cb.png";
+
 /**
  * Returns an appropriate nail salon image based on the salon's characteristics
  * @param isVietnamese Whether the salon is Vietnamese-owned or Vietnamese-themed
@@ -33,13 +36,17 @@ export const getNailSalonImage = (
 ): string => {
   // Prioritize image selection based on salon characteristics
   if (isLuxury) {
-    return NAIL_SALON_IMAGES.luxury;
+    return NAIL_SALON_IMAGES.luxury || FALLBACK_IMAGE;
   } else if (isPremium) {
     // Alternate between premium images for variety
-    return Math.random() > 0.5 ? NAIL_SALON_IMAGES.premium1 : NAIL_SALON_IMAGES.premium2;
+    return Math.random() > 0.5 ? 
+      (NAIL_SALON_IMAGES.premium1 || FALLBACK_IMAGE) : 
+      (NAIL_SALON_IMAGES.premium2 || FALLBACK_IMAGE);
   } else if (isVietnamese) {
     // Use more modern designs for Vietnamese listings
-    return Math.random() > 0.5 ? NAIL_SALON_IMAGES.modern1 : NAIL_SALON_IMAGES.modern2;
+    return Math.random() > 0.5 ? 
+      (NAIL_SALON_IMAGES.modern1 || FALLBACK_IMAGE) : 
+      (NAIL_SALON_IMAGES.modern2 || FALLBACK_IMAGE);
   } else {
     // For other general nail salons, use a variety of images
     const options = [
@@ -47,8 +54,9 @@ export const getNailSalonImage = (
       NAIL_SALON_IMAGES.elegantWhite,
       NAIL_SALON_IMAGES.retail,
       NAIL_SALON_IMAGES.workstation
-    ];
+    ].filter(img => img); // Filter out any undefined images
     
+    if (options.length === 0) return FALLBACK_IMAGE;
     return options[Math.floor(Math.random() * options.length)];
   }
 };
@@ -57,28 +65,28 @@ export const getNailSalonImage = (
  * Get nail salon image for a VIP/luxury booth rental
  */
 export const getNailBoothImage = (): string => {
-  return NAIL_SALON_IMAGES.vip;
+  return NAIL_SALON_IMAGES.vip || FALLBACK_IMAGE;
 };
 
 /**
  * Get nail salon image for a job listing
  */
 export const getNailJobImage = (): string => {
-  return NAIL_SALON_IMAGES.luxuryLounge;
+  return NAIL_SALON_IMAGES.luxuryLounge || FALLBACK_IMAGE;
 };
 
 /**
  * Gets a specific nail salon image by key
  */
 export const getNailImageByKey = (key: keyof typeof NAIL_SALON_IMAGES): string => {
-  return NAIL_SALON_IMAGES[key] || NAIL_SALON_IMAGES.professional;
+  return NAIL_SALON_IMAGES[key] || FALLBACK_IMAGE;
 };
 
 /**
  * Gets all available nail salon images
  */
 export const getAllNailImages = (): string[] => {
-  return Object.values(NAIL_SALON_IMAGES);
+  return Object.values(NAIL_SALON_IMAGES).filter(img => img);
 };
 
 /**
