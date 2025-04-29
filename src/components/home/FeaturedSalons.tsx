@@ -26,9 +26,21 @@ const item = {
 const FeaturedSalons = () => {
   const [salons, setSalons] = useState<Salon[]>([]);
   
+  // Premium images for featured salons
+  const premiumImages = [
+    "/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png",
+    "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png",
+    "/lovable-uploads/89ef4a43-b461-47fc-8b2d-97b07318a891.png"
+  ];
+  
   useEffect(() => {
     const featuredSalons = getFeaturedSalons(3);
-    setSalons(featuredSalons);
+    // Add our premium images to the salons
+    const enhancedSalons = featuredSalons.map((salon, index) => ({
+      ...salon,
+      image: premiumImages[index % premiumImages.length]
+    }));
+    setSalons(enhancedSalons);
   }, []);
 
   return (

@@ -9,14 +9,14 @@ import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/context/auth";
 
-// Sample salon data
+// Sample salon data with our premium images
 const hiringSalons = [
   {
     id: "1",
     name: "Salon Envy",
     location: "Atlanta, GA",
     rating: "4.9",
-    image: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60",
+    image: "/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png",
     isHiring: true,
     specialty: "Full Service Salon"
   },
@@ -25,7 +25,7 @@ const hiringSalons = [
     name: "Luxe Beauty Bar",
     location: "Los Angeles, CA",
     rating: "4.8",
-    image: null, // No image for this one
+    image: "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png",
     isHiring: true,
     specialty: "Nail Spa"
   },
@@ -34,7 +34,7 @@ const hiringSalons = [
     name: "The Nail Boutique",
     location: "New York, NY",
     rating: "5.0",
-    image: "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=800&q=60",
+    image: "/lovable-uploads/89ef4a43-b461-47fc-8b2d-97b07318a891.png",
     isHiring: true,
     specialty: "Nail Art Studio"
   }

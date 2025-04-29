@@ -1,6 +1,5 @@
 
 import { motion } from "framer-motion";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 
 const PostJobSection = () => {
@@ -16,7 +15,11 @@ const PostJobSection = () => {
         >
           <div className="md:w-1/2">
             <div className="relative rounded-lg overflow-hidden h-72 md:h-96 shadow-xl">
-              <Skeleton className="h-full w-full" />
+              <img 
+                src="/lovable-uploads/f3f2a5ae-65d9-4442-8842-1cb9e26cdb56.png"
+                alt="Luxury salon interior"
+                className="h-full w-full object-cover"
+              />
               <div className="absolute inset-0 bg-gradient-to-tr from-primary/30 to-transparent mix-blend-overlay" />
             </div>
           </div>

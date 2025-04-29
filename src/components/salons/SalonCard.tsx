@@ -27,9 +27,12 @@ const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) 
     'beauty'
   );
   
-  // For premium salons, use luxury images
+  // For premium salons, prioritize our new luxury images
   const fallbackImage = salon.isPremium ? 
-    getLuxurySalonImage() : 
+    salon.category === 'nail' ? '/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png' : 
+    salon.category === 'barber' ? '/lovable-uploads/f3f2a5ae-65d9-4442-8842-1cb9e26cdb56.png' :
+    salon.category === 'hair' ? '/lovable-uploads/0c68659d-ebd4-4091-aa1a-9329f3690d68.png' :
+    '/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png' : 
     getDefaultSalonImage(salonCategory);
 
   // Format price as currency

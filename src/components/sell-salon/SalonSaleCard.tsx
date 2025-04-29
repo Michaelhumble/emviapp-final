@@ -50,28 +50,26 @@ export const SalonSaleCard = ({
     return null;
   };
 
-  // Determine the appropriate fallback image based on business type
-  const getFallbackCategory = () => {
+  // Determine the appropriate luxury image based on business type
+  const getLuxuryImageByType = () => {
     const businessType = (salon.business_type || '').toLowerCase();
     
     if (businessType.includes('nail')) {
-      return 'nail';
-    } else if (businessType.includes('hair')) {
-      return 'hair';
-    } else if (businessType.includes('spa')) {
-      return 'spa';
+      return '/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png';
     } else if (businessType.includes('barber')) {
-      return 'barber';
-    } else if (businessType.includes('tattoo') || businessType.includes('pmu')) {
-      return 'tattoo';
+      return '/lovable-uploads/f3f2a5ae-65d9-4442-8842-1cb9e26cdb56.png';
+    } else if (businessType.includes('hair')) {
+      return '/lovable-uploads/0c68659d-ebd4-4091-aa1a-9329f3690d68.png';
+    } else if (businessType.includes('spa')) {
+      return '/lovable-uploads/89ef4a43-b461-47fc-8b2d-97b07318a891.png';
     } else {
-      return 'beauty';
+      return '/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png';
     }
   };
 
   // Use premium images for featured and urgent listings
   const isPremium = salon.is_featured || salon.is_urgent;
-  const fallbackImage = isPremium ? getLuxurySalonImage() : getDefaultSalonImage(getFallbackCategory());
+  const fallbackImage = isPremium ? getLuxuryImageByType() : getDefaultSalonImage('beauty');
 
   return (
     <Card 

@@ -7,8 +7,8 @@ const HeroSection = () => {
       <div className="absolute inset-0 w-full h-full overflow-hidden">
         <div className="absolute inset-0 bg-black/10 backdrop-blur-sm z-10" aria-hidden="true" />
         <img 
-          src="/lovable-uploads/63331551-d921-46f4-98dc-8404b611ddd3.png" 
-          alt="Hair stylist working with client" 
+          src="/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png" 
+          alt="Luxury salon interior" 
           className="w-full h-full object-cover scale-110 blur-md opacity-20"
           aria-hidden="true"
         />
@@ -34,8 +34,8 @@ const HeroSection = () => {
               transition={{ delay: 0.2, duration: 0.7 }}
             >
               <img 
-                src="/lovable-uploads/749e5584-caa4-4229-84a2-93589c7455c2.png" 
-                alt="Professional nail technician at work"
+                src="/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png" 
+                alt="Premium nail salon interior"
                 className="w-full h-64 object-cover hover:scale-105 transition-transform duration-700 ease-in-out"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
@@ -52,9 +52,8 @@ const HeroSection = () => {
               transition={{ delay: 0.4, duration: 0.7 }}
             >
               <img 
-                // Changed from 70c8662a-4525-4854-a529-62616b5b6c81.png to another image
-                src="/lovable-uploads/b851c5dd-95de-4137-a29c-9833ea410cf4.png" 
-                alt="Beauty professional with client"
+                src="/lovable-uploads/f3f2a5ae-65d9-4442-8842-1cb9e26cdb56.png" 
+                alt="Luxury salon with elegant styling chair"
                 className="w-full h-64 object-cover hover:scale-105 transition-transform duration-700 ease-in-out"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>

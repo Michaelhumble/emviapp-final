@@ -14,10 +14,17 @@ const SalonProfileHeader: React.FC<SalonProfileHeaderProps> = ({ salon }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const isMobile = useIsMobile();
   
-  // If salon has a gallery, use it, otherwise just use the main image
+  // Default to our new premium images, then use existing salon images if available
+  const defaultImages = [
+    "/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png",
+    "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png",
+    "/lovable-uploads/89ef4a43-b461-47fc-8b2d-97b07318a891.png"
+  ];
+  
+  // If salon has a gallery, use it, otherwise use our default premium images
   const images = salon.beforeAfterGallery && salon.beforeAfterGallery.length > 0 
-    ? [salon.image, ...salon.beforeAfterGallery]
-    : [salon.image];
+    ? [salon.image || defaultImages[0], ...salon.beforeAfterGallery]
+    : salon.image ? [salon.image, ...defaultImages.slice(1)] : defaultImages;
   
   const nextImage = () => {
     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);

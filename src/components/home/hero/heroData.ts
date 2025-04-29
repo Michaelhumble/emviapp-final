@@ -1,4 +1,3 @@
-
 export const heroImages = [
   // Nail technician images (prioritized - approximately 50%)
   {

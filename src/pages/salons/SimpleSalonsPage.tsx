@@ -31,7 +31,7 @@ const SimpleSalonsPage = () => {
           {/* Luxury Hero Banner */}
           <div className="relative w-full mb-10 overflow-hidden rounded-lg" style={{ aspectRatio: '1920/1080' }}>
             <img 
-              src="/lovable-uploads/6aa31dbf-9e67-4034-b930-af170ecd98ea.png" 
+              src="/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png" 
               alt="Luxury Salon Background" 
               className="w-full h-full object-cover"
             />

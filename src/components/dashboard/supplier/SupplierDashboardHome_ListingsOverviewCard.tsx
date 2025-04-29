@@ -3,12 +3,12 @@ import React from "react";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Package } from "lucide-react";
 
-// Demo mock listings with our uploaded images
+// Updated listings with our new uploaded images
 const listings = [
   {
     id: "p1",
     name: "Premium Gel Polish Set",
-    image: "/lovable-uploads/5392f705-a77b-4d8c-8071-562010763a1e.png",
+    image: "/lovable-uploads/89ef4a43-b461-47fc-8b2d-97b07318a891.png",
     status: "Active",
     price: "$39",
     views: 142,
@@ -16,7 +16,7 @@ const listings = [
   {
     id: "p2",
     name: "Professional Nail Drill",
-    image: "/lovable-uploads/21d69945-acea-4057-9ff0-df824cd3c607.png",
+    image: "/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png",
     status: "Active",
     price: "$89",
     views: 96,
@@ -24,7 +24,7 @@ const listings = [
   {
     id: "p3",
     name: "Acrylic Powder Collection",
-    image: "/lovable-uploads/ec5e520a-440f-4a62-bee8-23ba0c7e7c4c.png",
+    image: "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png",
     status: "Inactive",
     price: "$29",
     views: 78,

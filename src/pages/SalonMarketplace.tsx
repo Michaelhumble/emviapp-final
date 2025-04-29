@@ -18,7 +18,23 @@ const SalonMarketplace = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { user } = useAuth();
 
-  const filteredSalons = salons.filter(salon => {
+  // Luxury salon images
+  const luxuryImages = [
+    "/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png",
+    "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png",
+    "/lovable-uploads/89ef4a43-b461-47fc-8b2d-97b07318a891.png",
+    "/lovable-uploads/0c68659d-ebd4-4091-aa1a-9329f3690d68.png",
+    "/lovable-uploads/f3f2a5ae-65d9-4442-8842-1cb9e26cdb56.png",
+    "/lovable-uploads/1bc30225-0249-44a2-8086-c0a8ecbd57c2.png"
+  ];
+
+  // Enhance the salons with our luxury images
+  const enhancedSalons = salons.map((salon, index) => ({
+    ...salon,
+    imageUrl: salon.featured ? luxuryImages[index % luxuryImages.length] : salon.imageUrl
+  }));
+
+  const filteredSalons = enhancedSalons.filter(salon => {
     const matchesSearch = 
       salon.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       salon.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
