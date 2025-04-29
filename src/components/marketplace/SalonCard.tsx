@@ -4,6 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
 import { determineSalonCategory } from "@/utils/salonImageFallbacks";
+import { getBarberShopImage, isBarberShop } from "@/utils/barberShopImages";
+import { getNailSalonImage, isNailSalon } from "@/utils/nailSalonImages";
 
 interface SalonCardProps {
   salon: {
@@ -44,12 +46,15 @@ export const SalonCard = ({ salon, viewDetails }: SalonCardProps) => {
 
   // Choose an appropriate fallback image based on salon type
   const getFallbackImage = () => {
+    // First, check if this is a barbershop - priority for our test
+    if (salonCategory === 'barber' || isBarberShop(salon.name, salon.description?.en || '')) {
+      return getBarberShopImage(false, salon.featured);
+    }
+    // Then check other salon types
     if (salonCategory === 'nail') {
       return "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png";
     } else if (salonCategory === 'hair') {
       return "/lovable-uploads/0c68659d-ebd4-4091-aa1a-9329f3690d68.png";
-    } else if (salonCategory === 'barber') {
-      return "/lovable-uploads/f3f2a5ae-65d9-4442-8842-1cb9e26cdb56.png";
     } else {
       return "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800";
     }

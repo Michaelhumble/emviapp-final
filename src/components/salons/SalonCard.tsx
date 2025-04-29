@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Salon } from '@/types/salon';
 import { isNailSalon, getNailSalonImage } from '@/utils/nailSalonImages';
+import { isBarberShop, getBarberShopImage } from '@/utils/barberShopImages';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 
 interface SalonCardProps {
@@ -21,23 +22,27 @@ const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) 
     maximumFractionDigits: 0,
   }).format(salon.price);
 
-  // Check if this is a nail salon to use our high-quality nail images
-  const isNail = isNailSalon(salon.name, salon.description);
+  // Check if this is a barbershop first (prioritize barber category for our test)
+  const isBarber = isBarberShop(salon.name, salon.description);
+  // Then check if this is a nail salon 
+  const isNail = !isBarber && isNailSalon(salon.name, salon.description);
   
   // Get the appropriate image for this salon
-  const salonImage = isNail 
-    ? getNailSalonImage(salon.is_vietnamese_listing, salon.isPremium, salon.featured) 
-    : '';
+  const salonImage = isBarber
+    ? getBarberShopImage(salon.isPremium, salon.featured)
+    : isNail 
+      ? getNailSalonImage(salon.is_vietnamese_listing, salon.isPremium, salon.featured) 
+      : '';
 
   return (
     <div className={`bg-white rounded-xl overflow-hidden shadow-sm border hover:shadow-md transition-shadow ${isExpired ? 'opacity-75' : ''}`}>
-      {/* Image section - Use our high-quality nail salon images when appropriate */}
+      {/* Image section - Use our high-quality salon images when appropriate */}
       <div className="relative">
-        {isNail ? (
+        {isBarber || isNail ? (
           <div className="aspect-[16/9] overflow-hidden">
             <ImageWithFallback
               src={salonImage}
-              alt={salon.name || "Nail Salon"}
+              alt={salon.name || (isBarber ? "Barbershop" : "Nail Salon")}
               className="w-full h-full object-cover"
               priority={true}
             />

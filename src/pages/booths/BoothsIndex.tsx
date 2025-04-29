@@ -17,6 +17,7 @@ import { MapPin, DollarSign } from 'lucide-react';
 import { getAllBooths } from '@/utils/featuredContent';
 import { Job } from '@/types/job';
 import { isNailJob, getNailBoothImage } from '@/utils/nailSalonImages';
+import { isBarberJob, getBarberBoothImage } from '@/utils/barberShopImages';
 
 const BoothsIndex = () => {
   const [booths, setBooths] = useState<Job[]>([]);
@@ -38,7 +39,13 @@ const BoothsIndex = () => {
     fetchBooths();
   }, []);
 
-  // Determine if a booth is for nail services
+  // Determine if a booth is for barber services - check this first
+  const isBarberBooth = (booth: Job): boolean => {
+    return isBarberJob(booth.title || '', booth.description || '') || 
+           (booth.specialties?.some(s => s.toLowerCase().includes('barber')) ?? false);
+  };
+
+  // Determine if a booth is for nail services - check second
   const isNailBooth = (booth: Job): boolean => {
     return isNailJob(booth.title || '', booth.description || '') || 
            (booth.specialties?.some(s => s.toLowerCase().includes('nail')) ?? false);
@@ -63,12 +70,21 @@ const BoothsIndex = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {booths.map(booth => {
-              const isNail = isNailBooth(booth);
+              // Check for barber booth first, then nail booth
+              const isBarber = isBarberBooth(booth);
+              const isNail = !isBarber && isNailBooth(booth);
               
               return (
                 <Card key={booth.id} className="overflow-hidden h-full flex flex-col">
                   <div className="aspect-video w-full overflow-hidden">
-                    {isNail ? (
+                    {isBarber ? (
+                      <ImageWithFallback
+                        src={getBarberBoothImage()}
+                        alt={booth.title || "Barber Booth Rental"}
+                        className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                        priority={true}
+                      />
+                    ) : isNail ? (
                       <ImageWithFallback
                         src={getNailBoothImage()}
                         alt={booth.title || "Nail Booth Rental"}

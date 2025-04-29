@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
 import { isNailJob, getNailJobImage } from "@/utils/nailSalonImages";
+import { isBarberJob, getBarberJobImage } from "@/utils/barberShopImages";
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 interface JobListingCardProps {
@@ -40,11 +41,17 @@ const JobListingCard = ({
   const isOwner = currentUserId === job.user_id;
   const navigate = useNavigate();
 
-  // Check if this is a nail job to use our high-quality nail images
-  const isNail = isNailJob(job.title || '', job.description || '');
+  // Check if this is a barber job first
+  const isBarber = isBarberJob(job.title || '', job.description || '');
+  // Then check if this is a nail job
+  const isNail = !isBarber && isNailJob(job.title || '', job.description || '');
   
   // Get the appropriate image for this job
-  const jobImage = isNail ? getNailJobImage() : '';
+  const jobImage = isBarber 
+    ? getBarberJobImage() 
+    : isNail 
+      ? getNailJobImage() 
+      : '';
 
   const getContactMessage = () => {
     return isVietnamese 
@@ -105,12 +112,12 @@ const JobListingCard = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Image section - Use our high-quality nail salon images when appropriate */}
+      {/* Image section - Use appropriate industry images */}
       <div className="aspect-video w-full overflow-hidden">
-        {isNail ? (
+        {isBarber || isNail ? (
           <ImageWithFallback
             src={jobImage}
-            alt={job.title || "Nail Technician Job"}
+            alt={job.title || (isBarber ? "Barber Job" : "Nail Technician Job")}
             className="w-full h-full object-cover"
             priority={true}
           />
