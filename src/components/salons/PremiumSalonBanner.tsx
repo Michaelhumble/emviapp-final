@@ -14,7 +14,7 @@ const PremiumSalonBanner = ({ className }: PremiumSalonBannerProps) => {
   useEffect(() => {
     // Set visible after a short delay for animation purposes
     const timer = setTimeout(() => setIsVisible(true), 100);
-    console.log('PremiumSalonBanner mounted with your uploaded image');
+    console.log('PremiumSalonBanner mounted with newly uploaded salon-banner.png');
     return () => clearTimeout(timer);
   }, []);
 
@@ -23,14 +23,13 @@ const PremiumSalonBanner = ({ className }: PremiumSalonBannerProps) => {
       className={`relative w-full ${className}`} 
       style={{ height: 'clamp(360px, 50vw, 450px)' }}
     >
-      {/* Banner image with uploaded salon image */}
+      {/* Banner image with elegant salon interior */}
       <div 
         className="absolute inset-0"
         style={{
           backgroundImage: 'url(/salon-banner.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
         }}
       />
       
