@@ -1,36 +1,32 @@
 
-import { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { validateListingExists, ListingType } from '@/utils/listingValidator';
 
 interface ListingRouteGuardProps {
-  children: React.ReactNode;
+  children: ReactNode;
   listingType: ListingType;
-  loadingComponent?: React.ReactNode;
-  idParam?: string; // URL parameter name, defaults to 'id'
-  fallbackPath?: string; // Custom fallback path
+  loadingComponent?: ReactNode;
+  fallbackRoute?: string;
 }
 
 /**
- * Component to validate listing route parameters before rendering children
+ * A route guard component that validates listing IDs before rendering children
+ * Will redirect to a fallback route if the listing doesn't exist
  */
-const ListingRouteGuard: React.FC<ListingRouteGuardProps> = ({
-  children,
+const ListingRouteGuard: React.FC<ListingRouteGuardProps> = ({ 
+  children, 
   listingType,
   loadingComponent,
-  idParam = 'id',
-  fallbackPath
+  fallbackRoute 
 }) => {
-  const params = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [isValidating, setIsValidating] = useState(true);
   const [isValid, setIsValid] = useState(false);
-  
-  // Get the ID from route params
-  const id = params[idParam];
-  
-  // Default fallback paths based on listing type
-  const getDefaultFallback = () => {
+
+  // Determine fallback route based on listing type if not provided
+  const determinedFallback = fallbackRoute || (() => {
     switch (listingType) {
       case 'salon': return '/salon-not-found';
       case 'job':
@@ -38,40 +34,40 @@ const ListingRouteGuard: React.FC<ListingRouteGuardProps> = ({
       case 'booth': return '/booth-not-found';
       default: return '/not-found';
     }
-  };
+  })();
 
   useEffect(() => {
-    async function validateRoute() {
+    const validateListing = async () => {
       if (!id) {
-        navigate(fallbackPath || getDefaultFallback());
+        navigate(determinedFallback);
         return;
       }
-      
+
       try {
         setIsValidating(true);
         const exists = await validateListingExists(id, listingType);
         
         if (!exists) {
-          navigate(fallbackPath || getDefaultFallback());
+          navigate(determinedFallback);
         } else {
           setIsValid(true);
         }
       } catch (error) {
-        console.error('Error validating listing route:', error);
-        navigate(fallbackPath || getDefaultFallback());
+        console.error('Error validating listing:', error);
+        navigate(determinedFallback);
       } finally {
         setIsValidating(false);
       }
-    }
-    
-    validateRoute();
-  }, [id, listingType, navigate, fallbackPath]);
-  
-  // Show loading state while validating
+    };
+
+    validateListing();
+  }, [id, listingType, navigate, determinedFallback]);
+
+  // Show loading component while validating
   if (isValidating) {
-    return loadingComponent || <div className="p-12 text-center">Validating listing...</div>;
+    return <>{loadingComponent || <div>Validating listing...</div>}</>;
   }
-  
+
   // Only render children if the listing is valid
   return isValid ? <>{children}</> : null;
 };
