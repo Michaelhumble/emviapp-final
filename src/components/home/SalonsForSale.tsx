@@ -5,9 +5,35 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import SalonListings from '@/components/salons/SalonListings';
 import jobsData from '@/data/jobsData';
+import { vietnameseSalonListings } from '@/data/salonData';
 import SalonsLoadingState from '@/components/salons/SalonsLoadingState';
 import { Link } from 'react-router-dom';
 import { Job } from '@/types/job';
+
+// Transform job data to match the Job type
+const transformSalonData = (job: any): Job => {
+  return {
+    id: job.id?.toString() || '',
+    title: job.title || job.name || '',
+    company: job.company || job.name || '',
+    location: job.location || '',
+    created_at: job.posted || job.created_at || new Date().toISOString(),
+    description: job.description || '',
+    image: job.image || job.imageUrl || '',
+    price: job.price?.toString() || '',
+    salon_features: job.features || [],
+    type: 'salon',
+    for_sale: true,
+    // Add Vietnamese fields if available
+    vietnamese_description: job.vietnamese_description || '',
+    is_vietnamese_listing: job.is_vietnamese_listing || false,
+    contact_info: {
+      owner_name: job.contact_info?.owner_name || "Salon Owner",
+      phone: job.contact_info?.phone || "(555) 123-4567",
+      email: job.contact_info?.email || "contact@emviapp.com"
+    }
+  };
+};
 
 export default function SalonsForSale() {
   const [loading, setLoading] = useState(true);
@@ -21,16 +47,21 @@ export default function SalonsForSale() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Convert jobsData to Job type by adding the required created_at property
-  const jobsWithCorrectType = jobsData.filter(job => 
-    job.title?.includes("Salon") || 
-    job.company?.includes("Salon") || 
-    job.description?.includes("salon")
-  ).map(job => ({
-    ...job,
-    created_at: job.posted || new Date().toISOString(), // Use posted date if available or current date
-    id: job.id.toString() // Ensure id is a string as required by Job type
-  })) as Job[];
+  // Get Vietnamese salon listings first
+  const vietnameseListings = vietnameseSalonListings?.map(transformSalonData) || [];
+
+  // Convert jobsData to Job type and filter for salon listings
+  const salonJobListings = jobsData
+    .filter(job => 
+      job.title?.includes("Salon") || 
+      job.company?.includes("Salon") || 
+      job.description?.includes("salon") ||
+      job.price // If it has a price, it's likely for sale
+    )
+    .map(transformSalonData);
+    
+  // Combine Vietnamese and regular listings
+  const allSalonListings = [...vietnameseListings, ...salonJobListings];
 
   return (
     <section className="py-12 bg-gray-50">
@@ -59,7 +90,7 @@ export default function SalonsForSale() {
             {loading ? (
               <SalonsLoadingState count={4} />
             ) : (
-              <SalonListings salonsForSale={jobsWithCorrectType} />
+              <SalonListings salonsForSale={allSalonListings} />
             )}
           </CardContent>
         </Card>

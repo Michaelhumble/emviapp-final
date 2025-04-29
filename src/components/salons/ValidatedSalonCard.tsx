@@ -1,97 +1,147 @@
-
-import React, { useState, useEffect } from 'react';
-import { Salon } from '@/types/salon';
-import { Job } from '@/types/job';
-import SimpleSalonCard from './SimpleSalonCard';
-import { validateListingExists } from '@/utils/listingValidator';
+import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { AlertTriangle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { MapPin, DollarSign } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
+import { Job } from '@/types/job';
+import { Salon } from '@/types/salon';
+import { determineSalonCategory } from '@/utils/salonImageFallbacks';
 
 interface ValidatedSalonCardProps {
-  salon: Salon | Job;
-  listingType?: 'salon' | 'job' | 'opportunity' | 'booth';
+  salon: Job | Salon;
+  listingType: 'salon' | 'job' | 'opportunity';
 }
 
-/**
- * A wrapper component that validates a salon listing before rendering it
- * If the listing is invalid, displays a placeholder "Listing Unavailable" card
- */
-const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({ 
-  salon, 
-  listingType = 'salon'
-}) => {
-  const [isValid, setIsValid] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  
-  // Convert Job to Salon if needed - ALWAYS PRESERVE ALL ORIGINAL IMAGES
-  const convertedSalon: Salon = 'company' in salon ? {
-    id: salon.id,
-    name: salon.company || salon.title || 'Unnamed Salon',
-    location: salon.location || '',
-    price: typeof salon.price === 'number' ? salon.price : 
-           typeof salon.price === 'string' ? parseFloat(salon.price) || 0 : 0,
-    imageUrl: salon.image || salon.imageUrl || '', // Preserve original image
-    description: salon.description || '',
-    image: salon.image || salon.imageUrl || '', // Preserve original image
-    featured: 'is_featured' in salon ? salon.is_featured : false
-  } as Salon : {
-    ...salon as Salon,
-    // Ensure price is a number
-    price: typeof salon.price === 'number' ? salon.price : 
-           typeof salon.price === 'string' ? parseFloat(salon.price) || 0 : 0
+const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({ salon, listingType }) => {
+  // Get the name/title depending on salon type
+  const getName = () => {
+    if ('name' in salon && salon.name) return salon.name;
+    if ('title' in salon && salon.title) return salon.title;
+    if ('company' in salon && salon.company) return salon.company;
+    return 'Unnamed Salon';
   };
 
-  useEffect(() => {
-    const validateSalon = async () => {
-      try {
-        setIsLoading(true);
-        // Only perform validation if we have an ID
-        if (!salon.id) {
-          setIsValid(false);
-          return;
-        }
-        
-        // Check if the listing exists
-        const exists = await validateListingExists(salon.id, listingType);
-        setIsValid(exists);
-      } catch (error) {
-        console.error('Error validating salon:', error);
-        setIsValid(false);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Get the image URL depending on salon type
+  const getImageUrl = () => {
+    if ('image' in salon && salon.image) return salon.image;
+    if ('imageUrl' in salon && salon.imageUrl) return salon.imageUrl;
+    return '';
+  };
+
+  // Get the formatted price with fallback
+  const getFormattedPrice = () => {
+    let price;
     
-    validateSalon();
-  }, [salon.id, listingType]);
+    if ('asking_price' in salon && salon.asking_price) {
+      price = salon.asking_price;
+    } else if ('price' in salon && salon.price) {
+      price = salon.price;
+    } else {
+      return 'Contact for Price';
+    }
+    
+    if (typeof price === 'string') {
+      // If the price already has a $ sign, return it as is
+      if (price.includes('$')) return price;
+      // Otherwise, add the $ sign
+      return `$${price}`;
+    } else if (typeof price === 'number') {
+      return `$${price.toLocaleString()}`;
+    }
+    
+    return 'Contact for Price';
+  };
+
+  // Determine feature badges to display
+  const getFeatureBadges = () => {
+    const features = [];
+    
+    // Check for Vietnamese listing
+    if ('is_vietnamese_listing' in salon && salon.is_vietnamese_listing) {
+      features.push('Vietnamese');
+    }
+    
+    // Check if the salon has housing
+    if ('has_housing' in salon && salon.has_housing) {
+      features.push('Housing');
+    }
+    
+    // Check if the salon is featured
+    if ('featured' in salon && salon.featured) {
+      features.push('Featured');
+    } else if ('is_featured' in salon && salon.is_featured) {
+      features.push('Featured');
+    }
+    
+    // Return the features if there are any
+    return features.length > 0 ? features : null;
+  };
+
+  const features = getFeatureBadges();
+  const name = getName();
+  const imageUrl = getImageUrl();
+  const category = determineSalonCategory(
+    'description' in salon && salon.description ? salon.description : '', 
+    name
+  );
   
-  // Show loading state while validating
-  if (isLoading) {
-    return (
-      <Card className="overflow-hidden h-full border-dashed border-gray-200 opacity-70">
-        <CardContent className="p-4 flex-1 flex flex-col items-center justify-center h-64">
-          <div className="animate-pulse bg-gray-200 h-4 w-3/4 mb-2 rounded"></div>
-          <div className="animate-pulse bg-gray-200 h-4 w-1/2 rounded"></div>
-        </CardContent>
-      </Card>
-    );
-  }
-  
-  // If invalid, show placeholder card
-  if (isValid === false) {
-    return (
-      <Card className="overflow-hidden h-full border-dashed border-gray-200 bg-gray-50">
-        <CardContent className="p-4 flex-1 flex flex-col items-center justify-center h-64">
-          <AlertTriangle className="h-8 w-8 text-gray-400 mb-2" />
-          <p className="text-gray-500 font-medium text-center">Listing Unavailable</p>
-          <p className="text-gray-400 text-sm text-center mt-1">This listing is no longer active</p>
-        </CardContent>
-      </Card>
-    );
-  }
-  
-  // If valid, render the actual salon card - WITH ORIGINAL IMAGES
-  return <SimpleSalonCard salon={convertedSalon} />;
+  return (
+    <Card className="overflow-hidden hover:shadow-md transition-all duration-300">
+      <Link to={`/${listingType}s/${salon.id}`} className="block">
+        <div className="aspect-video overflow-hidden relative">
+          <ImageWithFallback
+            src={imageUrl}
+            alt={name}
+            className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+            businessName={name}
+            category={category}
+          />
+          
+          {features && features.length > 0 && (
+            <div className="absolute top-2 right-2 flex flex-col gap-1">
+              {features.map((feature, index) => (
+                <Badge 
+                  key={index}
+                  variant={feature === 'Featured' ? 'default' : 'secondary'}
+                  className={
+                    feature === 'Featured' 
+                      ? 'bg-amber-500 hover:bg-amber-600' 
+                      : 'bg-white/80 text-gray-800'
+                  }
+                >
+                  {feature}
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
+      </Link>
+      
+      <CardContent className="p-4">
+        <h3 className="font-semibold text-lg truncate">{name}</h3>
+        
+        <div className="flex items-center text-gray-500 my-1.5 text-sm">
+          <MapPin className="h-3.5 w-3.5 mr-1.5" />
+          <span>{('location' in salon && salon.location) || 'Location unavailable'}</span>
+        </div>
+        
+        <div className="flex justify-between items-center">
+          <div className="flex items-center font-medium text-emerald-700">
+            <DollarSign className="h-4 w-4 mr-1" />
+            <span>{getFormattedPrice()}</span>
+          </div>
+          
+          <Link 
+            to={`/${listingType}s/${salon.id}`} 
+            className="text-primary font-medium hover:underline text-sm"
+          >
+            View Details →
+          </Link>
+        </div>
+      </CardContent>
+    </Card>
+  );
 };
 
 export default ValidatedSalonCard;

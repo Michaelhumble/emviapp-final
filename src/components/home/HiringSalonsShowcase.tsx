@@ -9,18 +9,35 @@ import { Link } from 'react-router-dom';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 import { Job } from '@/types/job';
 
+// Utility function to transform job data to match required Job type
+const transformJobData = (job: any): Job => {
+  return {
+    id: job.id?.toString() || '',
+    title: job.title || '',
+    company: job.company || '',
+    location: job.location || '',
+    created_at: job.posted || new Date().toISOString(), 
+    description: job.description || '',
+    image: job.image || '',
+    price: job.price || '',
+    status: 'active',
+    // Add other required fields with safe defaults
+    type: 'job',
+    role: job.role || job.title || '',
+  };
+};
+
 export default function HiringSalonsShowcase() {
   // Filter to find hiring-related jobs
-  const hiringJobs = jobsData.filter(job => 
-    job.title?.toLowerCase().includes('hiring') || 
-    job.description?.toLowerCase().includes('hiring') ||
-    job.title?.toLowerCase().includes('technician') ||
-    job.title?.toLowerCase().includes('artist')
-  ).slice(0, 3).map(job => ({
-    ...job,
-    created_at: job.posted || new Date().toISOString(), // Add required created_at property
-    id: job.id.toString() // Ensure id is a string as required by Job type
-  })) as Job[];
+  const hiringJobs = jobsData
+    .filter(job => 
+      job.title?.toLowerCase().includes('hiring') || 
+      job.description?.toLowerCase().includes('hiring') ||
+      job.title?.toLowerCase().includes('technician') ||
+      job.title?.toLowerCase().includes('artist')
+    )
+    .slice(0, 3)
+    .map(transformJobData);
   
   if (hiringJobs.length === 0) {
     return null;

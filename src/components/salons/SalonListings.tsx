@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import { Job } from "@/types/job";
-import { Salon } from "@/types/salon"; 
 import SalonDetailsDialog from "./SalonDetailModal";
 import FilterSection from "./FilterSection";
 import PricingInfoCard from "./PricingInfoCard";
@@ -37,7 +36,7 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
     
     const matchesPrice = priceValue >= priceRange[0] && priceValue <= priceRange[1];
     
-    const sizeValue = parseFloat(salon.square_feet?.replace(/[^0-9.-]+/g, "") || "0");
+    const sizeValue = parseFloat(salon.square_feet?.toString()?.replace(/[^0-9.-]+/g, "") || "0");
     const matchesSize = sizeValue >= sizeRange[0] && sizeValue <= sizeRange[1];
     
     const matchesStatus = statusFilter === "all" || 

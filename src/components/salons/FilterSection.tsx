@@ -1,14 +1,10 @@
 
-import { Input } from "@/components/ui/input";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { SearchIcon } from "lucide-react";
+import React from 'react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
+import { MapPin, DollarSign, SquareStack, Clock } from 'lucide-react';
 
 interface FilterSectionProps {
   locationFilter: string;
@@ -21,7 +17,7 @@ interface FilterSectionProps {
   setStatusFilter: (value: string) => void;
 }
 
-const FilterSection = ({
+const FilterSection: React.FC<FilterSectionProps> = ({
   locationFilter,
   setLocationFilter,
   priceRange,
@@ -29,83 +25,77 @@ const FilterSection = ({
   sizeRange,
   setSizeRange,
   statusFilter,
-  setStatusFilter,
-}: FilterSectionProps) => {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
-
+  setStatusFilter
+}) => {
   return (
-    <div className="bg-white border border-gray-100 rounded-lg shadow-sm p-5 mb-6">
-      <h3 className="text-lg font-semibold mb-4">Filter Listings</h3>
-      
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div className="border rounded-lg p-4 bg-white">
+      <h3 className="font-medium text-lg mb-4">Filter Listings</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Location filter */}
-        <div className="relative">
+        <div className="space-y-2">
+          <Label className="flex items-center text-sm font-medium">
+            <MapPin className="h-4 w-4 mr-1.5 text-gray-500" />
+            Location
+          </Label>
           <Input
-            placeholder="Location..."
+            placeholder="City or state..."
             value={locationFilter}
             onChange={(e) => setLocationFilter(e.target.value)}
-            className="pl-9"
+            className="h-9"
           />
-          <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
         </div>
         
         {/* Price range filter */}
-        <div>
-          <p className="text-sm font-medium mb-2">Price Range</p>
-          <div className="px-2">
-            <Slider
-              defaultValue={priceRange}
-              min={0}
-              max={500000}
-              step={10000}
-              onValueChange={(value) => setPriceRange(value as [number, number])}
-            />
-            <div className="flex justify-between mt-2 text-xs text-gray-600">
-              <span>{formatCurrency(priceRange[0])}</span>
-              <span>{formatCurrency(priceRange[1])}</span>
-            </div>
-          </div>
+        <div className="space-y-2">
+          <Label className="flex items-center text-sm font-medium">
+            <DollarSign className="h-4 w-4 mr-1.5 text-gray-500" />
+            Price Range: ${priceRange[0]} - ${priceRange[1]}
+          </Label>
+          <Slider
+            defaultValue={[0, 500000]}
+            min={0}
+            max={500000}
+            step={10000}
+            value={priceRange}
+            onValueChange={(value) => setPriceRange(value as [number, number])}
+            className="py-2"
+          />
         </div>
         
         {/* Size range filter */}
-        <div>
-          <p className="text-sm font-medium mb-2">Salon Size (sq ft)</p>
-          <div className="px-2">
-            <Slider
-              defaultValue={sizeRange}
-              min={0}
-              max={5000}
-              step={100}
-              onValueChange={(value) => setSizeRange(value as [number, number])}
-            />
-            <div className="flex justify-between mt-2 text-xs text-gray-600">
-              <span>{sizeRange[0]} sq ft</span>
-              <span>{sizeRange[1]} sq ft</span>
-            </div>
-          </div>
+        <div className="space-y-2">
+          <Label className="flex items-center text-sm font-medium">
+            <SquareStack className="h-4 w-4 mr-1.5 text-gray-500" />
+            Size (sq ft): {sizeRange[0]} - {sizeRange[1]}
+          </Label>
+          <Slider
+            defaultValue={[0, 5000]}
+            min={0}
+            max={5000}
+            step={100}
+            value={sizeRange}
+            onValueChange={(value) => setSizeRange(value as [number, number])}
+            className="py-2"
+          />
         </div>
         
-        {/* Status filter */}
-        <div>
-          <p className="text-sm font-medium mb-2">Listing Status</p>
-          <Select 
+        {/* Listing status filter */}
+        <div className="space-y-2">
+          <Label className="flex items-center text-sm font-medium">
+            <Clock className="h-4 w-4 mr-1.5 text-gray-500" />
+            Status
+          </Label>
+          <Select
             value={statusFilter}
             onValueChange={setStatusFilter}
           >
-            <SelectTrigger>
-              <SelectValue placeholder="Status" />
+            <SelectTrigger className="h-9">
+              <SelectValue placeholder="All Statuses" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Listings</SelectItem>
-              <SelectItem value="active">Active Only</SelectItem>
-              <SelectItem value="expired">Expired Only</SelectItem>
+              <SelectItem value="all">All Statuses</SelectItem>
+              <SelectItem value="active">Active Listings</SelectItem>
+              <SelectItem value="expired">Expired</SelectItem>
             </SelectContent>
           </Select>
         </div>
