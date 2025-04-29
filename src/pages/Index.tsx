@@ -11,7 +11,7 @@ import AIPowerhouse from "@/components/home/AIPowerhouse";
 import AITeam from "@/components/home/AITeam";
 import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 import MissingPieceSection from "@/components/home/missing-piece";
-import { runListingsVerification } from "@/utils/listingsVerification";
+import { runListingsVerification } from "@/utils/runListingsVerification";
 
 // Enhanced homepage components
 import LatestIndustryOpportunities from "@/components/home/LatestIndustryOpportunities";

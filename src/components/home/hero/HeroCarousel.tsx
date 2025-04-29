@@ -27,16 +27,6 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
             opacity: { duration: 1.5, ease: "easeInOut" },
           }}
           aria-hidden={activeIndex !== index}
-          style={{
-            position: 'absolute',
-            left: 0,
-            top: 0,
-            right: 0,
-            bottom: 0,
-            width: '100%',
-            height: '100%',
-            overflow: 'hidden',
-          }}
         >
           <div className="fixed-image-container absolute inset-0">
             <img 
@@ -44,9 +34,9 @@ const HeroCarousel = ({ images, activeIndex, isMobile = false }: HeroCarouselPro
               alt={image.alt}
               className="w-screen h-screen object-cover"
               style={{ 
-                objectPosition: "center",
+                objectPosition: isMobile ? "center center" : "center", // Better positioning for mobile
                 width: "100vw",
-                height: "100vh",
+                height: "100vh", // Use vh units for better mobile support
                 maxWidth: "100vw",
                 maxHeight: "100vh",
                 position: "absolute",

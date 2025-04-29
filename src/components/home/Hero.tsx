@@ -57,9 +57,10 @@ const Hero = () => {
       className="relative overflow-hidden"
       style={{
         width: '100%',
-        height: `${viewportHeight}px`,
+        // Modified: Use CSS calc for height to ensure it works properly on mobile
+        height: isMobile ? '100vh' : `${viewportHeight}px`,
         maxWidth: '100vw',
-        maxHeight: `${viewportHeight}px`,
+        maxHeight: isMobile ? '100vh' : `${viewportHeight}px`, // Adjusted for mobile
         position: 'relative',
         margin: 0,
         padding: 0,
