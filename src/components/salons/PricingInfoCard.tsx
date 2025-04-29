@@ -1,26 +1,21 @@
 
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { InfoIcon } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 const PricingInfoCard = () => {
   return (
-    <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-xl shadow-sm border border-blue-100 text-center">
-      <div className="flex flex-col md:flex-row items-center justify-center gap-4">
-        <div className="flex items-center">
-          <Badge variant="outline" className="bg-white text-gray-800 font-normal text-sm py-1.5">
-            Standard Listing: $20
-          </Badge>
+    <Card className="mb-6 p-4 bg-blue-50 border border-blue-100">
+      <div className="flex items-start gap-3">
+        <InfoIcon className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
+        <div className="text-sm text-blue-700">
+          <p className="font-medium mb-1">Salon Value Considerations</p>
+          <p className="text-blue-600">
+            Prices reflect current market values and may vary based on location, size, equipment, and clientele.
+            Always perform due diligence and consider consulting with a business advisor before purchasing.
+          </p>
         </div>
-        <div className="flex items-center">
-          <Badge variant="outline" className="bg-white text-gray-800 font-normal text-sm py-1.5">
-            Nationwide Boost: +$10
-          </Badge>
-        </div>
-        <Button variant="default" className="bg-gradient-to-r from-purple-600 to-blue-600">
-          Post Your Salon For Sale
-        </Button>
       </div>
-    </div>
+    </Card>
   );
 };
 

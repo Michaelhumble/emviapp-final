@@ -1,7 +1,5 @@
 
-import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Slider } from "@/components/ui/slider";
 import { 
   Select, 
   SelectContent, 
@@ -9,6 +7,8 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { SearchIcon } from "lucide-react";
 
 interface FilterSectionProps {
   locationFilter: string;
@@ -29,66 +29,83 @@ const FilterSection = ({
   sizeRange,
   setSizeRange,
   statusFilter,
-  setStatusFilter
+  setStatusFilter,
 }: FilterSectionProps) => {
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
+
   return (
-    <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-      <h3 className="text-lg font-medium mb-4">Smart Filters</h3>
+    <div className="bg-white border border-gray-100 rounded-lg shadow-sm p-5 mb-6">
+      <h3 className="text-lg font-semibold mb-4">Filter Listings</h3>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div>
-          <label className="text-sm text-gray-600 block mb-1">Location</label>
-          <Input 
-            placeholder="Any location..." 
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {/* Location filter */}
+        <div className="relative">
+          <Input
+            placeholder="Location..."
             value={locationFilter}
             onChange={(e) => setLocationFilter(e.target.value)}
-            className="w-full"
+            className="pl-9"
           />
+          <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
         </div>
         
+        {/* Price range filter */}
         <div>
-          <label className="text-sm text-gray-600 block mb-1">Price Range</label>
-          <div className="flex items-center gap-2">
-            <span className="text-xs">${priceRange[0].toLocaleString()}</span>
-            <Slider 
-              defaultValue={[0, 500000]} 
-              max={500000} 
+          <p className="text-sm font-medium mb-2">Price Range</p>
+          <div className="px-2">
+            <Slider
+              defaultValue={priceRange}
+              min={0}
+              max={500000}
               step={10000}
-              onValueChange={(value) => setPriceRange([value[0], value[1]])}
-              className="flex-1" 
+              onValueChange={(value) => setPriceRange(value as [number, number])}
             />
-            <span className="text-xs">${priceRange[1].toLocaleString()}</span>
+            <div className="flex justify-between mt-2 text-xs text-gray-600">
+              <span>{formatCurrency(priceRange[0])}</span>
+              <span>{formatCurrency(priceRange[1])}</span>
+            </div>
           </div>
         </div>
         
+        {/* Size range filter */}
         <div>
-          <label className="text-sm text-gray-600 block mb-1">Size (sqft)</label>
-          <div className="flex items-center gap-2">
-            <span className="text-xs">{sizeRange[0]}</span>
-            <Slider 
-              defaultValue={[0, 5000]} 
-              max={5000} 
+          <p className="text-sm font-medium mb-2">Salon Size (sq ft)</p>
+          <div className="px-2">
+            <Slider
+              defaultValue={sizeRange}
+              min={0}
+              max={5000}
               step={100}
-              onValueChange={(value) => setSizeRange([value[0], value[1]])}
-              className="flex-1" 
+              onValueChange={(value) => setSizeRange(value as [number, number])}
             />
-            <span className="text-xs">{sizeRange[1]}</span>
+            <div className="flex justify-between mt-2 text-xs text-gray-600">
+              <span>{sizeRange[0]} sq ft</span>
+              <span>{sizeRange[1]} sq ft</span>
+            </div>
           </div>
         </div>
         
+        {/* Status filter */}
         <div>
-          <label className="text-sm text-gray-600 block mb-1">Status</label>
+          <p className="text-sm font-medium mb-2">Listing Status</p>
           <Select 
-            value={statusFilter} 
+            value={statusFilter}
             onValueChange={setStatusFilter}
           >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="All statuses" />
+            <SelectTrigger>
+              <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="expired">Expired</SelectItem>
+              <SelectItem value="all">All Listings</SelectItem>
+              <SelectItem value="active">Active Only</SelectItem>
+              <SelectItem value="expired">Expired Only</SelectItem>
             </SelectContent>
           </Select>
         </div>

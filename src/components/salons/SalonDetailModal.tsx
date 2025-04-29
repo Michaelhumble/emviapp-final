@@ -1,190 +1,134 @@
 
-import { DollarSign, MapPin, Calendar, SquareDot, Users, TrendingUp, Building2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogClose,
 } from "@/components/ui/dialog";
-import { Job } from "@/types/job"; // Import Job type
+import { Button } from "@/components/ui/button";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
+import { Job } from "@/types/job";
+import { Badge } from "@/components/ui/badge";
+import { MapPin, Phone, Mail, Calendar, Clock, DollarSign } from "lucide-react";
 
 interface SalonDetailsDialogProps {
-  isOpen: boolean;
-  onOpenChange?: (open: boolean) => void;
-  onClose: () => void; // Added onClose prop
   salon: Job | null;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export const SalonDetailsDialog = ({ isOpen, onOpenChange, onClose, salon }: SalonDetailsDialogProps) => {
-  if (!salon) return null;
+const SalonDetailsDialog = ({
+  salon,
+  isOpen,
+  onClose,
+}: SalonDetailsDialogProps) => {
+  if (!salon) {
+    return null;
+  }
 
-  const formatPrice = (price: string | number | undefined) => {
-    const numericPrice = typeof price === 'string' ? parseFloat(price.replace(/[^0-9.-]+/g, "")) : price;
+  const formatPrice = (price: string | number | undefined): string => {
+    if (!price) return 'Contact for price';
     
-    if (numericPrice === undefined || isNaN(Number(numericPrice))) {
-      return 'Price not available';
+    if (typeof price === 'number') {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0
+      }).format(price);
     }
     
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0
-    }).format(Number(numericPrice));
+    return price.toString().includes('$') ? price : `$${price}`;
   };
-
-  const getPriceAnalysis = (salon: Job) => {
-    const askingPrice = typeof salon.asking_price === 'string' 
-      ? parseFloat(salon.asking_price.replace(/[^0-9.-]+/g, ""))
-      : salon.asking_price;
-    
-    // Default market average if we can't determine salon price
-    const marketAvg = 180000;
-    
-    // If we can't determine price, return default assessment
-    if (askingPrice === undefined || isNaN(Number(askingPrice))) {
-      return {
-        assessment: "Market average estimate",
-        suggestion: "Contact seller for detailed financial information.",
-        color: "text-blue-500"
-      };
-    }
-
-    const priceDiff = (Number(askingPrice) - marketAvg) / marketAvg * 100;
-    
-    if (priceDiff < -10) {
-      return {
-        assessment: "Below market average",
-        suggestion: "Potential good deal. Consider fast action.",
-        color: "text-green-600"
-      };
-    } else if (priceDiff > 10) {
-      return {
-        assessment: "Above market average",
-        suggestion: "Premium location or high-end clientele may justify price.",
-        color: "text-orange-500"
-      };
-    } else {
-      return {
-        assessment: "At market average",
-        suggestion: "Fair pricing for the area and business size.",
-        color: "text-blue-500"
-      };
-    }
-  };
-
-  // Get staff count or default to "Not specified"
-  const staffCount = salon.number_of_stations || 'Not specified';
-  
-  // Extract monthly rent or show not available
-  const monthlyRent = salon.monthly_rent || 'Not available';
-  
-  // Extract revenue or show not available
-  const revenue = salon.revenue || 'Not available';
-  
-  // Extract square footage
-  const size = salon.square_feet || 'Not specified';
-  
-  // Extract owner will train
-  const willTrain = salon.owner_will_train !== undefined ? salon.owner_will_train : false;
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => {
-      if (!open) onClose();
-      if (onOpenChange) onOpenChange(open);
-    }}>
-      <DialogContent className="max-w-3xl">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-serif">{salon.company || salon.title || "Salon for Sale"}</DialogTitle>
-          <DialogDescription className="flex items-center">
-            <MapPin className="h-4 w-4 mr-1" /> {salon.location}
-          </DialogDescription>
+          <DialogTitle className="text-2xl font-semibold">
+            {salon.title || salon.company || "Salon Details"}
+          </DialogTitle>
+          <DialogClose />
         </DialogHeader>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <div className="aspect-video bg-gray-200 mb-4 rounded-md overflow-hidden">
-              {salon.image ? (
-                <img 
-                  src={salon.image} 
-                  alt={salon.company || "Salon"} 
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <img 
-                  src="/placeholder.svg" 
-                  alt={salon.company || "Salon"} 
-                  className="w-full h-full object-cover"
-                />
+
+        <div className="mt-4">
+          {/* Image */}
+          <div className="aspect-video w-full overflow-hidden rounded-lg mb-6">
+            <ImageWithFallback
+              src={salon.image || ''}
+              alt={salon.title || salon.company || "Salon image"}
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          {/* Basic Info */}
+          <div className="flex flex-col md:flex-row justify-between mb-6">
+            <div>
+              <div className="flex items-center mb-2">
+                <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                <span>{salon.location}</span>
+              </div>
+              {salon.price && (
+                <div className="flex items-center mb-2">
+                  <DollarSign className="h-4 w-4 mr-2 text-gray-500" />
+                  <span className="font-semibold">{formatPrice(salon.price)}</span>
+                </div>
+              )}
+              {salon.created_at && (
+                <div className="flex items-center">
+                  <Calendar className="h-4 w-4 mr-2 text-gray-500" />
+                  <span>Posted: {new Date(salon.created_at).toLocaleDateString()}</span>
+                </div>
               )}
             </div>
-            <div className="grid grid-cols-3 gap-2">
-              <div className="bg-gray-200 aspect-square rounded-md"></div>
-              <div className="bg-gray-200 aspect-square rounded-md"></div>
-              <div className="bg-gray-200 aspect-square rounded-md"></div>
+
+            <div className="mt-4 md:mt-0">
+              {salon.contact_info && (
+                <>
+                  {salon.contact_info.phone && (
+                    <Button variant="outline" className="mb-2 w-full">
+                      <Phone className="h-4 w-4 mr-2" /> {salon.contact_info.phone}
+                    </Button>
+                  )}
+                  {salon.contact_info.email && (
+                    <Button variant="outline" className="w-full">
+                      <Mail className="h-4 w-4 mr-2" /> Contact via Email
+                    </Button>
+                  )}
+                </>
+              )}
             </div>
           </div>
-          
-          <div className="space-y-4">
-            <div>
-              <h3 className="font-semibold text-xl font-serif mb-2">Details</h3>
-              <div className="grid grid-cols-2 gap-y-3">
-                <div className="flex items-center">
-                  <DollarSign className="h-4 w-4 mr-2" /> Asking Price
-                </div>
-                <div className="font-semibold">{formatPrice(salon.asking_price)}</div>
-                
-                <div className="flex items-center">
-                  <Building2 className="h-4 w-4 mr-2" /> Monthly Rent
-                </div>
-                <div>{formatPrice(monthlyRent)}</div>
-                
-                <div className="flex items-center">
-                  <Users className="h-4 w-4 mr-2" /> Staff
-                </div>
-                <div>{staffCount} stations</div>
-                
-                <div className="flex items-center">
-                  <TrendingUp className="h-4 w-4 mr-2" /> Monthly Revenue
-                </div>
-                <div>{formatPrice(revenue)}</div>
-                
-                <div className="flex items-center">
-                  <SquareDot className="h-4 w-4 mr-2" /> Size
-                </div>
-                <div>{size} sq ft</div>
 
-                <div className="flex items-center">
-                  <Calendar className="h-4 w-4 mr-2" /> Will Train
-                </div>
-                <div>{willTrain ? "Yes" : "No"}</div>
+          {/* Description */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Description</h3>
+            <p className="text-gray-700 whitespace-pre-line mb-6">
+              {salon.description || "No description provided."}
+            </p>
+          </div>
+
+          {/* Features */}
+          {salon.salon_features && salon.salon_features.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold mb-3">Features</h3>
+              <div className="flex flex-wrap gap-2">
+                {salon.salon_features.map((feature, index) => (
+                  <Badge key={index} variant="outline" className="bg-gray-50">
+                    {feature}
+                  </Badge>
+                ))}
               </div>
             </div>
-            
-            <div>
-              <h3 className="font-semibold text-xl font-serif mb-2">AI Price Analysis</h3>
-              <div className="bg-gray-50 p-3 rounded-md">
-                <div className={`font-semibold ${getPriceAnalysis(salon).color}`}>
-                  {getPriceAnalysis(salon).assessment}
-                </div>
-                <p className="text-sm text-gray-600">{getPriceAnalysis(salon).suggestion}</p>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <h3 className="font-semibold text-xl font-serif">Description</h3>
-              <div className="bg-gray-50 p-3 rounded-md">
-                <p className="mb-2 text-gray-800">
-                  {salon.vietnamese_description || ""}
-                </p>
-                <p className="text-gray-600">
-                  {salon.description || "No description available"}
-                </p>
-              </div>
-            </div>
-            
-            <Button className="w-full">Contact Seller</Button>
+          )}
+
+          {/* CTA for interested buyers */}
+          <div className="bg-gray-50 p-4 rounded-lg mt-4">
+            <h3 className="text-lg font-semibold mb-2">Interested in this salon?</h3>
+            <p className="text-gray-600 mb-4">
+              Contact the owner directly to schedule a viewing or ask questions about this listing.
+            </p>
+            <Button className="w-full sm:w-auto">Contact Owner</Button>
           </div>
         </div>
       </DialogContent>
@@ -192,5 +136,4 @@ export const SalonDetailsDialog = ({ isOpen, onOpenChange, onClose, salon }: Sal
   );
 };
 
-// Add default export
 export default SalonDetailsDialog;

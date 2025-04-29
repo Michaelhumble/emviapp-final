@@ -12,20 +12,6 @@ interface SalonListingsProps {
   salonsForSale: Job[];
 }
 
-// Create a conversion function to adapt Job type to Salon type
-const convertJobToSalon = (job: Job): Salon => {
-  return {
-    id: job.id,
-    name: job.company || 'Unnamed Salon',
-    location: job.location || '',
-    price: typeof job.price === 'string' ? parseFloat(job.price.replace(/[^0-9.-]+/g, "")) : 0,
-    imageUrl: job.image || '',
-    description: job.description || '',
-    image: job.image,
-    featured: job.is_featured
-  };
-};
-
 export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
   const [locationFilter, setLocationFilter] = useState<string>("");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 500000]);
@@ -33,7 +19,7 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedSalon, setSelectedSalon] = useState<Job | null>(null);
 
-  // Check if a salon is expired (for demo purposes, using random)
+  // Check if a salon is expired (for demo purposes)
   const isExpired = (salon: Job) => {
     // In a real application, this would check the creation date against current date
     if (salon.id === "104") return true; // Make one of the salons expired for demonstration
@@ -45,7 +31,10 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
     const matchesLocation = locationFilter === "" || 
       salon.location.toLowerCase().includes(locationFilter.toLowerCase());
     
-    const priceValue = parseFloat(salon.asking_price?.replace(/[^0-9.-]+/g, "") || "0");
+    const priceValue = typeof salon.price === 'string' ? 
+      parseFloat(salon.price?.replace(/[^0-9.-]+/g, "") || "0") : 
+      (salon.price || 0);
+    
     const matchesPrice = priceValue >= priceRange[0] && priceValue <= priceRange[1];
     
     const sizeValue = parseFloat(salon.square_feet?.replace(/[^0-9.-]+/g, "") || "0");
