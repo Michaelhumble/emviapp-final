@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
@@ -52,7 +53,11 @@ const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
     }
     
     if (typeof salon.price === 'string') {
-      return salon.price.startsWith('$') ? salon.price : `$${salon.price}`;
+      if (salon.price && salon.price.includes('$')) {
+        return salon.price;
+      } else if (salon.price) {
+        return `$${salon.price}`;
+      }
     }
     
     return 'Contact for Price';

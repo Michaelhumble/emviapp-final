@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Job } from '@/types/job';
 import OpportunitiesSection from './opportunities/OpportunitiesSection';
@@ -46,7 +45,8 @@ const LatestIndustryOpportunities = () => {
           specialties: ["Management", "Spa", "Wellness"],
           for_sale: false,
           created_at: new Date().toISOString(),
-          type: 'opportunity'
+          type: 'opportunity',
+          imageUrl: "/lovable-uploads/4c2d8a4c-e191-40a0-8666-147cbcc488d4.png" // Spa manager image
         },
         // Salon for sale
         {
@@ -71,7 +71,8 @@ const LatestIndustryOpportunities = () => {
           specialties: ["Booth Rental", "Hair"],
           for_sale: false,
           created_at: new Date().toISOString(),
-          type: 'salon'
+          type: 'salon',
+          imageUrl: "/lovable-uploads/05b5cfda-2b58-4be2-ae65-315168048aa3.png" // Booth rental image
         },
         // Tattoo artist
         {
@@ -83,7 +84,8 @@ const LatestIndustryOpportunities = () => {
           specialties: ["Tattoo", "Art"],
           for_sale: false,
           created_at: new Date().toISOString(),
-          type: 'opportunity'
+          type: 'opportunity',
+          imageUrl: "/lovable-uploads/16e16a16-df62-4741-aec7-3364fdc958ca.png" // Tattoo image
         },
         // Beauty supply business
         {
@@ -120,7 +122,8 @@ const LatestIndustryOpportunities = () => {
           specialties: ["Wellness", "Massage", "Partnership"],
           for_sale: true,
           created_at: new Date().toISOString(),
-          type: 'opportunity'
+          type: 'opportunity',
+          imageUrl: "/lovable-uploads/ec5e520a-440f-4a62-bee8-23ba0c7e7c4c.png" // Wellness studio image
         }
       ];
 
@@ -136,10 +139,14 @@ const LatestIndustryOpportunities = () => {
       // Run verification to ensure all listings have proper routing
       const verificationResults = verifyOpportunityListings(mixed);
       
-      // Enhance all listings with appropriate images
-      const enhancedListings = verificationResults.validListings.map(listing => 
-        enhanceListingWithImage(listing)
-      );
+      // Enhance all listings with appropriate images, but keep the user-specified images
+      const enhancedListings = verificationResults.validListings.map(listing => {
+        // If a user specified image exists, don't enhance it
+        if (listing.imageUrl && listing.imageUrl.includes('lovable-uploads')) {
+          return listing;
+        }
+        return enhanceListingWithImage(listing);
+      });
       
       if (!verificationResults.isValid) {
         console.error("⚠️ Opportunity listings verification failed:", verificationResults.issues);

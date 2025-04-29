@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
@@ -49,28 +50,38 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
   if (listing.imageUrl && listing.imageUrl.includes('lovable-uploads')) {
     listingImage = listing.imageUrl;
   } 
-  // Otherwise, determine the most appropriate image based on listing type
-  else {
-    if (isNailTechListing) {
-      listingImage = listing.for_sale ? getNailSalonImage() : getNailJobImage();
-    } else if (isLashListing || isLashSalonListing) {
-      listingImage = getLashSalonImage();
-    } else if (isBarberListing) {
-      listingImage = getBarberJobImage();
-    } else if (isMassageListing) {
-      listingImage = getMassageJobImage();
-    } else if (listing.title?.toLowerCase().includes('tattoo') || 
-              (listing.description || '').toLowerCase().includes('tattoo')) {
-      // Tattoo specific images
-      listingImage = "/lovable-uploads/16e16a16-df62-4741-aec7-3364fdc958ca.png";
-    } else {
-      // Fall back to the generic categories system
-      const category = determineSalonCategory(
-        listing.description || '', 
-        listing.title || listing.company || ''
-      );
-      listingImage = getDefaultSalonImage(category, !!listing.is_featured);
-    }
+  // Check for specific listing types
+  else if (isNailTechListing) {
+    listingImage = listing.for_sale ? getNailSalonImage() : getNailJobImage();
+  } else if (isLashListing || isLashSalonListing) {
+    listingImage = getLashSalonImage();
+  } else if (isBarberListing) {
+    listingImage = getBarberJobImage();
+  } else if (isMassageListing) {
+    listingImage = getMassageJobImage();
+  } else if (listing.title?.toLowerCase().includes('tattoo') || 
+            (listing.description || '').toLowerCase().includes('tattoo')) {
+    // Tattoo specific images
+    listingImage = "/lovable-uploads/16e16a16-df62-4741-aec7-3364fdc958ca.png";
+  } else if (listing.title?.toLowerCase().includes('booth rental') || 
+            (listing.description || '').toLowerCase().includes('booth rental')) {
+    // Booth rental specific images
+    listingImage = "/lovable-uploads/05b5cfda-2b58-4be2-ae65-315168048aa3.png";
+  } else if (listing.title?.toLowerCase().includes('spa manager') || 
+            (listing.description || '').toLowerCase().includes('spa manager')) {
+    // Spa manager specific images
+    listingImage = "/lovable-uploads/4c2d8a4c-e191-40a0-8666-147cbcc488d4.png";
+  } else if (listing.title?.toLowerCase().includes('wellness') || 
+            (listing.description || '').toLowerCase().includes('wellness')) {
+    // Wellness studio images
+    listingImage = "/lovable-uploads/ec5e520a-440f-4a62-bee8-23ba0c7e7c4c.png";
+  } else {
+    // Fall back to the generic categories system
+    const category = determineSalonCategory(
+      listing.description || '', 
+      listing.title || listing.company || ''
+    );
+    listingImage = getDefaultSalonImage(category, !!listing.is_featured);
   }
 
   // Ensure we always have an image
