@@ -58,13 +58,15 @@ const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
       // Handle string type
       if (typeof salon.price === 'string') {
         // Check if already has $ symbol using a safe method
-        return salon.price.indexOf('$') >= 0 ? 
-          salon.price : 
-          `$${salon.price}`;
+        const priceStr: string = salon.price;
+        return priceStr.indexOf('$') >= 0 ? 
+          priceStr : 
+          `$${priceStr}`;
       }
       // Handle number type
       else if (typeof salon.price === 'number') {
-        return `$${salon.price.toLocaleString()}`;
+        const priceNum: number = salon.price;
+        return `$${priceNum.toLocaleString()}`;
       }
     }
     
