@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import {
   Dialog,
@@ -28,7 +27,11 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
 
   // Check if this is a nail salon to use our high-quality nail images
   const isNail = isNailSalon(salon.salon_name || '', salon.description || '');
-  const nailSalonImage = isNail ? getNailSalonImage(false, salon.is_featured, true) : '';
+  
+  // IMPORTANT: Use the stored imageUrl from the salon object if available
+  // Otherwise, generate it consistently
+  const nailSalonImage = salon.image_url || 
+                        (isNail ? getNailSalonImage(false, salon.is_featured, true) : '');
 
   useEffect(() => {
     const loadSalonDetails = async () => {
@@ -36,6 +39,10 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
       try {
         const data = await fetchSalonSaleById(salon.id);
         if (data) {
+          // Store the image URL to maintain consistency
+          if (isNail && nailSalonImage) {
+            data.image_url = nailSalonImage;
+          }
           setSalonWithPhotos(data as SalonSale);
         }
       } catch (error) {
@@ -46,7 +53,7 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
     };
 
     loadSalonDetails();
-  }, [salon.id]);
+  }, [salon.id, isNail, nailSalonImage]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -75,6 +82,7 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
                 src={nailSalonImage}
                 alt={salon.salon_name || "Nail Salon"}
                 className="w-full h-full object-cover"
+                priority={true}
               />
             ) : salonWithPhotos?.photos && salonWithPhotos.photos.length > 0 ? (
               <img

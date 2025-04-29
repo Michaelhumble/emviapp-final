@@ -44,6 +44,11 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
     ? getNailSalonImage(isVietnamese, salon.isPremium, salon.isPremium) 
     : '';
 
+  // IMPORTANT: Store the selected image URL in the salon object so it can be accessed in detail view
+  if (isNail && salonImage) {
+    salon.imageUrl = salonImage;
+  }
+
   const handleViewContact = async () => {
     return true; // This will trigger the auth redirect
   };

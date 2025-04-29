@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
@@ -7,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { salonListings } from '@/data/salonData';
 import { vietnameseSalonListings } from '@/data/vietnameseSalonListings';
 import { useAuth } from '@/context/auth';
+import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
+import { isNailSalon, getNailSalonImage } from '@/utils/nailSalonImages';
 
 const SimpleSalonDetailPage = () => {
   const { id } = useParams();
@@ -36,6 +37,16 @@ const SimpleSalonDetailPage = () => {
   const isVietnamese = salon.is_vietnamese_listing;
   const backToListingsText = isVietnamese ? "← Trở lại danh sách" : "← Back to Listings";
 
+  // Determine if this is a nail salon
+  const isNail = isNailSalon(salon.name, salon.description);
+
+  // IMPORTANT: Use the stored imageUrl from the salon object
+  // If there's no stored imageUrl, generate one using the same logic as the listing card
+  let displayImageUrl = salon.imageUrl;
+  if (isNail && !displayImageUrl) {
+    displayImageUrl = getNailSalonImage(isVietnamese, salon.isPremium, salon.featured);
+  }
+
   // Construct the path to return to after login
   const currentPath = location.pathname;
 
@@ -53,11 +64,22 @@ const SimpleSalonDetailPage = () => {
           </Link>
           
           <div className="bg-white rounded-xl overflow-hidden shadow-sm">
-            {/* Hero image */}
-            <div 
-              className="h-64 bg-cover bg-center"
-              style={{ backgroundImage: `url(${salon.imageUrl})` }}
-            />
+            {/* Hero image - Use ImageWithFallback for better consistency */}
+            {displayImageUrl ? (
+              <div className="h-64 overflow-hidden">
+                <ImageWithFallback
+                  src={displayImageUrl}
+                  alt={title || "Salon"}
+                  className="w-full h-full object-cover"
+                  priority={true}
+                />
+              </div>
+            ) : (
+              <div 
+                className="h-64 bg-cover bg-center"
+                style={{ backgroundImage: `url(${salon.imageUrl})` }}
+              />
+            )}
             
             {/* Content */}
             <div className="p-6">

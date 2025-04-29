@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MapPin, DollarSign, Calendar } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
@@ -21,8 +20,10 @@ const SalonDetailContent: React.FC<SalonDetailContentProps> = ({ salon }) => {
   const isNail = isNailSalon(salon.title || salon.company || '', salon.description || '') || 
                  isNailJob(salon.title || salon.company || '', salon.description || '');
   
-  // Use correct image property based on what's available
-  const imageUrl = isNail ? getNailSalonImage(false, true, true) : salon.image || '';
+  // IMPORTANT: Use the stored imageUrl from the salon object if available
+  // Otherwise, use the correct image or fallback to the image property
+  const imageUrl = salon.imageUrl || 
+                  (isNail ? getNailSalonImage(false, true, true) : salon.image || '');
   
   // Format price as currency
   const formattedPrice = salon.price ? new Intl.NumberFormat('en-US', {
@@ -54,6 +55,7 @@ const SalonDetailContent: React.FC<SalonDetailContentProps> = ({ salon }) => {
                 src={imageUrl}
                 alt={salon.company || 'Nail Salon'}
                 className="w-full h-full object-cover"
+                priority={true}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">

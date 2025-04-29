@@ -34,6 +34,11 @@ const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) 
       ? getNailSalonImage(salon.is_vietnamese_listing, salon.isPremium, salon.featured) 
       : '';
 
+  // IMPORTANT: Store the selected image URL in the salon object so it can be accessed in detail view
+  if ((isBarber || isNail) && salonImage) {
+    salon.imageUrl = salonImage;
+  }
+
   return (
     <div className={`bg-white rounded-xl overflow-hidden shadow-sm border hover:shadow-md transition-shadow ${isExpired ? 'opacity-75' : ''}`}>
       {/* Image section - Use our high-quality salon images when appropriate */}
