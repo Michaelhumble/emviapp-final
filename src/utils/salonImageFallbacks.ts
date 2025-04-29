@@ -14,18 +14,21 @@ const salonFallbackImages = {
 const enhancedFallbackImages = {
   // Nail salon images
   nail: [
+    '/lovable-uploads/8b07a3f5-953b-41da-9826-562c175c4b33.png', // New nail salon image
     '/lovable-uploads/15bcad43-8797-40ed-ae8f-96eedb447b8f.png',
     '/lovable-uploads/1f3cfd40-4041-4545-b71e-5a7f484f86e9.png',
     '/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png',
   ],
   // Hair salon images
   hair: [
+    '/lovable-uploads/c8d1b9cf-b785-4b35-b0bb-33221678ac65.png', // New hair salon image
     '/lovable-uploads/1763ca30-ecb0-409f-8bb0-11b851ea743f.png',
     '/lovable-uploads/264f30fa-7e38-43a5-957e-7171f5e9160e.png',
     '/lovable-uploads/4b908b3b-93ed-4879-95d4-cfa861a1f69f.png',
   ],
   // Spa images
   spa: [
+    '/lovable-uploads/ea1c82db-e21e-4b53-9d07-a660139223d0.png', // New spa salon image
     '/lovable-uploads/19ff177d-e137-4d2c-afd1-0b5b69109c44.png',
     '/lovable-uploads/5a1ba245-85f7-4036-95f9-0e08ada34602.png',
     '/lovable-uploads/9a7898e7-739c-4a79-8705-70090e25c10b.png',
@@ -74,7 +77,14 @@ export const getDefaultSalonImage = (category: SalonCategory = 'beauty'): string
  * Each time this is called, it returns a different random beauty salon image
  */
 export const fallbackImage = (): string => {
-  return getRandomImage(enhancedFallbackImages.beauty);
+  // Prioritize the new uploaded images
+  const allImages = [
+    '/lovable-uploads/8b07a3f5-953b-41da-9826-562c175c4b33.png',
+    '/lovable-uploads/c8d1b9cf-b785-4b35-b0bb-33221678ac65.png',
+    '/lovable-uploads/ea1c82db-e21e-4b53-9d07-a660139223d0.png',
+    ...enhancedFallbackImages.beauty
+  ];
+  return allImages[Math.floor(Math.random() * allImages.length)];
 };
 
 /**

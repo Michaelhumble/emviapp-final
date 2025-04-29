@@ -48,6 +48,11 @@ const ImageWithFallback = ({
       }
     }
     
+    // Prioritize new uploaded images
+    if (src && src.includes('lovable-uploads')) {
+      console.log('Using high-quality uploaded image:', src);
+    }
+    
     setImgSrc(src || '');
   }, [src, fallbackImage]);
   
