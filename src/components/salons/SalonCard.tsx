@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Salon } from '@/types/salon';
 import { isNailSalon, getNailSalonImage } from '@/utils/nailSalonImages';
 import { isBarberShop, getBarberShopImage } from '@/utils/barberShopImages';
-import { isHairSalon, getHairSalonImage } from '@/utils/hairSalonImages';
+import { isHairSalon, getHairSalonImage, isLuxuryHairSalon } from '@/utils/hairSalonImages';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 
 interface SalonCardProps {
@@ -25,8 +25,13 @@ const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) 
 
   // Check if this is a barbershop first (prioritize barber category for our test)
   const isBarber = isBarberShop(salon.name, salon.description);
+  
   // Check if this is a hair salon
   const isHair = !isBarber && isHairSalon(salon.name, salon.description);
+  
+  // Check if this is specifically a luxury hair salon
+  const isLuxuryHair = isHair && isLuxuryHairSalon(salon.name, salon.description);
+  
   // Then check if this is a nail salon 
   const isNail = !isBarber && !isHair && isNailSalon(salon.name, salon.description);
   
@@ -34,7 +39,7 @@ const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) 
   const salonImage = isBarber
     ? getBarberShopImage(salon.isPremium, salon.featured)
     : isHair
-      ? getHairSalonImage(salon.isPremium, salon.featured)
+      ? getHairSalonImage(isLuxuryHair, salon.isPremium || salon.featured)
       : isNail 
         ? getNailSalonImage(salon.is_vietnamese_listing, salon.isPremium, salon.featured) 
         : '';
@@ -71,6 +76,14 @@ const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) 
           </Badge>
         )}
         
+        {/* Luxury badge for high-end hair salons */}
+        {isLuxuryHair && (
+          <Badge className="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-600 hover:to-yellow-500 text-white">
+            <Star className="h-3 w-3 mr-1 fill-white" />
+            Luxury
+          </Badge>
+        )}
+        
         {/* Price tag */}
         <div className="absolute bottom-3 right-3 bg-white/90 px-3 py-1 rounded-md font-semibold text-purple-800 shadow-sm">
           {formattedPrice}
@@ -91,8 +104,8 @@ const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) 
         </p>
         
         <Button 
-          variant="outline" 
-          className="w-full"
+          variant={isLuxuryHair ? "default" : "outline"}
+          className={isLuxuryHair ? "w-full bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-600 hover:to-yellow-500 text-white" : "w-full"}
           onClick={onViewDetails}
         >
           View Details

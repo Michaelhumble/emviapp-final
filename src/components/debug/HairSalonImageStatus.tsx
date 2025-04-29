@@ -5,7 +5,8 @@ import {
   getHairSalonImage, 
   getHairBoothImage, 
   getHairJobImage, 
-  getRandomHairSalonImage 
+  getRandomHairSalonImage,
+  isLuxuryHairSalon
 } from '@/utils/hairSalonImages';
 
 /**
@@ -22,7 +23,8 @@ const HairSalonImageStatus: React.FC = () => {
     <div className="mb-4 p-4 border border-pink-200 rounded-md bg-pink-50 text-xs">
       <h3 className="font-bold mb-2">🔍 Hair Salon Image Status (Dev Only)</h3>
       <div>
-        <p className="mb-1">Premium hair salon image: {getHairSalonImage(true, true)}</p>
+        <p className="mb-1">Luxury hair salon image: {getHairSalonImage(true, true)}</p>
+        <p className="mb-1">Premium hair salon image: {getHairSalonImage(false, true)}</p>
         <p className="mb-1">Standard hair salon image: {getHairSalonImage(false, false)}</p>
         <p className="mb-1">Hair booth image: {getHairBoothImage()}</p>
         <p className="mb-1">Hair stylist job image: {getHairJobImage()}</p>
@@ -40,6 +42,9 @@ const HairSalonImageStatus: React.FC = () => {
                   className="w-full h-32 object-cover rounded"
                 />
                 <p className="mt-1 text-[10px] break-all">{url}</p>
+                <p className="mt-1 text-[10px] text-pink-600">
+                  {key.includes('luxury') ? 'Ultra-Luxury Tier' : 'Premium Tier'}
+                </p>
               </div>
             ))}
           </div>
