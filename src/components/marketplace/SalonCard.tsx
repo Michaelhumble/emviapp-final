@@ -3,6 +3,7 @@ import { ArrowRight, Building, Calendar, MapPin, Star, TrendingUp, Users } from 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
+import { determineSalonCategory } from "@/utils/salonImageFallbacks";
 
 interface SalonCardProps {
   salon: {
@@ -17,6 +18,10 @@ interface SalonCardProps {
     featured: boolean;
     image?: string; // Make sure this property exists to match what we're sending
     images?: string[]; // Keep the existing images array property
+    description?: {
+      en: string;
+      vi: string;
+    };
   };
   viewDetails: () => void;
 }
@@ -31,6 +36,25 @@ export const SalonCard = ({ salon, viewDetails }: SalonCardProps) => {
     return { text: "Fair Price", color: "bg-blue-100 text-blue-800" };
   })();
 
+  // Determine appropriate fallback image category based on salon description or name
+  const salonCategory = determineSalonCategory(
+    salon.description?.en || '',
+    salon.name
+  );
+
+  // Choose an appropriate fallback image based on salon type
+  const getFallbackImage = () => {
+    if (salonCategory === 'nail') {
+      return "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png";
+    } else if (salonCategory === 'hair') {
+      return "/lovable-uploads/0c68659d-ebd4-4091-aa1a-9329f3690d68.png";
+    } else if (salonCategory === 'barber') {
+      return "/lovable-uploads/f3f2a5ae-65d9-4442-8842-1cb9e26cdb56.png";
+    } else {
+      return "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800";
+    }
+  };
+
   return (
     <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg h-full flex flex-col">
       <div className="relative">
@@ -39,7 +63,7 @@ export const SalonCard = ({ salon, viewDetails }: SalonCardProps) => {
             src={salon.image || ""}
             alt={salon.name} 
             className="w-full h-full object-cover"
-            fallbackImage="https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800"
+            fallbackImage={getFallbackImage()}
             businessName={salon.name}
           />
         </div>

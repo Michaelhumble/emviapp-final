@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Search, Frown, Star } from "lucide-react";
 import Layout from "@/components/layout/Layout";
@@ -9,6 +8,7 @@ import { SalonFilter } from "@/components/marketplace/SalonFilter";
 import { Salon, salons } from "@/components/marketplace/mockData";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/context/auth";
+import { determineSalonCategory } from "@/utils/salonImageFallbacks";
 
 const SalonMarketplace = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,22 +18,46 @@ const SalonMarketplace = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { user } = useAuth();
 
-  // Luxury salon images
+  // Luxury salon images - matched appropriately to salon types
   const luxuryImages = [
-    "/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png",
-    "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png",
-    "/lovable-uploads/89ef4a43-b461-47fc-8b2d-97b07318a891.png",
-    "/lovable-uploads/0c68659d-ebd4-4091-aa1a-9329f3690d68.png",
-    "/lovable-uploads/f3f2a5ae-65d9-4442-8842-1cb9e26cdb56.png",
-    "/lovable-uploads/1bc30225-0249-44a2-8086-c0a8ecbd57c2.png"
+    "/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png", // Modern luxury salon
+    "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png", // Premium nail salon
+    "/lovable-uploads/89ef4a43-b461-47fc-8b2d-97b07318a891.png", // Nail salon with pink chairs
+    "/lovable-uploads/0c68659d-ebd4-4091-aa1a-9329f3690d68.png", // Hair salon premium
+    "/lovable-uploads/f3f2a5ae-65d9-4442-8842-1cb9e26cdb56.png", // Barber shop premium
+    "/lovable-uploads/1bc30225-0249-44a2-8086-c0a8ecbd57c2.png"  // Another nail salon view
   ];
 
-  // Enhance the salons with our luxury images
-  const enhancedSalons = salons.map((salon, index) => ({
-    ...salon,
-    // Use image property instead of imageUrl since that's what the Salon type has
-    image: salon.featured ? luxuryImages[index % luxuryImages.length] : salon.images[0] || ''
-  }));
+  // Enhance the salons with appropriate luxury images
+  const enhancedSalons = salons.map((salon, index) => {
+    // Determine the appropriate image based on salon description
+    const category = determineSalonCategory(salon.description.en, salon.name);
+    
+    // For featured salons, use luxury images that match the salon type
+    let appropriateImage = '';
+    if (salon.featured) {
+      if (category === 'nail') {
+        appropriateImage = [
+          "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png", 
+          "/lovable-uploads/89ef4a43-b461-47fc-8b2d-97b07318a891.png"
+        ][index % 2];
+      } else if (category === 'barber') {
+        appropriateImage = "/lovable-uploads/f3f2a5ae-65d9-4442-8842-1cb9e26cdb56.png";
+      } else if (category === 'hair') {
+        appropriateImage = "/lovable-uploads/0c68659d-ebd4-4091-aa1a-9329f3690d68.png";
+      } else {
+        appropriateImage = "/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png";
+      }
+    } else {
+      // Use first image from the salon's images array if available
+      appropriateImage = salon.images[0] || '';
+    }
+
+    return {
+      ...salon,
+      image: appropriateImage
+    };
+  });
 
   const filteredSalons = enhancedSalons.filter(salon => {
     const matchesSearch = 

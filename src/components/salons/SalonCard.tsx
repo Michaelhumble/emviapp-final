@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Salon } from '@/types/salon';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
-import { getDefaultSalonImage, getLuxurySalonImage } from '@/utils/salonImageFallbacks';
+import { getDefaultSalonImage } from '@/utils/salonImageFallbacks';
 
 interface SalonCardProps {
   salon: Salon;
