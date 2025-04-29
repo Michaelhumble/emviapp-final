@@ -40,7 +40,9 @@ const Index = () => {
     console.log("Index page loaded");
     
     // Run verification to ensure all listings have proper routing
-    runListingsVerification();
+    runListingsVerification()
+      .then(() => console.log("Listings verification completed"))
+      .catch(err => console.error("Error in listings verification:", err));
   }, []);
   
   return (

@@ -49,11 +49,15 @@ const SalonDetailPage = () => {
   return (
     <ListingRouteGuard 
       listingType="salon"
+      notifyOnInvalid={true}
       loadingComponent={
         <Layout>
           <div className="min-h-screen bg-background">
             <div className="container mx-auto py-12">
-              <p>Loading salon details...</p>
+              <div className="flex flex-col items-center justify-center p-8">
+                <div className="w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin mb-4"></div>
+                <p className="text-lg text-muted-foreground">Loading salon details...</p>
+              </div>
             </div>
           </div>
         </Layout>
@@ -63,7 +67,10 @@ const SalonDetailPage = () => {
         <div className="min-h-screen bg-background">
           {loading ? (
             <div className="container mx-auto py-12">
-              <p>Loading salon details...</p>
+              <div className="flex flex-col items-center justify-center p-8">
+                <div className="w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin mb-4"></div>
+                <p className="text-lg text-muted-foreground">Loading salon details...</p>
+              </div>
             </div>
           ) : error ? (
             <SalonNotFound />

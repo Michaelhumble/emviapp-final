@@ -2,12 +2,14 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { validateListingExists, ListingType } from '@/utils/listingValidator';
+import { toast } from 'sonner';
 
 interface ListingRouteGuardProps {
   children: ReactNode;
   listingType: ListingType;
   loadingComponent?: ReactNode;
   fallbackRoute?: string;
+  notifyOnInvalid?: boolean;
 }
 
 /**
@@ -18,7 +20,8 @@ const ListingRouteGuard: React.FC<ListingRouteGuardProps> = ({
   children, 
   listingType,
   loadingComponent,
-  fallbackRoute 
+  fallbackRoute,
+  notifyOnInvalid = false
 }) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -39,21 +42,34 @@ const ListingRouteGuard: React.FC<ListingRouteGuardProps> = ({
   useEffect(() => {
     const validateListing = async () => {
       if (!id) {
+        console.log(`ListingRouteGuard: No ID parameter found, redirecting to ${determinedFallback}`);
         navigate(determinedFallback);
+        if (notifyOnInvalid) {
+          toast.error(`Invalid listing: missing ID parameter`);
+        }
         return;
       }
 
       try {
         setIsValidating(true);
+        console.log(`ListingRouteGuard: Validating ${listingType} with ID ${id}...`);
         const exists = await validateListingExists(id, listingType);
         
         if (!exists) {
+          console.log(`ListingRouteGuard: Invalid ${listingType} ID ${id}, redirecting to ${determinedFallback}`);
+          if (notifyOnInvalid) {
+            toast.error(`The requested ${listingType} listing could not be found`);
+          }
           navigate(determinedFallback);
         } else {
+          console.log(`ListingRouteGuard: Valid ${listingType} ID ${id}`);
           setIsValid(true);
         }
       } catch (error) {
         console.error('Error validating listing:', error);
+        if (notifyOnInvalid) {
+          toast.error(`Error validating listing: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
         navigate(determinedFallback);
       } finally {
         setIsValidating(false);
@@ -61,11 +77,11 @@ const ListingRouteGuard: React.FC<ListingRouteGuardProps> = ({
     };
 
     validateListing();
-  }, [id, listingType, navigate, determinedFallback]);
+  }, [id, listingType, navigate, determinedFallback, notifyOnInvalid]);
 
   // Show loading component while validating
   if (isValidating) {
-    return <>{loadingComponent || <div>Validating listing...</div>}</>;
+    return <>{loadingComponent || <div className="flex justify-center items-center p-8">Validating listing...</div>}</>;
   }
 
   // Only render children if the listing is valid
