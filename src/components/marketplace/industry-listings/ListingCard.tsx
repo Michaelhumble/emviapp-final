@@ -57,15 +57,15 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
   let listingImage = '';
   
   if (isNailTechListing) {
-    listingImage = listing.for_sale ? getNailSalonImage(false, true) : getNailJobImage();
+    listingImage = listing.for_sale ? getNailSalonImage() : getNailJobImage();
   } else if (isLashListing) {
-    listingImage = listing.for_sale ? getLashSalonImage(true) : getLashBrowJobImage(true);
+    listingImage = listing.for_sale ? getLashSalonImage() : getLashBrowJobImage();
   } else if (isBrowListing) {
-    listingImage = listing.for_sale ? getBrowSalonImage(true) : getLashBrowJobImage(false);
+    listingImage = listing.for_sale ? getBrowSalonImage() : getLashBrowJobImage();
   } else if (isBarberListing) {
-    listingImage = getBarberJobImage(true);
+    listingImage = getBarberJobImage();
   } else if (isMassageListing) {
-    listingImage = getMassageJobImage(true);
+    listingImage = getMassageJobImage();
   } else if (listing.title?.toLowerCase().includes('tattoo') || 
             (listing.description || '').toLowerCase().includes('tattoo')) {
     // Tattoo specific images
@@ -118,7 +118,6 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
               "Beauty Business"
             )}
             className="w-full h-full object-cover"
-            priority={true}
             fallbackImage={listingImage}
           />
         </div>
