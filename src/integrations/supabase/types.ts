@@ -771,6 +771,42 @@ export type Database = {
           },
         ]
       }
+      listing_validation_logs: {
+        Row: {
+          created_at: string | null
+          error_reason: string | null
+          id: string
+          ip_address: string | null
+          listing_id: string
+          listing_type: string
+          referrer: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_reason?: string | null
+          id?: string
+          ip_address?: string | null
+          listing_id: string
+          listing_type: string
+          referrer?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          error_reason?: string | null
+          id?: string
+          ip_address?: string | null
+          listing_id?: string
+          listing_type?: string
+          referrer?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       message_likes: {
         Row: {
           id: string

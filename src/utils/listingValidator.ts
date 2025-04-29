@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { Job } from "@/types/job";
 import { Salon } from "@/types/salon";
@@ -166,7 +167,12 @@ export async function logInvalidListingAccess(
     if (process.env.NODE_ENV === 'production') {
       await supabase
         .from('listing_validation_logs')
-        .insert(logEntry);
+        .insert({
+          listing_id: id,
+          listing_type: listingType,
+          error_reason: errorReason,
+          referrer: logEntry.referrer
+        });
     }
   } catch (error) {
     console.error('Failed to log invalid listing access:', error);
