@@ -18,10 +18,10 @@ const hiringSalons = [
     isNail: true,
     isHiring: true,
     specialty: "Full Service Salon",
-    image: "/lovable-uploads/2951176b-68c9-45d6-8bc5-20513e72d0a3.png", // Luxury makeup salon with black chairs
-    price: 0, // Added missing price field
-    description: "Luxury makeup salon with premium services", // Added missing description
-    imageUrl: "/lovable-uploads/2951176b-68c9-45d6-8bc5-20513e72d0a3.png" // Added missing imageUrl
+    image: "/lovable-uploads/2951176b-68c9-45d6-8bc5-20513e72d0a3.png",
+    price: 0,
+    description: "Luxury makeup salon with premium services",
+    imageUrl: "/lovable-uploads/2951176b-68c9-45d6-8bc5-20513e72d0a3.png"
   },
   {
     id: "salon-2",
@@ -31,10 +31,10 @@ const hiringSalons = [
     isNail: true,
     isHiring: true,
     specialty: "Nail Spa",
-    image: "", // Will use fallback image
-    price: 0, // Added missing price field
-    description: "Premium nail spa with top-tier services", // Added missing description
-    imageUrl: "" // Added missing imageUrl
+    image: "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png",
+    price: 0,
+    description: "Premium nail spa with top-tier services",
+    imageUrl: "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png"
   },
   {
     id: "salon-3",
@@ -44,10 +44,10 @@ const hiringSalons = [
     isNail: true,
     isHiring: true,
     specialty: "Nail Art Studio",
-    image: "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png", // Gold-accented luxury spa
-    price: 0, // Added missing price field
-    description: "Specializing in custom nail art and designs", // Added missing description
-    imageUrl: "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png" // Added missing imageUrl
+    image: "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png",
+    price: 0,
+    description: "Specializing in custom nail art and designs",
+    imageUrl: "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png"
   }
 ];
 
@@ -62,19 +62,19 @@ const validatedSalons = hiringSalons.map(salon => {
   return salon;
 });
 
-// Convert to Salon type
+// Convert to Salon type with all required properties
 const salonListings = validatedSalons.map(salon => ({
   id: salon.id,
   name: salon.name,
   location: salon.location,
   image: salon.image,
-  imageUrl: salon.imageUrl, // Ensure imageUrl is included
-  description: salon.description, // Ensure description is included
-  price: 0, // Ensure price is included as a number
+  imageUrl: salon.imageUrl, // Keep imageUrl intact
+  description: salon.description,
+  price: salon.price,
   rating: parseFloat(salon.rating),
   isHiring: salon.isHiring,
   specialty: salon.specialty,
-  featured: false // Add featured property
+  featured: false
 }));
 
 const container = {

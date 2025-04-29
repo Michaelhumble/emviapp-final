@@ -1,4 +1,3 @@
-
 import { ArrowRight, Building, Calendar, MapPin, Star, TrendingUp, Users } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -56,7 +55,17 @@ export const SalonCard = ({ salon, viewDetails }: SalonCardProps) => {
 
   // Choose an appropriate fallback image based on salon type with priority for nail salons
   const getFallbackImage = () => {
-    // First, check if this is a nail salon - PRIORITY FOR NAIL DETECTION
+    // First, check if we have a valid image URL directly in the salon data
+    if (salon.image && salon.image.includes('lovable-uploads')) {
+      return salon.image;
+    }
+    
+    // If we have images array with valid URLs, use the first one
+    if (salon.images && salon.images.length > 0 && salon.images[0].includes('lovable-uploads')) {
+      return salon.images[0];
+    }
+    
+    // Otherwise, determine the best fallback image based on salon type
     if (isNailSalonItem || salonCategory === 'nail') {
       const nailImages = [
         NAIL_SALON_IMAGES.luxuryLarge,
@@ -92,18 +101,18 @@ export const SalonCard = ({ salon, viewDetails }: SalonCardProps) => {
     }
   };
 
-  // Get the fallback image to use - make sure we have it for data consistency
-  const fallbackImage = getFallbackImage();
+  // Get the image to use - prioritize existing image and only use fallback if needed
+  const salonImage = salon.image || (salon.images && salon.images.length > 0 ? salon.images[0] : null) || getFallbackImage();
 
   return (
     <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg h-full flex flex-col">
       <div className="relative">
         <div className="aspect-video bg-gray-100 w-full overflow-hidden">
           <ImageWithFallback 
-            src={salon.image || ""}
+            src={salonImage}
             alt={salon.name} 
             className="w-full h-full object-cover"
-            fallbackImage={fallbackImage}
+            fallbackImage={getFallbackImage()}
             businessName={salon.name}
           />
         </div>
