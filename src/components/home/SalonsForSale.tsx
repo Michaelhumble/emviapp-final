@@ -4,9 +4,9 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Building, MapPin, Banknote, ArrowRight } from "lucide-react";
+import { MapPin, Banknote, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { getNailSalonImage } from "@/utils/nailSalonImages";
+import { getNailSalonImage, getRandomNailSalonImage } from "@/utils/nailSalonImages";
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 // Sample data for salons for sale - ensuring all have isNail property set to true
@@ -68,12 +68,15 @@ const SalonsForSale = () => {
             >
               <Card className="overflow-hidden h-full border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
                 <div className="h-48 overflow-hidden">
-                  {/* Always use nail salon images with specific parameters to ensure variety */}
+                  {/* Use one of our luxury nail salon images for each salon */}
                   <ImageWithFallback
-                    src={getNailSalonImage(false, index === 0, index === 1)}
+                    src={index === 0 ? "/lovable-uploads/c288ca24-3a79-470f-8bc8-c3abf5371fc1.png" : 
+                         index === 1 ? "/lovable-uploads/1d1e2a21-2e5b-452d-a583-57240e114a67.png" :
+                         "/lovable-uploads/16e16a16-df62-4741-aec7-3364fdc958ca.png"}
                     alt={salon.name}
                     className="w-full h-full object-cover"
                     priority={true} // Load images with priority
+                    fallbackImage={getRandomNailSalonImage()} // Use a random image as fallback
                   />
                 </div>
                 

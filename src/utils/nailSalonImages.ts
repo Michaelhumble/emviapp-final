@@ -18,7 +18,17 @@ const NAIL_SALON_IMAGES = {
   retail: "/lovable-uploads/4a4cb1e0-ae11-44c9-8c18-f77c351f9b18.png", // Nail salon with retail display
   workstation: "/lovable-uploads/b6193e3c-9320-4f9f-8cd8-c794545bf86e.png", // Close-up of nail salon workstation
   luxuryLounge: "/lovable-uploads/c980bff9-c395-42ac-aa18-3f4784c9bc6d.png", // Luxury nail salon lounge area
+  
+  // Newly added luxury nail salon images
+  luxuryPink1: "/lovable-uploads/c288ca24-3a79-470f-8bc8-c3abf5371fc1.png", // Luxury pink nail salon with manicure stations
+  spaRoom: "/lovable-uploads/a598b74b-4a31-4c7b-a616-f21b9f157099.png", // Elegant spa room with neutral tones
+  luxuryBeige: "/lovable-uploads/1d1e2a21-2e5b-452d-a583-57240e114a67.png", // Luxury beige nail salon with wood accents
+  manicureStations: "/lovable-uploads/16e16a16-df62-4741-aec7-3364fdc958ca.png", // Multiple manicure stations in beige theme
+  pedicureArea: "/lovable-uploads/320a97df-a8f7-4ff3-90d8-8c7e63ba8caa.png", // Luxury pedicure area with comfortable chairs
 };
+
+// Store all image keys to easily select random images
+const IMAGE_KEYS = Object.keys(NAIL_SALON_IMAGES);
 
 // Fallback image in case uploads fail - use the most reliable image
 const FALLBACK_IMAGE = "/lovable-uploads/e6f2407e-4402-42a5-b1eb-28761419c0cb.png";
@@ -39,40 +49,16 @@ export const getNailSalonImage = (
   isPremium: boolean = false
 ): string => {
   // Always get a valid image, no matter what - ensure no empty returns
-  // Prioritize image selection based on salon characteristics
-  let selectedImage = FALLBACK_IMAGE;
+  // Rotate through all available images to provide variety and ensure equal distribution
   
-  if (isLuxury) {
-    selectedImage = NAIL_SALON_IMAGES.luxury || FALLBACK_IMAGE;
-  } else if (isPremium) {
-    // Alternate between premium images for variety
-    selectedImage = Math.random() > 0.5 ? 
-      (NAIL_SALON_IMAGES.premium1 || FALLBACK_IMAGE) : 
-      (NAIL_SALON_IMAGES.premium2 || FALLBACK_IMAGE);
-  } else if (isVietnamese) {
-    // Use more modern designs for Vietnamese listings
-    selectedImage = Math.random() > 0.5 ? 
-      (NAIL_SALON_IMAGES.modern1 || FALLBACK_IMAGE) : 
-      (NAIL_SALON_IMAGES.modern2 || FALLBACK_IMAGE);
-  } else {
-    // For other general nail salons, use a variety of images
-    const options = [
-      NAIL_SALON_IMAGES.professional,
-      NAIL_SALON_IMAGES.elegantWhite,
-      NAIL_SALON_IMAGES.retail,
-      NAIL_SALON_IMAGES.workstation
-    ].filter(img => img); // Filter out any undefined images
-    
-    if (options.length === 0) return FALLBACK_IMAGE;
-    
-    // Use rotation to ensure variety
-    imageRotationIndex = (imageRotationIndex + 1) % options.length;
-    selectedImage = options[imageRotationIndex];
-  }
+  // Use rotation index to select image, increment for next usage
+  imageRotationIndex = (imageRotationIndex + 1) % IMAGE_KEYS.length;
+  const selectedKey = IMAGE_KEYS[imageRotationIndex];
+  const selectedImage = NAIL_SALON_IMAGES[selectedKey as keyof typeof NAIL_SALON_IMAGES];
   
   // Log the selected image to help diagnose any issues
   console.log(`Selected nail salon image: ${selectedImage}`);
-  return selectedImage;
+  return selectedImage || FALLBACK_IMAGE;
 };
 
 /**
@@ -80,12 +66,19 @@ export const getNailSalonImage = (
  * Always returns a valid image path
  */
 export const getNailBoothImage = (): string => {
-  const boothImages = [NAIL_SALON_IMAGES.vip, NAIL_SALON_IMAGES.luxuryLounge].filter(Boolean);
+  // Select from luxury images that are appropriate for booth rentals
+  const boothImages = [
+    NAIL_SALON_IMAGES.vip, 
+    NAIL_SALON_IMAGES.luxuryLounge,
+    NAIL_SALON_IMAGES.manicureStations,
+    NAIL_SALON_IMAGES.luxuryPink1
+  ].filter(Boolean);
+  
   if (boothImages.length === 0) return FALLBACK_IMAGE;
   
   // Rotate through available booth images
-  imageRotationIndex = (imageRotationIndex + 1) % boothImages.length;
-  return boothImages[imageRotationIndex];
+  const boothIndex = imageRotationIndex % boothImages.length;
+  return boothImages[boothIndex];
 };
 
 /**
@@ -93,12 +86,19 @@ export const getNailBoothImage = (): string => {
  * Always returns a valid image path
  */
 export const getNailJobImage = (): string => {
-  const jobImages = [NAIL_SALON_IMAGES.luxuryLounge, NAIL_SALON_IMAGES.workstation].filter(Boolean);
+  // Select from images that are appropriate for job listings
+  const jobImages = [
+    NAIL_SALON_IMAGES.workstation,
+    NAIL_SALON_IMAGES.professional,
+    NAIL_SALON_IMAGES.luxuryBeige,
+    NAIL_SALON_IMAGES.pedicureArea
+  ].filter(Boolean);
+  
   if (jobImages.length === 0) return FALLBACK_IMAGE;
   
   // Rotate through available job images
-  imageRotationIndex = (imageRotationIndex + 1) % jobImages.length;
-  return jobImages[imageRotationIndex];
+  const jobIndex = imageRotationIndex % jobImages.length;
+  return jobImages[jobIndex];
 };
 
 /**
@@ -147,4 +147,14 @@ export const isNailJob = (title: string = '', description: string = ''): boolean
          combinedText.includes('nail specialist') ||
          combinedText.includes('beautician') || // Many beautician roles include nail services
          combinedText.includes('thợ nail');     // Vietnamese term for nail technician
+};
+
+/**
+ * Get a random nail salon image - useful for ensuring variety
+ * Does not update the rotation index
+ */
+export const getRandomNailSalonImage = (): string => {
+  const randomIndex = Math.floor(Math.random() * IMAGE_KEYS.length);
+  const key = IMAGE_KEYS[randomIndex];
+  return NAIL_SALON_IMAGES[key as keyof typeof NAIL_SALON_IMAGES] || FALLBACK_IMAGE;
 };

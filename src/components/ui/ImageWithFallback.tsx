@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { CSSProperties } from 'react';
+import { getRandomNailSalonImage } from '@/utils/nailSalonImages';
 
 export interface ImageWithFallbackProps {
   src: string;
@@ -38,21 +39,20 @@ export const ImageWithFallback = ({
   const maxRetries = 2;
   
   // Default fallback for nail salon/beauty industry images
-  const defaultFallback = "/lovable-uploads/e6f2407e-4402-42a5-b1eb-28761419c0cb.png";
+  const defaultFallback = getRandomNailSalonImage(); // Use a random nail image for variety
   
   // Reset loading state and set initial source when component mounts or source changes
   useEffect(() => {
     setIsLoading(true);
     setHasErrored(false);
+    setRetryCount(0);
     
     // If src is empty or invalid, show fallback immediately
     if (!src || src === '') {
       if (fallbackImage) {
         setImgSrc(fallbackImage);
-      } else if (defaultFallback) {
-        setImgSrc(defaultFallback);
       } else {
-        setHasErrored(true);
+        setImgSrc(defaultFallback);
       }
       setIsLoading(false);
       return;
@@ -60,9 +60,6 @@ export const ImageWithFallback = ({
     
     // Use the provided source
     setImgSrc(src);
-    
-    // Log image source for debugging
-    console.log(`Loading image: ${src}`);
   }, [src, fallbackImage]);
   
   const handleError = () => {
@@ -94,7 +91,6 @@ export const ImageWithFallback = ({
   };
   
   const handleLoad = () => {
-    console.log(`Image loaded successfully: ${imgSrc}`);
     setIsLoading(false);
   };
   
