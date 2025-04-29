@@ -14,6 +14,7 @@ export interface Salon {
   willTrain: boolean;
   images: string[];
   featured: boolean;
+  image?: string; // Add this field to match our usage
 }
 
 export const salons: Salon[] = [

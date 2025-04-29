@@ -15,6 +15,8 @@ interface SalonCardProps {
     revenue: number;
     willTrain: boolean;
     featured: boolean;
+    image?: string; // Make sure this property exists to match what we're sending
+    images?: string[]; // Keep the existing images array property
   };
   viewDetails: () => void;
 }
@@ -34,7 +36,7 @@ export const SalonCard = ({ salon, viewDetails }: SalonCardProps) => {
       <div className="relative">
         <div className="aspect-video bg-gray-100 w-full overflow-hidden">
           <ImageWithFallback 
-            src="/placeholder.svg"
+            src={salon.image || ""}
             alt={salon.name} 
             className="w-full h-full object-cover"
             fallbackImage="https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800"

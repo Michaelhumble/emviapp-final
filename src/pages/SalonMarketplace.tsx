@@ -31,7 +31,8 @@ const SalonMarketplace = () => {
   // Enhance the salons with our luxury images
   const enhancedSalons = salons.map((salon, index) => ({
     ...salon,
-    imageUrl: salon.featured ? luxuryImages[index % luxuryImages.length] : salon.imageUrl
+    // Use image property instead of imageUrl since that's what the Salon type has
+    image: salon.featured ? luxuryImages[index % luxuryImages.length] : salon.images[0] || ''
   }));
 
   const filteredSalons = enhancedSalons.filter(salon => {
