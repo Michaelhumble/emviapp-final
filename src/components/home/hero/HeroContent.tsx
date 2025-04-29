@@ -31,6 +31,30 @@ const HeroContent = ({
   
   const currentSlide = heroImages[activeIndex];
   
+  // Only show a maximum of 7 dots, with current one centered
+  const getVisibleDots = () => {
+    if (heroImages.length <= 7) return heroImages.map((_, i) => i);
+    
+    const halfVisible = 3;
+    let startIdx = activeIndex - halfVisible;
+    let endIdx = activeIndex + halfVisible;
+    
+    // Adjust for edge cases
+    if (startIdx < 0) {
+      endIdx = Math.min(endIdx - startIdx, heroImages.length - 1);
+      startIdx = 0;
+    }
+    
+    if (endIdx >= heroImages.length) {
+      startIdx = Math.max(0, startIdx - (endIdx - heroImages.length + 1));
+      endIdx = heroImages.length - 1;
+    }
+    
+    return Array.from({ length: endIdx - startIdx + 1 }, (_, i) => i + startIdx);
+  };
+  
+  const visibleDots = getVisibleDots();
+  
   return (
     <motion.div 
       className={`text-center text-white z-20 max-w-5xl mx-auto px-4 ${isMobile ? 'py-8' : 'py-0'}`}
@@ -95,16 +119,40 @@ const HeroContent = ({
         </motion.div>
       </div>
       
-      {/* Image selection dots/indicators */}
-      <div className="flex justify-center gap-2 mt-10">
-        {heroImages.map((_, index) => (
+      {/* Image selection dots/indicators - showing active set with overflow indicator */}
+      <div className="flex justify-center items-center gap-2 mt-10">
+        {heroImages.length > 7 && activeIndex > 3 && (
+          <button
+            onClick={() => setActiveIndex(Math.max(0, activeIndex - 5))}
+            className="w-6 h-6 rounded-full flex items-center justify-center text-white/70 hover:text-white transition-colors"
+            aria-label="Previous images"
+          >
+            ⟨
+          </button>
+        )}
+        
+        {visibleDots.map(index => (
           <button
             key={index}
             onClick={() => setActiveIndex(index)}
-            className={`w-3 h-3 rounded-full transition-all ${activeIndex === index ? 'bg-white scale-125' : 'bg-white/40'}`}
+            className={`w-3 h-3 rounded-full transition-all ${
+              activeIndex === index 
+                ? 'bg-white scale-125' 
+                : 'bg-white/40 hover:bg-white/60'
+            }`}
             aria-label={`View slide ${index + 1}`}
           />
         ))}
+        
+        {heroImages.length > 7 && activeIndex < heroImages.length - 4 && (
+          <button
+            onClick={() => setActiveIndex(Math.min(heroImages.length - 1, activeIndex + 5))}
+            className="w-6 h-6 rounded-full flex items-center justify-center text-white/70 hover:text-white transition-colors"
+            aria-label="Next images"
+          >
+            ⟩
+          </button>
+        )}
       </div>
     </motion.div>
   );

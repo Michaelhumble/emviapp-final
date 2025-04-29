@@ -26,7 +26,7 @@ const Hero = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
-  // Rotate background images every 5 seconds with smooth transitions
+  // Rotate background images every 6.5 seconds with smooth transitions
   useEffect(() => {
     const interval = setInterval(() => {
       setIsChanging(true);
@@ -35,8 +35,8 @@ const Hero = () => {
           prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1
         );
         setIsChanging(false);
-      }, 500);
-    }, 5000);
+      }, 800); // Longer fade transition for smoother experience
+    }, 6500); // Slightly longer display time for each image
     
     return () => clearInterval(interval);
   }, []);
@@ -46,8 +46,22 @@ const Hero = () => {
     setTimeout(() => {
       setCurrentImageIndex(index);
       setIsChanging(false);
-    }, 300);
+    }, 500);
   };
+
+  // Preload next few images for smoother transitions
+  useEffect(() => {
+    const preloadNextImages = () => {
+      const imagesToPreload = 3; // Number of images to preload
+      for (let i = 1; i <= imagesToPreload; i++) {
+        const nextIndex = (currentImageIndex + i) % heroImages.length;
+        const img = new Image();
+        img.src = heroImages[nextIndex].url;
+      }
+    };
+    
+    preloadNextImages();
+  }, [currentImageIndex]);
 
   return (
     <section 
@@ -63,7 +77,7 @@ const Hero = () => {
         border: 'none'
       }}
     >
-      {/* Background image carousel with rotation */}
+      {/* Background image carousel with full rotation through all images */}
       <HeroCarousel 
         images={heroImages} 
         activeIndex={currentImageIndex} 
