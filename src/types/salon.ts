@@ -69,7 +69,7 @@ export interface Salon {
   company?: string;
   salon_type?: string;
   salon_features?: string[];
-  asking_price?: number;
+  asking_price?: number | string;
   
   // Category for appropriate fallback image selection
   category?: SalonCategory;
