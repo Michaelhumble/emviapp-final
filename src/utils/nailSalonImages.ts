@@ -5,7 +5,7 @@
  */
 
 // Define path constants for the uploaded nail salon images with explicit file paths
-const NAIL_SALON_IMAGES = {
+export const NAIL_SALON_IMAGES = {
   // Main featured images - using your uploaded images
   luxury: "/lovable-uploads/e6f2407e-4402-42a5-b1eb-28761419c0cb.png", // Luxury nail salon with elegant displays
   premium1: "/lovable-uploads/72875e23-d749-4521-989d-4ff82423de01.png", // Premium nail salon setup
@@ -16,7 +16,7 @@ const NAIL_SALON_IMAGES = {
   elegantWhite: "/lovable-uploads/2e44e40e-0338-42f9-add6-97d40eada906.png", // Elegant white-themed nail salon
   vip: "/lovable-uploads/df6670ab-0854-4472-b6db-0c0e9c578a0f.png", // VIP nail salon experience
   retail: "/lovable-uploads/4a4cb1e0-ae11-44c9-8c18-f77c351f9b18.png", // Nail salon with retail display
-  workstation: "/lovable-uploads/b6193e3c-9320-4f9f-8cd8-c794545bf86e.png", // Close-up of nail salon workstation
+  workstation: "/lovable-uploads/b6193e3c-9320-4f9f-8c18-f794545bf86e.png", // Close-up of nail salon workstation
   luxuryLounge: "/lovable-uploads/c980bff9-c395-42ac-aa18-3f4784c9bc6d.png", // Luxury nail salon lounge area
   
   // Newly added luxury nail salon images
