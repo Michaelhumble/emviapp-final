@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Job } from '@/types/job';
 import OpportunitiesSection from './opportunities/OpportunitiesSection';
@@ -11,7 +12,7 @@ const LatestIndustryOpportunities = () => {
     const loadDiverseListings = async () => {
       // Create a diverse set of listings with unique IDs
       let mixed: Job[] = [
-        // Nail industry position - UPDATED TITLE to match image mapping
+        // Nail industry position - Proper title to match image mapping
         {
           id: 'op-nail-' + uuidv4().slice(0, 8),
           title: "Nail Tech - Private Suite",
@@ -21,7 +22,8 @@ const LatestIndustryOpportunities = () => {
           specialties: ["Nails", "Manicure", "Pedicure"],
           for_sale: false,
           created_at: new Date().toISOString(),
-          type: 'job'
+          type: 'job',
+          imageUrl: "/lovable-uploads/72f0f6c8-5793-4750-993d-f250b495146d.png" // Ensure correct image
         },
         // Hair industry position
         {
@@ -61,7 +63,7 @@ const LatestIndustryOpportunities = () => {
           created_at: new Date().toISOString(),
           type: 'salon'
         },
-        // Booth rental - UPDATED TITLE to match image mapping
+        // Booth rental - Proper title to match image mapping
         {
           id: 'op-booth-' + uuidv4().slice(0, 8),
           title: "Luxury Booth Rental",
@@ -71,9 +73,10 @@ const LatestIndustryOpportunities = () => {
           specialties: ["Booth Rental", "Hair"],
           for_sale: false,
           created_at: new Date().toISOString(),
-          type: 'salon'
+          type: 'salon',
+          imageUrl: "/lovable-uploads/52b943aa-d9b3-46ce-9f7f-94f3b223cb28.png" // Ensure correct image
         },
-        // Tattoo artist - UPDATED TITLE to match image mapping
+        // Tattoo artist - Proper title to match image mapping
         {
           id: 'op-tattoo-' + uuidv4().slice(0, 8),
           title: "Experienced Tattoo Artist",
@@ -83,7 +86,8 @@ const LatestIndustryOpportunities = () => {
           specialties: ["Tattoo", "Art"],
           for_sale: false,
           created_at: new Date().toISOString(),
-          type: 'opportunity'
+          type: 'opportunity',
+          imageUrl: "/lovable-uploads/21d69945-acea-4057-9ff0-df824cd3c607.png" // Ensure correct image
         },
         // Beauty supply business
         {
@@ -98,7 +102,7 @@ const LatestIndustryOpportunities = () => {
           created_at: new Date().toISOString(),
           type: 'opportunity'
         },
-        // Esthetician - UPDATED TITLE to match image mapping
+        // Esthetician - Proper title to match image mapping
         {
           id: 'op-esth-' + uuidv4().slice(0, 8),
           title: "Licensed Esthetician",
@@ -108,7 +112,8 @@ const LatestIndustryOpportunities = () => {
           specialties: ["Skincare", "Esthetics"],
           for_sale: false,
           created_at: new Date().toISOString(),
-          type: 'job'
+          type: 'job',
+          imageUrl: "/lovable-uploads/16e16a16-df62-4741-aec7-3364fdc958ca.png" // Ensure correct image
         },
         // Wellness studio
         {

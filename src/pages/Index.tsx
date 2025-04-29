@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -49,7 +48,7 @@ const Index = () => {
       {/* Hero section as first */}
       <Hero />
       
-      {/* 1️⃣ Latest Industry Opportunities */}
+      {/* 1️⃣ Latest Industry Opportunities (Beauty Exchange) */}
       <LatestIndustryOpportunities />
       
       {/* 2️⃣ Nail & Beauty Salons Hiring Now */}

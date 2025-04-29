@@ -22,12 +22,12 @@ const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
   // Determine appropriate salon image
   const getSalonImage = () => {
     // Check if imageUrl exists and is a string
-    if (salon.imageUrl && typeof salon.imageUrl === 'string' && salon.imageUrl.includes('lovable-uploads')) {
+    if (salon.imageUrl && typeof salon.imageUrl === 'string' && salon.imageUrl.indexOf('lovable-uploads') !== -1) {
       return salon.imageUrl;
     }
     
     // Check if image exists and is a string
-    if (salon.image && typeof salon.image === 'string' && salon.image.includes('lovable-uploads')) {
+    if (salon.image && typeof salon.image === 'string' && salon.image.indexOf('lovable-uploads') !== -1) {
       return salon.image;
     }
     

@@ -16,8 +16,8 @@ export const verifyListingImage = (
   }
   
   // Check if the image is from our verified uploads
-  if ((listing.image && listing.image.includes('lovable-uploads')) || 
-      (listing.imageUrl && listing.imageUrl.includes('lovable-uploads'))) {
+  if ((listing.image && typeof listing.image === 'string' && listing.image.indexOf('lovable-uploads') !== -1) || 
+      (listing.imageUrl && typeof listing.imageUrl === 'string' && listing.imageUrl.indexOf('lovable-uploads') !== -1)) {
     return { isValid: true };
   }
   
@@ -35,6 +35,7 @@ export const verifyListingImage = (
 
 /**
  * Verify opportunity listings to ensure they have valid IDs and proper data
+ * Also checks for proper routing configuration based on listing type
  */
 export const verifyOpportunityListings = (listings: Job[]): { 
   isValid: boolean; 
@@ -50,6 +51,7 @@ export const verifyOpportunityListings = (listings: Job[]): {
   listings.forEach((listing, index) => {
     let isListingValid = true;
     
+    // Check for required ID
     if (!listing.id) {
       issues.push(`Listing at index ${index} is missing an ID`);
       isListingValid = false;
@@ -61,7 +63,7 @@ export const verifyOpportunityListings = (listings: Job[]): {
       }
     }
     
-    // Check if listing has basic required properties
+    // Check for basic required properties
     if (!listing.title && !listing.company) {
       issues.push(`Listing ${listing.id || index} is missing title and company information`);
       isListingValid = false;
@@ -70,6 +72,12 @@ export const verifyOpportunityListings = (listings: Job[]): {
     // Check if location is provided
     if (!listing.location) {
       issues.push(`Listing ${listing.id || index} is missing location information`);
+      isListingValid = false;
+    }
+    
+    // Check for proper type assignment for routing
+    if (!listing.type || (listing.type !== 'salon' && listing.type !== 'opportunity' && listing.type !== 'job')) {
+      issues.push(`Listing ${listing.id || index} has invalid or missing type (needed for routing): ${listing.type}`);
       isListingValid = false;
     }
     
@@ -94,8 +102,22 @@ export const verifyOpportunityListings = (listings: Job[]): {
 export const enhanceListingWithImage = (listing: Job): Job => {
   const enhancedListing = { ...listing };
   
+  // Special image mappings for specific titles
+  const specialTitleToImage: Record<string, string> = {
+    "Nail Tech - Private Suite": "/lovable-uploads/72f0f6c8-5793-4750-993d-f250b495146d.png",
+    "Luxury Booth Rental": "/lovable-uploads/52b943aa-d9b3-46ce-9f7f-94f3b223cb28.png",
+    "Licensed Esthetician": "/lovable-uploads/16e16a16-df62-4741-aec7-3364fdc958ca.png", 
+    "Experienced Tattoo Artist": "/lovable-uploads/21d69945-acea-4057-9ff0-df824cd3c607.png"
+  };
+  
   // Skip if listing already has a valid image
-  if (enhancedListing.imageUrl && enhancedListing.imageUrl.includes('lovable-uploads')) {
+  if (enhancedListing.imageUrl && typeof enhancedListing.imageUrl === 'string' && enhancedListing.imageUrl.indexOf('lovable-uploads') !== -1) {
+    return enhancedListing;
+  }
+  
+  // Check for special title mapping first
+  if (enhancedListing.title && specialTitleToImage[enhancedListing.title]) {
+    enhancedListing.imageUrl = specialTitleToImage[enhancedListing.title];
     return enhancedListing;
   }
   
@@ -149,4 +171,33 @@ export const getImageUsageStats = (): Record<string, number> => {
     'spa_images': 6,
     'beauty_images': 10
   };
+};
+
+/**
+ * Validate if a listing has all required fields to be displayed
+ * Used for future-proofing listing display validation
+ */
+export const isListingDisplayable = (listing: Job | Salon): boolean => {
+  // All listings must have these basic properties
+  const hasRequiredFields = Boolean(
+    listing && 
+    listing.id && 
+    (listing.title || listing.name || listing.company) &&
+    listing.location
+  );
+  
+  // Must either have a valid image or enough info to generate one
+  const hasImageCapability = Boolean(
+    (listing.imageUrl && typeof listing.imageUrl === 'string' && listing.imageUrl.indexOf('lovable-uploads') !== -1) ||
+    (listing.image && typeof listing.image === 'string' && listing.image.indexOf('lovable-uploads') !== -1) ||
+    (listing.specialties && listing.specialties.length > 0) || 
+    listing.category
+  );
+  
+  // For routing purposes, jobs/opportunities need a type
+  if ('type' in listing) {
+    return hasRequiredFields && hasImageCapability && Boolean(listing.type);
+  }
+  
+  return hasRequiredFields && hasImageCapability;
 };

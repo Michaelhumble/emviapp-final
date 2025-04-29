@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -18,7 +19,7 @@ interface OpportunityCardProps {
 const OpportunityCard: React.FC<OpportunityCardProps> = ({ listing, index }) => {
   const [isHovered, setIsHovered] = useState(false);
   
-  // Special image mappings for specific titles
+  // Special image mappings for specific titles - ensure all mappings are correct
   const getSpecialImage = (title: string): string | null => {
     const titleMappings: Record<string, string> = {
       "Nail Tech - Private Suite": "/lovable-uploads/72f0f6c8-5793-4750-993d-f250b495146d.png",
@@ -72,8 +73,10 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({ listing, index }) => 
     return listing.for_sale ? 'Contact for price' : '';
   };
 
-  // Determine card link based on listing type
+  // Determine card link based on listing type and ensure it's valid
   const getCardLink = () => {
+    if (!listing.type) return '#'; // Fallback for listings with no type
+    
     if (listing.type === 'salon') {
       return `/salons/${listing.id}`;
     }

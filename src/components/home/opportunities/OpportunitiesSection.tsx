@@ -14,12 +14,16 @@ interface OpportunitiesSectionProps {
 }
 
 const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) => {
-  // Pre-filter to ensure we only show valid listings with necessary data
+  // Enhanced validation to ensure we only show valid listings with necessary data
   const validListings = diverseListings.filter(listing => 
     listing && 
     listing.id && 
     (listing.title || listing.company) &&
-    listing.location
+    listing.location &&
+    // Additional validation to ensure listing has a type for proper routing
+    listing.type &&
+    // Ensure there's at least an imageUrl or a category/specialty for fallback images
+    (listing.imageUrl || listing.category || (listing.specialties && listing.specialties.length > 0))
   );
   
   // Log any issues with listings for debugging
