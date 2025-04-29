@@ -1,3 +1,4 @@
+
 export const heroImages = [
   // Facial and Spa images
   {
@@ -21,65 +22,65 @@ export const heroImages = [
     alt: "Luxury makeup salon with illuminated mirrors and elegant black chairs"
   },
   
-  // Keep some empty entries as placeholders (these will be replaced with appropriate images)
+  // Nail images - using some of your uploaded images
   {
-    url: "",
+    url: "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png",
     alt: "Close-up of hands with beautiful nail polish application"
   },
   {
-    url: "", 
+    url: "/lovable-uploads/f3f2a5ae-65d9-4442-8842-1cb9e26cdb56.png", 
     alt: "Close-up of nail technician with pink gloves applying nail polish"
   },
   {
-    url: "", 
+    url: "/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png", 
     alt: "Close-up of nail technician with black gloves working on client's nails"
   },
   {
-    url: "", 
+    url: "/lovable-uploads/f3f2a5ae-65d9-4442-8842-1cb9e26cdb56.png", 
     alt: "Group of hands with various nail designs arranged in a circle"
   },
   
-  // Hair styling images
+  // Hair styling images - using some of the spa/salon images you uploaded
   {
-    url: "",
+    url: "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png",
     alt: "Luxury hair salon interior with styling chairs and mirrors"
   },
   {
-    url: "",
+    url: "/lovable-uploads/f3f2a5ae-65d9-4442-8842-1cb9e26cdb56.png",
     alt: "Hair stylist blow drying client's hair in a salon"
   },
   {
-    url: "",
+    url: "/lovable-uploads/ada4c504-75cf-45ce-a673-c81a22b9dbe3.png",
     alt: "Hair stylist working in a modern blue salon"
   },
   {
-    url: "",
+    url: "/lovable-uploads/6fdf0a39-d203-4f5a-90ba-808059c3ae5e.png",
     alt: "Collection of professional hair styling tools and equipment"
   },
   {
-    url: "",
+    url: "/lovable-uploads/2951176b-68c9-45d6-8bc5-20513e72d0a3.png",
     alt: "Modern barbershop interior with stylish decor and equipment"
   },
   
   // Barber images
   {
-    url: "",
+    url: "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png",
     alt: "Luxury barbershop interior with classic chairs and wooden accents"
   },
   {
-    url: "",
+    url: "/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png",
     alt: "Professional barber station with elegant leather chairs"
   },
   {
-    url: "",
+    url: "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png",
     alt: "Barber trimming client's beard in a professional setting"
   },
   {
-    url: "",
+    url: "/lovable-uploads/ada4c504-75cf-45ce-a673-c81a22b9dbe3.png",
     alt: "Modern barbershop interior with urban styling"
   },
   {
-    url: "",
+    url: "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png",
     alt: "Barber providing professional grooming service in a traditional shop"
   },
   
@@ -97,19 +98,19 @@ export const heroImages = [
     alt: "Spa treatment room with contemporary design and relaxing ambiance"
   },
   {
-    url: "",
+    url: "/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png",
     alt: "Professional providing facial treatment to client in spa setting"
   },
   {
-    url: "",
+    url: "/lovable-uploads/f3f2a5ae-65d9-4442-8842-1cb9e26cdb56.png",
     alt: "Woman in fitness attire practicing yoga or wellness activity"
   },
   {
-    url: "",
+    url: "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png",
     alt: "Spa therapist providing facial massage to client in modern spa"
   },
   {
-    url: "",
+    url: "/lovable-uploads/6fdf0a39-d203-4f5a-90ba-808059c3ae5e.png",
     alt: "Skincare professional in white uniform performing facial treatment"
   },
   
@@ -125,7 +126,7 @@ export const heroImages = [
     alt: "Luxury makeup salon with professional styling stations"
   },
   {
-    url: "",
+    url: "/lovable-uploads/6fdf0a39-d203-4f5a-90ba-808059c3ae5e.png",
     alt: "Modern salon interior with luxurious design elements"
   }
 ];
