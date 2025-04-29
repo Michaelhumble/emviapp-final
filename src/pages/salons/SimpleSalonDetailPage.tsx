@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
@@ -8,6 +9,8 @@ import { vietnameseSalonListings } from '@/data/vietnameseSalonListings';
 import { useAuth } from '@/context/auth';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 import { isNailSalon, getNailSalonImage } from '@/utils/nailSalonImages';
+import { isBarberShop, getBarberShopImage } from '@/utils/barberShopImages';
+import { isHairSalon, getHairSalonImage } from '@/utils/hairSalonImages';
 
 const SimpleSalonDetailPage = () => {
   const { id } = useParams();
@@ -37,13 +40,23 @@ const SimpleSalonDetailPage = () => {
   const isVietnamese = salon.is_vietnamese_listing;
   const backToListingsText = isVietnamese ? "← Trở lại danh sách" : "← Back to Listings";
 
-  // Determine if this is a nail salon
-  const isNail = isNailSalon(salon.name, salon.description);
+  // Check if this is a barbershop first (prioritize barber category)
+  const isBarber = isBarberShop(salon.name, salon.description);
+  
+  // Check if this is a hair salon second
+  const isHair = !isBarber && isHairSalon(salon.name, salon.description);
+  
+  // Then check if this is a nail salon 
+  const isNail = !isBarber && !isHair && isNailSalon(salon.name, salon.description);
 
   // IMPORTANT: Use the stored imageUrl from the salon object
   // If there's no stored imageUrl, generate one using the same logic as the listing card
   let displayImageUrl = salon.imageUrl;
-  if (isNail && !displayImageUrl) {
+  if (isBarber && !displayImageUrl) {
+    displayImageUrl = getBarberShopImage(salon.isPremium, salon.featured);
+  } else if (isHair && !displayImageUrl) {
+    displayImageUrl = getHairSalonImage(salon.isPremium, salon.featured);
+  } else if (isNail && !displayImageUrl) {
     displayImageUrl = getNailSalonImage(isVietnamese, salon.isPremium, salon.featured);
   }
 
@@ -69,7 +82,11 @@ const SimpleSalonDetailPage = () => {
               <div className="h-64 overflow-hidden">
                 <ImageWithFallback
                   src={displayImageUrl}
-                  alt={title || "Salon"}
+                  alt={title || (
+                    isBarber ? "Barbershop" :
+                    isHair ? "Hair Salon" :
+                    isNail ? "Nail Salon" : "Salon"
+                  )}
                   className="w-full h-full object-cover"
                   priority={true}
                 />
@@ -86,6 +103,16 @@ const SimpleSalonDetailPage = () => {
               {isVietnamese && (
                 <div className="inline-block bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium mb-4">
                   Vietnamese Listing
+                </div>
+              )}
+              {isBarber && (
+                <div className="inline-block bg-slate-100 text-slate-800 px-3 py-1 rounded-full text-sm font-medium mb-4">
+                  Barbershop
+                </div>
+              )}
+              {isHair && (
+                <div className="inline-block bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-sm font-medium mb-4">
+                  Hair Salon
                 </div>
               )}
               

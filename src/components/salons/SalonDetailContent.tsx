@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MapPin, DollarSign, Calendar } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
@@ -5,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Job } from '@/types/job';
 import { useAuth } from '@/context/auth';
 import { isNailSalon, isNailJob, getNailSalonImage } from '@/utils/nailSalonImages';
+import { isBarberShop, getBarberShopImage } from '@/utils/barberShopImages';
+import { isHairSalon, getHairSalonImage } from '@/utils/hairSalonImages';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 
 interface SalonDetailContentProps {
@@ -16,14 +19,25 @@ const SalonDetailContent: React.FC<SalonDetailContentProps> = ({ salon }) => {
 
   if (!salon) return null;
 
-  // Determine if this is a nail salon to use our high-quality nail images
-  const isNail = isNailSalon(salon.title || salon.company || '', salon.description || '') || 
-                 isNailJob(salon.title || salon.company || '', salon.description || '');
+  // Check if this is a barbershop first (prioritize barber category)
+  const isBarber = isBarberShop(salon.title || salon.company || '', salon.description || '');
+  
+  // Check if this is a hair salon second
+  const isHair = !isBarber && isHairSalon(salon.title || salon.company || '', salon.description || '');
+  
+  // Finally check if this is a nail salon 
+  const isNail = !isBarber && !isHair && (
+    isNailSalon(salon.title || salon.company || '', salon.description || '') ||
+    isNailJob(salon.title || salon.company || '', salon.description || '')
+  );
   
   // IMPORTANT: Use the stored imageUrl from the salon object if available
   // Otherwise, use the correct image or fallback to the image property
   const imageUrl = salon.imageUrl || 
-                  (isNail ? getNailSalonImage(false, true, true) : salon.image || '');
+                  (isBarber ? getBarberShopImage(true, true) : 
+                   isHair ? getHairSalonImage(true, true) :
+                   isNail ? getNailSalonImage(false, true, true) : 
+                   salon.image || '');
   
   // Format price as currency
   const formattedPrice = salon.price ? new Intl.NumberFormat('en-US', {
@@ -48,12 +62,16 @@ const SalonDetailContent: React.FC<SalonDetailContentProps> = ({ salon }) => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column: Photos and Details */}
         <div className="lg:col-span-2">
-          {/* Main Image - Use our high-quality nail salon images when appropriate */}
+          {/* Main Image - Use our high-quality salon images when appropriate */}
           <div className="bg-gray-200 rounded-xl overflow-hidden mb-6 aspect-video">
             {imageUrl ? (
               <ImageWithFallback
                 src={imageUrl}
-                alt={salon.company || 'Nail Salon'}
+                alt={salon.company || (
+                  isBarber ? 'Barbershop' :
+                  isHair ? 'Hair Salon' :
+                  isNail ? 'Nail Salon' : 'Salon'
+                )}
                 className="w-full h-full object-cover"
                 priority={true}
               />

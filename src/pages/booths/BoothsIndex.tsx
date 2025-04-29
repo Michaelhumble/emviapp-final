@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -17,6 +18,7 @@ import { getAllBooths } from '@/utils/featuredContent';
 import { Job } from '@/types/job';
 import { isNailJob, getNailBoothImage } from '@/utils/nailSalonImages';
 import { isBarberJob, getBarberBoothImage } from '@/utils/barberShopImages';
+import { isHairJob, getHairBoothImage } from '@/utils/hairSalonImages';
 
 const BoothsIndex = () => {
   const [booths, setBooths] = useState<Job[]>([]);
@@ -33,14 +35,20 @@ const BoothsIndex = () => {
           // Determine if a booth is for barber services - check this first
           const isBarber = isBarberJob(booth.title || '', booth.description || '') || 
                          (booth.specialties?.some(s => s.toLowerCase().includes('barber')) ?? false);
+          
+          // Determine if a booth is for hair stylist services - check second
+          const isHair = !isBarber && (isHairJob(booth.title || '', booth.description || '') || 
+                       (booth.specialties?.some(s => s.toLowerCase().includes('hair') || s.toLowerCase().includes('stylist')) ?? false));
                          
-          // Determine if a booth is for nail services - check second
-          const isNail = !isBarber && (isNailJob(booth.title || '', booth.description || '') || 
+          // Determine if a booth is for nail services - check last
+          const isNail = !isBarber && !isHair && (isNailJob(booth.title || '', booth.description || '') || 
                        (booth.specialties?.some(s => s.toLowerCase().includes('nail')) ?? false));
                        
           // Assign and store appropriate image
           if (isBarber) {
             booth.imageUrl = getBarberBoothImage();
+          } else if (isHair) {
+            booth.imageUrl = getHairBoothImage();
           } else if (isNail) {
             booth.imageUrl = getNailBoothImage();
           }
@@ -63,10 +71,20 @@ const BoothsIndex = () => {
            (booth.specialties?.some(s => s.toLowerCase().includes('barber')) ?? false);
   };
 
-  // Determine if a booth is for nail services - check second
+  // Determine if a booth is for hair stylist services - check second
+  const isHairBooth = (booth: Job): boolean => {
+    return !isBarberBooth(booth) && (
+      isHairJob(booth.title || '', booth.description || '') || 
+      (booth.specialties?.some(s => s.toLowerCase().includes('hair') || s.toLowerCase().includes('stylist')) ?? false)
+    );
+  };
+
+  // Determine if a booth is for nail services - check last
   const isNailBooth = (booth: Job): boolean => {
-    return isNailJob(booth.title || '', booth.description || '') || 
-           (booth.specialties?.some(s => s.toLowerCase().includes('nail')) ?? false);
+    return !isBarberBooth(booth) && !isHairBooth(booth) && (
+      isNailJob(booth.title || '', booth.description || '') || 
+      (booth.specialties?.some(s => s.toLowerCase().includes('nail')) ?? false)
+    );
   };
 
   return (
@@ -88,9 +106,10 @@ const BoothsIndex = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {booths.map(booth => {
-              // Check for barber booth first, then nail booth
+              // Check for barber booth first, then hair booth, then nail booth
               const isBarber = isBarberBooth(booth);
-              const isNail = !isBarber && isNailBooth(booth);
+              const isHair = !isBarber && isHairBooth(booth);
+              const isNail = !isBarber && !isHair && isNailBooth(booth);
               
               return (
                 <Card key={booth.id} className="overflow-hidden h-full flex flex-col">
@@ -98,7 +117,12 @@ const BoothsIndex = () => {
                     {booth.imageUrl ? (
                       <ImageWithFallback
                         src={booth.imageUrl}
-                        alt={booth.title || (isBarber ? "Barber Booth Rental" : isNail ? "Nail Booth Rental" : "Booth Rental")}
+                        alt={booth.title || (
+                          isBarber ? "Barber Booth Rental" : 
+                          isHair ? "Hair Stylist Booth Rental" : 
+                          isNail ? "Nail Booth Rental" : 
+                          "Booth Rental"
+                        )}
                         className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
                         priority={true}
                       />
@@ -106,6 +130,13 @@ const BoothsIndex = () => {
                       <ImageWithFallback
                         src={getBarberBoothImage()}
                         alt={booth.title || "Barber Booth Rental"}
+                        className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                        priority={true}
+                      />
+                    ) : isHair ? (
+                      <ImageWithFallback
+                        src={getHairBoothImage()}
+                        alt={booth.title || "Hair Stylist Booth Rental"}
                         className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
                         priority={true}
                       />

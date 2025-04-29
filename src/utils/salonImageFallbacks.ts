@@ -2,6 +2,11 @@
 // Define categories for salon types to ensure appropriate image selection
 export type SalonCategory = 'nail' | 'hair' | 'barber' | 'spa' | 'beauty' | 'generic';
 
+// Import our specialized image utilities
+import { getBarberShopImage, isBarberShop } from '@/utils/barberShopImages';
+import { getHairSalonImage, isHairSalon } from '@/utils/hairSalonImages';
+import { getNailSalonImage, isNailSalon } from '@/utils/nailSalonImages';
+
 /**
  * Determines the most appropriate salon category based on description or name
  * This helps select the right fallback images
@@ -10,36 +15,18 @@ export const determineSalonCategory = (description: string, name: string): Salon
   const combinedText = (description + ' ' + name).toLowerCase();
   
   // Check for barbershop indicators first - added barber detection
-  if (
-    combinedText.includes('barber') || 
-    combinedText.includes('men\'s grooming') ||
-    combinedText.includes('mens grooming') ||
-    combinedText.includes('men\'s salon') ||
-    combinedText.includes('mens salon') ||
-    combinedText.includes('men\'s haircut') ||
-    combinedText.includes('mens haircut')
-  ) {
+  if (isBarberShop(name, description)) {
     return 'barber';
   }
   
-  // Check for nail salon indicators
-  if (
-    combinedText.includes('nail') || 
-    combinedText.includes('manicure') || 
-    combinedText.includes('pedicure') ||
-    combinedText.includes('nails')
-  ) {
-    return 'nail';
+  // Check for hair salon indicators next
+  if (isHairSalon(name, description)) {
+    return 'hair';
   }
   
-  // Check for hair salon indicators
-  if (
-    combinedText.includes('hair') || 
-    combinedText.includes('haircut') || 
-    combinedText.includes('hairstylist') ||
-    combinedText.includes('stylist')
-  ) {
-    return 'hair';
+  // Check for nail salon indicators
+  if (isNailSalon(name, description)) {
+    return 'nail';
   }
   
   // Check for spa indicators
@@ -60,18 +47,18 @@ export const determineSalonCategory = (description: string, name: string): Salon
  * Returns an appropriate default image URL for the given salon category
  * This helps ensure all listings have appropriate imagery
  */
-export const getDefaultSalonImage = (category: SalonCategory): string => {
+export const getDefaultSalonImage = (category: SalonCategory, isPremium: boolean = false): string => {
   // Return appropriate image based on category
   switch (category) {
     case 'barber':
-      // Use one of our barbershop images
-      return "/lovable-uploads/de0bd2bb-f6a2-486b-8949-0b7cbdb71559.png";
+      // Use our barbershop image utility
+      return getBarberShopImage(isPremium, isPremium);
+    case 'hair':
+      // Use our hair salon image utility
+      return getHairSalonImage(isPremium, isPremium);
     case 'nail':
       // Use a nail salon image
-      return "/lovable-uploads/1aa3efa7-8ea4-4815-91db-85a50b204ded.png";
-    case 'hair':
-      // Use a hair salon image
-      return "/lovable-uploads/5f8eaed6-4a17-4992-a270-6394aad0f43b.png";
+      return getNailSalonImage(false, isPremium, isPremium);
     case 'spa':
       // Use a spa/wellness image
       return "/lovable-uploads/b13a3b43-f6e1-4746-9992-03f6e8fac6bf.png";
