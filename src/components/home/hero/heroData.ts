@@ -1,6 +1,19 @@
-
 export const heroImages = [
-  // Newly uploaded nail technician and beauty service images
+  // Newly uploaded high-quality stock images
+  {
+    url: "/lovable-uploads/4c4050d4-4a79-4610-8d47-bf6cc92bf8a3.png",
+    alt: "Professional nail technician with purple gloves applying treatment to client in modern pink and blue salon"
+  },
+  {
+    url: "/lovable-uploads/573c99c9-78e4-4bc7-8e69-e82d6ac4c995.png",
+    alt: "Nail professional providing pedicure service in luxury salon with blue and pink interior"
+  },
+  {
+    url: "/lovable-uploads/a805a49d-4879-4eea-900d-a8dd480a29c8.png",
+    alt: "Makeup artist with pink mask applying eye makeup to client in bright home studio setting"
+  },
+  
+  // Existing nail technician and beauty service images
   {
     url: "/lovable-uploads/460bbeef-31f2-4314-8e12-b38b4093da8a.png",
     alt: "Nail technician with black gloves working on client's nails"
@@ -22,7 +35,7 @@ export const heroImages = [
     alt: "Woman in white bathrobe applying nail polish"
   },
   
-  // More newly uploaded beauty and wellness images
+  // More beauty and wellness images
   {
     url: "/lovable-uploads/c25453c7-588e-4544-99da-5b21cf64bf20.png",
     alt: "Woman getting relaxing back massage at luxury spa"
@@ -44,7 +57,7 @@ export const heroImages = [
     alt: "Professional makeup application with client in chair"
   },
   
-  // Retain some existing high-quality images
+  // Luxury spa and salon images
   {
     url: "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png",
     alt: "Luxury spa treatment room with dual beds and elegant gold accents"
