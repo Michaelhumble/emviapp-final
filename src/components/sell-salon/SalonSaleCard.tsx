@@ -7,8 +7,6 @@ import { SalonSale } from "@/types/salonSale";
 import { formatCurrency } from "@/utils/salonSales";
 import { FeatureListingButton } from "@/components/sell-salon/FeatureListingButton";
 import { useAuth } from "@/context/auth";
-import ImageWithFallback from "@/components/ui/ImageWithFallback";
-import { getDefaultSalonImage, getLuxurySalonImage } from '@/utils/salonImageFallbacks';
 
 interface SalonSaleCardProps {
   salon: SalonSale;
@@ -42,34 +40,6 @@ export const SalonSaleCard = ({
   };
 
   const isActive = salon.status === 'active';
-  
-  const getThumbnailUrl = () => {
-    if (salon.photos && Array.isArray(salon.photos) && salon.photos.length > 0) {
-      return salon.photos[0].photo_url;
-    }
-    return null;
-  };
-
-  // Determine the appropriate luxury image based on business type
-  const getLuxuryImageByType = () => {
-    const businessType = (salon.business_type || '').toLowerCase();
-    
-    if (businessType.includes('nail')) {
-      return '/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png';
-    } else if (businessType.includes('barber')) {
-      return '/lovable-uploads/f3f2a5ae-65d9-4442-8842-1cb9e26cdb56.png';
-    } else if (businessType.includes('hair')) {
-      return '/lovable-uploads/0c68659d-ebd4-4091-aa1a-9329f3690d68.png';
-    } else if (businessType.includes('spa')) {
-      return '/lovable-uploads/89ef4a43-b461-47fc-8b2d-97b07318a891.png';
-    } else {
-      return '/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png';
-    }
-  };
-
-  // Use premium images for featured and urgent listings
-  const isPremium = salon.is_featured || salon.is_urgent;
-  const fallbackImage = isPremium ? getLuxuryImageByType() : getDefaultSalonImage('beauty');
 
   return (
     <Card 
@@ -79,7 +49,9 @@ export const SalonSaleCard = ({
         salon.is_featured ? "border-2 border-amber-300 bg-amber-50" : ""
       }`}
     >
-      <div className="aspect-video bg-gray-200 relative">
+      <div className="aspect-video bg-gray-100 relative flex items-center justify-center">
+        <Store className="h-12 w-12 text-gray-200" />
+        
         {!isActive && (
           <div className="absolute inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-10">
             <div className="bg-white px-3 py-1 rounded-md text-gray-800 font-medium text-sm">
@@ -97,15 +69,6 @@ export const SalonSaleCard = ({
             <Star className="h-3 w-3 mr-1 fill-amber-900" /> Featured
           </div>
         )}
-        <ImageWithFallback
-          src={getThumbnailUrl()}
-          alt={salon.salon_name || "Salon for sale"}
-          className="w-full h-full object-cover"
-          fallbackImage={fallbackImage}
-          businessName={salon.salon_name || salon.business_type || "Salon"}
-          loading="lazy"
-          showPremiumBadge={isPremium}
-        />
       </div>
       <CardContent className="p-4 flex-1 flex flex-col">
         <h3 className="text-xl font-semibold mb-2 line-clamp-1">

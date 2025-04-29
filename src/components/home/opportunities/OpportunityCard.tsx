@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -41,23 +42,17 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
       className="group overflow-hidden h-full flex flex-col transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer bg-white"
       onClick={handleViewDetails}
     >
-      {listing.image && (
-        <div className="aspect-[4/3] w-full overflow-hidden relative">
-          <img 
-            src={listing.image}
-            alt={listing.title || listing.company || "Business opportunity"}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-          {listing.is_featured && (
-            <Badge 
-              variant="secondary" 
-              className="absolute top-3 left-3 bg-white/90 text-primary shadow-sm"
-            >
-              Featured
-            </Badge>
-          )}
-        </div>
-      )}
+      <div className="aspect-[4/3] w-full bg-gray-100 flex items-center justify-center relative">
+        <Building className="h-12 w-12 text-gray-200" />
+        {listing.is_featured && (
+          <Badge 
+            variant="secondary" 
+            className="absolute top-3 left-3 bg-white/90 text-primary shadow-sm"
+          >
+            Featured
+          </Badge>
+        )}
+      </div>
       
       <CardContent className="p-6 flex flex-col h-full">
         <div className="flex justify-between items-start mb-3">

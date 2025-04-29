@@ -9,14 +9,11 @@ import { JobSpecialties } from "./card-sections/JobSpecialties";
 import { JobTipInfo } from "./card-sections/JobTipInfo";
 import { JobExpirationInfo } from "./card-sections/JobExpirationInfo";
 import { JobCardActions } from "./card-sections/JobCardActions";
-import ImageWithFallback from "@/components/ui/ImageWithFallback";
 import { useTranslation } from "@/hooks/useTranslation";
-import { Lock } from "lucide-react";
+import { Lock, Building } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
-import AuthAction from "@/components/common/AuthAction";
-import { Link, useNavigate } from "react-router-dom";
-import { getDefaultSalonImage } from "@/utils/salonImageFallbacks";
+import { useNavigate } from "react-router-dom";
 
 interface JobListingCardProps {
   job: Job;
@@ -40,24 +37,6 @@ const JobListingCard = ({
   const { t, isVietnamese } = useTranslation();
   const isOwner = currentUserId === job.user_id;
   const navigate = useNavigate();
-
-  // Get the appropriate fallback image category based on job data
-  const getFallbackCategory = () => {
-    if (job.employment_type?.toLowerCase().includes('sale')) {
-      return 'luxury';
-    } else if (job.specialties?.some(s => s.toLowerCase().includes('nail'))) {
-      return 'nail';
-    } else if (job.specialties?.some(s => s.toLowerCase().includes('hair'))) {
-      return 'hair';
-    } else if (job.specialties?.some(s => s.toLowerCase().includes('spa'))) {
-      return 'spa';
-    } else if (job.specialties?.some(s => s.toLowerCase().includes('barber'))) {
-      return 'barber';
-    } else if (job.specialties?.some(s => s.toLowerCase().includes('tattoo') || s.toLowerCase().includes('pmu'))) {
-      return 'tattoo';
-    }
-    return 'beauty';
-  };
 
   const getContactMessage = () => {
     return isVietnamese 
@@ -118,14 +97,8 @@ const JobListingCard = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="aspect-video w-full overflow-hidden">
-        <ImageWithFallback
-          src={job.image}
-          alt={job.title || "Job listing"}
-          className="w-full h-full object-cover"
-          fallbackImage={getDefaultSalonImage(getFallbackCategory())}
-          businessName={job.company}
-        />
+      <div className="aspect-video w-full overflow-hidden bg-gray-100 flex items-center justify-center">
+        <Building className="h-12 w-12 text-gray-200" />
       </div>
       
       <CardContent className="p-6 flex flex-col h-full">

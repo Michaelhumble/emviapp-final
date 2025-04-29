@@ -1,5 +1,6 @@
+
 export const heroImages = [
-  // Nail technician images (prioritized - approximately 50%)
+  // All hero images have been removed as per cleanup request
   {
     url: "",
     alt: "Luxury nail salon interior with pink chairs and elegant decor"

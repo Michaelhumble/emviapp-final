@@ -6,24 +6,6 @@
 // Define valid salon categories
 export type SalonCategory = 'nail' | 'hair' | 'barber' | 'spa' | 'beauty' | 'tattoo' | 'luxury';
 
-// Premium/luxury images - all removed as per request
-const luxuryImages: string[] = [];
-
-// Nail salon specific images - all removed as per request
-const nailSalonImages: string[] = [];
-
-// Hair salon specific images - all removed as per request
-const hairSalonImages: string[] = [];
-
-// Barber shop specific images - all removed as per request
-const barberShopImages: string[] = [];
-
-// Spa specific images - all removed as per request
-const spaImages: string[] = [];
-
-// Generic beauty salon images - all removed as per request
-const beautySalonImages: string[] = [];
-
 // Check if an image is from our premium collection
 export const isPremiumImage = (imagePath: string): boolean => {
   return false; // No images are premium now

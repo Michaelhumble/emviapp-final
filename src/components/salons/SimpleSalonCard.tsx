@@ -7,8 +7,6 @@ import { MapPin, DollarSign, Building, Phone } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Salon } from '@/types/salon';
 import AuthAction from '@/components/common/AuthAction';
-import ImageWithFallback from '@/components/ui/ImageWithFallback';
-import { getDefaultSalonImage, getLuxurySalonImage } from '@/utils/salonImageFallbacks';
 import { useAuth } from '@/context/auth';
 
 interface SalonCardProps {
@@ -40,33 +38,13 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
     return true; // This will trigger the auth redirect
   };
 
-  // Determine the correct salon category for image fallback
-  const salonCategory = salon.category || (
-    salon.isPremium ? 'luxury' : 
-    salon.specialty?.toLowerCase().includes('nail') ? 'nail' :
-    salon.specialty?.toLowerCase().includes('hair') ? 'hair' :
-    salon.specialty?.toLowerCase().includes('spa') ? 'spa' :
-    salon.specialty?.toLowerCase().includes('barber') ? 'barber' :
-    'beauty'
-  );
-
-  // For premium salons, use luxury images
-  const fallbackImage = salon.isPremium ? 
-    getLuxurySalonImage() : 
-    getDefaultSalonImage(salonCategory);
-
   return (
     <Card className={`overflow-hidden group transition-shadow duration-300 ${isVietnamese ? 'hover:shadow-purple-100 shadow-sm border-purple-100' : 'hover:shadow-md'}`}>
       <div className="relative">
-        <ImageWithFallback
-          src={salon.imageUrl}
-          alt={title}
-          fallbackImage={fallbackImage}
-          className="h-48 w-full object-cover"
-          loading="lazy"
-          showPremiumBadge={salon.isPremium}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        <div className="h-48 bg-gray-100 flex items-center justify-center">
+          <Building className="h-14 w-14 text-gray-200" />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
         {isVietnamese && (
           <div className="absolute top-3 left-3">
             <Badge className="bg-purple-600 hover:bg-purple-700 text-white">Tiệm Nail</Badge>

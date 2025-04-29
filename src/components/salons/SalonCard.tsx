@@ -21,10 +21,10 @@ const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) 
 
   return (
     <div className={`bg-white rounded-xl overflow-hidden shadow-sm border hover:shadow-md transition-shadow ${isExpired ? 'opacity-75' : ''}`}>
-      {/* Image Placeholder */}
+      {/* Clean Image Placeholder */}
       <div className="relative">
         <div className="aspect-[16/9] bg-gray-100 flex items-center justify-center">
-          <Building className="h-12 w-12 text-gray-300" />
+          <Building className="h-12 w-12 text-gray-200" />
         </div>
         
         {/* Featured badge */}

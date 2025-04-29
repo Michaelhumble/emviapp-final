@@ -1,12 +1,11 @@
 
 import { useState, useEffect } from 'react';
 import { CSSProperties } from 'react';
-import { isPremiumImage } from '@/utils/salonImageFallbacks';
 
 export interface ImageWithFallbackProps {
   src: string;
   alt: string;
-  fallbackImage: string;
+  fallbackImage?: string;
   className?: string;
   businessName?: string;
   style?: CSSProperties;
@@ -18,7 +17,7 @@ export interface ImageWithFallbackProps {
 
 /**
  * Enhanced component that displays an image with fallback support and progressive loading
- * If the primary image fails to load, it will switch to the fallback image
+ * If the primary image is empty or fails to load, it will display a clean empty state
  */
 const ImageWithFallback = ({ 
   src, 
@@ -29,7 +28,7 @@ const ImageWithFallback = ({
   style,
   loading = 'lazy',
   objectFit = 'cover',
-  showPremiumBadge = true,
+  showPremiumBadge = false,
   priority = false
 }: ImageWithFallbackProps) => {
   const [imgSrc, setImgSrc] = useState<string>('');
@@ -42,41 +41,19 @@ const ImageWithFallback = ({
     setIsLoading(true);
     setHasErrored(false);
     
-    // If src starts with http and isn't from our domain, it could be an external URL that breaks
-    // For these cases, we can preemptively check and use fallback
-    if (!src || (src.startsWith('http') && !src.includes('lovable-uploads'))) {
-      // Check if the URL includes common pattern for broken images
-      if (!src || 
-          src.includes('imgur.com') || 
-          src.includes('i.imgur.com') ||
-          src.includes('unsplash.com') ||
-          src.includes('images.unsplash.com')) {
-        setImgSrc(fallbackImage);
-        setHasErrored(true);
-        setIsLoading(false);
-        // Check if the fallback is a premium image
-        setIsPremium(isPremiumImage(fallbackImage));
-        return;
-      }
+    // If src is empty or invalid, show clean empty state
+    if (!src || src === '') {
+      setHasErrored(true);
+      setIsLoading(false);
+      return;
     }
     
-    // Prioritize new uploaded images
-    if (src && src.includes('lovable-uploads')) {
-      // Check if this is a premium image
-      setIsPremium(isPremiumImage(src));
-    }
-    
-    setImgSrc(src || '');
-  }, [src, fallbackImage]);
+    setImgSrc(src);
+  }, [src]);
   
   const handleError = () => {
     if (!hasErrored) {
-      console.log('Image failed to load, using fallback:', fallbackImage);
-      setImgSrc(fallbackImage);
       setHasErrored(true);
-      
-      // Check if the fallback is a premium image
-      setIsPremium(isPremiumImage(fallbackImage));
     }
     setIsLoading(false);
   };
@@ -85,25 +62,40 @@ const ImageWithFallback = ({
     setIsLoading(false);
   };
   
+  // If no image is available and no fallback, return empty div with proper dimensions
+  if (hasErrored && !fallbackImage) {
+    return (
+      <div 
+        className={`bg-gray-100 flex items-center justify-center ${className}`}
+        style={style}
+      />
+    );
+  }
+  
   return (
     <div className="relative overflow-hidden w-full h-full">
       {isLoading && (
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-300 animate-pulse" />
+        <div className="absolute inset-0 bg-gray-100" />
       )}
-      <img 
-        src={imgSrc || fallbackImage} 
-        alt={alt || businessName || 'Salon image'}
-        className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'} ${isPremium ? 'shadow-sm' : ''}`}
-        style={{ objectFit, ...style }}
-        loading={priority ? 'eager' : loading}
-        onError={handleError}
-        onLoad={handleLoad}
-      />
-      
-      {isPremium && !isLoading && showPremiumBadge && (
-        <div className="absolute bottom-0 right-0 bg-gradient-to-l from-black/60 to-transparent p-1 px-2 text-xs text-white font-medium">
-          Premium
-        </div>
+      {!hasErrored && (
+        <img 
+          src={imgSrc}
+          alt={alt || businessName || 'Image'}
+          className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'}`}
+          style={{ objectFit, ...style }}
+          loading={priority ? 'eager' : loading}
+          onError={handleError}
+          onLoad={handleLoad}
+        />
+      )}
+      {fallbackImage && hasErrored && (
+        <img 
+          src={fallbackImage}
+          alt={alt || businessName || 'Image'}
+          className={`${className} transition-opacity duration-300`}
+          style={{ objectFit, ...style }}
+          loading={priority ? 'eager' : loading}
+        />
       )}
     </div>
   );
