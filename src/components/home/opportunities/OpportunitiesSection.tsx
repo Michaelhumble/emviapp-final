@@ -24,8 +24,8 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
     // Ensure there's at least an imageUrl or a category/specialty for fallback images
     (listing.imageUrl || 
      (listing.specialties && listing.specialties.length > 0) || 
-     // Check for category without assuming it exists on Job type
-     'category' in listing)
+     // Check for category using type guard
+     ('category' in listing && listing.category))
   );
   
   // Log any issues with listings for debugging

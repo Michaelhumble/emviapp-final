@@ -182,7 +182,7 @@ export const isListingDisplayable = (listing: Job | Salon): boolean => {
   const hasRequiredFields = Boolean(
     listing && 
     listing.id && 
-    (listing.title || listing.name || listing.company) &&
+    (listing.title || ('name' in listing && listing.name) || listing.company) &&
     listing.location
   );
   
@@ -190,10 +190,10 @@ export const isListingDisplayable = (listing: Job | Salon): boolean => {
   const hasImageCapability = Boolean(
     (listing.imageUrl && typeof listing.imageUrl === 'string' && listing.imageUrl.indexOf('lovable-uploads') !== -1) ||
     (listing.image && typeof listing.image === 'string' && listing.image.indexOf('lovable-uploads') !== -1) ||
-    // Safely check for specialties without assuming the property exists
-    ('specialties' in listing && Array.isArray((listing as Job).specialties) && (listing as Job).specialties.length > 0) || 
-    // Safely check for category without assuming the property exists
-    ('category' in listing)
+    // Safely check for specialties with type guard
+    ('specialties' in listing && Array.isArray(listing.specialties) && listing.specialties.length > 0) || 
+    // Safely check for category with type guard
+    ('category' in listing && listing.category)
   );
   
   // For routing purposes, jobs/opportunities need a type

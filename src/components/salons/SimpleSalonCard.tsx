@@ -41,7 +41,7 @@ const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
     // Use the asking_price field if available (for consistency with the Job type)
     if (salon.asking_price) {
       // If already formatted, return as is
-      if (typeof salon.asking_price === 'string' && salon.asking_price.includes('$')) {
+      if (typeof salon.asking_price === 'string' && salon.asking_price.indexOf('$') !== -1) {
         return salon.asking_price;
       }
       // Otherwise format it
@@ -54,7 +54,7 @@ const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
     }
     
     if (typeof salon.price === 'string') {
-      if (salon.price && typeof salon.price === 'string' && salon.price.includes('$')) {
+      if (salon.price && salon.price.indexOf('$') !== -1) {
         return salon.price;
       } else if (salon.price) {
         return `$${salon.price}`;

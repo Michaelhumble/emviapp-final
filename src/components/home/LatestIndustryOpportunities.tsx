@@ -1,12 +1,17 @@
-
 import React, { useState, useEffect } from 'react';
 import { Job } from '@/types/job';
 import OpportunitiesSection from './opportunities/OpportunitiesSection';
 import { v4 as uuidv4 } from 'uuid';
-import { verifyOpportunityListings, enhanceListingWithImage } from '@/utils/listingsVerification';
+import { verifyOpportunityListings, enhanceListingWithImage, isListingDisplayable } from '@/utils/listingsVerification';
 
 const LatestIndustryOpportunities = () => {
   const [diverseListings, setDiverseListings] = useState<Job[]>([]);
+  const [validationStats, setValidationStats] = useState({
+    total: 0,
+    valid: 0,
+    removed: 0,
+    fixed: 0
+  });
 
   useEffect(() => {
     const loadDiverseListings = async () => {
@@ -130,35 +135,63 @@ const LatestIndustryOpportunities = () => {
         }
       ];
 
-      // Verify each listing has a valid ID
+      const initialCount = mixed.length;
+      let fixedCount = 0;
+      let removedCount = 0;
+      
+      // Step 1: Verify each listing has a valid ID
       mixed = mixed.map(listing => {
         if (!listing.id) {
           console.warn('Found listing without ID, generating one:', listing);
+          fixedCount++;
           return { ...listing, id: 'op-' + uuidv4().slice(0, 8) };
         }
         return listing;
       });
 
-      // Run verification to ensure all listings have proper routing
+      // Step 2: Run verification to ensure all listings have proper routing
       const verificationResults = verifyOpportunityListings(mixed);
       
-      // Enhance all listings with appropriate images, but keep the user-specified images
-      const enhancedListings = verificationResults.validListings.map(listing => {
+      // Step 3: Remove listings with critical issues but log what was removed
+      if (!verificationResults.isValid) {
+        removedCount += (mixed.length - verificationResults.validListings.length);
+        console.error("⚠️ Removed invalid listings:", verificationResults.issues);
+        mixed = verificationResults.validListings;
+      }
+      
+      // Step 4: Enhance remaining listings with appropriate images
+      let enhancedListings = mixed.map(listing => {
         // If a user specified image exists, don't enhance it
-        if (listing.imageUrl && listing.imageUrl.includes('lovable-uploads')) {
+        if (listing.imageUrl && typeof listing.imageUrl === 'string' && listing.imageUrl.indexOf('lovable-uploads') !== -1) {
           return listing;
         }
+        fixedCount++;
         return enhanceListingWithImage(listing);
       });
       
-      if (!verificationResults.isValid) {
-        console.error("⚠️ Opportunity listings verification failed:", verificationResults.issues);
-        console.log(`✅ Using ${enhancedListings.length} valid listings after filtering out ${mixed.length - enhancedListings.length} invalid ones`);
-      } else {
-        console.log(`✅ All ${verificationResults.totalListings} opportunity listings verified and enhanced with proper images`);
+      // Step 5: Final validation pass - only keep listings that are fully displayable
+      const finalListings = enhancedListings.filter(listing => isListingDisplayable(listing));
+      
+      if (finalListings.length < enhancedListings.length) {
+        removedCount += (enhancedListings.length - finalListings.length);
+        console.warn(`⚠️ Filtered out ${enhancedListings.length - finalListings.length} listings that failed final validation`);
       }
+      
+      // Log final validation statistics
+      console.log(`✅ Beauty Exchange Validation Complete:`);
+      console.log(`   - Total listings: ${initialCount}`);
+      console.log(`   - Fixed listings: ${fixedCount}`);
+      console.log(`   - Removed listings: ${removedCount}`);
+      console.log(`   - Final valid listings: ${finalListings.length}`);
+      
+      setValidationStats({
+        total: initialCount,
+        valid: finalListings.length,
+        removed: removedCount,
+        fixed: fixedCount
+      });
 
-      setDiverseListings(enhancedListings);
+      setDiverseListings(finalListings);
     };
     
     loadDiverseListings();
