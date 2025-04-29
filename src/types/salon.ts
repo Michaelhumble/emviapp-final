@@ -69,5 +69,5 @@ export interface Salon {
   
   // Premium/luxury designation
   isPremium?: boolean;
-  interiorStyle?: 'modern' | 'classic' | 'minimalist' | 'luxury';
+  interiorStyle?: 'modern' | 'classic' | 'minimalist' | 'luxury' | 'designer';
 }

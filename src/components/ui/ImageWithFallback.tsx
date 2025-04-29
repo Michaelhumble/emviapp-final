@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { CSSProperties } from 'react';
+import { isPremiumImage } from '@/utils/salonImageFallbacks';
 
 export interface ImageWithFallbackProps {
   src: string;
@@ -11,6 +12,8 @@ export interface ImageWithFallbackProps {
   style?: CSSProperties;
   loading?: "eager" | "lazy";
   objectFit?: "cover" | "contain" | "fill" | "none" | "scale-down";
+  showPremiumBadge?: boolean;
+  priority?: boolean;
 }
 
 /**
@@ -25,11 +28,14 @@ const ImageWithFallback = ({
   businessName,
   style,
   loading = 'lazy',
-  objectFit = 'cover'
+  objectFit = 'cover',
+  showPremiumBadge = true,
+  priority = false
 }: ImageWithFallbackProps) => {
   const [imgSrc, setImgSrc] = useState<string>('');
   const [hasErrored, setHasErrored] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isPremium, setIsPremium] = useState(false);
   
   // Reset loading state and set initial source when component mounts or source changes
   useEffect(() => {
@@ -50,7 +56,8 @@ const ImageWithFallback = ({
     
     // Prioritize new uploaded images
     if (src && src.includes('lovable-uploads')) {
-      console.log('Using high-quality uploaded image:', src);
+      // Check if this is a premium image
+      setIsPremium(isPremiumImage(src) || src.includes('9ebb0db4') || src.includes('b1bada0a'));
     }
     
     setImgSrc(src || '');
@@ -61,6 +68,9 @@ const ImageWithFallback = ({
       console.log('Image failed to load, using fallback:', fallbackImage);
       setImgSrc(fallbackImage);
       setHasErrored(true);
+      
+      // Check if the fallback is a premium image
+      setIsPremium(isPremiumImage(fallbackImage));
     }
     setIsLoading(false);
   };
@@ -68,12 +78,6 @@ const ImageWithFallback = ({
   const handleLoad = () => {
     setIsLoading(false);
   };
-  
-  // Determine if this is a premium/luxury image
-  const isPremiumImage = 
-    (src && src.includes('lovable-uploads') && 
-    (src.includes('f34fda1a') || src.includes('a2001f31') || 
-     src.includes('322a70d7') || src.includes('e4474f6d')));
   
   return (
     <div className="relative overflow-hidden w-full h-full">
@@ -83,14 +87,14 @@ const ImageWithFallback = ({
       <img 
         src={imgSrc || fallbackImage} 
         alt={alt || businessName || 'Salon image'}
-        className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'} ${isPremiumImage ? 'shadow-sm' : ''}`}
+        className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'} ${isPremium ? 'shadow-sm' : ''}`}
         style={{ objectFit, ...style }}
-        loading={loading}
+        loading={priority ? 'eager' : loading}
         onError={handleError}
         onLoad={handleLoad}
       />
       
-      {isPremiumImage && !isLoading && (
+      {isPremium && !isLoading && showPremiumBadge && (
         <div className="absolute bottom-0 right-0 bg-gradient-to-l from-black/60 to-transparent p-1 px-2 text-xs text-white font-medium">
           Premium
         </div>
