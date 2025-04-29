@@ -1,3 +1,4 @@
+
 import { Job } from '@/types/job';
 import { salonListings } from '@/data/salonData';
 

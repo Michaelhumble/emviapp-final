@@ -1,141 +1,78 @@
 
-import React from "react";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
-import { Building } from "lucide-react";
-import { useAuth } from "@/context/auth";
-import { v4 as uuidv4 } from "uuid";
-import ValidatedSalonCard from "../salons/ValidatedSalonCard";
+import React from 'react';
+import { Container } from '@/components/ui/container';
+import { Button } from '@/components/ui/button';
+import jobsData from '@/data/jobsData';
+import { Card, CardContent } from '@/components/ui/card';
+import { MapPin, Building } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 
-// Enhanced salon data with verified images and IDs
-const hiringSalons = [
-  {
-    id: "salon-1",
-    name: "Salon Envy",
-    location: "Atlanta, GA",
-    rating: "4.9",
-    isNail: true,
-    isHiring: true,
-    specialty: "Full Service Salon",
-    image: "/lovable-uploads/2951176b-68c9-45d6-8bc5-20513e72d0a3.png",
-    price: 0,
-    description: "Luxury makeup salon with premium services",
-    imageUrl: "/lovable-uploads/2951176b-68c9-45d6-8bc5-20513e72d0a3.png"
-  },
-  {
-    id: "salon-2",
-    name: "Luxe Beauty Bar",
-    location: "Los Angeles, CA",
-    rating: "4.8",
-    isNail: true,
-    isHiring: true,
-    specialty: "Nail Spa",
-    image: "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png",
-    price: 0,
-    description: "Premium nail spa with top-tier services",
-    imageUrl: "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png"
-  },
-  {
-    id: "salon-3",
-    name: "The Nail Boutique",
-    location: "New York, NY",
-    rating: "5.0",
-    isNail: true,
-    isHiring: true,
-    specialty: "Nail Art Studio",
-    image: "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png",
-    price: 0,
-    description: "Specializing in custom nail art and designs",
-    imageUrl: "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png"
-  }
-];
-
-// Verify each salon has a valid ID
-const validatedSalons = hiringSalons.map(salon => {
-  if (!salon.id || salon.id === 'null' || salon.id === 'undefined') {
-    return {
-      ...salon,
-      id: `salon-${uuidv4().slice(0, 8)}`
-    };
-  }
-  return salon;
-});
-
-// Convert to Salon type with all required properties
-const salonListings = validatedSalons.map(salon => ({
-  id: salon.id,
-  name: salon.name,
-  location: salon.location,
-  image: salon.image,
-  imageUrl: salon.imageUrl, // Keep imageUrl intact
-  description: salon.description,
-  price: salon.price,
-  rating: parseFloat(salon.rating),
-  isHiring: salon.isHiring,
-  specialty: salon.specialty,
-  featured: false
-}));
-
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2
-    }
-  }
-};
-
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 }
-};
-
-const HiringSalonsShowcase = () => {
-  const { isSignedIn } = useAuth();
+export default function HiringSalonsShowcase() {
+  // Filter to find hiring-related jobs
+  const hiringJobs = jobsData.filter(job => 
+    job.title?.toLowerCase().includes('hiring') || 
+    job.description?.toLowerCase().includes('hiring') ||
+    job.title?.toLowerCase().includes('technician') ||
+    job.title?.toLowerCase().includes('artist')
+  ).slice(0, 3);
   
+  if (hiringJobs.length === 0) {
+    return null;
+  }
+
   return (
-    <section className="py-24 bg-white">
-      <div className="container mx-auto px-4">
-        <motion.div 
-          className="text-center max-w-3xl mx-auto mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-        >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Nail & Beauty Salons Hiring Now</h2>
-          <p className="text-lg text-gray-600">
-            Connect with top salons looking for talented beauty professionals like you
+    <section className="py-12 bg-white">
+      <Container>
+        <div className="text-center mb-8">
+          <h2 className="font-playfair text-3xl font-bold mb-2">Nail & Beauty Salons Hiring Now</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Find your next opportunity at these premier salons looking for talented professionals.
           </p>
-        </motion.div>
-
-        <motion.div 
-          className="grid grid-cols-1 md:grid-cols-3 gap-8"
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-        >
-          {salonListings.map((salon) => (
-            <motion.div key={salon.id} variants={item}>
-              <ValidatedSalonCard salon={salon} listingType="salon" />
-            </motion.div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {hiringJobs.map((job, index) => (
+            <Card key={index} className="overflow-hidden h-full hover:shadow-md transition-shadow">
+              <div className="aspect-video bg-gray-100 w-full overflow-hidden">
+                <ImageWithFallback
+                  src={job.image || ''}
+                  alt={job.title || 'Salon job opportunity'}
+                  className="w-full h-full object-cover"
+                  businessName={job.company || 'Nail Salon'}
+                />
+              </div>
+              <CardContent className="p-5">
+                <h3 className="font-medium text-lg mb-1">{job.title}</h3>
+                
+                <div className="flex items-center text-gray-500 mb-1 text-sm">
+                  <Building className="h-3.5 w-3.5 mr-1.5" />
+                  <span>{job.company}</span>
+                </div>
+                
+                <div className="flex items-center text-gray-500 mb-2 text-sm">
+                  <MapPin className="h-3.5 w-3.5 mr-1.5" />
+                  <span>{job.location}</span>
+                </div>
+                
+                <div className="text-gray-600 text-sm line-clamp-2 mb-4">
+                  {job.description?.substring(0, 120)}...
+                </div>
+                
+                <Link to={`/jobs/${job.id}`} className="text-primary text-sm font-medium hover:underline">
+                  View Job Details →
+                </Link>
+              </CardContent>
+            </Card>
           ))}
-        </motion.div>
-
-        <div className="mt-14 text-center">
-          <Link to="/salons">
-            <Button size="lg" variant="outline" className="font-medium">
-              <Building className="mr-2 h-4 w-4" />
-              Explore All Salons
-            </Button>
+        </div>
+        
+        <div className="text-center">
+          <Link to="/jobs">
+            <Button variant="outline" size="lg">View All Job Listings</Button>
           </Link>
         </div>
-      </div>
+      </Container>
     </section>
   );
-};
-
-export default HiringSalonsShowcase;
+}
