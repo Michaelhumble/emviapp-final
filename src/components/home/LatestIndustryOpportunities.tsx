@@ -11,6 +11,18 @@ const LatestIndustryOpportunities = () => {
     const loadDiverseListings = async () => {
       // Create a diverse set of listings with unique IDs
       let mixed: Job[] = [
+        // Nail industry position - UPDATED TITLE to match image mapping
+        {
+          id: 'op-nail-' + uuidv4().slice(0, 8),
+          title: "Nail Tech - Private Suite",
+          company: "The Nail Collective",
+          location: "Austin, TX",
+          description: "Private suite available for experienced nail technician. High-end clientele, modern facility.",
+          specialties: ["Nails", "Manicure", "Pedicure"],
+          for_sale: false,
+          created_at: new Date().toISOString(),
+          type: 'job'
+        },
         // Hair industry position
         {
           id: 'op-hair-' + uuidv4().slice(0, 8),
@@ -19,18 +31,6 @@ const LatestIndustryOpportunities = () => {
           location: "Denver, CO",
           description: "Seeking experienced hair stylist with color expertise. Base + commission structure, flexible schedule.",
           specialties: ["Hair", "Color", "Styling"],
-          for_sale: false,
-          created_at: new Date().toISOString(),
-          type: 'job'
-        },
-        // Nail position
-        {
-          id: 'op-nail-' + uuidv4().slice(0, 8),
-          title: "Nail Tech - Private Suite",
-          company: "The Nail Collective",
-          location: "Austin, TX",
-          description: "Private suite available for experienced nail technician. High-end clientele, modern facility.",
-          specialties: ["Nails", "Manicure", "Pedicure"],
           for_sale: false,
           created_at: new Date().toISOString(),
           type: 'job'
@@ -61,7 +61,7 @@ const LatestIndustryOpportunities = () => {
           created_at: new Date().toISOString(),
           type: 'salon'
         },
-        // Booth rental
+        // Booth rental - UPDATED TITLE to match image mapping
         {
           id: 'op-booth-' + uuidv4().slice(0, 8),
           title: "Luxury Booth Rental",
@@ -71,10 +71,9 @@ const LatestIndustryOpportunities = () => {
           specialties: ["Booth Rental", "Hair"],
           for_sale: false,
           created_at: new Date().toISOString(),
-          type: 'salon',
-          imageUrl: "/lovable-uploads/05b5cfda-2b58-4be2-ae65-315168048aa3.png" // Booth rental image
+          type: 'salon'
         },
-        // Tattoo artist
+        // Tattoo artist - UPDATED TITLE to match image mapping
         {
           id: 'op-tattoo-' + uuidv4().slice(0, 8),
           title: "Experienced Tattoo Artist",
@@ -84,8 +83,7 @@ const LatestIndustryOpportunities = () => {
           specialties: ["Tattoo", "Art"],
           for_sale: false,
           created_at: new Date().toISOString(),
-          type: 'opportunity',
-          imageUrl: "/lovable-uploads/16e16a16-df62-4741-aec7-3364fdc958ca.png" // Tattoo image
+          type: 'opportunity'
         },
         // Beauty supply business
         {
@@ -100,7 +98,7 @@ const LatestIndustryOpportunities = () => {
           created_at: new Date().toISOString(),
           type: 'opportunity'
         },
-        // Esthetician
+        // Esthetician - UPDATED TITLE to match image mapping
         {
           id: 'op-esth-' + uuidv4().slice(0, 8),
           title: "Licensed Esthetician",

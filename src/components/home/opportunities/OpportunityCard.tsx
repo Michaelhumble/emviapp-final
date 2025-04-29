@@ -50,6 +50,23 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
   if (listing.imageUrl && listing.imageUrl.includes('lovable-uploads')) {
     listingImage = listing.imageUrl;
   } 
+  // Special cases based on exact listing titles
+  else if (listing.title === "Nail Tech - Private Suite") {
+    // Use new uploaded nail tech image
+    listingImage = "/lovable-uploads/6d593f49-dc5d-4e4c-9685-87d13b4eb7ca.png";
+  } 
+  else if (listing.title === "Luxury Booth Rental") {
+    // Use new uploaded luxury booth rental image
+    listingImage = "/lovable-uploads/c53c9a68-de96-40d5-9284-c1cfbb878081.png";
+  } 
+  else if (listing.title === "Licensed Esthetician") {
+    // Use new uploaded esthetician image
+    listingImage = "/lovable-uploads/3016e425-432a-49f0-b106-be927292873e.png";
+  } 
+  else if (listing.title === "Experienced Tattoo Artist") {
+    // Use new uploaded tattoo artist image
+    listingImage = "/lovable-uploads/4c3f751f-3631-43c1-b95d-c6521663f366.png";
+  }
   // Check for specific listing types
   else if (isNailTechListing) {
     listingImage = listing.for_sale ? getNailSalonImage() : getNailJobImage();
@@ -61,11 +78,11 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
     listingImage = getMassageJobImage();
   } else if (listing.title?.toLowerCase().includes('tattoo') || 
             (listing.description || '').toLowerCase().includes('tattoo')) {
-    // Tattoo specific images
+    // Generic tattoo specific images as fallback
     listingImage = "/lovable-uploads/16e16a16-df62-4741-aec7-3364fdc958ca.png";
   } else if (listing.title?.toLowerCase().includes('booth rental') || 
             (listing.description || '').toLowerCase().includes('booth rental')) {
-    // Booth rental specific images
+    // Generic booth rental specific images as fallback
     listingImage = "/lovable-uploads/05b5cfda-2b58-4be2-ae65-315168048aa3.png";
   } else if (listing.title?.toLowerCase().includes('spa manager') || 
             (listing.description || '').toLowerCase().includes('spa manager')) {
