@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
@@ -45,7 +44,11 @@ const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
         return salon.asking_price;
       }
       // Otherwise format it
-      return `$${salon.asking_price}`;
+      if (typeof salon.asking_price === 'string') {
+        return `$${salon.asking_price}`;
+      } else if (typeof salon.asking_price === 'number') {
+        return `$${salon.asking_price}`;
+      }
     }
     
     // Otherwise use the price field
