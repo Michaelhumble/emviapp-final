@@ -7,13 +7,13 @@
  * These are used consistently across the platform for massage/spa-related listings
  */
 export const MASSAGE_SPA_IMAGES = {
-  // Premium blue-themed massage rooms with elegant decor
-  luxuryMassage1: "/lovable-uploads/8fce2e0f-98d1-4ee6-8e30-a81575dee63a.png", // Blue room with sofa and massage tables
-  luxuryMassage2: "/lovable-uploads/f575cfa2-98b5-4a1e-910c-acbc69a3736d.png", // Dual massage room with blue walls and sconces
+  // Premium blue-themed luxury massage rooms
+  luxuryMassage1: "/lovable-uploads/72f0f6c8-5793-4750-993d-f250b495146d.png", // Blue room with sofa and massage tables
+  luxuryMassage2: "/lovable-uploads/e4558475-4b40-4bb4-b3ae-7ade4595c1eb.png", // Dual massage room with blue walls and sconces
   
   // Modern massage rooms with clean aesthetic
-  modernMassage1: "/lovable-uploads/92f5120a-7058-40df-a505-71cb730e5ffa.png", // Wood paneling with blue accent wall
-  modernMassage2: "/lovable-uploads/6e6289a0-0f43-4a7e-8517-ba5aadbbf872.png", // Blue room with plants and gold accents
+  modernMassage1: "/lovable-uploads/f85b0984-587b-4ce1-bdc7-2bf357aa7695.png", // Wood paneling with blue accent wall
+  modernMassage2: "/lovable-uploads/3d3a731b-4560-4317-8dc7-93d933b82b10.png", // Blue room with plants and gold accents
   
   // Fallback generic image (in case needed)
   generic: "/lovable-uploads/b13a3b43-f6e1-4746-9992-03f6e8fac6bf.png"
