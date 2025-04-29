@@ -9,10 +9,10 @@ import { Link } from 'react-router-dom';
 import { Building } from 'lucide-react';
 
 interface OpportunitiesSectionProps {
-  diverseListings: Job[];
+  diverseListings?: Job[]; // Made optional with '?'
 }
 
-const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) => {
+const OpportunitiesSection = ({ diverseListings = [] }: OpportunitiesSectionProps) => {
   // Enhanced validation to ensure we only show valid listings with necessary data
   const validListings = diverseListings.filter(listing => 
     listing && 
