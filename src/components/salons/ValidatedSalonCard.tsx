@@ -24,16 +24,22 @@ const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   
   // Convert Job to Salon if needed
-  const convertedSalon = 'company' in salon ? {
+  const convertedSalon: Salon = 'company' in salon ? {
     id: salon.id,
     name: salon.company || salon.title || 'Unnamed Salon',
     location: salon.location || '',
-    price: typeof salon.price === 'string' ? salon.price : '0',
+    price: typeof salon.price === 'number' ? salon.price : 
+           typeof salon.price === 'string' ? parseFloat(salon.price) || 0 : 0,
     imageUrl: salon.image || '',
     description: salon.description || '',
     image: salon.image || '',
     featured: salon.is_featured || false
-  } as Salon : salon as Salon;
+  } as Salon : {
+    ...salon as Salon,
+    // Ensure price is a number
+    price: typeof salon.price === 'number' ? salon.price : 
+           typeof salon.price === 'string' ? parseFloat(salon.price) || 0 : 0
+  };
 
   useEffect(() => {
     const validateSalon = async () => {
