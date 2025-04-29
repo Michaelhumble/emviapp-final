@@ -7,11 +7,13 @@
  * These are used consistently across the platform for massage/spa-related listings
  */
 export const MASSAGE_SPA_IMAGES = {
-  // Premium massage rooms (elegant blue decor with treatment tables)
-  luxuryMassage1: "/lovable-uploads/628e6cc1-661e-4698-840a-a0facea2f7bb.png", // Elegant blue room with massage tables
-  luxuryMassage2: "/lovable-uploads/b2498739-4d20-4b75-8fc1-9f740ec1e4cc.png", // Dual massage tables with cabinet center
-  luxuryMassage3: "/lovable-uploads/60aae990-d617-435c-8c05-79cc9276b6ba.png", // Wood accent spa room
-  luxuryMassage4: "/lovable-uploads/fc2a8931-d58f-47a3-81f2-6ae43cf431c5.png", // Plants and daylight massage room
+  // Premium blue-themed massage rooms with elegant decor
+  luxuryMassage1: "/lovable-uploads/8fce2e0f-98d1-4ee6-8e30-a81575dee63a.png", // Blue room with sofa and massage tables
+  luxuryMassage2: "/lovable-uploads/f575cfa2-98b5-4a1e-910c-acbc69a3736d.png", // Dual massage room with blue walls and sconces
+  
+  // Modern massage rooms with clean aesthetic
+  modernMassage1: "/lovable-uploads/92f5120a-7058-40df-a505-71cb730e5ffa.png", // Wood paneling with blue accent wall
+  modernMassage2: "/lovable-uploads/6e6289a0-0f43-4a7e-8517-ba5aadbbf872.png", // Blue room with plants and gold accents
   
   // Fallback generic image (in case needed)
   generic: "/lovable-uploads/b13a3b43-f6e1-4746-9992-03f6e8fac6bf.png"
@@ -71,27 +73,44 @@ export const isMassageJob = (title: string = '', description: string = ''): bool
  * Returns an appropriate image URL for a massage salon listing
  */
 export const getMassageSalonImage = (isPremium: boolean = false, randomize: boolean = true): string => {
-  // Use luxury massage images based on premium status or randomization
-  const images = Object.values(MASSAGE_SPA_IMAGES).filter(url => url !== MASSAGE_SPA_IMAGES.generic);
+  // Get either luxury or modern massage images based on premium status
+  const luxuryImages = [MASSAGE_SPA_IMAGES.luxuryMassage1, MASSAGE_SPA_IMAGES.luxuryMassage2];
+  const modernImages = [MASSAGE_SPA_IMAGES.modernMassage1, MASSAGE_SPA_IMAGES.modernMassage2];
   
-  if (images.length === 0) {
+  // Select image pool based on premium status
+  const imagePool = isPremium ? luxuryImages : modernImages;
+  
+  if (imagePool.length === 0) {
     return MASSAGE_SPA_IMAGES.generic;
   }
   
   if (randomize) {
-    const randomIndex = Math.floor(Math.random() * images.length);
-    return images[randomIndex];
+    const randomIndex = Math.floor(Math.random() * imagePool.length);
+    return imagePool[randomIndex];
   }
   
   // Return first image if not randomizing
-  return images[0];
+  return imagePool[0];
 };
 
 /**
  * Returns an appropriate image URL for a massage job listing
  */
 export const getMassageJobImage = (randomize: boolean = true): string => {
-  return getMassageSalonImage(true, randomize);
+  // For job listings, use a mix of all images for variety
+  const allImages = [
+    MASSAGE_SPA_IMAGES.luxuryMassage1,
+    MASSAGE_SPA_IMAGES.luxuryMassage2,
+    MASSAGE_SPA_IMAGES.modernMassage1,
+    MASSAGE_SPA_IMAGES.modernMassage2
+  ];
+  
+  if (randomize) {
+    const randomIndex = Math.floor(Math.random() * allImages.length);
+    return allImages[randomIndex];
+  }
+  
+  return allImages[0];
 };
 
 /**
@@ -99,7 +118,8 @@ export const getMassageJobImage = (randomize: boolean = true): string => {
  * Useful for variety in listings
  */
 export const getRandomMassageSpaImage = (): string => {
-  const images = Object.values(MASSAGE_SPA_IMAGES);
+  const images = Object.values(MASSAGE_SPA_IMAGES).filter(url => url !== MASSAGE_SPA_IMAGES.generic);
   const randomIndex = Math.floor(Math.random() * images.length);
   return images[randomIndex];
 };
+
