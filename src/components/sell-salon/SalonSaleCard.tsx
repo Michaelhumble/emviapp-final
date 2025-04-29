@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -62,6 +63,7 @@ export const SalonSaleCard = ({
             src={salonImage}
             alt={salon.salon_name || "Nail Salon"}
             className="h-full w-full object-cover"
+            priority={true}
           />
         ) : (
           <div className="h-full w-full bg-gray-100 flex items-center justify-center">

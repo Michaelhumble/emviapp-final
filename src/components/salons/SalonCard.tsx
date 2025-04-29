@@ -39,6 +39,7 @@ const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) 
               src={salonImage}
               alt={salon.name || "Nail Salon"}
               className="w-full h-full object-cover"
+              priority={true}
             />
           </div>
         ) : (

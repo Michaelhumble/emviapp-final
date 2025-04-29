@@ -1,3 +1,4 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -69,6 +70,7 @@ const TopBeautyJobs = () => {
                               src={getNailJobImage()}
                               alt={job.title || job.role || "Nail Technician Position"}
                               className="w-full h-full object-cover"
+                              priority={true}
                             />
                           </div>
                         )}
@@ -152,6 +154,7 @@ const TopBeautyJobs = () => {
                         src={getNailJobImage()}
                         alt={job.title || job.role || "Nail Technician Position"}
                         className="w-full h-full object-cover"
+                        priority={true}
                       />
                     </div>
                   )}

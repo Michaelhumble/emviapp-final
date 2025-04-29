@@ -112,6 +112,7 @@ const JobListingCard = ({
             src={jobImage}
             alt={job.title || "Nail Technician Job"}
             className="w-full h-full object-cover"
+            priority={true}
           />
         ) : (
           <div className="bg-gray-100 h-full w-full flex items-center justify-center">

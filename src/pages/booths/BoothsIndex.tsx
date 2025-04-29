@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -72,6 +73,7 @@ const BoothsIndex = () => {
                         src={getNailBoothImage()}
                         alt={booth.title || "Nail Booth Rental"}
                         className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                        priority={true}
                       />
                     ) : (
                       <ImageWithFallback
