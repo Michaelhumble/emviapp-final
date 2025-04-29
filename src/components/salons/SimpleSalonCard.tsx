@@ -60,7 +60,7 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
   };
 
   return (
-    <Card className={`overflow-hidden group transition-shadow duration-300 ${isVietnamese ? 'hover:shadow-purple-100 shadow-sm border-purple-100' : 'hover:shadow-md'}`}>
+    <Card className={`overflow-hidden group transition-shadow duration-300 ${isBarber ? 'hover:shadow-slate-200 shadow-sm border-slate-100' : isVietnamese ? 'hover:shadow-purple-100 shadow-sm border-purple-100' : 'hover:shadow-md'}`}>
       <div className="relative">
         {isBarber ? (
           <div className="h-48 overflow-hidden">
