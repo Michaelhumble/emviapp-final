@@ -16,7 +16,7 @@ import { getMassageSalonImage, isMassageSpa } from '@/utils/massageSalonImages';
 export const determineSalonCategory = (description: string, name: string): SalonCategory => {
   const combinedText = (description + ' ' + name).toLowerCase();
   
-  // Check for barbershop indicators first - added barber detection
+  // Check for barbershop indicators first
   if (isBarberShop(name, description)) {
     return 'barber';
   }
@@ -41,7 +41,7 @@ export const determineSalonCategory = (description: string, name: string): Salon
     return 'nail';
   }
   
-  // Check for massage/spa indicators - ADDED MASSAGE/SPA DETECTION
+  // Check for massage/spa indicators
   if (isMassageSpa(name, description)) {
     return 'massage';
   }
@@ -83,10 +83,10 @@ export const getDefaultSalonImage = (category: SalonCategory, isPremium: boolean
       // Use a nail salon image
       return getNailSalonImage(false, isPremium, isPremium);
     case 'massage':
-      // NEW: Use massage salon image utility
+      // Use massage salon image utility
       return getMassageSalonImage(isPremium);
     case 'spa':
-      // Use a spa/wellness image - now with our new massage images
+      // Use a spa/wellness image
       return getMassageSalonImage(true);
     case 'beauty':
       // Use a general beauty salon image

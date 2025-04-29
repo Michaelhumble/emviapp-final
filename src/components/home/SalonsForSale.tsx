@@ -9,9 +9,21 @@ import { vietnameseSalonListings } from '@/data/salonData';
 import SalonsLoadingState from '@/components/salons/SalonsLoadingState';
 import { Link } from 'react-router-dom';
 import { Job } from '@/types/job';
+import { determineSalonCategory, getDefaultSalonImage } from '@/utils/salonImageFallbacks';
 
-// Transform job data to match the Job type
+// Transform job data to match the Job type with enhanced image selection
 const transformSalonData = (job: any): Job => {
+  // Determine the appropriate salon category for image selection
+  const category = determineSalonCategory(job.description || '', job.title || job.name || '');
+  
+  // Get an appropriate image based on salon type
+  let imageUrl = job.image || job.imageUrl || '';
+  
+  // Only assign a new image if one doesn't already exist
+  if (!imageUrl || !imageUrl.includes('lovable-uploads')) {
+    imageUrl = getDefaultSalonImage(category, job.is_featured || false);
+  }
+  
   return {
     id: job.id?.toString() || '',
     title: job.title || job.name || '',
@@ -19,7 +31,8 @@ const transformSalonData = (job: any): Job => {
     location: job.location || '',
     created_at: job.posted || job.created_at || new Date().toISOString(),
     description: job.description || '',
-    image: job.image || job.imageUrl || '',
+    image: imageUrl,
+    imageUrl: imageUrl, // Ensure both image fields are set for compatibility
     price: job.price?.toString() || '',
     salon_features: job.features || [],
     type: 'salon',
@@ -47,10 +60,10 @@ export default function SalonsForSale() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Get Vietnamese salon listings first
+  // Get Vietnamese salon listings first with enhanced image selection
   const vietnameseListings = vietnameseSalonListings?.map(transformSalonData) || [];
 
-  // Convert jobsData to Job type and filter for salon listings
+  // Convert jobsData to Job type and filter for salon listings with enhanced image selection
   const salonJobListings = jobsData
     .filter(job => 
       job.title?.includes("Salon") || 

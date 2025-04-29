@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Job } from "@/types/job";
@@ -43,7 +44,7 @@ const JobListingCard = ({
   const isOwner = currentUserId === job.user_id;
   const navigate = useNavigate();
 
-  // IMPORTANT: Determine appropriate job image - enhanced logic for reliable images
+  // IMPORTANT: Determine appropriate job image with enhanced logic
   // First check if this job already has an assigned image
   let jobImage = job.imageUrl || job.image || '';
   
@@ -63,7 +64,7 @@ const JobListingCard = ({
     
     // Get the appropriate image for this job
     if (isNail) {
-      // For nail jobs, select randomly from our high-quality nail salon images
+      // For nail jobs, select from our high-quality nail salon images
       const nailJobImages = [
         NAIL_SALON_IMAGES.artGallery,
         NAIL_SALON_IMAGES.executiveNails,
@@ -156,6 +157,7 @@ const JobListingCard = ({
           className="w-full h-full object-cover"
           priority={true}
           fallbackImage={jobImage} // Add fallback for reliability
+          category={job.salon_type || job.type} // Help the component choose an appropriate image
         />
       </div>
       

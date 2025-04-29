@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 import { Job } from '@/types/job';
 import { Salon } from '@/types/salon';
-import { determineSalonCategory } from '@/utils/salonImageFallbacks';
+import { determineSalonCategory, getDefaultSalonImage } from '@/utils/salonImageFallbacks';
 
 interface ValidatedSalonCardProps {
   salon: Job | Salon;
@@ -22,11 +22,23 @@ const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({ salon, listingT
     return 'Unnamed Salon';
   };
 
-  // Get the image URL depending on salon type
+  // Get the image URL depending on salon type - ENHANCED to prioritize existing images
   const getImageUrl = () => {
-    if ('image' in salon && salon.image) return salon.image;
-    if ('imageUrl' in salon && salon.imageUrl) return salon.imageUrl;
-    return '';
+    // Always prioritize existing valid images - NEVER overwrite them
+    if ('image' in salon && salon.image && salon.image.includes('lovable-uploads')) 
+      return salon.image;
+      
+    if ('imageUrl' in salon && salon.imageUrl && salon.imageUrl.includes('lovable-uploads')) 
+      return salon.imageUrl;
+    
+    // If no valid image exists, determine category and get appropriate image
+    const category = determineSalonCategory(
+      'description' in salon ? (salon.description as string || '') : '',
+      getName()
+    );
+    
+    const isPremium = 'is_featured' in salon ? !!salon.is_featured : false;
+    return getDefaultSalonImage(category as any, isPremium);
   };
 
   // Get the formatted price with fallback
@@ -96,6 +108,8 @@ const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({ salon, listingT
             className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
             businessName={name}
             category={category}
+            showPremiumBadge={'isPremium' in salon ? !!salon.isPremium : false}
+            priority={true}
           />
           
           {features && features.length > 0 && (

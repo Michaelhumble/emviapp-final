@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { CSSProperties } from 'react';
 import { getRandomNailSalonImage } from '@/utils/nailSalonImages';
@@ -20,7 +19,7 @@ export interface ImageWithFallbackProps {
 
 /**
  * Enhanced component that displays an image with fallback support and progressive loading
- * If the primary image is empty or fails to load, it will display a clean fallback
+ * If the primary image is empty or fails to load, it will display a high-quality category-based fallback
  */
 export const ImageWithFallback = ({ 
   src, 
@@ -41,22 +40,16 @@ export const ImageWithFallback = ({
   const [retryCount, setRetryCount] = useState(0);
   const maxRetries = 2;
   
-  // Default fallback images - ensure we ALWAYS have an image
+  // Default fallback images from our high-quality uploaded set
   const defaultFallbacks = [
-    "/lovable-uploads/0bc39cbb-bdd3-4843-ace0-3cf730af576f.png",
-    "/lovable-uploads/179dbed5-2209-4b12-8e72-ef20d1818d46.png",
-    "/lovable-uploads/04b1b8d8-1c45-4be9-96e7-7afcceca8760.png",
-    "/lovable-uploads/15bcad43-8797-40ed-ae8f-96eedb447b8f.png",
-    "/lovable-uploads/1aa3efa7-8ea4-4815-91db-85a50b204ded.png"
+    "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png", // Nail salon
+    "/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png", // Modern salon with sitting area
+    "/lovable-uploads/d1da4b24-248e-4e84-9289-06237e7d4458.png", // Nail salon with art gallery
+    "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png", // Lash supplies
+    "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png"  // Luxury spa
   ];
   
-  // Get a random fallback image from our high-quality stock photos
-  const getRandomFallback = () => {
-    const randomIndex = Math.floor(Math.random() * defaultFallbacks.length);
-    return defaultFallbacks[randomIndex];
-  };
-  
-  // Get the best fallback (either provided or random)
+  // Get the best fallback (either provided or category-based)
   const getBestFallback = () => {
     // If a specific fallback was provided, use that
     if (fallbackImage && fallbackImage.includes('lovable-uploads')) {
@@ -65,7 +58,7 @@ export const ImageWithFallback = ({
     
     // If a category was provided, use that for appropriate image selection
     if (category) {
-      return getDefaultSalonImage(category as any);
+      return getDefaultSalonImage(category as any, showPremiumBadge);
     }
     
     // Otherwise use business name and alt text to determine the best fallback
@@ -78,7 +71,7 @@ export const ImageWithFallback = ({
     );
     
     // Get appropriate image based on detected category
-    return getDefaultSalonImage(detectedCategory);
+    return getDefaultSalonImage(detectedCategory, showPremiumBadge);
   };
   
   // Reset loading state and set initial source when component mounts or source changes
@@ -94,7 +87,7 @@ export const ImageWithFallback = ({
       return;
     }
     
-    // Check for invalid or potentially problematic image paths (common 404 causes)
+    // Check for invalid or potentially problematic image paths
     const probablyInvalid = 
       src === 'null' || 
       src === 'undefined' ||
@@ -109,16 +102,15 @@ export const ImageWithFallback = ({
       return;
     }
     
-    // Use the provided source - ALWAYS respect valid URLs
+    // Use the provided source if it's valid
     setImgSrc(src);
-  }, [src, fallbackImage, businessName, alt]);
+  }, [src, fallbackImage, businessName, alt, category]);
   
   const handleError = () => {
     console.log(`Image error loading: ${imgSrc}`);
     
     // Try to reload the image once
     if (retryCount < maxRetries) {
-      console.log(`Retrying image load (${retryCount + 1}/${maxRetries})`);
       setRetryCount(retryCount + 1);
       // Add cache busting parameter
       const cacheBuster = `?retry=${retryCount + 1}&t=${new Date().getTime()}`;
