@@ -9,8 +9,8 @@ import { MapPin, Building, Star, Lock } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import { Job } from "@/types/job";
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
-import { isNailTech, getNailSalonImage, getNailJobImage } from "@/utils/nailSalonImages";
-import { isLashSpecialist, isLashSalon, getLashSalonImage } from '@/utils/lashBrowSalonImages';
+import { isNailJob, isNailSalon, getNailSalonImage, getNailJobImage } from "@/utils/nailSalonImages";
+import { isLashBrowJob, isLashSalon, getLashSalonImage } from '@/utils/lashBrowSalonImages';
 import { isMassageJob, getMassageJobImage } from '@/utils/massageSalonImages';
 import { isBarberJob, getBarberJobImage } from '@/utils/barberShopImages';
 
@@ -33,8 +33,9 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
   };
 
   // Determine job type with priority order
-  const isNailTechListing = isNailTech(listing.title || listing.company || '', listing.description || '');
-  const isLashListing = !isNailTechListing && isLashSpecialist(listing.title || listing.company || '', listing.description || '');
+  const isNailTechListing = isNailJob(listing.title || listing.company || '', listing.description || '');
+  const isLashListing = !isNailTechListing && isLashBrowJob(listing.title || listing.company || '', listing.description || '') && 
+    (listing.title || '').toLowerCase().includes('lash');
   const isLashSalonListing = !isNailTechListing && !isLashListing && isLashSalon(listing.title || listing.company || '', listing.description || '');
   const isBarberListing = !isNailTechListing && !isLashListing && !isLashSalonListing && 
     isBarberJob(listing.title || listing.company || '', listing.description || '');
