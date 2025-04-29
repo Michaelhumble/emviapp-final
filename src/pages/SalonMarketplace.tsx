@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Frown, Star } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -18,6 +17,10 @@ const SalonMarketplace = () => {
   const [selectedSalon, setSelectedSalon] = useState<Salon | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { user } = useAuth();
+
+  useEffect(() => {
+    console.log('SalonMarketplace mounted - should display banner');
+  }, []);
 
   // Use salon data with all original images preserved
   const filteredSalons = salons.filter(salon => {
@@ -49,7 +52,6 @@ const SalonMarketplace = () => {
   });
 
   const viewSalonDetails = (salon: Salon) => {
-    // Pass the salon with original image intact - never modify it
     setSelectedSalon(salon);
     setIsDialogOpen(true);
   };
@@ -100,8 +102,10 @@ const SalonMarketplace = () => {
 
   return (
     <Layout>
-      {/* Replace the old hero banner with our new premium banner */}
-      <PremiumSalonBanner />
+      {/* Premium Salon Banner - explicitly rendered with console log */}
+      <div className="w-full">
+        <PremiumSalonBanner />
+      </div>
       
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-serif font-bold mb-2 text-center">Salon Marketplace</h1>

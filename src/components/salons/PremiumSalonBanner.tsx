@@ -17,19 +17,25 @@ const PremiumSalonBanner = ({ className }: PremiumSalonBannerProps) => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Explicitly console log when the component renders
+  console.log('PremiumSalonBanner rendering...');
+
   return (
     <div className={`relative w-full ${className}`} style={{ height: '450px' }}>
-      {/* Banner image - Using the uploaded image */}
+      {/* Banner image - Using an absolute path to the uploaded image */}
       <div 
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: 'url(/lovable-uploads/66e70923-43d0-457e-bc77-4cee67cb6b0e.png)' }}
+        className="absolute inset-0 bg-cover bg-center z-0"
+        style={{ 
+          backgroundImage: 'url(/lovable-uploads/76336ed2-3f8f-43b0-9674-769001a6f38f.png)',
+          backgroundSize: 'cover'
+        }}
       />
       
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black opacity-35" />
+      <div className="absolute inset-0 bg-black opacity-40 z-10" />
       
       {/* Content container */}
-      <div className="absolute inset-0 flex items-center justify-center px-4 sm:px-6">
+      <div className="absolute inset-0 flex items-center justify-center px-4 sm:px-6 z-20">
         <div className="text-center max-w-3xl">
           {/* Headline with animation */}
           <motion.h1 
