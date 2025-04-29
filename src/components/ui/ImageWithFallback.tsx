@@ -27,22 +27,37 @@ const ImageWithFallback = ({
   loading = 'lazy',
   objectFit = 'cover'
 }: ImageWithFallbackProps) => {
-  const [imgSrc, setImgSrc] = useState(src || '');
+  const [imgSrc, setImgSrc] = useState<string>('');
   const [hasErrored, setHasErrored] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Reset loading state when image source changes
+  // Reset loading state and set initial source when component mounts or source changes
   useEffect(() => {
     setIsLoading(true);
     setHasErrored(false);
+    
+    // If src starts with http and isn't from our domain, it could be an external URL that breaks
+    // For these cases, we can preemptively check and use fallback
+    if (!src || (src.startsWith('http') && !src.includes('lovable-uploads'))) {
+      // Check if the URL includes common pattern for broken images
+      if (!src || src.includes('imgur.com') || src.includes('i.imgur.com')) {
+        setImgSrc(fallbackImage);
+        setHasErrored(true);
+        setIsLoading(false);
+        return;
+      }
+    }
+    
     setImgSrc(src || '');
-  }, [src]);
+  }, [src, fallbackImage]);
   
   const handleError = () => {
     if (!hasErrored) {
+      console.log('Image failed to load, using fallback:', fallbackImage);
       setImgSrc(fallbackImage);
       setHasErrored(true);
     }
+    setIsLoading(false);
   };
   
   const handleLoad = () => {
@@ -55,7 +70,7 @@ const ImageWithFallback = ({
         <div className="absolute inset-0 bg-gradient-to-r from-gray-200 to-gray-300 animate-pulse" />
       )}
       <img 
-        src={imgSrc} 
+        src={imgSrc || fallbackImage} 
         alt={alt || businessName || 'Salon image'}
         className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'}`}
         style={{ objectFit, ...style }}

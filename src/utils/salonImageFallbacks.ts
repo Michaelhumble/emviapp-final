@@ -1,6 +1,6 @@
 
 /**
- * Enhanced salon fallback images with high-quality external URLs
+ * Enhanced salon fallback images using locally uploaded images
  */
 const salonFallbackImages = {
   nail: '/images/fallback/nail-salon.jpg',
@@ -10,37 +10,37 @@ const salonFallbackImages = {
   beauty: '/images/fallback/beauty-salon.jpg'
 } as const;
 
-// Curated external high-quality fallback images
+// Updated high-quality locally uploaded images that won't break
 const enhancedFallbackImages = {
   // Nail salon images
   nail: [
-    'https://i.imgur.com/xnfXgKK.jpg',
-    'https://i.imgur.com/1M3AdLY.jpg',
-    'https://i.imgur.com/lG6LfrB.jpg',
+    '/lovable-uploads/15bcad43-8797-40ed-ae8f-96eedb447b8f.png',
+    '/lovable-uploads/1f3cfd40-4041-4545-b71e-5a7f484f86e9.png',
+    '/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png',
   ],
   // Hair salon images
   hair: [
-    'https://i.imgur.com/2SE0sie.jpg',
-    'https://i.imgur.com/kdCXOkc.jpg',
-    'https://i.imgur.com/KsRm2La.jpg',
+    '/lovable-uploads/1763ca30-ecb0-409f-8bb0-11b851ea743f.png',
+    '/lovable-uploads/264f30fa-7e38-43a5-957e-7171f5e9160e.png',
+    '/lovable-uploads/4b908b3b-93ed-4879-95d4-cfa861a1f69f.png',
   ],
   // Spa images
   spa: [
-    'https://i.imgur.com/UsZkxYd.jpg',
-    'https://i.imgur.com/wVQ2tl8.jpg',
-    'https://i.imgur.com/cDOfyQ4.jpg',
+    '/lovable-uploads/19ff177d-e137-4d2c-afd1-0b5b69109c44.png',
+    '/lovable-uploads/5a1ba245-85f7-4036-95f9-0e08ada34602.png',
+    '/lovable-uploads/9a7898e7-739c-4a79-8705-70090e25c10b.png',
   ],
   // Barbershop images
   barber: [
-    'https://i.imgur.com/tUb7dCY.jpg',
-    'https://i.imgur.com/mlDHNI0.jpg',
-    'https://i.imgur.com/8DfOgfr.jpg',
+    '/lovable-uploads/1f97f5e0-6b52-4ac6-925b-396bc0a1e585.png', 
+    '/lovable-uploads/5f8eaed6-4a17-4992-a270-6394aad0f43b.png',
+    '/lovable-uploads/9d6f82f3-66a2-4ff3-bdd8-7b7cd561bf8f.png',
   ],
   // Beauty salon images
   beauty: [
-    'https://i.imgur.com/1PdtpmZ.jpg',
-    'https://i.imgur.com/kk7SYha.jpg',
-    'https://i.imgur.com/u2PZSPG.jpg',
+    '/lovable-uploads/1b5ea814-ad33-4a65-b01e-6c406c98ffc1.png',
+    '/lovable-uploads/68057e27-17e9-4643-941f-d68d048d40ce.png',
+    '/lovable-uploads/733d57a9-1f52-4ef1-afa2-59d9507d7f92.png',
   ],
 };
 
@@ -59,7 +59,7 @@ const getRandomImage = (collection: string[]): string => {
 
 /**
  * Gets the appropriate fallback image based on salon category.
- * Returns a high-quality image from our curated external collection.
+ * Returns a high-quality image from our curated local collection.
  * 
  * @param category The salon category
  * @returns URL to the appropriate fallback image
