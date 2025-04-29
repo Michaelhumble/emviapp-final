@@ -8,6 +8,7 @@ import SalonNotFound from '@/components/salon/SalonNotFound';
 import { fetchJob } from '@/utils/jobs';
 import { getSalonByIdAsJob } from '@/utils/featuredContent';
 import { Job } from '@/types/job';
+import ListingRouteGuard from '@/components/common/ListingRouteGuard';
 
 const SalonDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -45,27 +46,36 @@ const SalonDetailPage = () => {
     loadSalon();
   }, [id]);
 
-  if (loading) {
-    return (
+  return (
+    <ListingRouteGuard 
+      listingType="salon"
+      loadingComponent={
+        <Layout>
+          <div className="min-h-screen bg-background">
+            <div className="container mx-auto py-12">
+              <p>Loading salon details...</p>
+            </div>
+          </div>
+        </Layout>
+      }
+    >
       <Layout>
         <div className="min-h-screen bg-background">
-          <div className="container mx-auto py-12">
-            <p>Loading salon details...</p>
-          </div>
+          {loading ? (
+            <div className="container mx-auto py-12">
+              <p>Loading salon details...</p>
+            </div>
+          ) : error ? (
+            <SalonNotFound />
+          ) : (
+            <>
+              <SalonDetailContent salon={salon} />
+              <SalonListingCta />
+            </>
+          )}
         </div>
       </Layout>
-    );
-  }
-
-  if (error) return <SalonNotFound />;
-
-  return (
-    <Layout>
-      <div className="min-h-screen bg-background">
-        <SalonDetailContent salon={salon} />
-        <SalonListingCta />
-      </div>
-    </Layout>
+    </ListingRouteGuard>
   );
 };
 
