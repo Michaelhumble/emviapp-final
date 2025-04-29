@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,6 +12,7 @@ import { isLashSalon, isBrowSalon, isLashBrowJob, getLashSalonImage, getBrowSalo
 import { isMassageJob, getMassageJobImage } from '@/utils/massageSalonImages';
 import { isBarberJob, getBarberJobImage } from '@/utils/barberShopImages';
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
+import { determineSalonCategory, getDefaultSalonImage } from '@/utils/salonImageFallbacks';
 
 interface ListingCardProps {
   listing: any;
@@ -53,25 +53,44 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
   const isMassageListing = !isNailTechListing && !isLashListing && !isBrowListing && !isBarberListing && 
     (isMassageJob(listing.title || listing.company || '', listing.description || ''));
   
-  // Get appropriate image based on listing type - ensure we ALWAYS have an image
+  // Get appropriate image based on listing type - ENHANCED LOGIC
   let listingImage = '';
   
-  if (isNailTechListing) {
-    listingImage = listing.for_sale ? getNailSalonImage() : getNailJobImage();
-  } else if (isLashListing) {
-    listingImage = listing.for_sale ? getLashSalonImage() : getLashBrowJobImage();
-  } else if (isBrowListing) {
-    listingImage = listing.for_sale ? getBrowSalonImage() : getLashBrowJobImage();
-  } else if (isBarberListing) {
-    listingImage = getBarberJobImage();
-  } else if (isMassageListing) {
-    listingImage = getMassageJobImage();
-  } else if (listing.title?.toLowerCase().includes('tattoo') || 
-            (listing.description || '').toLowerCase().includes('tattoo')) {
-    // Tattoo specific images
-    listingImage = "/lovable-uploads/16e16a16-df62-4741-aec7-3364fdc958ca.png";
-  } else {
-    // Use high-quality beauty industry images as fallback
+  // First, check if the listing already has an assigned image
+  if (listing.imageUrl && listing.imageUrl.includes('lovable-uploads')) {
+    listingImage = listing.imageUrl;
+  } else if (listing.image && listing.image.includes('lovable-uploads')) {
+    listingImage = listing.image;
+  }
+  // Otherwise, determine the most appropriate image based on listing type
+  else {
+    if (isNailTechListing) {
+      listingImage = listing.for_sale ? getNailSalonImage() : getNailJobImage();
+    } else if (isLashListing) {
+      listingImage = listing.for_sale ? getLashSalonImage() : getLashBrowJobImage();
+    } else if (isBrowListing) {
+      listingImage = listing.for_sale ? getBrowSalonImage() : getLashBrowJobImage();
+    } else if (isBarberListing) {
+      listingImage = getBarberJobImage();
+    } else if (isMassageListing) {
+      listingImage = getMassageJobImage();
+    } else if (listing.title?.toLowerCase().includes('tattoo') || 
+              (listing.description || '').toLowerCase().includes('tattoo')) {
+      // Tattoo specific images
+      listingImage = "/lovable-uploads/16e16a16-df62-4741-aec7-3364fdc958ca.png";
+    } else {
+      // Fall back to the generic categories system
+      const category = determineSalonCategory(
+        listing.description || '', 
+        listing.title || listing.company || ''
+      );
+      listingImage = getDefaultSalonImage(category, !!listing.is_featured);
+    }
+  }
+
+  // Ensure we always have an image
+  if (!listingImage) {
+    // Ultimate fallback to high-quality beauty industry images
     const genericImages = [
       "/lovable-uploads/04b1b8d8-1c45-4be9-96e7-7afcceca8760.png",
       "/lovable-uploads/15bcad43-8797-40ed-ae8f-96eedb447b8f.png",
@@ -80,6 +99,11 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
     ];
     const randomIndex = index % genericImages.length;
     listingImage = genericImages[randomIndex];
+  }
+
+  // Store the determined image in the listing for detail view consistency
+  if (listingImage && !listing.imageUrl) {
+    listing.imageUrl = listingImage;
   }
 
   // Handle view details click with proper redirect

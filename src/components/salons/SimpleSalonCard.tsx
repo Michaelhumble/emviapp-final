@@ -1,256 +1,105 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { MapPin, DollarSign, Building, Phone, Scissors } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Salon } from '@/types/salon';
-import AuthAction from '@/components/common/AuthAction';
-import { useAuth } from '@/context/auth';
-import { isNailSalon, getNailSalonImage } from '@/utils/nailSalonImages';
-import { isBarberShop, getBarberShopImage } from '@/utils/barberShopImages';
-import { isHairSalon, getHairSalonImage } from '@/utils/hairSalonImages';
-import { isLashSalon, isBrowSalon, getLashSalonImage, getBrowSalonImage } from '@/utils/lashBrowSalonImages';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { MapPin, DollarSign } from 'lucide-react';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
+import { Salon } from '@/types/salon';
+import { determineSalonCategory, getDefaultSalonImage } from '@/utils/salonImageFallbacks';
 
-interface SalonCardProps {
+interface SimpleSalonCardProps {
   salon: Salon;
 }
 
 /**
- * Component for displaying a salon card in the listings page
+ * A simplified salon card component for displaying salon listings
+ * Used in salon grid views on homepage and listings pages
  */
-const SimpleSalonCard = ({ salon }: SalonCardProps) => {
-  const { isSignedIn } = useAuth();
-  
-  const formatPrice = (price: number) => {
-    if (price === 0) return "Giá thương lượng";
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0,
-    }).format(price);
+const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Determine appropriate salon image
+  const getSalonImage = () => {
+    // Use existing image if available and valid
+    if (salon.imageUrl && salon.imageUrl.includes('lovable-uploads')) {
+      return salon.imageUrl;
+    }
+    
+    if (salon.image && salon.image.includes('lovable-uploads')) {
+      return salon.image;
+    }
+    
+    // Otherwise determine appropriate category and get default image
+    const category = salon.category || determineSalonCategory(salon.description || '', salon.name || '');
+    return getDefaultSalonImage(category, salon.isPremium || false);
   };
-
-  // Use Vietnamese content when available
-  const title = salon.vietnamese_title || salon.name;
-  const description = salon.vietnamese_description || salon.description;
-  const buttonText = salon.is_vietnamese_listing ? "Xem Chi Tiết" : "View Details";
-  const isVietnamese = salon.is_vietnamese_listing;
-
-  // Check if this is a barbershop first (prioritize barber category)
-  const isBarber = isBarberShop(salon.name, salon.description);
-  // Then check if this is a hair salon
-  const isHair = !isBarber && isHairSalon(salon.name, salon.description);
-  // Check if this is a lash salon
-  const isLash = !isBarber && !isHair && isLashSalon(salon.name, salon.description);
-  // Check if this is a brow salon/studio
-  const isBrow = !isBarber && !isHair && !isLash && isBrowSalon(salon.name, salon.description);
-  // Finally check if this is a nail salon as fallback
-  const isNail = !isBarber && !isHair && !isLash && !isBrow && isNailSalon(salon.name, salon.description);
   
-  // Get the appropriate image for this salon
-  let salonImage;
-  if (isBarber) {
-    salonImage = getBarberShopImage(salon.isPremium, salon.isPremium);
-  } else if (isHair) {
-    salonImage = getHairSalonImage(salon.isPremium, salon.isPremium);
-  } else if (isLash) {
-    salonImage = getLashSalonImage(salon.isPremium);
-  } else if (isBrow) {
-    salonImage = getBrowSalonImage(salon.isPremium);
-  } else if (isNail) {
-    salonImage = getNailSalonImage(isVietnamese, salon.isPremium, salon.isPremium);
-  }
-
-  // IMPORTANT: Store the selected image URL in the salon object so it can be accessed in detail view
-  if ((isBarber || isHair || isLash || isBrow || isNail) && salonImage) {
-    salon.imageUrl = salonImage;
-  }
-
-  const handleViewContact = async () => {
-    return true; // This will trigger the auth redirect
+  // Get formatted price for display
+  const getFormattedPrice = () => {
+    // Use the asking_price field if available (for consistency with the Job type)
+    if (salon.asking_price) {
+      // If already formatted, return as is
+      if (typeof salon.asking_price === 'string' && salon.asking_price.includes('$')) {
+        return salon.asking_price;
+      }
+      // Otherwise format it
+      return `$${salon.asking_price}`;
+    }
+    
+    // Otherwise use the price field
+    if (typeof salon.price === 'number') {
+      return `$${salon.price.toLocaleString()}`;
+    }
+    
+    if (typeof salon.price === 'string') {
+      return salon.price.startsWith('$') ? salon.price : `$${salon.price}`;
+    }
+    
+    return 'Contact for Price';
   };
-
-  // Choose appropriate gradient colors based on salon type
-  const cardGradientClass = isHair 
-    ? 'bg-gradient-to-br from-white to-pink-50' 
-    : isLash 
-      ? 'bg-gradient-to-br from-white to-rose-50'
-      : isBrow
-        ? 'bg-gradient-to-br from-white to-amber-50'
-        : isVietnamese 
-          ? 'bg-gradient-to-br from-white to-purple-50' 
-          : '';
-
-  // Choose appropriate hover effects based on salon type
-  const hoverShadowClass = isBarber 
-    ? 'hover:shadow-slate-200 shadow-sm border-slate-100' 
-    : isHair 
-      ? 'hover:shadow-pink-100 shadow-sm border-pink-50' 
-      : isLash
-        ? 'hover:shadow-rose-100 shadow-sm border-rose-50'
-        : isBrow
-          ? 'hover:shadow-amber-100 shadow-sm border-amber-50'
-          : isVietnamese 
-            ? 'hover:shadow-purple-100 shadow-sm border-purple-100' 
-            : 'hover:shadow-md';
 
   return (
-    <Card className={`overflow-hidden group transition-shadow duration-300 ${hoverShadowClass}`}>
-      <div className="relative">
-        {isBarber ? (
-          <div className="h-48 overflow-hidden">
-            <ImageWithFallback
-              src={salonImage}
-              alt={title || "Barbershop"}
-              className="h-full w-full object-cover"
-              priority={true}
-            />
-          </div>
-        ) : isHair ? (
-          <div className="h-48 overflow-hidden">
-            <ImageWithFallback
-              src={salonImage}
-              alt={title || "Hair Salon"}
-              className="h-full w-full object-cover"
-              priority={true}
-            />
-          </div>
-        ) : isLash ? (
-          <div className="h-48 overflow-hidden">
-            <ImageWithFallback
-              src={salonImage}
-              alt={title || "Lash Studio"}
-              className="h-full w-full object-cover"
-              priority={true}
-            />
-          </div>
-        ) : isBrow ? (
-          <div className="h-48 overflow-hidden">
-            <ImageWithFallback
-              src={salonImage}
-              alt={title || "Brow Studio"}
-              className="h-full w-full object-cover"
-              priority={true}
-            />
-          </div>
-        ) : isNail ? (
-          <div className="h-48 overflow-hidden">
-            <ImageWithFallback
-              src={salonImage}
-              alt={title || "Nail Salon"}
-              className="h-full w-full object-cover"
-            />
-          </div>
-        ) : (
-          <div className="h-48 bg-gray-100 flex items-center justify-center">
-            <Building className="h-14 w-14 text-gray-200" />
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-        {isBarber && (
-          <div className="absolute top-3 left-3">
-            <Badge className="bg-slate-600 hover:bg-slate-700 text-white">Barbershop</Badge>
-          </div>
-        )}
-        {isHair && (
-          <div className="absolute top-3 left-3">
-            <Badge className="bg-pink-600 hover:bg-pink-700 text-white">Hair Salon</Badge>
-          </div>
-        )}
-        {isLash && (
-          <div className="absolute top-3 left-3">
-            <Badge className="bg-rose-600 hover:bg-rose-700 text-white">Lash Studio</Badge>
-          </div>
-        )}
-        {isBrow && (
-          <div className="absolute top-3 left-3">
-            <Badge className="bg-amber-600 hover:bg-amber-700 text-white">Brow Studio</Badge>
-          </div>
-        )}
-        {isVietnamese && !isBarber && !isHair && !isLash && !isBrow && (
-          <div className="absolute top-3 left-3">
-            <Badge className="bg-purple-600 hover:bg-purple-700 text-white">Tiệm Nail</Badge>
-          </div>
-        )}
-      </div>
-      
-      <CardContent className={`p-5 ${cardGradientClass}`}>
-        <h3 className="font-playfair text-lg font-semibold mb-2 line-clamp-2">
-          {title}
-        </h3>
-        
-        <div className="flex items-center text-gray-500 text-sm mb-2">
-          <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-          <span className="truncate">{salon.location}</span>
-        </div>
-        
-        <div className="flex items-center text-gray-800 font-medium mb-2">
-          <DollarSign className="h-4 w-4 mr-0.5 text-green-600" />
-          <span>{formatPrice(salon.price)}</span>
-        </div>
-
-        {salon.square_feet && (
-          <div className="flex items-center text-gray-600 text-sm mb-3">
-            <Building className="h-4 w-4 mr-1" />
-            <span>{salon.square_feet.toLocaleString()} sqft</span>
-          </div>
-        )}
-
-        <div className="space-y-2 mb-4">
-          <p className="text-gray-600 text-sm whitespace-pre-line line-clamp-3">
-            {description}
-          </p>
-        </div>
-
-        {salon.contact_info?.phone && (
-          <AuthAction 
-            onAction={handleViewContact} 
-            redirectPath={`/salons/${salon.id}`}
-            authenticatedContent={
-              <div className={`text-sm py-2 px-3 rounded border mb-4 flex items-center gap-2 ${
-                isHair ? 'bg-pink-50 border-pink-200 text-pink-900' : 
-                isLash ? 'bg-rose-50 border-rose-200 text-rose-900' :
-                isBrow ? 'bg-amber-50 border-amber-200 text-amber-900' :
-                isVietnamese ? 'bg-purple-50 border-purple-200 text-purple-900' : 
-                isBarber ? 'bg-slate-50 border-slate-200 text-slate-900' : 
-                'bg-gray-50 border-gray-100 text-gray-600'
-              }`}>
-                <Phone className="h-4 w-4" />
-                <span>{salon.contact_info.phone}</span>
-              </div>
-            }
-            fallbackContent={
-              <div className={`text-sm py-2 px-3 rounded border mb-4 flex items-center gap-2 cursor-pointer ${
-                isHair ? 'bg-pink-50 border-pink-200 text-pink-900 hover:bg-pink-100' : 
-                isLash ? 'bg-rose-50 border-rose-200 text-rose-900 hover:bg-rose-100' :
-                isBrow ? 'bg-amber-50 border-amber-200 text-amber-900 hover:bg-amber-100' :
-                isVietnamese ? 'bg-purple-50 border-purple-200 text-purple-900 hover:bg-purple-100' : 
-                isBarber ? 'bg-slate-50 border-slate-200 text-slate-900 hover:bg-slate-100' : 
-                'bg-gray-50 border-gray-100 text-gray-600 hover:bg-gray-100'
-              }`}>
-                <Phone className="h-4 w-4" />
-                <span>{isVietnamese ? "Đăng nhập để xem liên hệ" : "Sign in to view contact"}</span>
-              </div>
-            }
+    <Card 
+      className={`overflow-hidden transition-all duration-300 hover:shadow-md ${isHovered ? 'transform-gpu -translate-y-1' : ''}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Link to={`/salons/${salon.id}`} className="block">
+        <div className="aspect-video w-full overflow-hidden">
+          <ImageWithFallback
+            src={getSalonImage()}
+            alt={salon.name}
+            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            businessName={salon.name}
+            category={salon.category}
+            showPremiumBadge={salon.isPremium}
+            priority={true}
           />
-        )}
-
-        <Link to={`/salons/${salon.id}`}>
-          <Button 
-            className={`w-full ${
-              isBarber ? 'bg-gradient-to-r from-slate-700 to-slate-900 hover:from-slate-800 hover:to-slate-950' : 
-              isHair ? 'bg-gradient-to-r from-pink-600 to-pink-800 hover:from-pink-700 hover:to-pink-900' :
-              isLash ? 'bg-gradient-to-r from-rose-500 to-rose-700 hover:from-rose-600 hover:to-rose-800' :
-              isBrow ? 'bg-gradient-to-r from-amber-600 to-amber-800 hover:from-amber-700 hover:to-amber-900' : 
-              isVietnamese ? 'bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900' : 
-              'bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900'
-            } text-white`}
-          >
-            {buttonText}
-          </Button>
+        </div>
+      </Link>
+      
+      <CardContent className="p-5">
+        <div className="flex items-start justify-between">
+          <h3 className="font-semibold text-lg">{salon.name}</h3>
+          {salon.featured && (
+            <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200 uppercase text-xs">
+              Featured
+            </Badge>
+          )}
+        </div>
+        
+        <div className="flex items-center text-gray-500 my-1.5 text-sm">
+          <MapPin className="h-3.5 w-3.5 mr-1.5" />
+          <span>{salon.location}</span>
+        </div>
+        
+        <div className="flex items-center font-medium text-emerald-700 mt-3">
+          <DollarSign className="h-4 w-4 mr-1 flex-shrink-0" />
+          <span>{getFormattedPrice()}</span>
+        </div>
+        
+        <Link to={`/salons/${salon.id}`} className="mt-4 text-primary font-medium hover:text-primary/90 text-sm inline-flex items-center">
+          View Details →
         </Link>
       </CardContent>
     </Card>

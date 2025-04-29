@@ -14,18 +14,18 @@ interface OpportunitiesSectionProps {
 }
 
 const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) => {
-  // Verify listings have valid IDs before rendering
-  const { isValid, issues } = verifyOpportunityListings(diverseListings);
-  
-  if (!isValid) {
-    console.error("Invalid opportunity listings:", issues);
-    return null;
-  }
-  
-  // Filter out any invalid listings
+  // Pre-filter to ensure we only show valid listings with necessary data
   const validListings = diverseListings.filter(listing => 
-    listing && listing.id && (listing.title || listing.company)
+    listing && 
+    listing.id && 
+    (listing.title || listing.company) &&
+    listing.location
   );
+  
+  // Log any issues with listings for debugging
+  if (validListings.length < diverseListings.length) {
+    console.log(`⚠️ Filtered out ${diverseListings.length - validListings.length} invalid listings from Opportunities section`);
+  }
 
   return (
     <section className="py-24 bg-gradient-to-b from-white to-gray-50">
@@ -46,21 +46,27 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {validListings.map((listing, index) => (
-            <AuthAction
-              key={listing.id}
-              onAction={() => true}
-              redirectPath={listing.type === 'salon' ? `/salons/${listing.id}` : `/opportunities/${listing.id}`}
-              customTitle="Sign in to view full details"
-              creditMessage="Create a free account to access contact information and more details."
-            >
-              <OpportunityCard 
-                key={listing.id} 
-                listing={listing} 
-                index={index}
-              />
-            </AuthAction>
-          ))}
+          {validListings.length > 0 ? (
+            validListings.map((listing, index) => (
+              <AuthAction
+                key={listing.id}
+                onAction={() => true}
+                redirectPath={listing.type === 'salon' ? `/salons/${listing.id}` : `/opportunities/${listing.id}`}
+                customTitle="Sign in to view full details"
+                creditMessage="Create a free account to access contact information and more details."
+              >
+                <OpportunityCard 
+                  key={listing.id} 
+                  listing={listing} 
+                  index={index}
+                />
+              </AuthAction>
+            ))
+          ) : (
+            <div className="col-span-3 text-center py-12">
+              <p className="text-gray-500 mb-4">No opportunities available at the moment.</p>
+            </div>
+          )}
         </div>
 
         <div className="mt-12 text-center">

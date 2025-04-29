@@ -10,8 +10,9 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/context/auth";
 import { NAIL_SALON_IMAGES } from "@/utils/nailSalonImages";
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
+import { v4 as uuidv4 } from "uuid";
 
-// Sample salon data with high-quality images
+// Enhanced salon data with verified images and IDs
 const hiringSalons = [
   {
     id: "salon-1",
@@ -45,6 +46,17 @@ const hiringSalons = [
   }
 ];
 
+// Verify each salon has a valid ID
+const validatedSalons = hiringSalons.map(salon => {
+  if (!salon.id || salon.id === 'null' || salon.id === 'undefined') {
+    return {
+      ...salon,
+      id: `salon-${uuidv4().slice(0, 8)}`
+    };
+  }
+  return salon;
+});
+
 const container = {
   hidden: { opacity: 0 },
   show: {
@@ -66,12 +78,11 @@ const HiringSalonsShowcase = () => {
   const navigate = useNavigate();
   
   const handleViewDetails = (salonId: string) => {
-    // Modified to ensure the ID format is valid for routing
-    const formattedId = salonId.startsWith("salon-") ? salonId : `salon-${salonId}`;
+    // Ensure the ID format is valid for routing
     if (isSignedIn) {
-      navigate(`/salons/${formattedId}`);
+      navigate(`/salons/${salonId}`);
     } else {
-      navigate(`/sign-in?redirect=${encodeURIComponent(`/salons/${formattedId}`)}`);
+      navigate(`/sign-in?redirect=${encodeURIComponent(`/salons/${salonId}`)}`);
     }
   };
   
@@ -98,7 +109,7 @@ const HiringSalonsShowcase = () => {
           whileInView="show"
           viewport={{ once: true }}
         >
-          {hiringSalons.map((salon) => (
+          {validatedSalons.map((salon) => (
             <motion.div key={salon.id} variants={item}>
               <Card className="overflow-hidden h-full transition-shadow hover:shadow-lg border-gray-100">
                 <div className="h-48 w-full overflow-hidden">

@@ -1,6 +1,7 @@
 
 import { determineSalonCategory, getDefaultSalonImage } from './salonImageFallbacks';
 import { Job } from '@/types/job';
+import { Salon } from '@/types/salon';
 
 /**
  * Utility function to verify if images used in listings are appropriate
@@ -10,12 +11,13 @@ export const verifyListingImage = (
   listing: any,
   listingType: 'salon' | 'job' | 'booth'
 ): { isValid: boolean; suggestedImage?: string } => {
-  if (!listing.image) {
+  if (!listing.image && !listing.imageUrl) {
     return { isValid: false };
   }
   
   // Check if the image is from our verified uploads
-  if (listing.image.includes('lovable-uploads')) {
+  if ((listing.image && listing.image.includes('lovable-uploads')) || 
+      (listing.imageUrl && listing.imageUrl.includes('lovable-uploads'))) {
     return { isValid: true };
   }
   
@@ -38,14 +40,19 @@ export const verifyOpportunityListings = (listings: Job[]): {
   isValid: boolean; 
   issues: string[];
   totalListings: number;
+  validListings: Job[];
 } => {
   const issues: string[] = [];
   const validListingIds = new Set<string>();
+  const validListings: Job[] = [];
   
   // Check if all listings have valid data
   listings.forEach((listing, index) => {
+    let isListingValid = true;
+    
     if (!listing.id) {
       issues.push(`Listing at index ${index} is missing an ID`);
+      isListingValid = false;
     } else {
       if (validListingIds.has(listing.id)) {
         issues.push(`Duplicate listing ID found: ${listing.id}`);
@@ -57,19 +64,51 @@ export const verifyOpportunityListings = (listings: Job[]): {
     // Check if listing has basic required properties
     if (!listing.title && !listing.company) {
       issues.push(`Listing ${listing.id || index} is missing title and company information`);
+      isListingValid = false;
     }
     
     // Check if location is provided
     if (!listing.location) {
       issues.push(`Listing ${listing.id || index} is missing location information`);
+      isListingValid = false;
+    }
+    
+    // If the listing is valid, add it to our valid listings array
+    if (isListingValid) {
+      validListings.push(listing);
     }
   });
   
   return {
     isValid: issues.length === 0,
     issues,
-    totalListings: listings.length
+    totalListings: listings.length,
+    validListings
   };
+};
+
+/**
+ * Enhance a listing with proper image based on its type
+ * Ensures all listings have appropriate, high-quality images
+ */
+export const enhanceListingWithImage = (listing: Job): Job => {
+  const enhancedListing = { ...listing };
+  
+  // Skip if listing already has a valid image
+  if (enhancedListing.imageUrl && enhancedListing.imageUrl.includes('lovable-uploads')) {
+    return enhancedListing;
+  }
+  
+  // Determine listing category
+  const category = determineSalonCategory(
+    enhancedListing.description || '',
+    enhancedListing.title || enhancedListing.company || ''
+  );
+  
+  // Assign appropriate image based on listing type
+  enhancedListing.imageUrl = getDefaultSalonImage(category, !!enhancedListing.is_featured);
+  
+  return enhancedListing;
 };
 
 /**

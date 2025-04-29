@@ -1,7 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { CSSProperties } from 'react';
 import { getRandomNailSalonImage } from '@/utils/nailSalonImages';
+import { determineSalonCategory, getDefaultSalonImage } from '@/utils/salonImageFallbacks';
 
 export interface ImageWithFallbackProps {
   src: string;
@@ -14,6 +14,7 @@ export interface ImageWithFallbackProps {
   objectFit?: "cover" | "contain" | "fill" | "none" | "scale-down";
   showPremiumBadge?: boolean;
   priority?: boolean;
+  category?: string; // Optional category hint for fallback selection
 }
 
 /**
@@ -30,7 +31,8 @@ export const ImageWithFallback = ({
   loading = 'lazy',
   objectFit = 'cover',
   showPremiumBadge = false,
-  priority = false
+  priority = false,
+  category
 }: ImageWithFallbackProps) => {
   const [imgSrc, setImgSrc] = useState<string>('');
   const [hasErrored, setHasErrored] = useState(false);
@@ -55,7 +57,27 @@ export const ImageWithFallback = ({
   
   // Get the best fallback (either provided or random)
   const getBestFallback = () => {
-    return fallbackImage || getRandomNailSalonImage() || getRandomFallback();
+    // If a specific fallback was provided, use that
+    if (fallbackImage && fallbackImage.includes('lovable-uploads')) {
+      return fallbackImage;
+    }
+    
+    // If a category was provided, use that for appropriate image selection
+    if (category) {
+      return getDefaultSalonImage(category as any);
+    }
+    
+    // Otherwise use business name and alt text to determine the best fallback
+    const combinedText = `${businessName || ''} ${alt || ''}`.toLowerCase();
+    
+    // Determine the most appropriate category based on text
+    const detectedCategory = determineSalonCategory(
+      combinedText,
+      businessName || alt || ''
+    );
+    
+    // Get appropriate image based on detected category
+    return getDefaultSalonImage(detectedCategory);
   };
   
   // Reset loading state and set initial source when component mounts or source changes
@@ -71,9 +93,24 @@ export const ImageWithFallback = ({
       return;
     }
     
+    // Check for invalid or potentially problematic image paths (common 404 causes)
+    const probablyInvalid = 
+      src === 'null' || 
+      src === 'undefined' ||
+      src.includes('null') || 
+      src.includes('undefined') ||
+      src.startsWith('/lovable-uploads/undefined');
+    
+    if (probablyInvalid) {
+      console.log(`Image src appears invalid: ${src}, using fallback`);
+      setImgSrc(getBestFallback());
+      setIsLoading(false);
+      return;
+    }
+    
     // Use the provided source
     setImgSrc(src);
-  }, [src, fallbackImage]);
+  }, [src, fallbackImage, businessName, alt]);
   
   const handleError = () => {
     console.log(`Image error loading: ${imgSrc}`);

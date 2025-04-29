@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Job } from '@/types/job';
 import OpportunitiesSection from './opportunities/OpportunitiesSection';
 import { v4 as uuidv4 } from 'uuid';
-import { verifyOpportunityListings } from '@/utils/listingsVerification';
+import { verifyOpportunityListings, enhanceListingWithImage } from '@/utils/listingsVerification';
 
 const LatestIndustryOpportunities = () => {
   const [diverseListings, setDiverseListings] = useState<Job[]>([]);
@@ -135,13 +135,20 @@ const LatestIndustryOpportunities = () => {
 
       // Run verification to ensure all listings have proper routing
       const verificationResults = verifyOpportunityListings(mixed);
+      
+      // Enhance all listings with appropriate images
+      const enhancedListings = verificationResults.validListings.map(listing => 
+        enhanceListingWithImage(listing)
+      );
+      
       if (!verificationResults.isValid) {
         console.error("⚠️ Opportunity listings verification failed:", verificationResults.issues);
+        console.log(`✅ Using ${enhancedListings.length} valid listings after filtering out ${mixed.length - enhancedListings.length} invalid ones`);
       } else {
-        console.log(`✅ All ${verificationResults.totalListings} opportunity listings verified successfully`);
+        console.log(`✅ All ${verificationResults.totalListings} opportunity listings verified and enhanced with proper images`);
       }
 
-      setDiverseListings(mixed);
+      setDiverseListings(enhancedListings);
     };
     
     loadDiverseListings();

@@ -2,18 +2,18 @@
 import { useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Store, Home, Search, ArrowLeft } from "lucide-react";
+import { Briefcase, Home, Search, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import ErrorLayout from "@/components/layout/ErrorLayout";
 
-const SalonNotFound = () => {
+const OpportunityNotFound = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
   useEffect(() => {
     const currentPath = location.pathname;
-    console.error(`Salon/Opportunity not found: ${currentPath}`);
-    document.title = "Listing Not Found | EmviApp";
+    console.error(`Opportunity not found: ${currentPath}`);
+    document.title = "Opportunity Not Found | EmviApp";
   }, [location.pathname]);
 
   const goBack = () => {
@@ -47,16 +47,16 @@ const SalonNotFound = () => {
         animate="visible"
         className="text-center"
       >
-        <motion.div variants={itemVariants} className="bg-orange-50 p-6 rounded-full inline-flex mb-6">
-          <Store className="h-16 w-16 text-orange-400" />
+        <motion.div variants={itemVariants} className="bg-blue-50 p-6 rounded-full inline-flex mb-6">
+          <Briefcase className="h-16 w-16 text-blue-400" />
         </motion.div>
         
         <motion.h1 variants={itemVariants} className="text-4xl font-bold mb-4">
-          Listing Not Found
+          Opportunity Not Found
         </motion.h1>
         
         <motion.p variants={itemVariants} className="text-xl text-gray-600 mb-8">
-          We couldn't find the listing you're looking for. It may have been removed or the URL might be incorrect.
+          We couldn't find the opportunity you're looking for. It may have been removed or the URL might be incorrect.
         </motion.p>
         
         <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
@@ -65,10 +65,10 @@ const SalonNotFound = () => {
             Go Back
           </Button>
           
-          <Link to="/salons">
-            <Button size="lg" className="flex items-center bg-orange-500 hover:bg-orange-600">
+          <Link to="/jobs">
+            <Button size="lg" className="flex items-center bg-blue-500 hover:bg-blue-600">
               <Search className="mr-2 h-4 w-4" />
-              Browse Listings
+              Browse Opportunities
             </Button>
           </Link>
           
@@ -84,4 +84,4 @@ const SalonNotFound = () => {
   );
 };
 
-export default SalonNotFound;
+export default OpportunityNotFound;
