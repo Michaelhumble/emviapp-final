@@ -1,210 +1,218 @@
 
 import React from 'react';
-import { MapPin, DollarSign, Calendar } from 'lucide-react';
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Job } from '@/types/job';
+import { Card, CardContent } from '@/components/ui/card';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
+import { MapPin, Phone, Mail, Clock, DollarSign, Users, SquareFoot } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/auth';
-import { isNailSalon, isNailJob, getNailSalonImage } from '@/utils/nailSalonImages';
-import { isBarberShop, getBarberShopImage } from '@/utils/barberShopImages';
-import { isHairSalon, getHairSalonImage } from '@/utils/hairSalonImages';
-import { isLashSalon, isBrowSalon, getLashSalonImage, getBrowSalonImage } from '@/utils/lashBrowSalonImages';
-import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
+import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
 
 interface SalonDetailContentProps {
   salon: Job | null;
 }
 
 const SalonDetailContent: React.FC<SalonDetailContentProps> = ({ salon }) => {
-  const { isSignedIn } = useAuth();
-
+  const { user } = useAuth();
+  
   if (!salon) return null;
+  
+  const handleContactClick = () => {
+    if (!user) {
+      toast.error("Please sign in to view contact information", {
+        action: {
+          label: "Sign In",
+          onClick: () => window.location.href = "/login"
+        }
+      });
+    } else {
+      toast.success("Contact information is now visible below");
+    }
+  };
+  
+  // Format price with commas and dollar sign
+  const formatPrice = (price: string | number | undefined) => {
+    if (!price) return "Price not available";
+    
+    const numericPrice = typeof price === 'string' 
+      ? parseFloat(price.replace(/[^0-9.-]+/g, "")) 
+      : price;
+      
+    if (isNaN(Number(numericPrice))) return "Price not available";
+    
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0
+    }).format(Number(numericPrice));
+  };
 
-  // Check if this is a barbershop first (prioritize barber category)
-  const isBarber = isBarberShop(salon.title || salon.company || '', salon.description || '');
-  
-  // Check if this is a hair salon second
-  const isHair = !isBarber && isHairSalon(salon.title || salon.company || '', salon.description || '');
-  
-  // Check if this is a lash salon
-  const isLash = !isBarber && !isHair && isLashSalon(salon.title || salon.company || '', salon.description || '');
-  
-  // Check if this is a brow salon
-  const isBrow = !isBarber && !isHair && !isLash && isBrowSalon(salon.title || salon.company || '', salon.description || '');
-  
-  // Finally check if this is a nail salon 
-  const isNail = !isBarber && !isHair && !isLash && !isBrow && (
-    isNailSalon(salon.title || salon.company || '', salon.description || '') ||
-    isNailJob(salon.title || salon.company || '', salon.description || '')
-  );
-  
-  // IMPORTANT: Use the stored imageUrl from the salon object if available
-  // Otherwise, use the correct image or fallback to the image property
-  const imageUrl = salon.imageUrl || 
-                  (isBarber ? getBarberShopImage(true, true) : 
-                   isHair ? getHairSalonImage(true, true) :
-                   isLash ? getLashSalonImage(true) :
-                   isBrow ? getBrowSalonImage(true) :
-                   isNail ? getNailSalonImage(false, true, true) : 
-                   salon.image || '');
-  
-  // Format price as currency
-  const formattedPrice = salon.price ? new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(parseFloat(salon.price)) : 'Price on request';
-  
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Back Button */}
-      <div className="mb-6">
-        <a href="/salons" className="text-primary hover:text-primary/80 flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
-            <path d="M19 12H5M12 19l-7-7 7-7" />
-          </svg>
-          Back to Salon Listings
-        </a>
-      </div>
-
-      {/* Main Content */}
+    <div className="container mx-auto py-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column: Photos and Details */}
+        {/* Left Column - Main Info */}
         <div className="lg:col-span-2">
-          {/* Main Image - Use our high-quality salon images when appropriate */}
-          <div className="bg-gray-200 rounded-xl overflow-hidden mb-6 aspect-video">
-            {imageUrl ? (
-              <ImageWithFallback
-                src={imageUrl}
-                alt={salon.company || (
-                  isBarber ? 'Barbershop' :
-                  isHair ? 'Hair Salon' :
-                  isLash ? 'Lash Studio' :
-                  isBrow ? 'Brow Studio' :
-                  isNail ? 'Nail Salon' : 'Salon'
-                )}
-                className="w-full h-full object-cover"
+          {/* Salon Hero Image - Full width on mobile and desktop */}
+          <div className="w-full mb-6 rounded-xl overflow-hidden shadow-md">
+            <div className="w-full h-[300px] md:h-[400px]">
+              <ImageWithFallback 
+                src={salon.image || ''} 
+                alt={salon.title || salon.company || 'Salon image'} 
+                className="w-full h-full object-cover" 
+                businessName={salon.company}
+                category={salon.salon_type}
                 priority={true}
               />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <span className="text-gray-400">No image available</span>
-              </div>
-            )}
+            </div>
           </div>
-
+          
           {/* Salon Details */}
-          <div className="bg-white rounded-xl border shadow-sm p-6 mb-6">
-            <h1 className="font-serif text-2xl md:text-3xl font-semibold mb-2">
-              {salon.company || 'Unnamed Salon'}
-            </h1>
-            
-            <div className="flex items-center text-gray-600 mb-4">
-              <MapPin className="h-5 w-5 mr-2" />
-              {salon.location}
-            </div>
-            
-            <div className="border-b mb-4 pb-4">
-              <div className="flex items-center text-primary text-xl md:text-2xl font-semibold">
-                <DollarSign className="h-6 w-6 mr-1" />
-                {formattedPrice}
+          <Card className="mb-6">
+            <CardContent className="pt-6">
+              <h1 className="text-2xl font-bold mb-2">{salon.title || salon.company || 'Salon for Sale'}</h1>
+              
+              <div className="flex items-center text-muted-foreground mb-4">
+                <MapPin className="h-4 w-4 mr-1" />
+                <span>{salon.location || 'Location not specified'}</span>
               </div>
-            </div>
-            
-            {/* Description */}
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold mb-3">Description</h2>
-              <p className="text-gray-700 whitespace-pre-line">
-                {salon.description || 'No description available.'}
-              </p>
-            </div>
-
-            {/* Features */}
-            {salon.salon_features && salon.salon_features.length > 0 && (
-              <div className="mb-6">
-                <h2 className="text-xl font-semibold mb-3">Salon Features</h2>
-                <div className="flex flex-wrap gap-2">
-                  {salon.salon_features.map((feature, index) => (
-                    <Badge key={index} variant="outline" className="bg-gray-50">
-                      {feature}
-                    </Badge>
-                  ))}
-                </div>
+              
+              <h2 className="text-xl font-semibold mb-2">Description</h2>
+              <div className="prose max-w-none">
+                {salon.description ? (
+                  <p>{salon.description}</p>
+                ) : (
+                  <p className="text-muted-foreground italic">No description available yet.</p>
+                )}
+                
+                {salon.vietnamese_description && (
+                  <div className="mt-4 p-4 bg-gray-50 rounded-md">
+                    <h3 className="text-md font-medium mb-2">Vietnamese Description</h3>
+                    <p>{salon.vietnamese_description}</p>
+                  </div>
+                )}
               </div>
-            )}
-            
-            {/* Additional Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {salon.created_at && (
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500">Listed Date</h3>
-                  <div className="flex items-center">
-                    <Calendar className="h-4 w-4 mr-1 text-gray-400" />
-                    {new Date(salon.created_at).toLocaleDateString()}
+              
+              {/* Features/Amenities */}
+              {salon.salon_features && salon.salon_features.length > 0 && (
+                <div className="mt-6">
+                  <h2 className="text-xl font-semibold mb-2">Features</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {salon.salon_features.map((feature, index) => (
+                      <span key={index} className="bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-sm">
+                        {feature}
+                      </span>
+                    ))}
                   </div>
                 </div>
               )}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
         
-        {/* Right Column: Contact and CTA */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl border shadow-sm p-6 sticky top-4">
-            <h2 className="text-xl font-semibold mb-4">Contact Information</h2>
-            
-            {isSignedIn ? (
-              <div className="space-y-4 mb-6">
-                {salon.contact_info?.owner_name && (
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500">Owner</h3>
-                    <p>{salon.contact_info.owner_name}</p>
-                  </div>
-                )}
-                
-                {salon.contact_info?.phone && (
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500">Phone</h3>
-                    <p>{salon.contact_info.phone}</p>
-                  </div>
-                )}
-                
-                {salon.contact_info?.email && (
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500">Email</h3>
-                    <p>{salon.contact_info.email}</p>
-                  </div>
-                )}
+        {/* Right Column - Sidebar */}
+        <div>
+          {/* Price Card */}
+          <Card className="mb-6">
+            <CardContent className="pt-6">
+              <div className="text-2xl font-bold mb-4 flex items-center">
+                <DollarSign className="h-5 w-5 mr-1" />
+                {formatPrice(salon.asking_price || salon.price)}
               </div>
-            ) : (
-              <div className="bg-gray-50 p-4 rounded-md mb-6">
-                <p className="text-center text-gray-600">
-                  Sign in to view contact details
-                </p>
+              
+              <div className="space-y-4">
+                {/* Salon Stats */}
+                <div className="grid grid-cols-2 gap-y-3">
+                  {salon.square_feet && (
+                    <>
+                      <div className="flex items-center text-sm">
+                        <SquareFoot className="h-4 w-4 mr-2" /> Size
+                      </div>
+                      <div className="text-sm font-medium">{salon.square_feet} sq ft</div>
+                    </>
+                  )}
+                  
+                  {salon.number_of_stations && (
+                    <>
+                      <div className="flex items-center text-sm">
+                        <Users className="h-4 w-4 mr-2" /> Stations
+                      </div>
+                      <div className="text-sm font-medium">{salon.number_of_stations}</div>
+                    </>
+                  )}
+                  
+                  {salon.monthly_rent && (
+                    <>
+                      <div className="flex items-center text-sm">
+                        <DollarSign className="h-4 w-4 mr-2" /> Monthly Rent
+                      </div>
+                      <div className="text-sm font-medium">{formatPrice(salon.monthly_rent)}</div>
+                    </>
+                  )}
+                  
+                  {salon.revenue && (
+                    <>
+                      <div className="flex items-center text-sm">
+                        <DollarSign className="h-4 w-4 mr-2" /> Revenue
+                      </div>
+                      <div className="text-sm font-medium">{formatPrice(salon.revenue)}</div>
+                    </>
+                  )}
+                </div>
               </div>
-            )}
-            
-            <Button 
-              className={`w-full mb-4 ${
-                isLash ? 'bg-gradient-to-r from-rose-500 to-rose-700 hover:from-rose-600 hover:to-rose-800' :
-                isBrow ? 'bg-gradient-to-r from-amber-600 to-amber-800 hover:from-amber-700 hover:to-amber-900' :
-                ''
-              }`}
-              size="lg"
-            >
-              Contact Seller
-            </Button>
-            
-            {!isSignedIn && (
-              <div className="text-center text-sm text-gray-500">
-                <a href="/login" className="text-primary hover:underline">
-                  Sign in
-                </a> or <a href="/signup" className="text-primary hover:underline">
-                  create an account
-                </a> to contact the seller directly.
-              </div>
-            )}
-          </div>
+              
+              <Button className="w-full mt-6" onClick={handleContactClick}>
+                Contact Seller
+              </Button>
+            </CardContent>
+          </Card>
+          
+          {/* Contact Card - Conditionally show based on auth */}
+          <Card>
+            <CardContent className="pt-6">
+              <h2 className="text-xl font-semibold mb-4">Contact Information</h2>
+              
+              {user ? (
+                <div className="space-y-3">
+                  {salon.contact_info?.owner_name && (
+                    <div className="flex items-center">
+                      <Users className="h-4 w-4 mr-2 text-muted-foreground" />
+                      <span>{salon.contact_info.owner_name}</span>
+                    </div>
+                  )}
+                  
+                  {salon.contact_info?.phone && (
+                    <div className="flex items-center">
+                      <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
+                      <a href={`tel:${salon.contact_info.phone}`} className="hover:underline">
+                        {salon.contact_info.phone}
+                      </a>
+                    </div>
+                  )}
+                  
+                  {salon.contact_info?.email && (
+                    <div className="flex items-center">
+                      <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
+                      <a href={`mailto:${salon.contact_info.email}`} className="hover:underline">
+                        {salon.contact_info.email}
+                      </a>
+                    </div>
+                  )}
+                  
+                  {!salon.contact_info?.owner_name && !salon.contact_info?.phone && !salon.contact_info?.email && (
+                    <p className="text-muted-foreground italic">No contact information available yet.</p>
+                  )}
+                </div>
+              ) : (
+                <div className="p-4 bg-secondary rounded-md text-center">
+                  <p className="mb-3">Sign in to view contact information</p>
+                  <Link to="/login">
+                    <Button size="sm">Sign In</Button>
+                  </Link>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

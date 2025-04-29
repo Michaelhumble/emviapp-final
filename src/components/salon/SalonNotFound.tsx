@@ -56,7 +56,7 @@ const SalonNotFound = () => {
         </motion.h1>
         
         <motion.p variants={itemVariants} className="text-xl text-gray-600 mb-8">
-          We couldn't find the listing you're looking for. It may have been removed or the URL might be incorrect.
+          We couldn't find the salon listing you're looking for. It may have been removed or the URL might be incorrect.
         </motion.p>
         
         <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center mt-8">

@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import SalonDetailContent from '@/components/salons/SalonDetailContent';
 import SalonListingCta from '@/components/salons/SalonListingCta';
@@ -9,6 +9,8 @@ import { fetchJob } from '@/utils/jobs';
 import { getSalonByIdAsJob } from '@/utils/featuredContent';
 import { Job } from '@/types/job';
 import ListingRouteGuard from '@/components/common/ListingRouteGuard';
+import { ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const SalonDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -30,10 +32,12 @@ const SalonDetailPage = () => {
         
         if (salonData) {
           setSalon(salonData);
+          console.log('Salon loaded from featured content:', id);
         } else {
           // Fall back to fetching from jobs
           const jobData = await fetchJob(id);
           setSalon(jobData);
+          console.log('Salon loaded from jobs API:', id);
         }
       } catch (err) {
         console.error('Error loading salon:', err);
@@ -46,6 +50,28 @@ const SalonDetailPage = () => {
     loadSalon();
   }, [id]);
 
+  // Enhanced loading state with skeleton
+  const LoadingState = () => (
+    <div className="container mx-auto py-12">
+      <div className="flex flex-col items-center justify-center p-8">
+        <div className="w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin mb-4"></div>
+        <p className="text-lg text-muted-foreground">Loading salon details...</p>
+      </div>
+    </div>
+  );
+
+  // Back button component
+  const BackToListings = () => (
+    <div className="container mx-auto pt-6">
+      <Link to="/salons">
+        <Button variant="outline" className="mb-4 flex items-center gap-2">
+          <ArrowLeft className="h-4 w-4" />
+          <span>Back to Listings</span>
+        </Button>
+      </Link>
+    </div>
+  );
+
   return (
     <ListingRouteGuard 
       listingType="salon"
@@ -53,12 +79,7 @@ const SalonDetailPage = () => {
       loadingComponent={
         <Layout>
           <div className="min-h-screen bg-background">
-            <div className="container mx-auto py-12">
-              <div className="flex flex-col items-center justify-center p-8">
-                <div className="w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin mb-4"></div>
-                <p className="text-lg text-muted-foreground">Loading salon details...</p>
-              </div>
-            </div>
+            <LoadingState />
           </div>
         </Layout>
       }
@@ -66,16 +87,12 @@ const SalonDetailPage = () => {
       <Layout>
         <div className="min-h-screen bg-background">
           {loading ? (
-            <div className="container mx-auto py-12">
-              <div className="flex flex-col items-center justify-center p-8">
-                <div className="w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin mb-4"></div>
-                <p className="text-lg text-muted-foreground">Loading salon details...</p>
-              </div>
-            </div>
+            <LoadingState />
           ) : error ? (
             <SalonNotFound />
           ) : (
             <>
+              <BackToListings />
               <SalonDetailContent salon={salon} />
               <SalonListingCta />
             </>
