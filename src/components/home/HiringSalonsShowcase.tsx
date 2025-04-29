@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Building } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
+import { Job } from '@/types/job';
 
 export default function HiringSalonsShowcase() {
   // Filter to find hiring-related jobs
@@ -15,7 +16,11 @@ export default function HiringSalonsShowcase() {
     job.description?.toLowerCase().includes('hiring') ||
     job.title?.toLowerCase().includes('technician') ||
     job.title?.toLowerCase().includes('artist')
-  ).slice(0, 3);
+  ).slice(0, 3).map(job => ({
+    ...job,
+    created_at: job.posted || new Date().toISOString(), // Add required created_at property
+    id: job.id.toString() // Ensure id is a string as required by Job type
+  })) as Job[];
   
   if (hiringJobs.length === 0) {
     return null;
