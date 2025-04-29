@@ -29,13 +29,22 @@ const SimpleSalonsPage = () => {
 
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
-          {/* Luxury Hero Banner - Using new image */}
+          {/* Luxury Hero Banner with Text Overlay */}
           <div className="relative w-full mb-10 overflow-hidden rounded-lg">
             <ImageWithFallback
               src="/lovable-uploads/98f473d0-0359-4114-9bcc-c9aea3c6fcf6.png"
               alt="Luxury beauty salon entrance with FOR SALE sign"
               className="w-full h-auto object-cover"
             />
+            {/* Text Overlay */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold font-playfair text-[#FAFAFA] mb-2 drop-shadow-sm">
+                List Your Salon with Confidence
+              </h1>
+              <p className="text-xl md:text-2xl font-playfair font-normal text-[#FAFAFA] drop-shadow-sm">
+                Đăng Tin Bán Tiệm với Sự Tự Tin
+              </p>
+            </div>
           </div>
           
           {/* Vietnamese Community Listings Section */}

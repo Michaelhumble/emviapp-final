@@ -111,7 +111,7 @@ const SalonMarketplace = () => {
         <h1 className="text-4xl font-serif font-bold mb-2 text-center">Salon Marketplace</h1>
         <p className="text-center text-gray-600 mb-8">Browse salons for sale across the country</p>
         
-        {/* Luxury Hero Banner - Using new image */}
+        {/* Luxury Hero Banner with Text Overlay */}
         <div className="relative w-full mb-10 overflow-hidden rounded-lg">
           <ImageWithFallback
             src="/lovable-uploads/98f473d0-0359-4114-9bcc-c9aea3c6fcf6.png"
@@ -119,6 +119,15 @@ const SalonMarketplace = () => {
             className="w-full h-auto object-cover"
             priority={true}
           />
+          {/* Text Overlay */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-playfair text-[#FAFAFA] mb-2 drop-shadow-sm">
+              List Your Salon with Confidence
+            </h2>
+            <p className="text-xl md:text-2xl font-playfair font-normal text-[#FAFAFA] drop-shadow-sm">
+              Đăng Tin Bán Tiệm với Sự Tự Tin
+            </p>
+          </div>
         </div>
         
         <SalonFilter
