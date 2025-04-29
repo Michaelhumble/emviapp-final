@@ -54,7 +54,7 @@ const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
     }
     
     if (typeof salon.price === 'string') {
-      if (salon.price && salon.price.includes('$')) {
+      if (salon.price && typeof salon.price === 'string' && salon.price.includes('$')) {
         return salon.price;
       } else if (salon.price) {
         return `$${salon.price}`;
