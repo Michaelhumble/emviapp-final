@@ -11,34 +11,37 @@ import { useAuth } from "@/context/auth";
 import { NAIL_SALON_IMAGES } from "@/utils/nailSalonImages";
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
-// Sample salon data with no images
+// Sample salon data with high-quality images
 const hiringSalons = [
   {
-    id: "1",
+    id: "salon-1",
     name: "Salon Envy",
     location: "Atlanta, GA",
     rating: "4.9",
     isNail: true,
     isHiring: true,
-    specialty: "Full Service Salon"
+    specialty: "Full Service Salon",
+    image: "/lovable-uploads/2951176b-68c9-45d6-8bc5-20513e72d0a3.png" // Luxury makeup salon with black chairs
   },
   {
-    id: "2",
+    id: "salon-2",
     name: "Luxe Beauty Bar",
     location: "Los Angeles, CA",
     rating: "4.8",
     isNail: true,
     isHiring: true,
-    specialty: "Nail Spa"
+    specialty: "Nail Spa",
+    image: NAIL_SALON_IMAGES.minimalist
   },
   {
-    id: "3",
+    id: "salon-3",
     name: "The Nail Boutique",
     location: "New York, NY",
     rating: "5.0",
     isNail: true,
     isHiring: true,
-    specialty: "Nail Art Studio"
+    specialty: "Nail Art Studio",
+    image: "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png" // Gold-accented luxury spa
   }
 ];
 
@@ -63,10 +66,12 @@ const HiringSalonsShowcase = () => {
   const navigate = useNavigate();
   
   const handleViewDetails = (salonId: string) => {
+    // Modified to ensure the ID format is valid for routing
+    const formattedId = salonId.startsWith("salon-") ? salonId : `salon-${salonId}`;
     if (isSignedIn) {
-      navigate(`/salons/${salonId}`);
+      navigate(`/salons/${formattedId}`);
     } else {
-      navigate(`/sign-in?redirect=${encodeURIComponent(`/salons/${salonId}`)}`);
+      navigate(`/sign-in?redirect=${encodeURIComponent(`/salons/${formattedId}`)}`);
     }
   };
   
@@ -93,24 +98,17 @@ const HiringSalonsShowcase = () => {
           whileInView="show"
           viewport={{ once: true }}
         >
-          {hiringSalons.map((salon, index) => (
+          {hiringSalons.map((salon) => (
             <motion.div key={salon.id} variants={item}>
               <Card className="overflow-hidden h-full transition-shadow hover:shadow-lg border-gray-100">
-                {salon.isNail ? (
-                  <div className="h-48 w-full overflow-hidden">
-                    <ImageWithFallback
-                      src={index === 0 ? NAIL_SALON_IMAGES.luxuryLarge : 
-                           index === 1 ? NAIL_SALON_IMAGES.minimalist :
-                           NAIL_SALON_IMAGES.executiveNails}
-                      alt={salon.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ) : (
-                  <div className="h-48 bg-gray-100 flex items-center justify-center">
-                    <Building className="h-12 w-12 text-gray-300" />
-                  </div>
-                )}
+                <div className="h-48 w-full overflow-hidden">
+                  <ImageWithFallback
+                    src={salon.image}
+                    alt={salon.name}
+                    className="w-full h-full object-cover"
+                    fallbackImage={salon.isNail ? NAIL_SALON_IMAGES.luxuryLarge : "/lovable-uploads/6fdf0a39-d203-4f5a-90ba-808059c3ae5e.png"}
+                  />
+                </div>
                 
                 <CardContent className="pt-6">
                   <div className="flex justify-between items-start mb-2">

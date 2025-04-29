@@ -10,7 +10,8 @@ import { useNavigate } from 'react-router-dom';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { isLashBrowJob, getLashBrowJobImage } from '@/utils/lashBrowSalonImages';
 import { isMassageJob, getMassageJobImage } from '@/utils/massageSalonImages';
-import { isNailJob, NAIL_SALON_IMAGES } from '@/utils/nailSalonImages';
+import { isNailJob, NAIL_SALON_IMAGES, getNailJobImage } from '@/utils/nailSalonImages';
+import { getBarberJobImage, isBarberJob } from '@/utils/barberShopImages';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 
 interface OpportunityCardProps {
@@ -35,20 +36,18 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
     return `${Math.floor(diffDays / 30)} months ago`;
   };
   
-  // IMPORTANT: First check if this is a nail job (PRIORITIZE nail detection per user's request)
+  // Determine job type with priority order
   const isNailTechJob = isNailJob(listing.title || '', listing.description || '');
-  
-  // Then check if this is a lash or brow job (only if not a nail job)
-  const isLashJob = !isNailTechJob && isLashBrowJob(listing.title || '', listing.description || '') && 
+  const isBarberShopJob = !isNailTechJob && isBarberJob(listing.title || '', listing.description || '');
+  const isLashJob = !isNailTechJob && !isBarberShopJob && isLashBrowJob(listing.title || '', listing.description || '') && 
                    (listing.title || '').toLowerCase().includes('lash');
-                   
-  const isBrowJob = !isNailTechJob && isLashBrowJob(listing.title || '', listing.description || '') && 
+  const isBrowJob = !isNailTechJob && !isBarberShopJob && !isLashJob && 
+                    isLashBrowJob(listing.title || '', listing.description || '') && 
                    (listing.title || '').toLowerCase().includes('brow');
+  const isMassageTherapistJob = !isNailTechJob && !isBarberShopJob && !isLashJob && !isBrowJob && 
+                               isMassageJob(listing.title || '', listing.description || '');
   
-  // Then check if this is a massage job (only if not a nail job, lash job, or brow job)
-  const isMassageTherapistJob = !isNailTechJob && !isLashJob && !isBrowJob && isMassageJob(listing.title || '', listing.description || '');
-  
-  // Get appropriate image for the job type with nail jobs taking priority
+  // Get appropriate image for the job type with better image selection
   let jobImage = '';
   
   if (isNailTechJob) {
@@ -57,25 +56,60 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
       NAIL_SALON_IMAGES.artGallery,
       NAIL_SALON_IMAGES.executiveNails,
       NAIL_SALON_IMAGES.minimalist,
-      NAIL_SALON_IMAGES.modernDeluxe
+      NAIL_SALON_IMAGES.modernDeluxe,
+      "/lovable-uploads/0bc39cbb-bdd3-4843-ace0-3cf730af576f.png",  // Added new nail image
+      "/lovable-uploads/0c68659d-ebd4-4091-aa1a-9329f3690d68.png",  // Added new nail image
+      "/lovable-uploads/1bc30225-0249-44a2-8086-c0a8ecbd57c2.png"   // Added new nail image
     ];
     jobImage = nailJobImages[index % nailJobImages.length];
+  } else if (isBarberShopJob) {
+    jobImage = getBarberJobImage(true); // Force premium barber image
   } else if (isLashJob) {
     jobImage = getLashBrowJobImage(true);
   } else if (isBrowJob) {
     jobImage = getLashBrowJobImage(false);
   } else if (isMassageTherapistJob) {
     jobImage = getMassageJobImage(true); // Force randomization for variety
+  } else if (listing.title?.toLowerCase().includes('tattoo') || 
+            (listing.description || '').toLowerCase().includes('tattoo')) {
+    // Tattoo specific images
+    jobImage = "/lovable-uploads/16e16a16-df62-4741-aec7-3364fdc958ca.png";
+  } else if (listing.title?.toLowerCase().includes('beauty supply') || 
+            listing.title?.toLowerCase().includes('retail')) {
+    // Beauty retail specific images
+    jobImage = "/lovable-uploads/94ea5644-26ac-4862-a6fc-b5b4c5c1fbb5.png";
+  } else if (listing.for_sale) {
+    // For business listings for sale
+    const saleImages = [
+      "/lovable-uploads/6fdf0a39-d203-4f5a-90ba-808059c3ae5e.png",
+      "/lovable-uploads/179dbed5-2209-4b12-8e72-ef20d1818d46.png",
+      "/lovable-uploads/1f97f5e0-6b52-4ac6-925b-396bc0a1e585.png"
+    ];
+    jobImage = saleImages[index % saleImages.length];
+  } else {
+    // Generic beauty industry images as fallback - never show blank
+    const genericImages = [
+      "/lovable-uploads/04b1b8d8-1c45-4be9-96e7-7afcceca8760.png",
+      "/lovable-uploads/11d11587-a1b4-4f8f-a93b-b792a672b16b.png",
+      "/lovable-uploads/15bcad43-8797-40ed-ae8f-96eedb447b8f.png",
+      "/lovable-uploads/1aa3efa7-8ea4-4815-91db-85a50b204ded.png", 
+      "/lovable-uploads/072ab653-428c-4ec9-bd87-1bd6658d82de.png"
+    ];
+    jobImage = genericImages[index % genericImages.length];
   }
 
   // Store the image URL in the job object for detail view consistency
-  if ((isNailTechJob || isLashJob || isBrowJob || isMassageTherapistJob) && jobImage && !listing.imageUrl) {
+  if (jobImage && !listing.imageUrl) {
     listing.imageUrl = jobImage;
   }
 
   const handleViewDetails = () => {
     if (listing.id) {
-      navigate(`/opportunities/${listing.id}`);
+      // Determine the correct route based on listing type
+      const route = listing.type === 'salon' ? 
+                   `/salons/${listing.id}` : 
+                   `/opportunities/${listing.id}`;
+      navigate(route);
     }
   };
 
@@ -85,23 +119,20 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
       onClick={handleViewDetails}
     >
       <div className="aspect-[4/3] w-full bg-gray-100 flex items-center justify-center relative">
-        {(isNailTechJob || isLashJob || isBrowJob || isMassageTherapistJob) && jobImage ? (
-          <ImageWithFallback
-            src={jobImage}
-            alt={listing.title || (
-              isNailTechJob ? "Nail Technician Job" :
-              isLashJob ? "Lash Artist Job" : 
-              isBrowJob ? "Brow Specialist Job" : 
-              isMassageTherapistJob ? "Massage Therapist Job" : 
-              "Job Listing"
-            )}
-            className="h-full w-full object-cover"
-            priority={true}
-            fallbackImage={jobImage} // Add fallback for reliability
-          />
-        ) : (
-          <Building className="h-12 w-12 text-gray-200" />
-        )}
+        <ImageWithFallback
+          src={jobImage}
+          alt={listing.title || (
+            isNailTechJob ? "Nail Technician Job" :
+            isBarberShopJob ? "Barber Job" :
+            isLashJob ? "Lash Artist Job" : 
+            isBrowJob ? "Brow Specialist Job" : 
+            isMassageTherapistJob ? "Massage Therapist Job" : 
+            "Industry Opportunity"
+          )}
+          className="h-full w-full object-cover"
+          priority={true}
+          fallbackImage={jobImage} // Add fallback for reliability
+        />
         
         {listing.is_featured && (
           <Badge 
