@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import salonBannerImage from '/lovable-uploads/generated-14.png';
+// Remove the direct import and use a string path instead
 
 interface PremiumSalonBannerProps {
   className?: string;
@@ -15,16 +15,19 @@ const PremiumSalonBanner = ({ className }: PremiumSalonBannerProps) => {
   useEffect(() => {
     // Set visible after a short delay for animation purposes
     const timer = setTimeout(() => setIsVisible(true), 100);
-    console.log('PremiumSalonBanner mounted with image:', salonBannerImage);
+    console.log('PremiumSalonBanner mounted with image URL');
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <div className={`relative w-full ${className}`} style={{ height: 'clamp(360px, 50vw, 450px)' }}>
-      {/* Banner image - explicitly imported and used */}
+      {/* Banner image - use a string path instead of an imported module */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${salonBannerImage})`, zIndex: 0 }}
+        style={{ 
+          backgroundImage: 'url(/lovable-uploads/generated-14.png)', 
+          zIndex: 0 
+        }}
       />
       
       {/* Dark overlay with 35% opacity */}
