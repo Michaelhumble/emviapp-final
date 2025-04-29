@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import salonBannerImage from '/lovable-uploads/generated-14.png';
 
 interface PremiumSalonBannerProps {
   className?: string;
@@ -14,22 +15,23 @@ const PremiumSalonBanner = ({ className }: PremiumSalonBannerProps) => {
   useEffect(() => {
     // Set visible after a short delay for animation purposes
     const timer = setTimeout(() => setIsVisible(true), 100);
+    console.log('PremiumSalonBanner mounted with image:', salonBannerImage);
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <div className={`relative w-full ${className}`} style={{ height: 'clamp(360px, 50vw, 450px)' }}>
-      {/* Banner image - updated to use the new uploaded image */}
+      {/* Banner image - explicitly imported and used */}
       <div 
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: 'url(/lovable-uploads/generated-14.png)' }}
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${salonBannerImage})`, zIndex: 0 }}
       />
       
       {/* Dark overlay with 35% opacity */}
-      <div className="absolute inset-0 bg-black opacity-35" />
+      <div className="absolute inset-0 bg-black opacity-35 z-10" />
       
       {/* Content container */}
-      <div className="absolute inset-0 flex items-center justify-center px-4 sm:px-6">
+      <div className="absolute inset-0 flex items-center justify-center px-4 sm:px-6 z-20">
         <div className="text-center max-w-3xl">
           {/* Headline with animation */}
           <motion.h1 
