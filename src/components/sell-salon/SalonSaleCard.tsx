@@ -9,6 +9,7 @@ import { FeatureListingButton } from "@/components/sell-salon/FeatureListingButt
 import { useAuth } from "@/context/auth";
 import { isNailSalon, getNailSalonImage } from "@/utils/nailSalonImages";
 import { isLashSalon, isBrowSalon, getLashSalonImage, getBrowSalonImage } from "@/utils/lashBrowSalonImages";
+import { isMassageSpa, getMassageSalonImage } from "@/utils/massageSalonImages";
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 interface SalonSaleCardProps {
@@ -33,8 +34,11 @@ export const SalonSaleCard = ({
   // Check if this is a brow salon or studio
   const isBrow = !isLash && isBrowSalon(salon.salon_name || '', salon.description || '');
   
+  // NEW: Check if this is a massage salon or spa
+  const isMassage = !isLash && !isBrow && isMassageSpa(salon.salon_name || '', salon.description || '');
+  
   // Fallback check for nail salon
-  const isNail = !isLash && !isBrow && isNailSalon(salon.salon_name || '', salon.description || '');
+  const isNail = !isLash && !isBrow && !isMassage && isNailSalon(salon.salon_name || '', salon.description || '');
   
   // Get appropriate image for the salon type
   let salonImage = '';
@@ -42,6 +46,8 @@ export const SalonSaleCard = ({
     salonImage = getLashSalonImage(salon.is_featured);
   } else if (isBrow) {
     salonImage = getBrowSalonImage(salon.is_featured);
+  } else if (isMassage) {
+    salonImage = getMassageSalonImage(salon.is_featured);
   } else if (isNail) { 
     salonImage = getNailSalonImage(false, salon.is_featured, salon.is_featured);
   }
@@ -59,6 +65,7 @@ export const SalonSaleCard = ({
       case "Brow":
         return <Store className="h-4 w-4" />;
       case "Spa":
+      case "Massage":
         return <Store className="h-4 w-4" />;
       case "Barbershop":
         return <Store className="h-4 w-4" />;
@@ -78,12 +85,13 @@ export const SalonSaleCard = ({
       }`}
     >
       <div className="aspect-video relative">
-        {isLash || isBrow || isNail ? (
+        {isLash || isBrow || isMassage || isNail ? (
           <ImageWithFallback
             src={salonImage}
             alt={salon.salon_name || (
               isLash ? "Lash Studio" : 
-              isBrow ? "Brow Studio" : 
+              isBrow ? "Brow Studio" :
+              isMassage ? "Massage & Spa" :
               "Nail Salon"
             )}
             className="h-full w-full object-cover"

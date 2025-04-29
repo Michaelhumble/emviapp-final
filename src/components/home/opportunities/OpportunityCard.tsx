@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { isLashBrowJob, getLashBrowJobImage } from '@/utils/lashBrowSalonImages';
+import { isMassageJob, getMassageJobImage } from '@/utils/massageSalonImages';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 
 interface OpportunityCardProps {
@@ -40,12 +41,18 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
   const isBrowJob = isLashBrowJob(listing.title || '', listing.description || '') && 
                    (listing.title || '').toLowerCase().includes('brow');
   
-  // Get appropriate image for lash/brow jobs
-  const jobImage = isLashJob 
-    ? getLashBrowJobImage(true) 
-    : isBrowJob 
-      ? getLashBrowJobImage(false) 
-      : '';
+  // NEW: Check if this is a massage job
+  const isMassageTherapistJob = isMassageJob(listing.title || '', listing.description || '');
+  
+  // Get appropriate image for the job type
+  let jobImage = '';
+  if (isLashJob) {
+    jobImage = getLashBrowJobImage(true);
+  } else if (isBrowJob) {
+    jobImage = getLashBrowJobImage(false);
+  } else if (isMassageTherapistJob) {
+    jobImage = getMassageJobImage();
+  }
 
   const handleViewDetails = () => {
     if (listing.id) {
@@ -59,10 +66,15 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
       onClick={handleViewDetails}
     >
       <div className="aspect-[4/3] w-full bg-gray-100 flex items-center justify-center relative">
-        {(isLashJob || isBrowJob) && jobImage ? (
+        {(isLashJob || isBrowJob || isMassageTherapistJob) && jobImage ? (
           <ImageWithFallback
             src={jobImage}
-            alt={listing.title || (isLashJob ? "Lash Artist Job" : "Brow Specialist Job")}
+            alt={listing.title || (
+              isLashJob ? "Lash Artist Job" : 
+              isBrowJob ? "Brow Specialist Job" : 
+              isMassageTherapistJob ? "Massage Therapist Job" : 
+              "Job Listing"
+            )}
             className="h-full w-full object-cover"
             priority={true}
           />

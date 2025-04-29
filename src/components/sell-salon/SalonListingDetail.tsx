@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import {
   Dialog,
@@ -15,6 +16,7 @@ import { fetchSalonSaleById, formatCurrency } from "@/utils/salonSales";
 import { formatDistanceToNow } from "date-fns";
 import { isNailSalon, getNailSalonImage } from "@/utils/nailSalonImages";
 import { isLashSalon, isBrowSalon, getLashSalonImage, getBrowSalonImage } from "@/utils/lashBrowSalonImages";
+import { isMassageSpa, getMassageSalonImage } from "@/utils/massageSalonImages";
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 interface SalonListingDetailProps {
@@ -32,8 +34,11 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
   // Check if this is a brow salon/studio to use our high-quality brow images
   const isBrow = !isLash && isBrowSalon(salon.salon_name || '', salon.description || '');
   
+  // NEW: Check if this is a massage salon/spa
+  const isMassage = !isLash && !isBrow && isMassageSpa(salon.salon_name || '', salon.description || '');
+  
   // Check if this is a nail salon as fallback
-  const isNail = !isLash && !isBrow && isNailSalon(salon.salon_name || '', salon.description || '');
+  const isNail = !isLash && !isBrow && !isMassage && isNailSalon(salon.salon_name || '', salon.description || '');
   
   // IMPORTANT: Use the stored imageUrl from the salon object if available
   // Otherwise, generate it consistently
@@ -44,6 +49,8 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
       salonImage = getLashSalonImage(salon.is_featured);
     } else if (isBrow) {
       salonImage = getBrowSalonImage(salon.is_featured);
+    } else if (isMassage) {
+      salonImage = getMassageSalonImage(salon.is_featured);
     } else if (isNail) {
       salonImage = getNailSalonImage(false, salon.is_featured, true);
     }
@@ -56,7 +63,7 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
         const data = await fetchSalonSaleById(salon.id);
         if (data) {
           // Store the image URL to maintain consistency
-          if ((isLash || isBrow || isNail) && salonImage) {
+          if ((isLash || isBrow || isMassage || isNail) && salonImage) {
             data.image_url = salonImage;
           }
           setSalonWithPhotos(data as SalonSale);
@@ -69,7 +76,7 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
     };
 
     loadSalonDetails();
-  }, [salon.id, isLash, isBrow, isNail, salonImage]);
+  }, [salon.id, isLash, isBrow, isMassage, isNail, salonImage]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -77,9 +84,11 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
   };
 
   // Check if we should use our custom images instead of uploaded ones
-  const shouldUseCustomImage = isLash || isBrow || isNail || 
+  const shouldUseCustomImage = isLash || isBrow || isMassage || isNail || 
     (salonWithPhotos?.business_type?.toLowerCase().includes('lash') ?? false) ||
     (salonWithPhotos?.business_type?.toLowerCase().includes('brow') ?? false) ||
+    (salonWithPhotos?.business_type?.toLowerCase().includes('spa') ?? false) ||
+    (salonWithPhotos?.business_type?.toLowerCase().includes('massage') ?? false) ||
     (salonWithPhotos?.business_type?.toLowerCase().includes('nail') ?? false);
 
   return (
@@ -102,6 +111,7 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
                 alt={salon.salon_name || (
                   isLash ? "Lash Studio" :
                   isBrow ? "Brow Studio" :
+                  isMassage ? "Massage & Spa" :
                   "Nail Salon"
                 )}
                 className="w-full h-full object-cover"
@@ -198,6 +208,7 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
           <Button className={`flex items-center ${
             isLash ? 'bg-rose-500 hover:bg-rose-600' :
             isBrow ? 'bg-amber-600 hover:bg-amber-700' :
+            isMassage ? 'bg-blue-500 hover:bg-blue-600' :
             ''
           }`}>
             Contact Seller <ArrowRight className="ml-2 h-4 w-4" />

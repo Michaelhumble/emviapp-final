@@ -1,12 +1,13 @@
 
 // Define categories for salon types to ensure appropriate image selection
-export type SalonCategory = 'nail' | 'hair' | 'barber' | 'lash' | 'brow' | 'spa' | 'beauty' | 'generic';
+export type SalonCategory = 'nail' | 'hair' | 'barber' | 'lash' | 'brow' | 'spa' | 'massage' | 'beauty' | 'generic';
 
 // Import our specialized image utilities
 import { getBarberShopImage, isBarberShop } from '@/utils/barberShopImages';
 import { getHairSalonImage, isHairSalon } from '@/utils/hairSalonImages';
 import { getNailSalonImage, isNailSalon } from '@/utils/nailSalonImages';
 import { getLashSalonImage, getBrowSalonImage, isLashSalon, isBrowSalon } from '@/utils/lashBrowSalonImages';
+import { getMassageSalonImage, isMassageSpa } from '@/utils/massageSalonImages';
 
 /**
  * Determines the most appropriate salon category based on description or name
@@ -38,6 +39,11 @@ export const determineSalonCategory = (description: string, name: string): Salon
   // Check for nail salon indicators
   if (isNailSalon(name, description)) {
     return 'nail';
+  }
+  
+  // Check for massage/spa indicators - ADDED MASSAGE/SPA DETECTION
+  if (isMassageSpa(name, description)) {
+    return 'massage';
   }
   
   // Check for spa indicators
@@ -76,9 +82,12 @@ export const getDefaultSalonImage = (category: SalonCategory, isPremium: boolean
     case 'nail':
       // Use a nail salon image
       return getNailSalonImage(false, isPremium, isPremium);
+    case 'massage':
+      // NEW: Use massage salon image utility
+      return getMassageSalonImage(isPremium);
     case 'spa':
-      // Use a spa/wellness image
-      return "/lovable-uploads/b13a3b43-f6e1-4746-9992-03f6e8fac6bf.png";
+      // Use a spa/wellness image - now with our new massage images
+      return getMassageSalonImage(true);
     case 'beauty':
       // Use a general beauty salon image
       return "/lovable-uploads/f7ba1d82-2928-4e73-a61b-112e5aaf5b7e.png";

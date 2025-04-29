@@ -6,6 +6,7 @@ import ImageWithFallback from "@/components/ui/ImageWithFallback";
 import { determineSalonCategory } from "@/utils/salonImageFallbacks";
 import { getBarberShopImage, isBarberShop } from "@/utils/barberShopImages";
 import { getNailSalonImage, isNailSalon } from "@/utils/nailSalonImages";
+import { isMassageSpa, getMassageSalonImage } from "@/utils/massageSalonImages";
 
 interface SalonCardProps {
   salon: {
@@ -55,6 +56,9 @@ export const SalonCard = ({ salon, viewDetails }: SalonCardProps) => {
       return "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png";
     } else if (salonCategory === 'hair') {
       return "/lovable-uploads/0c68659d-ebd4-4091-aa1a-9329f3690d68.png";
+    } else if (salonCategory === 'massage' || isMassageSpa(salon.name, salon.description?.en || '')) {
+      // NEW: Return massage salon image
+      return getMassageSalonImage(salon.featured);
     } else {
       return "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800";
     }

@@ -3,6 +3,7 @@ import React from 'react';
 import BarberImageStatus from './BarberImageStatus';
 import HairSalonImageStatus from './HairSalonImageStatus';
 import LashBrowImageStatus from './LashBrowImageStatus';
+import MassageSpaImageStatus from './MassageSpaImageStatus';
 
 /**
  * Combined debug component for salon image systems
@@ -21,6 +22,7 @@ const SalonImageDebug: React.FC = () => {
         <BarberImageStatus />
         <HairSalonImageStatus />
         <LashBrowImageStatus />
+        <MassageSpaImageStatus />
       </div>
     </div>
   );
