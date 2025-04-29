@@ -54,7 +54,7 @@ const Hero = () => {
       className="relative overflow-hidden"
       style={{
         width: '100%',
-        // Use full viewport height with improved handling for all device sizes
+        // Ensure consistent height across all devices
         height: '100vh',
         maxWidth: '100vw',
         maxHeight: '100vh',
