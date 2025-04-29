@@ -66,4 +66,8 @@ export interface Salon {
   
   // Category for appropriate fallback image selection
   category?: SalonCategory;
+  
+  // Premium/luxury designation
+  isPremium?: boolean;
+  interiorStyle?: 'modern' | 'classic' | 'minimalist' | 'luxury';
 }

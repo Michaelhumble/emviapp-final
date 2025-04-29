@@ -69,6 +69,12 @@ const ImageWithFallback = ({
     setIsLoading(false);
   };
   
+  // Determine if this is a premium/luxury image
+  const isPremiumImage = 
+    (src && src.includes('lovable-uploads') && 
+    (src.includes('f34fda1a') || src.includes('a2001f31') || 
+     src.includes('322a70d7') || src.includes('e4474f6d')));
+  
   return (
     <div className="relative overflow-hidden w-full h-full">
       {isLoading && (
@@ -77,12 +83,18 @@ const ImageWithFallback = ({
       <img 
         src={imgSrc || fallbackImage} 
         alt={alt || businessName || 'Salon image'}
-        className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'}`}
+        className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'} ${isPremiumImage ? 'shadow-sm' : ''}`}
         style={{ objectFit, ...style }}
         loading={loading}
         onError={handleError}
         onLoad={handleLoad}
       />
+      
+      {isPremiumImage && !isLoading && (
+        <div className="absolute bottom-0 right-0 bg-gradient-to-l from-black/60 to-transparent p-1 px-2 text-xs text-white font-medium">
+          Premium
+        </div>
+      )}
     </div>
   );
 };
