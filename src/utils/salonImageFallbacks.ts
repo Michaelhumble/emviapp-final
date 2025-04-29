@@ -84,6 +84,34 @@ export const getRandomCategoryImage = (category: SalonCategory): string => {
   return categoryImages[Math.floor(Math.random() * categoryImages.length)];
 };
 
+/**
+ * Get a luxury salon image, optionally based on category
+ * If no category is specified, returns a random luxury image
+ */
+export const getLuxurySalonImage = (category?: SalonCategory): string => {
+  if (!category) {
+    // Return a random luxury image if no category specified
+    return luxuryImages[Math.floor(Math.random() * luxuryImages.length)];
+  }
+  
+  // For specific categories, return the appropriate luxury image
+  switch(category) {
+    case 'nail':
+      return "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png";
+    case 'hair':
+      return "/lovable-uploads/0c68659d-ebd4-4091-aa1a-9329f3690d68.png";
+    case 'barber':
+      return "/lovable-uploads/f3f2a5ae-65d9-4442-8842-1cb9e26cdb56.png";
+    case 'spa':
+      return "/lovable-uploads/00ccb907-6755-4698-a289-71b05f7012f1.png";
+    case 'tattoo':
+    case 'beauty':
+    case 'luxury':
+    default:
+      return "/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png";
+  }
+};
+
 // Get default salon image based on category
 export const getDefaultSalonImage = (category: SalonCategory): string => {
   switch(category) {

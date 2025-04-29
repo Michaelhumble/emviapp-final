@@ -1,5 +1,6 @@
 
 import { determineSalonCategory, getDefaultSalonImage } from './salonImageFallbacks';
+import { Job } from '@/types/job';
 
 /**
  * Utility function to verify if images used in listings are appropriate
@@ -27,6 +28,47 @@ export const verifyListingImage = (
   return { 
     isValid: false,
     suggestedImage: getDefaultSalonImage(category)
+  };
+};
+
+/**
+ * Verify opportunity listings to ensure they have valid IDs and proper data
+ */
+export const verifyOpportunityListings = (listings: Job[]): { 
+  isValid: boolean; 
+  issues: string[];
+  totalListings: number;
+} => {
+  const issues: string[] = [];
+  const validListingIds = new Set<string>();
+  
+  // Check if all listings have valid data
+  listings.forEach((listing, index) => {
+    if (!listing.id) {
+      issues.push(`Listing at index ${index} is missing an ID`);
+    } else {
+      if (validListingIds.has(listing.id)) {
+        issues.push(`Duplicate listing ID found: ${listing.id}`);
+      } else {
+        validListingIds.add(listing.id);
+      }
+    }
+    
+    // Check if listing has basic required properties
+    if (!listing.title && !listing.company) {
+      issues.push(`Listing ${listing.id || index} is missing title and company information`);
+    }
+    
+    // Check if location is provided
+    if (!listing.location) {
+      issues.push(`Listing ${listing.id || index} is missing location information`);
+    }
+  });
+  
+  return {
+    isValid: issues.length === 0,
+    issues,
+    totalListings: listings.length
   };
 };
 
