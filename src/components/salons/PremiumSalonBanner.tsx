@@ -14,17 +14,17 @@ const PremiumSalonBanner = ({ className }: PremiumSalonBannerProps) => {
   useEffect(() => {
     // Set visible after a short delay for animation purposes
     const timer = setTimeout(() => setIsVisible(true), 100);
-    console.log('PremiumSalonBanner mounted with correct public path');
+    console.log('PremiumSalonBanner mounted with luxury salon image');
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <div className={`relative w-full ${className}`} style={{ height: 'clamp(360px, 50vw, 450px)' }}>
-      {/* Banner image with correct public path */}
+      {/* Banner image with luxury salon image */}
       <div 
         className="absolute inset-0"
         style={{
-          backgroundImage: "url('/salon-banner.png')",
+          backgroundImage: "url('/lovable-uploads/666ba321-563a-4070-af3f-62579918c5aa.png')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
