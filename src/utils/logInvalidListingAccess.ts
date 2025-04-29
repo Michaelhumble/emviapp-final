@@ -53,7 +53,7 @@ export async function logInvalidListingAccess(
 /**
  * Helper function to safely access properties on objects with unknown structure
  */
-export function safeGet<T, K extends keyof T>(obj: T | null | undefined, key: K, fallback: T[K]): T[K] {
+export function safeGet<T extends object, K extends keyof T>(obj: T | null | undefined, key: K, fallback: T[K]): T[K] {
   if (!obj) return fallback;
   if (!(key in obj)) return fallback;
   return obj[key] !== undefined && obj[key] !== null ? obj[key] : fallback;
