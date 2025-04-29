@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
@@ -40,31 +39,28 @@ const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
   const getFormattedPrice = () => {
     // Use the asking_price field if available (for consistency with the Job type)
     if (salon.asking_price) {
-      // If already formatted, return as is - with proper type guard
-      if (typeof salon.asking_price === 'string' && salon.asking_price.indexOf('$') !== -1) {
-        return salon.asking_price;
-      }
-      // Otherwise format it
+      // Check if it's a string and contains $ already
       if (typeof salon.asking_price === 'string') {
-        return `$${salon.asking_price}`;
-      } else if (typeof salon.asking_price === 'number') {
+        return salon.asking_price.indexOf('$') !== -1 
+          ? salon.asking_price 
+          : `$${salon.asking_price}`;
+      } 
+      // Otherwise if it's a number
+      else if (typeof salon.asking_price === 'number') {
         return `$${salon.asking_price}`;
       }
     }
     
     // Otherwise use the price field
-    if (typeof salon.price === 'number') {
-      return `$${salon.price.toLocaleString()}`;
-    }
-    
     if (salon.price) {
-      // Add proper type guard before using indexOf
+      // If it's a string
       if (typeof salon.price === 'string') {
-        if (salon.price.indexOf('$') !== -1) {
-          return salon.price;
-        }
-        return `$${salon.price}`;
-      } else if (typeof salon.price === 'number') {
+        return salon.price.indexOf('$') !== -1 
+          ? salon.price 
+          : `$${salon.price}`;
+      }
+      // If it's a number
+      else if (typeof salon.price === 'number') {
         return `$${salon.price.toLocaleString()}`;
       }
     }
