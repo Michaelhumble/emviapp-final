@@ -190,8 +190,10 @@ export const isListingDisplayable = (listing: Job | Salon): boolean => {
   const hasImageCapability = Boolean(
     (listing.imageUrl && typeof listing.imageUrl === 'string' && listing.imageUrl.indexOf('lovable-uploads') !== -1) ||
     (listing.image && typeof listing.image === 'string' && listing.image.indexOf('lovable-uploads') !== -1) ||
-    (listing.specialties && listing.specialties.length > 0) || 
-    listing.category
+    // Safely check for specialties without assuming the property exists
+    ('specialties' in listing && Array.isArray((listing as Job).specialties) && (listing as Job).specialties.length > 0) || 
+    // Safely check for category without assuming the property exists
+    ('category' in listing)
   );
   
   // For routing purposes, jobs/opportunities need a type

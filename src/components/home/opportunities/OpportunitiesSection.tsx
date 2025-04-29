@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { Job } from '@/types/job';
 import OpportunityCard from './OpportunityCard';
 import AuthAction from '@/components/common/AuthAction';
-import { verifyOpportunityListings } from '@/utils/listingsVerification';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Building } from 'lucide-react';
@@ -23,7 +22,10 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
     // Additional validation to ensure listing has a type for proper routing
     listing.type &&
     // Ensure there's at least an imageUrl or a category/specialty for fallback images
-    (listing.imageUrl || listing.category || (listing.specialties && listing.specialties.length > 0))
+    (listing.imageUrl || 
+     (listing.specialties && listing.specialties.length > 0) || 
+     // Check for category without assuming it exists on Job type
+     'category' in listing)
   );
   
   // Log any issues with listings for debugging
