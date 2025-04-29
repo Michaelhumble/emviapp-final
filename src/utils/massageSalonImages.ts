@@ -22,6 +22,7 @@ export const MASSAGE_SPA_IMAGES = {
 /**
  * Returns true if the salon is likely a massage salon based on name and description
  * This helps automatically identify massage-related businesses
+ * ENHANCED: More comprehensive detection for better matching
  */
 export const isMassageSpa = (name: string = '', description: string = ''): boolean => {
   const combinedText = (name + ' ' + description).toLowerCase();
@@ -30,7 +31,9 @@ export const isMassageSpa = (name: string = '', description: string = ''): boole
     'massage', 'spa', 'wellness', 'relaxation', 
     'therapy', 'therapeutic', 'bodywork', 'body work',
     'deep tissue', 'swedish', 'thai massage', 'reflexology',
-    'hot stone', 'aromatherapy', 'sports massage', 'facial'
+    'hot stone', 'aromatherapy', 'sports massage', 'facial',
+    'masseuse', 'masseur', 'massage therapist', 'body treatment',
+    'day spa', 'wellness center', 'massotherapy'
   ];
   
   return massageKeywords.some(keyword => combinedText.includes(keyword));
@@ -55,6 +58,7 @@ export const isLuxuryMassageSpa = (name: string = '', description: string = ''):
 /**
  * Returns true if the listing is likely a massage therapist job based on title and description
  * This helps automatically identify massage job listings
+ * ENHANCED: More comprehensive detection for better matching
  */
 export const isMassageJob = (title: string = '', description: string = ''): boolean => {
   const combinedText = (title + ' ' + description).toLowerCase();
@@ -62,7 +66,10 @@ export const isMassageJob = (title: string = '', description: string = ''): bool
   const jobKeywords = [
     'massage therapist', 'spa therapist', 'licensed massage', 'lmt',
     'masseuse', 'masseur', 'spa position', 'wellness practitioner',
-    'hiring massage', 'massage position', 'bodywork position'
+    'hiring massage', 'massage position', 'bodywork position',
+    'massage tech', 'massage specialist', 'massage professional',
+    'spa staff', 'massage job', 'massage opportunity',
+    'therapeutic massage', 'therapist needed'
   ];
   
   return isMassageSpa(title, description) || 
@@ -73,6 +80,9 @@ export const isMassageJob = (title: string = '', description: string = ''): bool
  * Returns an appropriate image URL for a massage salon listing
  */
 export const getMassageSalonImage = (isPremium: boolean = false, randomize: boolean = true): string => {
+  // Add console log for debugging
+  console.log('Getting massage salon image', {isPremium, randomize});
+  
   // Get either luxury or modern massage images based on premium status
   const luxuryImages = [MASSAGE_SPA_IMAGES.luxuryMassage1, MASSAGE_SPA_IMAGES.luxuryMassage2];
   const modernImages = [MASSAGE_SPA_IMAGES.modernMassage1, MASSAGE_SPA_IMAGES.modernMassage2];
@@ -122,4 +132,3 @@ export const getRandomMassageSpaImage = (): string => {
   const randomIndex = Math.floor(Math.random() * images.length);
   return images[randomIndex];
 };
-

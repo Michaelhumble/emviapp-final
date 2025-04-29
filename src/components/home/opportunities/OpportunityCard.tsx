@@ -41,7 +41,7 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
   const isBrowJob = isLashBrowJob(listing.title || '', listing.description || '') && 
                    (listing.title || '').toLowerCase().includes('brow');
   
-  // NEW: Check if this is a massage job
+  // Check if this is a massage job - IMPORTANT: Improved detection
   const isMassageTherapistJob = isMassageJob(listing.title || '', listing.description || '');
   
   // Get appropriate image for the job type
@@ -51,7 +51,13 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
   } else if (isBrowJob) {
     jobImage = getLashBrowJobImage(false);
   } else if (isMassageTherapistJob) {
-    jobImage = getMassageJobImage();
+    // Ensure we're getting a massage job image
+    jobImage = getMassageJobImage(true); // Force randomization for variety
+  }
+
+  // Store the image URL in the job object for detail view consistency
+  if ((isLashJob || isBrowJob || isMassageTherapistJob) && jobImage && !listing.imageUrl) {
+    listing.imageUrl = jobImage;
   }
 
   const handleViewDetails = () => {
@@ -77,6 +83,7 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
             )}
             className="h-full w-full object-cover"
             priority={true}
+            fallbackImage={jobImage} // Add fallback for reliability
           />
         ) : (
           <Building className="h-12 w-12 text-gray-200" />

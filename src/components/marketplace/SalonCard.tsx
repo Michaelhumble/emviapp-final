@@ -6,7 +6,7 @@ import ImageWithFallback from "@/components/ui/ImageWithFallback";
 import { determineSalonCategory } from "@/utils/salonImageFallbacks";
 import { getBarberShopImage, isBarberShop } from "@/utils/barberShopImages";
 import { getNailSalonImage, isNailSalon } from "@/utils/nailSalonImages";
-import { isMassageSpa, getMassageSalonImage } from "@/utils/massageSalonImages";
+import { isMassageSpa, getMassageSalonImage, isLuxuryMassageSpa } from "@/utils/massageSalonImages";
 
 interface SalonCardProps {
   salon: {
@@ -19,8 +19,8 @@ interface SalonCardProps {
     revenue: number;
     willTrain: boolean;
     featured: boolean;
-    image?: string; // Make sure this property exists to match what we're sending
-    images?: string[]; // Keep the existing images array property
+    image?: string;
+    images?: string[];
     description?: {
       en: string;
       vi: string;
@@ -45,9 +45,19 @@ export const SalonCard = ({ salon, viewDetails }: SalonCardProps) => {
     salon.name
   );
 
+  // Check if this is specifically a massage or spa salon - direct check for better detection
+  const isMassageSalon = isMassageSpa(salon.name, salon.description?.en || '');
+  
+  // Check if this is a luxury massage salon
+  const isLuxuryMassage = isMassageSalon && isLuxuryMassageSpa(salon.name, salon.description?.en || '');
+
   // Choose an appropriate fallback image based on salon type
   const getFallbackImage = () => {
-    // First, check if this is a barbershop - priority for our test
+    // First, check if this is a massage/spa salon - PRIORITIZE massage detection
+    if (isMassageSalon || salonCategory === 'massage' || salonCategory === 'spa') {
+      return getMassageSalonImage(isLuxuryMassage || salon.featured);
+    }
+    // Then check if this is a barbershop
     if (salonCategory === 'barber' || isBarberShop(salon.name, salon.description?.en || '')) {
       return getBarberShopImage(false, salon.featured);
     }
@@ -56,13 +66,13 @@ export const SalonCard = ({ salon, viewDetails }: SalonCardProps) => {
       return "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png";
     } else if (salonCategory === 'hair') {
       return "/lovable-uploads/0c68659d-ebd4-4091-aa1a-9329f3690d68.png";
-    } else if (salonCategory === 'massage' || isMassageSpa(salon.name, salon.description?.en || '')) {
-      // NEW: Return massage salon image
-      return getMassageSalonImage(salon.featured);
     } else {
       return "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?q=80&w=800";
     }
   };
+
+  // Get the fallback image to use - make sure we have it for data consistency
+  const fallbackImage = getFallbackImage();
 
   return (
     <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg h-full flex flex-col">
@@ -72,13 +82,18 @@ export const SalonCard = ({ salon, viewDetails }: SalonCardProps) => {
             src={salon.image || ""}
             alt={salon.name} 
             className="w-full h-full object-cover"
-            fallbackImage={getFallbackImage()}
+            fallbackImage={fallbackImage}
             businessName={salon.name}
           />
         </div>
         {salon.featured && (
           <div className="absolute top-2 right-2 bg-yellow-400 text-yellow-900 text-xs px-2 py-1 rounded-full flex items-center">
             <Star className="h-3 w-3 mr-1" /> Featured
+          </div>
+        )}
+        {isMassageSalon && isLuxuryMassage && (
+          <div className="absolute top-2 left-2 bg-gradient-to-r from-blue-400 to-teal-500 text-white text-xs px-2 py-1 rounded-full">
+            Premium Spa
           </div>
         )}
       </div>

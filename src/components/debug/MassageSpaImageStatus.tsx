@@ -18,6 +18,11 @@ const MassageSpaImageStatus: React.FC = () => {
     return null;
   }
 
+  // Log massage images to console for debugging
+  console.log('Massage/spa images available:', MASSAGE_SPA_IMAGES);
+  console.log('Premium massage sample:', getMassageSalonImage(true, false));
+  console.log('Standard massage sample:', getMassageSalonImage(false, false));
+
   return (
     <div className="mb-4 p-4 border border-blue-200 rounded-md bg-blue-50 text-xs">
       <h3 className="font-bold mb-2">🔍 Massage & Spa Image Status (Dev Only)</h3>

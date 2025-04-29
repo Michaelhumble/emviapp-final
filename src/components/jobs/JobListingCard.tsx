@@ -16,6 +16,7 @@ import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
 import { isNailJob, getNailJobImage } from "@/utils/nailSalonImages";
 import { isBarberJob, getBarberJobImage } from "@/utils/barberShopImages";
+import { isMassageJob, getMassageJobImage } from "@/utils/massageSalonImages";
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 interface JobListingCardProps {
@@ -41,20 +42,27 @@ const JobListingCard = ({
   const isOwner = currentUserId === job.user_id;
   const navigate = useNavigate();
 
-  // Check if this is a barber job first
-  const isBarber = isBarberJob(job.title || '', job.description || '');
+  // First check if this is a massage job (PRIORITIZE massage detection)
+  const isMassage = isMassageJob(job.title || '', job.description || '');
+  
+  // Then check if this is a barber job
+  const isBarber = !isMassage && isBarberJob(job.title || '', job.description || '');
+  
   // Then check if this is a nail job
-  const isNail = !isBarber && isNailJob(job.title || '', job.description || '');
+  const isNail = !isMassage && !isBarber && isNailJob(job.title || '', job.description || '');
   
   // Get the appropriate image for this job
-  const jobImage = isBarber 
-    ? getBarberJobImage() 
-    : isNail 
-      ? getNailJobImage() 
-      : '';
+  let jobImage = '';
+  if (isMassage) {
+    jobImage = getMassageJobImage(true); // Force randomization for variety
+  } else if (isBarber) {
+    jobImage = getBarberJobImage();
+  } else if (isNail) {
+    jobImage = getNailJobImage();
+  }
       
   // Store the image URL in the job object for detail view consistency
-  if ((isBarber || isNail) && jobImage && !job.imageUrl) {
+  if ((isMassage || isBarber || isNail) && jobImage && !job.imageUrl) {
     job.imageUrl = jobImage;
   }
 
@@ -119,12 +127,17 @@ const JobListingCard = ({
     >
       {/* Image section - Use appropriate industry images */}
       <div className="aspect-video w-full overflow-hidden">
-        {isBarber || isNail ? (
+        {isMassage || isBarber || isNail ? (
           <ImageWithFallback
             src={job.imageUrl || jobImage}
-            alt={job.title || (isBarber ? "Barber Job" : "Nail Technician Job")}
+            alt={job.title || (
+              isMassage ? "Massage Therapist Job" :
+              isBarber ? "Barber Job" : 
+              "Nail Technician Job"
+            )}
             className="w-full h-full object-cover"
             priority={true}
+            fallbackImage={jobImage} // Add fallback for reliability
           />
         ) : (
           <div className="bg-gray-100 h-full w-full flex items-center justify-center">
