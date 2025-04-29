@@ -41,13 +41,14 @@ const HeroContent = ({
     >
       {/* Main hero content */}
       <div className="space-y-6">
+        {/* IMPORTANT: This title must remain exactly as written - core to EmviApp identity */}
         <motion.h1 
-          className={`font-serif font-bold tracking-tight text-white ${isMobile ? 'text-4xl' : 'text-6xl'}`} // Adjusted font size for mobile
+          className={`font-serif font-bold tracking-tight text-white ${isMobile ? 'text-4xl md:text-5xl' : 'text-6xl'}`} // Improved responsive font sizing
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
         >
-          {currentSlide.title || "Beauty Industry's First AI-Powered Platform"}
+          The Beauty Industry's Missing Piece — We Just Built It.
         </motion.h1>
         
         <motion.p 

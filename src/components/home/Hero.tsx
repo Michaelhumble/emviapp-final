@@ -1,10 +1,7 @@
 
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "framer-motion";
-import { ChevronRight } from "lucide-react";
 import { heroImages } from "./hero/heroData";
 import HeroCarousel from "./hero/HeroCarousel";
 import HeroContent from "./hero/HeroContent";
@@ -57,10 +54,10 @@ const Hero = () => {
       className="relative overflow-hidden"
       style={{
         width: '100%',
-        // Modified: Use CSS calc for height to ensure it works properly on mobile
-        height: isMobile ? '100vh' : `${viewportHeight}px`,
+        // Use full viewport height with improved handling for all device sizes
+        height: '100vh',
         maxWidth: '100vw',
-        maxHeight: isMobile ? '100vh' : `${viewportHeight}px`, // Adjusted for mobile
+        maxHeight: '100vh',
         position: 'relative',
         margin: 0,
         padding: 0,
