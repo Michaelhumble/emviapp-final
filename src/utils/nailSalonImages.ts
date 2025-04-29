@@ -7,17 +7,17 @@
 // Define path constants for the uploaded nail salon images
 const NAIL_SALON_IMAGES = {
   // Main featured images
-  luxury: "/lovable-uploads/e6f2407e-4402-42a5-b1eb-28761419c0cb.png", // Luxury nail salon with elegant displays
-  premium1: "/lovable-uploads/72875e23-d749-4521-989d-4ff82423de01.png", // Premium nail salon setup
-  premium2: "/lovable-uploads/3ef97ce8-eb62-44e0-842c-d10c54d23d81.png", // Another premium nail salon view
-  modern1: "/lovable-uploads/41732c75-4b6f-4629-8848-cdca464f4f6d.png", // Modern nail salon design
-  modern2: "/lovable-uploads/6fb96978-d78d-40c5-9ab7-59790e7d5e2d.png", // Another modern nail salon view
-  professional: "/lovable-uploads/9bdbde32-0578-4964-a428-25155aa09bca.png", // Professional nail salon setting
-  elegantWhite: "/lovable-uploads/2e44e40e-0338-42f9-add6-97d40eada906.png", // Elegant white-themed nail salon
-  vip: "/lovable-uploads/df6670ab-0854-4472-b6db-0c0e9c578a0f.png", // VIP nail salon experience
-  retail: "/lovable-uploads/4a4cb1e0-ae11-44c9-8c18-f77c351f9b18.png", // Nail salon with retail display
-  workstation: "/lovable-uploads/b6193e3c-9320-4f9f-8cd8-c794545bf86e.png", // Close-up of nail salon workstation
-  luxuryLounge: "/lovable-uploads/c980bff9-c395-42ac-aa18-3f4784c9bc6d.png", // Luxury nail salon lounge area
+  luxury: "/nail-salon-luxury.jpg", 
+  premium1: "/nail-salon-premium1.jpg", 
+  premium2: "/nail-salon-premium2.jpg", 
+  modern1: "/nail-salon-modern1.jpg", 
+  modern2: "/nail-salon-modern2.jpg", 
+  professional: "/nail-salon-professional.jpg", 
+  elegantWhite: "/nail-salon-elegant-white.jpg", 
+  vip: "/nail-salon-vip.jpg", 
+  retail: "/nail-salon-retail.jpg", 
+  workstation: "/nail-salon-workstation.jpg", 
+  luxuryLounge: "/nail-salon-luxury-lounge.jpg", 
 };
 
 /**
