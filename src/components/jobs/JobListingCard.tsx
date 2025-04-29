@@ -52,6 +52,11 @@ const JobListingCard = ({
     : isNail 
       ? getNailJobImage() 
       : '';
+      
+  // Store the image URL in the job object for detail view consistency
+  if ((isBarber || isNail) && jobImage && !job.imageUrl) {
+    job.imageUrl = jobImage;
+  }
 
   const getContactMessage = () => {
     return isVietnamese 
@@ -116,7 +121,7 @@ const JobListingCard = ({
       <div className="aspect-video w-full overflow-hidden">
         {isBarber || isNail ? (
           <ImageWithFallback
-            src={jobImage}
+            src={job.imageUrl || jobImage}
             alt={job.title || (isBarber ? "Barber Job" : "Nail Technician Job")}
             className="w-full h-full object-cover"
             priority={true}

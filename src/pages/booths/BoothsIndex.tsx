@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import ImageWithFallback from '@/components/ui/ImageWithFallback';
+import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 import { MapPin, DollarSign } from 'lucide-react';
 import { getAllBooths } from '@/utils/featuredContent';
 import { Job } from '@/types/job';
@@ -28,6 +28,25 @@ const BoothsIndex = () => {
       try {
         // Use our premium booths data
         const premiumBooths = getAllBooths();
+        
+        // Assign appropriate images to each booth
+        premiumBooths.forEach(booth => {
+          // Determine if a booth is for barber services - check this first
+          const isBarber = isBarberJob(booth.title || '', booth.description || '') || 
+                         (booth.specialties?.some(s => s.toLowerCase().includes('barber')) ?? false);
+                         
+          // Determine if a booth is for nail services - check second
+          const isNail = !isBarber && (isNailJob(booth.title || '', booth.description || '') || 
+                       (booth.specialties?.some(s => s.toLowerCase().includes('nail')) ?? false));
+                       
+          // Assign and store appropriate image
+          if (isBarber) {
+            booth.imageUrl = getBarberBoothImage();
+          } else if (isNail) {
+            booth.imageUrl = getNailBoothImage();
+          }
+        });
+        
         setBooths(premiumBooths);
         setLoading(false);
       } catch (error) {
@@ -77,7 +96,14 @@ const BoothsIndex = () => {
               return (
                 <Card key={booth.id} className="overflow-hidden h-full flex flex-col">
                   <div className="aspect-video w-full overflow-hidden">
-                    {isBarber ? (
+                    {booth.imageUrl ? (
+                      <ImageWithFallback
+                        src={booth.imageUrl}
+                        alt={booth.title || (isBarber ? "Barber Booth Rental" : isNail ? "Nail Booth Rental" : "Booth Rental")}
+                        className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                        priority={true}
+                      />
+                    ) : isBarber ? (
                       <ImageWithFallback
                         src={getBarberBoothImage()}
                         alt={booth.title || "Barber Booth Rental"}

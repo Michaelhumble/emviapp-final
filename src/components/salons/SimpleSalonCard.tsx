@@ -9,6 +9,7 @@ import { Salon } from '@/types/salon';
 import AuthAction from '@/components/common/AuthAction';
 import { useAuth } from '@/context/auth';
 import { isNailSalon, getNailSalonImage } from '@/utils/nailSalonImages';
+import { isBarberShop, getBarberShopImage } from '@/utils/barberShopImages';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 
 interface SalonCardProps {
@@ -36,16 +37,21 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
   const buttonText = salon.is_vietnamese_listing ? "Xem Chi Tiết" : "View Details";
   const isVietnamese = salon.is_vietnamese_listing;
 
-  // Determine if this is a nail salon to use our high-quality nail images
-  const isNail = isNailSalon(salon.name, salon.description);
+  // Check if this is a barbershop first (prioritize barber category)
+  const isBarber = isBarberShop(salon.name, salon.description);
+  // Then check if this is a nail salon
+  const isNail = !isBarber && isNailSalon(salon.name, salon.description);
   
   // Get the appropriate image for this salon
-  const salonImage = isNail 
-    ? getNailSalonImage(isVietnamese, salon.isPremium, salon.isPremium) 
-    : '';
+  let salonImage;
+  if (isBarber) {
+    salonImage = getBarberShopImage(salon.isPremium, salon.isPremium);
+  } else if (isNail) {
+    salonImage = getNailSalonImage(isVietnamese, salon.isPremium, salon.isPremium);
+  }
 
   // IMPORTANT: Store the selected image URL in the salon object so it can be accessed in detail view
-  if (isNail && salonImage) {
+  if ((isBarber || isNail) && salonImage) {
     salon.imageUrl = salonImage;
   }
 
@@ -56,7 +62,16 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
   return (
     <Card className={`overflow-hidden group transition-shadow duration-300 ${isVietnamese ? 'hover:shadow-purple-100 shadow-sm border-purple-100' : 'hover:shadow-md'}`}>
       <div className="relative">
-        {isNail ? (
+        {isBarber ? (
+          <div className="h-48 overflow-hidden">
+            <ImageWithFallback
+              src={salonImage}
+              alt={title || "Barbershop"}
+              className="h-full w-full object-cover"
+              priority={true}
+            />
+          </div>
+        ) : isNail ? (
           <div className="h-48 overflow-hidden">
             <ImageWithFallback
               src={salonImage}
@@ -70,7 +85,12 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-        {isVietnamese && (
+        {isBarber && (
+          <div className="absolute top-3 left-3">
+            <Badge className="bg-slate-600 hover:bg-slate-700 text-white">Barbershop</Badge>
+          </div>
+        )}
+        {isVietnamese && !isBarber && (
           <div className="absolute top-3 left-3">
             <Badge className="bg-purple-600 hover:bg-purple-700 text-white">Tiệm Nail</Badge>
           </div>
@@ -110,13 +130,13 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
             onAction={handleViewContact} 
             redirectPath={`/salons/${salon.id}`}
             authenticatedContent={
-              <div className={`text-sm py-2 px-3 rounded border mb-4 flex items-center gap-2 ${isVietnamese ? 'bg-purple-50 border-purple-200 text-purple-900' : 'bg-gray-50 border-gray-100 text-gray-600'}`}>
+              <div className={`text-sm py-2 px-3 rounded border mb-4 flex items-center gap-2 ${isVietnamese ? 'bg-purple-50 border-purple-200 text-purple-900' : isBarber ? 'bg-slate-50 border-slate-200 text-slate-900' : 'bg-gray-50 border-gray-100 text-gray-600'}`}>
                 <Phone className="h-4 w-4" />
                 <span>{salon.contact_info.phone}</span>
               </div>
             }
             fallbackContent={
-              <div className={`text-sm py-2 px-3 rounded border mb-4 flex items-center gap-2 cursor-pointer ${isVietnamese ? 'bg-purple-50 border-purple-200 text-purple-900 hover:bg-purple-100' : 'bg-gray-50 border-gray-100 text-gray-600 hover:bg-gray-100'}`}>
+              <div className={`text-sm py-2 px-3 rounded border mb-4 flex items-center gap-2 cursor-pointer ${isVietnamese ? 'bg-purple-50 border-purple-200 text-purple-900 hover:bg-purple-100' : isBarber ? 'bg-slate-50 border-slate-200 text-slate-900 hover:bg-slate-100' : 'bg-gray-50 border-gray-100 text-gray-600 hover:bg-gray-100'}`}>
                 <Phone className="h-4 w-4" />
                 <span>{isVietnamese ? "Đăng nhập để xem liên hệ" : "Sign in to view contact"}</span>
               </div>
@@ -126,7 +146,7 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
 
         <Link to={`/salons/${salon.id}`}>
           <Button 
-            className={`w-full ${isVietnamese ? 'bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900' : 'bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900'} text-white`}
+            className={`w-full ${isBarber ? 'bg-gradient-to-r from-slate-700 to-slate-900 hover:from-slate-800 hover:to-slate-950' : isVietnamese ? 'bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900' : 'bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900'} text-white`}
           >
             {buttonText}
           </Button>
