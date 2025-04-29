@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Search, Frown, Star } from "lucide-react";
 import Layout from "@/components/layout/Layout";

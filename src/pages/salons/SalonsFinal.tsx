@@ -19,7 +19,7 @@ const SalonsFinalsPage = () => {
         />
       </Helmet>
 
-      {/* Premium Banner */}
+      {/* New Premium Banner */}
       <PremiumSalonBanner />
 
       <div className="container mx-auto px-4 py-12">
