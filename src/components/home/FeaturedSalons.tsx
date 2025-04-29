@@ -73,6 +73,6 @@ const FeaturedSalons = () => {
       </div>
     </section>
   );
-};
+}
 
 export default FeaturedSalons;
