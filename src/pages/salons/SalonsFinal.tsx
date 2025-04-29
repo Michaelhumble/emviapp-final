@@ -39,6 +39,19 @@ const SalonsFinalsPage = () => {
             </div>
           </div>
 
+          {/* Premium Listings Section - Immediately below the banner */}
+          <div className="mb-16">
+            <h2 className="font-playfair text-3xl md:text-4xl font-bold mb-6">
+              Premium Salon Listings
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {salonListings.map((salon) => (
+                <ValidatedSalonCard key={salon.id} salon={salon} listingType="salon" />
+              ))}
+            </div>
+          </div>
+
           <div className="flex flex-wrap items-center gap-4 mb-8">
             <Button variant="outline" className="rounded-full">
               All Locations
@@ -55,12 +68,6 @@ const SalonsFinalsPage = () => {
             <Button variant="outline" className="rounded-full">
               Recently Added
             </Button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {salonListings.map((salon) => (
-              <ValidatedSalonCard key={salon.id} salon={salon} listingType="salon" />
-            ))}
           </div>
           
           <div className="mt-16 text-center">
