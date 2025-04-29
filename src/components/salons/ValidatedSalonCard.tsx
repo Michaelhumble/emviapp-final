@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Salon } from '@/types/salon';
 import { Job } from '@/types/job';
@@ -33,7 +32,7 @@ const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({
     imageUrl: salon.image || '',
     description: salon.description || '',
     image: salon.image || '',
-    featured: salon.is_featured || false
+    featured: 'is_featured' in salon ? salon.is_featured : false
   } as Salon : {
     ...salon as Salon,
     // Ensure price is a number
