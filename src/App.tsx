@@ -14,6 +14,8 @@ import { Toaster } from "@/components/ui/toaster";
 import GeneralErrorBoundary from '@/components/error-handling/GeneralErrorBoundary';
 import SimpleLoadingFallback from '@/components/error-handling/SimpleLoadingFallback';
 import RouteLogger from '@/components/common/RouteLogger';
+import StableSalonPage from "@/pages/salons/StableSalonPage";
+import SalonMarketplace from "@/pages/SalonMarketplace";
 
 function App() {
   const location = useLocation();
@@ -44,6 +46,8 @@ function App() {
                   ))}
                   <Route path="/dashboard/artist/booking-calendar" element={<BookingCalendar />} />
                   <Route path="/dashboard/artist/inbox" element={<ArtistInbox />} />
+                  <Route path="/salons" element={<StableSalonPage />} />
+                  <Route path="/salons/marketplace" element={<SalonMarketplace />} />
                 </Routes>
               </Suspense>
               <Toaster />
