@@ -51,6 +51,7 @@ export const ImageWithFallback = ({
   }, [src]);
   
   const handleError = () => {
+    console.log(`Image error loading: ${src}`);
     if (!hasErrored) {
       setHasErrored(true);
     }
@@ -58,6 +59,7 @@ export const ImageWithFallback = ({
   };
   
   const handleLoad = () => {
+    console.log(`Image loaded successfully: ${src}`);
     setIsLoading(false);
   };
   
