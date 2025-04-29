@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { salonListings } from '@/data/salonData';
+import { salonListings, vietnameseSalonListings } from '@/data/salonData';
 import ValidatedSalonCard from '@/components/salons/ValidatedSalonCard';
 import PremiumSalonBanner from '@/components/salons/PremiumSalonBanner';
 
@@ -45,6 +45,26 @@ const SalonsFinalsPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {salonListings.map((salon) => (
                 <ValidatedSalonCard key={salon.id} salon={salon} listingType="salon" />
+              ))}
+            </div>
+          </div>
+
+          {/* Vietnamese Nail Listings Section - Restored section */}
+          <div className="mb-16 border-t pt-12">
+            <h2 className="font-playfair text-3xl md:text-4xl font-bold mb-2">
+              💅 Tin Rao Vặt Tiệm Nail – Cộng Đồng Người Việt
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Vietnamese nail salon listings for our community
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {vietnameseSalonListings.map((salon) => (
+                <ValidatedSalonCard 
+                  key={salon.id} 
+                  salon={salon} 
+                  listingType="vietnamese-salon" 
+                />
               ))}
             </div>
           </div>
