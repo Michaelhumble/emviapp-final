@@ -40,7 +40,7 @@ const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
   const getFormattedPrice = () => {
     // Use the asking_price field if available (for consistency with the Job type)
     if (salon.asking_price) {
-      // If already formatted, return as is
+      // If already formatted, return as is - with proper type guard
       if (typeof salon.asking_price === 'string' && salon.asking_price.indexOf('$') !== -1) {
         return salon.asking_price;
       }
