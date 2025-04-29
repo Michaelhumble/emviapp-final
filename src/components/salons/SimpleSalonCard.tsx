@@ -19,24 +19,24 @@ interface SimpleSalonCardProps {
 const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  // Determine appropriate salon image
+  // Determine appropriate salon image - PRESERVE ORIGINAL IMAGES
   const getSalonImage = () => {
     try {
-      // Check if imageUrl exists and is a string
-      if (salon.imageUrl && typeof salon.imageUrl === 'string' && salon.imageUrl.indexOf('lovable-uploads') !== -1) {
-        return salon.imageUrl;
-      }
-      
-      // Check if image exists and is a string
-      if (salon.image && typeof salon.image === 'string' && salon.image.indexOf('lovable-uploads') !== -1) {
+      // Always prioritize existing valid images - DO NOT OVERWRITE
+      if (salon.image && typeof salon.image === 'string' && salon.image.trim() !== '') {
         return salon.image;
       }
       
-      // Otherwise determine appropriate category and get default image
+      if (salon.imageUrl && typeof salon.imageUrl === 'string' && salon.imageUrl.trim() !== '') {
+        return salon.imageUrl;
+      }
+      
+      // Only use fallbacks if truly no image is available
       const category = salon.category || determineSalonCategory(
         safeGetListingProperty(salon, 'description', ''),
         safeGetListingProperty(salon, 'name', '')
       );
+      
       return getDefaultSalonImage(category, salon.isPremium || false);
     } catch (error) {
       console.error('Error getting salon image:', error);

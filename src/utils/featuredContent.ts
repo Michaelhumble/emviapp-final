@@ -1,4 +1,3 @@
-
 import { Job } from '@/types/job';
 import { Salon } from '@/types/salon';
 import { sampleSalons } from '@/data/sampleSalons';
@@ -74,6 +73,7 @@ export const getSalonById = (id: string): Salon | undefined => {
 /**
  * Convert a Salon object to a Job object
  * This ensures proper type compatibility when displaying salon details with job components
+ * IMPORTANT: This preserves all original image URLs
  */
 export const getSalonByIdAsJob = (id: string): Job | null => {
   const salon = getSalonById(id);
@@ -88,7 +88,11 @@ export const getSalonByIdAsJob = (id: string): Job | null => {
     created_at: salon.created_at || new Date().toISOString(),
     description: salon.description || '',
     price: salon.price?.toString() || '',
-    image: salon.image || salon.imageUrl || '', // Preserve image URL if available
+    
+    // PRESERVE ORIGINAL IMAGES - Do not override or provide defaults
+    // This ensures we keep the original image URLs
+    image: salon.image || salon.imageUrl || '',
+    
     salon_features: salon.features || [],
     contact_info: {
       owner_name: salon.contact_info?.owner_name || "Salon Owner",
@@ -105,6 +109,7 @@ export const getSalonByIdAsJob = (id: string): Job | null => {
  * Get all featured salons, optionally limited by count
  */
 export const getFeaturedSalons = (count?: number): Salon[] => {
+  // Return unmodified featured salons - preserve all image URLs
   return count ? featuredSalons.slice(0, count) : featuredSalons;
 };
 
@@ -112,6 +117,7 @@ export const getFeaturedSalons = (count?: number): Salon[] => {
  * Get all salons for sale, optionally limited by count
  */
 export const getSalonsForSale = (count?: number): Salon[] => {
+  // Return unmodified salons for sale - preserve all image URLs
   return count ? salonsForSale.slice(0, count) : salonsForSale;
 };
 

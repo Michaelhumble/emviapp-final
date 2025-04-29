@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Salon } from '@/types/salon';
 import { Job } from '@/types/job';
@@ -22,16 +23,16 @@ const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({
   const [isValid, setIsValid] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Convert Job to Salon if needed
+  // Convert Job to Salon if needed - PRESERVE IMAGE URLs
   const convertedSalon: Salon = 'company' in salon ? {
     id: salon.id,
     name: salon.company || salon.title || 'Unnamed Salon',
     location: salon.location || '',
     price: typeof salon.price === 'number' ? salon.price : 
            typeof salon.price === 'string' ? parseFloat(salon.price) || 0 : 0,
-    imageUrl: salon.image || '',
+    imageUrl: salon.image || '', // Preserve original image
     description: salon.description || '',
-    image: salon.image || '',
+    image: salon.image || '', // Preserve original image
     featured: 'is_featured' in salon ? salon.is_featured : false
   } as Salon : {
     ...salon as Salon,
@@ -89,7 +90,7 @@ const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({
     );
   }
   
-  // If valid, render the actual salon card
+  // If valid, render the actual salon card - WITH ORIGINAL IMAGES
   return <SimpleSalonCard salon={convertedSalon} />;
 };
 

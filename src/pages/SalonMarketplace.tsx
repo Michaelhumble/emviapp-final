@@ -18,7 +18,7 @@ const SalonMarketplace = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { user } = useAuth();
 
-  // Use the salon data with original images preserved
+  // Use the salon data with original images preserved - DON'T MODIFY IMAGES
   const enhancedSalons = salons;
 
   const filteredSalons = enhancedSalons.filter(salon => {
@@ -50,6 +50,7 @@ const SalonMarketplace = () => {
   });
 
   const viewSalonDetails = (salon: Salon) => {
+    // Pass the salon with original image intact
     setSelectedSalon(salon);
     setIsDialogOpen(true);
   };

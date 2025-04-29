@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { CSSProperties } from 'react';
 import { getRandomNailSalonImage } from '@/utils/nailSalonImages';
@@ -86,7 +87,7 @@ export const ImageWithFallback = ({
     setHasErrored(false);
     setRetryCount(0);
     
-    // If src is empty or invalid, show fallback immediately
+    // If src is empty, undefined or null, show fallback immediately
     if (!src || src === '') {
       setImgSrc(getBestFallback());
       setIsLoading(false);
@@ -108,7 +109,7 @@ export const ImageWithFallback = ({
       return;
     }
     
-    // Use the provided source
+    // Use the provided source - ALWAYS respect valid URLs
     setImgSrc(src);
   }, [src, fallbackImage, businessName, alt]);
   

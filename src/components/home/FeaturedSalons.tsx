@@ -26,6 +26,7 @@ const FeaturedSalons = () => {
   const [salons, setSalons] = useState<Salon[]>([]);
   
   useEffect(() => {
+    // Get featured salons but DO NOT modify their image URLs
     const featuredSalons = getFeaturedSalons(3);
     setSalons(featuredSalons);
   }, []);
