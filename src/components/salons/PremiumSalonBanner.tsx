@@ -14,21 +14,20 @@ const PremiumSalonBanner = ({ className }: PremiumSalonBannerProps) => {
   useEffect(() => {
     // Set visible after a short delay for animation purposes
     const timer = setTimeout(() => setIsVisible(true), 100);
-    console.log('PremiumSalonBanner mounted with direct public path');
+    console.log('PremiumSalonBanner mounted with correct public path');
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <div className={`relative w-full ${className}`} style={{ height: 'clamp(360px, 50vw, 450px)' }}>
-      {/* Banner image with direct public path */}
+      {/* Banner image with correct public path */}
       <div 
         className="absolute inset-0"
-        style={{ 
-          backgroundImage: "url('/public/generated-14.png')",
+        style={{
+          backgroundImage: "url('/salon-banner.png')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          zIndex: 0 
+          backgroundRepeat: 'no-repeat'
         }}
       />
       
