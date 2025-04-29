@@ -99,24 +99,24 @@ export const getSalonByIdAsJob = (id: string): Job | null => {
 };
 
 /**
- * Get all featured salons
+ * Get all featured salons, optionally limited by count
  */
-export const getFeaturedSalons = (): Salon[] => {
-  return featuredSalons;
+export const getFeaturedSalons = (count?: number): Salon[] => {
+  return count ? featuredSalons.slice(0, count) : featuredSalons;
 };
 
 /**
- * Get all salons for sale
+ * Get all salons for sale, optionally limited by count
  */
-export const getSalonsForSale = (): Salon[] => {
-  return salonsForSale;
+export const getSalonsForSale = (count?: number): Salon[] => {
+  return count ? salonsForSale.slice(0, count) : salonsForSale;
 };
 
 /**
- * Get featured job listings
+ * Get featured job listings, optionally limited by count
  */
-export const getFeaturedJobs = (): Job[] => {
-  return featuredJobs;
+export const getFeaturedJobs = (count?: number): Job[] => {
+  return count ? featuredJobs.slice(0, count) : featuredJobs;
 };
 
 /**
