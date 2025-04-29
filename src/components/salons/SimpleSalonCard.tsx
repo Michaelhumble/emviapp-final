@@ -42,8 +42,8 @@ const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
     if (salon.asking_price !== undefined && salon.asking_price !== null) {
       // Handle string type
       if (typeof salon.asking_price === 'string') {
-        // Check if already has $ symbol
-        return salon.asking_price.includes('$') ? 
+        // Check if already has $ symbol using a safe method
+        return salon.asking_price.indexOf('$') >= 0 ? 
           salon.asking_price : 
           `$${salon.asking_price}`;
       }
@@ -57,8 +57,8 @@ const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
     if (salon.price !== undefined && salon.price !== null) {
       // Handle string type
       if (typeof salon.price === 'string') {
-        // Check if already has $ symbol
-        return salon.price.includes('$') ? 
+        // Check if already has $ symbol using a safe method
+        return salon.price.indexOf('$') >= 0 ? 
           salon.price : 
           `$${salon.price}`;
       }
