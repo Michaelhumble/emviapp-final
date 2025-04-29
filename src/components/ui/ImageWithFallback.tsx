@@ -34,16 +34,23 @@ export const ImageWithFallback = ({
   const [imgSrc, setImgSrc] = useState<string>('');
   const [hasErrored, setHasErrored] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
+  const maxRetries = 2;
+  
+  // Default fallback for nail salon/beauty industry images
+  const defaultFallback = "/lovable-uploads/e6f2407e-4402-42a5-b1eb-28761419c0cb.png";
   
   // Reset loading state and set initial source when component mounts or source changes
   useEffect(() => {
     setIsLoading(true);
     setHasErrored(false);
     
-    // If src is empty or invalid, show clean empty state or fallback immediately
+    // If src is empty or invalid, show fallback immediately
     if (!src || src === '') {
       if (fallbackImage) {
         setImgSrc(fallbackImage);
+      } else if (defaultFallback) {
+        setImgSrc(defaultFallback);
       } else {
         setHasErrored(true);
       }
@@ -51,13 +58,34 @@ export const ImageWithFallback = ({
       return;
     }
     
+    // Use the provided source
     setImgSrc(src);
+    
+    // Log image source for debugging
+    console.log(`Loading image: ${src}`);
   }, [src, fallbackImage]);
   
   const handleError = () => {
-    console.log(`Image error loading: ${src}`);
+    console.log(`Image error loading: ${imgSrc}`);
+    
+    // Try to reload the image once
+    if (retryCount < maxRetries) {
+      console.log(`Retrying image load (${retryCount + 1}/${maxRetries}): ${imgSrc}`);
+      setRetryCount(retryCount + 1);
+      // Add cache busting parameter
+      const cacheBuster = `?retry=${retryCount + 1}&t=${new Date().getTime()}`;
+      setImgSrc(`${src}${cacheBuster}`);
+      return;
+    }
+    
+    // After retries, use fallback
     if (fallbackImage && !hasErrored) {
+      console.log(`Using fallback image: ${fallbackImage}`);
       setImgSrc(fallbackImage);
+      setIsLoading(false);
+    } else if (defaultFallback && !hasErrored) {
+      console.log(`Using default fallback image: ${defaultFallback}`);
+      setImgSrc(defaultFallback);
       setIsLoading(false);
     } else {
       setHasErrored(true);
@@ -70,8 +98,8 @@ export const ImageWithFallback = ({
     setIsLoading(false);
   };
   
-  // If no image is available and no fallback, return empty div with proper dimensions
-  if (hasErrored && !fallbackImage) {
+  // If no image is available after all attempts, return empty div with proper dimensions
+  if (hasErrored && !fallbackImage && !defaultFallback) {
     return (
       <div 
         className={`bg-gray-100 flex items-center justify-center ${className}`}
@@ -84,7 +112,7 @@ export const ImageWithFallback = ({
   return (
     <div className="relative overflow-hidden w-full h-full">
       {isLoading && (
-        <div className="absolute inset-0 bg-gray-100" />
+        <div className="absolute inset-0 bg-gray-100 animate-pulse" />
       )}
       <img 
         src={imgSrc}
@@ -95,6 +123,12 @@ export const ImageWithFallback = ({
         onError={handleError}
         onLoad={handleLoad}
       />
+      
+      {showPremiumBadge && !isLoading && (
+        <div className="absolute top-2 right-2 bg-gradient-to-r from-amber-400 to-yellow-300 px-2 py-1 rounded text-xs font-medium text-amber-900 shadow-sm">
+          Premium
+        </div>
+      )}
     </div>
   );
 };

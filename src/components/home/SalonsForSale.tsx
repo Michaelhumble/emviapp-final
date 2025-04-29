@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { getNailSalonImage } from "@/utils/nailSalonImages";
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
-// Sample data for salons for sale
+// Sample data for salons for sale - ensuring all have isNail property set to true
 const salonsForSale = [
   {
     id: "s1",
@@ -17,7 +17,8 @@ const salonsForSale = [
     location: "San Francisco, CA",
     price: "$175,000",
     description: "Established nail salon with loyal clientele and premium location",
-    isNail: true
+    isNail: true,
+    imageIndex: 0
   },
   {
     id: "s2",
@@ -25,7 +26,8 @@ const salonsForSale = [
     location: "Los Angeles, CA",
     price: "$250,000",
     description: "Upscale full-service beauty salon with modern equipment",
-    isNail: true
+    isNail: true,
+    imageIndex: 1
   },
   {
     id: "s3",
@@ -33,7 +35,8 @@ const salonsForSale = [
     location: "Miami, FL",
     price: "$130,000",
     description: "Turnkey nail salon operation with growing customer base",
-    isNail: true
+    isNail: true,
+    imageIndex: 2
   }
 ];
 
@@ -65,17 +68,13 @@ const SalonsForSale = () => {
             >
               <Card className="overflow-hidden h-full border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
                 <div className="h-48 overflow-hidden">
-                  {salon.isNail ? (
-                    <ImageWithFallback
-                      src={getNailSalonImage(false, index === 0, index === 1)}
-                      alt={salon.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="h-full bg-gray-100 flex items-center justify-center">
-                      <Building className="h-12 w-12 text-gray-300" />
-                    </div>
-                  )}
+                  {/* Always use nail salon images with specific parameters to ensure variety */}
+                  <ImageWithFallback
+                    src={getNailSalonImage(false, index === 0, index === 1)}
+                    alt={salon.name}
+                    className="w-full h-full object-cover"
+                    priority={true} // Load images with priority
+                  />
                 </div>
                 
                 <CardContent className="p-6">
