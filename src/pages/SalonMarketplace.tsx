@@ -19,7 +19,7 @@ const SalonMarketplace = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    console.log('SalonMarketplace mounted - should display banner');
+    console.log('SalonMarketplace mounted - banner should display at top');
   }, []);
 
   // Use salon data with all original images preserved
@@ -102,10 +102,8 @@ const SalonMarketplace = () => {
 
   return (
     <Layout>
-      {/* Premium Salon Banner - explicitly rendered with console log */}
-      <div className="w-full">
-        <PremiumSalonBanner />
-      </div>
+      {/* Premium Salon Banner - keep at the top */}
+      <PremiumSalonBanner />
       
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-serif font-bold mb-2 text-center">Salon Marketplace</h1>

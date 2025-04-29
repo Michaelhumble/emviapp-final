@@ -15,7 +15,6 @@ import AIPowerhouse from "@/components/home/AIPowerhouse";
 import MissingPieceSection from "@/components/home/missing-piece";
 import OpportunitiesSection from "@/components/home/opportunities/OpportunitiesSection";
 import { useEffect } from "react";
-import PremiumSalonBanner from "@/components/salons/PremiumSalonBanner";
 
 const HomePage: React.FC = () => {
   useEffect(() => {
@@ -32,8 +31,7 @@ const HomePage: React.FC = () => {
         />
       </Helmet>
       
-      {/* Show the premium salon banner on the homepage too */}
-      <PremiumSalonBanner />
+      {/* Removed the PremiumSalonBanner from homepage */}
       
       <Hero />
       <TrustFirstPanel />

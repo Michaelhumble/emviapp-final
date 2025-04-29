@@ -14,19 +14,18 @@ const PremiumSalonBanner = ({ className }: PremiumSalonBannerProps) => {
   useEffect(() => {
     // Set visible after a short delay for animation purposes
     const timer = setTimeout(() => setIsVisible(true), 100);
+    // Log when the banner renders
+    console.log('PremiumSalonBanner rendering...');
     return () => clearTimeout(timer);
   }, []);
 
-  // Explicitly console log when the component renders
-  console.log('PremiumSalonBanner rendering...');
-
   return (
-    <div className={`relative w-full ${className}`} style={{ height: '450px' }}>
+    <div className={`relative w-full overflow-hidden ${className}`} style={{ height: '450px' }}>
       {/* Banner image - Using an absolute path to the uploaded image */}
       <div 
         className="absolute inset-0 bg-cover bg-center z-0"
         style={{ 
-          backgroundImage: 'url(/lovable-uploads/76336ed2-3f8f-43b0-9674-769001a6f38f.png)',
+          backgroundImage: 'url(/lovable-uploads/b60e5b1c-2863-45b5-b1c4-dfaa23deb96c.png)',
           backgroundSize: 'cover'
         }}
       />
@@ -44,7 +43,7 @@ const PremiumSalonBanner = ({ className }: PremiumSalonBannerProps) => {
             animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 20 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Premium Salons for Sale — Ready to Own
+            List Your Salon with Confidence
           </motion.h1>
           
           {/* Subheadline with animation */}

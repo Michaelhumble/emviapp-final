@@ -11,7 +11,7 @@ import PremiumSalonBanner from '@/components/salons/PremiumSalonBanner';
 const SalonsFinalsPage = () => {
   
   useEffect(() => {
-    console.log('SalonsFinalsPage mounted - should display banner');
+    console.log('SalonsFinalsPage mounted - banner should appear at the top');
   }, []);
 
   return (
