@@ -23,7 +23,7 @@ const LuxurySalonBanner = () => {
       <div 
         className="absolute inset-0"
         style={{
-          backgroundImage: 'url(/lovable-uploads/f3e9a4cf-99bf-41d9-8ade-44e05666a135.png)',
+          backgroundImage: 'url(/lovable-uploads/bae6e6d3-5a06-4254-a5ef-cb37a9fc8c44.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
