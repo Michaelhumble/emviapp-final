@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-// Remove the direct import and use a string path instead
 
 interface PremiumSalonBannerProps {
   className?: string;
@@ -15,17 +14,20 @@ const PremiumSalonBanner = ({ className }: PremiumSalonBannerProps) => {
   useEffect(() => {
     // Set visible after a short delay for animation purposes
     const timer = setTimeout(() => setIsVisible(true), 100);
-    console.log('PremiumSalonBanner mounted with image URL');
+    console.log('PremiumSalonBanner mounted with direct public path');
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <div className={`relative w-full ${className}`} style={{ height: 'clamp(360px, 50vw, 450px)' }}>
-      {/* Banner image - use a string path instead of an imported module */}
+      {/* Banner image with direct public path */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        className="absolute inset-0"
         style={{ 
-          backgroundImage: 'url(/lovable-uploads/generated-14.png)', 
+          backgroundImage: "url('/public/generated-14.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
           zIndex: 0 
         }}
       />
