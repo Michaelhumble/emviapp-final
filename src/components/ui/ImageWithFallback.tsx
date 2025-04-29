@@ -10,6 +10,7 @@ export interface ImageWithFallbackProps {
   businessName?: string;
   style?: CSSProperties;
   loading?: "eager" | "lazy";
+  objectFit?: "cover" | "contain" | "fill" | "none" | "scale-down";
 }
 
 /**
@@ -23,7 +24,8 @@ const ImageWithFallback = ({
   className = '',
   businessName,
   style,
-  loading = 'lazy'
+  loading = 'lazy',
+  objectFit = 'cover'
 }: ImageWithFallbackProps) => {
   const [imgSrc, setImgSrc] = useState(src || '');
   const [hasErrored, setHasErrored] = useState(false);
@@ -56,7 +58,7 @@ const ImageWithFallback = ({
         src={imgSrc} 
         alt={alt || businessName || 'Salon image'}
         className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100 transition-opacity duration-300'}`}
-        style={style}
+        style={{ objectFit, ...style }}
         loading={loading}
         onError={handleError}
         onLoad={handleLoad}

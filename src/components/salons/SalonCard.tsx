@@ -1,9 +1,11 @@
 
 import React from 'react';
-import { MapPin, DollarSign, Star } from 'lucide-react';
+import { MapPin, Star } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Salon } from '@/types/salon';
+import ImageWithFallback from '@/components/ui/ImageWithFallback';
+import { getDefaultSalonImage } from '@/utils/salonImageFallbacks';
 
 interface SalonCardProps {
   salon: Salon;
@@ -14,6 +16,7 @@ interface SalonCardProps {
 const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) => {
   // Use correct image property based on what's available
   const imageUrl = salon.imageUrl || salon.image || '';
+  const salonCategory = salon.category || 'beauty';
 
   // Format price as currency
   const formattedPrice = new Intl.NumberFormat('en-US', {
@@ -23,14 +26,16 @@ const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) 
   }).format(salon.price);
 
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-sm border hover:shadow-md transition-shadow">
+    <div className={`bg-white rounded-xl overflow-hidden shadow-sm border hover:shadow-md transition-shadow ${isExpired ? 'opacity-75' : ''}`}>
       {/* Image */}
       <div className="relative">
         <div className="aspect-[16/9] bg-gray-200">
-          <img
+          <ImageWithFallback
             src={imageUrl}
             alt={salon.name}
-            className="w-full h-full object-cover"
+            fallbackImage={getDefaultSalonImage(salonCategory)}
+            className="w-full h-full"
+            objectFit="cover"
           />
         </div>
         

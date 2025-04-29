@@ -1,17 +1,23 @@
 
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Upload, X, Image } from "lucide-react";
+import { Upload, X, Image, Info } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { getCategoryFallbackImages, SalonCategory } from "@/utils/salonImageFallbacks";
 
 interface SalonPostPhotoUploadProps {
   photoUploads: File[];
   setPhotoUploads: React.Dispatch<React.SetStateAction<File[]>>;
+  salonCategory?: SalonCategory;
 }
 
 export const SalonPostPhotoUpload = ({ 
   photoUploads, 
-  setPhotoUploads 
+  setPhotoUploads,
+  salonCategory = 'beauty'
 }: SalonPostPhotoUploadProps) => {
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
@@ -26,6 +32,14 @@ export const SalonPostPhotoUpload = ({
   const removePhoto = useCallback((index: number) => {
     setPhotoUploads(prev => prev.filter((_, i) => i !== index));
   }, [setPhotoUploads]);
+
+  // Toggle sample images display
+  const toggleSuggestions = () => {
+    setShowSuggestions(prev => !prev);
+  };
+
+  // Get sample images for the current category
+  const sampleImages = getCategoryFallbackImages(salonCategory);
 
   return (
     <div className="space-y-6">
@@ -91,14 +105,38 @@ export const SalonPostPhotoUpload = ({
       )}
 
       {photoUploads.length === 0 && (
-        <div className="mt-6 bg-blue-50 p-4 rounded-lg border border-blue-100">
-          <div className="flex items-start space-x-3">
-            <Image className="h-5 w-5 text-blue-500 mt-0.5" />
-            <div className="text-sm text-blue-700">
-              <p className="font-medium">Photos make a difference!</p>
-              <p className="mt-1">Listings with 5+ photos receive 3x more inquiries. Show your salon at its best.</p>
+        <div className="mt-6">
+          <Alert className="bg-blue-50 border-blue-100">
+            <Info className="h-5 w-5 text-blue-500" />
+            <AlertDescription className="text-blue-700">
+              <p className="font-medium">Don't have photos yet?</p>
+              <p className="mt-1">No worries! We'll use one of our professional salon images as a placeholder until you upload your own photos.</p>
+              <Button 
+                variant="link" 
+                className="text-blue-600 p-0 h-auto mt-1 font-normal"
+                onClick={toggleSuggestions}
+              >
+                {showSuggestions ? "Hide sample images" : "View sample images"}
+              </Button>
+            </AlertDescription>
+          </Alert>
+          
+          {showSuggestions && (
+            <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-3 rounded-lg border border-blue-100 p-3 bg-blue-50/50">
+              <p className="col-span-full text-sm text-blue-700 mb-1">
+                One of these professional images will be used if you don't upload your own:
+              </p>
+              {sampleImages.map((img, index) => (
+                <div key={index} className="aspect-video rounded overflow-hidden">
+                  <img
+                    src={img}
+                    alt={`Sample salon image ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
             </div>
-          </div>
+          )}
         </div>
       )}
     </div>

@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Salon } from '@/types/salon';
 import AuthAction from '@/components/common/AuthAction';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
-import { fallbackImage, getDefaultSalonImage } from '@/utils/salonImageFallbacks';
+import { getDefaultSalonImage } from '@/utils/salonImageFallbacks';
 import { useAuth } from '@/context/auth';
 
 interface SalonCardProps {
@@ -17,8 +17,6 @@ interface SalonCardProps {
 
 /**
  * Component for displaying a salon card in the listings page
- * IMPORTANT: This component is locked as part of the salon listings stabilization.
- * Do not modify the Vietnamese content or sign-in logic without explicit request.
  */
 const SimpleSalonCard = ({ salon }: SalonCardProps) => {
   const { isSignedIn } = useAuth();

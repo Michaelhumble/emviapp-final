@@ -1,6 +1,6 @@
 
 /**
- * Enhanced salon fallback images with high-quality options
+ * Enhanced salon fallback images with high-quality external URLs
  */
 const salonFallbackImages = {
   nail: '/images/fallback/nail-salon.jpg',
@@ -10,34 +10,88 @@ const salonFallbackImages = {
   beauty: '/images/fallback/beauty-salon.jpg'
 } as const;
 
-// Enhanced high-quality fallback images (using Unsplash premium stock photos)
+// Curated external high-quality fallback images
 const enhancedFallbackImages = {
-  nail: 'https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=1200&auto=format&fit=crop',
-  hair: 'https://images.unsplash.com/photo-1633681926022-84c23e8cb3d6?q=80&w=1200&auto=format&fit=crop',
-  spa: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=1200&auto=format&fit=crop', 
-  barber: 'https://images.unsplash.com/photo-1587909209111-5097ee578ec3?q=80&w=1200&auto=format&fit=crop',
-  beauty: 'https://images.unsplash.com/photo-1613843351058-1dd06fccdc6a?q=80&w=1200&auto=format&fit=crop'
+  // Nail salon images
+  nail: [
+    'https://i.imgur.com/xnfXgKK.jpg',
+    'https://i.imgur.com/1M3AdLY.jpg',
+    'https://i.imgur.com/lG6LfrB.jpg',
+  ],
+  // Hair salon images
+  hair: [
+    'https://i.imgur.com/2SE0sie.jpg',
+    'https://i.imgur.com/kdCXOkc.jpg',
+    'https://i.imgur.com/KsRm2La.jpg',
+  ],
+  // Spa images
+  spa: [
+    'https://i.imgur.com/UsZkxYd.jpg',
+    'https://i.imgur.com/wVQ2tl8.jpg',
+    'https://i.imgur.com/cDOfyQ4.jpg',
+  ],
+  // Barbershop images
+  barber: [
+    'https://i.imgur.com/tUb7dCY.jpg',
+    'https://i.imgur.com/mlDHNI0.jpg',
+    'https://i.imgur.com/8DfOgfr.jpg',
+  ],
+  // Beauty salon images
+  beauty: [
+    'https://i.imgur.com/1PdtpmZ.jpg',
+    'https://i.imgur.com/kk7SYha.jpg',
+    'https://i.imgur.com/u2PZSPG.jpg',
+  ],
 };
 
 export type SalonCategory = keyof typeof salonFallbackImages;
 
 /**
+ * Gets a random image from the category's collection
+ * 
+ * @param collection Array of image URLs
+ * @returns A randomly selected URL
+ */
+const getRandomImage = (collection: string[]): string => {
+  const randomIndex = Math.floor(Math.random() * collection.length);
+  return collection[randomIndex];
+};
+
+/**
  * Gets the appropriate fallback image based on salon category.
- * Now returns high-quality images from Unsplash for better aesthetics.
+ * Returns a high-quality image from our curated external collection.
  * 
  * @param category The salon category
  * @returns URL to the appropriate fallback image
  */
 export const getDefaultSalonImage = (category: SalonCategory = 'beauty'): string => {
-  return enhancedFallbackImages[category] || enhancedFallbackImages.beauty;
+  const imageCollection = enhancedFallbackImages[category] || enhancedFallbackImages.beauty;
+  return getRandomImage(imageCollection);
 };
 
 /**
  * Default fallback image for general salon images
+ * Each time this is called, it returns a different random beauty salon image
  */
-export const fallbackImage = enhancedFallbackImages.beauty;
+export const fallbackImage = (): string => {
+  return getRandomImage(enhancedFallbackImages.beauty);
+};
 
 /**
- * IMPORTANT: This file is part of the salon listings stabilization.
- * Do not modify the Vietnamese content or fallback image logic without explicit request.
+ * Get all available fallback images for a specific category
+ * Useful for allowing selection from available options
+ * 
+ * @param category The salon category
+ * @returns Array of image URLs for the category
  */
+export const getCategoryFallbackImages = (category: SalonCategory = 'beauty'): string[] => {
+  return enhancedFallbackImages[category] || enhancedFallbackImages.beauty;
+};
+
+/**
+ * Get all available fallback images across all categories
+ * Useful for displaying a gallery of options
+ */
+export const getAllFallbackImages = (): Record<SalonCategory, string[]> => {
+  return enhancedFallbackImages;
+};
