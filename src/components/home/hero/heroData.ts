@@ -1,4 +1,3 @@
-
 export const heroImages = [
   // Newly uploaded high-quality stock images
   {
@@ -190,47 +189,5 @@ export const heroImages = [
   {
     url: "/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png", 
     alt: "Close-up of nail technician with black gloves working on client's nails"
-  },
-  
-  // New uploaded images from user's request
-  {
-    url: "/lovable-uploads/36417782-c139-4dd1-8dc4-e5eea22a01bb.png",
-    alt: "Luxury beauty salon professional service"
-  },
-  {
-    url: "/lovable-uploads/3bd8e670-e121-4f05-8d36-30966a627ec9.png",
-    alt: "Premium beauty treatment in elegant setting"
-  },
-  {
-    url: "/lovable-uploads/3d3a731b-4560-4317-8dc7-93d933b82b10.png",
-    alt: "High-end beauty service in modern salon"
-  },
-  {
-    url: "/lovable-uploads/4011381e-fa21-45dc-a6d1-1ebf0aebb664.png",
-    alt: "Professional nail artist providing luxury service"
-  },
-  {
-    url: "/lovable-uploads/418cf3ab-c7f4-4f6a-8049-945b70df38ca.png",
-    alt: "Elegant beauty workspace with premium tools"
-  },
-  {
-    url: "/lovable-uploads/43b9da9d-d4a5-419c-93c9-c724e3983b19.png",
-    alt: "Contemporary beauty treatment with professional technique"
-  },
-  {
-    url: "/lovable-uploads/44afc5c7-fa4b-4e7c-86a3-3fa4486102ef.png",
-    alt: "Luxury nail design service in high-end salon"
-  },
-  {
-    url: "/lovable-uploads/45fbe8fa-1758-43e5-a8b0-bbf55a601a41.png",
-    alt: "Premium beauty service with specialized tools"
-  },
-  {
-    url: "/lovable-uploads/4a455b85-c040-4be5-9557-b1e3b0040bf4.png",
-    alt: "Expert beauty technician working in luxury environment"
-  },
-  {
-    url: "/lovable-uploads/4b908b3b-93ed-4879-95d4-cfa861a1f69f.png",
-    alt: "High-quality beauty treatment in contemporary setting"
   }
 ];
