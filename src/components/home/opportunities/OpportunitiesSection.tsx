@@ -38,10 +38,10 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
           className="max-w-3xl mx-auto text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-playfair font-bold mb-6 text-gray-900">
-            Industry Opportunities
+            The Beauty Exchange
           </h2>
           <p className="text-lg text-gray-600 leading-relaxed">
-            From established salons to thriving businesses for sale — discover your next career move.
+            Turn Beauticians Into Magicians.
           </p>
         </motion.div>
 
