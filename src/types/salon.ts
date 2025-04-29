@@ -64,10 +64,20 @@ export interface Salon {
   income_range?: string;
   is_vietnamese_listing?: boolean;
   
+  // Properties needed for SalonsForSale component
+  title?: string;
+  company?: string;
+  salon_type?: string;
+  salon_features?: string[];
+  asking_price?: number;
+  
   // Category for appropriate fallback image selection
   category?: SalonCategory;
   
   // Premium/luxury designation
   isPremium?: boolean;
   interiorStyle?: 'modern' | 'classic' | 'minimalist' | 'luxury' | 'designer';
+  
+  // Created at timestamp (needed for Job compatibility)
+  created_at?: string;
 }

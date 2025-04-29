@@ -1,4 +1,3 @@
-
 import { Salon } from '@/types/salon';
 import { Job } from '@/types/job';
 import { v4 as uuidv4 } from 'uuid';
@@ -174,6 +173,70 @@ const mockFeaturedJobs: Job[] = [
   }
 ];
 
+// Mock booth rentals
+const mockBooths: Job[] = [
+  {
+    id: 'b-1',
+    title: 'Premium Nail Station',
+    company: 'Luxe Beauty Salon',
+    location: 'New York, NY',
+    created_at: new Date().toISOString(),
+    description: 'Well-lit nail station in upscale salon. Perfect for experienced nail technicians with their own clientele.',
+    employment_type: 'Booth Rental',
+    compensation_details: '$250/week',
+    status: 'active',
+    image: '/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png',
+    specialties: ['Nail Art', 'Manicure', 'Pedicure'],
+    monthly_rent: '$1,000',
+    price: '$250/week'
+  },
+  {
+    id: 'b-2',
+    title: 'Hair Styling Station',
+    company: 'Modern Cuts Studio',
+    location: 'Los Angeles, CA',
+    created_at: new Date().toISOString(),
+    description: 'Spacious styling station in busy LA salon. Great opportunity for hair stylists looking for flexibility.',
+    employment_type: 'Booth Rental',
+    compensation_details: '$300/week',
+    status: 'active',
+    image: '/lovable-uploads/0c68659d-ebd4-4091-aa1a-9329f3690d68.png',
+    specialties: ['Haircuts', 'Color', 'Styling'],
+    monthly_rent: '$1,200',
+    price: '$300/week'
+  },
+  {
+    id: 'b-3',
+    title: 'Barber Chair Rental',
+    company: 'Classic Cuts',
+    location: 'Chicago, IL',
+    created_at: new Date().toISOString(),
+    description: 'Professional barber chair available in established barbershop. High foot traffic location.',
+    employment_type: 'Booth Rental',
+    compensation_details: '$200/week',
+    status: 'active',
+    image: '/lovable-uploads/f3f2a5ae-65d9-4442-8842-1cb9e26cdb56.png',
+    specialties: ['Men\'s Cuts', 'Beard Trims', 'Hot Towel Shaves'],
+    monthly_rent: '$800',
+    price: '$200/week'
+  },
+  {
+    id: 'b-4',
+    title: 'Esthetician Room',
+    company: 'Glow Spa',
+    location: 'Miami, FL',
+    created_at: new Date().toISOString(),
+    description: 'Private treatment room perfect for esthetician services. Fully equipped and recently renovated.',
+    employment_type: 'Booth Rental',
+    compensation_details: '$350/week',
+    status: 'active',
+    image: '/lovable-uploads/00ccb907-6755-4698-a289-71b05f7012f1.png',
+    specialties: ['Facials', 'Waxing', 'Skin Care'],
+    monthly_rent: '$1,400',
+    price: '$350/week'
+  }
+];
+
 // All salons map for quick lookup by ID
 const allSalons = new Map<string, Salon>();
 mockFeaturedSalons.forEach(salon => allSalons.set(salon.id, salon));
@@ -203,6 +266,18 @@ export const getFeaturedJobs = (limit?: number): Job[] => {
 };
 
 /**
+ * Get all booth rentals
+ * @param limit Maximum number of booths to return
+ * @returns Array of booth rental listings
+ */
+export const getAllBooths = (limit?: number): Job[] => {
+  if (limit && limit > 0) {
+    return mockBooths.slice(0, limit);
+  }
+  return mockBooths;
+};
+
+/**
  * Get a salon by ID
  * @param id The salon ID to find
  * @returns The salon with the matching ID, or undefined if not found
@@ -219,10 +294,19 @@ export const getSalonById = (id: string): Salon | undefined => {
 export const getSalonsForSale = (limit?: number): Salon[] => {
   // In a real application, this would filter salons that are specifically marked for sale
   // For now, just return the featured salons
+  const salonsWithSaleProps = mockFeaturedSalons.map(salon => ({
+    ...salon,
+    title: `${salon.name} For Sale`,
+    company: salon.name,
+    salon_type: salon.category || 'beauty',
+    salon_features: salon.features || ['Modern Design', 'Great Location', 'Established Clientele'],
+    asking_price: salon.price
+  }));
+  
   if (limit && limit > 0) {
-    return mockFeaturedSalons.slice(0, limit);
+    return salonsWithSaleProps.slice(0, limit);
   }
-  return mockFeaturedSalons;
+  return salonsWithSaleProps;
 };
 
 /**
@@ -232,4 +316,23 @@ export const getSalonsForSale = (limit?: number): Salon[] => {
  */
 export const getJobById = (id: string): Job | undefined => {
   return mockFeaturedJobs.find(job => job.id === id);
+};
+
+// Add compatibility helper for SalonDetail page
+export const getSalonByIdAsJob = (id: string): Job | undefined => {
+  const salon = allSalons.get(id);
+  if (!salon) return undefined;
+  
+  return {
+    id: salon.id,
+    title: salon.name,
+    company: salon.name,
+    location: salon.location,
+    created_at: salon.created_at || new Date().toISOString(),
+    description: salon.description,
+    image: salon.image || salon.imageUrl,
+    salon_features: salon.features,
+    contact_info: salon.contact_info,
+    price: salon.price.toString()
+  };
 };

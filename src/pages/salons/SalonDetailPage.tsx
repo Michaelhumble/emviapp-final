@@ -6,6 +6,7 @@ import SalonDetailContent from '@/components/salons/SalonDetailContent';
 import SalonListingCta from '@/components/salons/SalonListingCta';
 import SalonNotFound from '@/components/salon/SalonNotFound';
 import { fetchJob } from '@/utils/jobs';
+import { getSalonByIdAsJob } from '@/utils/featuredContent';
 import { Job } from '@/types/job';
 
 const SalonDetailPage = () => {
@@ -23,8 +24,16 @@ const SalonDetailPage = () => {
 
       setLoading(true);
       try {
-        const salonData = await fetchJob(id);
-        setSalon(salonData);
+        // Try to get from the featured salons first (converted to Job type)
+        const salonData = getSalonByIdAsJob(id);
+        
+        if (salonData) {
+          setSalon(salonData);
+        } else {
+          // Fall back to fetching from jobs
+          const jobData = await fetchJob(id);
+          setSalon(jobData);
+        }
       } catch (err) {
         console.error('Error loading salon:', err);
         setError(true);

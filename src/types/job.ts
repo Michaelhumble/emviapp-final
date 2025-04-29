@@ -54,4 +54,6 @@ export interface Job {
   role_normalized?: string;
   is_urgent?: boolean;
   type?: 'salon' | 'job' | 'opportunity'; // Added type property
+  // Add name field for compatibility with Salon type
+  name?: string;
 }
