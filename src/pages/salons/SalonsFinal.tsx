@@ -63,7 +63,7 @@ const SalonsFinalsPage = () => {
                 <ValidatedSalonCard 
                   key={salon.id} 
                   salon={salon} 
-                  listingType="vietnamese-salon" 
+                  listingType="salon" 
                 />
               ))}
             </div>
