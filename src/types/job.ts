@@ -53,7 +53,9 @@ export interface Job {
   is_remote?: boolean;
   role_normalized?: string;
   is_urgent?: boolean;
-  type?: 'salon' | 'job' | 'opportunity'; // Added type property
+  type?: 'salon' | 'job' | 'opportunity';
   // Add name field for compatibility with Salon type
   name?: string;
+  // Add imageUrl property that's needed for consistent image handling
+  imageUrl?: string;
 }

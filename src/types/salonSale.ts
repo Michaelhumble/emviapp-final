@@ -26,6 +26,8 @@ export interface SalonSale {
   created_at: string;
   updated_at: string;
   photos?: SalonSalePhoto[];
+  // Add image_url property that's needed for consistent image handling
+  image_url?: string;
 }
 
 export interface SalonSaleFormValues {
