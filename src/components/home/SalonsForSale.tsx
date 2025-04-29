@@ -7,6 +7,7 @@ import SalonListings from '@/components/salons/SalonListings';
 import jobsData from '@/data/jobsData';
 import SalonsLoadingState from '@/components/salons/SalonsLoadingState';
 import { Link } from 'react-router-dom';
+import { Job } from '@/types/job';
 
 export default function SalonsForSale() {
   const [loading, setLoading] = useState(true);
@@ -19,6 +20,17 @@ export default function SalonsForSale() {
     
     return () => clearTimeout(timer);
   }, []);
+
+  // Convert jobsData to Job type by adding the required created_at property
+  const jobsWithCorrectType = jobsData.filter(job => 
+    job.title?.includes("Salon") || 
+    job.company?.includes("Salon") || 
+    job.description?.includes("salon")
+  ).map(job => ({
+    ...job,
+    created_at: job.posted || new Date().toISOString(), // Use posted date if available or current date
+    id: job.id.toString() // Ensure id is a string as required by Job type
+  })) as Job[];
 
   return (
     <section className="py-12 bg-gray-50">
@@ -47,11 +59,7 @@ export default function SalonsForSale() {
             {loading ? (
               <SalonsLoadingState count={4} />
             ) : (
-              <SalonListings salonsForSale={jobsData.filter(job => 
-                job.title?.includes("Salon") || 
-                job.company?.includes("Salon") || 
-                job.description?.includes("salon")
-              )} />
+              <SalonListings salonsForSale={jobsWithCorrectType} />
             )}
           </CardContent>
         </Card>
