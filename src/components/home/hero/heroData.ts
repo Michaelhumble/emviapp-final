@@ -1,25 +1,27 @@
 export const heroImages = [
-  // All hero images have been removed as per cleanup request
+  // Facial and Spa images
   {
-    url: "",
-    alt: "Luxury nail salon interior with pink chairs and elegant decor"
+    url: "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png",
+    alt: "Luxury spa treatment room with dual beds and elegant gold accents"
   },
   {
-    url: "",
-    alt: "Close-up of manicurist applying nail polish with precision"
+    url: "/lovable-uploads/6fdf0a39-d203-4f5a-90ba-808059c3ae5e.png",
+    alt: "Modern makeup and lash station with beauty products elegantly displayed"
   },
   {
-    url: "",
-    alt: "Person getting a professional manicure with blue gloves"
+    url: "/lovable-uploads/ada4c504-75cf-45ce-a673-c81a22b9dbe3.png",
+    alt: "Contemporary spa room with blue walls and treatment beds"
   },
   {
-    url: "",
-    alt: "Close-up of nail technician applying polish to client's nails"
+    url: "/lovable-uploads/ca09b67d-f8b2-497c-bfd9-ac6ec0a491c7.png",
+    alt: "Modern blue-themed spa treatment room with white beds and plants"
   },
   {
-    url: "", 
-    alt: "Manicurist working on client's nails in a pink salon setting"
+    url: "/lovable-uploads/2951176b-68c9-45d6-8bc5-20513e72d0a3.png",
+    alt: "Luxury makeup salon with illuminated mirrors and elegant black chairs"
   },
+  
+  // Keep some empty entries as placeholders (these will be replaced with appropriate images)
   {
     url: "",
     alt: "Close-up of hands with beautiful nail polish application"
@@ -30,7 +32,7 @@ export const heroImages = [
   },
   {
     url: "", 
-    alt: "Nail technician with black gloves working on client's nails"
+    alt: "Close-up of nail technician with black gloves working on client's nails"
   },
   {
     url: "", 
@@ -81,18 +83,18 @@ export const heroImages = [
     alt: "Barber providing professional grooming service in a traditional shop"
   },
   
-  // Spa & Wellness images
+  // Spa & Wellness images - now updated with actual images
   {
-    url: "",
-    alt: "Luxury spa room with elegant couch and calming decor"
+    url: "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png",
+    alt: "Luxury spa room with elegant gold accents and calming decor"
   },
   {
-    url: "",
-    alt: "Premium spa treatment chairs with elegant design"
+    url: "/lovable-uploads/ca09b67d-f8b2-497c-bfd9-ac6ec0a491c7.png",
+    alt: "Premium spa treatment beds with blue accent wall"
   },
   {
-    url: "",
-    alt: "Spa treatment room with white aesthetics and relaxing ambiance"
+    url: "/lovable-uploads/ada4c504-75cf-45ce-a673-c81a22b9dbe3.png",
+    alt: "Spa treatment room with contemporary design and relaxing ambiance"
   },
   {
     url: "",
@@ -111,16 +113,16 @@ export const heroImages = [
     alt: "Skincare professional in white uniform performing facial treatment"
   },
   
-  // Beauty product images
+  // Beauty product images - updated with an actual image
   {
-    url: "",
-    alt: "Elegant display of premium beauty products in luxury setting"
+    url: "/lovable-uploads/6fdf0a39-d203-4f5a-90ba-808059c3ae5e.png",
+    alt: "Elegant display of premium beauty products with lash extensions"
   },
   
-  // Makeup & Beauty images
+  // Makeup & Beauty images - updated with actual image
   {
-    url: "",
-    alt: "Makeup artist applying cosmetics in home setting"
+    url: "/lovable-uploads/2951176b-68c9-45d6-8bc5-20513e72d0a3.png",
+    alt: "Luxury makeup salon with professional styling stations"
   },
   {
     url: "",

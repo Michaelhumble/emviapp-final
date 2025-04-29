@@ -7,7 +7,12 @@
  * These are used consistently across the platform for massage/spa-related listings
  */
 export const MASSAGE_SPA_IMAGES = {
-  // Premium blue-themed luxury massage rooms
+  // Premium luxury spa rooms - NEW UPLOADS
+  luxuryGoldSpa: "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png", // Gold-accented luxury spa room with two beds
+  contemporarySpa: "/lovable-uploads/ada4c504-75cf-45ce-a673-c81a22b9dbe3.png", // Contemporary spa with wooden accents
+  modernBlueSpa: "/lovable-uploads/ca09b67d-f8b2-497c-bfd9-ac6ec0a491c7.png", // Blue-themed spa with bright windows
+  
+  // Previously existing spa images
   luxuryMassage1: "/lovable-uploads/72f0f6c8-5793-4750-993d-f250b495146d.png", // Blue room with sofa and massage tables
   luxuryMassage2: "/lovable-uploads/e4558475-4b40-4bb4-b3ae-7ade4595c1eb.png", // Dual massage room with blue walls and sconces
   
@@ -56,9 +61,24 @@ export const isLuxuryMassageSpa = (name: string = '', description: string = ''):
 };
 
 /**
+ * Returns true if the salon is specifically a facial spa
+ * This helps identify facial-focused spas for appropriate imagery
+ */
+export const isFacialSpa = (name: string = '', description: string = ''): boolean => {
+  const combinedText = (name + ' ' + description).toLowerCase();
+  
+  const facialKeywords = [
+    'facial', 'face treatment', 'skincare', 'skin care',
+    'esthetician', 'aesthetician', 'dermaplaning', 'microdermabrasion',
+    'face mask', 'face spa', 'skin clinic', 'face massage'
+  ];
+  
+  return facialKeywords.some(keyword => combinedText.includes(keyword));
+};
+
+/**
  * Returns true if the listing is likely a massage therapist job based on title and description
  * This helps automatically identify massage job listings
- * ENHANCED: More comprehensive detection for better matching
  */
 export const isMassageJob = (title: string = '', description: string = ''): boolean => {
   const combinedText = (title + ' ' + description).toLowerCase();
@@ -84,8 +104,18 @@ export const getMassageSalonImage = (isPremium: boolean = false, randomize: bool
   console.log('Getting massage salon image', {isPremium, randomize});
   
   // Get either luxury or modern massage images based on premium status
-  const luxuryImages = [MASSAGE_SPA_IMAGES.luxuryMassage1, MASSAGE_SPA_IMAGES.luxuryMassage2];
-  const modernImages = [MASSAGE_SPA_IMAGES.modernMassage1, MASSAGE_SPA_IMAGES.modernMassage2];
+  const luxuryImages = [
+    MASSAGE_SPA_IMAGES.luxuryGoldSpa, // NEW primary luxury option
+    MASSAGE_SPA_IMAGES.contemporarySpa, // NEW secondary luxury option
+    MASSAGE_SPA_IMAGES.luxuryMassage1,
+    MASSAGE_SPA_IMAGES.luxuryMassage2
+  ];
+  
+  const modernImages = [
+    MASSAGE_SPA_IMAGES.modernBlueSpa, // NEW primary standard option
+    MASSAGE_SPA_IMAGES.modernMassage1,
+    MASSAGE_SPA_IMAGES.modernMassage2
+  ];
   
   // Select image pool based on premium status
   const imagePool = isPremium ? luxuryImages : modernImages;
@@ -104,11 +134,27 @@ export const getMassageSalonImage = (isPremium: boolean = false, randomize: bool
 };
 
 /**
+ * Returns an appropriate image URL specifically for a facial spa
+ */
+export const getFacialSpaImage = (isPremium: boolean = false): string => {
+  // For facial spas, prioritize the new luxury spa images
+  if (isPremium) {
+    return MASSAGE_SPA_IMAGES.luxuryGoldSpa; // Gold accented luxury spa perfect for facial treatments
+  }
+  
+  // For standard facial spas, use the blue spa image which has a clean, clinical feel
+  return MASSAGE_SPA_IMAGES.modernBlueSpa;
+};
+
+/**
  * Returns an appropriate image URL for a massage job listing
  */
 export const getMassageJobImage = (randomize: boolean = true): string => {
   // For job listings, use a mix of all images for variety
   const allImages = [
+    MASSAGE_SPA_IMAGES.luxuryGoldSpa, // NEW primary option for jobs
+    MASSAGE_SPA_IMAGES.contemporarySpa,
+    MASSAGE_SPA_IMAGES.modernBlueSpa,
     MASSAGE_SPA_IMAGES.luxuryMassage1,
     MASSAGE_SPA_IMAGES.luxuryMassage2,
     MASSAGE_SPA_IMAGES.modernMassage1,

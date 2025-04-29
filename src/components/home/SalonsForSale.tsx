@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { getNailSalonImage, NAIL_SALON_IMAGES } from "@/utils/nailSalonImages";
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
-// Sample data for salons for sale - ensuring all have isNail property set to true
+// Sample data for salons for sale with expanded categories
 const salonsForSale = [
   {
     id: "s1",
@@ -22,20 +22,24 @@ const salonsForSale = [
   },
   {
     id: "s2",
-    name: "Luxe Beauty Center",
+    name: "Serenity Facial & Spa",
     location: "Los Angeles, CA",
     price: "$250,000",
-    description: "Upscale full-service beauty salon with modern equipment",
-    isNail: true,
+    description: "Upscale full-service beauty salon with modern facial treatment rooms",
+    isNail: false,
+    isSpa: true,
+    isFacial: true,
     imageIndex: 1
   },
   {
     id: "s3",
-    name: "Elite Nail Lounge",
+    name: "Lush Lashes & Beauty",
     location: "Miami, FL",
     price: "$130,000",
-    description: "Turnkey nail salon operation with growing customer base",
-    isNail: true,
+    description: "Turnkey beauty salon specializing in lash extensions and makeup services",
+    isNail: false,
+    isLash: true,
+    isMakeup: true,
     imageIndex: 2
   }
 ];
@@ -68,15 +72,22 @@ const SalonsForSale = () => {
             >
               <Card className="overflow-hidden h-full border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
                 <div className="h-48 overflow-hidden">
-                  {/* Use our updated luxury nail salon images for each salon */}
+                  {/* Select appropriate image based on salon type */}
                   <ImageWithFallback
-                    src={index === 0 ? NAIL_SALON_IMAGES.luxuryLarge : 
-                         index === 1 ? NAIL_SALON_IMAGES.modernDeluxe :
-                         NAIL_SALON_IMAGES.artGallery}
+                    src={
+                      salon.isNail ? NAIL_SALON_IMAGES.luxuryLarge : 
+                      salon.isSpa || salon.isFacial ? "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png" :
+                      salon.isLash || salon.isMakeup ? "/lovable-uploads/6fdf0a39-d203-4f5a-90ba-808059c3ae5e.png" :
+                      NAIL_SALON_IMAGES.executiveNails
+                    }
                     alt={salon.name}
                     className="w-full h-full object-cover"
-                    priority={true} // Load images with priority
-                    fallbackImage={NAIL_SALON_IMAGES.executiveNails} // Use consistent fallback
+                    priority={true}
+                    fallbackImage={
+                      salon.isSpa ? "/lovable-uploads/ada4c504-75cf-45ce-a673-c81a22b9dbe3.png" :
+                      salon.isLash ? "/lovable-uploads/6fdf0a39-d203-4f5a-90ba-808059c3ae5e.png" :
+                      NAIL_SALON_IMAGES.modernDeluxe
+                    }
                   />
                 </div>
                 
