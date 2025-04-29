@@ -53,10 +53,11 @@ const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
       return `$${salon.price.toLocaleString()}`;
     }
     
-    if (typeof salon.price === 'string') {
-      if (salon.price && salon.price.indexOf('$') !== -1) {
+    if (salon.price) {
+      // Add proper type guard before using indexOf
+      if (typeof salon.price === 'string' && salon.price.indexOf('$') !== -1) {
         return salon.price;
-      } else if (salon.price) {
+      } else if (typeof salon.price === 'string') {
         return `$${salon.price}`;
       }
     }
