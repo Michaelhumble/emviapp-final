@@ -54,12 +54,8 @@ const SalonsForSale = () => {
                 {salons.map((salon) => (
                   <CarouselItem key={salon.id}>
                     <Card className="h-full flex flex-col overflow-hidden hover:shadow-md transition-shadow">
-                      <div className="h-48 bg-gray-200 relative overflow-hidden">
-                        <img 
-                          src={salon.image || "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60"} 
-                          alt={salon.company || salon.title || "Salon"} 
-                          className="w-full h-full object-cover"
-                        />
+                      <div className="h-48 bg-gray-100 relative overflow-hidden flex items-center justify-center">
+                        <Building className="h-12 w-12 text-gray-300" />
                       </div>
                       <CardContent className="pt-6 flex-grow">
                         <h3 className="text-lg font-semibold mb-1">{salon.title || `${salon.salon_type || 'Nail'} Salon for Sale`}</h3>
@@ -129,12 +125,8 @@ const SalonsForSale = () => {
           {salons.map((salon) => (
             <motion.div key={salon.id} variants={item}>
               <Card className="h-full flex flex-col overflow-hidden hover:shadow-md transition-shadow">
-                <div className="h-48 bg-gray-200 relative overflow-hidden">
-                  <img 
-                    src={salon.image || "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=60"} 
-                    alt={salon.company || salon.title || "Salon"} 
-                    className="w-full h-full object-cover"
-                  />
+                <div className="h-48 bg-gray-100 relative overflow-hidden flex items-center justify-center">
+                  <Building className="h-12 w-12 text-gray-300" />
                 </div>
                 <CardContent className="pt-6 flex-grow">
                   <h3 className="text-lg font-semibold mb-1">{salon.title || `${salon.salon_type || 'Nail'} Salon for Sale`}</h3>

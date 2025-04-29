@@ -9,14 +9,14 @@ import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/context/auth";
 
-// Sample salon data with our premium images
+// Sample salon data with no images
 const hiringSalons = [
   {
     id: "1",
     name: "Salon Envy",
     location: "Atlanta, GA",
     rating: "4.9",
-    image: "/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png",
+    image: "",
     isHiring: true,
     specialty: "Full Service Salon"
   },
@@ -25,7 +25,7 @@ const hiringSalons = [
     name: "Luxe Beauty Bar",
     location: "Los Angeles, CA",
     rating: "4.8",
-    image: "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png",
+    image: "",
     isHiring: true,
     specialty: "Nail Spa"
   },
@@ -34,7 +34,7 @@ const hiringSalons = [
     name: "The Nail Boutique",
     location: "New York, NY",
     rating: "5.0",
-    image: "/lovable-uploads/89ef4a43-b461-47fc-8b2d-97b07318a891.png",
+    image: "",
     isHiring: true,
     specialty: "Nail Art Studio"
   }
@@ -94,16 +94,10 @@ const HiringSalonsShowcase = () => {
           {hiringSalons.map((salon) => (
             <motion.div key={salon.id} variants={item}>
               <Card className="overflow-hidden h-full transition-shadow hover:shadow-lg border-gray-100">
-                {salon.image && (
-                  <div className="relative h-48 overflow-hidden">
-                    <img 
-                      src={salon.image} 
-                      alt={salon.name} 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-                <CardContent className={`${salon.image ? 'pt-6' : 'pt-5'}`}>
+                <div className="h-48 bg-gray-100 flex items-center justify-center">
+                  <Building className="h-12 w-12 text-gray-300" />
+                </div>
+                <CardContent className="pt-6">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-xl font-semibold">{salon.name}</h3>
                     <div className="flex items-center text-amber-500">

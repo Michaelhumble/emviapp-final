@@ -28,26 +28,20 @@ const SimpleSalonsPage = () => {
 
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
-          {/* Luxury Hero Banner */}
-          <div className="relative w-full mb-10 overflow-hidden rounded-lg" style={{ aspectRatio: '1920/1080' }}>
-            <img 
-              src="/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png" 
-              alt="Luxury Salon Background" 
-              className="w-full h-full object-cover"
-            />
-            
+          {/* Luxury Hero Banner - Image Removed */}
+          <div className="relative w-full mb-10 overflow-hidden rounded-lg bg-gray-100 flex items-center justify-center" style={{ aspectRatio: '1920/1080' }}>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <div className="text-center px-4 space-y-8">
-                <h1 className="font-playfair text-4xl md:text-5xl lg:text-6xl text-[#FDFDFD] font-medium tracking-wide">
+                <h1 className="font-playfair text-4xl md:text-5xl lg:text-6xl text-gray-800 font-medium tracking-wide">
                   List Your Salon
                 </h1>
-                <h2 className="font-playfair text-3xl md:text-4xl lg:text-5xl text-[#FDFDFD] font-medium tracking-wide">
+                <h2 className="font-playfair text-3xl md:text-4xl lg:text-5xl text-gray-700 font-medium tracking-wide">
                   With Confidence
                 </h2>
                 <div className="pt-8">
                   <Link to="/salon-listing">
                     <Button 
-                      className="bg-transparent hover:bg-transparent/10 text-[#FDFDFD] border border-[#D4AF37] rounded-full px-10 py-6 text-lg font-medium transition-all hover:shadow-[0_0_15px_rgba(212,175,55,0.5)]"
+                      className="bg-transparent hover:bg-transparent/10 text-gray-800 border border-gray-500 rounded-full px-10 py-6 text-lg font-medium transition-all"
                     >
                       List Now
                     </Button>

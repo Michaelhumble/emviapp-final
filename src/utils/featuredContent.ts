@@ -47,7 +47,7 @@ const boothlListings = [
     created_at: new Date().toISOString(),
     price: "500",
     description: "Luxury booth available in high-end salon",
-    image: "/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png"
+    image: ""
   },
   {
     id: "booth-2",
@@ -57,7 +57,7 @@ const boothlListings = [
     created_at: new Date().toISOString(),
     price: "350",
     description: "Well-equipped nail station in busy location",
-    image: "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png"
+    image: ""
   }
 ];
 
@@ -85,7 +85,7 @@ export const getSalonByIdAsJob = (id: string): Job | null => {
     created_at: salon.created_at || new Date().toISOString(), // Ensure created_at is always present
     description: salon.description || '',
     price: salon.price?.toString() || '',
-    image: salon.imageUrl || salon.image || '',
+    image: '', // Removing image references
     salon_features: salon.features || [],
     contact_info: {
       owner_name: salon.contact_info?.owner_name || "Salon Owner",

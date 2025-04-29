@@ -1,3 +1,4 @@
+
 import { Job } from '@/types/job';
 
 // Generate a sample of Vietnamese nail salon job listings

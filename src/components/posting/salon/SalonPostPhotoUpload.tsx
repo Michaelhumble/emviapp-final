@@ -1,9 +1,9 @@
 
 import React, { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Upload, X, Image, Info } from "lucide-react";
+import { Upload, X, Info } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { getCategoryFallbackImages, SalonCategory } from "@/utils/salonImageFallbacks";
+import { SalonCategory } from "@/utils/salonImageFallbacks";
 
 interface SalonPostPhotoUploadProps {
   photoUploads: File[];
@@ -16,8 +16,6 @@ export const SalonPostPhotoUpload = ({
   setPhotoUploads,
   salonCategory = 'beauty'
 }: SalonPostPhotoUploadProps) => {
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
@@ -32,14 +30,6 @@ export const SalonPostPhotoUpload = ({
   const removePhoto = useCallback((index: number) => {
     setPhotoUploads(prev => prev.filter((_, i) => i !== index));
   }, [setPhotoUploads]);
-
-  // Toggle sample images display
-  const toggleSuggestions = () => {
-    setShowSuggestions(prev => !prev);
-  };
-
-  // Get sample images for the current category
-  const sampleImages = getCategoryFallbackImages(salonCategory);
 
   return (
     <div className="space-y-6">
@@ -109,34 +99,10 @@ export const SalonPostPhotoUpload = ({
           <Alert className="bg-blue-50 border-blue-100">
             <Info className="h-5 w-5 text-blue-500" />
             <AlertDescription className="text-blue-700">
-              <p className="font-medium">Don't have photos yet?</p>
-              <p className="mt-1">No worries! We'll use one of our professional salon images as a placeholder until you upload your own photos.</p>
-              <Button 
-                variant="link" 
-                className="text-blue-600 p-0 h-auto mt-1 font-normal"
-                onClick={toggleSuggestions}
-              >
-                {showSuggestions ? "Hide sample images" : "View sample images"}
-              </Button>
+              <p className="font-medium">Please upload your own photos</p>
+              <p className="mt-1">High-quality images of your salon will be needed to create your listing. You'll need to upload your own photos as we no longer provide sample images.</p>
             </AlertDescription>
           </Alert>
-          
-          {showSuggestions && (
-            <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-3 rounded-lg border border-blue-100 p-3 bg-blue-50/50">
-              <p className="col-span-full text-sm text-blue-700 mb-1">
-                One of these professional images will be used if you don't upload your own:
-              </p>
-              {sampleImages.map((img, index) => (
-                <div key={index} className="aspect-video rounded overflow-hidden">
-                  <img
-                    src={img}
-                    alt={`Sample salon image ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       )}
     </div>

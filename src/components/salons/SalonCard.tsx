@@ -1,11 +1,9 @@
 
 import React from 'react';
-import { MapPin, Star } from 'lucide-react';
+import { MapPin, Star, Building } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Salon } from '@/types/salon';
-import ImageWithFallback from '@/components/ui/ImageWithFallback';
-import { getDefaultSalonImage } from '@/utils/salonImageFallbacks';
 
 interface SalonCardProps {
   salon: Salon;
@@ -14,27 +12,6 @@ interface SalonCardProps {
 }
 
 const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) => {
-  // Use correct image property based on what's available
-  const imageUrl = salon.imageUrl || salon.image || '';
-  
-  // Determine appropriate salon category for fallback image
-  const salonCategory = salon.category || (
-    salon.isPremium ? 'luxury' : 
-    salon.specialty?.toLowerCase().includes('nail') ? 'nail' :
-    salon.specialty?.toLowerCase().includes('hair') ? 'hair' :
-    salon.specialty?.toLowerCase().includes('spa') ? 'spa' :
-    salon.specialty?.toLowerCase().includes('barber') ? 'barber' :
-    'beauty'
-  );
-  
-  // For premium salons, prioritize our new luxury images
-  const fallbackImage = salon.isPremium ? 
-    salon.category === 'nail' ? '/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png' : 
-    salon.category === 'barber' ? '/lovable-uploads/f3f2a5ae-65d9-4442-8842-1cb9e26cdb56.png' :
-    salon.category === 'hair' ? '/lovable-uploads/0c68659d-ebd4-4091-aa1a-9329f3690d68.png' :
-    '/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png' : 
-    getDefaultSalonImage(salonCategory);
-
   // Format price as currency
   const formattedPrice = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -44,17 +21,10 @@ const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) 
 
   return (
     <div className={`bg-white rounded-xl overflow-hidden shadow-sm border hover:shadow-md transition-shadow ${isExpired ? 'opacity-75' : ''}`}>
-      {/* Image */}
+      {/* Image Placeholder */}
       <div className="relative">
-        <div className="aspect-[16/9] bg-gray-200">
-          <ImageWithFallback
-            src={imageUrl}
-            alt={salon.name}
-            fallbackImage={fallbackImage}
-            className="w-full h-full"
-            objectFit="cover"
-            showPremiumBadge={salon.isPremium}
-          />
+        <div className="aspect-[16/9] bg-gray-100 flex items-center justify-center">
+          <Building className="h-12 w-12 text-gray-300" />
         </div>
         
         {/* Featured badge */}

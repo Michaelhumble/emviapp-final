@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { MapPin, Star } from "lucide-react";
+import { MapPin, Star, Building } from "lucide-react";
 import { motion } from "framer-motion";
 import { getFeaturedSalons } from "@/utils/featuredContent";
 import { useEffect, useState } from "react";
@@ -26,21 +26,15 @@ const item = {
 const FeaturedSalons = () => {
   const [salons, setSalons] = useState<Salon[]>([]);
   
-  // Premium images for featured salons
-  const premiumImages = [
-    "/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png",
-    "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png",
-    "/lovable-uploads/89ef4a43-b461-47fc-8b2d-97b07318a891.png"
-  ];
-  
   useEffect(() => {
     const featuredSalons = getFeaturedSalons(3);
-    // Add our premium images to the salons
-    const enhancedSalons = featuredSalons.map((salon, index) => ({
+    // Remove images from the salons
+    const sanitizedSalons = featuredSalons.map(salon => ({
       ...salon,
-      image: premiumImages[index % premiumImages.length]
+      image: "",
+      imageUrl: ""
     }));
-    setSalons(enhancedSalons);
+    setSalons(sanitizedSalons);
   }, []);
 
   return (
@@ -69,19 +63,15 @@ const FeaturedSalons = () => {
           {salons.map((salon) => (
             <motion.div key={salon.id} variants={item}>
               <Card className="overflow-hidden h-full transition-shadow hover:shadow-lg">
-                <div className="relative h-48 overflow-hidden">
-                  <img 
-                    src={salon.image} 
-                    alt={salon.name} 
-                    className="w-full h-full object-cover"
-                  />
+                <div className="h-48 bg-gray-100 flex items-center justify-center">
+                  <Building className="h-12 w-12 text-gray-300" />
                 </div>
                 <CardContent className="pt-6">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-xl font-semibold">{salon.name}</h3>
                     <div className="flex items-center text-amber-500">
                       <Star className="w-4 h-4 fill-current mr-1" />
-                      <span className="text-sm font-medium">{salon.rating.toFixed(1)}</span>
+                      <span className="text-sm font-medium">{salon.rating?.toFixed(1)}</span>
                     </div>
                   </div>
                   <div className="flex items-center text-gray-500 mb-4">
