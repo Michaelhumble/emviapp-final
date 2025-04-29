@@ -3,14 +3,10 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import { MapPin, Star, Building } from "lucide-react";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { Building } from "lucide-react";
 import { useAuth } from "@/context/auth";
-import { NAIL_SALON_IMAGES } from "@/utils/nailSalonImages";
-import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 import { v4 as uuidv4 } from "uuid";
+import ValidatedSalonCard from "../salons/ValidatedSalonCard";
 
 // Enhanced salon data with verified images and IDs
 const hiringSalons = [
@@ -32,7 +28,7 @@ const hiringSalons = [
     isNail: true,
     isHiring: true,
     specialty: "Nail Spa",
-    image: NAIL_SALON_IMAGES.minimalist
+    image: "" // Will use fallback image
   },
   {
     id: "salon-3",
@@ -57,6 +53,17 @@ const validatedSalons = hiringSalons.map(salon => {
   return salon;
 });
 
+// Convert to Salon type
+const salonListings = validatedSalons.map(salon => ({
+  id: salon.id,
+  name: salon.name,
+  location: salon.location,
+  image: salon.image,
+  rating: parseFloat(salon.rating),
+  isHiring: salon.isHiring,
+  specialty: salon.specialty
+}));
+
 const container = {
   hidden: { opacity: 0 },
   show: {
@@ -73,18 +80,7 @@ const item = {
 };
 
 const HiringSalonsShowcase = () => {
-  const isMobile = useIsMobile();
   const { isSignedIn } = useAuth();
-  const navigate = useNavigate();
-  
-  const handleViewDetails = (salonId: string) => {
-    // Ensure the ID format is valid for routing
-    if (isSignedIn) {
-      navigate(`/salons/${salonId}`);
-    } else {
-      navigate(`/sign-in?redirect=${encodeURIComponent(`/salons/${salonId}`)}`);
-    }
-  };
   
   return (
     <section className="py-24 bg-white">
@@ -109,50 +105,9 @@ const HiringSalonsShowcase = () => {
           whileInView="show"
           viewport={{ once: true }}
         >
-          {validatedSalons.map((salon) => (
+          {salonListings.map((salon) => (
             <motion.div key={salon.id} variants={item}>
-              <Card className="overflow-hidden h-full transition-shadow hover:shadow-lg border-gray-100">
-                <div className="h-48 w-full overflow-hidden">
-                  <ImageWithFallback
-                    src={salon.image}
-                    alt={salon.name}
-                    className="w-full h-full object-cover"
-                    fallbackImage={salon.isNail ? NAIL_SALON_IMAGES.luxuryLarge : "/lovable-uploads/6fdf0a39-d203-4f5a-90ba-808059c3ae5e.png"}
-                  />
-                </div>
-                
-                <CardContent className="pt-6">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-xl font-semibold">{salon.name}</h3>
-                    <div className="flex items-center text-amber-500">
-                      <Star className="w-4 h-4 fill-current mr-1" />
-                      <span className="text-sm font-medium">{salon.rating}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center text-gray-500 mb-4">
-                    <MapPin className="w-4 h-4 mr-1" />
-                    <span className="text-sm">{salon.location}</span>
-                  </div>
-                  
-                  {salon.specialty && (
-                    <Badge variant="outline" className="mb-3 bg-blue-50 text-blue-700 border-blue-200">
-                      {salon.specialty}
-                    </Badge>
-                  )}
-                  
-                  <p className="text-primary font-medium mt-2">
-                    {salon.isHiring ? "Currently Hiring" : "Contact for Opportunities"}
-                  </p>
-                </CardContent>
-                <CardFooter className="pt-0">
-                  <button 
-                    onClick={() => handleViewDetails(salon.id)} 
-                    className="text-primary hover:text-primary/80 text-sm font-medium cursor-pointer flex items-center"
-                  >
-                    {isSignedIn ? "View details →" : "Sign in to view details →"}
-                  </button>
-                </CardFooter>
-              </Card>
+              <ValidatedSalonCard salon={salon} listingType="salon" />
             </motion.div>
           ))}
         </motion.div>

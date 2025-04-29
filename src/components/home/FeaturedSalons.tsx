@@ -1,12 +1,11 @@
 
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { MapPin, Star, Building } from "lucide-react";
 import { motion } from "framer-motion";
 import { getFeaturedSalons } from "@/utils/featuredContent";
 import { useEffect, useState } from "react";
 import { Salon } from "@/types/salon";
+import ValidatedSalonCard from "@/components/salons/ValidatedSalonCard";
 
 const container = {
   hidden: { opacity: 0 },
@@ -28,13 +27,7 @@ const FeaturedSalons = () => {
   
   useEffect(() => {
     const featuredSalons = getFeaturedSalons(3);
-    // Remove images from the salons
-    const sanitizedSalons = featuredSalons.map(salon => ({
-      ...salon,
-      image: "",
-      imageUrl: ""
-    }));
-    setSalons(sanitizedSalons);
+    setSalons(featuredSalons);
   }, []);
 
   return (
@@ -62,32 +55,7 @@ const FeaturedSalons = () => {
         >
           {salons.map((salon) => (
             <motion.div key={salon.id} variants={item}>
-              <Card className="overflow-hidden h-full transition-shadow hover:shadow-lg">
-                <div className="h-48 bg-gray-100 flex items-center justify-center">
-                  <Building className="h-12 w-12 text-gray-300" />
-                </div>
-                <CardContent className="pt-6">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-xl font-semibold">{salon.name}</h3>
-                    <div className="flex items-center text-amber-500">
-                      <Star className="w-4 h-4 fill-current mr-1" />
-                      <span className="text-sm font-medium">{salon.rating?.toFixed(1)}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center text-gray-500 mb-4">
-                    <MapPin className="w-4 h-4 mr-1" />
-                    <span className="text-sm">{salon.city}</span>
-                  </div>
-                  <p className="text-primary font-medium">
-                    {salon.isHiring ? "Currently Hiring" : "Contact for Opportunities"}
-                  </p>
-                </CardContent>
-                <CardFooter className="pt-0">
-                  <Link to={`/salons/${salon.id}`} className="text-primary hover:text-primary/80 text-sm font-medium">
-                    View details →
-                  </Link>
-                </CardFooter>
-              </Card>
+              <ValidatedSalonCard salon={salon} listingType="salon" />
             </motion.div>
           ))}
         </motion.div>

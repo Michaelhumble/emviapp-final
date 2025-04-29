@@ -3,16 +3,14 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
 import { vietnameseSalonListings } from '@/data/vietnameseSalonListings';
-import SimpleSalonCard from '@/components/salons/SimpleSalonCard';
 import { salonListings } from '@/data/salonData';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
+import ValidatedSalonCard from '@/components/salons/ValidatedSalonCard';
 
 /**
  * Main Salon Listings Page Component
- * IMPORTANT: This component is locked as part of the salon listings stabilization.
- * Do not modify the Vietnamese content or layout without explicit request.
  */
 const SimpleSalonsPage = () => {
   const regularListings = salonListings.filter(salon => !salon.is_vietnamese_listing);
@@ -58,7 +56,7 @@ const SimpleSalonsPage = () => {
             {vietnameseSalonListings.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
                 {vietnameseSalonListings.map((salon) => (
-                  <SimpleSalonCard key={salon.id} salon={salon} />
+                  <ValidatedSalonCard key={salon.id} salon={salon} listingType="salon" />
                 ))}
               </div>
             ) : (
@@ -81,7 +79,7 @@ const SimpleSalonsPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {regularListings.map((salon) => (
-              <SimpleSalonCard key={salon.id} salon={salon} />
+              <ValidatedSalonCard key={salon.id} salon={salon} listingType="salon" />
             ))}
           </div>
         </div>

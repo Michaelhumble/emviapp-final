@@ -5,8 +5,8 @@ import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { salonListings } from '@/data/salonData';
-import SimpleSalonCard from '@/components/salons/SimpleSalonCard';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
+import ValidatedSalonCard from '@/components/salons/ValidatedSalonCard';
 
 const SalonsFinalsPage = () => {
   return (
@@ -59,7 +59,7 @@ const SalonsFinalsPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {salonListings.map((salon) => (
-              <SimpleSalonCard key={salon.id} salon={salon} />
+              <ValidatedSalonCard key={salon.id} salon={salon} listingType="salon" />
             ))}
           </div>
           

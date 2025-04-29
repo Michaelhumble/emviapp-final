@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import SalonDetailContent from '@/components/salons/SalonDetailContent';
 import SalonListingCta from '@/components/salons/SalonListingCta';
@@ -11,15 +11,21 @@ import { Job } from '@/types/job';
 import ListingRouteGuard from '@/components/common/ListingRouteGuard';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { validateListingExists } from '@/utils/listingValidator';
+import { toast } from 'sonner';
 
+/**
+ * Enhanced SalonDetailPage component with robust validation
+ */
 const SalonDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [salon, setSalon] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const loadSalon = async () => {
+    const validateAndLoadSalon = async () => {
       if (!id) {
         setError(true);
         return;
@@ -27,6 +33,16 @@ const SalonDetailPage = () => {
 
       setLoading(true);
       try {
+        // First validate that the salon ID exists
+        const exists = await validateListingExists(id, 'salon');
+        
+        if (!exists) {
+          console.error('Invalid salon ID:', id);
+          setError(true);
+          navigate('/salon-not-found');
+          return;
+        }
+        
         // Try to get from the featured salons first (converted to Job type)
         const salonData = getSalonByIdAsJob(id);
         
@@ -35,20 +51,33 @@ const SalonDetailPage = () => {
           console.log('Salon loaded from featured content:', id);
         } else {
           // Fall back to fetching from jobs
-          const jobData = await fetchJob(id);
-          setSalon(jobData);
-          console.log('Salon loaded from jobs API:', id);
+          try {
+            const jobData = await fetchJob(id);
+            
+            if (!jobData || !jobData.id) {
+              throw new Error('Invalid salon data received');
+            }
+            
+            setSalon(jobData);
+            console.log('Salon loaded from jobs API:', id);
+          } catch (jobError) {
+            console.error('Error loading salon from jobs API:', jobError);
+            setError(true);
+            toast.error('This salon listing could not be found');
+            navigate('/salon-not-found');
+          }
         }
       } catch (err) {
         console.error('Error loading salon:', err);
         setError(true);
+        navigate('/salon-not-found');
       } finally {
         setLoading(false);
       }
     };
 
-    loadSalon();
-  }, [id]);
+    validateAndLoadSalon();
+  }, [id, navigate]);
 
   // Enhanced loading state with skeleton
   const LoadingState = () => (

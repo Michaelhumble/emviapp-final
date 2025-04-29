@@ -5,8 +5,8 @@ import { Salon } from "@/types/salon";
 import SalonDetailsDialog from "./SalonDetailModal";
 import FilterSection from "./FilterSection";
 import PricingInfoCard from "./PricingInfoCard";
-import SalonCard from "./SalonCard";
 import EmptyState from "./EmptyState";
+import ValidatedSalonCard from "./ValidatedSalonCard";
 
 interface SalonListingsProps {
   salonsForSale: Job[];
@@ -94,11 +94,10 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {filteredSalons.length > 0 ? (
           filteredSalons.map((salon) => (
-            <SalonCard 
+            <ValidatedSalonCard 
               key={salon.id}
-              salon={convertJobToSalon(salon)} // Convert Job to Salon
-              isExpired={isExpired(salon)}
-              onViewDetails={() => handleViewDetails(salon)}
+              salon={salon} 
+              listingType="salon"
             />
           ))
         ) : (
