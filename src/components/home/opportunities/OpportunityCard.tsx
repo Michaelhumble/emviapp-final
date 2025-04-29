@@ -8,6 +8,8 @@ import { useAuth } from '@/context/auth';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { isLashBrowJob, getLashBrowJobImage } from '@/utils/lashBrowSalonImages';
+import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 
 interface OpportunityCardProps {
   listing: Job;
@@ -30,6 +32,20 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
     if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
     return `${Math.floor(diffDays / 30)} months ago`;
   };
+  
+  // Check if this is a lash or brow job
+  const isLashJob = isLashBrowJob(listing.title || '', listing.description || '') && 
+                   (listing.title || '').toLowerCase().includes('lash');
+                   
+  const isBrowJob = isLashBrowJob(listing.title || '', listing.description || '') && 
+                   (listing.title || '').toLowerCase().includes('brow');
+  
+  // Get appropriate image for lash/brow jobs
+  const jobImage = isLashJob 
+    ? getLashBrowJobImage(true) 
+    : isBrowJob 
+      ? getLashBrowJobImage(false) 
+      : '';
 
   const handleViewDetails = () => {
     if (listing.id) {
@@ -43,7 +59,17 @@ const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
       onClick={handleViewDetails}
     >
       <div className="aspect-[4/3] w-full bg-gray-100 flex items-center justify-center relative">
-        <Building className="h-12 w-12 text-gray-200" />
+        {(isLashJob || isBrowJob) && jobImage ? (
+          <ImageWithFallback
+            src={jobImage}
+            alt={listing.title || (isLashJob ? "Lash Artist Job" : "Brow Specialist Job")}
+            className="h-full w-full object-cover"
+            priority={true}
+          />
+        ) : (
+          <Building className="h-12 w-12 text-gray-200" />
+        )}
+        
         {listing.is_featured && (
           <Badge 
             variant="secondary" 

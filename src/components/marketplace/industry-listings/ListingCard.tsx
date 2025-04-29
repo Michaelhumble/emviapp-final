@@ -9,6 +9,7 @@ import { MapPin, Building, Star, Lock } from "lucide-react";
 import { useAuth } from "@/context/auth";
 import AuthAction from "@/components/common/AuthAction";
 import { isNailSalon, isNailJob, getNailSalonImage, getNailJobImage } from "@/utils/nailSalonImages";
+import { isLashSalon, isBrowSalon, isLashBrowJob, getLashSalonImage, getBrowSalonImage, getLashBrowJobImage } from "@/utils/lashBrowSalonImages";
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 interface ListingCardProps {
@@ -29,15 +30,33 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
     return `/jobs/${listing.id}`;
   };
 
-  // Determine if this is a nail-related listing
-  const isNailListing = listing.for_sale 
-    ? isNailSalon(listing.title || listing.company || '', listing.description || '')
-    : isNailJob(listing.title || listing.company || '', listing.description || '');
+  // Determine if this is a lash/brow-related listing
+  const isLashListing = listing.for_sale 
+    ? isLashSalon(listing.title || listing.company || '', listing.description || '')
+    : isLashBrowJob(listing.title || listing.company || '', listing.description || '') &&
+      (listing.title || '').toLowerCase().includes('lash');
+    
+  const isBrowListing = listing.for_sale 
+    ? isBrowSalon(listing.title || listing.company || '', listing.description || '')
+    : isLashBrowJob(listing.title || listing.company || '', listing.description || '') &&
+      (listing.title || '').toLowerCase().includes('brow');
+  
+  // Determine if this is a nail-related listing (fallback)
+  const isNailListing = !isLashListing && !isBrowListing && (
+    listing.for_sale 
+      ? isNailSalon(listing.title || listing.company || '', listing.description || '')
+      : isNailJob(listing.title || listing.company || '', listing.description || '')
+  );
     
   // Get appropriate image based on listing type
-  const listingImage = isNailListing 
-    ? (listing.for_sale ? getNailSalonImage() : getNailJobImage()) 
-    : '';
+  let listingImage = '';
+  if (isLashListing) {
+    listingImage = listing.for_sale ? getLashSalonImage(true) : getLashBrowJobImage(true);
+  } else if (isBrowListing) {
+    listingImage = listing.for_sale ? getBrowSalonImage(true) : getLashBrowJobImage(false);
+  } else if (isNailListing) {
+    listingImage = listing.for_sale ? getNailSalonImage() : getNailJobImage();
+  }
 
   // Handle view details click with proper redirect
   const handleViewDetails = () => {
@@ -62,13 +81,18 @@ const ListingCard = ({ listing, index }: ListingCardProps) => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Image section - Use our high-quality nail images when appropriate */}
-        {isNailListing ? (
+        {/* Image section - Use our high-quality images when appropriate */}
+        {isLashListing || isBrowListing || isNailListing ? (
           <div className="aspect-video w-full overflow-hidden">
             <ImageWithFallback
               src={listingImage}
-              alt={listing.title || listing.company || "Industry listing"}
+              alt={listing.title || listing.company || (
+                isLashListing ? "Lash Studio" :
+                isBrowListing ? "Brow Studio" :
+                "Nail Salon"
+              )}
               className="w-full h-full object-cover"
+              priority={true}
             />
           </div>
         ) : (

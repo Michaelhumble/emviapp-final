@@ -8,6 +8,7 @@ import { formatCurrency } from "@/utils/salonSales";
 import { FeatureListingButton } from "@/components/sell-salon/FeatureListingButton";
 import { useAuth } from "@/context/auth";
 import { isNailSalon, getNailSalonImage } from "@/utils/nailSalonImages";
+import { isLashSalon, isBrowSalon, getLashSalonImage, getBrowSalonImage } from "@/utils/lashBrowSalonImages";
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 interface SalonSaleCardProps {
@@ -26,17 +27,36 @@ export const SalonSaleCard = ({
   const { user } = useAuth();
   const isOwner = user?.id === salon.user_id;
   
-  const isNail = isNailSalon(salon.salon_name || '', salon.description || '');
+  // Check if this is a lash salon or studio
+  const isLash = isLashSalon(salon.salon_name || '', salon.description || '');
   
-  const salonImage = isNail 
-    ? getNailSalonImage(false, salon.is_featured, salon.is_featured) 
-    : '';
+  // Check if this is a brow salon or studio
+  const isBrow = !isLash && isBrowSalon(salon.salon_name || '', salon.description || '');
+  
+  // Fallback check for nail salon
+  const isNail = !isLash && !isBrow && isNailSalon(salon.salon_name || '', salon.description || '');
+  
+  // Get appropriate image for the salon type
+  let salonImage = '';
+  if (isLash) {
+    salonImage = getLashSalonImage(salon.is_featured);
+  } else if (isBrow) {
+    salonImage = getBrowSalonImage(salon.is_featured);
+  } else if (isNail) { 
+    salonImage = getNailSalonImage(false, salon.is_featured, salon.is_featured);
+  }
   
   const getBusinessTypeIcon = (type?: string) => {
     switch (type) {
       case "Nails":
         return <Store className="h-4 w-4" />;
       case "Hair":
+        return <Store className="h-4 w-4" />;
+      case "Lashes":
+      case "Lash":
+        return <Store className="h-4 w-4" />;
+      case "Brows":
+      case "Brow":
         return <Store className="h-4 w-4" />;
       case "Spa":
         return <Store className="h-4 w-4" />;
@@ -58,10 +78,14 @@ export const SalonSaleCard = ({
       }`}
     >
       <div className="aspect-video relative">
-        {isNail ? (
+        {isLash || isBrow || isNail ? (
           <ImageWithFallback
             src={salonImage}
-            alt={salon.salon_name || "Nail Salon"}
+            alt={salon.salon_name || (
+              isLash ? "Lash Studio" : 
+              isBrow ? "Brow Studio" : 
+              "Nail Salon"
+            )}
             className="h-full w-full object-cover"
             priority={true}
           />

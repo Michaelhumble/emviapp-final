@@ -8,6 +8,7 @@ import { useAuth } from '@/context/auth';
 import { isNailSalon, isNailJob, getNailSalonImage } from '@/utils/nailSalonImages';
 import { isBarberShop, getBarberShopImage } from '@/utils/barberShopImages';
 import { isHairSalon, getHairSalonImage } from '@/utils/hairSalonImages';
+import { isLashSalon, isBrowSalon, getLashSalonImage, getBrowSalonImage } from '@/utils/lashBrowSalonImages';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 
 interface SalonDetailContentProps {
@@ -25,8 +26,14 @@ const SalonDetailContent: React.FC<SalonDetailContentProps> = ({ salon }) => {
   // Check if this is a hair salon second
   const isHair = !isBarber && isHairSalon(salon.title || salon.company || '', salon.description || '');
   
+  // Check if this is a lash salon
+  const isLash = !isBarber && !isHair && isLashSalon(salon.title || salon.company || '', salon.description || '');
+  
+  // Check if this is a brow salon
+  const isBrow = !isBarber && !isHair && !isLash && isBrowSalon(salon.title || salon.company || '', salon.description || '');
+  
   // Finally check if this is a nail salon 
-  const isNail = !isBarber && !isHair && (
+  const isNail = !isBarber && !isHair && !isLash && !isBrow && (
     isNailSalon(salon.title || salon.company || '', salon.description || '') ||
     isNailJob(salon.title || salon.company || '', salon.description || '')
   );
@@ -36,6 +43,8 @@ const SalonDetailContent: React.FC<SalonDetailContentProps> = ({ salon }) => {
   const imageUrl = salon.imageUrl || 
                   (isBarber ? getBarberShopImage(true, true) : 
                    isHair ? getHairSalonImage(true, true) :
+                   isLash ? getLashSalonImage(true) :
+                   isBrow ? getBrowSalonImage(true) :
                    isNail ? getNailSalonImage(false, true, true) : 
                    salon.image || '');
   
@@ -70,6 +79,8 @@ const SalonDetailContent: React.FC<SalonDetailContentProps> = ({ salon }) => {
                 alt={salon.company || (
                   isBarber ? 'Barbershop' :
                   isHair ? 'Hair Salon' :
+                  isLash ? 'Lash Studio' :
+                  isBrow ? 'Brow Studio' :
                   isNail ? 'Nail Salon' : 'Salon'
                 )}
                 className="w-full h-full object-cover"
@@ -174,7 +185,11 @@ const SalonDetailContent: React.FC<SalonDetailContentProps> = ({ salon }) => {
             )}
             
             <Button 
-              className="w-full mb-4" 
+              className={`w-full mb-4 ${
+                isLash ? 'bg-gradient-to-r from-rose-500 to-rose-700 hover:from-rose-600 hover:to-rose-800' :
+                isBrow ? 'bg-gradient-to-r from-amber-600 to-amber-800 hover:from-amber-700 hover:to-amber-900' :
+                ''
+              }`}
               size="lg"
             >
               Contact Seller

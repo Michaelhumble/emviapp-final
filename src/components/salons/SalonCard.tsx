@@ -7,6 +7,7 @@ import { Salon } from '@/types/salon';
 import { isNailSalon, getNailSalonImage } from '@/utils/nailSalonImages';
 import { isBarberShop, getBarberShopImage } from '@/utils/barberShopImages';
 import { isHairSalon, getHairSalonImage, isLuxuryHairSalon } from '@/utils/hairSalonImages';
+import { isLashSalon, isBrowSalon, getLashSalonImage, getBrowSalonImage, isLuxuryLashStudio } from '@/utils/lashBrowSalonImages';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 
 interface SalonCardProps {
@@ -32,20 +33,34 @@ const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) 
   // Check if this is specifically a luxury hair salon
   const isLuxuryHair = isHair && isLuxuryHairSalon(salon.name, salon.description);
   
-  // Then check if this is a nail salon 
-  const isNail = !isBarber && !isHair && isNailSalon(salon.name, salon.description);
+  // Check if this is a lash salon
+  const isLash = !isBarber && !isHair && isLashSalon(salon.name, salon.description);
+  
+  // Check if this is specifically a luxury lash salon
+  const isLuxuryLash = isLash && isLuxuryLashStudio(salon.name, salon.description);
+  
+  // Check if this is a brow salon
+  const isBrow = !isBarber && !isHair && !isLash && isBrowSalon(salon.name, salon.description);
+  
+  // Then check if this is a nail salon as fallback
+  const isNail = !isBarber && !isHair && !isLash && !isBrow && isNailSalon(salon.name, salon.description);
   
   // Get the appropriate image for this salon
-  const salonImage = isBarber
-    ? getBarberShopImage(salon.isPremium, salon.featured)
-    : isHair
-      ? getHairSalonImage(isLuxuryHair, salon.isPremium || salon.featured)
-      : isNail 
-        ? getNailSalonImage(salon.is_vietnamese_listing, salon.isPremium, salon.featured) 
-        : '';
+  let salonImage;
+  if (isBarber) {
+    salonImage = getBarberShopImage(salon.isPremium, salon.featured);
+  } else if (isHair) {
+    salonImage = getHairSalonImage(isLuxuryHair, salon.isPremium || salon.featured);
+  } else if (isLash) {
+    salonImage = getLashSalonImage(isLuxuryLash || salon.isPremium || salon.featured);
+  } else if (isBrow) {
+    salonImage = getBrowSalonImage(salon.isPremium || salon.featured);
+  } else if (isNail) { 
+    salonImage = getNailSalonImage(salon.is_vietnamese_listing, salon.isPremium, salon.featured);
+  }
 
   // IMPORTANT: Store the selected image URL in the salon object so it can be accessed in detail view
-  if ((isBarber || isHair || isNail) && salonImage) {
+  if ((isBarber || isHair || isLash || isBrow || isNail) && salonImage) {
     salon.imageUrl = salonImage;
   }
 
@@ -53,11 +68,17 @@ const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) 
     <div className={`bg-white rounded-xl overflow-hidden shadow-sm border hover:shadow-md transition-shadow ${isExpired ? 'opacity-75' : ''}`}>
       {/* Image section - Use our high-quality salon images when appropriate */}
       <div className="relative">
-        {isBarber || isHair || isNail ? (
+        {isBarber || isHair || isLash || isBrow || isNail ? (
           <div className="aspect-[16/9] overflow-hidden">
             <ImageWithFallback
               src={salonImage}
-              alt={salon.name || (isBarber ? "Barbershop" : isHair ? "Hair Salon" : "Nail Salon")}
+              alt={salon.name || (
+                isBarber ? "Barbershop" : 
+                isHair ? "Hair Salon" : 
+                isLash ? "Lash Studio" : 
+                isBrow ? "Brow Studio" : 
+                "Nail Salon"
+              )}
               className="w-full h-full object-cover"
               priority={true}
             />
@@ -84,6 +105,14 @@ const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) 
           </Badge>
         )}
         
+        {/* Luxury badge for premium lash studios */}
+        {isLuxuryLash && (
+          <Badge className="absolute top-3 left-3 bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white">
+            <Star className="h-3 w-3 mr-1 fill-white" />
+            Premium
+          </Badge>
+        )}
+        
         {/* Price tag */}
         <div className="absolute bottom-3 right-3 bg-white/90 px-3 py-1 rounded-md font-semibold text-purple-800 shadow-sm">
           {formattedPrice}
@@ -104,8 +133,12 @@ const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) 
         </p>
         
         <Button 
-          variant={isLuxuryHair ? "default" : "outline"}
-          className={isLuxuryHair ? "w-full bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-600 hover:to-yellow-500 text-white" : "w-full"}
+          variant={isLuxuryHair || isLuxuryLash ? "default" : "outline"}
+          className={isLuxuryHair 
+            ? "w-full bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-600 hover:to-yellow-500 text-white" 
+            : isLuxuryLash
+              ? "w-full bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white"
+              : "w-full"}
           onClick={onViewDetails}
         >
           View Details

@@ -14,6 +14,7 @@ import { SalonSale } from "@/types/salonSale";
 import { fetchSalonSaleById, formatCurrency } from "@/utils/salonSales";
 import { formatDistanceToNow } from "date-fns";
 import { isNailSalon, getNailSalonImage } from "@/utils/nailSalonImages";
+import { isLashSalon, isBrowSalon, getLashSalonImage, getBrowSalonImage } from "@/utils/lashBrowSalonImages";
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 interface SalonListingDetailProps {
@@ -25,13 +26,28 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
   const [salonWithPhotos, setSalonWithPhotos] = useState<SalonSale | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Check if this is a nail salon to use our high-quality nail images
-  const isNail = isNailSalon(salon.salon_name || '', salon.description || '');
+  // Check if this is a lash salon/studio to use our high-quality lash images
+  const isLash = isLashSalon(salon.salon_name || '', salon.description || '');
+  
+  // Check if this is a brow salon/studio to use our high-quality brow images
+  const isBrow = !isLash && isBrowSalon(salon.salon_name || '', salon.description || '');
+  
+  // Check if this is a nail salon as fallback
+  const isNail = !isLash && !isBrow && isNailSalon(salon.salon_name || '', salon.description || '');
   
   // IMPORTANT: Use the stored imageUrl from the salon object if available
   // Otherwise, generate it consistently
-  const nailSalonImage = salon.image_url || 
-                        (isNail ? getNailSalonImage(false, salon.is_featured, true) : '');
+  let salonImage = salon.image_url;
+  
+  if (!salonImage) {
+    if (isLash) {
+      salonImage = getLashSalonImage(salon.is_featured);
+    } else if (isBrow) {
+      salonImage = getBrowSalonImage(salon.is_featured);
+    } else if (isNail) {
+      salonImage = getNailSalonImage(false, salon.is_featured, true);
+    }
+  }
 
   useEffect(() => {
     const loadSalonDetails = async () => {
@@ -40,8 +56,8 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
         const data = await fetchSalonSaleById(salon.id);
         if (data) {
           // Store the image URL to maintain consistency
-          if (isNail && nailSalonImage) {
-            data.image_url = nailSalonImage;
+          if ((isLash || isBrow || isNail) && salonImage) {
+            data.image_url = salonImage;
           }
           setSalonWithPhotos(data as SalonSale);
         }
@@ -53,14 +69,17 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
     };
 
     loadSalonDetails();
-  }, [salon.id, isNail, nailSalonImage]);
+  }, [salon.id, isLash, isBrow, isNail, salonImage]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return formatDistanceToNow(date, { addSuffix: true });
   };
 
-  const shouldUseNailImage = isNail || 
+  // Check if we should use our custom images instead of uploaded ones
+  const shouldUseCustomImage = isLash || isBrow || isNail || 
+    (salonWithPhotos?.business_type?.toLowerCase().includes('lash') ?? false) ||
+    (salonWithPhotos?.business_type?.toLowerCase().includes('brow') ?? false) ||
     (salonWithPhotos?.business_type?.toLowerCase().includes('nail') ?? false);
 
   return (
@@ -75,12 +94,16 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
         </DialogHeader>
 
         <div className="grid grid-cols-1 gap-4">
-          {/* Gallery - Use our high-quality nail salon image when appropriate */}
+          {/* Gallery - Use our high-quality salon images when appropriate */}
           <div className="aspect-video bg-gray-200 rounded-md overflow-hidden">
-            {shouldUseNailImage ? (
+            {shouldUseCustomImage ? (
               <ImageWithFallback
-                src={nailSalonImage}
-                alt={salon.salon_name || "Nail Salon"}
+                src={salonImage}
+                alt={salon.salon_name || (
+                  isLash ? "Lash Studio" :
+                  isBrow ? "Brow Studio" :
+                  "Nail Salon"
+                )}
                 className="w-full h-full object-cover"
                 priority={true}
               />
@@ -97,8 +120,8 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
             )}
           </div>
 
-          {/* Only show thumbnail gallery for actual uploaded photos, not our nail images */}
-          {!shouldUseNailImage && salonWithPhotos?.photos && salonWithPhotos.photos.length > 1 && (
+          {/* Only show thumbnail gallery for actual uploaded photos, not our custom images */}
+          {!shouldUseCustomImage && salonWithPhotos?.photos && salonWithPhotos.photos.length > 1 && (
             <div className="grid grid-cols-4 gap-2">
               {salonWithPhotos.photos.slice(0, 4).map((photo) => (
                 <div key={photo.id} className="aspect-square rounded-md overflow-hidden">
@@ -172,7 +195,11 @@ const SalonListingDetail = ({ salon, onClose }: SalonListingDetailProps) => {
           >
             Close
           </Button>
-          <Button className="flex items-center">
+          <Button className={`flex items-center ${
+            isLash ? 'bg-rose-500 hover:bg-rose-600' :
+            isBrow ? 'bg-amber-600 hover:bg-amber-700' :
+            ''
+          }`}>
             Contact Seller <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </DialogFooter>

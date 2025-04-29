@@ -11,6 +11,7 @@ import { useAuth } from '@/context/auth';
 import { isNailSalon, getNailSalonImage } from '@/utils/nailSalonImages';
 import { isBarberShop, getBarberShopImage } from '@/utils/barberShopImages';
 import { isHairSalon, getHairSalonImage } from '@/utils/hairSalonImages';
+import { isLashSalon, isBrowSalon, getLashSalonImage, getBrowSalonImage } from '@/utils/lashBrowSalonImages';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 
 interface SalonCardProps {
@@ -42,8 +43,12 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
   const isBarber = isBarberShop(salon.name, salon.description);
   // Then check if this is a hair salon
   const isHair = !isBarber && isHairSalon(salon.name, salon.description);
-  // Finally check if this is a nail salon
-  const isNail = !isBarber && !isHair && isNailSalon(salon.name, salon.description);
+  // Check if this is a lash salon
+  const isLash = !isBarber && !isHair && isLashSalon(salon.name, salon.description);
+  // Check if this is a brow salon/studio
+  const isBrow = !isBarber && !isHair && !isLash && isBrowSalon(salon.name, salon.description);
+  // Finally check if this is a nail salon as fallback
+  const isNail = !isBarber && !isHair && !isLash && !isBrow && isNailSalon(salon.name, salon.description);
   
   // Get the appropriate image for this salon
   let salonImage;
@@ -51,12 +56,16 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
     salonImage = getBarberShopImage(salon.isPremium, salon.isPremium);
   } else if (isHair) {
     salonImage = getHairSalonImage(salon.isPremium, salon.isPremium);
+  } else if (isLash) {
+    salonImage = getLashSalonImage(salon.isPremium);
+  } else if (isBrow) {
+    salonImage = getBrowSalonImage(salon.isPremium);
   } else if (isNail) {
     salonImage = getNailSalonImage(isVietnamese, salon.isPremium, salon.isPremium);
   }
 
   // IMPORTANT: Store the selected image URL in the salon object so it can be accessed in detail view
-  if ((isBarber || isHair || isNail) && salonImage) {
+  if ((isBarber || isHair || isLash || isBrow || isNail) && salonImage) {
     salon.imageUrl = salonImage;
   }
 
@@ -64,8 +73,32 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
     return true; // This will trigger the auth redirect
   };
 
+  // Choose appropriate gradient colors based on salon type
+  const cardGradientClass = isHair 
+    ? 'bg-gradient-to-br from-white to-pink-50' 
+    : isLash 
+      ? 'bg-gradient-to-br from-white to-rose-50'
+      : isBrow
+        ? 'bg-gradient-to-br from-white to-amber-50'
+        : isVietnamese 
+          ? 'bg-gradient-to-br from-white to-purple-50' 
+          : '';
+
+  // Choose appropriate hover effects based on salon type
+  const hoverShadowClass = isBarber 
+    ? 'hover:shadow-slate-200 shadow-sm border-slate-100' 
+    : isHair 
+      ? 'hover:shadow-pink-100 shadow-sm border-pink-50' 
+      : isLash
+        ? 'hover:shadow-rose-100 shadow-sm border-rose-50'
+        : isBrow
+          ? 'hover:shadow-amber-100 shadow-sm border-amber-50'
+          : isVietnamese 
+            ? 'hover:shadow-purple-100 shadow-sm border-purple-100' 
+            : 'hover:shadow-md';
+
   return (
-    <Card className={`overflow-hidden group transition-shadow duration-300 ${isBarber ? 'hover:shadow-slate-200 shadow-sm border-slate-100' : isHair ? 'hover:shadow-pink-100 shadow-sm border-pink-50' : isVietnamese ? 'hover:shadow-purple-100 shadow-sm border-purple-100' : 'hover:shadow-md'}`}>
+    <Card className={`overflow-hidden group transition-shadow duration-300 ${hoverShadowClass}`}>
       <div className="relative">
         {isBarber ? (
           <div className="h-48 overflow-hidden">
@@ -81,6 +114,24 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
             <ImageWithFallback
               src={salonImage}
               alt={title || "Hair Salon"}
+              className="h-full w-full object-cover"
+              priority={true}
+            />
+          </div>
+        ) : isLash ? (
+          <div className="h-48 overflow-hidden">
+            <ImageWithFallback
+              src={salonImage}
+              alt={title || "Lash Studio"}
+              className="h-full w-full object-cover"
+              priority={true}
+            />
+          </div>
+        ) : isBrow ? (
+          <div className="h-48 overflow-hidden">
+            <ImageWithFallback
+              src={salonImage}
+              alt={title || "Brow Studio"}
               className="h-full w-full object-cover"
               priority={true}
             />
@@ -109,14 +160,24 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
             <Badge className="bg-pink-600 hover:bg-pink-700 text-white">Hair Salon</Badge>
           </div>
         )}
-        {isVietnamese && !isBarber && !isHair && (
+        {isLash && (
+          <div className="absolute top-3 left-3">
+            <Badge className="bg-rose-600 hover:bg-rose-700 text-white">Lash Studio</Badge>
+          </div>
+        )}
+        {isBrow && (
+          <div className="absolute top-3 left-3">
+            <Badge className="bg-amber-600 hover:bg-amber-700 text-white">Brow Studio</Badge>
+          </div>
+        )}
+        {isVietnamese && !isBarber && !isHair && !isLash && !isBrow && (
           <div className="absolute top-3 left-3">
             <Badge className="bg-purple-600 hover:bg-purple-700 text-white">Tiệm Nail</Badge>
           </div>
         )}
       </div>
       
-      <CardContent className={`p-5 ${isHair ? 'bg-gradient-to-br from-white to-pink-50' : isVietnamese ? 'bg-gradient-to-br from-white to-purple-50' : ''}`}>
+      <CardContent className={`p-5 ${cardGradientClass}`}>
         <h3 className="font-playfair text-lg font-semibold mb-2 line-clamp-2">
           {title}
         </h3>
@@ -149,13 +210,27 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
             onAction={handleViewContact} 
             redirectPath={`/salons/${salon.id}`}
             authenticatedContent={
-              <div className={`text-sm py-2 px-3 rounded border mb-4 flex items-center gap-2 ${isHair ? 'bg-pink-50 border-pink-200 text-pink-900' : isVietnamese ? 'bg-purple-50 border-purple-200 text-purple-900' : isBarber ? 'bg-slate-50 border-slate-200 text-slate-900' : 'bg-gray-50 border-gray-100 text-gray-600'}`}>
+              <div className={`text-sm py-2 px-3 rounded border mb-4 flex items-center gap-2 ${
+                isHair ? 'bg-pink-50 border-pink-200 text-pink-900' : 
+                isLash ? 'bg-rose-50 border-rose-200 text-rose-900' :
+                isBrow ? 'bg-amber-50 border-amber-200 text-amber-900' :
+                isVietnamese ? 'bg-purple-50 border-purple-200 text-purple-900' : 
+                isBarber ? 'bg-slate-50 border-slate-200 text-slate-900' : 
+                'bg-gray-50 border-gray-100 text-gray-600'
+              }`}>
                 <Phone className="h-4 w-4" />
                 <span>{salon.contact_info.phone}</span>
               </div>
             }
             fallbackContent={
-              <div className={`text-sm py-2 px-3 rounded border mb-4 flex items-center gap-2 cursor-pointer ${isHair ? 'bg-pink-50 border-pink-200 text-pink-900 hover:bg-pink-100' : isVietnamese ? 'bg-purple-50 border-purple-200 text-purple-900 hover:bg-purple-100' : isBarber ? 'bg-slate-50 border-slate-200 text-slate-900 hover:bg-slate-100' : 'bg-gray-50 border-gray-100 text-gray-600 hover:bg-gray-100'}`}>
+              <div className={`text-sm py-2 px-3 rounded border mb-4 flex items-center gap-2 cursor-pointer ${
+                isHair ? 'bg-pink-50 border-pink-200 text-pink-900 hover:bg-pink-100' : 
+                isLash ? 'bg-rose-50 border-rose-200 text-rose-900 hover:bg-rose-100' :
+                isBrow ? 'bg-amber-50 border-amber-200 text-amber-900 hover:bg-amber-100' :
+                isVietnamese ? 'bg-purple-50 border-purple-200 text-purple-900 hover:bg-purple-100' : 
+                isBarber ? 'bg-slate-50 border-slate-200 text-slate-900 hover:bg-slate-100' : 
+                'bg-gray-50 border-gray-100 text-gray-600 hover:bg-gray-100'
+              }`}>
                 <Phone className="h-4 w-4" />
                 <span>{isVietnamese ? "Đăng nhập để xem liên hệ" : "Sign in to view contact"}</span>
               </div>
@@ -165,7 +240,14 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
 
         <Link to={`/salons/${salon.id}`}>
           <Button 
-            className={`w-full ${isBarber ? 'bg-gradient-to-r from-slate-700 to-slate-900 hover:from-slate-800 hover:to-slate-950' : isHair ? 'bg-gradient-to-r from-pink-600 to-pink-800 hover:from-pink-700 hover:to-pink-900' : isVietnamese ? 'bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900' : 'bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900'} text-white`}
+            className={`w-full ${
+              isBarber ? 'bg-gradient-to-r from-slate-700 to-slate-900 hover:from-slate-800 hover:to-slate-950' : 
+              isHair ? 'bg-gradient-to-r from-pink-600 to-pink-800 hover:from-pink-700 hover:to-pink-900' :
+              isLash ? 'bg-gradient-to-r from-rose-500 to-rose-700 hover:from-rose-600 hover:to-rose-800' :
+              isBrow ? 'bg-gradient-to-r from-amber-600 to-amber-800 hover:from-amber-700 hover:to-amber-900' : 
+              isVietnamese ? 'bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900' : 
+              'bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900'
+            } text-white`}
           >
             {buttonText}
           </Button>

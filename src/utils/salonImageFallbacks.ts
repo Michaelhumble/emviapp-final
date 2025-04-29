@@ -1,11 +1,12 @@
 
 // Define categories for salon types to ensure appropriate image selection
-export type SalonCategory = 'nail' | 'hair' | 'barber' | 'spa' | 'beauty' | 'generic';
+export type SalonCategory = 'nail' | 'hair' | 'barber' | 'lash' | 'brow' | 'spa' | 'beauty' | 'generic';
 
 // Import our specialized image utilities
 import { getBarberShopImage, isBarberShop } from '@/utils/barberShopImages';
 import { getHairSalonImage, isHairSalon } from '@/utils/hairSalonImages';
 import { getNailSalonImage, isNailSalon } from '@/utils/nailSalonImages';
+import { getLashSalonImage, getBrowSalonImage, isLashSalon, isBrowSalon } from '@/utils/lashBrowSalonImages';
 
 /**
  * Determines the most appropriate salon category based on description or name
@@ -22,6 +23,16 @@ export const determineSalonCategory = (description: string, name: string): Salon
   // Check for hair salon indicators next
   if (isHairSalon(name, description)) {
     return 'hair';
+  }
+  
+  // Check for lash salon indicators
+  if (isLashSalon(name, description)) {
+    return 'lash';
+  }
+  
+  // Check for brow salon indicators
+  if (isBrowSalon(name, description)) {
+    return 'brow';
   }
   
   // Check for nail salon indicators
@@ -56,6 +67,12 @@ export const getDefaultSalonImage = (category: SalonCategory, isPremium: boolean
     case 'hair':
       // Use our hair salon image utility
       return getHairSalonImage(isPremium, isPremium);
+    case 'lash':
+      // Use our lash salon image utility
+      return getLashSalonImage(isPremium);
+    case 'brow':
+      // Use our brow salon image utility
+      return getBrowSalonImage(isPremium);
     case 'nail':
       // Use a nail salon image
       return getNailSalonImage(false, isPremium, isPremium);
