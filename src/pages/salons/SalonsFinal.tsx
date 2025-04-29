@@ -6,19 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { salonListings, vietnameseSalonListings } from '@/data/salonData';
 import ValidatedSalonCard from '@/components/salons/ValidatedSalonCard';
-import PremiumSalonBanner from '@/components/salons/PremiumSalonBanner';
+import LuxurySalonBanner from '@/components/salons/LuxurySalonBanner';
 
 const SalonsFinalsPage = () => {
   useEffect(() => {
     // Enhanced debugging - confirm this component is rendering properly
-    console.log('SalonsFinal page rendered directly with PremiumSalonBanner - timestamp:', new Date().toISOString());
-    
-    // Force a reflow/repaint to ensure banner renders correctly
-    const banner = document.querySelector('.bg-cover');
-    if (banner) {
-      banner.classList.add('force-repaint');
-      setTimeout(() => banner.classList.remove('force-repaint'), 100);
-    }
+    console.log('SalonsFinal page rendered with LuxurySalonBanner - timestamp:', new Date().toISOString());
   }, []);
 
   return (
@@ -32,7 +25,7 @@ const SalonsFinalsPage = () => {
       </Helmet>
 
       {/* Premium Banner */}
-      <PremiumSalonBanner />
+      <LuxurySalonBanner />
 
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-7xl mx-auto">

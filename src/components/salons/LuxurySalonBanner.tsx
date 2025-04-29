@@ -4,30 +4,26 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 
-interface PremiumSalonBannerProps {
-  className?: string;
-}
-
-const PremiumSalonBanner = ({ className }: PremiumSalonBannerProps) => {
+const LuxurySalonBanner = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     // Set visible after a short delay for animation purposes
     const timer = setTimeout(() => setIsVisible(true), 100);
-    console.log('PremiumSalonBanner mounted with newly uploaded salon-banner.png');
+    console.log('LuxurySalonBanner mounted');
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <div 
-      className={`relative w-full ${className}`} 
+      className="relative w-full" 
       style={{ height: 'clamp(360px, 50vw, 450px)' }}
     >
       {/* Banner image with elegant salon interior */}
       <div 
         className="absolute inset-0"
         style={{
-          backgroundImage: 'url(/salon-banner.png)',
+          backgroundImage: 'url(/lovable-uploads/f3e9a4cf-99bf-41d9-8ade-44e05666a135.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
@@ -90,4 +86,4 @@ const PremiumSalonBanner = ({ className }: PremiumSalonBannerProps) => {
   );
 };
 
-export default PremiumSalonBanner;
+export default LuxurySalonBanner;

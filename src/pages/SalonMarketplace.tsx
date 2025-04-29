@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Search, Frown, Star } from "lucide-react";
 import Layout from "@/components/layout/Layout";
@@ -8,7 +9,6 @@ import { SalonFilter } from "@/components/marketplace/SalonFilter";
 import { Salon, salons } from "@/components/marketplace/mockData";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/context/auth";
-import PremiumSalonBanner from "@/components/salons/PremiumSalonBanner";
 
 const SalonMarketplace = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,8 +19,7 @@ const SalonMarketplace = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    // For debugging - confirm banner is rendered
-    console.log('SalonMarketplace page rendered with PremiumSalonBanner');
+    console.log('SalonMarketplace page rendered');
   }, []);
 
   // Use salon data with all original images preserved
@@ -105,14 +104,10 @@ const SalonMarketplace = () => {
 
   return (
     <Layout>
-      {/* Include the Premium Banner */}
-      <PremiumSalonBanner />
-      
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-serif font-bold mb-2 text-center">Salon Marketplace</h1>
         <p className="text-center text-gray-600 mb-8">Browse salons for sale across the country</p>
         
-        {/* ... keep existing code for filtering, tabs, etc. */}
         <SalonFilter
           searchTerm={searchTerm}
           locationFilter={locationFilter}
