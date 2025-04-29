@@ -46,10 +46,16 @@ const ImageWithFallback = ({
     // For these cases, we can preemptively check and use fallback
     if (!src || (src.startsWith('http') && !src.includes('lovable-uploads'))) {
       // Check if the URL includes common pattern for broken images
-      if (!src || src.includes('imgur.com') || src.includes('i.imgur.com')) {
+      if (!src || 
+          src.includes('imgur.com') || 
+          src.includes('i.imgur.com') ||
+          src.includes('unsplash.com') ||
+          src.includes('images.unsplash.com')) {
         setImgSrc(fallbackImage);
         setHasErrored(true);
         setIsLoading(false);
+        // Check if the fallback is a premium image
+        setIsPremium(isPremiumImage(fallbackImage));
         return;
       }
     }
@@ -57,7 +63,7 @@ const ImageWithFallback = ({
     // Prioritize new uploaded images
     if (src && src.includes('lovable-uploads')) {
       // Check if this is a premium image
-      setIsPremium(isPremiumImage(src) || src.includes('9ebb0db4') || src.includes('b1bada0a'));
+      setIsPremium(isPremiumImage(src));
     }
     
     setImgSrc(src || '');

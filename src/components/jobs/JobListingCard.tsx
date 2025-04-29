@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
 import AuthAction from "@/components/common/AuthAction";
 import { Link, useNavigate } from "react-router-dom";
+import { getDefaultSalonImage } from "@/utils/salonImageFallbacks";
 
 interface JobListingCardProps {
   job: Job;
@@ -40,21 +41,22 @@ const JobListingCard = ({
   const isOwner = currentUserId === job.user_id;
   const navigate = useNavigate();
 
-  const getFallbackImage = () => {
+  // Get the appropriate fallback image category based on job data
+  const getFallbackCategory = () => {
     if (job.employment_type?.toLowerCase().includes('sale')) {
-      return "https://images.unsplash.com/photo-1613843351058-1dd06fccdc6a?q=80&w=2070&auto=format&fit=crop";
-    } else if (job.employment_type?.toLowerCase().includes('part')) {
-      return "https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=2069&auto=format&fit=crop";
+      return 'luxury';
     } else if (job.specialties?.some(s => s.toLowerCase().includes('nail'))) {
-      return "https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=2070&auto=format&fit=crop";
+      return 'nail';
     } else if (job.specialties?.some(s => s.toLowerCase().includes('hair'))) {
-      return "https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=2070&auto=format&fit=crop";
+      return 'hair';
     } else if (job.specialties?.some(s => s.toLowerCase().includes('spa'))) {
-      return "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=2070&auto=format&fit=crop";
+      return 'spa';
     } else if (job.specialties?.some(s => s.toLowerCase().includes('barber'))) {
-      return "https://images.unsplash.com/photo-1587909209111-5097ee578ec3?q=80&w=2070&auto=format&fit=crop";
+      return 'barber';
+    } else if (job.specialties?.some(s => s.toLowerCase().includes('tattoo') || s.toLowerCase().includes('pmu'))) {
+      return 'tattoo';
     }
-    return "https://images.unsplash.com/photo-1607008829749-c0f284a49841?q=80&w=2070&auto=format&fit=crop";
+    return 'beauty';
   };
 
   const getContactMessage = () => {
@@ -121,7 +123,7 @@ const JobListingCard = ({
           src={job.image}
           alt={job.title || "Job listing"}
           className="w-full h-full object-cover"
-          fallbackImage={getFallbackImage()}
+          fallbackImage={getDefaultSalonImage(getFallbackCategory())}
           businessName={job.company}
         />
       </div>

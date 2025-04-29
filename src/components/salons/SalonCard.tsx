@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Salon } from '@/types/salon';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
-import { getDefaultSalonImage } from '@/utils/salonImageFallbacks';
+import { getDefaultSalonImage, getLuxurySalonImage } from '@/utils/salonImageFallbacks';
 
 interface SalonCardProps {
   salon: Salon;
@@ -16,7 +16,21 @@ interface SalonCardProps {
 const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) => {
   // Use correct image property based on what's available
   const imageUrl = salon.imageUrl || salon.image || '';
-  const salonCategory = salon.category || 'beauty';
+  
+  // Determine appropriate salon category for fallback image
+  const salonCategory = salon.category || (
+    salon.isPremium ? 'luxury' : 
+    salon.specialty?.toLowerCase().includes('nail') ? 'nail' :
+    salon.specialty?.toLowerCase().includes('hair') ? 'hair' :
+    salon.specialty?.toLowerCase().includes('spa') ? 'spa' :
+    salon.specialty?.toLowerCase().includes('barber') ? 'barber' :
+    'beauty'
+  );
+  
+  // For premium salons, use luxury images
+  const fallbackImage = salon.isPremium ? 
+    getLuxurySalonImage() : 
+    getDefaultSalonImage(salonCategory);
 
   // Format price as currency
   const formattedPrice = new Intl.NumberFormat('en-US', {
@@ -33,9 +47,10 @@ const SalonCard = ({ salon, isExpired = false, onViewDetails }: SalonCardProps) 
           <ImageWithFallback
             src={imageUrl}
             alt={salon.name}
-            fallbackImage={getDefaultSalonImage(salonCategory)}
+            fallbackImage={fallbackImage}
             className="w-full h-full"
             objectFit="cover"
+            showPremiumBadge={salon.isPremium}
           />
         </div>
         

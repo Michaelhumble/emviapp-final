@@ -16,6 +16,7 @@ import ImageWithFallback from '@/components/ui/ImageWithFallback';
 import { MapPin, DollarSign } from 'lucide-react';
 import { getAllBooths } from '@/utils/featuredContent';
 import { Job } from '@/types/job';
+import { getDefaultSalonImage } from '@/utils/salonImageFallbacks';
 
 const BoothsIndex = () => {
   const [booths, setBooths] = useState<Job[]>([]);
@@ -37,6 +38,21 @@ const BoothsIndex = () => {
     fetchBooths();
   }, []);
 
+  // Determine appropriate salon category based on booth data
+  const getSalonCategory = (booth: Job) => {
+    if (booth.specialties?.some(s => s.toLowerCase().includes('nail'))) {
+      return 'nail';
+    } else if (booth.specialties?.some(s => s.toLowerCase().includes('hair'))) {
+      return 'hair';
+    } else if (booth.specialties?.some(s => s.toLowerCase().includes('spa'))) {
+      return 'spa';
+    } else if (booth.specialties?.some(s => s.toLowerCase().includes('barber'))) {
+      return 'barber';
+    } else {
+      return 'beauty';
+    }
+  };
+
   return (
     <Layout>
       <div className="container mx-auto py-10 px-4">
@@ -55,56 +71,59 @@ const BoothsIndex = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {booths.map(booth => (
-              <Card key={booth.id} className="overflow-hidden h-full flex flex-col">
-                <div className="aspect-video w-full overflow-hidden">
-                  <ImageWithFallback
-                    src={booth.image}
-                    alt={booth.title || "Booth Rental"}
-                    className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
-                    businessName={booth.company || "Salon Booth"}
-                    fallbackImage="https://images.unsplash.com/photo-1571646034647-52e6ea84b28c?q=80&w=2070&auto=format&fit=crop"
-                  />
-                </div>
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <CardTitle className="text-xl">{booth.title || "Booth Rental"}</CardTitle>
-                    <Badge 
-                      variant={booth.status === "active" ? "outline" : "secondary"} 
-                      className={booth.status === "active" ? "bg-green-50 text-green-700 border-green-200" : "bg-red-50 text-red-700 border-red-200"}
-                    >
-                      {booth.status === "active" ? 'Available' : 'Unavailable'}
-                    </Badge>
+            {booths.map(booth => {
+              const salonCategory = getSalonCategory(booth);
+              return (
+                <Card key={booth.id} className="overflow-hidden h-full flex flex-col">
+                  <div className="aspect-video w-full overflow-hidden">
+                    <ImageWithFallback
+                      src={booth.image}
+                      alt={booth.title || "Booth Rental"}
+                      className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                      businessName={booth.company || "Salon Booth"}
+                      fallbackImage={getDefaultSalonImage(salonCategory)}
+                    />
                   </div>
-                  <CardDescription className="flex items-center mt-1">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    {booth.location}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <div className="flex items-center text-lg font-semibold">
-                    <DollarSign className="h-5 w-5 text-primary" />
-                    {booth.compensation_details || "Contact for pricing"}
-                  </div>
-                  
-                  <p className="mt-3 text-sm text-gray-600 line-clamp-3">
-                    {booth.description?.split('\n')[0] || "Beautiful booth available in a premium salon location."}
-                  </p>
-                  
-                  {booth.company && (
-                    <div className="mt-3 flex items-center text-sm">
-                      <span className="font-medium">At: </span>
-                      <span className="ml-1 text-primary">{booth.company}</span>
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-xl">{booth.title || "Booth Rental"}</CardTitle>
+                      <Badge 
+                        variant={booth.status === "active" ? "outline" : "secondary"} 
+                        className={booth.status === "active" ? "bg-green-50 text-green-700 border-green-200" : "bg-red-50 text-red-700 border-red-200"}
+                      >
+                        {booth.status === "active" ? 'Available' : 'Unavailable'}
+                      </Badge>
                     </div>
-                  )}
-                </CardContent>
-                <CardFooter>
-                  <Link to={`/booths/${booth.id}`} className="w-full">
-                    <Button className="w-full">View Details</Button>
-                  </Link>
-                </CardFooter>
-              </Card>
-            ))}
+                    <CardDescription className="flex items-center mt-1">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      {booth.location}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <div className="flex items-center text-lg font-semibold">
+                      <DollarSign className="h-5 w-5 text-primary" />
+                      {booth.compensation_details || "Contact for pricing"}
+                    </div>
+                    
+                    <p className="mt-3 text-sm text-gray-600 line-clamp-3">
+                      {booth.description?.split('\n')[0] || "Beautiful booth available in a premium salon location."}
+                    </p>
+                    
+                    {booth.company && (
+                      <div className="mt-3 flex items-center text-sm">
+                        <span className="font-medium">At: </span>
+                        <span className="ml-1 text-primary">{booth.company}</span>
+                      </div>
+                    )}
+                  </CardContent>
+                  <CardFooter>
+                    <Link to={`/booths/${booth.id}`} className="w-full">
+                      <Button className="w-full">View Details</Button>
+                    </Link>
+                  </CardFooter>
+                </Card>
+              );
+            })}
           </div>
         )}
       </div>

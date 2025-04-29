@@ -8,6 +8,7 @@ import { formatCurrency } from "@/utils/salonSales";
 import { FeatureListingButton } from "@/components/sell-salon/FeatureListingButton";
 import { useAuth } from "@/context/auth";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
+import { getDefaultSalonImage, getLuxurySalonImage } from '@/utils/salonImageFallbacks';
 
 interface SalonSaleCardProps {
   salon: SalonSale;
@@ -50,25 +51,27 @@ export const SalonSaleCard = ({
   };
 
   // Determine the appropriate fallback image based on business type
-  const getFallbackImage = () => {
+  const getFallbackCategory = () => {
     const businessType = (salon.business_type || '').toLowerCase();
     
     if (businessType.includes('nail')) {
-      return "https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=2070&auto=format&fit=crop";
+      return 'nail';
     } else if (businessType.includes('hair')) {
-      return "https://images.unsplash.com/photo-1633681926022-84c23e8cb3d6?q=80&w=1976&auto=format&fit=crop";
+      return 'hair';
     } else if (businessType.includes('spa')) {
-      return "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=2070&auto=format&fit=crop";
+      return 'spa';
     } else if (businessType.includes('barber')) {
-      return "https://images.unsplash.com/photo-1587909209111-5097ee578ec3?q=80&w=2070&auto=format&fit=crop";
-    } else if (businessType.includes('restaurant') || businessType.includes('food')) {
-      return "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=2074&auto=format&fit=crop";
-    } else if (businessType.includes('coffee') || businessType.includes('cafe')) {
-      return "https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?q=80&w=2070&auto=format&fit=crop";
+      return 'barber';
+    } else if (businessType.includes('tattoo') || businessType.includes('pmu')) {
+      return 'tattoo';
+    } else {
+      return 'beauty';
     }
-    
-    return "https://images.unsplash.com/photo-1613843351058-1dd06fccdc6a?q=80&w=2070&auto=format&fit=crop";
   };
+
+  // Use premium images for featured and urgent listings
+  const isPremium = salon.is_featured || salon.is_urgent;
+  const fallbackImage = isPremium ? getLuxurySalonImage() : getDefaultSalonImage(getFallbackCategory());
 
   return (
     <Card 
@@ -100,9 +103,10 @@ export const SalonSaleCard = ({
           src={getThumbnailUrl()}
           alt={salon.salon_name || "Salon for sale"}
           className="w-full h-full object-cover"
-          fallbackImage={getFallbackImage()}
+          fallbackImage={fallbackImage}
           businessName={salon.salon_name || salon.business_type || "Salon"}
           loading="lazy"
+          showPremiumBadge={isPremium}
         />
       </div>
       <CardContent className="p-4 flex-1 flex flex-col">

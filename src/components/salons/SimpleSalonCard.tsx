@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Salon } from '@/types/salon';
 import AuthAction from '@/components/common/AuthAction';
 import ImageWithFallback from '@/components/ui/ImageWithFallback';
-import { getDefaultSalonImage } from '@/utils/salonImageFallbacks';
+import { getDefaultSalonImage, getLuxurySalonImage } from '@/utils/salonImageFallbacks';
 import { useAuth } from '@/context/auth';
 
 interface SalonCardProps {
@@ -41,7 +41,19 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
   };
 
   // Determine the correct salon category for image fallback
-  const salonCategory = salon.category || 'beauty';
+  const salonCategory = salon.category || (
+    salon.isPremium ? 'luxury' : 
+    salon.specialty?.toLowerCase().includes('nail') ? 'nail' :
+    salon.specialty?.toLowerCase().includes('hair') ? 'hair' :
+    salon.specialty?.toLowerCase().includes('spa') ? 'spa' :
+    salon.specialty?.toLowerCase().includes('barber') ? 'barber' :
+    'beauty'
+  );
+
+  // For premium salons, use luxury images
+  const fallbackImage = salon.isPremium ? 
+    getLuxurySalonImage() : 
+    getDefaultSalonImage(salonCategory);
 
   return (
     <Card className={`overflow-hidden group transition-shadow duration-300 ${isVietnamese ? 'hover:shadow-purple-100 shadow-sm border-purple-100' : 'hover:shadow-md'}`}>
@@ -49,9 +61,10 @@ const SimpleSalonCard = ({ salon }: SalonCardProps) => {
         <ImageWithFallback
           src={salon.imageUrl}
           alt={title}
-          fallbackImage={getDefaultSalonImage(salonCategory)}
+          fallbackImage={fallbackImage}
           className="h-48 w-full object-cover"
           loading="lazy"
+          showPremiumBadge={salon.isPremium}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         {isVietnamese && (

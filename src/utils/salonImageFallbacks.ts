@@ -20,6 +20,8 @@ const enhancedFallbackImages = {
     '/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png',
     '/lovable-uploads/f34fda1a-6470-49ac-b973-2d1ee4fe0e86.png', // Modern nail station
     '/lovable-uploads/48f68f0e-3f4d-40d2-83e0-af67aeb11046.png', // New premium nail salon
+    '/lovable-uploads/21d69945-acea-4057-9ff0-df824cd3c607.png', // New luxury nail salon with pink theme
+    '/lovable-uploads/9e713225-1758-4c21-84d3-33e7707a2806.png', // Luxury spa/nail treatment chairs
   ],
   // Hair salon images
   hair: [
@@ -30,6 +32,8 @@ const enhancedFallbackImages = {
     '/lovable-uploads/a2001f31-d2ca-485b-b8ca-324f7f0a93e9.png', // Modern salon with mirrors
     '/lovable-uploads/322a70d7-f911-42b6-81e7-a205cc679cb7.png', // Nail bar with stools
     '/lovable-uploads/338c5814-c437-4b4a-abfd-ff088a9bb8e3.png', // New premium hair salon
+    '/lovable-uploads/ec5e520a-440f-4a62-bee8-23ba0c7e7c4c.png', // Luxury hair salon interior
+    '/lovable-uploads/56896daa-2bfa-44c0-b666-d2b7eb5a8205.png', // Professional barbershop interior
   ],
   // Spa images
   spa: [
@@ -39,20 +43,26 @@ const enhancedFallbackImages = {
     '/lovable-uploads/9a7898e7-739c-4a79-8705-70090e25c10b.png',
     '/lovable-uploads/e4474f6d-0c06-41b3-a3f6-f9a757313c5f.png', // Premium modern salon lounge
     '/lovable-uploads/20821f05-1d54-4853-b505-c09302440fe1.png', // New premium spa image
+    '/lovable-uploads/9e713225-1758-4c21-84d3-33e7707a2806.png', // Luxury spa treatment chairs
+    '/lovable-uploads/00ccb907-6755-4698-a289-71b05f7012f1.png', // Calming spa room with couch and plants
   ],
   // Barbershop images
   barber: [
     '/lovable-uploads/1f97f5e0-6b52-4ac6-925b-396bc0a1e585.png', 
     '/lovable-uploads/5f8eaed6-4a17-4992-a270-6394aad0f43b.png',
     '/lovable-uploads/9d6f82f3-66a2-4ff3-bdd8-7b7cd561bf8f.png',
-    '/lovable-uploads/ad023c9d-dc76-4c3e-8951-11be40460b06.png', // New tattoo/PMU studio
+    '/lovable-uploads/ad023c9d-dc76-4c3e-8951-11be40460b06.png', // Tattoo/PMU studio
+    '/lovable-uploads/56896daa-2bfa-44c0-b666-d2b7eb5a8205.png', // Professional barbershop chairs
+    '/lovable-uploads/072ab653-428c-4ec9-bd87-1bd6658d82de.png', // Professional barber station
   ],
   // Beauty salon images
   beauty: [
     '/lovable-uploads/1b5ea814-ad33-4a65-b01e-6c406c98ffc1.png',
     '/lovable-uploads/68057e27-17e9-4643-941f-d68d048d40ce.png',
     '/lovable-uploads/733d57a9-1f52-4ef1-afa2-59d9507d7f92.png',
-    '/lovable-uploads/9ebb0db4-1d49-4ac9-a746-4706af496749.png', // New elegant beauty salon
+    '/lovable-uploads/9ebb0db4-1d49-4ac9-a746-4706af496749.png', // Elegant beauty salon
+    '/lovable-uploads/21d69945-acea-4057-9ff0-df824cd3c607.png', // Luxury nail salon with pink theme
+    '/lovable-uploads/5392f705-a77b-4d8c-8071-562010763a1e.png', // Luxury product display
   ],
   
   // Premium luxury salons category with high-end interiors
@@ -67,9 +77,16 @@ const enhancedFallbackImages = {
     '/lovable-uploads/ad023c9d-dc76-4c3e-8951-11be40460b06.png', // Luxury tattoo/PMU studio
     '/lovable-uploads/9ebb0db4-1d49-4ac9-a746-4706af496749.png', // Luxury beauty salon
     '/lovable-uploads/b1bada0a-03dd-4a48-bc56-fad4fa216e62.png', // Luxury black and red nail salon
+    '/lovable-uploads/21d69945-acea-4057-9ff0-df824cd3c607.png', // Luxury nail salon with pink theme
+    '/lovable-uploads/ec5e520a-440f-4a62-bee8-23ba0c7e7c4c.png', // Luxury hair salon interior
+    '/lovable-uploads/9e713225-1758-4c21-84d3-33e7707a2806.png', // Luxury spa treatment chairs
+    '/lovable-uploads/00ccb907-6755-4698-a289-71b05f7012f1.png', // Luxury spa room with couch
+    '/lovable-uploads/56896daa-2bfa-44c0-b666-d2b7eb5a8205.png', // Luxury barbershop chairs
+    '/lovable-uploads/072ab653-428c-4ec9-bd87-1bd6658d82de.png', // Luxury barber station
+    '/lovable-uploads/5392f705-a77b-4d8c-8071-562010763a1e.png', // Luxury product display
   ],
   
-  // New specialized categories based on uploaded images
+  // Specialized categories based on uploaded images
   tattoo: [
     '/lovable-uploads/ad023c9d-dc76-4c3e-8951-11be40460b06.png', // Tattoo studio
   ],
@@ -77,10 +94,21 @@ const enhancedFallbackImages = {
   designerNail: [
     '/lovable-uploads/48f68f0e-3f4d-40d2-83e0-af67aeb11046.png', // Luxury nail salon with pink theme
     '/lovable-uploads/b1bada0a-03dd-4a48-bc56-fad4fa216e62.png', // Luxury black and red nail salon
+    '/lovable-uploads/21d69945-acea-4057-9ff0-df824cd3c607.png', // Luxury nail salon with pink interior
+  ],
+  
+  // New specialized categories for the uploaded images
+  spaWellness: [
+    '/lovable-uploads/00ccb907-6755-4698-a289-71b05f7012f1.png', // Spa wellness room
+    '/lovable-uploads/9e713225-1758-4c21-84d3-33e7707a2806.png', // Spa treatment chairs
+  ],
+  
+  beautyProducts: [
+    '/lovable-uploads/5392f705-a77b-4d8c-8071-562010763a1e.png', // Premium beauty products display
   ]
 };
 
-export type SalonCategory = keyof typeof salonFallbackImages | 'luxury' | 'tattoo' | 'designerNail';
+export type SalonCategory = keyof typeof salonFallbackImages | 'luxury' | 'tattoo' | 'designerNail' | 'spaWellness' | 'beautyProducts';
 
 /**
  * Gets a random image from the category's collection
@@ -125,6 +153,13 @@ export const fallbackImage = (): string => {
     '/lovable-uploads/ad023c9d-dc76-4c3e-8951-11be40460b06.png',
     '/lovable-uploads/9ebb0db4-1d49-4ac9-a746-4706af496749.png',
     '/lovable-uploads/b1bada0a-03dd-4a48-bc56-fad4fa216e62.png',
+    '/lovable-uploads/21d69945-acea-4057-9ff0-df824cd3c607.png',
+    '/lovable-uploads/ec5e520a-440f-4a62-bee8-23ba0c7e7c4c.png',
+    '/lovable-uploads/9e713225-1758-4c21-84d3-33e7707a2806.png',
+    '/lovable-uploads/00ccb907-6755-4698-a289-71b05f7012f1.png',
+    '/lovable-uploads/56896daa-2bfa-44c0-b666-d2b7eb5a8205.png',
+    '/lovable-uploads/072ab653-428c-4ec9-bd87-1bd6658d82de.png',
+    '/lovable-uploads/5392f705-a77b-4d8c-8071-562010763a1e.png',
     ...enhancedFallbackImages.beauty
   ];
   return allImages[Math.floor(Math.random() * allImages.length)];
@@ -166,6 +201,8 @@ export const isPremiumImage = (src: string): boolean => {
   const premiumImages = [
     ...enhancedFallbackImages.luxury,
     ...enhancedFallbackImages.designerNail,
+    ...enhancedFallbackImages.spaWellness,
+    ...enhancedFallbackImages.beautyProducts,
   ];
   
   return premiumImages.some(img => src.includes(img));
@@ -184,4 +221,18 @@ export const getDesignerNailSalonImage = (): string => {
  */
 export const getTattooStudioImage = (): string => {
   return getRandomImage(enhancedFallbackImages.tattoo);
+};
+
+/**
+ * Get a spa wellness image for spa services
+ */
+export const getSpaWellnessImage = (): string => {
+  return getRandomImage(enhancedFallbackImages.spaWellness);
+};
+
+/**
+ * Get a beauty products image for product displays
+ */
+export const getBeautyProductsImage = (): string => {
+  return getRandomImage(enhancedFallbackImages.beautyProducts);
 };
