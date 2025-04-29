@@ -6,6 +6,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 import './index.css';
 
+// Global error handler
+window.addEventListener('error', (event) => {
+  console.error('Global error caught:', event.error);
+});
+
 // Create query client with optimized settings for mobile
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -60,12 +65,44 @@ document.body.style.margin = '0';
 document.body.style.padding = '0';
 document.body.style.position = 'relative';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <Router>
-        <App />
-      </Router>
-    </QueryClientProvider>
-  </React.StrictMode>,
-);
+// Create a fallback div to show if rendering fails completely
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  const fallbackDiv = document.createElement('div');
+  fallbackDiv.innerHTML = `
+    <div style="padding: 20px; text-align: center; font-family: sans-serif;">
+      <h2>Application Error</h2>
+      <p>Could not find root element. Please refresh the page or contact support.</p>
+      <button onclick="window.location.reload()" style="padding: 8px 16px; background: #f97316; color: white; border: none; border-radius: 4px; cursor: pointer;">
+        Reload Page
+      </button>
+    </div>
+  `;
+  document.body.appendChild(fallbackDiv);
+} else {
+  try {
+    ReactDOM.createRoot(rootElement).render(
+      <React.StrictMode>
+        <QueryClientProvider client={queryClient}>
+          <Router>
+            <App />
+          </Router>
+        </QueryClientProvider>
+      </React.StrictMode>,
+    );
+  } catch (error) {
+    console.error('Failed to render application:', error);
+    rootElement.innerHTML = `
+      <div style="padding: 20px; text-align: center; font-family: sans-serif;">
+        <h2>Application Error</h2>
+        <p>Something went wrong while rendering the application. Please refresh the page.</p>
+        <div style="margin: 20px; padding: 10px; background: #ffebee; color: #c62828; text-align: left; overflow: auto;">
+          ${error instanceof Error ? error.message : 'Unknown error'}
+        </div>
+        <button onclick="window.location.reload()" style="padding: 8px 16px; background: #f97316; color: white; border: none; border-radius: 4px; cursor: pointer;">
+          Reload Page
+        </button>
+      </div>
+    `;
+  }
+}
