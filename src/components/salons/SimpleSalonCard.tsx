@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
@@ -58,10 +59,13 @@ const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
     
     if (salon.price) {
       // Add proper type guard before using indexOf
-      if (typeof salon.price === 'string' && salon.price.indexOf('$') !== -1) {
-        return salon.price;
-      } else if (typeof salon.price === 'string') {
+      if (typeof salon.price === 'string') {
+        if (salon.price.indexOf('$') !== -1) {
+          return salon.price;
+        }
         return `$${salon.price}`;
+      } else if (typeof salon.price === 'number') {
+        return `$${salon.price.toLocaleString()}`;
       }
     }
     
