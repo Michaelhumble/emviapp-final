@@ -1,8 +1,13 @@
 
 /**
+ * Listing type definition
+ */
+export type ListingType = 'salon' | 'job' | 'opportunity' | 'booth';
+
+/**
  * Validates if a listing exists in the database
  */
-export async function validateListingExists(id: string, type: 'salon' | 'job' | 'opportunity' | 'booth'): Promise<boolean> {
+export async function validateListingExists(id: string, type: ListingType): Promise<boolean> {
   try {
     // If the ID starts with a prefix like "salon-", it's not a UUID
     if (id.includes('-') && isNaN(parseInt(id.split('-')[0]))) {
@@ -74,6 +79,20 @@ export async function validateListingExists(id: string, type: 'salon' | 'job' | 
     // If there's an error in validation, fail safely
     return false;
   }
+}
+
+/**
+ * Validates if listing data has all required fields
+ */
+export function validateListingData(listing: any, requiredFields: string[] = []): boolean {
+  // If no listing provided, validation fails
+  if (!listing) return false;
+  
+  // Check that all required fields exist and are not null/undefined/empty
+  return requiredFields.every(field => {
+    const fieldValue = listing[field];
+    return fieldValue !== undefined && fieldValue !== null && fieldValue !== '';
+  });
 }
 
 // Import statement for supabase client
