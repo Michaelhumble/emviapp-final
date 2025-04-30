@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { salonListings, vietnameseSalonListings } from '@/data/salonData';
 import ValidatedSalonCard from '@/components/salons/ValidatedSalonCard';
 import { Plus, Search } from 'lucide-react';
+import BilingualExperienceSection from '@/components/salons/BilingualExperienceSection';
 
 const SalonsFinalsPage = () => {
   useEffect(() => {
@@ -78,6 +79,9 @@ const SalonsFinalsPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Replace "The Platform You've Been Waiting For" with BilingualExperienceSection */}
+      <BilingualExperienceSection />
 
       <div className="container mx-auto px-4 py-12" id="listings">
         <div className="max-w-7xl mx-auto">
