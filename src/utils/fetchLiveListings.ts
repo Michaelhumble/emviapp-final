@@ -42,7 +42,8 @@ export async function fetchLiveListings({
     // Transform database records to match Job type but avoid excessive recursion
     // Use explicit typing and avoid deep nesting that could cause infinite type recursion
     return data.map(listing => {
-      const jobListing: Job = {
+      // Create a minimal Job object with only the properties we need
+      const jobListing = {
         id: listing.id,
         title: listing.title,
         company: listing.title,
@@ -51,17 +52,20 @@ export async function fetchLiveListings({
         type: listing.post_type === 'salon' ? 'salon' : 'opportunity',
         created_at: listing.created_at,
         price: listing.price,
-        // Add simple metadata extraction without causing type recursion
-        imageUrl: listing.metadata && typeof listing.metadata === 'object' ? 
-          (listing.metadata as any).image_url || null : null,
-        for_sale: listing.metadata && typeof listing.metadata === 'object' ? 
-          (listing.metadata as any).for_sale || false : false,
-        specialties: listing.metadata && typeof listing.metadata === 'object' ? 
-          (listing.metadata as any).specialties || [] : [],
-        // Add image property for compatibility
-        image: listing.metadata && typeof listing.metadata === 'object' ? 
-          (listing.metadata as any).image_url || null : null
-      };
+        imageUrl: null,
+        for_sale: false,
+        specialties: [] as string[],
+        image: null
+      } as Job;
+
+      // Safely extract metadata without causing type recursion
+      if (listing.metadata && typeof listing.metadata === 'object') {
+        const meta = listing.metadata as Record<string, any>;
+        jobListing.imageUrl = meta.image_url || null;
+        jobListing.image = meta.image_url || null;
+        jobListing.for_sale = meta.for_sale || false;
+        jobListing.specialties = Array.isArray(meta.specialties) ? meta.specialties : [];
+      }
       
       return jobListing;
     });
@@ -84,26 +88,30 @@ export async function fetchListingById(id: string): Promise<Job | null> {
       .single();
     
     if (post) {
-      // Use type assertion to ensure proper typing without recursion
-      const listing: Job = {
+      // Create a minimal Job object to avoid type recursion
+      const listing = {
         id: post.id,
         title: post.title,
         company: post.title,
         location: post.location || 'Location not specified',
         description: post.content,
         type: post.post_type === 'salon' ? 'salon' : 'opportunity',
-        imageUrl: post.metadata && typeof post.metadata === 'object' ? 
-          (post.metadata as any).image_url || null : null,
+        imageUrl: null,
         created_at: post.created_at,
         price: post.price,
-        for_sale: post.metadata && typeof post.metadata === 'object' ? 
-          (post.metadata as any).for_sale || false : false,
-        specialties: post.metadata && typeof post.metadata === 'object' ? 
-          (post.metadata as any).specialties || [] : [],
-        // Add image property for compatibility
-        image: post.metadata && typeof post.metadata === 'object' ? 
-          (post.metadata as any).image_url || null : null
-      };
+        for_sale: false,
+        specialties: [] as string[],
+        image: null
+      } as Job;
+
+      // Safely extract metadata fields
+      if (post.metadata && typeof post.metadata === 'object') {
+        const meta = post.metadata as Record<string, any>;
+        listing.imageUrl = meta.image_url || null;
+        listing.image = meta.image_url || null;
+        listing.for_sale = meta.for_sale || false;
+        listing.specialties = Array.isArray(meta.specialties) ? meta.specialties : [];
+      }
       
       return listing;
     }
@@ -116,8 +124,8 @@ export async function fetchListingById(id: string): Promise<Job | null> {
       .single();
     
     if (salon) {
-      // Use type assertion to ensure proper typing without recursion
-      const salonListing: Job = {
+      // Create a minimal Job object for a salon to avoid type recursion
+      const salonListing = {
         id: salon.id,
         title: salon.salon_name,
         company: salon.salon_name,
@@ -128,7 +136,7 @@ export async function fetchListingById(id: string): Promise<Job | null> {
         imageUrl: salon.logo_url || null,
         image: salon.logo_url || null,
         created_at: salon.created_at,
-      };
+      } as Job;
       
       return salonListing;
     }
