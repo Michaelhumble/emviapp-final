@@ -25,12 +25,12 @@ const IndexPage = () => {
       <Hero />
       <Features />
       <BeautyExchangeSection />
-      <MissingPieceSection />
-      <FeaturedSalons />
       
-      {/* Add the Bilingual Experience Section before AIPowerhouse */}
+      {/* Add the Bilingual Experience Section before MissingPieceSection */}
       <BilingualExperienceSection />
       
+      <MissingPieceSection />
+      <FeaturedSalons />
       <AIPowerhouse />
       <CallToAction />
     </Layout>
