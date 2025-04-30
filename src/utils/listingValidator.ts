@@ -17,29 +17,15 @@ export async function validateListingExists(id: string, listingType: ListingType
     if (!id) return false;
     
     // In a real implementation, we would query different tables based on type
-    let tableName: string;
-    
-    switch(listingType) {
-      case 'salon':
-        tableName = 'salons';
-        break;
-      case 'job':
-      case 'opportunity':
-        tableName = 'jobs';
-        break;
-      case 'booth':
-        tableName = 'posts'; // Assuming booths are in posts table
-        break;
-      default:
-        return false;
-    }
+    // We need to use table names that exist in the Supabase schema
+    const tableName = listingType === 'salon' ? 'salons' : 
+                      (listingType === 'job' || listingType === 'opportunity') ? 'jobs' : 'posts';
     
     // Query the appropriate table to check if the listing exists
     const { data, error } = await supabase
       .from(tableName)
       .select('id')
       .eq('id', id)
-      .eq('status', 'active') // Only check active listings
       .single();
     
     if (error) {
@@ -100,6 +86,23 @@ export async function fetchValidListings(limit: number = 6): Promise<any[]> {
     console.error('Error in fetchValidListings:', error);
     return [];
   }
+}
+
+/**
+ * Validate listing data for displaying
+ * Checks if a listing has all required fields for display
+ */
+export function validateListingData(listing: any, requiredFields: string[] = ['id', 'title']): boolean {
+  if (!listing) return false;
+  
+  for (const field of requiredFields) {
+    if (listing[field] === undefined || listing[field] === null || listing[field] === '') {
+      console.log(`Listing validation failed: missing ${field}`);
+      return false;
+    }
+  }
+  
+  return true;
 }
 
 /**

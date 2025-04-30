@@ -48,15 +48,15 @@ export async function fetchSalonById(id: string): Promise<{
     // Convert to Job format for compatibility
     const salonAsJob: Job = {
       id: data.id,
-      title: data.salon_name || data.name || '',
-      company: data.salon_name || data.name || '',
+      title: data.salon_name || '',
+      company: data.salon_name || '',
       location: data.location || '',
       created_at: data.created_at || new Date().toISOString(),
-      description: data.description || data.about || '',
-      image: data.image || data.logo_url || '',
-      imageUrl: data.image || data.logo_url || '',
+      description: data.about || '',
+      image: data.logo_url || '',
+      imageUrl: data.logo_url || '',
       type: 'salon',
-      salon_features: data.features || []
+      salon_features: data.services ? JSON.parse(data.services) : []
     };
     
     console.log("Successfully fetched salon from database:", salonAsJob.id);

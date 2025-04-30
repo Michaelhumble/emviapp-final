@@ -18,7 +18,7 @@ export function determineSalonCategory(description: string = '', name: string = 
     return 'spa';
   } else if (normalizedText.includes('luxury') || normalizedText.includes('premium') || normalizedText.includes('high-end')) {
     return 'luxury';
-  } else if (normalizedText.includes('beauty') || normalizedText.includes('makeup') || normalizedText.includes('cosmetic')) {
+  } else if (normalizedText.includes('beauty') || normalizedText.includes('makeup') || normalizedText.includes('cosmetic') || normalizedText.includes('barber')) {
     return 'beauty';
   } else {
     return 'generic';

@@ -59,7 +59,7 @@ export function getMockDiverseListings(): Job[] {
     imageUrl: salon.imageUrl || salon.image,
     created_at: salon.created_at || new Date().toISOString(),
     type: 'salon' as const,
-    specialties: salon.features || []
+    salon_features: salon.features || []
   }));
   
   const jobListings = jobsData.slice(0, 3).map(job => ({
@@ -71,11 +71,41 @@ export function getMockDiverseListings(): Job[] {
     imageUrl: job.image || '',
     created_at: job.posted || new Date().toISOString(),
     type: 'job' as const,
-    specialties: job.specialties || []
+    specialty: job.specialty || []
   }));
   
   // Combine and enhance all listings
   return [...salonListings, ...jobListings].map(enhanceListingWithImage);
+}
+
+/**
+ * Checks if a listing has all required fields for display
+ * @param listing The listing to verify
+ * @returns boolean indicating if listing is displayable
+ */
+export function isListingDisplayable(listing: any): boolean {
+  if (!listing) return false;
+  
+  // Basic check for required fields
+  const hasBasicInfo = listing.id && 
+                     (listing.title || listing.name) && 
+                     (listing.location);
+  
+  // Check for image or fallback capabilities
+  const hasImageOrFallback = listing.imageUrl || 
+                            listing.image || 
+                            (listing.type && ['salon', 'job', 'opportunity'].includes(listing.type));
+  
+  return hasBasicInfo && hasImageOrFallback;
+}
+
+/**
+ * Verify all opportunity listings for display
+ * @param listings Array of listings to verify
+ * @returns Array of valid listings
+ */
+export function verifyOpportunityListings(listings: any[]): Job[] {
+  return listings.filter(isListingDisplayable).map(enhanceListingWithImage);
 }
 
 /**
