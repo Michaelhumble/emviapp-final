@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Job } from '@/types/job';
 import { getValidatedDiverseListings, isListingDisplayable, enhanceListingWithImage } from '@/utils/listingsVerification';

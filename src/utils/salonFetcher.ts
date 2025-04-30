@@ -56,7 +56,7 @@ export async function fetchSalonById(id: string): Promise<{
       image: data.logo_url || '',
       imageUrl: data.logo_url || '',
       type: 'salon',
-      salon_features: data.services ? JSON.parse(data.services) : []
+      salon_features: data.services ? JSON.parse(data.services as string) : []
     };
     
     console.log("Successfully fetched salon from database:", salonAsJob.id);

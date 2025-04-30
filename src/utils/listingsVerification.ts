@@ -1,3 +1,4 @@
+
 import { Job } from '@/types/job';
 import jobsData from '@/data/jobsData';
 import { sampleSalons } from '@/data/sampleSalons';
@@ -71,7 +72,7 @@ export function getMockDiverseListings(): Job[] {
     imageUrl: job.image || '',
     created_at: job.posted || new Date().toISOString(),
     type: 'job' as const,
-    specialty: job.specialty || []
+    specialties: job.specialty || [] // Using specialties property instead of specialty
   }));
   
   // Combine and enhance all listings
