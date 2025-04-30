@@ -11,7 +11,7 @@ const BilingualExperienceSection = () => {
       <div className="container mx-auto px-4">
         {/* Dual Language Title Section */}
         <div className="flex flex-col items-center text-center mb-12">
-          {/* Vietnamese Heading */}
+          {/* English Heading */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -22,13 +22,13 @@ const BilingualExperienceSection = () => {
             <div className="relative inline-block">
               <Sparkles className="absolute -left-10 -top-6 w-8 h-8 text-purple-500 opacity-80" />
               <h2 className="font-playfair font-bold text-2xl md:text-4xl bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent mb-3">
-                Hãy Cùng Nhau Trải Nghiệm EmviApp ✨
+                Let's Experience EmviApp Together ✨
               </h2>
               <div className="h-1 bg-gradient-to-r from-purple-600 to-pink-400 w-full mt-2 rounded-full" />
             </div>
           </motion.div>
           
-          {/* English Heading */}
+          {/* Vietnamese Heading */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -38,7 +38,7 @@ const BilingualExperienceSection = () => {
             <div className="relative inline-block">
               <Sparkles className="absolute -left-10 -top-6 w-8 h-8 text-purple-500 opacity-80" />
               <h2 className="font-playfair font-bold text-2xl md:text-4xl bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent mb-3">
-                Let's Experience EmviApp Together ✨
+                Hãy Cùng Nhau Trải Nghiệm EmviApp ✨
               </h2>
               <div className="h-1 bg-gradient-to-r from-purple-600 to-pink-400 w-full mt-2 rounded-full" />
             </div>
