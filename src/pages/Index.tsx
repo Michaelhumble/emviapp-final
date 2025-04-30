@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -20,7 +21,11 @@ import FinalFounderCTA from "@/components/home/FinalFounderCTA";
 import SalonClientGrowthSystem from "@/components/home/SalonClientGrowthSystem";
 import WhyTrustSection from "@/components/home/sections/WhyTrustSection";
 import WhatYouCanDoSection from "@/components/home/sections/WhatYouCanDoSection";
-import BeautyExchangeSection from "@/components/home/BeautyExchangeSection";
+import OpportunitiesSection from "@/components/home/opportunities/OpportunitiesSection";
+
+// Import utilities for getting diverse listings
+import { getFeaturedJobs, getSalonsForSale } from "@/utils/featuredContent";
+import { Job } from "@/types/job";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -33,6 +38,23 @@ const Index = () => {
     isLoading,
     userId
   } = useRoleSelection();
+  
+  // Get diverse listings for the Beauty Exchange section
+  const diverseListings: Job[] = [
+    ...getFeaturedJobs(3),
+    ...getSalonsForSale(3).map(salon => ({
+      id: salon.id,
+      title: salon.name,
+      company: salon.name,
+      location: salon.location,
+      created_at: salon.created_at || new Date().toISOString(),
+      description: salon.description,
+      price: salon.price?.toString() || "",
+      imageUrl: salon.imageUrl,
+      type: "salon",
+      for_sale: true
+    }))
+  ].slice(0, 3); // Limit to 3 listings
   
   useEffect(() => {
     document.title = "EmviApp | The Beauty Industry Platform";
@@ -49,8 +71,8 @@ const Index = () => {
       {/* Hero section as first */}
       <Hero />
       
-      {/* ✨ The Beauty Exchange Section - Positioned first after hero */}
-      <BeautyExchangeSection />
+      {/* The Beauty Exchange - Original polished version with job cards */}
+      <OpportunitiesSection diverseListings={diverseListings} />
       
       {/* Why Artists & Salons Trust Us */}
       <WhyTrustSection />
