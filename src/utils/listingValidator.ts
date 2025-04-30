@@ -1,180 +1,126 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { Job } from "@/types/job";
-import { Salon } from "@/types/salon";
-import { Listing } from "@/types/listing";
 
 export type ListingType = 'salon' | 'job' | 'opportunity' | 'booth';
 
-interface ValidationLogEntry {
-  id: string;
-  listingType: ListingType;
-  errorReason?: string;
-  timestamp: string;
-  referrer?: string;
-}
-
-// Keep a runtime cache of recently validated IDs
-const validatedListingCache = new Map<string, boolean>();
-
 /**
- * Validates if a listing ID exists in the database
+ * Validates if a listing exists in the database
+ * @param id The listing ID to validate
+ * @param listingType The type of listing (salon, job, opportunity, booth)
+ * @returns Promise<boolean> indicating if the listing exists
  */
-export async function validateListingExists(
-  id: string, 
-  listingType: ListingType
-): Promise<boolean> {
+export async function validateListingExists(id: string, listingType: ListingType): Promise<boolean> {
   try {
-    // First check the cache to prevent unnecessary DB queries
-    const cacheKey = `${listingType}:${id}`;
-    if (validatedListingCache.has(cacheKey)) {
-      return validatedListingCache.get(cacheKey) as boolean;
-    }
+    // For development purposes, we'll default to true but log the attempted validation
+    console.log(`Validating ${listingType} listing with ID: ${id}`);
     
-    // Determine which table to query based on listing type
-    let exists = false;
+    if (!id) return false;
     
-    switch (listingType) {
+    // In a real implementation, we would query different tables based on type
+    let tableName: string;
+    
+    switch(listingType) {
       case 'salon':
-        // Try looking in salons table
-        const { data: salon } = await supabase
-          .from('salons')
-          .select('id')
-          .eq('id', id)
-          .single();
-        
-        // If not found in salons table, check if it exists as a job of type 'salon'
-        if (!salon) {
-          const { data: salonJob } = await supabase
-            .from('posts')
-            .select('id')
-            .eq('id', id)
-            .eq('post_type', 'salon')
-            .single();
-          
-          exists = !!salonJob;
-        } else {
-          exists = true;
-        }
+        tableName = 'salons';
         break;
-        
       case 'job':
       case 'opportunity':
-        const { data: job } = await supabase
-          .from('posts')
-          .select('id')
-          .eq('id', id)
-          .single();
-        
-        exists = !!job;
+        tableName = 'jobs';
         break;
-        
       case 'booth':
-        const { data: booth } = await supabase
-          .from('posts')
-          .select('id')
-          .eq('id', id)
-          .eq('post_type', 'booth')
-          .single();
-        
-        exists = !!booth;
+        tableName = 'posts'; // Assuming booths are in posts table
         break;
+      default:
+        return false;
     }
     
-    // Cache the result
-    validatedListingCache.set(cacheKey, exists);
+    // Query the appropriate table to check if the listing exists
+    const { data, error } = await supabase
+      .from(tableName)
+      .select('id')
+      .eq('id', id)
+      .eq('status', 'active') // Only check active listings
+      .single();
     
-    // If it doesn't exist, log the invalid attempt
-    if (!exists) {
-      logInvalidListingAccess(id, listingType, "ID not found in database");
+    if (error) {
+      console.error(`Error validating ${listingType} with ID ${id}:`, error);
+      return false;
     }
     
-    return exists;
+    return !!data;
   } catch (error) {
-    // Log error and return false
-    logInvalidListingAccess(id, listingType, error instanceof Error ? error.message : "Unknown error");
+    console.error('Error in validateListingExists:', error);
     return false;
   }
 }
 
 /**
- * Validates listing data to ensure it has all required properties
+ * Fetch valid listings data from Supabase
+ * @returns Promise<Array<any>> Array of valid listings
  */
-export function validateListingData(
-  listing: Job | Salon | Listing | null | undefined,
-  requiredFields: string[] = ['id']
-): boolean {
-  if (!listing) return false;
-  
+export async function fetchValidListings(limit: number = 6): Promise<any[]> {
   try {
-    // Check that all required fields exist
-    for (const field of requiredFields) {
-      if (!(field in listing) || listing[field as keyof typeof listing] === undefined) {
-        logInvalidListingAccess(
-          listing.id || "unknown", 
-          getListingTypeFromData(listing), 
-          `Missing required field: ${field}`
-        );
-        return false;
-      }
+    // First, try to get salon listings
+    const { data: salonData, error: salonError } = await supabase
+      .from('salons')
+      .select('*')
+      .eq('status', 'active')
+      .limit(limit/2);
+      
+    if (salonError) {
+      console.error('Error fetching salon listings:', salonError);
     }
+    
+    // Then, get job listings
+    const { data: jobData, error: jobError } = await supabase
+      .from('jobs')
+      .select('*')
+      .eq('status', 'active')
+      .limit(limit/2);
+    
+    if (jobError) {
+      console.error('Error fetching job listings:', jobError);
+    }
+    
+    // Combine and process the data
+    const salonListings = (salonData || []).map(salon => ({
+      ...salon,
+      type: 'salon'
+    }));
+    
+    const jobListings = (jobData || []).map(job => ({
+      ...job,
+      type: 'job'
+    }));
+    
+    // Combine and shuffle
+    const combinedListings = [...salonListings, ...jobListings];
+    return combinedListings.slice(0, limit);
+  } catch (error) {
+    console.error('Error in fetchValidListings:', error);
+    return [];
+  }
+}
+
+/**
+ * Run verification on listings to ensure they are properly routed
+ * Useful for debugging
+ */
+export async function runListingsVerification() {
+  // Get sample data from static file for testing
+  try {
+    console.log("🔍 Running listings verification...");
+    
+    // Check a sample salon and job
+    const salonValid = await validateListingExists("sample-salon-id", "salon");
+    console.log(`Sample salon validation: ${salonValid}`);
+    
+    const jobValid = await validateListingExists("sample-job-id", "job");
+    console.log(`Sample job validation: ${jobValid}`);
     
     return true;
   } catch (error) {
-    logInvalidListingAccess(
-      listing?.id || "unknown", 
-      getListingTypeFromData(listing), 
-      error instanceof Error ? error.message : "Data validation error"
-    );
+    console.error("Error in listings verification:", error);
     return false;
-  }
-}
-
-/**
- * Determine listing type from data structure
- */
-function getListingTypeFromData(listing: any): ListingType {
-  if (!listing) return 'opportunity'; // Default fallback
-  
-  if (listing.type) return listing.type as ListingType;
-  if ('salon_name' in listing) return 'salon';
-  if ('role' in listing || 'company' in listing) return 'job';
-  return 'opportunity';
-}
-
-/**
- * Log invalid listing access attempts
- */
-export async function logInvalidListingAccess(
-  id: string,
-  listingType: ListingType,
-  errorReason?: string
-): Promise<void> {
-  try {
-    // Log to console for development
-    console.error(`Invalid listing access: ${listingType} ID ${id} - ${errorReason || 'Unknown error'}`);
-    
-    // Create log entry
-    const logEntry: ValidationLogEntry = {
-      id,
-      listingType,
-      errorReason,
-      timestamp: new Date().toISOString(),
-      referrer: typeof window !== 'undefined' ? window.location.href : undefined
-    };
-    
-    // Log to Supabase if in production
-    if (process.env.NODE_ENV === 'production') {
-      await supabase
-        .from('listing_validation_logs')
-        .insert({
-          listing_id: id,
-          listing_type: listingType,
-          error_reason: errorReason,
-          referrer: logEntry.referrer
-        });
-    }
-  } catch (error) {
-    console.error('Failed to log invalid listing access:', error);
   }
 }
