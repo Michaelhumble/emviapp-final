@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
@@ -29,13 +30,13 @@ const SalonsFinalsPage = () => {
         />
       </Helmet>
 
-      {/* Hero banner with overlay, text and buttons */}
-      <div className="w-full relative overflow-hidden" style={{ maxHeight: '500px' }}>
-        {/* Main image (unchanged) */}
+      {/* Hero banner with overlay, text and buttons - Updated for better visual impact */}
+      <div className="w-full relative overflow-hidden min-h-[400px] md:min-h-[520px]">
+        {/* Main image with improved sizing */}
         <img 
           src="/lovable-uploads/79cf9064-5740-4752-9ad6-9b7e9b4db31e.png" 
           alt="Luxury salon interior" 
-          className="w-full h-auto object-cover"
+          className="w-full h-full absolute inset-0 object-cover object-center"
         />
         
         {/* Dark gradient overlay */}
@@ -46,8 +47,8 @@ const SalonsFinalsPage = () => {
           }} 
         />
         
-        {/* Hero content */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 md:px-8">
+        {/* Hero content with improved vertical centering */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 md:px-8 z-10">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold text-white mb-3">
             Premium Salons for Sale — Ready to Own
           </h1>
