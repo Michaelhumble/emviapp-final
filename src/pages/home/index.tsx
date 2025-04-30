@@ -1,41 +1,40 @@
 
 import React from 'react';
+import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
-import SalonsForSale from '@/components/home/SalonsForSale';
+import Hero from '@/components/home/Hero';
+import Features from '@/components/home/Features';
+import BeautyExchangeSection from '@/components/home/BeautyExchangeSection';
+import BilingualExperienceSection from '@/components/home/BilingualExperienceSection';
+import AIPowerhouse from '@/components/home/AIPowerhouse';
 import FeaturedSalons from '@/components/home/FeaturedSalons';
-import HiringSalonsShowcase from '@/components/home/HiringSalonsShowcase';
-import JobsHighlight from '@/components/home/JobsHighlight';
-import NailImageStatus from '@/components/debug/NailImageStatus';
-import BarberImageStatus from '@/components/debug/BarberImageStatus';
-import FallbackBoundary from '@/components/error-handling/FallbackBoundary';
+import CallToAction from '@/components/home/CallToAction';
+import MissingPieceSection from '@/components/home/missing-piece';
 
-const Home = () => {
+const IndexPage = () => {
   return (
     <Layout>
-      <FallbackBoundary errorMessage="Debug components failed to load">
-        <div className="container mx-auto p-4 mb-8 space-y-4">
-          <NailImageStatus />
-          <BarberImageStatus />
-        </div>
-      </FallbackBoundary>
+      <Helmet>
+        <title>EmviApp | Beauty Industry Marketplace</title>
+        <meta
+          name="description"
+          content="EmviApp connects beauty professionals, salon owners, and clients. Find jobs, talent, salons for sale, and more."
+        />
+      </Helmet>
+
+      <Hero />
+      <Features />
+      <BeautyExchangeSection />
+      <MissingPieceSection />
+      <FeaturedSalons />
       
-      <FallbackBoundary errorMessage="Salons for sale section failed to load">
-        <SalonsForSale />
-      </FallbackBoundary>
+      {/* Add the Bilingual Experience Section before AIPowerhouse */}
+      <BilingualExperienceSection />
       
-      <FallbackBoundary errorMessage="Featured salons section failed to load">
-        <FeaturedSalons />
-      </FallbackBoundary>
-      
-      <FallbackBoundary errorMessage="Hiring salons section failed to load">
-        <HiringSalonsShowcase />
-      </FallbackBoundary>
-      
-      <FallbackBoundary errorMessage="Jobs section failed to load">
-        <JobsHighlight />
-      </FallbackBoundary>
+      <AIPowerhouse />
+      <CallToAction />
     </Layout>
   );
 };
 
-export default Home;
+export default IndexPage;
