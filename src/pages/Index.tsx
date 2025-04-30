@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -22,6 +23,7 @@ import FinalFounderCTA from "@/components/home/FinalFounderCTA";
 import SalonClientGrowthSystem from "@/components/home/SalonClientGrowthSystem";
 import WhyTrustSection from "@/components/home/sections/WhyTrustSection";
 import WhatYouCanDoSection from "@/components/home/sections/WhatYouCanDoSection";
+import BeautyExchangeSection from "@/components/home/BeautyExchangeSection";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -49,6 +51,9 @@ const Index = () => {
     <Layout>
       {/* Hero section as first */}
       <Hero />
+      
+      {/* ✨ NEW SECTION: The Beauty Exchange */}
+      <BeautyExchangeSection />
       
       {/* 1️⃣ Latest Industry Opportunities (Beauty Exchange) */}
       <LatestIndustryOpportunities />
