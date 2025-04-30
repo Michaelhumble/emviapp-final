@@ -7,7 +7,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Building } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Job } from '@/types/job';
-import { getNailSalonImage, getNailJobImage } from '@/utils/nailSalonImages';
+import { getNailJobImage } from '@/utils/nailSalonImages';
+import ValidatedLink from '@/components/common/ValidatedLink';
 
 export default function HiringSalonsShowcase() {
   // Filter to find hiring-related jobs
@@ -16,7 +17,8 @@ export default function HiringSalonsShowcase() {
       job.title?.toLowerCase().includes('hiring') || 
       job.description?.toLowerCase().includes('hiring') ||
       job.title?.toLowerCase().includes('technician') ||
-      job.title?.toLowerCase().includes('artist')
+      job.title?.toLowerCase().includes('artist') ||
+      job.title?.toLowerCase().includes('nail')
     )
     .slice(0, 3)
     .map(transformJobData);
@@ -24,6 +26,13 @@ export default function HiringSalonsShowcase() {
   if (hiringJobs.length === 0) {
     return null;
   }
+
+  // Use these specific nail salon images from your uploads for a consistent look
+  const nailSalonImages = [
+    "/lovable-uploads/b704ea4b-0b33-4df7-82b7-fc09b0fd3f87.png", // First uploaded image
+    "/lovable-uploads/309e611b-a055-4c18-be15-db9fa1da4a03.png", // Second uploaded image  
+    "/lovable-uploads/c3f5bfae-e121-4a6c-9703-33ec0b092447.png", // Third uploaded image
+  ];
 
   return (
     <section className="py-12 bg-white">
@@ -39,9 +48,9 @@ export default function HiringSalonsShowcase() {
           {hiringJobs.map((job, index) => (
             <Card key={index} className="overflow-hidden h-full hover:shadow-md transition-shadow">
               <div className="aspect-video bg-gray-100 w-full overflow-hidden">
-                {/* Use nail job/salon images that match the opportunity */}
+                {/* Use the specific nail salon images */}
                 <img
-                  src={getNailJobImage()}
+                  src={nailSalonImages[index % nailSalonImages.length]}
                   alt={job.title || 'Premium nail salon opportunity'}
                   className="w-full h-full object-cover"
                 />
@@ -63,9 +72,14 @@ export default function HiringSalonsShowcase() {
                   {job.description?.substring(0, 120)}...
                 </div>
                 
-                <Link to={`/jobs/${job.id}`} className="text-primary text-sm font-medium hover:underline">
+                <ValidatedLink 
+                  to={`/jobs/${job.id}`} 
+                  listingId={job.id} 
+                  listingType="job"
+                  className="text-primary text-sm font-medium hover:underline"
+                >
                   View Job Details →
-                </Link>
+                </ValidatedLink>
               </CardContent>
             </Card>
           ))}

@@ -7,11 +7,18 @@ import { MapPin, Building, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { fetchLiveListings } from '@/utils/fetchLiveListings';
 import { Job } from '@/types/job';
-import { getNailJobImage } from '@/utils/nailSalonImages';
+import ValidatedLink from '@/components/common/ValidatedLink';
 
 export default function SalonJobListingsShowcase() {
   const [hiringSalons, setHiringSalons] = React.useState<Job[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
+
+  // Use these specific nail salon images from your uploads for a consistent look
+  const nailSalonImages = [
+    "/lovable-uploads/b704ea4b-0b33-4df7-82b7-fc09b0fd3f87.png", // First uploaded image
+    "/lovable-uploads/309e611b-a055-4c18-be15-db9fa1da4a03.png", // Second uploaded image  
+    "/lovable-uploads/c3f5bfae-e121-4a6c-9703-33ec0b092447.png", // Third uploaded image
+  ];
 
   React.useEffect(() => {
     // Attempt to fetch real listings first
@@ -83,9 +90,9 @@ export default function SalonJobListingsShowcase() {
           {hiringSalons.map((job, index) => (
             <Card key={index} className="overflow-hidden h-full hover:shadow-md transition-shadow">
               <div className="aspect-video bg-gray-100 w-full overflow-hidden">
-                {/* Use your beautiful nail salon images */}
+                {/* Use the specific nail salon images */}
                 <img
-                  src={getNailJobImage()}
+                  src={nailSalonImages[index % nailSalonImages.length]}
                   alt={job.title || 'Nail salon job opportunity'}
                   className="w-full h-full object-cover"
                 />
@@ -169,3 +176,6 @@ function getSampleSalonJobs(): Job[] {
     }
   ];
 }
+
+// Export the sample salon jobs for other components to use if needed
+export const sampleSalonJobs = getSampleSalonJobs;
