@@ -88,7 +88,7 @@ const BeautyExchangeSection = () => {
               Find Your Startup. Build Something Beautiful With Your New Team.
             </motion.p>
             
-            {/* CTA Buttons - 3 buttons */}
+            {/* CTA Buttons - 3 buttons with enhanced hover effects */}
             <div className="flex flex-col sm:flex-row flex-wrap items-center gap-4">
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -97,7 +97,7 @@ const BeautyExchangeSection = () => {
               >
                 <Link to="/salons">
                   <Button 
-                    className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white shadow-md"
+                    className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white shadow-md rounded-xl font-medium transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg"
                     size="lg"
                   >
                     <Search className="mr-2 h-5 w-5" /> Browse Beauty Listings
@@ -112,7 +112,7 @@ const BeautyExchangeSection = () => {
               >
                 <Link to="/create-listing">
                   <Button 
-                    className="w-full sm:w-auto border-2 border-purple-600 bg-transparent text-purple-700 hover:bg-purple-50"
+                    className="w-full sm:w-auto border-2 border-purple-600 bg-transparent text-purple-700 hover:bg-purple-50 rounded-xl font-medium transition-all duration-300 hover:translate-y-[-2px]"
                     variant="outline"
                     size="lg"
                   >
@@ -128,7 +128,7 @@ const BeautyExchangeSection = () => {
               >
                 <Link to="/artists">
                   <Button 
-                    className="w-full sm:w-auto border-2 border-purple-600 bg-transparent text-purple-700 hover:bg-purple-50"
+                    className="w-full sm:w-auto border-2 border-purple-600 bg-transparent text-purple-700 hover:bg-purple-50 rounded-xl font-medium transition-all duration-300 hover:translate-y-[-2px]"
                     variant="outline"
                     size="lg"
                   >
