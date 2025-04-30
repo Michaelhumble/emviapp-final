@@ -1,7 +1,8 @@
+
+import { supabase } from "@/integrations/supabase/client";
 import { Job } from "@/types/job";
 import { Salon } from "@/types/salon";
 import { Listing } from "@/types/listing";
-import { supabase } from "@/integrations/supabase/client";
 
 export type ListingType = 'salon' | 'job' | 'opportunity' | 'booth';
 
