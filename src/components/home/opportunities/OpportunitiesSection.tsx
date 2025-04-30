@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Job } from '@/types/job';
@@ -43,8 +42,8 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
           transition={{ duration: 0.5 }}
           className="max-w-3xl mx-auto text-center mb-16"
         >
-          <h2 className="text-2xl md:text-4xl font-playfair font-bold mb-6 text-gray-900">
-            What's Everyone Looking Right Now
+          <h2 className="text-2xl md:text-4xl font-playfair font-bold mb-6 text-[#1A1A1A]">
+            Right Now on EmviApp — The Listings Everyone's Talking About
           </h2>
         </motion.div>
 
