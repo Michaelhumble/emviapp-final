@@ -1,4 +1,3 @@
-
 import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
@@ -14,6 +13,8 @@ import { getRedirectPath } from '@/utils/routeRedirector';
 import StableSalonPage from "@/pages/salons/StableSalonPage";
 import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
 import ArtistInbox from "@/pages/dashboard/artist/Inbox";
+import SalonDetailPage from "@/pages/salons/SalonDetailPage";
+import OpportunityDetailPage from "@/pages/opportunities/OpportunityDetailPage";
 
 // Simple component to handle route redirects
 const RouteRedirector = () => {
@@ -50,6 +51,12 @@ function App() {
                 <Routes>
                   {/* Explicitly define the /salons route to use StableSalonPage which includes SalonsFinal */}
                   <Route path="/salons" element={<StableSalonPage />} />
+                  
+                  {/* Add explicit route for salon details */}
+                  <Route path="/salons/:id" element={<SalonDetailPage />} />
+                  
+                  {/* Add explicit route for opportunity details */}
+                  <Route path="/opportunities/:id" element={<OpportunityDetailPage />} />
                   
                   {/* Redirect old routes to new ones */}
                   <Route path="/posting/*" element={<Navigate to="/create-listing" replace />} />
