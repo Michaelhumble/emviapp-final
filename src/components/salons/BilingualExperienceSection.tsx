@@ -24,7 +24,7 @@ const BilingualExperienceSection = () => {
               <h2 className="font-playfair font-bold text-2xl md:text-4xl bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent mb-3">
                 Hãy Cùng Nhau Trải Nghiệm EmviApp ✨
               </h2>
-              <div className="h-1 bg-gradient-to-r from-purple-600 to-purple-300 w-full mt-2 rounded-full" />
+              <div className="h-1 bg-gradient-to-r from-purple-600 to-pink-400 w-full mt-2 rounded-full" />
             </div>
           </motion.div>
           
@@ -40,7 +40,7 @@ const BilingualExperienceSection = () => {
               <h2 className="font-playfair font-bold text-2xl md:text-4xl bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent mb-3">
                 Let's Experience EmviApp Together ✨
               </h2>
-              <div className="h-1 bg-gradient-to-r from-purple-600 to-purple-300 w-full mt-2 rounded-full" />
+              <div className="h-1 bg-gradient-to-r from-purple-600 to-pink-400 w-full mt-2 rounded-full" />
             </div>
           </motion.div>
         </div>
