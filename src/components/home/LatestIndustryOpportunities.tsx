@@ -30,11 +30,15 @@ const LatestIndustryOpportunities = () => {
           .slice(0, 6)
           .map(job => ({
             ...job,
-            imageUrl: job.imageUrl || job.image || '', // Ensure imageUrl is set
-            type: job.type || 'opportunity'  // Default to opportunity type
+            // Convert JobPosting to Job type with required fields
+            id: job.id.toString(), // Convert number to string for Job interface
+            created_at: new Date().toISOString(), // Add required created_at field
+            image: job.image || '', // Ensure image is set
+            imageUrl: job.image || '', // Map image to imageUrl
+            type: 'opportunity'  // Default to opportunity type
           }));
         
-        setListings(filteredListings);
+        setListings(filteredListings as Job[]);
         console.log(`Loaded ${filteredListings.length} listings for display`);
       } catch (error) {
         console.error("Error loading opportunity listings:", error);
