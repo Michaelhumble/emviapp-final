@@ -26,6 +26,16 @@ export const getLanguagePreference = (): Language => {
 };
 
 /**
+ * Check if the user has already set a language preference
+ */
+export const hasLanguagePreference = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  
+  const savedPreference = localStorage.getItem(LANGUAGE_PREFERENCE_KEY);
+  return savedPreference === 'en' || savedPreference === 'vi';
+};
+
+/**
  * Set the user's language preference in localStorage and notify listeners
  */
 export const setLanguagePreference = (language: Language): void => {
