@@ -14,17 +14,35 @@ const FeaturedListingsSection: React.FC<FeaturedListingsSectionProps> = ({
   featuredListings,
   onViewDetails
 }) => {
-  // Format price to currency
-  const formatPrice = (price: string | undefined) => {
+  // Format price to currency - Updated to handle string | number | undefined
+  const formatPrice = (price: string | number | undefined) => {
     if (!price) return "$0";
     
-    const numericPrice = parseFloat(price.replace(/[^0-9.-]+/g, ""));
+    if (typeof price === 'string') {
+      // If already has dollar sign, return as is
+      if (price.includes('$')) return price;
+      
+      // Try to parse it as a number
+      const numericPrice = parseFloat(price.replace(/[^0-9.-]+/g, ""));
+      if (isNaN(numericPrice)) return "$0";
+      
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0
+      }).format(numericPrice);
+    }
     
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0
-    }).format(numericPrice);
+    // If it's a number
+    if (typeof price === 'number') {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0
+      }).format(price);
+    }
+    
+    return "$0";
   };
 
   if (!featuredListings || featuredListings.length === 0) {

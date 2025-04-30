@@ -35,11 +35,14 @@ const SalonDetailContent: React.FC<SalonDetailContentProps> = ({ salon }) => {
     }
   };
 
-  // Format price display with commas and dollar sign
-  const formatPrice = (price: string | undefined) => {
+  // Format price display with commas and dollar sign - Updated to handle string | number | undefined
+  const formatPrice = (price: string | number | undefined) => {
     if (!price) return "Price not available";
     
-    const numericPrice = parseFloat(price.replace(/[^0-9.-]+/g, ""));
+    // If it's a string that might contain non-numeric characters
+    const numericPrice = typeof price === 'string' 
+      ? parseFloat(price.replace(/[^0-9.-]+/g, ""))
+      : price;
     
     if (isNaN(numericPrice)) {
       return "Price not available";

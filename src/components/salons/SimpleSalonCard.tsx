@@ -7,7 +7,6 @@ import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 import { Salon } from '@/types/salon';
 import { determineSalonCategory, getDefaultSalonImage } from '@/utils/salonImageFallbacks';
 import ValidatedLink from '@/components/common/ValidatedLink';
-import { safeGetListingProperty } from '@/components/common/withListingValidation';
 
 interface SimpleSalonCardProps {
   salon: Salon;
@@ -34,8 +33,8 @@ const SimpleSalonCard: React.FC<SimpleSalonCardProps> = ({ salon }) => {
       
       // Only use fallbacks if truly no image is available
       const category = salon.category || determineSalonCategory(
-        safeGetListingProperty(salon, 'description', ''),
-        safeGetListingProperty(salon, 'name', '')
+        salon.description || '',
+        salon.name || ''
       );
       
       return getDefaultSalonImage(category, salon.isPremium || false);
