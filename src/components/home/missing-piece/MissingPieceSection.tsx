@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 const MissingPieceSection = () => {
   return (
-    <section className="py-12 md:py-16 bg-gradient-to-br from-[#FDF6FF] via-[#FCFAFF] to-[#F6F6F6] overflow-hidden">
+    <section className="py-10 md:py-14 bg-gradient-to-br from-[#FDF6FF] via-[#FCFAFF] to-[#F6F6F6] overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between space-y-8 md:space-y-0 md:space-x-10">
           {/* Left side - Icon and little Sunshine label */}
