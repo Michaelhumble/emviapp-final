@@ -1,5 +1,5 @@
 
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 
 export type ListingType = 'salon' | 'job' | 'opportunity' | 'booth';
 
@@ -49,6 +49,21 @@ export async function validateListingExists(
     console.error(`Error validating ${type} listing ${id}:`, error);
     return false;
   }
+}
+
+/**
+ * Validates if a listing data object has the required fields
+ */
+export function validateListingData(data: any, requiredFields: string[] = ['id']): boolean {
+  if (!data) return false;
+  
+  for (const field of requiredFields) {
+    if (data[field] === undefined || data[field] === null || data[field] === '') {
+      return false;
+    }
+  }
+  
+  return true;
 }
 
 /**

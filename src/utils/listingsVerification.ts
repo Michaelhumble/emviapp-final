@@ -82,6 +82,25 @@ export const verifyListings = (listings: Job[]): {
 };
 
 /**
+ * Verifies specifically opportunity listings
+ */
+export const verifyOpportunityListings = (listings: Job[]): Job[] => {
+  const { validListings } = verifyListings(listings);
+  return validListings.map(listing => {
+    // Ensure all opportunity-specific fields are set
+    if (!listing.type) listing.type = 'opportunity';
+    return listing;
+  });
+};
+
+/**
+ * Checks if a listing can be displayed
+ */
+export const isListingDisplayable = (listing: Job): boolean => {
+  return !!(listing && listing.id && (listing.title || listing.company) && listing.location);
+};
+
+/**
  * Run listing verification on app startup
  */
 export const runListingsVerification = async (): Promise<void> => {
