@@ -1,3 +1,4 @@
+
 import { determineSalonCategory, getDefaultSalonImage } from './salonImageFallbacks';
 import { Job } from '@/types/job';
 import { Salon } from '@/types/salon';
