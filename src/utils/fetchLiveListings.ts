@@ -2,6 +2,23 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Job } from '@/types/job';
 
+// Local interface to avoid excessive type recursion
+interface SimplifiedJob {
+  id: string;
+  title?: string;
+  company?: string;
+  location: string;
+  description?: string;
+  type?: 'salon' | 'job' | 'opportunity';
+  created_at: string;
+  price?: string | number;
+  imageUrl?: string;
+  image?: string;
+  for_sale?: boolean;
+  specialties?: string[];
+  name?: string;
+}
+
 /**
  * Fetch active listings from Supabase based on specified parameters
  */
@@ -39,10 +56,10 @@ export async function fetchLiveListings({
       return [];
     }
     
-    // Transform the data into Job objects without deep instantiation
-    return data.map(listing => {
-      // Create job object with basic properties
-      const job: any = {
+    // Transform the data using SimplifiedJob to avoid deep type instantiation
+    const result: SimplifiedJob[] = data.map(listing => {
+      // Create a simplified job object with basic properties
+      const job: SimplifiedJob = {
         id: listing.id,
         title: listing.title,
         company: listing.title,
@@ -50,18 +67,15 @@ export async function fetchLiveListings({
         description: listing.content,
         type: listing.post_type === 'salon' ? 'salon' : 'opportunity',
         created_at: listing.created_at,
-        price: listing.price
+        price: listing.price,
+        imageUrl: null,
+        image: null,
+        for_sale: false,
+        specialties: []
       };
 
-      // Add default values for non-primitive properties
-      job.imageUrl = null;
-      job.image = null;
-      job.for_sale = false;
-      job.specialties = [];
-
-      // Handle metadata separately with explicit typing
+      // Handle metadata separately
       if (listing.metadata && typeof listing.metadata === 'object') {
-        // Type the metadata simply without nested structures
         const meta = listing.metadata as any;
         
         if (meta.image_url) job.imageUrl = meta.image_url;
@@ -70,8 +84,11 @@ export async function fetchLiveListings({
         if (Array.isArray(meta.specialties)) job.specialties = meta.specialties;
       }
       
-      return job as Job;
+      return job;
     });
+    
+    // Cast the result to the full Job type at the end
+    return result as Job[];
   } catch (error) {
     console.error('Error in fetchLiveListings:', error);
     return [];
@@ -91,8 +108,8 @@ export async function fetchListingById(id: string): Promise<Job | null> {
       .single();
     
     if (post) {
-      // Create object with simple typing approach
-      const job: any = {
+      // Create simplified object to avoid deep type instantiation
+      const job: SimplifiedJob = {
         id: post.id,
         title: post.title,
         company: post.title,
@@ -100,15 +117,13 @@ export async function fetchListingById(id: string): Promise<Job | null> {
         description: post.content,
         type: post.post_type === 'salon' ? 'salon' : 'opportunity',
         created_at: post.created_at,
-        price: post.price
+        price: post.price,
+        imageUrl: null,
+        image: null,
+        for_sale: false,
+        specialties: []
       };
       
-      // Add default values
-      job.imageUrl = null;
-      job.image = null;
-      job.for_sale = false;
-      job.specialties = [];
-
       // Handle metadata separately
       if (post.metadata && typeof post.metadata === 'object') {
         const meta = post.metadata as any;
@@ -130,8 +145,8 @@ export async function fetchListingById(id: string): Promise<Job | null> {
       .single();
     
     if (salon) {
-      // Create object with simple typing
-      const job: any = {
+      // Create simplified object to avoid deep type instantiation
+      const job: SimplifiedJob = {
         id: salon.id,
         title: salon.salon_name,
         company: salon.salon_name,
