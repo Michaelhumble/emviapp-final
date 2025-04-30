@@ -6,12 +6,17 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { salonListings, vietnameseSalonListings } from '@/data/salonData';
 import ValidatedSalonCard from '@/components/salons/ValidatedSalonCard';
-import PremiumSalonBanner from '@/components/salons/PremiumSalonBanner';
 
 const SalonsFinalsPage = () => {
   useEffect(() => {
-    // Enhanced debugging - confirm this component is rendering properly
-    console.log('SalonsFinal page rendered with PremiumSalonBanner - timestamp:', new Date().toISOString());
+    // Simple debug log to confirm rendering
+    console.log('SalonsFinal page rendered - timestamp:', new Date().toISOString());
+    
+    // Add an image loading debug
+    const img = new Image();
+    img.onload = () => console.log('✅ Salon banner image loaded successfully');
+    img.onerror = () => console.error('❌ Failed to load salon banner image');
+    img.src = '/lovable-uploads/79cf9064-5740-4752-9ad6-9b7e9b4db31e.png';
   }, []);
 
   return (
@@ -24,8 +29,14 @@ const SalonsFinalsPage = () => {
         />
       </Helmet>
 
-      {/* Premium Banner */}
-      <PremiumSalonBanner />
+      {/* Simple full-width image banner */}
+      <div className="w-full relative overflow-hidden" style={{ maxHeight: '500px' }}>
+        <img 
+          src="/lovable-uploads/79cf9064-5740-4752-9ad6-9b7e9b4db31e.png" 
+          alt="Luxury salon interior" 
+          className="w-full h-auto object-cover"
+        />
+      </div>
 
       <div className="container mx-auto px-4 py-12" id="listings">
         <div className="max-w-7xl mx-auto">
