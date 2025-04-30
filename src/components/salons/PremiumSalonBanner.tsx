@@ -5,8 +5,14 @@ import { Link } from 'react-router-dom';
 
 const PremiumSalonBanner: React.FC = () => {
   useEffect(() => {
-    // Add console log for debugging
+    // Enhanced debugging for image loading
     console.log('PremiumSalonBanner mounted - checking if image loads correctly');
+    
+    // Add an event listener to check if the image loads
+    const img = new Image();
+    img.onload = () => console.log('✅ Salon banner image loaded successfully');
+    img.onerror = () => console.error('❌ Failed to load salon banner image: /salon-banner.png');
+    img.src = '/salon-banner.png';
   }, []);
 
   return (

@@ -11,7 +11,7 @@ import PremiumSalonBanner from '@/components/salons/PremiumSalonBanner';
 const SalonsFinalsPage = () => {
   useEffect(() => {
     // Enhanced debugging - confirm this component is rendering properly
-    console.log('SalonsFinal page rendered with new PremiumSalonBanner - timestamp:', new Date().toISOString());
+    console.log('SalonsFinal page rendered with PremiumSalonBanner - timestamp:', new Date().toISOString());
   }, []);
 
   return (
