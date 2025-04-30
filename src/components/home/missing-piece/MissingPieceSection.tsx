@@ -146,7 +146,7 @@ const MissingPieceSection = () => {
               >
                 <Link to="/create-listing">
                   <button className="w-full sm:w-auto px-8 py-2.5 rounded-full font-medium text-white bg-gradient-to-r from-[#9B5DE5] to-[#E493FF] hover:shadow-lg hover:shadow-purple-200/40 transition-all duration-300 transform hover:-translate-y-0.5">
-                    Post a Job or Salon for Sale
+                    Post a Job or Salon
                   </button>
                 </Link>
               </motion.div>
