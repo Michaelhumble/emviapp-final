@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { User, Session } from '@supabase/supabase-js';
+import { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
 import { determineUserRole, persistUserRole } from '../utils/roleManagement';
 import { UserRole, UserProfile } from '../types/authTypes';
 import { fetchUserProfile } from '../userProfileService';
