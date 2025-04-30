@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -15,10 +14,8 @@ import MissingPieceSection from "@/components/home/missing-piece";
 import { runListingsVerification } from "@/utils/runListingsVerification";
 
 // Enhanced homepage components
-import LatestIndustryOpportunities from "@/components/home/LatestIndustryOpportunities";
-import SalonJobListingsShowcase from "@/components/home/SalonJobListingsShowcase";
-import FounderMessage from "@/components/home/FounderMessage";
 import EnhancedAIFeatures from "@/components/home/EnhancedAIFeatures";
+import FounderMessage from "@/components/home/FounderMessage";
 import FinalFounderCTA from "@/components/home/FinalFounderCTA";
 import SalonClientGrowthSystem from "@/components/home/SalonClientGrowthSystem";
 import WhyTrustSection from "@/components/home/sections/WhyTrustSection";
@@ -52,31 +49,25 @@ const Index = () => {
       {/* Hero section as first */}
       <Hero />
       
-      {/* ✨ NEW SECTION: The Beauty Exchange */}
+      {/* ✨ The Beauty Exchange Section - Positioned first after hero */}
       <BeautyExchangeSection />
       
-      {/* 1️⃣ Latest Industry Opportunities (Beauty Exchange) */}
-      <LatestIndustryOpportunities />
-      
-      {/* 2️⃣ Nail & Beauty Salons Hiring Now */}
-      <SalonJobListingsShowcase />
-      
-      {/* 3️⃣ Why Artists & Salons Trust Us */}
+      {/* Why Artists & Salons Trust Us */}
       <WhyTrustSection />
       
-      {/* Let AI Do the Hard Work (moved here) */}
+      {/* Let AI Do the Hard Work */}
       <EnhancedAIFeatures />
       
-      {/* 4️⃣ What You Can Do With EmviApp */}
+      {/* What You Can Do With EmviApp */}
       <WhatYouCanDoSection />
       
-      {/* 6️⃣ Let's Experience EmviApp Together */}
+      {/* Let's Experience EmviApp Together */}
       <MissingPieceSection />
       
-      {/* 7️⃣ No Matter Your Craft — We Know the Struggle */}
+      {/* No Matter Your Craft — We Know the Struggle */}
       <ClientSuccessStories />
       
-      {/* 8️⃣ What's Really Keeping Your Salon From Growing? */}
+      {/* What's Really Keeping Your Salon From Growing? */}
       <SalonClientGrowthSystem />
       
       {/* Trust First Panel */}
