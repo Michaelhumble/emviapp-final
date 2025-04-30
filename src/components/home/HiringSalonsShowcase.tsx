@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
@@ -6,55 +7,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Building } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Job } from '@/types/job';
-
-// Define your beautiful uploaded nail salon images
-const nailSalonImages = [
-  "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png", // Large spacious nail salon with cream chairs
-  "/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png", // Modern salon with sitting area and large windows
-  "/lovable-uploads/d1da4b24-248e-4e84-9289-06237e7d4458.png", // Nail salon with art gallery walls and hanging lights
-  "/lovable-uploads/e1ce1662-fb69-4ad9-995a-364ee16e42f6.png", // Clean cream interior with plenty of natural light
-  "/lovable-uploads/7a58770c-404e-4259-b1a6-f044c8eefdc0.png", // Modern minimalist white interior with reception
-  "/lovable-uploads/c0ac3c79-c24e-447d-8f7e-054431430c71.png"  // Luxury nail salon with gold mirrors
-];
-
-// Image tracking to avoid repetition
-let currentImageIndex = 0;
-
-// Utility function to transform job data to match required Job type
-const transformJobData = (job: any): Job => {
-  return {
-    id: job.id?.toString() || '',
-    title: job.title || '',
-    company: job.company || '',
-    location: job.location || '',
-    created_at: job.posted || new Date().toISOString(), 
-    description: job.description || '',
-    image: job.image || '',
-    price: job.price || '',
-    status: 'active',
-    // Add other required fields with safe defaults
-    type: 'job',
-    role: job.role || job.title || '',
-  };
-};
-
-// Get the next nail salon image without repeating adjacent images
-const getNailSalonImage = (): string => {
-  // Get current image path
-  const imagePath = nailSalonImages[currentImageIndex];
-  
-  // Advance to next image, loop back when we reach the end
-  currentImageIndex = (currentImageIndex + 1) % nailSalonImages.length;
-  
-  return imagePath;
-};
+import { getNailSalonImage, getNailJobImage } from '@/utils/nailSalonImages';
 
 export default function HiringSalonsShowcase() {
-  // Reset image index when component renders to ensure consistent rotation
-  React.useEffect(() => {
-    currentImageIndex = 0;
-  }, []);
-
   // Filter to find hiring-related jobs
   const hiringJobs = jobsData
     .filter(job => 
@@ -84,9 +39,9 @@ export default function HiringSalonsShowcase() {
           {hiringJobs.map((job, index) => (
             <Card key={index} className="overflow-hidden h-full hover:shadow-md transition-shadow">
               <div className="aspect-video bg-gray-100 w-full overflow-hidden">
-                {/* Use your beautiful uploaded nail salon images */}
+                {/* Use nail job/salon images that match the opportunity */}
                 <img
-                  src={getNailSalonImage()}
+                  src={getNailJobImage()}
                   alt={job.title || 'Premium nail salon opportunity'}
                   className="w-full h-full object-cover"
                 />
@@ -125,3 +80,21 @@ export default function HiringSalonsShowcase() {
     </section>
   );
 }
+
+// Utility function to transform job data to match required Job type
+const transformJobData = (job: any): Job => {
+  return {
+    id: job.id?.toString() || '',
+    title: job.title || '',
+    company: job.company || '',
+    location: job.location || '',
+    created_at: job.posted || new Date().toISOString(), 
+    description: job.description || '',
+    image: job.image || '',
+    price: job.price || '',
+    status: 'active',
+    // Add other required fields with safe defaults
+    type: 'job',
+    role: job.role || job.title || '',
+  };
+};
