@@ -43,11 +43,11 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
           transition={{ duration: 0.5 }}
           className="max-w-3xl mx-auto text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-playfair font-bold mb-6 text-gray-900">
-            The Beauty Exchange
+          <h2 className="text-2xl md:text-4xl font-playfair font-bold mb-2 text-gray-900">
+            TOP 9 ON THE EMVIAPP MARKET
           </h2>
-          <p className="text-lg text-gray-600 leading-relaxed">
-            Turn Beauticians Into Magicians.
+          <p className="text-base md:text-lg text-red-600 tracking-wide">
+            what's everyone looking right now.
           </p>
         </motion.div>
 
