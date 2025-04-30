@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -14,8 +15,10 @@ import MissingPieceSection from "@/components/home/missing-piece";
 import { runListingsVerification } from "@/utils/runListingsVerification";
 
 // Enhanced homepage components
-import EnhancedAIFeatures from "@/components/home/EnhancedAIFeatures";
+import LatestIndustryOpportunities from "@/components/home/LatestIndustryOpportunities";
+import SalonJobListingsShowcase from "@/components/home/SalonJobListingsShowcase";
 import FounderMessage from "@/components/home/FounderMessage";
+import EnhancedAIFeatures from "@/components/home/EnhancedAIFeatures";
 import FinalFounderCTA from "@/components/home/FinalFounderCTA";
 import SalonClientGrowthSystem from "@/components/home/SalonClientGrowthSystem";
 import WhyTrustSection from "@/components/home/sections/WhyTrustSection";
@@ -49,25 +52,31 @@ const Index = () => {
       {/* Hero section as first */}
       <Hero />
       
-      {/* ✨ The Beauty Exchange Section - Positioned first after hero */}
+      {/* ✨ NEW SECTION: The Beauty Exchange */}
       <BeautyExchangeSection />
       
-      {/* Why Artists & Salons Trust Us */}
+      {/* 1️⃣ Latest Industry Opportunities (Beauty Exchange) */}
+      <LatestIndustryOpportunities />
+      
+      {/* 2️⃣ Nail & Beauty Salons Hiring Now */}
+      <SalonJobListingsShowcase />
+      
+      {/* 3️⃣ Why Artists & Salons Trust Us */}
       <WhyTrustSection />
       
-      {/* Let AI Do the Hard Work */}
+      {/* Let AI Do the Hard Work (moved here) */}
       <EnhancedAIFeatures />
       
-      {/* What You Can Do With EmviApp */}
+      {/* 4️⃣ What You Can Do With EmviApp */}
       <WhatYouCanDoSection />
       
-      {/* Let's Experience EmviApp Together */}
+      {/* 6️⃣ Let's Experience EmviApp Together */}
       <MissingPieceSection />
       
-      {/* No Matter Your Craft — We Know the Struggle */}
+      {/* 7️⃣ No Matter Your Craft — We Know the Struggle */}
       <ClientSuccessStories />
       
-      {/* What's Really Keeping Your Salon From Growing? */}
+      {/* 8️⃣ What's Really Keeping Your Salon From Growing? */}
       <SalonClientGrowthSystem />
       
       {/* Trust First Panel */}
