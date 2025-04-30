@@ -110,7 +110,7 @@ const BeautyExchangeSection = () => {
                 animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
                 transition={{ duration: 0.5, ease: "easeOut", delay: 0.9 }}
               >
-                <Link to="/create-listing">
+                <Link to="/posting">
                   <Button 
                     className="w-full sm:w-auto border-2 border-purple-600 bg-transparent text-purple-700 hover:bg-purple-50 rounded-xl font-medium transition-all duration-300 hover:translate-y-[-2px]"
                     variant="outline"
