@@ -12,7 +12,10 @@ export * from "./listing";
 export * from "./map";
 export * from "./MessageSender";
 export * from "./notification";
-export * from "./portfolio";
+// Export from portfolio without PortfolioImage to avoid conflict with artist.ts
+export type {
+  // Add specific types from portfolio.ts except PortfolioImage
+} from "./portfolio";
 export * from "./profile";
 export * from "./profile-completion";
 export * from "./reviews";
