@@ -18,9 +18,9 @@ const CtaSection = () => {
           <p className="text-lg text-gray-600 mb-8">
             Join thousands of salon owners who trust EmviApp to find, vet, and hire the best beauty professionals in the industry.
           </p>
-          <Link to="/auth/signup">
+          <Link to="/create-listing">
             <Button size="lg" className="font-medium px-8 py-6 text-base hover:scale-105 transition-transform">
-              Create Salon Account
+              Post a Job Opening
             </Button>
           </Link>
         </motion.div>

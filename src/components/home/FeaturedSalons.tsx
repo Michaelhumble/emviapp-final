@@ -66,7 +66,7 @@ const FeaturedSalons = () => {
         <div className="mt-14 text-center">
           <Link to="/salons">
             <Button size="lg" variant="outline" className="font-medium">
-              Explore All Salons
+              Browse All Salons
             </Button>
           </Link>
         </div>

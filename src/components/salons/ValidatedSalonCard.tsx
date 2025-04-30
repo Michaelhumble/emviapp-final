@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,6 +8,7 @@ import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 import { Job } from '@/types/job';
 import { Salon } from '@/types/salon';
 import { determineSalonCategory, getDefaultSalonImage } from '@/utils/salonImageFallbacks';
+import ValidatedLink from '@/components/common/ValidatedLink';
 
 interface ValidatedSalonCardProps {
   salon: Job | Salon;
@@ -99,8 +101,14 @@ const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({ salon, listingT
   );
   
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-all duration-300">
-      <Link to={`/${listingType}s/${salon.id}`} className="block">
+    <Card className="overflow-hidden hover:shadow-md transition-all duration-300 h-full">
+      <ValidatedLink 
+        to={`/${listingType}s/${salon.id}`} 
+        listingId={salon.id?.toString() || ''} 
+        listingType={listingType}
+        fallbackRoute={`/${listingType}s`}
+        className="block"
+      >
         <div className="aspect-video overflow-hidden relative">
           <ImageWithFallback
             src={imageUrl}
@@ -130,9 +138,9 @@ const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({ salon, listingT
             </div>
           )}
         </div>
-      </Link>
+      </ValidatedLink>
       
-      <CardContent className="p-4">
+      <CardContent className="p-4 flex flex-col justify-between h-[calc(100%-40%)]">
         <h3 className="font-semibold text-lg truncate">{name}</h3>
         
         <div className="flex items-center text-gray-500 my-1.5 text-sm">
@@ -140,18 +148,21 @@ const ValidatedSalonCard: React.FC<ValidatedSalonCardProps> = ({ salon, listingT
           <span>{('location' in salon && salon.location) || 'Location unavailable'}</span>
         </div>
         
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mt-auto">
           <div className="flex items-center font-medium text-emerald-700">
             <DollarSign className="h-4 w-4 mr-1" />
             <span>{getFormattedPrice()}</span>
           </div>
           
-          <Link 
-            to={`/${listingType}s/${salon.id}`} 
+          <ValidatedLink 
+            to={`/${listingType}s/${salon.id}`}
+            listingId={salon.id?.toString() || ''} 
+            listingType={listingType}
+            fallbackRoute={`/${listingType}s`}
             className="text-primary font-medium hover:underline text-sm"
           >
             View Details →
-          </Link>
+          </ValidatedLink>
         </div>
       </CardContent>
     </Card>

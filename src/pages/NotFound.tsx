@@ -1,15 +1,17 @@
 
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, AlertTriangle, Home, HelpCircle, Search } from "lucide-react";
+import { ArrowLeft, AlertTriangle, Home, HelpCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import ErrorLayout from "@/components/layout/ErrorLayout";
 import { logRouteAccess, getRouteName } from "@/utils/routeChecker";
+import { getSafeFallbackRoute } from "@/utils/routeRedirector";
 
 const NotFound = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [attemptedPath, setAttemptedPath] = useState<string>("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   
@@ -27,25 +29,34 @@ const NotFound = () => {
     
     document.title = "Page Not Found | EmviApp";
     
-    // Generate suggestions based on the path
+    // Generate suggestions based on the path and get the appropriate fallback
     generateSuggestions(currentPath);
-  }, [location.pathname]);
+    
+    // Auto-redirect after 5 seconds
+    const timer = setTimeout(() => {
+      const safePath = getSafeFallbackRoute(currentPath);
+      console.log(`Auto-redirecting to ${safePath}`);
+      navigate(safePath);
+    }, 5000);
+    
+    return () => clearTimeout(timer);
+  }, [location.pathname, navigate]);
   
   const generateSuggestions = (path: string) => {
     const suggestions: string[] = [];
     
     // Default suggestions
-    if (path.includes('/profile')) {
-      suggestions.push('/profile');
-      suggestions.push('/dashboard');
-    } else if (path.includes('/salon')) {
+    if (path.includes('/salon')) {
       suggestions.push('/salons');
-      suggestions.push('/dashboard/salon');
+      suggestions.push('/create-listing');
     } else if (path.includes('/job')) {
       suggestions.push('/jobs');
-      suggestions.push('/dashboard/artist');
-    } else if (path.includes('/message')) {
-      suggestions.push('/messages');
+      suggestions.push('/artists');
+    } else if (path.includes('/artist')) {
+      suggestions.push('/artists');
+      suggestions.push('/jobs');
+    } else if (path.includes('/post') || path.includes('/create')) {
+      suggestions.push('/create-listing');
       suggestions.push('/dashboard');
     } else {
       suggestions.push('/');
@@ -105,7 +116,7 @@ const NotFound = () => {
         <motion.div variants={itemVariants} className="my-8">
           <Alert className="bg-blue-50 border-blue-100">
             <HelpCircle className="h-4 w-4 text-blue-500" />
-            <AlertTitle>Looking for something?</AlertTitle>
+            <AlertTitle>Auto-redirecting in a moment</AlertTitle>
             <AlertDescription>
               Here are some pages you might be interested in:
               <div className="mt-3 flex flex-wrap gap-2">
