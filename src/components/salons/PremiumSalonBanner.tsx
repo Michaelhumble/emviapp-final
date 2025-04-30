@@ -1,9 +1,14 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
 const PremiumSalonBanner: React.FC = () => {
+  useEffect(() => {
+    // Add console log for debugging
+    console.log('PremiumSalonBanner mounted - checking if image loads correctly');
+  }, []);
+
   return (
     <div 
       className="relative w-full"
