@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
 import { Link, LinkProps, useNavigate } from 'react-router-dom';
-import { validateListingExists, ListingType } from '@/utils/listingValidator';
 import { toast } from 'sonner';
 import { fetchListingById } from '@/utils/fetchLiveListings';
+
+export type ListingType = 'salon' | 'job' | 'opportunity' | 'booth';
 
 interface ValidatedLinkProps extends LinkProps {
   listingId: string;

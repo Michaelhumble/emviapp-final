@@ -7,7 +7,7 @@ import AuthAction from '@/components/common/AuthAction';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Building } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { fetchLiveListings } from '@/utils/fetchLiveListings';
 
 interface OpportunitiesSectionProps {
   diverseListings: Job[];
@@ -23,41 +23,17 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
       setIsLoading(true);
       
       try {
-        // Try to get live listings from Supabase
-        const { data: liveListings, error } = await supabase
-          .from('posts')
-          .select('*')
-          .eq('status', 'active')
-          .order('created_at', { ascending: false })
-          .limit(6);
+        // Get live listings directly from fetchLiveListings utility
+        const liveListings = await fetchLiveListings({ 
+          limit: 6,
+          featured: false
+        });
           
-        if (error) {
-          console.error('Error fetching live listings:', error);
-          // Fall back to diverseListings prop if there's an error
-          validateExistingListings();
-          return;
-        }
-        
-        // Transform database records to match Job type
         if (liveListings && liveListings.length > 0) {
-          const transformedListings = liveListings.map(listing => ({
-            id: listing.id,
-            title: listing.title,
-            company: listing.title,
-            location: listing.location || 'Location not specified',
-            description: listing.content,
-            type: listing.post_type === 'salon' ? 'salon' : 'opportunity',
-            imageUrl: listing.metadata?.image_url || null,
-            created_at: listing.created_at,
-            price: listing.price,
-            for_sale: listing.metadata?.for_sale || false,
-            specialties: listing.metadata?.specialties || []
-          }));
-          
-          setValidatedListings(transformedListings);
-          console.log('Fetched live listings:', transformedListings);
+          console.log('Fetched live listings:', liveListings);
+          setValidatedListings(liveListings);
         } else {
-          // Fall back to diverseListings if no listings are found
+          // Fall back to diverseListings prop if no live listings found
           validateExistingListings();
         }
       } catch (error) {
@@ -77,8 +53,7 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
         listing.id && 
         (listing.title || listing.company) &&
         listing.location &&
-        listing.type &&
-        (listing.imageUrl || 'image' in listing)
+        (listing.type === 'salon' || listing.type === 'opportunity' || listing.type === 'job')
       );
       
       if (validListings.length < diverseListings.length) {
@@ -92,10 +67,15 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
   }, [diverseListings]);
 
   // Helper function to determine the correct route path for each listing
-  const getListingPath = (listing: Job) => {
+  const getListingPath = (listing: Job): string => {
+    // Debug: Log the ID to verify it's correct (DEV only)
+    console.log(`Routing to listing ${listing.id} with type ${listing.type}`);
+    
+    // Use explicit type check for routing to ensure we always have a valid path
     if (listing.type === 'salon') {
       return `/salons/${listing.id}`;
     } else {
+      // Default to opportunities for anything else
       return `/opportunities/${listing.id}`;
     }
   };
@@ -123,9 +103,8 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
             ))
           ) : validatedListings.length > 0 ? (
             validatedListings.map((listing, index) => {
-              // Debugging to verify the link path is correct
+              // Get the correct link path
               const linkPath = getListingPath(listing);
-              console.log(`Listing ${index} path:`, linkPath);
               
               return (
                 <AuthAction

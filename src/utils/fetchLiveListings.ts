@@ -47,11 +47,14 @@ export async function fetchLiveListings({
       location: listing.location || 'Location not specified',
       description: listing.content,
       type: listing.post_type === 'salon' ? 'salon' : 'opportunity',
-      imageUrl: listing.metadata?.image_url || null,
+      imageUrl: listing.metadata && typeof listing.metadata === 'object' ? 
+        (listing.metadata as any).image_url || null : null,
       created_at: listing.created_at,
       price: listing.price,
-      for_sale: listing.metadata?.for_sale || false,
-      specialties: listing.metadata?.specialties || []
+      for_sale: listing.metadata && typeof listing.metadata === 'object' ? 
+        (listing.metadata as any).for_sale || false : false,
+      specialties: listing.metadata && typeof listing.metadata === 'object' ? 
+        (listing.metadata as any).specialties || [] : []
     }));
   } catch (error) {
     console.error('Error in fetchLiveListings:', error);
@@ -79,11 +82,14 @@ export async function fetchListingById(id: string): Promise<Job | null> {
         location: post.location || 'Location not specified',
         description: post.content,
         type: post.post_type === 'salon' ? 'salon' : 'opportunity',
-        imageUrl: post.metadata?.image_url || null,
+        imageUrl: post.metadata && typeof post.metadata === 'object' ? 
+          (post.metadata as any).image_url || null : null,
         created_at: post.created_at,
         price: post.price,
-        for_sale: post.metadata?.for_sale || false,
-        specialties: post.metadata?.specialties || []
+        for_sale: post.metadata && typeof post.metadata === 'object' ? 
+          (post.metadata as any).for_sale || false : false,
+        specialties: post.metadata && typeof post.metadata === 'object' ? 
+          (post.metadata as any).specialties || [] : []
       };
     }
     
