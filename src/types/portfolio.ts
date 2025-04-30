@@ -1,18 +1,4 @@
 
-import { PortfolioImage as ArtistPortfolioImage } from './artist';
-
-// Re-export PortfolioImage from artist for backward compatibility
-export type PortfolioImage = ArtistPortfolioImage;
-
-// Add other portfolio-specific types below
-export interface PortfolioCollection {
-  id: string;
-  name: string;
-  description?: string;
-  items: PortfolioImage[];
-}
-
-// Add required types for components that need them
 export interface PortfolioItem {
   id: string;
   user_id: string;

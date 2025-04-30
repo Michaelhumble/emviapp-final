@@ -24,8 +24,8 @@ const CallToAction = () => {
               <Link to="/auth/signup">
                 <Button size="lg">Get Started</Button>
               </Link>
-              <Link to="/how-it-works">
-                <Button size="lg" variant="outline">See How It Works</Button>
+              <Link to="/early-access">
+                <Button size="lg" variant="outline">Get Early Access</Button>
               </Link>
             </>
           ) : (
@@ -36,9 +36,7 @@ const CallToAction = () => {
               
               {!hasActiveSubscription && (
                 <PremiumFeatureGate feature="multiple-posts">
-                  <Link to="/create-listing">
-                    <Button size="lg" variant="outline">Post a Listing</Button>
-                  </Link>
+                  <Button size="lg" variant="outline">Post Multiple Listings</Button>
                 </PremiumFeatureGate>
               )}
             </>

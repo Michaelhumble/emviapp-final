@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Job } from '@/types/job';
@@ -42,9 +43,12 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
           transition={{ duration: 0.5 }}
           className="max-w-3xl mx-auto text-center mb-16"
         >
-          <h2 className="text-2xl md:text-4xl font-playfair font-bold mb-6 text-[#1A1A1A]">
-            Right Now on EmviApp — The Listings Everyone's Talking About
+          <h2 className="text-4xl md:text-5xl font-playfair font-bold mb-6 text-gray-900">
+            The Beauty Exchange
           </h2>
+          <p className="text-lg text-gray-600 leading-relaxed">
+            Turn Beauticians Into Magicians.
+          </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

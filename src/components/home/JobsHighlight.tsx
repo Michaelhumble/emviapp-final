@@ -83,7 +83,7 @@ const JobsHighlight = () => {
                     </div>
                     <div className="mt-4 md:mt-0">
                       <Link to="/jobs">
-                        <Button>View Details</Button>
+                        <Button>Apply Now</Button>
                       </Link>
                     </div>
                   </div>
