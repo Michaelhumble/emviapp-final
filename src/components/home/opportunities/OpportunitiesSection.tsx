@@ -18,8 +18,20 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
     listing && 
     listing.id && 
     (listing.title || listing.company) &&
-    listing.location
+    listing.location &&
+    // Additional validation to ensure listing has a type for proper routing
+    listing.type &&
+    // Ensure there's at least an imageUrl or a category/specialty for fallback images
+    (listing.imageUrl || 
+     (listing.specialties && listing.specialties.length > 0) || 
+     // Check for category using type guard
+     ('category' in listing && listing.category))
   );
+  
+  // Log any issues with listings for debugging
+  if (validListings.length < diverseListings.length) {
+    console.log(`⚠️ Filtered out ${diverseListings.length - validListings.length} invalid listings from Opportunities section`);
+  }
 
   return (
     <section className="py-24 bg-gradient-to-b from-white to-gray-50">
@@ -34,7 +46,7 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
           <h2 className="text-4xl md:text-5xl font-playfair font-bold mb-6 text-gray-900">
             The Beauty Exchange
           </h2>
-          <p className="text-lg text-purple-700 leading-relaxed mb-2">
+          <p className="text-lg text-gray-600 leading-relaxed">
             Turn Beauticians Into Magicians.
           </p>
         </motion.div>

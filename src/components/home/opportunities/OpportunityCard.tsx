@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Job } from '@/types/job';
 import { Badge } from '@/components/ui/badge';
+import { enhanceListingWithImage } from '@/utils/listingsVerification';
 import { MapPin, DollarSign, Clock, Briefcase } from 'lucide-react';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 
@@ -18,6 +19,36 @@ interface OpportunityCardProps {
 const OpportunityCard: React.FC<OpportunityCardProps> = ({ listing, index }) => {
   const [isHovered, setIsHovered] = useState(false);
   
+  // Special image mappings for specific titles - ensure all mappings are correct
+  const getSpecialImage = (title: string): string | null => {
+    const titleMappings: Record<string, string> = {
+      "Nail Tech - Private Suite": "/lovable-uploads/72f0f6c8-5793-4750-993d-f250b495146d.png",
+      "Luxury Booth Rental": "/lovable-uploads/52b943aa-d9b3-46ce-9f7f-94f3b223cb28.png",
+      "Licensed Esthetician": "/lovable-uploads/16e16a16-df62-4741-aec7-3364fdc958ca.png",
+      "Experienced Tattoo Artist": "/lovable-uploads/21d69945-acea-4057-9ff0-df824cd3c607.png"
+    };
+    
+    return titleMappings[title] || null;
+  };
+
+  // Determine the appropriate image for the listing
+  const getListingImage = () => {
+    // Check for specific title-based images first
+    if (listing.title) {
+      const specialImage = getSpecialImage(listing.title);
+      if (specialImage) return specialImage;
+    }
+    
+    // If listing already has a valid image URL, use it
+    if (listing.imageUrl && listing.imageUrl.includes('lovable-uploads')) {
+      return listing.imageUrl;
+    }
+    
+    // Otherwise use the image from the enhanced listing
+    const enhancedListing = enhanceListingWithImage({ ...listing });
+    return enhancedListing.imageUrl;
+  };
+
   // Define motion variants for card animation
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -38,11 +69,6 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({ listing, index }) => 
         return listing.asking_price;
       }
       return `$${listing.asking_price}`;
-    } else if (listing.price) {
-      if (typeof listing.price === 'string' && listing.price.includes('$')) {
-        return listing.price;
-      }
-      return `$${listing.price}`;
     }
     return listing.for_sale ? 'Contact for price' : '';
   };
@@ -72,7 +98,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({ listing, index }) => 
         <Link to={getCardLink()} className="block">
           <div className="w-full aspect-[5/3] overflow-hidden">
             <ImageWithFallback
-              src={listing.image || listing.imageUrl}
+              src={getListingImage()}
               alt={listing.title || listing.company || "Opportunity listing"}
               className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
               businessName={listing.company || ""}

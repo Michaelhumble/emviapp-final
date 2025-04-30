@@ -15,17 +15,15 @@ import MissingPieceSection from "@/components/home/missing-piece";
 import { runListingsVerification } from "@/utils/runListingsVerification";
 
 // Enhanced homepage components
-import EnhancedAIFeatures from "@/components/home/EnhancedAIFeatures";
+import LatestIndustryOpportunities from "@/components/home/LatestIndustryOpportunities";
+import SalonJobListingsShowcase from "@/components/home/SalonJobListingsShowcase";
 import FounderMessage from "@/components/home/FounderMessage";
+import EnhancedAIFeatures from "@/components/home/EnhancedAIFeatures";
 import FinalFounderCTA from "@/components/home/FinalFounderCTA";
 import SalonClientGrowthSystem from "@/components/home/SalonClientGrowthSystem";
 import WhyTrustSection from "@/components/home/sections/WhyTrustSection";
 import WhatYouCanDoSection from "@/components/home/sections/WhatYouCanDoSection";
-import OpportunitiesSection from "@/components/home/opportunities/OpportunitiesSection";
-
-// Import utilities for getting diverse listings
-import { getFeaturedJobs, getSalonsForSale } from "@/utils/featuredContent";
-import { Job } from "@/types/job";
+import BeautyExchangeSection from "@/components/home/BeautyExchangeSection";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -38,23 +36,6 @@ const Index = () => {
     isLoading,
     userId
   } = useRoleSelection();
-  
-  // Get diverse listings for the Beauty Exchange section
-  const diverseListings: Job[] = [
-    ...getFeaturedJobs(3),
-    ...getSalonsForSale(3).map(salon => ({
-      id: salon.id,
-      title: salon.name,
-      company: salon.name,
-      location: salon.location,
-      created_at: salon.created_at || new Date().toISOString(),
-      description: salon.description,
-      price: salon.price?.toString() || "",
-      imageUrl: salon.imageUrl,
-      type: "salon",
-      for_sale: true
-    }))
-  ].slice(0, 3); // Limit to 3 listings
   
   useEffect(() => {
     document.title = "EmviApp | The Beauty Industry Platform";
@@ -71,25 +52,31 @@ const Index = () => {
       {/* Hero section as first */}
       <Hero />
       
-      {/* The Beauty Exchange - Original polished version with job cards */}
-      <OpportunitiesSection diverseListings={diverseListings} />
+      {/* ✨ NEW SECTION: The Beauty Exchange */}
+      <BeautyExchangeSection />
       
-      {/* Why Artists & Salons Trust Us */}
+      {/* 1️⃣ Latest Industry Opportunities (Beauty Exchange) */}
+      <LatestIndustryOpportunities />
+      
+      {/* 2️⃣ Nail & Beauty Salons Hiring Now */}
+      <SalonJobListingsShowcase />
+      
+      {/* 3️⃣ Why Artists & Salons Trust Us */}
       <WhyTrustSection />
       
-      {/* Let AI Do the Hard Work */}
+      {/* Let AI Do the Hard Work (moved here) */}
       <EnhancedAIFeatures />
       
-      {/* What You Can Do With EmviApp */}
+      {/* 4️⃣ What You Can Do With EmviApp */}
       <WhatYouCanDoSection />
       
-      {/* Let's Experience EmviApp Together */}
+      {/* 6️⃣ Let's Experience EmviApp Together */}
       <MissingPieceSection />
       
-      {/* No Matter Your Craft — We Know the Struggle */}
+      {/* 7️⃣ No Matter Your Craft — We Know the Struggle */}
       <ClientSuccessStories />
       
-      {/* What's Really Keeping Your Salon From Growing? */}
+      {/* 8️⃣ What's Really Keeping Your Salon From Growing? */}
       <SalonClientGrowthSystem />
       
       {/* Trust First Panel */}
