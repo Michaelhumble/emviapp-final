@@ -39,10 +39,10 @@ export async function fetchLiveListings({
       return [];
     }
     
-    // Transform the data into Job objects with careful typing
+    // Transform the data into Job objects using a more explicit approach to avoid deep type instantiation
     return data.map(listing => {
-      // Create a strictly typed object with only necessary fields
-      const job = {
+      // Create a base job object with primitive properties first
+      const job: Record<string, any> = {
         id: listing.id,
         title: listing.title,
         company: listing.title,
@@ -55,18 +55,23 @@ export async function fetchLiveListings({
         image: null,
         for_sale: false,
         specialties: []
-      } as Partial<Job>;
+      };
 
-      // Handle metadata without recursive typing
+      // Handle metadata safely without recursive typing issues
       if (listing.metadata && typeof listing.metadata === 'object') {
-        const meta = listing.metadata as Record<string, any>;
+        const meta = listing.metadata as {
+          image_url?: string;
+          for_sale?: boolean;
+          specialties?: string[];
+        };
+        
         job.imageUrl = meta.image_url || null;
         job.image = meta.image_url || null;
         job.for_sale = meta.for_sale || false;
         job.specialties = Array.isArray(meta.specialties) ? meta.specialties : [];
       }
       
-      // Cast to Job type after construction
+      // Cast to Job type at the end
       return job as Job;
     });
   } catch (error) {
@@ -88,8 +93,8 @@ export async function fetchListingById(id: string): Promise<Job | null> {
       .single();
     
     if (post) {
-      // Create a strictly typed object with only necessary properties
-      const job = {
+      // Create object with explicitly defined properties
+      const job: Record<string, any> = {
         id: post.id,
         title: post.title,
         company: post.title,
@@ -102,11 +107,16 @@ export async function fetchListingById(id: string): Promise<Job | null> {
         for_sale: false,
         specialties: [],
         image: null
-      } as Partial<Job>;
+      };
 
-      // Handle metadata separately to avoid recursive types
+      // Handle metadata safely
       if (post.metadata && typeof post.metadata === 'object') {
-        const meta = post.metadata as Record<string, any>;
+        const meta = post.metadata as {
+          image_url?: string;
+          for_sale?: boolean;
+          specialties?: string[];
+        };
+        
         job.imageUrl = meta.image_url || null;
         job.image = meta.image_url || null;
         job.for_sale = meta.for_sale || false;
@@ -124,8 +134,8 @@ export async function fetchListingById(id: string): Promise<Job | null> {
       .single();
     
     if (salon) {
-      // Create a strictly typed object with only necessary properties
-      const job = {
+      // Create object with explicitly defined properties
+      const job: Record<string, any> = {
         id: salon.id,
         title: salon.salon_name,
         company: salon.salon_name,
@@ -136,7 +146,7 @@ export async function fetchListingById(id: string): Promise<Job | null> {
         imageUrl: salon.logo_url || null,
         image: salon.logo_url || null,
         created_at: salon.created_at
-      } as Partial<Job>;
+      };
       
       return job as Job;
     }
