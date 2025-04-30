@@ -30,49 +30,51 @@ const SalonsFinalsPage = () => {
         />
       </Helmet>
 
-      {/* Hero banner with overlay, text and buttons - Updated for better visual impact */}
-      <div className="w-full relative overflow-hidden min-h-[400px] md:min-h-[520px]">
-        {/* Main image with improved sizing */}
-        <img 
-          src="/lovable-uploads/79cf9064-5740-4752-9ad6-9b7e9b4db31e.png" 
-          alt="Luxury salon interior" 
-          className="w-full h-full absolute inset-0 object-cover object-center"
-        />
-        
-        {/* Dark gradient overlay */}
-        <div 
-          className="absolute inset-0" 
-          style={{ 
-            background: 'linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35))',
-          }} 
-        />
-        
-        {/* Hero content with improved vertical centering */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 md:px-8 z-10">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold text-white mb-3">
-            Premium Salons for Sale — Ready to Own
-          </h1>
-          <p className="text-white text-lg md:text-xl mb-8 max-w-2xl opacity-90">
-            Discover, list, and buy high-end beauty businesses with EmviApp
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Link to="/sell-salon">
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800"
-              >
-                <Plus className="w-5 h-5 mr-1" /> Post Your Salon
-              </Button>
-            </Link>
-            <Link to="#listings">
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-2 border-white text-white bg-transparent hover:bg-white/10"
-              >
-                <Search className="w-5 h-5 mr-1" /> Browse Listings
-              </Button>
-            </Link>
+      {/* Enhanced hero banner with responsive sizing and better visual impact */}
+      <div className="container mx-auto px-4 py-6">
+        <div className="w-full relative overflow-hidden rounded-2xl shadow-lg min-h-[350px] sm:min-h-[400px] md:min-h-[480px] lg:min-h-[520px]">
+          {/* Main image with improved sizing and positioning */}
+          <img 
+            src="/lovable-uploads/79cf9064-5740-4752-9ad6-9b7e9b4db31e.png" 
+            alt="Luxury salon interior" 
+            className="w-full h-full absolute inset-0 object-cover object-center"
+          />
+          
+          {/* Improved gradient overlay with better fade effect */}
+          <div 
+            className="absolute inset-0" 
+            style={{ 
+              background: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.6))',
+            }} 
+          />
+          
+          {/* Hero content with improved spacing and responsiveness */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 sm:px-6 md:px-12 z-10">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold text-white mb-3 md:mb-4 max-w-3xl mx-auto leading-tight">
+              Premium Salons for Sale — Ready to Own
+            </h1>
+            <p className="text-white text-lg md:text-xl mb-6 md:mb-8 max-w-2xl mx-auto opacity-90 font-light">
+              Discover, list, and buy high-end beauty businesses with EmviApp
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 md:gap-6 w-full max-w-md mx-auto">
+              <Link to="/sell-salon" className="w-full sm:w-auto">
+                <Button 
+                  size="lg" 
+                  className="w-full bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 shadow-md"
+                >
+                  <Plus className="w-5 h-5 mr-1" /> Post Your Salon
+                </Button>
+              </Link>
+              <Link to="#listings" className="w-full sm:w-auto">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="w-full border-2 border-white text-white bg-transparent hover:bg-white/10 shadow-md"
+                >
+                  <Search className="w-5 h-5 mr-1" /> Browse Listings
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
