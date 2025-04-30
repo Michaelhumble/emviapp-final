@@ -7,6 +7,7 @@ import ArtistProfilesSection from "@/components/salon-owners/ArtistProfilesSecti
 import PostJobSection from "@/components/salon-owners/PostJobSection";
 import CtaSection from "@/components/salon-owners/CtaSection";
 import Map from "@/components/Map";
+import BilingualExperienceSection from "@/components/salons/BilingualExperienceSection";
 
 const SalonOwners = () => {
   return (
@@ -19,6 +20,9 @@ const SalonOwners = () => {
 
       {/* AI Features Section */}
       <FeaturesSection />
+
+      {/* Bilingual Experience Section */}
+      <BilingualExperienceSection />
 
       {/* Map Section */}
       <div className="container mx-auto px-4 py-12">

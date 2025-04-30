@@ -26,7 +26,7 @@ const IndexPage = () => {
       <Features />
       <BeautyExchangeSection />
       
-      {/* Add the Bilingual Experience Section before MissingPieceSection */}
+      {/* Replace "The Platform You've Been Waiting For" with Bilingual Experience Section */}
       <BilingualExperienceSection />
       
       <MissingPieceSection />
