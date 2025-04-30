@@ -42,7 +42,7 @@ export const useAuthSession = (
           
           // Handle each auth event type appropriately
           switch (event) {
-            case 'SIGNED_IN':
+            case AuthChangeEvent.SIGNED_IN:
               // Check for role in user metadata and store it
               const userRole = determineUserRole(
                 session.user.user_metadata,
@@ -80,7 +80,7 @@ export const useAuthSession = (
               }, 0);
               break;
               
-            case 'SIGNED_UP':
+            case AuthChangeEvent.SIGNED_UP:
               setIsNewUser(true);
               localStorage.setItem('emviapp_new_user', 'true');
               
@@ -97,7 +97,7 @@ export const useAuthSession = (
               }
               break;
               
-            case 'SIGNED_OUT':
+            case AuthChangeEvent.SIGNED_OUT:
               // Reset all user state
               setUserProfile(null);
               setUserRole('customer');
@@ -106,7 +106,7 @@ export const useAuthSession = (
               localStorage.removeItem('emviapp_user_role');
               break;
               
-            case 'USER_UPDATED':
+            case AuthChangeEvent.USER_UPDATED:
               // Re-determine role if user data was updated
               const updatedRole = determineUserRole(
                 session.user.user_metadata,
