@@ -39,26 +39,32 @@ export async function fetchLiveListings({
       return [];
     }
     
-    // Transform database records to match Job type - avoiding deep recursion
-    return data.map(listing => ({
-      id: listing.id,
-      title: listing.title,
-      company: listing.title,
-      location: listing.location || 'Location not specified',
-      description: listing.content,
-      type: listing.post_type === 'salon' ? 'salon' : 'opportunity',
-      imageUrl: listing.metadata && typeof listing.metadata === 'object' ? 
-        (listing.metadata as any).image_url || null : null,
-      created_at: listing.created_at,
-      price: listing.price,
-      for_sale: listing.metadata && typeof listing.metadata === 'object' ? 
-        (listing.metadata as any).for_sale || false : false,
-      specialties: listing.metadata && typeof listing.metadata === 'object' ? 
-        (listing.metadata as any).specialties || [] : [],
-      // Add image property for compatibility
-      image: listing.metadata && typeof listing.metadata === 'object' ? 
-        (listing.metadata as any).image_url || null : null
-    } as Job)); // Cast to Job to avoid TS recursion issues
+    // Transform database records to match Job type but avoid excessive recursion
+    // Use explicit typing and avoid deep nesting that could cause infinite type recursion
+    return data.map(listing => {
+      const jobListing: Job = {
+        id: listing.id,
+        title: listing.title,
+        company: listing.title,
+        location: listing.location || 'Location not specified',
+        description: listing.content,
+        type: listing.post_type === 'salon' ? 'salon' : 'opportunity',
+        created_at: listing.created_at,
+        price: listing.price,
+        // Add simple metadata extraction without causing type recursion
+        imageUrl: listing.metadata && typeof listing.metadata === 'object' ? 
+          (listing.metadata as any).image_url || null : null,
+        for_sale: listing.metadata && typeof listing.metadata === 'object' ? 
+          (listing.metadata as any).for_sale || false : false,
+        specialties: listing.metadata && typeof listing.metadata === 'object' ? 
+          (listing.metadata as any).specialties || [] : [],
+        // Add image property for compatibility
+        image: listing.metadata && typeof listing.metadata === 'object' ? 
+          (listing.metadata as any).image_url || null : null
+      };
+      
+      return jobListing;
+    });
   } catch (error) {
     console.error('Error in fetchLiveListings:', error);
     return [];
@@ -78,7 +84,8 @@ export async function fetchListingById(id: string): Promise<Job | null> {
       .single();
     
     if (post) {
-      return {
+      // Use type assertion to ensure proper typing without recursion
+      const listing: Job = {
         id: post.id,
         title: post.title,
         company: post.title,
@@ -96,7 +103,9 @@ export async function fetchListingById(id: string): Promise<Job | null> {
         // Add image property for compatibility
         image: post.metadata && typeof post.metadata === 'object' ? 
           (post.metadata as any).image_url || null : null
-      } as Job;
+      };
+      
+      return listing;
     }
     
     // If not found in posts, try salons table
@@ -107,7 +116,8 @@ export async function fetchListingById(id: string): Promise<Job | null> {
       .single();
     
     if (salon) {
-      return {
+      // Use type assertion to ensure proper typing without recursion
+      const salonListing: Job = {
         id: salon.id,
         title: salon.salon_name,
         company: salon.salon_name,
@@ -118,7 +128,9 @@ export async function fetchListingById(id: string): Promise<Job | null> {
         imageUrl: salon.logo_url || null,
         image: salon.logo_url || null,
         created_at: salon.created_at,
-      } as Job;
+      };
+      
+      return salonListing;
     }
     
     console.error('Listing not found:', id);
