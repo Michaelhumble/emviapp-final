@@ -14,7 +14,9 @@ export * from "./MessageSender";
 export * from "./notification";
 // Export from portfolio without PortfolioImage to avoid conflict with artist.ts
 export type {
-  // Add specific types from portfolio.ts except PortfolioImage
+  PortfolioCollection,
+  PortfolioItem,
+  PortfolioFormData
 } from "./portfolio";
 export * from "./profile";
 export * from "./profile-completion";
