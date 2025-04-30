@@ -39,10 +39,10 @@ export async function fetchLiveListings({
       return [];
     }
     
-    // Transform and return the data while avoiding deep type recursion
+    // Transform data using explicit typing to avoid recursion
     return data.map(listing => {
-      // Initialize only the necessary properties to avoid circular references
-      const job: Record<string, any> = {
+      // Define base properties with explicit typing
+      const job: Partial<Job> = {
         id: listing.id,
         title: listing.title,
         company: listing.title,
@@ -57,7 +57,7 @@ export async function fetchLiveListings({
         specialties: []
       };
 
-      // Safely add metadata properties if they exist
+      // Handle metadata separately to avoid recursive types
       if (listing.metadata && typeof listing.metadata === 'object') {
         const meta = listing.metadata as Record<string, any>;
         job.imageUrl = meta.image_url || null;
@@ -66,6 +66,7 @@ export async function fetchLiveListings({
         job.specialties = Array.isArray(meta.specialties) ? meta.specialties : [];
       }
       
+      // Use type assertion to safely convert our partial object
       return job as Job;
     });
   } catch (error) {
@@ -87,8 +88,8 @@ export async function fetchListingById(id: string): Promise<Job | null> {
       .single();
     
     if (post) {
-      // Create a record to avoid type recursion
-      const job: Record<string, any> = {
+      // Create a base object with known properties
+      const job: Partial<Job> = {
         id: post.id,
         title: post.title,
         company: post.title,
@@ -103,7 +104,7 @@ export async function fetchListingById(id: string): Promise<Job | null> {
         image: null
       };
 
-      // Safely extract metadata fields
+      // Handle metadata separately to avoid recursive types
       if (post.metadata && typeof post.metadata === 'object') {
         const meta = post.metadata as Record<string, any>;
         job.imageUrl = meta.image_url || null;
@@ -123,8 +124,8 @@ export async function fetchListingById(id: string): Promise<Job | null> {
       .single();
     
     if (salon) {
-      // Create a record for a salon to avoid type recursion
-      const job: Record<string, any> = {
+      // Create a base object with known properties
+      const job: Partial<Job> = {
         id: salon.id,
         title: salon.salon_name,
         company: salon.salon_name,
