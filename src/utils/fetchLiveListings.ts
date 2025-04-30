@@ -39,7 +39,7 @@ export async function fetchLiveListings({
       return [];
     }
     
-    // Transform database records to match Job type
+    // Transform database records to match Job type - avoiding deep recursion
     return data.map(listing => ({
       id: listing.id,
       title: listing.title,
@@ -54,8 +54,11 @@ export async function fetchLiveListings({
       for_sale: listing.metadata && typeof listing.metadata === 'object' ? 
         (listing.metadata as any).for_sale || false : false,
       specialties: listing.metadata && typeof listing.metadata === 'object' ? 
-        (listing.metadata as any).specialties || [] : []
-    }));
+        (listing.metadata as any).specialties || [] : [],
+      // Add image property for compatibility
+      image: listing.metadata && typeof listing.metadata === 'object' ? 
+        (listing.metadata as any).image_url || null : null
+    } as Job)); // Cast to Job to avoid TS recursion issues
   } catch (error) {
     console.error('Error in fetchLiveListings:', error);
     return [];
@@ -89,8 +92,11 @@ export async function fetchListingById(id: string): Promise<Job | null> {
         for_sale: post.metadata && typeof post.metadata === 'object' ? 
           (post.metadata as any).for_sale || false : false,
         specialties: post.metadata && typeof post.metadata === 'object' ? 
-          (post.metadata as any).specialties || [] : []
-      };
+          (post.metadata as any).specialties || [] : [],
+        // Add image property for compatibility
+        image: post.metadata && typeof post.metadata === 'object' ? 
+          (post.metadata as any).image_url || null : null
+      } as Job;
     }
     
     // If not found in posts, try salons table
@@ -110,8 +116,9 @@ export async function fetchListingById(id: string): Promise<Job | null> {
         description: salon.about,
         type: 'salon',
         imageUrl: salon.logo_url || null,
+        image: salon.logo_url || null,
         created_at: salon.created_at,
-      };
+      } as Job;
     }
     
     console.error('Listing not found:', id);

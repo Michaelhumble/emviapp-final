@@ -14,7 +14,7 @@ const FeaturedListingsSection: React.FC<FeaturedListingsSectionProps> = ({
   featuredListings,
   onViewDetails
 }) => {
-  // Format price to currency
+  // Format price to currency - Updated to handle string | number | undefined
   const formatPrice = (price: string | number | undefined) => {
     if (!price) return "$0";
     

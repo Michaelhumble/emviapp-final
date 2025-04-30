@@ -60,6 +60,6 @@ export interface Job {
   imageUrl?: string;
   // Add the missing property
   is_vietnamese_listing?: boolean;
-  // Make sure this exists for destructuring operations
+  // Simple indexer to avoid excessive type recursion
   [key: string]: any;
 }
