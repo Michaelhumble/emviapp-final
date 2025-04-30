@@ -39,10 +39,10 @@ export async function fetchLiveListings({
       return [];
     }
     
-    // Transform the data into Job objects using a more explicit approach to avoid deep type instantiation
+    // Transform the data into Job objects without deep instantiation
     return data.map(listing => {
-      // Create a base job object with primitive properties first
-      const job: Record<string, any> = {
+      // Create job object with basic properties
+      const job: any = {
         id: listing.id,
         title: listing.title,
         company: listing.title,
@@ -50,28 +50,26 @@ export async function fetchLiveListings({
         description: listing.content,
         type: listing.post_type === 'salon' ? 'salon' : 'opportunity',
         created_at: listing.created_at,
-        price: listing.price,
-        imageUrl: null,
-        image: null,
-        for_sale: false,
-        specialties: []
+        price: listing.price
       };
 
-      // Handle metadata safely without recursive typing issues
+      // Add default values for non-primitive properties
+      job.imageUrl = null;
+      job.image = null;
+      job.for_sale = false;
+      job.specialties = [];
+
+      // Handle metadata separately with explicit typing
       if (listing.metadata && typeof listing.metadata === 'object') {
-        const meta = listing.metadata as {
-          image_url?: string;
-          for_sale?: boolean;
-          specialties?: string[];
-        };
+        // Type the metadata simply without nested structures
+        const meta = listing.metadata as any;
         
-        job.imageUrl = meta.image_url || null;
-        job.image = meta.image_url || null;
-        job.for_sale = meta.for_sale || false;
-        job.specialties = Array.isArray(meta.specialties) ? meta.specialties : [];
+        if (meta.image_url) job.imageUrl = meta.image_url;
+        if (meta.image_url) job.image = meta.image_url;
+        if (meta.for_sale) job.for_sale = meta.for_sale;
+        if (Array.isArray(meta.specialties)) job.specialties = meta.specialties;
       }
       
-      // Cast to Job type at the end
       return job as Job;
     });
   } catch (error) {
@@ -93,34 +91,32 @@ export async function fetchListingById(id: string): Promise<Job | null> {
       .single();
     
     if (post) {
-      // Create object with explicitly defined properties
-      const job: Record<string, any> = {
+      // Create object with simple typing approach
+      const job: any = {
         id: post.id,
         title: post.title,
         company: post.title,
         location: post.location || 'Location not specified',
         description: post.content,
         type: post.post_type === 'salon' ? 'salon' : 'opportunity',
-        imageUrl: null,
         created_at: post.created_at,
-        price: post.price,
-        for_sale: false,
-        specialties: [],
-        image: null
+        price: post.price
       };
+      
+      // Add default values
+      job.imageUrl = null;
+      job.image = null;
+      job.for_sale = false;
+      job.specialties = [];
 
-      // Handle metadata safely
+      // Handle metadata separately
       if (post.metadata && typeof post.metadata === 'object') {
-        const meta = post.metadata as {
-          image_url?: string;
-          for_sale?: boolean;
-          specialties?: string[];
-        };
+        const meta = post.metadata as any;
         
-        job.imageUrl = meta.image_url || null;
-        job.image = meta.image_url || null;
-        job.for_sale = meta.for_sale || false;
-        job.specialties = Array.isArray(meta.specialties) ? meta.specialties : [];
+        if (meta.image_url) job.imageUrl = meta.image_url;
+        if (meta.image_url) job.image = meta.image_url;
+        if (meta.for_sale) job.for_sale = meta.for_sale;
+        if (Array.isArray(meta.specialties)) job.specialties = meta.specialties;
       }
       
       return job as Job;
@@ -134,8 +130,8 @@ export async function fetchListingById(id: string): Promise<Job | null> {
       .single();
     
     if (salon) {
-      // Create object with explicitly defined properties
-      const job: Record<string, any> = {
+      // Create object with simple typing
+      const job: any = {
         id: salon.id,
         title: salon.salon_name,
         company: salon.salon_name,
