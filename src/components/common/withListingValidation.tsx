@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { validateListingExists, validateListingData, ListingType } from '@/utils/listingValidator';
+import { validateListingData, ListingType } from '@/utils/listingValidator';
 
 interface WithListingValidationProps {
   id: string;

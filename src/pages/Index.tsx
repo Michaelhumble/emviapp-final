@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -12,7 +11,7 @@ import AIPowerhouse from "@/components/home/AIPowerhouse";
 import AITeam from "@/components/home/AITeam";
 import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 import MissingPieceSection from "@/components/home/missing-piece";
-import { runListingsVerification } from "@/utils/listingValidator";
+import { runListingsVerification } from "@/utils/runListingsVerification";
 
 // Enhanced homepage components
 import LatestIndustryOpportunities from "@/components/home/LatestIndustryOpportunities";
@@ -25,7 +24,6 @@ import WhyTrustSection from "@/components/home/sections/WhyTrustSection";
 import WhatYouCanDoSection from "@/components/home/sections/WhatYouCanDoSection";
 import BeautyExchangeSection from "@/components/home/BeautyExchangeSection";
 import BilingualExperienceSection from "@/components/home/BilingualExperienceSection";
-import OpportunitiesSection from "@/components/home/opportunities/OpportunitiesSection";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -61,7 +59,7 @@ const Index = () => {
       <BilingualExperienceSection />
       
       {/* 1️⃣ Latest Industry Opportunities (Beauty Exchange) */}
-      <OpportunitiesSection /> {/* Using our fixed component */}
+      <LatestIndustryOpportunities />
       
       {/* 2️⃣ Nail & Beauty Salons Hiring Now */}
       <SalonJobListingsShowcase />

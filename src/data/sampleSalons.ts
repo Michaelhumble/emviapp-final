@@ -1,6 +1,5 @@
 
 import { Salon } from "@/types/salon";
-import { SalonCategory } from "@/utils/salonImageFallbacks";
 
 export const sampleSalons: Salon[] = [
   {
@@ -91,7 +90,7 @@ export const sampleSalons: Salon[] = [
     features: ["6 barber chairs", "Waiting area", "Beverage service"],
     square_feet: 1100,
     monthly_rent: 3200,
-    category: "beauty", // Changed from "barber" to match SalonCategory type
+    category: "barber",
     city: "Los Angeles",
     neighborhood: "Downtown",
     rating: 4.8,
