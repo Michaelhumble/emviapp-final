@@ -39,10 +39,10 @@ export async function fetchLiveListings({
       return [];
     }
     
-    // Transform data using explicit typing to avoid recursion
+    // Transform the data into Job objects with careful typing
     return data.map(listing => {
-      // Define base properties with explicit typing
-      const job: Partial<Job> = {
+      // Create a strictly typed object with only necessary fields
+      const job = {
         id: listing.id,
         title: listing.title,
         company: listing.title,
@@ -55,9 +55,9 @@ export async function fetchLiveListings({
         image: null,
         for_sale: false,
         specialties: []
-      };
+      } as Partial<Job>;
 
-      // Handle metadata separately to avoid recursive types
+      // Handle metadata without recursive typing
       if (listing.metadata && typeof listing.metadata === 'object') {
         const meta = listing.metadata as Record<string, any>;
         job.imageUrl = meta.image_url || null;
@@ -66,7 +66,7 @@ export async function fetchLiveListings({
         job.specialties = Array.isArray(meta.specialties) ? meta.specialties : [];
       }
       
-      // Use type assertion to safely convert our partial object
+      // Cast to Job type after construction
       return job as Job;
     });
   } catch (error) {
@@ -88,8 +88,8 @@ export async function fetchListingById(id: string): Promise<Job | null> {
       .single();
     
     if (post) {
-      // Create a base object with known properties
-      const job: Partial<Job> = {
+      // Create a strictly typed object with only necessary properties
+      const job = {
         id: post.id,
         title: post.title,
         company: post.title,
@@ -102,7 +102,7 @@ export async function fetchListingById(id: string): Promise<Job | null> {
         for_sale: false,
         specialties: [],
         image: null
-      };
+      } as Partial<Job>;
 
       // Handle metadata separately to avoid recursive types
       if (post.metadata && typeof post.metadata === 'object') {
@@ -124,8 +124,8 @@ export async function fetchListingById(id: string): Promise<Job | null> {
       .single();
     
     if (salon) {
-      // Create a base object with known properties
-      const job: Partial<Job> = {
+      // Create a strictly typed object with only necessary properties
+      const job = {
         id: salon.id,
         title: salon.salon_name,
         company: salon.salon_name,
@@ -136,7 +136,7 @@ export async function fetchListingById(id: string): Promise<Job | null> {
         imageUrl: salon.logo_url || null,
         image: salon.logo_url || null,
         created_at: salon.created_at
-      };
+      } as Partial<Job>;
       
       return job as Job;
     }
