@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Store, Search, Users } from 'lucide-react';
+import { Store, Search, Users, Sparkles, Stars } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
@@ -19,7 +19,7 @@ const BeautyExchangeSection = () => {
     >
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-          {/* Left side - Image/Icon */}
+          {/* Left side - Enhanced Premium Icon with magical elements */}
           <motion.div 
             className="w-full md:w-1/2 flex justify-center"
             initial={{ opacity: 0, x: -20 }}
@@ -27,12 +27,29 @@ const BeautyExchangeSection = () => {
             transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
           >
             <div className="relative">
+              {/* Enhanced glow effect with multiple layers */}
+              <div className="absolute -inset-6 rounded-full bg-purple-200/50 blur-2xl"></div>
               <div className="absolute -inset-4 rounded-full bg-purple-100/80 blur-xl"></div>
-              <div className="relative bg-white p-8 rounded-full shadow-xl border border-purple-100">
-                <Store 
-                  className="w-24 h-24 md:w-32 md:h-32 text-purple-600"
-                  strokeWidth={1.5}
-                />
+              
+              {/* Premium icon container with subtle gradient */}
+              <div className="relative bg-gradient-to-br from-white to-purple-50 p-8 rounded-full shadow-xl border border-purple-100">
+                {/* Main icon */}
+                <div className="relative flex items-center justify-center">
+                  <Store 
+                    className="w-20 h-20 md:w-24 md:h-24 text-purple-600"
+                    strokeWidth={1.5}
+                  />
+                  
+                  {/* Overlapping sparkle elements for magic/transformation */}
+                  <Stars 
+                    className="absolute -top-4 -right-2 w-12 h-12 text-purple-500/80"
+                    strokeWidth={1.25}
+                  />
+                  <Sparkles 
+                    className="absolute -bottom-2 -left-2 w-10 h-10 text-purple-400/90"
+                    strokeWidth={1.25}
+                  />
+                </div>
               </div>
             </div>
           </motion.div>
