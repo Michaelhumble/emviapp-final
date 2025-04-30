@@ -37,48 +37,88 @@ const BeautyExchangeSection = () => {
             </div>
           </motion.div>
           
-          {/* Right side - Updated Content */}
+          {/* Right side - Title, Subtitle, Supporting Line, and CTAs */}
           <motion.div 
             className="w-full md:w-1/2 text-center md:text-left"
             initial={{ opacity: 0, y: 30 }}
             animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             transition={{ duration: 0.7, ease: "easeOut", delay: 0.4 }}
           >
-            <h2 className="text-3xl md:text-4xl font-playfair font-bold mb-4">
-              The Beauty Exchange — Find Your Startup. Build Something Beautiful With Your New Team.
-            </h2>
-            <p className="text-gray-700 mb-8 text-lg">
-              Post jobs, buy or sell salons, and connect with rising talent — all in one place built for the future of the beauty industry.
-            </p>
+            <motion.h2 
+              className="text-3xl md:text-4xl font-playfair font-bold mb-2"
+              initial={{ opacity: 0, y: 10 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+              transition={{ duration: 0.5, ease: "easeOut", delay: 0.5 }}
+            >
+              The Beauty Exchange
+            </motion.h2>
             
-            {/* Updated CTA Buttons - 3 buttons now */}
+            <motion.h3 
+              className="text-xl md:text-2xl text-purple-700 mb-2"
+              initial={{ opacity: 0, y: 10 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+              transition={{ duration: 0.5, ease: "easeOut", delay: 0.6 }}
+            >
+              Turn Beauticians Into Magicians.
+            </motion.h3>
+            
+            <motion.p 
+              className="text-gray-700 mb-6 text-lg"
+              initial={{ opacity: 0, y: 10 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+              transition={{ duration: 0.5, ease: "easeOut", delay: 0.7 }}
+            >
+              Find Your Startup. Build Something Beautiful With Your New Team.
+            </motion.p>
+            
+            {/* CTA Buttons - 3 buttons */}
             <div className="flex flex-col sm:flex-row flex-wrap items-center gap-4">
-              <Link to="/salons">
-                <Button 
-                  className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white shadow-md"
-                  size="lg"
-                >
-                  <Search className="mr-2 h-5 w-5" /> Browse Beauty Listings
-                </Button>
-              </Link>
-              <Link to="/create-listing">
-                <Button 
-                  className="w-full sm:w-auto border-2 border-purple-600 bg-transparent text-purple-700 hover:bg-purple-50"
-                  variant="outline"
-                  size="lg"
-                >
-                  <Store className="mr-2 h-5 w-5" /> Post a Job or Salon for Sale
-                </Button>
-              </Link>
-              <Link to="/artists">
-                <Button 
-                  className="w-full sm:w-auto border-2 border-purple-600 bg-transparent text-purple-700 hover:bg-purple-50"
-                  variant="outline"
-                  size="lg"
-                >
-                  <Users className="mr-2 h-5 w-5" /> Find Artists & Stylists
-                </Button>
-              </Link>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                transition={{ duration: 0.5, ease: "easeOut", delay: 0.8 }}
+              >
+                <Link to="/salons">
+                  <Button 
+                    className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white shadow-md"
+                    size="lg"
+                  >
+                    <Search className="mr-2 h-5 w-5" /> Browse Beauty Listings
+                  </Button>
+                </Link>
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                transition={{ duration: 0.5, ease: "easeOut", delay: 0.9 }}
+              >
+                <Link to="/create-listing">
+                  <Button 
+                    className="w-full sm:w-auto border-2 border-purple-600 bg-transparent text-purple-700 hover:bg-purple-50"
+                    variant="outline"
+                    size="lg"
+                  >
+                    <Store className="mr-2 h-5 w-5" /> Post a Job or Salon for Sale
+                  </Button>
+                </Link>
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                transition={{ duration: 0.5, ease: "easeOut", delay: 1.0 }}
+              >
+                <Link to="/artists">
+                  <Button 
+                    className="w-full sm:w-auto border-2 border-purple-600 bg-transparent text-purple-700 hover:bg-purple-50"
+                    variant="outline"
+                    size="lg"
+                  >
+                    <Users className="mr-2 h-5 w-5" /> Find Artists & Stylists
+                  </Button>
+                </Link>
+              </motion.div>
             </div>
           </motion.div>
         </div>
