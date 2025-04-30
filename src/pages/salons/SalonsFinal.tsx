@@ -6,12 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { salonListings, vietnameseSalonListings } from '@/data/salonData';
 import ValidatedSalonCard from '@/components/salons/ValidatedSalonCard';
-import LuxurySalonBanner from '@/components/salons/LuxurySalonBanner';
 
 const SalonsFinalsPage = () => {
   useEffect(() => {
     // Enhanced debugging - confirm this component is rendering properly
-    console.log('SalonsFinal page rendered with LuxurySalonBanner - timestamp:', new Date().toISOString());
+    console.log('SalonsFinal page rendered - banner removed - timestamp:', new Date().toISOString());
   }, []);
 
   return (
@@ -24,12 +23,9 @@ const SalonsFinalsPage = () => {
         />
       </Helmet>
 
-      {/* Premium Banner */}
-      <LuxurySalonBanner />
-
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-7xl mx-auto">
-          {/* Premium Listings Section - Immediately below the banner */}
+          {/* Premium Listings Section */}
           <div className="mb-16">
             <h2 className="font-playfair text-3xl md:text-4xl font-bold mb-6">
               Premium Salon Listings

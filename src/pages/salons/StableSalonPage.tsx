@@ -16,7 +16,7 @@ const StableSalonPage: React.FC = () => {
 
   React.useEffect(() => {
     // Log that we're using the stable version
-    console.log('Using StableSalonPage wrapper - v1.0.0');
+    console.log('Using StableSalonPage wrapper - v1.0.1 - banner removed');
   }, []);
 
   // Error boundary functionality

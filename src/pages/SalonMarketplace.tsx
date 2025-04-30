@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Search, Frown, Star } from "lucide-react";
 import Layout from "@/components/layout/Layout";
@@ -19,7 +18,7 @@ const SalonMarketplace = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    console.log('SalonMarketplace page rendered');
+    console.log('SalonMarketplace page rendered - no banner');
   }, []);
 
   // Use salon data with all original images preserved
