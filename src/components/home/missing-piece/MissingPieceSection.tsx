@@ -81,7 +81,7 @@ const MissingPieceSection = () => {
               transition={{ delay: 0.5, duration: 0.5 }}
             >
               <motion.span
-                className="text-sm font-medium text-[#B57CF3] flex items-center space-x-1.5"
+                className="text-sm font-medium text-[#9B5DE5] italic flex items-center space-x-1.5"
                 animate={{ y: [0, -2, 0] }}
                 transition={{
                   duration: 2.5,
