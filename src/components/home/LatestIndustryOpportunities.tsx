@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container } from '@/components/ui/container';
 import { motion } from 'framer-motion';
-import { jobsData } from '@/data/jobsData';
+import jobsData from '@/data/jobsData'; // Changed from named import to default import
 import OpportunitiesSection from './opportunities/OpportunitiesSection';
 import { Job } from '@/types/job';
 
