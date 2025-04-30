@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Store, Search } from 'lucide-react';
+import { Store, Search, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
@@ -37,42 +37,46 @@ const BeautyExchangeSection = () => {
             </div>
           </motion.div>
           
-          {/* Right side - Content */}
+          {/* Right side - Updated Content */}
           <motion.div 
             className="w-full md:w-1/2 text-center md:text-left"
             initial={{ opacity: 0, y: 30 }}
             animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
             transition={{ duration: 0.7, ease: "easeOut", delay: 0.4 }}
           >
-            <h2 className="text-3xl md:text-4xl font-playfair font-bold mb-3">
-              The Beauty Exchange
+            <h2 className="text-3xl md:text-4xl font-playfair font-bold mb-4">
+              The Beauty Exchange — Find Your Startup. Build Something Beautiful With Your New Team.
             </h2>
-            <h3 className="text-xl md:text-2xl text-purple-700 mb-4">
-              Turn Beauticians Into Magicians.
-            </h3>
-            <p className="text-gray-700 mb-8 max-w-xl mx-auto md:mx-0">
-              Buy or sell salons, booths, and listings with ease. 
-              Whether you're a solo artist or a salon empire builder — 
-              this is where dreams change hands.
+            <p className="text-gray-700 mb-8 text-lg">
+              Post jobs, buy or sell salons, and connect with rising talent — all in one place built for the future of the beauty industry.
             </p>
             
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-center gap-4">
+            {/* Updated CTA Buttons - 3 buttons now */}
+            <div className="flex flex-col sm:flex-row flex-wrap items-center gap-4">
               <Link to="/salons">
                 <Button 
                   className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white shadow-md"
                   size="lg"
                 >
-                  <Store className="mr-2 h-5 w-5" /> Post a Salon for Sale
+                  <Search className="mr-2 h-5 w-5" /> Browse Beauty Listings
                 </Button>
               </Link>
-              <Link to="/salons">
+              <Link to="/create-listing">
                 <Button 
                   className="w-full sm:w-auto border-2 border-purple-600 bg-transparent text-purple-700 hover:bg-purple-50"
                   variant="outline"
                   size="lg"
                 >
-                  <Search className="mr-2 h-5 w-5" /> Browse Beauty Listings
+                  <Store className="mr-2 h-5 w-5" /> Post a Job or Salon for Sale
+                </Button>
+              </Link>
+              <Link to="/artists">
+                <Button 
+                  className="w-full sm:w-auto border-2 border-purple-600 bg-transparent text-purple-700 hover:bg-purple-50"
+                  variant="outline"
+                  size="lg"
+                >
+                  <Users className="mr-2 h-5 w-5" /> Find Artists & Stylists
                 </Button>
               </Link>
             </div>
