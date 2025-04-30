@@ -1,10 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Store } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const MissingPieceSection = () => {
+  const [hovered, setHovered] = useState(false);
+
   return (
     <section className="py-10 md:py-14 bg-gradient-to-br from-[#FDF6FF] via-[#FCFAFF] to-[#F6F6F6] overflow-hidden">
       <div className="container mx-auto px-4">
@@ -16,6 +18,8 @@ const MissingPieceSection = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.7 }}
+              onHoverStart={() => setHovered(true)}
+              onHoverEnd={() => setHovered(false)}
             >
               {/* Animated glow background */}
               <motion.div
@@ -35,6 +39,7 @@ const MissingPieceSection = () => {
               <motion.div 
                 className="relative flex items-center justify-center w-28 h-28 md:w-32 md:h-32 rounded-full bg-white border border-purple-100 shadow-sm z-10"
                 whileHover={{ scale: 1.05 }}
+                animate={hovered ? { scale: 1.05 } : { scale: 1 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
                 <Store className="w-12 h-12 md:w-16 md:h-16 text-[#9B5DE5]" />
