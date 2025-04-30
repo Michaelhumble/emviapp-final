@@ -51,6 +51,12 @@ function App() {
                   {/* Explicitly define the /salons route to use StableSalonPage which includes SalonsFinal */}
                   <Route path="/salons" element={<StableSalonPage />} />
                   
+                  {/* Ensure we have a proper route for salon details */}
+                  <Route path="/salons/:id" element={<SalonDetailPage />} />
+                  
+                  {/* Ensure we have a proper route for opportunity details */}
+                  <Route path="/opportunities/:id" element={<SalonDetailPage />} />
+                  
                   {/* Redirect old routes to new ones */}
                   <Route path="/posting/*" element={<Navigate to="/create-listing" replace />} />
                   <Route path="/post/job" element={<Navigate to="/create-listing" replace />} />

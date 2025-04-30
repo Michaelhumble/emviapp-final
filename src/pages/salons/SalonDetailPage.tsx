@@ -32,13 +32,18 @@ const SalonDetailPage = () => {
 
       setLoading(true);
       try {
+        // For debugging
+        console.log(`SalonDetailPage: Loading salon with ID: ${id}`);
+        
         const { salon: salonData, error: hasError, validId } = await fetchSalonById(id);
         
         if (hasError || !validId) {
+          console.error(`SalonDetailPage: Error loading salon with ID: ${id}`);
           setError(true);
           toast.error('This salon listing could not be found');
           navigate('/salon-not-found');
         } else {
+          console.log(`SalonDetailPage: Successfully loaded salon: ${salonData?.title || salonData?.company}`);
           setSalon(salonData);
         }
       } finally {
