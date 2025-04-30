@@ -14,7 +14,6 @@ import { getRedirectPath } from '@/utils/routeRedirector';
 import StableSalonPage from "@/pages/salons/StableSalonPage";
 import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
 import ArtistInbox from "@/pages/dashboard/artist/Inbox";
-import SalonDetail from '@/pages/salons/SalonDetail'; // Import SalonDetail instead of SalonDetailPage
 
 // Simple component to handle route redirects
 const RouteRedirector = () => {
@@ -51,12 +50,6 @@ function App() {
                 <Routes>
                   {/* Explicitly define the /salons route to use StableSalonPage which includes SalonsFinal */}
                   <Route path="/salons" element={<StableSalonPage />} />
-                  
-                  {/* Ensure we have a proper route for salon details */}
-                  <Route path="/salons/:id" element={<SalonDetail />} />
-                  
-                  {/* Ensure we have a proper route for opportunity details */}
-                  <Route path="/opportunities/:id" element={<SalonDetail />} />
                   
                   {/* Redirect old routes to new ones */}
                   <Route path="/posting/*" element={<Navigate to="/create-listing" replace />} />

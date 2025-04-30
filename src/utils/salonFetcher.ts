@@ -43,24 +43,8 @@ export async function fetchSalonById(id: string): Promise<{
       return { salon: null, error: true, validId: false };
     }
     
-    // Ensure salon data has the correct fields
-    const enhancedSalonData: Job = {
-      ...salonData,
-      title: salonData.title || salonData.company || (salonData as any).salon_name || '',
-      location: salonData.location || '',
-      description: salonData.description || (salonData as any).about || '',
-      imageUrl: salonData.imageUrl || salonData.image || (salonData as any).logo_url || '',
-      image: salonData.image || salonData.imageUrl || (salonData as any).logo_url || '',
-      features: Array.isArray((salonData as any).features) 
-        ? (salonData as any).features 
-        : Array.isArray((salonData as any).salon_features)
-          ? (salonData as any).salon_features
-          : [],
-      type: 'salon'
-    };
-    
     return {
-      salon: enhancedSalonData,
+      salon: salonData,
       error: false,
       validId: true
     };

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Job } from '@/types/job';
@@ -18,19 +17,20 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
     listing && 
     listing.id && 
     (listing.title || listing.company) &&
-    listing.location
+    listing.location &&
+    // Additional validation to ensure listing has a type for proper routing
+    listing.type &&
+    // Ensure there's at least an imageUrl or a category/specialty for fallback images
+    (listing.imageUrl || 
+     (listing.specialties && listing.specialties.length > 0) || 
+     // Check for category using type guard
+     ('category' in listing && listing.category))
   );
   
   // Log any issues with listings for debugging
   if (validListings.length < diverseListings.length) {
     console.log(`⚠️ Filtered out ${diverseListings.length - validListings.length} invalid listings from Opportunities section`);
   }
-
-  // Add proper type to listings if missing
-  const enhancedListings = validListings.map(listing => ({
-    ...listing,
-    type: listing.type || 'opportunity'
-  }));
 
   return (
     <section className="py-24 bg-gradient-to-b from-white to-gray-50">
@@ -48,31 +48,22 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {enhancedListings.length > 0 ? (
-            enhancedListings.map((listing, index) => {
-              // Determine proper route based on listing type
-              const listingType = listing.type === 'salon' ? 'salon' : 'opportunity';
-              const routePath = `/${listingType}s/${listing.id}`;
-              
-              return (
-                <AuthAction
-                  key={listing.id}
-                  onAction={() => {
-                    console.log(`Clicked listing: ${listing.title || listing.company}, ID: ${listing.id}, Route: ${routePath}`);
-                    return true;
-                  }}
-                  redirectPath={routePath}
-                  customTitle="Sign in to view full details"
-                  creditMessage="Create a free account to access contact information and more details."
-                >
-                  <OpportunityCard 
-                    key={listing.id} 
-                    listing={listing} 
-                    index={index}
-                  />
-                </AuthAction>
-              );
-            })
+          {validListings.length > 0 ? (
+            validListings.map((listing, index) => (
+              <AuthAction
+                key={listing.id}
+                onAction={() => true}
+                redirectPath={listing.type === 'salon' ? `/salons/${listing.id}` : `/opportunities/${listing.id}`}
+                customTitle="Sign in to view full details"
+                creditMessage="Create a free account to access contact information and more details."
+              >
+                <OpportunityCard 
+                  key={listing.id} 
+                  listing={listing} 
+                  index={index}
+                />
+              </AuthAction>
+            ))
           ) : (
             <div className="col-span-3 text-center py-12">
               <p className="text-gray-500 mb-4">No opportunities available at the moment.</p>
