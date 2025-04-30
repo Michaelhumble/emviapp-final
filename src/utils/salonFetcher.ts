@@ -51,7 +51,11 @@ export async function fetchSalonById(id: string): Promise<{
       description: salonData.description || (salonData as any).about || '',
       imageUrl: salonData.imageUrl || salonData.image || (salonData as any).logo_url || '',
       image: salonData.image || salonData.imageUrl || (salonData as any).logo_url || '',
-      features: salonData.features || (salonData as any).salon_features || [],
+      features: Array.isArray((salonData as any).features) 
+        ? (salonData as any).features 
+        : Array.isArray((salonData as any).salon_features)
+          ? (salonData as any).salon_features
+          : [],
       type: 'salon'
     };
     

@@ -49,9 +49,10 @@ export async function validateListingExists(
         return false;
     }
     
-    // Query the database to check if the listing exists
+    // Fix for the dynamic table name issue - use a type assertion for table name
+    // to ensure TypeScript knows this is a valid table
     const { data } = await supabase
-      .from(tableName)
+      .from(tableName as 'jobs' | 'posts')
       .select('id')
       .eq('id', id)
       .maybeSingle();
