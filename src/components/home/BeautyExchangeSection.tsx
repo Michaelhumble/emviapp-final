@@ -7,10 +7,28 @@ import { Sparkles } from 'lucide-react';
 
 const BeautyExchangeSection = () => {
   return (
-    <section className="py-24 bg-[#FCFAFF]">
-      <div className="container mx-auto px-4">
+    <section className="py-32 bg-white relative overflow-hidden">
+      {/* Animated shimmer background effect */}
+      <motion.div 
+        className="absolute inset-0 opacity-5"
+        style={{
+          backgroundImage: `linear-gradient(135deg, transparent 0%, #9B5DE5 50%, transparent 100%)`,
+          backgroundSize: '200% 200%',
+        }}
+        animate={{
+          backgroundPosition: ['0% 0%', '100% 100%'],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          repeatType: "reverse",
+          ease: "linear"
+        }}
+      />
+      
+      <div className="container mx-auto px-4 relative z-10">
         <motion.div 
-          className="max-w-3xl mx-auto text-center mb-16 relative"
+          className="max-w-3xl mx-auto text-center mb-20 relative"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -18,9 +36,9 @@ const BeautyExchangeSection = () => {
         >
           {/* Animated sparkle icon */}
           <motion.div
-            className="absolute -top-2 -left-4 md:left-0 text-primary/80"
+            className="absolute -top-2 -left-4 md:left-0 text-[#9B5DE5]"
             initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+            animate={{ scale: 1, opacity: 0.9 }}
             transition={{ 
               duration: 0.5, 
               delay: 0.3,
@@ -29,23 +47,31 @@ const BeautyExchangeSection = () => {
               repeatDelay: 2
             }}
           >
-            <Sparkles size={28} className="text-[#9b87f5]" />
+            <Sparkles size={32} className="text-[#9B5DE5]" />
           </motion.div>
           
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-[#1A1A1A] font-playfair tracking-tight">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-[#1A1A1A] font-playfair tracking-wide">
             The Beauty Industry Exchange
           </h2>
-          <p className="text-lg text-gray-600 mb-10 font-inter leading-relaxed tracking-wide">
-            Where Salons, Stylists & Opportunities Meet.
+          <p className="text-lg md:text-xl text-[#555] mb-12 font-inter font-medium tracking-wide">
+            Where Beauty Deals Are Made Daily
           </p>
-          <div className="flex flex-wrap gap-4 justify-center mb-16">
+          
+          <div className="flex flex-wrap gap-5 justify-center mb-20">
             <Link to="/salons">
-              <Button className="font-medium px-8 py-6 bg-primary hover:bg-primary/90 shadow-sm text-base transition-all duration-300" size="lg">
+              <Button 
+                className="font-medium px-8 py-6 bg-black hover:bg-black/90 text-white shadow-none text-base transition-all duration-300 rounded-xl" 
+                size="lg"
+              >
                 Browse Beauty Listings
               </Button>
             </Link>
             <Link to="/create-listing">
-              <Button variant="outline" className="font-medium px-8 py-6 border-gray-300 hover:bg-gray-50 text-base transition-all duration-300" size="lg">
+              <Button 
+                variant="outline" 
+                className="font-medium px-8 py-6 border-[#EFEFEF] hover:border-[#9B5DE5] hover:text-[#9B5DE5] text-base transition-all duration-300 shadow-none rounded-xl bg-transparent" 
+                size="lg"
+              >
                 Post a Job or Salon for Sale
               </Button>
             </Link>
@@ -53,7 +79,7 @@ const BeautyExchangeSection = () => {
         </motion.div>
         
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto"
           variants={{
             hidden: { opacity: 0 },
             show: {
@@ -69,21 +95,21 @@ const BeautyExchangeSection = () => {
         >
           {[
             {
-              icon: "💼",
+              icon: "briefcase",
               title: "Find Your Next Position",
               description: "Browse job listings from top salons looking for talented professionals like you.",
               link: "/jobs",
               linkText: "View Job Listings"
             },
             {
-              icon: "🏢",
+              icon: "building",
               title: "Salon Opportunities",
               description: "Discover salons for sale, booth rentals, and partnership opportunities in your area.",
               link: "/salons",
               linkText: "Browse Salon Listings"
             },
             {
-              icon: "👩‍💼",
+              icon: "users",
               title: "Find Talented Artists",
               description: "Connect with skilled beauty professionals for your salon or business.",
               link: "/artists",
@@ -92,28 +118,60 @@ const BeautyExchangeSection = () => {
           ].map((item, index) => (
             <motion.div
               key={index}
-              className="bg-white p-8 rounded-2xl shadow-sm text-center hover:shadow-md transition-all duration-500 group relative overflow-hidden"
+              className="bg-white p-10 rounded-3xl border border-[#EFEFEF] text-center transition-all duration-500 group relative overflow-hidden"
               variants={{
                 hidden: { opacity: 0, y: 20 },
                 show: { opacity: 1, y: 0, transition: { duration: 0.5 } }
               }}
+              whileHover={{
+                y: -5,
+                boxShadow: '0 0 0 1px rgba(155, 93, 229, 0.15), 0 0 0 4px rgba(155, 93, 229, 0.05)',
+                transition: { duration: 0.2 }
+              }}
             >
-              {/* Subtle background gradient */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white to-[#F6F6F7] opacity-50"></div>
-              
-              {/* Glow effect on hover */}
-              <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
-              
-              <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 relative">
-                <span className="text-2xl">{item.icon}</span>
+              {/* SVG Icon */}
+              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-8 relative">
+                <svg 
+                  className="w-8 h-8 text-[#9B5DE5]" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24" 
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  {item.icon === "briefcase" && (
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={1.5} 
+                      d="M21 13.5A1.5 1.5 0 0019.5 12H4.5A1.5 1.5 0 003 13.5m18 0v6a1.5 1.5 0 01-1.5 1.5H4.5A1.5 1.5 0 013 19.5v-6m18 0V9a1.5 1.5 0 00-1.5-1.5H4.5A1.5 1.5 0 003 9v4.5m0-9V6a1.5 1.5 0 011.5-1.5h13.5a1.5 1.5 0 011.5 1.5v1.5m-15 0h6v-1.5a1.5 1.5 0 00-1.5-1.5h-3a1.5 1.5 0 00-1.5 1.5V6z" 
+                    />
+                  )}
+                  {item.icon === "building" && (
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={1.5} 
+                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                    />
+                  )}
+                  {item.icon === "users" && (
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={1.5} 
+                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" 
+                    />
+                  )}
+                </svg>
               </div>
-              <h3 className="text-xl font-semibold mb-3 font-playfair text-[#1A1A1A]">{item.title}</h3>
-              <p className="text-gray-600 mb-6 font-inter">
+              
+              <h3 className="text-xl font-semibold mb-4 font-playfair text-[#1A1A1A]">{item.title}</h3>
+              <p className="text-[#555] mb-8 font-inter leading-relaxed">
                 {item.description}
               </p>
-              <Link to={item.link} className="text-primary font-medium hover:underline inline-flex items-center transition-all">
+              <Link to={item.link} className="text-[#9B5DE5] font-medium hover:text-[#7b4dba] inline-flex items-center transition-all group-hover:translate-x-1">
                 {item.linkText}
-                <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4 ml-2 transition-transform ease-in-out duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               </Link>
