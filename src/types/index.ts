@@ -3,7 +3,13 @@
 
 // Re-export all type definitions for easier imports
 export * from "./activity";
-export * from "./artist";
+// Export artist types except PortfolioImage to avoid conflict
+export type {
+  ArtistProfile,
+  ArtistStats,
+  HighlightStat,
+  ProfileHighlightProps
+} from "./artist";
 export * from "./availability";
 export * from "./booking";
 export * from "./booth";
@@ -12,11 +18,12 @@ export * from "./listing";
 export * from "./map";
 export * from "./MessageSender";
 export * from "./notification";
-// Export from portfolio without PortfolioImage to avoid conflict with artist.ts
+// Export from portfolio with PortfolioImage to be the canonical source
 export type {
   PortfolioCollection,
   PortfolioItem,
-  PortfolioFormData
+  PortfolioFormData,
+  PortfolioImage
 } from "./portfolio";
 export * from "./profile";
 export * from "./profile-completion";

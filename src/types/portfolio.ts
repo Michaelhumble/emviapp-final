@@ -1,8 +1,8 @@
 
-import { PortfolioImage } from './artist';
+import { PortfolioImage as ArtistPortfolioImage } from './artist';
 
 // Re-export PortfolioImage from artist for backward compatibility
-export type { PortfolioImage };
+export type PortfolioImage = ArtistPortfolioImage;
 
 // Add other portfolio-specific types below
 export interface PortfolioCollection {
