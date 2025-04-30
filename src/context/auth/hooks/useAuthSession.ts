@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
+import { User, Session } from '@supabase/supabase-js';
 import { determineUserRole, persistUserRole } from '../utils/roleManagement';
 import { UserRole, UserProfile } from '../types/authTypes';
 import { fetchUserProfile } from '../userProfileService';
@@ -42,7 +42,7 @@ export const useAuthSession = (
           
           // Handle each auth event type appropriately
           switch (event) {
-            case AuthChangeEvent.SIGNED_IN:
+            case 'SIGNED_IN':
               // Check for role in user metadata and store it
               const userRole = determineUserRole(
                 session.user.user_metadata,
@@ -80,7 +80,7 @@ export const useAuthSession = (
               }, 0);
               break;
               
-            case AuthChangeEvent.SIGNED_UP:
+            case 'SIGNED_UP':
               setIsNewUser(true);
               localStorage.setItem('emviapp_new_user', 'true');
               
@@ -97,7 +97,7 @@ export const useAuthSession = (
               }
               break;
               
-            case AuthChangeEvent.SIGNED_OUT:
+            case 'SIGNED_OUT':
               // Reset all user state
               setUserProfile(null);
               setUserRole('customer');
@@ -106,7 +106,7 @@ export const useAuthSession = (
               localStorage.removeItem('emviapp_user_role');
               break;
               
-            case AuthChangeEvent.USER_UPDATED:
+            case 'USER_UPDATED':
               // Re-determine role if user data was updated
               const updatedRole = determineUserRole(
                 session.user.user_metadata,
