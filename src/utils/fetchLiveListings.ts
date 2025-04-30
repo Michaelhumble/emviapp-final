@@ -39,11 +39,10 @@ export async function fetchLiveListings({
       return [];
     }
     
-    // Transform database records to match Job type but avoid excessive recursion
-    // Use explicit typing and avoid deep nesting that could cause infinite type recursion
+    // Transform and return the data while avoiding deep type recursion
     return data.map(listing => {
-      // Create a minimal Job object with only the properties we need
-      const jobListing = {
+      // Initialize only the necessary properties to avoid circular references
+      const job: Record<string, any> = {
         id: listing.id,
         title: listing.title,
         company: listing.title,
@@ -53,21 +52,21 @@ export async function fetchLiveListings({
         created_at: listing.created_at,
         price: listing.price,
         imageUrl: null,
+        image: null,
         for_sale: false,
-        specialties: [] as string[],
-        image: null
-      } as Job;
+        specialties: []
+      };
 
-      // Safely extract metadata without causing type recursion
+      // Safely add metadata properties if they exist
       if (listing.metadata && typeof listing.metadata === 'object') {
         const meta = listing.metadata as Record<string, any>;
-        jobListing.imageUrl = meta.image_url || null;
-        jobListing.image = meta.image_url || null;
-        jobListing.for_sale = meta.for_sale || false;
-        jobListing.specialties = Array.isArray(meta.specialties) ? meta.specialties : [];
+        job.imageUrl = meta.image_url || null;
+        job.image = meta.image_url || null;
+        job.for_sale = meta.for_sale || false;
+        job.specialties = Array.isArray(meta.specialties) ? meta.specialties : [];
       }
       
-      return jobListing;
+      return job as Job;
     });
   } catch (error) {
     console.error('Error in fetchLiveListings:', error);
@@ -88,8 +87,8 @@ export async function fetchListingById(id: string): Promise<Job | null> {
       .single();
     
     if (post) {
-      // Create a minimal Job object to avoid type recursion
-      const listing = {
+      // Create a record to avoid type recursion
+      const job: Record<string, any> = {
         id: post.id,
         title: post.title,
         company: post.title,
@@ -100,20 +99,20 @@ export async function fetchListingById(id: string): Promise<Job | null> {
         created_at: post.created_at,
         price: post.price,
         for_sale: false,
-        specialties: [] as string[],
+        specialties: [],
         image: null
-      } as Job;
+      };
 
       // Safely extract metadata fields
       if (post.metadata && typeof post.metadata === 'object') {
         const meta = post.metadata as Record<string, any>;
-        listing.imageUrl = meta.image_url || null;
-        listing.image = meta.image_url || null;
-        listing.for_sale = meta.for_sale || false;
-        listing.specialties = Array.isArray(meta.specialties) ? meta.specialties : [];
+        job.imageUrl = meta.image_url || null;
+        job.image = meta.image_url || null;
+        job.for_sale = meta.for_sale || false;
+        job.specialties = Array.isArray(meta.specialties) ? meta.specialties : [];
       }
       
-      return listing;
+      return job as Job;
     }
     
     // If not found in posts, try salons table
@@ -124,8 +123,8 @@ export async function fetchListingById(id: string): Promise<Job | null> {
       .single();
     
     if (salon) {
-      // Create a minimal Job object for a salon to avoid type recursion
-      const salonListing = {
+      // Create a record for a salon to avoid type recursion
+      const job: Record<string, any> = {
         id: salon.id,
         title: salon.salon_name,
         company: salon.salon_name,
@@ -135,10 +134,10 @@ export async function fetchListingById(id: string): Promise<Job | null> {
         type: 'salon',
         imageUrl: salon.logo_url || null,
         image: salon.logo_url || null,
-        created_at: salon.created_at,
-      } as Job;
+        created_at: salon.created_at
+      };
       
-      return salonListing;
+      return job as Job;
     }
     
     console.error('Listing not found:', id);
