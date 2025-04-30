@@ -43,12 +43,9 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
           transition={{ duration: 0.5 }}
           className="max-w-3xl mx-auto text-center mb-16"
         >
-          <h2 className="text-2xl md:text-4xl font-playfair font-bold mb-2 text-gray-900">
-            TOP 9 ON THE EMVIAPP MARKET
+          <h2 className="text-2xl md:text-4xl font-playfair font-bold mb-6 text-gray-900">
+            What's Everyone Looking Right Now
           </h2>
-          <p className="text-base md:text-lg text-red-600 tracking-wide">
-            what's everyone looking right now.
-          </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
