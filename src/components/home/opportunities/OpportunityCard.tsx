@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -70,17 +69,33 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({ listing, index }) => 
       }
       return `$${listing.asking_price}`;
     }
+    
+    if (listing.price) {
+      if (typeof listing.price === 'string' && listing.price.includes('$')) {
+        return listing.price;
+      }
+      return `$${listing.price}`;
+    }
+    
     return listing.for_sale ? 'Contact for price' : '';
   };
 
   // Determine card link based on listing type and ensure it's valid
   const getCardLink = () => {
-    if (!listing.type) return '#'; // Fallback for listings with no type
-    
-    if (listing.type === 'salon') {
-      return `/salons/${listing.id}`;
+    if (!listing.id) {
+      console.error('Listing is missing ID:', listing);
+      return '#'; // Fallback for listings with no ID
     }
-    return `/opportunities/${listing.id}`;
+    
+    if (!listing.type) {
+      console.error('Listing is missing type:', listing);
+      return `/opportunities/${listing.id}`; // Default fallback
+    }
+    
+    // Log the link details for debugging
+    const link = listing.type === 'salon' ? `/salons/${listing.id}` : `/opportunities/${listing.id}`;
+    console.log(`Card link for ${listing.title || listing.company}:`, link);
+    return link;
   };
 
   return (

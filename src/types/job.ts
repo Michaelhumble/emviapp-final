@@ -18,7 +18,7 @@ export interface Job {
     notes?: string;
   };
   for_sale?: boolean;
-  asking_price?: string;
+  asking_price?: string | number;
   number_of_stations?: string;
   square_feet?: string;
   reason_for_selling?: string;
@@ -43,7 +43,7 @@ export interface Job {
   preferred_languages?: string[];
   benefits?: string[];
   features?: string[];
-  price?: string;
+  price?: string | number;
   monthly_rent?: string;
   trust_indicators?: any;
   revenue?: string;
@@ -60,4 +60,6 @@ export interface Job {
   imageUrl?: string;
   // Add the missing property
   is_vietnamese_listing?: boolean;
+  // Make sure this exists for destructuring operations
+  [key: string]: any;
 }
