@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Store } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import EmviLogo from '@/components/branding/EmviLogo';
 
 const MissingPieceSection = () => {
   const [hovered, setHovered] = useState(false);
@@ -11,7 +11,7 @@ const MissingPieceSection = () => {
     <section className="py-10 md:py-14 bg-gradient-to-br from-[#FDF6FF] via-[#FCFAFF] to-[#F6F6F6] overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between space-y-8 md:space-y-0 md:space-x-10">
-          {/* Left side - Icon and little Sunshine label */}
+          {/* Left side - EmviLogo and little Sunshine label */}
           <div className="flex flex-col items-center md:w-1/3">
             <motion.div
               className="relative"
@@ -35,14 +35,14 @@ const MissingPieceSection = () => {
                 }}
               />
               
-              {/* Icon with sparkle animation */}
+              {/* EmviApp Logo with sparkle animation */}
               <motion.div 
                 className="relative flex items-center justify-center w-28 h-28 md:w-32 md:h-32 rounded-full bg-white border border-purple-100 shadow-sm z-10"
                 whileHover={{ scale: 1.05 }}
                 animate={hovered ? { scale: 1.05 } : { scale: 1 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <Store className="w-12 h-12 md:w-16 md:h-16 text-[#9B5DE5]" />
+                <EmviLogo size="medium" showText={false} />
                 
                 {/* Sparkle elements */}
                 <motion.div 
