@@ -9,19 +9,19 @@ import { Container } from '@/components/ui/container';
 const BeautyExchangeSection = () => {
   const iconControls = useAnimation();
   
-  // Animation for the icon glow effect
+  // Enhanced animation for the icon glow effect
   useEffect(() => {
     const animateIcon = async () => {
       while (true) {
         await iconControls.start({
-          boxShadow: '0 0 30px rgba(155, 93, 229, 0.5), 0 0 60px rgba(155, 93, 229, 0.3)',
+          boxShadow: '0 0 40px rgba(155, 93, 229, 0.6), 0 0 80px rgba(155, 93, 229, 0.3)',
           scale: 1.05,
-          transition: { duration: 2, ease: 'easeInOut' }
+          transition: { duration: 2.2, ease: 'easeInOut' }
         });
         await iconControls.start({
-          boxShadow: '0 0 15px rgba(155, 93, 229, 0.3), 0 0 30px rgba(155, 93, 229, 0.1)',
+          boxShadow: '0 0 20px rgba(155, 93, 229, 0.4), 0 0 40px rgba(155, 93, 229, 0.15)',
           scale: 1,
-          transition: { duration: 2, ease: 'easeInOut' }
+          transition: { duration: 2.2, ease: 'easeInOut' }
         });
       }
     };
@@ -30,12 +30,12 @@ const BeautyExchangeSection = () => {
   }, [iconControls]);
   
   return (
-    <section className="py-32 bg-white relative overflow-hidden">
-      {/* Animated background effect */}
+    <section className="py-32 bg-gradient-to-r from-[#FDF6FF] via-[#FCFAFF] to-[#F6F6F6] relative overflow-hidden">
+      {/* Enhanced animated background effect */}
       <motion.div 
-        className="absolute inset-0 opacity-5"
+        className="absolute inset-0 opacity-10"
         style={{
-          backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(155, 93, 229, 0.5) 0%, rgba(255, 255, 255, 0) 70%)',
+          backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(155, 93, 229, 0.6) 0%, rgba(255, 255, 255, 0) 70%)',
           backgroundSize: '200% 200%',
         }}
         animate={{
@@ -92,9 +92,29 @@ const BeautyExchangeSection = () => {
                 </svg>
               </motion.div>
               
-              {/* Main animated store icon */}
+              {/* Additional subtle sparkle */}
               <motion.div
-                className="relative z-10 bg-white rounded-full p-8 border border-[#EFEFEF]"
+                className="absolute top-10 -left-8 text-[#E493FF] opacity-50"
+                animate={{
+                  scale: [0.6, 1, 0.6],
+                  opacity: [0.3, 0.7, 0.3],
+                  rotate: [0, 45, 0],
+                }}
+                transition={{
+                  duration: 6,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 2
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                </svg>
+              </motion.div>
+              
+              {/* Main animated store icon with enhanced glow */}
+              <motion.div
+                className="relative z-10 bg-white rounded-full p-8 border border-[#F5EDFF]"
                 animate={iconControls}
               >
                 <Store size={80} className="text-[#9B5DE5]" />
@@ -108,9 +128,9 @@ const BeautyExchangeSection = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
+            transition={{ duration: 0.8 }}
           >
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 text-[#1A1A1A] font-playfair tracking-wide">
+            <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-3 text-[#1A1A1A] font-playfair tracking-wide">
               The Beauty Exchange
             </h2>
             
@@ -118,7 +138,7 @@ const BeautyExchangeSection = () => {
               className="text-lg md:text-xl font-semibold mb-3 text-[#9C27B0] tracking-wide"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
+              transition={{ delay: 0.3, duration: 0.7 }}
             >
               Turn Beauticians Into Magicians.
             </motion.p>
@@ -130,13 +150,13 @@ const BeautyExchangeSection = () => {
             <div className="flex flex-wrap gap-4 justify-end mt-8 mb-16">
               <Link to="/salons">
                 <Button 
-                  className="relative overflow-hidden rounded-full px-8 py-6 bg-black hover:bg-black/90 text-white shadow-none text-base transition-all duration-300"
+                  className="relative overflow-hidden rounded-full px-8 py-6 text-white font-medium shadow-none text-base transition-all duration-300 bg-gradient-to-r from-[#9B5DE5] to-[#E493FF] hover:shadow-[0_5px_15px_-3px_rgba(155,93,229,0.4)]"
                   size="lg"
                 >
                   <span className="relative z-10">Browse Beauty Listings</span>
                   <motion.span 
-                    className="absolute inset-0 bg-[#9B5DE5] opacity-0"
-                    whileHover={{ opacity: 0.1 }}
+                    className="absolute inset-0 bg-gradient-to-r from-[#A45DE8] to-[#ED9AFF] opacity-0"
+                    whileHover={{ opacity: 1 }}
                     transition={{ duration: 0.3 }}
                   />
                 </Button>
@@ -144,7 +164,7 @@ const BeautyExchangeSection = () => {
               <Link to="/create-listing">
                 <Button 
                   variant="outline" 
-                  className="relative overflow-hidden rounded-full px-8 py-6 border-[#EFEFEF] hover:border-[#9B5DE5] hover:text-[#9B5DE5] text-base transition-all duration-300 shadow-none bg-transparent"
+                  className="relative overflow-hidden rounded-full px-8 py-6 border-[#D4B6FF] hover:border-[#9B5DE5] hover:text-[#9B5DE5] text-base transition-all duration-300 shadow-none bg-transparent"
                   size="lg"
                 >
                   <span className="relative z-10">Post a Job or Salon for Sale</span>
@@ -158,7 +178,7 @@ const BeautyExchangeSection = () => {
               <Link to="/artists">
                 <Button 
                   variant="outline" 
-                  className="relative overflow-hidden rounded-full px-8 py-6 border-[#EFEFEF] hover:border-[#9B5DE5] hover:text-[#9B5DE5] text-base transition-all duration-300 shadow-none bg-transparent"
+                  className="relative overflow-hidden rounded-full px-8 py-6 border-[#D4B6FF] hover:border-[#9B5DE5] hover:text-[#9B5DE5] text-base transition-all duration-300 shadow-none bg-transparent"
                   size="lg"
                 >
                   <span className="relative z-10">Find Artists & Stylists</span>
