@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Job } from '@/types/job';
@@ -7,7 +6,6 @@ import AuthAction from '@/components/common/AuthAction';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Building } from 'lucide-react';
-import ValidatedLink from '@/components/common/ValidatedLink';
 
 interface OpportunitiesSectionProps {
   diverseListings: Job[];
@@ -21,7 +19,12 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
     (listing.title || listing.company) &&
     listing.location &&
     // Additional validation to ensure listing has a type for proper routing
-    (listing.type || 'salon')
+    listing.type &&
+    // Ensure there's at least an imageUrl or a category/specialty for fallback images
+    (listing.imageUrl || 
+     (listing.specialties && listing.specialties.length > 0) || 
+     // Check for category using type guard
+     ('category' in listing && listing.category))
   );
   
   // Log any issues with listings for debugging
@@ -47,18 +50,19 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {validListings.length > 0 ? (
             validListings.map((listing, index) => (
-              <div key={listing.id || index}>
-                <ValidatedLink 
-                  to={listing.type === 'salon' ? `/salons/${listing.id}` : `/opportunities/${listing.id}`}
-                  listingId={listing.id}
-                  listingType={listing.type || 'salon'}
-                >
-                  <OpportunityCard 
-                    listing={listing} 
-                    index={index}
-                  />
-                </ValidatedLink>
-              </div>
+              <AuthAction
+                key={listing.id}
+                onAction={() => true}
+                redirectPath={listing.type === 'salon' ? `/salons/${listing.id}` : `/opportunities/${listing.id}`}
+                customTitle="Sign in to view full details"
+                creditMessage="Create a free account to access contact information and more details."
+              >
+                <OpportunityCard 
+                  key={listing.id} 
+                  listing={listing} 
+                  index={index}
+                />
+              </AuthAction>
             ))
           ) : (
             <div className="col-span-3 text-center py-12">

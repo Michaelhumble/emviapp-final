@@ -1,96 +1,203 @@
-
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { Job } from '@/types/job';
-import OpportunityCard from './opportunities/OpportunityCard';
-import { verifyListings, enhanceListingWithImage } from '@/utils/listingsVerification';
-import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import OpportunitiesSection from './opportunities/OpportunitiesSection';
+import { v4 as uuidv4 } from 'uuid';
+import { verifyOpportunityListings, enhanceListingWithImage, isListingDisplayable } from '@/utils/listingsVerification';
 
-// Sample data - in a real app, this would come from your API
-const sampleOpportunities = [
-  {
-    id: '1',
-    title: 'Senior Nail Technician',
-    company: 'Luxury Nails & Spa',
-    location: 'Los Angeles, CA',
-    description: 'Looking for an experienced nail technician with at least 3 years of experience in luxury salon settings.',
-    image: '/lovable-uploads/f6bb9656-c400-4f28-ba97-69d71c651a97.png'
-  },
-  {
-    id: '2',
-    title: 'Full-Time Hair Stylist',
-    company: 'Glamour Salon',
-    location: 'Irvine, CA',
-    description: 'Join our growing team of professional stylists. Great commission rates and regular clientele.',
-    image: '/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png'
-  },
-  {
-    id: '3',
-    title: 'Booth Rental Available',
-    company: 'Studio Beauty',
-    location: 'Santa Monica, CA',
-    description: 'Prime location booth rental for nail technicians in a busy shopping area. All amenities included.',
-    image: '/lovable-uploads/72f0f6c8-5793-4750-993d-f250b495146d.png'
-  }
-];
-
-const LatestIndustryOpportunities: React.FC = () => {
-  const [opportunities, setOpportunities] = useState<Job[]>([]);
+const LatestIndustryOpportunities = () => {
+  const [diverseListings, setDiverseListings] = useState<Job[]>([]);
+  const [validationStats, setValidationStats] = useState({
+    total: 0,
+    valid: 0,
+    removed: 0,
+    fixed: 0
+  });
 
   useEffect(() => {
-    // In a real app, this would be an API call
-    // For now we'll use sample data with transformation to match Job type
-    const enhancedOpportunities = sampleOpportunities.map(opportunity => {
-      const enhanced = enhanceListingWithImage({
-        ...opportunity,
-        type: 'opportunity',
-        created_at: new Date().toISOString(), // Required by Job type
-        // Add any other required properties for Job type
+    const loadDiverseListings = async () => {
+      // Create a diverse set of listings with unique IDs
+      let mixed: Job[] = [
+        // Nail industry position - Proper title to match image mapping
+        {
+          id: 'op-nail-' + uuidv4().slice(0, 8),
+          title: "Nail Tech - Private Suite",
+          company: "The Nail Collective",
+          location: "Austin, TX",
+          description: "Private suite available for experienced nail technician. High-end clientele, modern facility.",
+          specialties: ["Nails", "Manicure", "Pedicure"],
+          for_sale: false,
+          created_at: new Date().toISOString(),
+          type: 'job',
+          imageUrl: "/lovable-uploads/72f0f6c8-5793-4750-993d-f250b495146d.png" // Ensure correct image
+        },
+        // Hair industry position
+        {
+          id: 'op-hair-' + uuidv4().slice(0, 8),
+          title: "Senior Hair Stylist",
+          company: "Luxe Hair Studio",
+          location: "Denver, CO",
+          description: "Seeking experienced hair stylist with color expertise. Base + commission structure, flexible schedule.",
+          specialties: ["Hair", "Color", "Styling"],
+          for_sale: false,
+          created_at: new Date().toISOString(),
+          type: 'job'
+        },
+        // Spa position
+        {
+          id: 'op-spa-' + uuidv4().slice(0, 8),
+          title: "Spa Manager",
+          company: "Serenity Wellness Center",
+          location: "Seattle, WA",
+          description: "Leading luxury day spa seeking experienced manager. Full benefits package.",
+          specialties: ["Management", "Spa", "Wellness"],
+          for_sale: false,
+          created_at: new Date().toISOString(),
+          type: 'opportunity',
+          imageUrl: "/lovable-uploads/4c2d8a4c-e191-40a0-8666-147cbcc488d4.png" // Spa manager image
+        },
+        // Salon for sale
+        {
+          id: 'op-sale-' + uuidv4().slice(0, 8),
+          title: "Established Hair Salon For Sale",
+          company: "Premier Salon",
+          location: "Phoenix, AZ",
+          description: "10-year established salon, prime location, 8 stations, strong clientele base.",
+          specialties: ["Business", "Salon"],
+          for_sale: true,
+          asking_price: "$175,000",
+          created_at: new Date().toISOString(),
+          type: 'salon'
+        },
+        // Booth rental - Proper title to match image mapping
+        {
+          id: 'op-booth-' + uuidv4().slice(0, 8),
+          title: "Luxury Booth Rental",
+          company: "The Style House",
+          location: "Miami, FL",
+          description: "Premium booth space available in upscale salon. High foot traffic area.",
+          specialties: ["Booth Rental", "Hair"],
+          for_sale: false,
+          created_at: new Date().toISOString(),
+          type: 'salon',
+          imageUrl: "/lovable-uploads/52b943aa-d9b3-46ce-9f7f-94f3b223cb28.png" // Ensure correct image
+        },
+        // Tattoo artist - Proper title to match image mapping
+        {
+          id: 'op-tattoo-' + uuidv4().slice(0, 8),
+          title: "Experienced Tattoo Artist",
+          company: "Black Iris Tattoo",
+          location: "Portland, OR",
+          description: "Seeking professional tattoo artist for established studio. Commission-based position.",
+          specialties: ["Tattoo", "Art"],
+          for_sale: false,
+          created_at: new Date().toISOString(),
+          type: 'opportunity',
+          imageUrl: "/lovable-uploads/21d69945-acea-4057-9ff0-df824cd3c607.png" // Ensure correct image
+        },
+        // Beauty supply business
+        {
+          id: 'op-supply-' + uuidv4().slice(0, 8),
+          title: "Beauty Supply Store For Sale",
+          company: "Beauty Essentials",
+          location: "Atlanta, GA",
+          description: "Profitable beauty supply store with loyal customer base. Includes inventory.",
+          specialties: ["Retail", "Beauty Supply"],
+          for_sale: true,
+          asking_price: "$220,000",
+          created_at: new Date().toISOString(),
+          type: 'opportunity'
+        },
+        // Esthetician - Proper title to match image mapping
+        {
+          id: 'op-esth-' + uuidv4().slice(0, 8),
+          title: "Licensed Esthetician",
+          company: "Glow Skincare",
+          location: "San Diego, CA",
+          description: "Full-time position for licensed esthetician. Medical spa environment.",
+          specialties: ["Skincare", "Esthetics"],
+          for_sale: false,
+          created_at: new Date().toISOString(),
+          type: 'job',
+          imageUrl: "/lovable-uploads/16e16a16-df62-4741-aec7-3364fdc958ca.png" // Ensure correct image
+        },
+        // Wellness studio
+        {
+          id: 'op-well-' + uuidv4().slice(0, 8),
+          title: "Wellness Studio Partnership",
+          company: "Balance Wellness",
+          location: "Chicago, IL",
+          description: "Seeking partner for established wellness studio. Ideal for licensed massage therapist.",
+          specialties: ["Wellness", "Massage", "Partnership"],
+          for_sale: true,
+          created_at: new Date().toISOString(),
+          type: 'opportunity',
+          imageUrl: "/lovable-uploads/ec5e520a-440f-4a62-bee8-23ba0c7e7c4c.png" // Wellness studio image
+        }
+      ];
+
+      const initialCount = mixed.length;
+      let fixedCount = 0;
+      let removedCount = 0;
+      
+      // Step 1: Verify each listing has a valid ID
+      mixed = mixed.map(listing => {
+        if (!listing.id) {
+          console.warn('Found listing without ID, generating one:', listing);
+          fixedCount++;
+          return { ...listing, id: 'op-' + uuidv4().slice(0, 8) };
+        }
+        return listing;
+      });
+
+      // Step 2: Run verification to ensure all listings have proper routing
+      const verificationResults = verifyOpportunityListings(mixed);
+      
+      // Step 3: Remove listings with critical issues but log what was removed
+      if (!verificationResults.isValid) {
+        removedCount += (mixed.length - verificationResults.validListings.length);
+        console.error("⚠️ Removed invalid listings:", verificationResults.issues);
+        mixed = verificationResults.validListings;
+      }
+      
+      // Step 4: Enhance remaining listings with appropriate images
+      let enhancedListings = mixed.map(listing => {
+        // If a user specified image exists, don't enhance it
+        if (listing.imageUrl && typeof listing.imageUrl === 'string' && listing.imageUrl.indexOf('lovable-uploads') !== -1) {
+          return listing;
+        }
+        fixedCount++;
+        return enhanceListingWithImage(listing);
       });
       
-      return enhanced;
-    });
+      // Step 5: Final validation pass - only keep listings that are fully displayable
+      const finalListings = enhancedListings.filter(listing => isListingDisplayable(listing));
+      
+      if (finalListings.length < enhancedListings.length) {
+        removedCount += (enhancedListings.length - finalListings.length);
+        console.warn(`⚠️ Filtered out ${enhancedListings.length - finalListings.length} listings that failed final validation`);
+      }
+      
+      // Log final validation statistics
+      console.log(`✅ Beauty Exchange Validation Complete:`);
+      console.log(`   - Total listings: ${initialCount}`);
+      console.log(`   - Fixed listings: ${fixedCount}`);
+      console.log(`   - Removed listings: ${removedCount}`);
+      console.log(`   - Final valid listings: ${finalListings.length}`);
+      
+      setValidationStats({
+        total: initialCount,
+        valid: finalListings.length,
+        removed: removedCount,
+        fixed: fixedCount
+      });
+
+      setDiverseListings(finalListings);
+    };
     
-    setOpportunities(enhancedOpportunities);
+    loadDiverseListings();
   }, []);
 
-  return (
-    <section className="py-16 bg-white">
-      <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-3xl md:text-4xl font-bold font-playfair mb-4">
-            Latest Industry Opportunities
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Discover the most recent openings and booth rentals in the beauty industry
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {opportunities.map((opportunity, index) => (
-            <div key={opportunity.id}>
-              <OpportunityCard listing={opportunity} index={index} />
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-12 text-center">
-          <Link to="/opportunities">
-            <Button size="lg" className="bg-black hover:bg-gray-800 text-white font-medium">
-              View All Opportunities
-            </Button>
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
+  return <OpportunitiesSection diverseListings={diverseListings} />;
 };
 
 export default LatestIndustryOpportunities;
