@@ -9,6 +9,14 @@ import { Link } from 'react-router-dom';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 import { Job } from '@/types/job';
 
+// Define the custom nail salon images from your uploads
+const nailSalonImages = [
+  "/lovable-uploads/c0ac3c79-c24e-447d-8f7e-054431430c71.png", // Luxury nail salon with gold mirrors
+  "/lovable-uploads/7824740d-825d-4819-a4f0-d15534ed13b0.png", // Elegant nail salon with blue chairs
+  "/lovable-uploads/499bb702-e4bb-4b1e-8220-ceacadbaf885.png", // Nail salon with gold pendants
+  "/lovable-uploads/aeb82d96-8ea7-4da3-855a-984cf34a09a5.png"  // Nail salon with nail art display
+];
+
 // Utility function to transform job data to match required Job type
 const transformJobData = (job: any): Job => {
   return {
@@ -25,6 +33,11 @@ const transformJobData = (job: any): Job => {
     type: 'job',
     role: job.role || job.title || '',
   };
+};
+
+// Get a nail salon image by index, with fallback to prevent out-of-bounds errors
+const getNailSalonImage = (index: number): string => {
+  return nailSalonImages[index % nailSalonImages.length];
 };
 
 export default function HiringSalonsShowcase() {
@@ -57,11 +70,11 @@ export default function HiringSalonsShowcase() {
           {hiringJobs.map((job, index) => (
             <Card key={index} className="overflow-hidden h-full hover:shadow-md transition-shadow">
               <div className="aspect-video bg-gray-100 w-full overflow-hidden">
-                <ImageWithFallback
-                  src={job.image || ''}
+                {/* Always use one of the custom uploaded images */}
+                <img
+                  src={getNailSalonImage(index)}
                   alt={job.title || 'Salon job opportunity'}
                   className="w-full h-full object-cover"
-                  businessName={job.company || 'Nail Salon'}
                 />
               </div>
               <CardContent className="p-5">
