@@ -100,7 +100,7 @@ export const useAuthSession = (
             case 'SIGNED_OUT':
               // Reset all user state
               setUserProfile(null);
-              setUserRole('customer');
+              setUserRole('customer' as UserRole);
               setIsNewUser(false);
               localStorage.removeItem('emviapp_new_user');
               localStorage.removeItem('emviapp_user_role');
