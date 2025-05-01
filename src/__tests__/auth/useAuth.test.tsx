@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useAuth } from '@/context/auth';
 import { AuthProvider } from '@/context/auth';
-import { UserRole } from '@/context/auth/types';
+import { UserRole } from '@/context/auth/types/authTypes';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import React from 'react';
@@ -65,11 +65,13 @@ describe('useAuth hook', () => {
 
     const { result } = renderHook(() => useAuth(), { wrapper });
     
-    expect(result.current.user).toBeNull();
-    expect(result.current.userProfile).toBeNull();
-    expect(result.current.userRole).toBe('customer');
-    expect(result.current.loading).toBe(true);
-    expect(result.current.isSignedIn).toBe(false);
+    // Explicitly type the result.current as AuthContextType
+    const auth = result.current;
+    expect(auth.user).toBeNull();
+    expect(auth.userProfile).toBeNull();
+    expect(auth.userRole).toBe('customer');
+    expect(auth.loading).toBe(true);
+    expect(auth.isSignedIn).toBe(false);
   });
 
   it('should update state when user signs in', async () => {
@@ -126,9 +128,10 @@ describe('useAuth hook', () => {
     });
 
     // Verify the auth state has been updated
-    expect(result.current.user).toEqual(mockUser);
-    expect(result.current.isSignedIn).toBe(true);
-    expect(result.current.loading).toBe(false);
+    const auth = result.current;
+    expect(auth.user).toEqual(mockUser);
+    expect(auth.isSignedIn).toBe(true);
+    expect(auth.loading).toBe(false);
   });
 
   it('should handle sign out correctly', async () => {
@@ -162,8 +165,9 @@ describe('useAuth hook', () => {
 
     // Verify sign out effects
     expect(supabase.auth.signOut).toHaveBeenCalled();
-    expect(result.current.user).toBeNull();
-    expect(result.current.userProfile).toBeNull();
-    expect(result.current.isSignedIn).toBe(false);
+    const auth = result.current;
+    expect(auth.user).toBeNull();
+    expect(auth.userProfile).toBeNull();
+    expect(auth.isSignedIn).toBe(false);
   });
 });

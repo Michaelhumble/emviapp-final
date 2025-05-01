@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { UserProfile } from '@/context/auth/types';
+import { UserProfile } from '@/context/auth/types/authTypes';
 
 /**
  * Hook to synchronize user profile data across tabs/devices in real-time

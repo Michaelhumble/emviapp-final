@@ -6,7 +6,8 @@ import { migrateSingleToMultiSalon } from '@/utils/migration/migrateSingleToMult
 // This component will handle the migration of users to the multi-salon model
 // We'll use it as a child component in the main App.tsx
 const AppModifier = () => {
-  const { user, userRole, isSignedIn } = useAuth();
+  const auth = useAuth();
+  const { user, userRole, isSignedIn } = auth;
   
   useEffect(() => {
     const handleMigration = async () => {
