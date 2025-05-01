@@ -1,16 +1,22 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-interface UseScrollAnimationProps {
+export interface UseScrollAnimationProps {
   threshold?: number;
   animation?: string;
   once?: boolean;
+  rootMargin?: string;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 export const useScrollAnimation = ({
   threshold = 0.1,
   animation = 'fade-in',
-  once = true
+  once = true,
+  rootMargin = '0px 0px -100px 0px',
+  className = '',
+  style = {}
 }: UseScrollAnimationProps = {}) => {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -33,7 +39,7 @@ export const useScrollAnimation = ({
       },
       {
         threshold,
-        rootMargin: '0px 0px -100px 0px' // Trigger slightly before the element comes into view
+        rootMargin // Trigger slightly before the element comes into view
       }
     );
 
@@ -46,7 +52,7 @@ export const useScrollAnimation = ({
         observer.unobserve(currentRef);
       }
     };
-  }, [threshold, once]);
+  }, [threshold, once, rootMargin]);
 
-  return { ref, isVisible, animation };
+  return { ref, isVisible, animation, className, style };
 };

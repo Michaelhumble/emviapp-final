@@ -34,16 +34,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     clearIsNewUser
   } = useAuthState();
 
-  // Initialize auth session and handle auth state changes
-  const { clearIsNewUser: clearNewUserFromSession } = useAuthSession(
-    setUser,
-    setSession,
-    setUserProfile,
-    setUserRole,
-    setIsNewUser,
-    setLoading,
-    setIsError
-  );
+  // Get authentication session data
+  const authSession = useAuthSession();
+  
+  // Use the session data to update our state
+  React.useEffect(() => {
+    if (authSession.user) {
+      setUser(authSession.user);
+    }
+    if (authSession.session) {
+      setSession(authSession.session);
+    }
+    if (authSession.isNewUser) {
+      setIsNewUser(true);
+    }
+    setLoading(authSession.loading);
+  }, [authSession, setUser, setSession, setIsNewUser, setLoading]);
 
   // Initialize auth methods
   const {
@@ -65,7 +71,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Wrap clearIsNewUser to ensure both implementations are called
   const handleClearIsNewUser = () => {
     clearIsNewUser();
-    clearNewUserFromSession();
+    if (authSession.clearIsNewUser) {
+      authSession.clearIsNewUser();
+    }
   };
 
   // Wrapper for refreshUserProfile to include userId

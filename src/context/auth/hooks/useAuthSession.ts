@@ -1,11 +1,13 @@
+
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { Session, User, AuthChangeEvent } from '@supabase/supabase-js';
 
 export const useAuthSession = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isNewUser, setIsNewUser] = useState(false);
 
   useEffect(() => {
     // Get initial session
@@ -62,7 +64,8 @@ export const useAuthSession = () => {
           }
           
           // Handle sign up
-          if (event as AuthChangeEvent === 'SIGNED_UP') {
+          if (event === 'SIGNED_UP') {
+            setIsNewUser(true);
             // Add sign up logic
           }
         }
@@ -74,5 +77,10 @@ export const useAuthSession = () => {
     };
   }, []);
 
-  return { session, user, loading };
+  // Add a function to clear the isNewUser state
+  const clearIsNewUser = () => {
+    setIsNewUser(false);
+  };
+
+  return { session, user, loading, isNewUser, clearIsNewUser };
 };
