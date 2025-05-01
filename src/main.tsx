@@ -5,6 +5,11 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 import './index.css';
+import { setupChunkErrorHandler, logResourceErrors } from './utils/chunkErrorHandler';
+
+// Setup chunk error detection
+setupChunkErrorHandler();
+logResourceErrors();
 
 // Global error handler
 window.addEventListener('error', (event) => {

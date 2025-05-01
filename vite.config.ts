@@ -34,6 +34,10 @@ export default defineConfig(({ mode }) => ({
     emptyOutDir: true, // Clean the output directory before each build
     rollupOptions: {
       output: {
+        // Prevent chunk invalidation by setting explicit chunk names and avoiding hashes in development
+        chunkFileNames: mode === 'development' ? 'assets/js/[name].js' : 'assets/js/[name]-[hash].js',
+        entryFileNames: mode === 'development' ? 'assets/js/[name].js' : 'assets/js/[name]-[hash].js',
+        assetFileNames: mode === 'development' ? 'assets/[ext]/[name].[ext]' : 'assets/[ext]/[name]-[hash].[ext]',
         manualChunks: {
           // Split vendor code for better caching
           vendor: ['react', 'react-dom', 'react-router-dom'],
