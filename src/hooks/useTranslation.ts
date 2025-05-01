@@ -3,8 +3,14 @@ import { useState, useEffect } from 'react';
 
 export type Language = 'en' | 'vi';
 
+// Define a translation type that can be used for bilingual text
+export interface Translation {
+  english: string;
+  vietnamese: string;
+}
+
 // Create a simple translation function
-type TranslationFunction = (key: string) => string;
+type TranslationFunction = (key: string | Translation) => string;
 const translations: Record<Language, Record<string, string>> = {
   en: {
     // Common translations
@@ -28,6 +34,11 @@ const translations: Record<Language, Record<string, string>> = {
 
 export function useTranslation() {
   const [lang, setLang] = useState<Language>('en');
+  
+  // Helper to check if a value is a Translation object
+  const isTranslation = (value: any): value is Translation => {
+    return typeof value === 'object' && value !== null && 'english' in value && 'vietnamese' in value;
+  };
 
   useEffect(() => {
     try {
@@ -53,10 +64,19 @@ export function useTranslation() {
     }
   };
 
-  // Translation function
+  // Get the correct language value based on user preferences
+  const isVietnamese = lang === 'vi';
+
+  // Translation function that handles both string keys and Translation objects
   const t: TranslationFunction = (key) => {
+    // If it's a Translation object, return the appropriate language version
+    if (isTranslation(key)) {
+      return isVietnamese ? key.vietnamese : key.english;
+    }
+    
+    // If it's a string key, look up in translations
     return translations[lang]?.[key] || key;
   };
 
-  return { lang, setLanguage, t };
+  return { lang, setLanguage, t, isVietnamese };
 }
