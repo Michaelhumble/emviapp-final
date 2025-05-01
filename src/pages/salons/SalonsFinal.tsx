@@ -1,14 +1,24 @@
-
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { salonListings } from '@/data/salonData';
-import SimpleSalonCard from '@/components/salons/SimpleSalonCard';
-import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
+import { salonListings, vietnameseSalonListings } from '@/data/salonData';
+import ValidatedSalonCard from '@/components/salons/ValidatedSalonCard';
+import { Plus, Search } from 'lucide-react';
 
 const SalonsFinalsPage = () => {
+  useEffect(() => {
+    // Simple debug log to confirm rendering
+    console.log('SalonsFinal page rendered - timestamp:', new Date().toISOString());
+    
+    // Add an image loading debug
+    const img = new Image();
+    img.onload = () => console.log('✅ Salon banner image loaded successfully');
+    img.onerror = () => console.error('❌ Failed to load salon banner image');
+    img.src = '/lovable-uploads/79cf9064-5740-4752-9ad6-9b7e9b4db31e.png';
+  }, []);
+
   return (
     <Layout>
       <Helmet>
@@ -19,23 +29,85 @@ const SalonsFinalsPage = () => {
         />
       </Helmet>
 
-      <div className="container mx-auto px-4 py-12">
+      {/* Hero banner with overlay, text and buttons */}
+      <div className="w-full relative overflow-hidden" style={{ maxHeight: '500px' }}>
+        {/* Main image (unchanged) */}
+        <img 
+          src="/lovable-uploads/79cf9064-5740-4752-9ad6-9b7e9b4db31e.png" 
+          alt="Luxury salon interior" 
+          className="w-full h-auto object-cover"
+        />
+        
+        {/* Dark gradient overlay */}
+        <div 
+          className="absolute inset-0" 
+          style={{ 
+            background: 'linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35))',
+          }} 
+        />
+        
+        {/* Hero content */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 md:px-8">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold text-white mb-3">
+            Premium Salons for Sale — Ready to Own
+          </h1>
+          <p className="text-white text-lg md:text-xl mb-8 max-w-2xl opacity-90">
+            Discover, list, and buy high-end beauty businesses with EmviApp
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link to="/sell-salon">
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800"
+              >
+                <Plus className="w-5 h-5 mr-1" /> Post Your Salon
+              </Button>
+            </Link>
+            <Link to="#listings">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-2 border-white text-white bg-transparent hover:bg-white/10"
+              >
+                <Search className="w-5 h-5 mr-1" /> Browse Listings
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-12" id="listings">
         <div className="max-w-7xl mx-auto">
-          {/* Luxury Hero Banner with Text Overlay */}
-          <div className="relative w-full mb-10 overflow-hidden rounded-lg">
-            <ImageWithFallback
-              src="/lovable-uploads/98f473d0-0359-4114-9bcc-c9aea3c6fcf6.png"
-              alt="Luxury beauty salon entrance with FOR SALE sign"
-              className="w-full h-auto object-cover"
-            />
-            {/* Text Overlay */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold font-playfair text-[#FAFAFA] mb-2 drop-shadow-sm">
-                List Your Salon with Confidence
-              </h1>
-              <p className="text-xl md:text-2xl font-playfair font-normal text-[#FAFAFA] drop-shadow-sm">
-                Đăng Tin Bán Tiệm với Sự Tự Tin
-              </p>
+          {/* Premium Listings Section */}
+          <div className="mb-16">
+            <h2 className="font-playfair text-3xl md:text-4xl font-bold mb-6">
+              Premium Salon Listings
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {salonListings.map((salon) => (
+                <ValidatedSalonCard key={salon.id} salon={salon} listingType="salon" />
+              ))}
+            </div>
+          </div>
+
+          {/* Vietnamese Nail Listings Section - Restored section */}
+          <div className="mb-16 border-t pt-12">
+            <h2 className="font-playfair text-3xl md:text-4xl font-bold mb-2">
+              💅 Tin Rao Vặt Tiệm Nail – Cộng Đồng Người Việt
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Vietnamese nail salon listings for our community
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {vietnameseSalonListings.map((salon) => (
+                <ValidatedSalonCard 
+                  key={salon.id} 
+                  salon={salon} 
+                  listingType="salon" 
+                />
+              ))}
             </div>
           </div>
 
@@ -55,12 +127,6 @@ const SalonsFinalsPage = () => {
             <Button variant="outline" className="rounded-full">
               Recently Added
             </Button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {salonListings.map((salon) => (
-              <SimpleSalonCard key={salon.id} salon={salon} />
-            ))}
           </div>
           
           <div className="mt-16 text-center">

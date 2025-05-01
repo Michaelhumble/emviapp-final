@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -12,7 +11,7 @@ import AIPowerhouse from "@/components/home/AIPowerhouse";
 import AITeam from "@/components/home/AITeam";
 import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 import MissingPieceSection from "@/components/home/missing-piece";
-import { runListingsVerification } from "@/utils/listingsVerification";
+import { runListingsVerification } from "@/utils/runListingsVerification";
 
 // Enhanced homepage components
 import LatestIndustryOpportunities from "@/components/home/LatestIndustryOpportunities";
@@ -23,6 +22,7 @@ import FinalFounderCTA from "@/components/home/FinalFounderCTA";
 import SalonClientGrowthSystem from "@/components/home/SalonClientGrowthSystem";
 import WhyTrustSection from "@/components/home/sections/WhyTrustSection";
 import WhatYouCanDoSection from "@/components/home/sections/WhatYouCanDoSection";
+import BeautyExchangeSection from "@/components/home/BeautyExchangeSection";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -41,7 +41,9 @@ const Index = () => {
     console.log("Index page loaded");
     
     // Run verification to ensure all listings have proper routing
-    runListingsVerification();
+    runListingsVerification()
+      .then(() => console.log("Listings verification completed"))
+      .catch(err => console.error("Error in listings verification:", err));
   }, []);
   
   return (
@@ -49,7 +51,10 @@ const Index = () => {
       {/* Hero section as first */}
       <Hero />
       
-      {/* 1️⃣ Latest Industry Opportunities */}
+      {/* ✨ Re-enabled Beauty Exchange Section */}
+      <BeautyExchangeSection />
+      
+      {/* 1️⃣ Latest Industry Opportunities (Beauty Exchange) */}
       <LatestIndustryOpportunities />
       
       {/* 2️⃣ Nail & Beauty Salons Hiring Now */}

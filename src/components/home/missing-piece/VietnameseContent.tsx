@@ -1,70 +1,63 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Check, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 interface VietnameseContentProps {
   itemVariants: any;
 }
 
 const VietnameseContent = ({ itemVariants }: VietnameseContentProps) => {
+  const benefits = [
+    "Tìm tiệm đang tuyển dụng ngay bây giờ",
+    "Kết nối với cơ hội thuê booth",
+    "Khám phá các tiệm đang bán",
+    "Được trả lương xứng đáng với giá trị của bạn"
+  ];
+
   return (
-    <>
-      <motion.div 
-        className="text-center mb-10" 
+    <div className="space-y-8">
+      <motion.h3 
+        className="text-3xl md:text-4xl font-playfair font-bold text-gray-800"
         variants={itemVariants}
-        initial="visible" // Ensure component is visible immediately
       >
-        <h3 className="text-2xl md:text-3xl font-bold text-indigo-700 mb-6">
-          <span className="bg-indigo-50 px-4 py-1 rounded-lg">Kinh Doanh Của Bạn, Được Nâng Cấp</span>
-        </h3>
-        <p className="text-xl text-gray-700 leading-relaxed max-w-3xl mx-auto">
-          <span className="font-semibold text-indigo-600">Chúng tôi giúp bạn mang khách hàng đến tận tiệm.</span>{" "}
-          Giúp bạn tìm những thợ giỏi, có kinh nghiệm, và đưa ra những ưu đãi tốt nhất — để bạn quản lý tiệm dễ dàng và đạt hiệu quả cao.
-        </p>
-      </motion.div>
-
-      <motion.div 
-        className="bg-gradient-to-r from-indigo-50 to-purple-50 p-8 rounded-2xl mb-10 border border-indigo-100/50 shadow-inner"
+        Mảnh Ghép Còn Thiếu Của Bạn Trong Ngành Làm Đẹp
+      </motion.h3>
+      
+      <motion.p 
+        className="text-lg text-gray-600"
         variants={itemVariants}
-        initial="visible" // Ensure component is visible immediately
       >
-        <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-          <div className="flex-shrink-0 bg-white rounded-2xl p-4 shadow-md">
-            <Sparkles size={48} className="text-indigo-600" />
-          </div>
-          <p className="text-xl text-gray-700 text-center md:text-left">
-            <span className="font-semibold">Hãy để A.I thông minh của EmviApp lo mọi thứ cho bạn —</span><br />
-            bạn chỉ cần tập trung làm điều mình yêu thích và phát triển sự nghiệp của mình.
-          </p>
-        </div>
-      </motion.div>
-
-      <motion.div 
-        className="text-center" 
-        variants={itemVariants}
-        initial="visible" // Ensure component is visible immediately
-      >
-        <p className="text-xl text-gray-800 font-medium mb-8">
-          Nếu bạn không dùng thử EmviApp...<br />
-          Chắc chắn bạn đang bỏ lỡ một công nghệ có thể giải quyết rất nhiều việc cùng một lúc. <span className="text-2xl">😌</span>
-        </p>
-        
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.98 }}
-          className="group inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-full text-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300"
-        >
-          Hãy cùng nhau trải nghiệm những điều thú vị mà EmviApp mang đến cho bạn — ngay bây giờ
-          <motion.div
-            animate={{ x: [0, 5, 0] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
+        Kết nối các chuyên gia làm đẹp tài năng với cơ hội hoàn hảo của họ chưa bao giờ dễ dàng hơn thế. Cho dù bạn đang tìm kiếm để tham gia vào một đội ngũ hoặc tìm kiếm nhân viên ngôi sao tiếp theo của mình, chúng tôi đã tạo ra nền tảng mà ngành làm đẹp đang chờ đợi.
+      </motion.p>
+      
+      <div className="space-y-3">
+        {benefits.map((benefit, index) => (
+          <motion.div 
+            key={index}
+            className="flex items-start"
+            variants={itemVariants}
           >
-            <ArrowRight size={20} className="text-white" />
+            <Check className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
+            <span className="text-gray-700">{benefit}</span>
           </motion.div>
-        </motion.button>
+        ))}
+      </div>
+      
+      <motion.div 
+        className="pt-4"
+        variants={itemVariants}
+      >
+        <Link to="/sign-up">
+          <Button size="lg" className="group">
+            Tham Gia EmviApp Ngay Hôm Nay
+            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </Button>
+        </Link>
       </motion.div>
-    </>
+    </div>
   );
 };
 

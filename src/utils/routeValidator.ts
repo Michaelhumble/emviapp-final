@@ -4,7 +4,9 @@ import routes from '../routes';
 
 // Map routes config to paths for validation
 const getRoutePaths = () => {
-  return routes.map(route => route.path);
+  // Add explicit routes that might not be in the routes config
+  const explicitRoutes = ['/salons', '/dashboard/artist/booking-calendar', '/dashboard/artist/inbox'];
+  return [...routes.map(route => route.path), ...explicitRoutes];
 };
 
 // Validate that a path exists in our routes configuration

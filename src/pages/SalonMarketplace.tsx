@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Frown, Star } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,7 +8,6 @@ import { SalonFilter } from "@/components/marketplace/SalonFilter";
 import { Salon, salons } from "@/components/marketplace/mockData";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/context/auth";
-import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 const SalonMarketplace = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,16 +17,12 @@ const SalonMarketplace = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { user } = useAuth();
 
-  // Clean up the salons data to ensure no images are present
-  const enhancedSalons = salons.map((salon) => {
-    return {
-      ...salon,
-      image: '',
-      images: []
-    };
-  });
+  useEffect(() => {
+    console.log('SalonMarketplace page rendered - no banner');
+  }, []);
 
-  const filteredSalons = enhancedSalons.filter(salon => {
+  // Use salon data with all original images preserved
+  const filteredSalons = salons.filter(salon => {
     const matchesSearch = 
       salon.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       salon.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -55,11 +49,6 @@ const SalonMarketplace = () => {
     if (a.featured === b.featured) return 0;
     return a.featured ? -1 : 1;
   });
-
-  const viewSalonDetails = (salon: Salon) => {
-    setSelectedSalon(salon);
-    setIsDialogOpen(true);
-  };
 
   // Component for displaying no results message
   const NoResults = () => (
@@ -105,30 +94,18 @@ const SalonMarketplace = () => {
     );
   };
 
+  // Function to view salon details
+  const viewSalonDetails = (salon: Salon) => {
+    // Pass the salon with original image intact - never modify it
+    setSelectedSalon(salon);
+    setIsDialogOpen(true);
+  };
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-serif font-bold mb-2 text-center">Salon Marketplace</h1>
         <p className="text-center text-gray-600 mb-8">Browse salons for sale across the country</p>
-        
-        {/* Luxury Hero Banner with Text Overlay */}
-        <div className="relative w-full mb-10 overflow-hidden rounded-lg">
-          <ImageWithFallback
-            src="/lovable-uploads/98f473d0-0359-4114-9bcc-c9aea3c6fcf6.png"
-            alt="Luxury beauty salon entrance with FOR SALE sign"
-            className="w-full h-auto object-cover"
-            priority={true}
-          />
-          {/* Text Overlay */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-playfair text-[#FAFAFA] mb-2 drop-shadow-sm">
-              List Your Salon with Confidence
-            </h2>
-            <p className="text-xl md:text-2xl font-playfair font-normal text-[#FAFAFA] drop-shadow-sm">
-              Đăng Tin Bán Tiệm với Sự Tự Tin
-            </p>
-          </div>
-        </div>
         
         <SalonFilter
           searchTerm={searchTerm}

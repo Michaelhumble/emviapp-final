@@ -1,236 +1,228 @@
 
 export const heroImages = [
-  // Newly uploaded high-quality stock images
   {
-    url: "/lovable-uploads/4c4050d4-4a79-4610-8d47-bf6cc92bf8a3.png",
-    alt: "Professional nail technician with purple gloves applying treatment to client in modern pink and blue salon"
+    url: "/lovable-uploads/f7491bd3-25bf-43f9-80e2-d53b137a70d7.png",
+    alt: "EmviApp - Beauty professionals platform",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Join EmviApp Today",
+      link: "/auth/signup"
+    }
   },
   {
-    url: "/lovable-uploads/573c99c9-78e4-4bc7-8e69-e82d6ac4c995.png",
-    alt: "Nail professional providing pedicure service in luxury salon with blue and pink interior"
+    url: "/lovable-uploads/e84078f4-339e-4231-b027-e8cd67c8e4ae.png",
+    alt: "Nail salon services showcase",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Explore Opportunities",
+      link: "/explore"
+    }
   },
   {
-    url: "/lovable-uploads/a805a49d-4879-4eea-900d-a8dd480a29c8.png",
-    alt: "Makeup artist with pink mask applying eye makeup to client in bright home studio setting"
+    url: "/lovable-uploads/c288ca24-3a79-470f-8bc8-c3abf5371fc1.png",
+    alt: "Hair salon professional workspace",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Start Your Journey",
+      link: "/auth/signup"
+    }
   },
-  
-  // Additional newly uploaded beauty images
   {
     url: "/lovable-uploads/00ccb907-6755-4698-a289-71b05f7012f1.png",
-    alt: "Elegant beauty professional working in premium salon environment"
+    alt: "Modern beauty salon interior",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Join Our Community",
+      link: "/auth/signup"
+    }
   },
   {
     url: "/lovable-uploads/04b1b8d8-1c45-4be9-96e7-7afcceca8760.png",
-    alt: "Professional beauty treatment with specialized equipment in luxury spa"
-  },
-  {
-    url: "/lovable-uploads/072ab653-428c-4ec9-bd87-1bd6658d82de.png",
-    alt: "Beauty artist providing professional service in modern salon"
+    alt: "Professional hair styling tools",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Find Your Perfect Match",
+      link: "/explore"
+    }
   },
   {
     url: "/lovable-uploads/0bc39cbb-bdd3-4843-ace0-3cf730af576f.png",
-    alt: "Stylish nail service being performed in high-end beauty parlor"
-  },
-  {
-    url: "/lovable-uploads/0c68659d-ebd4-4091-aa1a-9329f3690d68.png",
-    alt: "Premium beauty treatment with elegant tools and atmosphere"
-  },
-  {
-    url: "/lovable-uploads/0f87e7e4-f896-4c6d-a832-eca65e4b20cd.png",
-    alt: "Professional applying beauty treatment in contemporary salon setting"
-  },
-  {
-    url: "/lovable-uploads/0fcc390c-fc2b-4e72-9fa9-055da1d97ad4.png",
-    alt: "Luxurious beauty care service in elegant spa environment"
-  },
-  {
-    url: "/lovable-uploads/11d11587-a1b4-4f8f-a93b-b792a672b16b.png",
-    alt: "Beauty professional providing specialized treatment in modern facility"
-  },
-  {
-    url: "/lovable-uploads/15bcad43-8797-40ed-ae8f-96eedb447b8f.png",
-    alt: "Nail technician applying intricate design in premium setting"
+    alt: "Luxury salon experience",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Discover Services",
+      link: "/explore"
+    }
   },
   {
     url: "/lovable-uploads/16e16a16-df62-4741-aec7-3364fdc958ca.png",
-    alt: "Client receiving luxury beauty treatment in high-end salon"
-  },
-  {
-    url: "/lovable-uploads/1763ca30-ecb0-409f-8bb0-11b851ea743f.png",
-    alt: "Professional beauty workspace with quality tools and products"
-  },
-  {
-    url: "/lovable-uploads/179dbed5-2209-4b12-8e72-ef20d1818d46.png",
-    alt: "Elegant salon setup for premium beauty services"
-  },
-  {
-    url: "/lovable-uploads/19ff177d-e137-4d2c-afd1-0b5b69109c44.png",
-    alt: "Beauty specialist providing expert treatment in modern salon"
-  },
-  {
-    url: "/lovable-uploads/1aa3efa7-8ea4-4815-91db-85a50b204ded.png",
-    alt: "High-quality beauty service in contemporary salon environment"
+    alt: "Nail art professionals at work",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Book Now",
+      link: "/auth/signup"
+    }
   },
   {
     url: "/lovable-uploads/1b5ea814-ad33-4a65-b01e-6c406c98ffc1.png",
-    alt: "Professional beauty treatment in luxury spa facility"
-  },
-  {
-    url: "/lovable-uploads/1bc30225-0249-44a2-8086-c0a8ecbd57c2.png",
-    alt: "Expert beauty service with premium tools and equipment"
-  },
-  {
-    url: "/lovable-uploads/1d1e2a21-2e5b-452d-a583-57240e114a67.png",
-    alt: "Nail artist providing detailed service in upscale salon"
-  },
-  {
-    url: "/lovable-uploads/1f3cfd40-4041-4545-b71e-5a7f484f86e9.png",
-    alt: "Premium beauty workspace with professional equipment"
-  },
-  {
-    url: "/lovable-uploads/1f97f5e0-6b52-4ac6-925b-396bc0a1e585.png",
-    alt: "Beauty specialist working in contemporary luxury environment"
+    alt: "Hair coloring expert",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Find Your Artist",
+      link: "/explore"
+    }
   },
   {
     url: "/lovable-uploads/21d69945-acea-4057-9ff0-df824cd3c607.png",
-    alt: "Professional beauty treatment in elegant salon setting"
-  },
-  {
-    url: "/lovable-uploads/253b19a3-141f-40c7-9cce-fc10464f0615.png",
-    alt: "Expert beauty service with specialized techniques in premium environment"
+    alt: "Spa treatment session",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Experience Luxury",
+      link: "/auth/signup"
+    }
   },
   {
     url: "/lovable-uploads/264f30fa-7e38-43a5-957e-7171f5e9160e.png",
-    alt: "High-end beauty technique being applied in luxury setting"
+    alt: "Beauty professional workspace",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Join EmviApp",
+      link: "/auth/signup"
+    }
   },
   {
-    url: "/lovable-uploads/320a97df-a8f7-4ff3-90d8-8c7e63ba8caa.png",
-    alt: "Professional beauty specialist providing expert service"
-  },
-  {
-    url: "/lovable-uploads/331d95ff-f18b-4053-958e-5982d85bc536.png",
-    alt: "Luxury beauty treatment with premium tools and equipment"
-  },
-  
-  // Existing nail technician and beauty service images
-  {
-    url: "/lovable-uploads/460bbeef-31f2-4314-8e12-b38b4093da8a.png",
-    alt: "Nail technician with black gloves working on client's nails"
-  },
-  {
-    url: "/lovable-uploads/3433ae04-07e6-402e-b59d-681077d3a6ca.png",
-    alt: "Nail technician with pink gloves applying intricate nail design"
-  },
-  {
-    url: "/lovable-uploads/55fac081-9f6d-4220-a212-94ee2720bde9.png",
-    alt: "Professional facial treatment with esthetician massaging client's face"
-  },
-  {
-    url: "/lovable-uploads/f9c0a9f2-e45c-4c98-8413-6fd84624a578.png",
-    alt: "Young nail artist applying polish to client's nails"
-  },
-  {
-    url: "/lovable-uploads/ef2533d3-313e-4150-baf2-31d91cd4837b.png",
-    alt: "Woman in white bathrobe applying nail polish"
-  },
-  
-  // More beauty and wellness images
-  {
-    url: "/lovable-uploads/c25453c7-588e-4544-99da-5b21cf64bf20.png",
-    alt: "Woman getting relaxing back massage at luxury spa"
-  },
-  {
-    url: "/lovable-uploads/94ea5644-26ac-4862-a6fc-b5b4c5c1fbb5.png",
-    alt: "Professional makeup brushes collection in holders on vanity"
-  },
-  {
-    url: "/lovable-uploads/955feb1d-3a31-4a0e-b6b2-44f8240519c1.png",
-    alt: "Modern barbershop with stylist trimming client's hair"
-  },
-  {
-    url: "/lovable-uploads/4963d98c-613d-4a9a-99a4-7fa4b2e22717.png",
-    alt: "Barber carefully grooming client's beard with straight razor"
-  },
-  {
-    url: "/lovable-uploads/4e42c014-9ec4-4834-ade3-2b11c8e47361.png",
-    alt: "Professional makeup application with client in chair"
-  },
-  
-  // Luxury spa and salon images
-  {
-    url: "/lovable-uploads/c540558f-09db-483f-b844-bacb8824f789.png",
-    alt: "Luxury spa treatment room with dual beds and elegant gold accents"
-  },
-  {
-    url: "/lovable-uploads/6fdf0a39-d203-4f5a-90ba-808059c3ae5e.png",
-    alt: "Modern makeup and lash station with beauty products elegantly displayed"
-  },
-  {
-    url: "/lovable-uploads/ada4c504-75cf-45ce-a673-c81a22b9dbe3.png",
-    alt: "Contemporary spa room with blue walls and treatment beds"
-  },
-  {
-    url: "/lovable-uploads/ca09b67d-f8b2-497c-bfd9-ac6ec0a491c7.png",
-    alt: "Modern blue-themed spa treatment room with white beds and plants"
-  },
-  {
-    url: "/lovable-uploads/2951176b-68c9-45d6-8bc5-20513e72d0a3.png",
-    alt: "Luxury makeup salon with illuminated mirrors and elegant black chairs"
-  },
-  
-  // Additional nail service images
-  {
-    url: "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png",
-    alt: "Close-up of hands with beautiful nail polish application"
-  },
-  {
-    url: "/lovable-uploads/f3f2a5ae-65d9-4442-8842-1cb9e26cdb56.png",
-    alt: "Close-up of nail technician applying detailed nail art"
-  },
-  {
-    url: "/lovable-uploads/a98d2b96-e38c-43a0-9abe-d846764a9e11.png", 
-    alt: "Close-up of nail technician with black gloves working on client's nails"
-  },
-  
-  // New uploaded images from user's request
-  {
-    url: "/lovable-uploads/36417782-c139-4dd1-8dc4-e5eea22a01bb.png",
-    alt: "Luxury beauty salon professional service"
+    url: "/lovable-uploads/3016e425-432a-49f0-b106-be927292873e.png",
+    alt: "Barber shop experience",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Find Your Style",
+      link: "/explore"
+    }
   },
   {
     url: "/lovable-uploads/3bd8e670-e121-4f05-8d36-30966a627ec9.png",
-    alt: "Premium beauty treatment in elegant setting"
-  },
-  {
-    url: "/lovable-uploads/3d3a731b-4560-4317-8dc7-93d933b82b10.png",
-    alt: "High-end beauty service in modern salon"
+    alt: "Beauty salon client consultation",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Connect Today",
+      link: "/auth/signup"
+    }
   },
   {
     url: "/lovable-uploads/4011381e-fa21-45dc-a6d1-1ebf0aebb664.png",
-    alt: "Professional nail artist providing luxury service"
-  },
-  {
-    url: "/lovable-uploads/418cf3ab-c7f4-4f6a-8049-945b70df38ca.png",
-    alt: "Elegant beauty workspace with premium tools"
-  },
-  {
-    url: "/lovable-uploads/43b9da9d-d4a5-419c-93c9-c724e3983b19.png",
-    alt: "Contemporary beauty treatment with professional technique"
-  },
-  {
-    url: "/lovable-uploads/44afc5c7-fa4b-4e7c-86a3-3fa4486102ef.png",
-    alt: "Luxury nail design service in high-end salon"
+    alt: "Nail art close-up",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Book Services",
+      link: "/explore"
+    }
   },
   {
     url: "/lovable-uploads/45fbe8fa-1758-43e5-a8b0-bbf55a601a41.png",
-    alt: "Premium beauty service with specialized tools"
+    alt: "Premium salon interior",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Experience Premium",
+      link: "/auth/signup"
+    }
   },
   {
-    url: "/lovable-uploads/4a455b85-c040-4be5-9557-b1e3b0040bf4.png",
-    alt: "Expert beauty technician working in luxury environment"
+    url: "/lovable-uploads/4bc7eaab-8b8b-4b00-a4bb-6ea3b6deb483.png",
+    alt: "Modern beauty technology",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Join The Revolution",
+      link: "/auth/signup"
+    }
   },
   {
-    url: "/lovable-uploads/4b908b3b-93ed-4879-95d4-cfa861a1f69f.png",
-    alt: "High-quality beauty treatment in contemporary setting"
+    url: "/lovable-uploads/513e8703-1059-4ed5-aef3-9f9b4536b69d.png",
+    alt: "Salon team collaboration",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Build Your Team",
+      link: "/explore"
+    }
+  },
+  {
+    url: "/lovable-uploads/56896daa-2bfa-44c0-b666-d2b7eb5a8205.png",
+    alt: "Hair styling session",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Transform Your Look",
+      link: "/auth/signup"
+    }
+  },
+  {
+    url: "/lovable-uploads/5af131ca-038f-40e6-892a-502d1e822395.png",
+    alt: "Beauty consultation session",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Get Expert Advice",
+      link: "/explore"
+    }
+  },
+  {
+    url: "/lovable-uploads/628e6cc1-661e-4698-840a-a0facea2f7bb.png",
+    alt: "Luxury beauty products",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Discover Quality",
+      link: "/auth/signup"
+    }
+  },
+  {
+    url: "/lovable-uploads/67947adb-5754-4569-aa1c-228d8f9db461.png",
+    alt: "Salon client experience",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Feel The Difference",
+      link: "/explore"
+    }
+  },
+  {
+    url: "/lovable-uploads/6aa31dbf-9e67-4034-b930-af170ecd98ea.png",
+    alt: "Beauty industry professionals",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Join The Network",
+      link: "/auth/signup"
+    }
+  },
+  {
+    url: "/lovable-uploads/6d593f49-dc5d-4e4c-9685-87d13b4eb7ca.png",
+    alt: "Manicure session close-up",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Perfect Details",
+      link: "/explore"
+    }
+  },
+  {
+    url: "/lovable-uploads/70c8662a-4525-4854-a529-62616b5b6c81.png",
+    alt: "Salon front desk",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Start Your Business",
+      link: "/auth/signup"
+    }
+  },
+  {
+    url: "/lovable-uploads/733d57a9-1f52-4ef1-afa2-59d9507d7f92.png",
+    alt: "Hair stylist at work",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Find Your Stylist",
+      link: "/explore"
+    }
+  },
+  {
+    url: "/lovable-uploads/7dd3d7e2-dc6b-4d9a-9feb-9e3b023a9f28.png",
+    alt: "Premium salon experience",
+    subtitle: "Connecting salons, artists & customers through intelligent AI-powered technology.",
+    cta: {
+      text: "Experience Excellence",
+      link: "/auth/signup"
+    }
   }
 ];

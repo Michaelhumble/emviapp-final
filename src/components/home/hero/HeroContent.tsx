@@ -1,102 +1,160 @@
 
 import React from "react";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { ChevronRight } from "lucide-react";
-import FloatingElements from "./FloatingElements";
-import ScrollIndicator from "./ScrollIndicator";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 interface HeroImage {
   url: string;
   alt: string;
+  title?: string;
+  subtitle?: string;
+  cta?: {
+    text: string;
+    link: string;
+  };
 }
 
 interface HeroContentProps {
   activeIndex: number;
   setActiveIndex: (index: number) => void;
   heroImages: HeroImage[];
-  isMobile: boolean;
+  isMobile?: boolean;
 }
 
-const HeroContent: React.FC<HeroContentProps> = ({ 
+const HeroContent = ({ 
   activeIndex, 
-  setActiveIndex,
+  setActiveIndex, 
   heroImages,
-  isMobile 
-}) => {
+  isMobile = false
+}: HeroContentProps) => {
+  
+  const currentSlide = heroImages[activeIndex];
+  
+  // Only show a maximum of 7 dots, with current one centered
+  const getVisibleDots = () => {
+    if (heroImages.length <= 7) return heroImages.map((_, i) => i);
+    
+    const halfVisible = 3;
+    let startIdx = activeIndex - halfVisible;
+    let endIdx = activeIndex + halfVisible;
+    
+    // Adjust for edge cases
+    if (startIdx < 0) {
+      endIdx = Math.min(endIdx - startIdx, heroImages.length - 1);
+      startIdx = 0;
+    }
+    
+    if (endIdx >= heroImages.length) {
+      startIdx = Math.max(0, startIdx - (endIdx - heroImages.length + 1));
+      endIdx = heroImages.length - 1;
+    }
+    
+    return Array.from({ length: endIdx - startIdx + 1 }, (_, i) => i + startIdx);
+  };
+  
+  const visibleDots = getVisibleDots();
+  
   return (
-    <div className="container mx-auto px-4 h-full flex flex-col items-center justify-center relative">
-      <FloatingElements />
-      
-      <motion.div
-        className="text-center relative z-30"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.3 }}
-      >
-        <motion.h1
-          className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 md:mb-6 font-playfair"
-          initial={{ opacity: 0, y: 30 }}
+    <motion.div 
+      className={`text-center text-white z-20 max-w-5xl mx-auto px-4 ${isMobile ? 'py-8' : 'py-0'}`}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      {/* Main hero content */}
+      <div className="space-y-6">
+        {/* 
+          ⚠️ PERMANENT LOCKED TITLE - DO NOT MODIFY ⚠️
+          This title must remain exactly as written - core to EmviApp identity
+        */}
+        <motion.h1 
+          className={`font-serif font-bold tracking-tight text-white ${isMobile ? 'text-4xl md:text-5xl' : 'text-6xl'}`}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
+          transition={{ duration: 0.7, delay: 0.2 }}
         >
-          Beauty Industry's <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-pink-300">First AI Platform</span>
+          The Beauty Industry's Missing Piece — We Just Built It.
         </motion.h1>
         
-        <motion.p
-          className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto font-light"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.7 }}
+        {/* 
+          ⚠️ PERMANENT SUBHEADLINE - DO NOT MODIFY WITHOUT PERMISSION ⚠️
+        */}
+        <motion.p 
+          className={`${isMobile ? 'text-lg' : 'text-2xl'} max-w-2xl mx-auto text-white/90`}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.4 }}
         >
-          Connecting salons, artists & customers through intelligent technology.
+          Connecting salons, artists & customers through intelligent AI-powered technology.
         </motion.p>
         
         <motion.div
-          className="flex flex-col sm:flex-row justify-center gap-4 mt-6"
+          className="flex flex-wrap justify-center gap-4 mt-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.9 }}
+          transition={{ duration: 0.7, delay: 0.6 }}
         >
-          <Link to="/auth/signup">
+          {/* Main CTA Button */}
+          <Link to={currentSlide.cta?.link || "/auth/signup"}>
             <Button 
-              size="lg"
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 rounded-lg text-lg shadow-xl hover:shadow-2xl transition-all duration-300 border-none"
+              size="lg" 
+              className="font-medium px-8 py-6 text-lg shadow-lg shadow-black/20 hover:shadow-xl hover:shadow-black/30 transition-all duration-300"
             >
-              Join EmviApp Now
-              <ChevronRight className="ml-1 h-5 w-5" />
+              {currentSlide.cta?.text || "Join EmviApp Today"}
             </Button>
           </Link>
-          <Link to="/tour">
+          
+          {/* Secondary CTA Button */}
+          <Link to="/explore">
             <Button 
-              variant="outline"
-              size="lg"
-              className="border-2 border-white/50 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white px-8 py-6 rounded-lg text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              variant="outline" 
+              size="lg" 
+              className="bg-white/10 border-white/20 text-white font-medium px-8 py-6 text-lg backdrop-blur-sm hover:bg-white/20 transition-all duration-300"
             >
-              Take a Tour
+              Explore First
             </Button>
           </Link>
         </motion.div>
-        
-        {/* Indicators */}
-        <div className="absolute bottom-[-60px] left-1/2 transform -translate-x-1/2 flex space-x-2">
-          {heroImages.slice(0, 5).map((_, i) => (
-            <button
-              key={i}
-              className={`w-2 h-2 rounded-full ${
-                i === activeIndex % 5 ? "bg-white" : "bg-white/40"
-              }`}
-              onClick={() => setActiveIndex(i)}
-              aria-label={`Go to slide ${i + 1}`}
-            />
-          ))}
-        </div>
-      </motion.div>
+      </div>
       
-      {/* Scroll indicator at the bottom */}
-      <ScrollIndicator />
-    </div>
+      {/* Image selection dots/indicators - showing active set with overflow indicator */}
+      <div className="flex justify-center items-center gap-2 mt-10">
+        {heroImages.length > 7 && activeIndex > 3 && (
+          <button
+            onClick={() => setActiveIndex(Math.max(0, activeIndex - 5))}
+            className="w-6 h-6 rounded-full flex items-center justify-center text-white/70 hover:text-white transition-colors"
+            aria-label="Previous images"
+          >
+            ⟨
+          </button>
+        )}
+        
+        {visibleDots.map(index => (
+          <button
+            key={index}
+            onClick={() => setActiveIndex(index)}
+            className={`w-3 h-3 rounded-full transition-all ${
+              activeIndex === index 
+                ? 'bg-white scale-125' 
+                : 'bg-white/40 hover:bg-white/60'
+            }`}
+            aria-label={`View slide ${index + 1}`}
+          />
+        ))}
+        
+        {heroImages.length > 7 && activeIndex < heroImages.length - 4 && (
+          <button
+            onClick={() => setActiveIndex(Math.min(heroImages.length - 1, activeIndex + 5))}
+            className="w-6 h-6 rounded-full flex items-center justify-center text-white/70 hover:text-white transition-colors"
+            aria-label="Next images"
+          >
+            ⟩
+          </button>
+        )}
+      </div>
+    </motion.div>
   );
 };
 
