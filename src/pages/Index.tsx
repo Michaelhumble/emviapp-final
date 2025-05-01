@@ -13,6 +13,7 @@ import AITeam from "@/components/home/AITeam";
 import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 import MissingPieceSection from "@/components/home/missing-piece/MissingPieceSection";
 import { runListingsVerification } from "@/utils/runListingsVerification";
+import SimpleLoadingFallback from "@/components/error-handling/SimpleLoadingFallback";
 
 // Enhanced homepage components
 import LatestIndustryOpportunities from "@/components/home/LatestIndustryOpportunities";
@@ -27,6 +28,9 @@ import BeautyExchangeSection from "@/components/home/BeautyExchangeSection";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
+  // Add guard clause to prevent rendering when auth is loading
+  if (loading) return <SimpleLoadingFallback message="Loading EmviApp..." />;
+  
   const navigate = useNavigate();
   
   const { 
