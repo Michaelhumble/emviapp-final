@@ -36,7 +36,7 @@ export function useSessionQuery() {
       
       // If the user just signed up, set isNewUser to true
       // Using string literals directly for comparison since event is a string
-      if (event === 'SIGNED_UP' as AuthChangeEvent) {
+      if ((event as any) === "SIGNED_UP") {
         setIsNewUser(true);
         localStorage.setItem('emviapp_new_user', 'true');
         
@@ -50,7 +50,7 @@ export function useSessionQuery() {
       }
       
       // If the user signs in, check for role info
-      if (event === 'SIGNED_IN' as AuthChangeEvent) {
+      if ((event as any) === "SIGNED_IN") {
         const userRole = session?.user?.user_metadata?.role;
         if (userRole) {
           localStorage.setItem('emviapp_user_role', userRole);
@@ -58,7 +58,7 @@ export function useSessionQuery() {
       }
 
       // If the user signs out, reset all states
-      if (event === 'SIGNED_OUT' as AuthChangeEvent) {
+      if ((event as any) === "SIGNED_OUT") {
         setIsNewUser(false);
         localStorage.removeItem('emviapp_new_user');
         localStorage.removeItem('emviapp_user_role');
