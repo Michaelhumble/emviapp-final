@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/auth";
@@ -5,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, AlertCircle, Mail } from "lucide-react";
+import { Loader2, AlertCircle, Mail, RefreshCw } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import { toast } from "sonner";
 import EmviLogo from "@/components/branding/EmviLogo";
@@ -20,12 +21,30 @@ const SignIn = () => {
   const [error, setError] = useState<string | null>(null);
   const [sendingVerification, setSendingVerification] = useState(false);
   const [showVerificationAlert, setShowVerificationAlert] = useState(false);
+  const [recoveryInProgress, setRecoveryInProgress] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   
   const queryParams = new URLSearchParams(location.search);
   const redirectUrl = queryParams.get('redirect') || '/dashboard';
+  const errorCode = queryParams.get('error');
+
+  useEffect(() => {
+    if (errorCode) {
+      // Handle error codes from auth redirects
+      switch(errorCode) {
+        case 'session_expired':
+          setError("Your session has expired. Please sign in again.");
+          break;
+        case 'invalid_request':
+          setError("There was a problem with your sign in request. Please try again.");
+          break;
+        default:
+          setError(`Authentication error: ${errorCode}`);
+      }
+    }
+  }, [errorCode]);
 
   useEffect(() => {
     if (user) {
@@ -49,7 +68,14 @@ const SignIn = () => {
       } else if (result.error?.message?.includes("Email not confirmed")) {
         setShowVerificationAlert(true);
       } else {
-        setError("Invalid login credentials. Please try again.");
+        // Provide more specific error messages based on error types
+        if (result.error?.message?.includes("Invalid login")) {
+          setError("The email or password you entered is incorrect. Please try again.");
+        } else if (result.error?.message?.includes("rate limit")) {
+          setError("Too many sign in attempts. Please try again in a few minutes.");
+        } else {
+          setError(result.error?.message || "Invalid login credentials. Please try again.");
+        }
       }
     } catch (error: any) {
       console.error("Sign in error:", error);
@@ -74,12 +100,32 @@ const SignIn = () => {
       
       if (error) throw error;
       
-      toast.success("Verification email sent! Please check your inbox.");
+      toast.success("Verification email sent! Please check your inbox and spam folder.");
     } catch (error: any) {
       console.error("Error resending verification:", error);
       toast.error(error.message || "Failed to send verification email");
     } finally {
       setSendingVerification(false);
+    }
+  };
+
+  const handleRetryRecovery = async () => {
+    setRecoveryInProgress(true);
+    setError(null);
+    
+    try {
+      // Clear any local storage remnants of previous sessions
+      localStorage.removeItem('supabase.auth.token');
+      
+      // Force a session refresh with Supabase
+      await supabase.auth.refreshSession();
+      
+      toast.success("Session refreshed. Please try signing in again.");
+    } catch (error) {
+      console.error("Recovery attempt failed:", error);
+      setError("Recovery attempt failed. Please try signing in with your credentials.");
+    } finally {
+      setRecoveryInProgress(false);
     }
   };
 
@@ -107,7 +153,21 @@ const SignIn = () => {
               {error && (
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{error}</AlertDescription>
+                  <AlertDescription>
+                    <div className="flex flex-col">
+                      <span>{error}</span>
+                      <Button 
+                        variant="link" 
+                        size="sm" 
+                        className="p-0 h-auto text-destructive/90 justify-start font-medium mt-1"
+                        onClick={handleRetryRecovery}
+                        disabled={recoveryInProgress}
+                      >
+                        <RefreshCw className={`mr-1 h-3 w-3 ${recoveryInProgress ? 'animate-spin' : ''}`} />
+                        {recoveryInProgress ? 'Attempting recovery...' : 'Try session recovery'}
+                      </Button>
+                    </div>
+                  </AlertDescription>
                 </Alert>
               )}
 
@@ -142,6 +202,8 @@ const SignIn = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isSubmitting}
+                  className="border-input"
+                  autoComplete="email"
                 />
               </div>
               <div className="space-y-2">
@@ -154,6 +216,8 @@ const SignIn = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isSubmitting}
+                  className="border-input"
+                  autoComplete="current-password"
                 />
               </div>
             </CardContent>
@@ -162,6 +226,7 @@ const SignIn = () => {
                 type="submit" 
                 className="w-full" 
                 disabled={isSubmitting}
+                aria-label={isSubmitting ? "Signing in..." : "Sign in"}
               >
                 {isSubmitting ? (
                   <>
