@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -11,14 +10,12 @@ import { useRoleSelection } from "@/hooks/useRoleSelection";
 import AIPowerhouse from "@/components/home/AIPowerhouse";
 import AITeam from "@/components/home/AITeam";
 import TrustFirstPanel from "@/components/home/TrustFirstPanel";
-import MissingPieceSection from "@/components/home/missing-piece/MissingPieceSection";
+import MissingPieceSection from "@/components/home/missing-piece";
 import { runListingsVerification } from "@/utils/runListingsVerification";
 
 // Enhanced homepage components
-import LatestIndustryOpportunities from "@/components/home/LatestIndustryOpportunities";
-import SalonJobListingsShowcase from "@/components/home/SalonJobListingsShowcase";
-import FounderMessage from "@/components/home/FounderMessage";
 import EnhancedAIFeatures from "@/components/home/EnhancedAIFeatures";
+import FounderMessage from "@/components/home/FounderMessage";
 import FinalFounderCTA from "@/components/home/FinalFounderCTA";
 import SalonClientGrowthSystem from "@/components/home/SalonClientGrowthSystem";
 import WhyTrustSection from "@/components/home/sections/WhyTrustSection";
@@ -41,14 +38,10 @@ const Index = () => {
     document.title = "EmviApp | The Beauty Industry Platform";
     console.log("Index page loaded");
     
-    try {
-      // Run verification to ensure all listings have proper routing
-      runListingsVerification()
-        .then(() => console.log("Listings verification completed"))
-        .catch(err => console.error("Error in listings verification:", err));
-    } catch (error) {
-      console.error("Failed to run listings verification:", error);
-    }
+    // Run verification to ensure all listings have proper routing
+    runListingsVerification()
+      .then(() => console.log("Listings verification completed"))
+      .catch(err => console.error("Error in listings verification:", err));
   }, []);
   
   return (
@@ -56,19 +49,13 @@ const Index = () => {
       {/* Hero section as first */}
       <Hero />
       
-      {/* Beauty Exchange Section with stable fix */}
+      {/* ✨ The Beauty Exchange Section - Positioned first after hero */}
       <BeautyExchangeSection />
-      
-      {/* Latest Industry Opportunities (Beauty Exchange) */}
-      <LatestIndustryOpportunities />
-      
-      {/* Nail & Beauty Salons Hiring Now */}
-      <SalonJobListingsShowcase />
       
       {/* Why Artists & Salons Trust Us */}
       <WhyTrustSection />
       
-      {/* Let AI Do the Hard Work (moved here) */}
+      {/* Let AI Do the Hard Work */}
       <EnhancedAIFeatures />
       
       {/* What You Can Do With EmviApp */}
@@ -80,7 +67,7 @@ const Index = () => {
       {/* No Matter Your Craft — We Know the Struggle */}
       <ClientSuccessStories />
       
-      {/* 8️⃣ What's Really Keeping Your Salon From Growing? */}
+      {/* What's Really Keeping Your Salon From Growing? */}
       <SalonClientGrowthSystem />
       
       {/* Trust First Panel */}

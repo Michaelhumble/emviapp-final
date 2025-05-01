@@ -17,7 +17,10 @@ const BookingReminderStatus = ({ reminderSent, reminderSentAt }: BookingReminder
   if (!reminderSent) {
     return (
       <Badge variant="outline" className="text-gray-500 border-gray-300 text-xs px-1.5 py-0">
-        {t("No reminder")}
+        {t({
+          english: "No reminder",
+          vietnamese: "Chưa gửi"
+        })}
       </Badge>
     );
   }
@@ -32,17 +35,26 @@ const BookingReminderStatus = ({ reminderSent, reminderSentAt }: BookingReminder
         <TooltipTrigger asChild>
           <Badge className="bg-green-100 text-green-800 hover:bg-green-200 border-0 flex items-center gap-1 text-xs px-1.5 py-0">
             <Bell className="h-2.5 w-2.5" />
-            {t("Reminded")}
+            {t({
+              english: "Reminded",
+              vietnamese: "Đã gửi"
+            })}
           </Badge>
         </TooltipTrigger>
         <TooltipContent>
           {reminderSentAt ? (
             <p>
-              {t(`Sent on ${formattedDate}`)}
+              {t({
+                english: `Sent on ${formattedDate}`,
+                vietnamese: `Đã gửi vào ${formattedDate}`
+              })}
             </p>
           ) : (
             <p>
-              {t("Reminder has been sent")}
+              {t({
+                english: "Reminder has been sent",
+                vietnamese: "Đã gửi nhắc nhở"
+              })}
             </p>
           )}
         </TooltipContent>

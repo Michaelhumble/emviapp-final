@@ -9,22 +9,22 @@ const BookingTableHeader = () => {
     <thead className="bg-gray-50">
       <tr>
         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          {t("Client")}
+          {t({ english: "Client", vietnamese: "Khách hàng" })}
         </th>
         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          {t("Service")}
+          {t({ english: "Service", vietnamese: "Dịch vụ" })}
         </th>
         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          {t("Date")}
+          {t({ english: "Date", vietnamese: "Ngày" })}
         </th>
         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          {t("Time")}
+          {t({ english: "Time", vietnamese: "Thời gian" })}
         </th>
         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          {t("Status")}
+          {t({ english: "Status", vietnamese: "Trạng thái" })}
         </th>
         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          {t("Actions")}
+          {t({ english: "Actions", vietnamese: "Hành động" })}
         </th>
       </tr>
     </thead>

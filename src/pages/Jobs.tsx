@@ -1,15 +1,16 @@
 
 import { useEffect } from 'react';
-import StableJobsPage from './jobs/StableJobsPage';
+import JobsPage from './jobs';
 
 const Jobs = () => {
   useEffect(() => {
     // Log page visit
-    console.log("Jobs page accessed, rendering via StableJobsPage wrapper");
+    console.log("Jobs page accessed, rendering JobsPage component");
+    document.title = "Job Listings | EmviApp";
   }, []);
 
-  // Render the stable jobs page component 
-  return <StableJobsPage />;
+  // Render the actual jobs page component instead of redirecting
+  return <JobsPage />;
 };
 
 export default Jobs;

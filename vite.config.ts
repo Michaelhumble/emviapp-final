@@ -10,7 +10,6 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  base: './', // Use relative paths for assets
   plugins: [
     react(),
     mode === 'development' && componentTagger(),
@@ -25,21 +24,5 @@ export default defineConfig(({ mode }) => ({
     'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(process.env.VITE_SUPABASE_URL || "https://wwhqbjrhbajpabfdwnip.supabase.co"),
     'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(process.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3aHFianJoYmFqcGFiZmR3bmlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE5OTk2OTMsImV4cCI6MjA1NzU3NTY5M30.1YGaLgfnwqmzn3f28IzmTxDKKX5NoJ1V8IbI3V4-WmM"),
     'import.meta.env.VITE_GOOGLE_MAPS_API_KEY': JSON.stringify(process.env.VITE_GOOGLE_MAPS_API_KEY || "AIzaSyAQfGVhQ1OLV0ZgWJ1EqIBcubinphfJ8Mk")
-  },
-  build: {
-    outDir: "dist",
-    assetsDir: "assets",
-    sourcemap: true,
-    cssCodeSplit: true, // Enable CSS code splitting
-    emptyOutDir: true, // Clean the output directory before each build
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          // Split vendor code for better caching
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-popover', '@radix-ui/react-toast'],
-        },
-      },
-    },
-  },
+  }
 }));

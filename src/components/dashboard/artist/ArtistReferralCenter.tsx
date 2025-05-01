@@ -12,7 +12,8 @@ const ArtistReferralCenter = () => {
   const { user, userProfile } = useAuth();
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
-  
+  const isVietnamese = userProfile?.preferred_language?.toLowerCase() === 'vietnamese';
+
   // Generate a referral link based on the user ID
   const referralLink = user ? `https://emviapp.com/join?ref=${user.id.substring(0, 8)}` : '';
 
@@ -20,9 +21,14 @@ const ArtistReferralCenter = () => {
     if (referralLink) {
       navigator.clipboard.writeText(referralLink);
       setCopied(true);
-      toast.success(t("Copied to clipboard!"), {
-        description: t("Share this link with friends and colleagues")
-      });
+      toast.success(
+        isVietnamese ? "Đã sao chép vào clipboard!" : "Copied to clipboard!",
+        {
+          description: isVietnamese 
+            ? "Chia sẻ link này với bạn bè và đồng nghiệp" 
+            : "Share this link with friends and colleagues"
+        }
+      );
       
       // Reset copied state after 3 seconds
       setTimeout(() => setCopied(false), 3000);
@@ -46,19 +52,28 @@ const ArtistReferralCenter = () => {
         <CardHeader className="pb-2 relative overflow-hidden">
           <p className="text-gray-500 text-sm italic mb-2">
             <span className="block">
-              {t("Invite friends and earn rewards from Emvi.")}
+              {t({
+                english: "Invite friends and earn rewards from Emvi.",
+                vietnamese: "Giới thiệu bạn bè và nhận thưởng từ Emvi."
+              })}
             </span>
           </p>
           
           <CardTitle className="text-xl font-serif flex items-center">
             <Users className="h-5 w-5 mr-2 text-purple-500" />
-            {t("Referral Program")}
+            {t({
+              english: "Referral Program",
+              vietnamese: "Chương Trình Giới Thiệu"
+            })}
           </CardTitle>
         </CardHeader>
         
         <CardContent className="relative z-10">
           <p className="text-gray-600 mb-4">
-            {t("Earn Emvi Credits when someone joins using your link. Credits can be redeemed for profile boosts and visibility upgrades.")}
+            {t({
+              english: "Earn Emvi Credits when someone joins using your link. Credits can be redeemed for profile boosts and visibility upgrades.",
+              vietnamese: "Nhận tín dụng Emvi khi ai đó tham gia bằng liên kết của bạn. Tín dụng có thể được sử dụng để tăng cường hồ sơ và nâng cao khả năng hiển thị."
+            })}
           </p>
           
           <div className="relative mb-4 group">
@@ -82,12 +97,18 @@ const ArtistReferralCenter = () => {
                   {copied ? (
                     <>
                       <CheckCircle className="h-4 w-4 mr-1" />
-                      {t("Copied!")}
+                      {t({
+                        english: "Copied!",
+                        vietnamese: "Đã sao chép!"
+                      })}
                     </>
                   ) : (
                     <>
                       <Copy className="h-4 w-4 mr-1" />
-                      {t("Copy Link")}
+                      {t({
+                        english: "Copy Link",
+                        vietnamese: "Sao chép"
+                      })}
                     </>
                   )}
                 </Button>
@@ -98,8 +119,14 @@ const ArtistReferralCenter = () => {
                   className="text-purple-600"
                   asChild
                 >
-                  <a href={`mailto:?subject=${encodeURIComponent(t("Join me on EmviApp!"))}&body=${encodeURIComponent(
-                      t(`Hey! I'm using EmviApp for my nail art business. Join using my referral link: ${referralLink}`)
+                  <a href={`mailto:?subject=${encodeURIComponent(t({
+                      english: "Join me on EmviApp!",
+                      vietnamese: "Tham gia EmviApp cùng tôi!"
+                    }))}&body=${encodeURIComponent(
+                      t({
+                        english: `Hey! I'm using EmviApp for my nail art business. Join using my referral link: ${referralLink}`,
+                        vietnamese: `Chào! Tôi đang sử dụng EmviApp cho công việc nail của mình. Tham gia bằng link giới thiệu của tôi: ${referralLink}`
+                      })
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -113,10 +140,16 @@ const ArtistReferralCenter = () => {
           
           <div className="flex justify-between text-sm">
             <span className="text-gray-500">
-              {t("Earn 3 credits per referral")}
+              {t({
+                english: "Earn 3 credits per referral",
+                vietnamese: "Nhận 3 tín dụng cho mỗi lần giới thiệu"
+              })}
             </span>
             <span className="text-gray-500">
-              {t("Unlimited referrals")}
+              {t({
+                english: "Unlimited referrals",
+                vietnamese: "Không giới hạn số lượng"
+              })}
             </span>
           </div>
         </CardContent>

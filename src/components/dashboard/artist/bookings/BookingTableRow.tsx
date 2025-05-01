@@ -110,7 +110,7 @@ const BookingTableRow = ({ booking, handleAccept, handleDecline }: BookingTableR
               size="sm" 
               variant="default"
             >
-              {t("Accept")}
+              {t({ english: "Accept", vietnamese: "Chấp nhận" })}
             </Button>
             <Button 
               onClick={() => handleDecline(booking.id)} 
@@ -118,14 +118,14 @@ const BookingTableRow = ({ booking, handleAccept, handleDecline }: BookingTableR
               variant="outline" 
               className="text-red-600 border-red-200 hover:bg-red-50"
             >
-              {t("Decline")}
+              {t({ english: "Decline", vietnamese: "Từ chối" })}
             </Button>
           </div>
         )}
         
         {booking.status === 'accepted' && (
           <Button size="sm" variant="outline">
-            {t("View Details")}
+            {t({ english: "View Details", vietnamese: "Xem chi tiết" })}
           </Button>
         )}
       </td>

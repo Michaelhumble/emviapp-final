@@ -1,15 +1,16 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useTranslation, Translation } from '@/hooks/useTranslation';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useAuth } from '@/context/auth';
 
 const ArtistMotivationalQuote = () => {
-  const { t, isVietnamese } = useTranslation();
+  const { t } = useTranslation();
   const { userProfile } = useAuth();
+  const isVietnamese = userProfile?.preferred_language?.toLowerCase() === 'vietnamese';
   
   // Quotes in both languages
-  const quotes: Translation[] = [
+  const quotes = [
     {
       english: "Behind every beautiful set is a beautiful hustle.",
       vietnamese: "Đằng sau mỗi bộ móng đẹp là một sự cố gắng tuyệt vời."

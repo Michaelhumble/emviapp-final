@@ -1,55 +1,69 @@
 
-import { enhanceListingWithImage } from './listingsVerification';
+import { validateListingExists } from "./listingValidator";
+import { salonListings } from "@/data/salonData";
 
-// Define the ListingValidationResult interface
-export interface ListingValidationResult {
-  isValid: boolean;
-  fallbackRoute: string;
-  message?: string;
+/**
+ * Runs a verification on all featured listings to ensure they're valid
+ * This helps catch any broken links before users encounter them
+ */
+export async function runListingsVerification(): Promise<void> {
+  try {
+    console.log("Starting listings verification...");
+    
+    // Verify salon listings
+    if (salonListings && salonListings.length > 0) {
+      console.log(`Verifying ${salonListings.length} salon listings`);
+      let validCount = 0;
+      let invalidCount = 0;
+      
+      for (const salon of salonListings) {
+        if (salon.id) {
+          const isValid = await validateListingExists(salon.id, 'salon');
+          if (!isValid) {
+            console.error(`❌ Invalid salon listing detected: ${salon.id} - ${salon.name || 'Unnamed'}`);
+            invalidCount++;
+          } else {
+            console.log(`✓ Valid salon listing: ${salon.id} - ${salon.name || 'Unnamed'}`);
+            validCount++;
+          }
+        }
+      }
+      
+      console.log(`Salon listings verification completed: ${validCount} valid, ${invalidCount} invalid`);
+    } else {
+      console.log("No salon listings found to verify");
+    }
+    
+    console.log("Listings verification complete");
+  } catch (error) {
+    console.error("Error during listings verification:", error);
+  }
 }
 
-// Function to validate a specific listing
-export const validateListing = async (id: string, type: string): Promise<ListingValidationResult> => {
-  console.log(`Validating listing: ${id} of type: ${type}`);
-  
+// Add function to validate a specific listing and get detailed results
+export async function validateListing(id: string, type: 'salon' | 'job' | 'opportunity' | 'booth'): Promise<{
+  isValid: boolean;
+  id: string;
+  type: string;
+  timestamp: string;
+  error?: string;
+}> {
   try {
-    // For now, we just return true as valid to prevent routing issues
-    // In a real implementation, this would query the database to check if the listing exists
+    const isValid = await validateListingExists(id, type);
     return {
-      isValid: true,
-      fallbackRoute: type === 'salon' ? '/salons' : '/jobs'
+      isValid,
+      id,
+      type,
+      timestamp: new Date().toISOString(),
+      ...(isValid ? {} : { error: `Listing ${id} of type ${type} does not exist` })
     };
   } catch (error) {
-    console.error(`Error validating ${type} listing:`, error);
     return {
       isValid: false,
-      fallbackRoute: type === 'salon' ? '/salons' : '/jobs',
-      message: `Error validating ${type} listing: ${error instanceof Error ? error.message : 'Unknown error'}`
+      id,
+      type,
+      timestamp: new Date().toISOString(),
+      error: error instanceof Error ? error.message : 'Unknown error'
     };
   }
-};
-
-// Main function to run verification on all listings
-export const runListingsVerification = async () => {
-  console.log('Running listings verification...');
-  
-  try {
-    // This is a placeholder to verify routing integrity
-    // Here we would normally check a selection of listings in each category
-    
-    // Example: verify a fixed salon listing
-    const salonResult = await validateListing('salon123', 'salon');
-    
-    // Example: verify a fixed job listing
-    const jobResult = await validateListing('job123', 'job');
-    
-    // Log the results
-    console.log('Verification results:', { salonResult, jobResult });
-    
-    // Return overall status
-    return salonResult.isValid && jobResult.isValid;
-  } catch (error) {
-    console.error('Listings verification failed:', error);
-    return false;
-  }
-};
+}

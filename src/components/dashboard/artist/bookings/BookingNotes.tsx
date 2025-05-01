@@ -30,7 +30,10 @@ const BookingNotes = ({ bookings }: BookingNotesProps) => {
         <div className="flex items-center">
           <AlertTriangle className="h-4 w-4 text-yellow-600 mr-2" />
           <span className="font-medium">
-            {bookingsWithNotes.length} {bookingsWithNotes.length > 1 ? t("bookings with special notes") : t("booking with special notes")}
+            {t({ 
+              english: `${bookingsWithNotes.length} booking${bookingsWithNotes.length > 1 ? 's' : ''} with special notes`, 
+              vietnamese: `${bookingsWithNotes.length} lịch hẹn có ghi chú đặc biệt` 
+            })}
           </span>
         </div>
         <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'transform rotate-180' : ''}`} />
@@ -46,11 +49,11 @@ const BookingNotes = ({ bookings }: BookingNotesProps) => {
                 </div>
               </div>
               <div className="text-sm">
-                <span className="font-medium mr-1">{t("Service:")} </span>
+                <span className="font-medium mr-1">{t({ english: "Service:", vietnamese: "Dịch vụ:" })}</span>
                 {booking.service_name}
               </div>
               <div className="mt-2 bg-gray-50 p-2 rounded-md text-sm">
-                <span className="font-medium mr-1">{t("Note:")} </span>
+                <span className="font-medium mr-1">{t({ english: "Note:", vietnamese: "Ghi chú:" })}</span>
                 {booking.note}
               </div>
             </div>

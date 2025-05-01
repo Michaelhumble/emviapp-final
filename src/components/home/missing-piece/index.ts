@@ -1,4 +1,2 @@
 
-import MissingPieceSection from "./MissingPieceSection";
-
-export default MissingPieceSection;
+export { default } from './MissingPieceSection';
