@@ -1,11 +1,10 @@
+
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { PieChart, BarChart, DonutChart } from '@tremor/react';
-import { CoinIcon, UsersIcon, TrendingUpIcon, StarIcon } from 'lucide-react';
+import { CoinsIcon, StarIcon } from 'lucide-react';
 import { useSafeQuery } from '@/hooks/useSafeQuery';
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
 import { useAuth } from '@/context/auth';
-import { supabase } from '@/integrations/supabase/client';
 
 // Define the shape of the dashboard data
 interface SalonDashboardData {
@@ -61,8 +60,6 @@ export const SalonOwnerDashboardWidgets = () => {
   if (isError) {
     return <div>Error loading dashboard data. Please refresh.</div>;
   }
-
-  const { revenueData } = data;
   
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -72,7 +69,7 @@ export const SalonOwnerDashboardWidgets = () => {
         </CardHeader>
         <CardContent>
           <div className="flex items-center">
-            <CoinIcon className="w-4 h-4 mr-2 text-yellow-500" />
+            <CoinsIcon className="w-4 h-4 mr-2 text-yellow-500" />
             <span className="text-2xl font-bold">{data.credits}</span>
           </div>
         </CardContent>

@@ -30,7 +30,7 @@ const SignInForm = ({
   const [formError, setFormError] = useState<string | null>(initialError || null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { signIn, loggingIn } = useAuth();
+  const { signIn, loading: loggingIn } = useAuth();
 
   /**
    * Handles form submission for user authentication
@@ -46,7 +46,7 @@ const SignInForm = ({
       setFormSuccess("Signing in...");
       
       // Attempt to sign in
-      const { user, error } = await signIn({ email, password });
+      const { success, error } = await signIn(email, password);
       
       if (error) {
         setFormError(error.message || "Invalid login credentials");
@@ -54,7 +54,7 @@ const SignInForm = ({
         return;
       }
       
-      if (user) {
+      if (success) {
         setFormSuccess("Login successful! Redirecting...");
         // Decode the redirect URL if it exists
         const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';

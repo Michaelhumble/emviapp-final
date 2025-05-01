@@ -1,49 +1,52 @@
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, AlertCircle, CheckCircle, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, AlertCircle, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 /**
  * ForgotPassword component for password reset functionality
  * 
  * @component
- * @returns {JSX.Element} Forgot password component
+ * @returns {JSX.Element} Forgot password form component
  */
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
 
   /**
-   * Handles form submission for password reset
-   * @param {React.FormEvent} e - Form submission event
+   * Handles the password reset request submission
+   * @param {React.FormEvent} e - Form event
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
     setFormSuccess(null);
-    setLoading(true);
-    
+    setIsSubmitting(true);
+
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: window.location.origin + "/reset-password",
       });
-      
-      if (error) throw error;
-      
-      setFormSuccess(`Password reset instructions sent to ${email}. Please check your email inbox.`);
+
+      if (error) {
+        setFormError(error.message || "Failed to send reset email");
+      } else {
+        setFormSuccess(
+          "Password reset instructions have been sent to your email address."
+        );
+      }
     } catch (error: any) {
-      console.error("Password reset error:", error);
-      setFormError(error.message || "Failed to send password reset email");
+      setFormError(error.message || "An unexpected error occurred");
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -59,40 +62,43 @@ const ForgotPassword = () => {
 
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
-              {/* Display form errors */}
+              {/* Error Alert */}
               {formError && (
                 <Alert variant="destructive" className="animate-in fade-in-50 slide-in-from-top-5">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>{formError}</AlertDescription>
                 </Alert>
               )}
-              
-              {/* Display success messages */}
+
+              {/* Success Alert */}
               {formSuccess && (
                 <Alert className="bg-green-50 border-green-200 animate-in fade-in-50 slide-in-from-top-5">
                   <CheckCircle className="h-4 w-4 text-green-600" />
                   <AlertDescription className="text-green-700">{formSuccess}</AlertDescription>
                 </Alert>
               )}
-              
+
               {!formSuccess && (
-                <div className="space-y-2">
-                  <p className="text-sm text-gray-500 mb-4">
-                    Enter your email address and we'll send you instructions to reset your password.
+                <div className="space-y-4">
+                  <p className="text-sm text-gray-600">
+                    Enter your email address below and we'll send you instructions on how to reset your password.
                   </p>
-                  <Label htmlFor="email" className="text-sm font-medium text-gray-600">
-                    Email Address
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    disabled={loading}
-                    className="py-3 px-4"
-                    placeholder="your@email.com"
-                  />
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-sm font-medium text-gray-600">
+                      Email Address
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      disabled={isSubmitting}
+                      className="py-3 px-4"
+                      placeholder="your@email.com"
+                    />
+                  </div>
                 </div>
               )}
             </CardContent>
@@ -102,12 +108,12 @@ const ForgotPassword = () => {
                 <Button
                   type="submit"
                   className="w-full py-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
-                  disabled={loading}
+                  disabled={isSubmitting}
                 >
-                  {loading ? (
+                  {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Sending Instructions...
+                      Sending...
                     </>
                   ) : (
                     "Send Reset Instructions"
@@ -116,18 +122,23 @@ const ForgotPassword = () => {
               ) : (
                 <Button
                   type="button"
-                  className="w-full py-6"
                   variant="outline"
-                  onClick={() => setFormSuccess(null)}
+                  className="w-full" 
+                  onClick={() => {
+                    setEmail("");
+                    setFormSuccess(null);
+                  }}
                 >
                   Send Again
                 </Button>
               )}
-              
-              <Link to="/sign-in" className="flex items-center justify-center text-sm text-indigo-600 hover:text-indigo-800 font-medium">
-                <ArrowLeft className="h-4 w-4 mr-1" />
-                Back to Sign In
-              </Link>
+
+              <div className="text-sm text-center text-gray-500">
+                <Link to="/sign-in" className="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium">
+                  <ArrowLeft className="w-4 h-4 mr-1" />
+                  Back to Sign In
+                </Link>
+              </div>
             </CardFooter>
           </form>
         </Card>
