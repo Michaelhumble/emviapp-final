@@ -70,7 +70,11 @@ const getStatusIcon = (status: string) => {
 };
 
 const BookingTableRow = ({ booking, handleAccept, handleDecline }: BookingTableRowProps) => {
-  const { t } = useTranslation();
+  const { isVietnamese } = useTranslation();
+  
+  const acceptText = isVietnamese ? "Chấp nhận" : "Accept";
+  const declineText = isVietnamese ? "Từ chối" : "Decline";
+  const viewDetailsText = isVietnamese ? "Xem chi tiết" : "View Details";
   
   return (
     <tr key={booking.id} className="hover:bg-gray-50">
@@ -110,7 +114,7 @@ const BookingTableRow = ({ booking, handleAccept, handleDecline }: BookingTableR
               size="sm" 
               variant="default"
             >
-              {t("Accept")}
+              {acceptText}
             </Button>
             <Button 
               onClick={() => handleDecline(booking.id)} 
@@ -118,14 +122,14 @@ const BookingTableRow = ({ booking, handleAccept, handleDecline }: BookingTableR
               variant="outline" 
               className="text-red-600 border-red-200 hover:bg-red-50"
             >
-              {t("Decline")}
+              {declineText}
             </Button>
           </div>
         )}
         
         {booking.status === 'accepted' && (
           <Button size="sm" variant="outline">
-            {t("View Details")}
+            {viewDetailsText}
           </Button>
         )}
       </td>
