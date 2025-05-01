@@ -1,191 +1,78 @@
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
+import { Session, User, AuthChangeEvent } from '@supabase/supabase-js';
 
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
-import { determineUserRole, persistUserRole } from '../utils/roleManagement';
-import { UserRole, UserProfile } from '../types/authTypes';
-import { fetchUserProfile } from '../userProfileService';
+export const useAuthSession = () => {
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-/**
- * Hook to manage auth session and state changes
- */
-export const useAuthSession = (
-  setUser: (user: User | null) => void,
-  setSession: (session: Session | null) => void,
-  setUserProfile: (profile: UserProfile | null) => void,
-  setUserRole: (role: UserRole) => void,
-  setIsNewUser: (isNew: boolean) => void,
-  setLoading: (loading: boolean) => void,
-  setIsError: (isError: boolean) => void,
-) => {
   useEffect(() => {
-    // Check for new user status in localStorage
-    const storedNewUserStatus = localStorage.getItem('emviapp_new_user') === 'true';
-    if (storedNewUserStatus) {
-      setIsNewUser(true);
-    }
+    // Get initial session
+    const getInitialSession = async () => {
+      try {
+        setLoading(true);
+        const { data: { session: initialSession } } = await supabase.auth.getSession();
 
-    // Set up auth state change listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event: AuthChangeEvent, session) => {
-        setSession(session);
-        
-        if (session?.user) {
-          setUser(session.user);
-          
-          // Handle each auth event type appropriately
-          switch (event) {
-            case 'SIGNED_IN':
-              // Check for role in user metadata and store it
-              const userRole = determineUserRole(
-                session.user.user_metadata,
-                null,
-                localStorage.getItem('emviapp_user_role')
-              );
-              
-              if (userRole) {
-                setUserRole(userRole);
-                persistUserRole(userRole);
-              }
-              
-              // Load profile asynchronously using setTimeout to prevent auth deadlock
-              setTimeout(async () => {
-                try {
-                  const profile = await fetchUserProfile(session.user.id);
-                  setUserProfile(profile);
-                  
-                  // Update role from profile if available
-                  if (profile?.role) {
-                    const profileRole = determineUserRole(
-                      null,
-                      profile.role,
-                      userRole || null
-                    );
-                    
-                    if (profileRole) {
-                      setUserRole(profileRole);
-                      persistUserRole(profileRole);
-                    }
-                  }
-                } catch (err) {
-                  console.error('Error fetching profile on sign in:', err);
-                }
-              }, 0);
-              break;
-              
-            case 'SIGNED_UP':
-              setIsNewUser(true);
-              localStorage.setItem('emviapp_new_user', 'true');
-              
-              // Check for role in user metadata
-              const signUpRole = determineUserRole(
-                session.user.user_metadata,
-                null,
-                null
-              );
-              
-              if (signUpRole) {
-                setUserRole(signUpRole);
-                persistUserRole(signUpRole);
-              }
-              break;
-              
-            case 'SIGNED_OUT':
-              // Reset all user state
-              setUserProfile(null);
-              setUserRole('customer' as UserRole);
-              setIsNewUser(false);
-              localStorage.removeItem('emviapp_new_user');
-              localStorage.removeItem('emviapp_user_role');
-              break;
-              
-            case 'USER_UPDATED':
-              // Re-determine role if user data was updated
-              const updatedRole = determineUserRole(
-                session.user.user_metadata,
-                null,
-                localStorage.getItem('emviapp_user_role')
-              );
-              
-              if (updatedRole) {
-                setUserRole(updatedRole);
-                persistUserRole(updatedRole);
-              }
-              break;
-          }
-        } else {
-          // No user, reset state
-          setUser(null);
-          setUserProfile(null);
-          setUserRole('customer');
+        if (initialSession) {
+          setSession(initialSession);
+          setUser(initialSession.user);
         }
-        
+      } catch (error) {
+        console.error('Error getting initial session:', error);
+      } finally {
         setLoading(false);
+      }
+    };
+
+    getInitialSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event: AuthChangeEvent, currentSession) => {
+        if (currentSession) {
+          setSession(currentSession);
+          setUser(currentSession.user);
+        } else {
+          // Handle sign out
+          if (event === 'SIGNED_OUT') {
+            setSession(null);
+            setUser(null);
+          }
+          
+          // Handle password recovery
+          if (event === 'PASSWORD_RECOVERY') {
+            // Add password recovery logic
+          }
+          
+          // Handle token refresh
+          if (event === 'TOKEN_REFRESHED') {
+            // Add token refresh logic
+          }
+          
+          // Handle user update
+          if (event === 'USER_UPDATED') {
+            // Add user update logic
+          }
+          
+          // Handle user deletion
+          if (event === 'USER_DELETED') {
+            setSession(null);
+            setUser(null);
+          }
+          
+          // Handle sign up
+          if (event as AuthChangeEvent === 'SIGNED_UP') {
+            // Add sign up logic
+          }
+        }
       }
     );
-
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      if (error) {
-        setIsError(true);
-        console.error('Error getting session:', error);
-      }
-      
-      setSession(session);
-      
-      if (session?.user) {
-        setUser(session.user);
-        
-        // Check for role in user metadata
-        const existingRole = determineUserRole(
-          session.user.user_metadata,
-          null,
-          localStorage.getItem('emviapp_user_role')
-        );
-        
-        if (existingRole) {
-          setUserRole(existingRole);
-        }
-        
-        // Load profile asynchronously
-        setTimeout(async () => {
-          try {
-            const profile = await fetchUserProfile(session.user.id);
-            setUserProfile(profile);
-            
-            // Update role from profile if available
-            if (profile?.role) {
-              const profileRole = determineUserRole(
-                null,
-                profile.role,
-                existingRole || null
-              );
-              
-              if (profileRole) {
-                setUserRole(profileRole);
-                persistUserRole(profileRole);
-              }
-            }
-          } catch (err) {
-            console.error('Error fetching initial profile:', err);
-          }
-          
-          setLoading(false);
-        }, 0);
-      } else {
-        setLoading(false);
-      }
-    });
 
     return () => {
       subscription.unsubscribe();
     };
   }, []);
 
-  const clearIsNewUser = () => {
-    setIsNewUser(false);
-    localStorage.removeItem('emviapp_new_user');
-  };
-
-  return { clearIsNewUser };
+  return { session, user, loading };
 };

@@ -51,8 +51,8 @@ const Index = () => {
       {/* Hero section as first */}
       <Hero />
       
-      {/* ✨ NEW SECTION: The Beauty Exchange - TEMPORARILY COMMENTED OUT */}
-      {/* <BeautyExchangeSection /> */}
+      {/* ✨ Re-enabled Beauty Exchange Section */}
+      <BeautyExchangeSection />
       
       {/* 1️⃣ Latest Industry Opportunities (Beauty Exchange) */}
       <LatestIndustryOpportunities />
