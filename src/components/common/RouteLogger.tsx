@@ -5,6 +5,7 @@ import { useAuth } from '@/context/auth';
 import { logRouteAccess } from '@/utils/routeChecker';
 
 const RouteLogger = () => {
+  // This will now safely be used within the BrowserRouter context
   const location = useLocation();
   const { user } = useAuth();
   
