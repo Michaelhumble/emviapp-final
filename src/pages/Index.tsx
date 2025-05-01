@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -10,7 +11,7 @@ import { useRoleSelection } from "@/hooks/useRoleSelection";
 import AIPowerhouse from "@/components/home/AIPowerhouse";
 import AITeam from "@/components/home/AITeam";
 import TrustFirstPanel from "@/components/home/TrustFirstPanel";
-import MissingPieceSection from "@/components/home/missing-piece";
+import MissingPieceSection from "@/components/home/missing-piece/MissingPieceSection";
 import { runListingsVerification } from "@/utils/runListingsVerification";
 
 // Enhanced homepage components
@@ -51,7 +52,7 @@ const Index = () => {
       {/* Hero section as first */}
       <Hero />
       
-      {/* ✨ Re-enabled Beauty Exchange Section */}
+      {/* ✨ Re-enabled Beauty Exchange Section with stable fix */}
       <BeautyExchangeSection />
       
       {/* 1️⃣ Latest Industry Opportunities (Beauty Exchange) */}
