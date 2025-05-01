@@ -77,21 +77,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (profileError && user) {
       console.error("Profile fetch error detected");
       // Show a recovery toast only once
-      toast.error(
-        <div className="flex flex-col">
-          <span className="font-medium">Profile data error</span>
-          <span className="text-sm mt-1">Unable to load your profile data</span>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="mt-2"
-            onClick={() => refreshUserProfile()}
-          >
-            <RefreshCw className="mr-2 h-3 w-3" /> Retry
-          </Button>
-        </div>, 
-        { id: 'profile-error', duration: 8000 }
-      );
+      toast.error("Profile data error - Unable to load your profile data", {
+        id: 'profile-error',
+        duration: 8000,
+        action: {
+          label: "Retry",
+          onClick: () => refreshUserProfile()
+        }
+      });
     }
   }, [profileError, user, refreshUserProfile]);
 
@@ -119,7 +112,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     updateProfile: (data: Partial<UserProfile>) => {
       return updateProfile(data);
     },
-    hasRole // Add the hasRole function from roleQuery
+    hasRole
   };
 
   // If there's an auth error and the recovery alert should be shown,

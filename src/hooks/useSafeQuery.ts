@@ -33,13 +33,7 @@ export function useSafeQuery<TData, TError = Error>(
           const errorMessage = customErrorMessage || 
             (error instanceof Error ? error.message : 'An unexpected error occurred');
             
-          toast.error(
-            <div className="flex flex-col">
-              <span className="font-medium">Failed to load {context}</span>
-              <span className="text-sm opacity-90 mt-1">{errorMessage}</span>
-              <span className="text-xs opacity-75 mt-1">{retryMessage}</span>
-            </div>
-          );
+          toast.error(`Failed to load ${context} - ${errorMessage} - ${retryMessage}`);
         }
         
         if (queryOptions.meta?.onError) {

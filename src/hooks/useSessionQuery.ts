@@ -102,12 +102,7 @@ export function useSessionQuery() {
     onError: (error) => {
       console.error("Sign in error:", error);
       setAuthError(error instanceof Error ? error : new Error("Failed to sign in"));
-      toast.error(
-        <div className="flex flex-col">
-          <span className="font-medium">Sign in failed</span>
-          <span className="text-sm opacity-90 mt-1">{error instanceof Error ? error.message : 'Authentication error'}</span>
-        </div>
-      );
+      toast.error(`Sign in failed - ${error instanceof Error ? error.message : 'Authentication error'}`);
     }
   });
   
@@ -140,12 +135,7 @@ export function useSessionQuery() {
     onError: (error) => {
       console.error("Sign up error:", error);
       setAuthError(error instanceof Error ? error : new Error("Failed to sign up"));
-      toast.error(
-        <div className="flex flex-col">
-          <span className="font-medium">Sign up failed</span>
-          <span className="text-sm opacity-90 mt-1">{error instanceof Error ? error.message : 'Registration error'}</span>
-        </div>
-      );
+      toast.error(`Sign up failed - ${error instanceof Error ? error.message : 'Registration error'}`);
     }
   });
   
@@ -164,17 +154,7 @@ export function useSessionQuery() {
     onError: (error) => {
       console.error("Sign out error:", error);
       setAuthError(error instanceof Error ? error : new Error("Failed to sign out"));
-      toast.error(
-        <div className="flex flex-col">
-          <span className="font-medium">Sign out failed</span>
-          <span className="text-sm opacity-90 mt-1">
-            {error instanceof Error ? error.message : 'Unable to sign out properly'}
-          </span>
-          <span className="text-xs opacity-75 mt-1">
-            Please try again or refresh your browser
-          </span>
-        </div>
-      );
+      toast.error(`Sign out failed - ${error instanceof Error ? error.message : 'Unable to sign out properly'} - Please try again or refresh your browser`);
     }
   });
   

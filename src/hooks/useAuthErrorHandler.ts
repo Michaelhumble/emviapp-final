@@ -47,12 +47,7 @@ export const useAuthErrorHandler = (options: AuthErrorHandlerOptions = {}) => {
     }
     
     if (showToasts) {
-      toast.error(
-        <div className="flex flex-col">
-          <span className="font-medium">{context} Error</span>
-          <span className="text-sm opacity-90 mt-1">{userMessage}</span>
-        </div>
-      );
+      toast.error(`${context} Error - ${userMessage}`);
     }
     
     // Auto retry for JWT expired errors if enabled
