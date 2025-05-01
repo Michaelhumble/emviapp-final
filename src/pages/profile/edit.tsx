@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/context/auth';
 import Layout from '@/components/layout/Layout';
@@ -53,8 +54,11 @@ const ProfileEdit = () => {
     if (!refreshUserProfile) return;
     
     try {
-      // Call refreshUserProfile without checking return value
-      await refreshUserProfile();
+      // Adapt the boolean return to void to satisfy TypeScript
+      const success = await refreshUserProfile();
+      if (!success) {
+        toast.error("Could not load your profile. Please try again later.");
+      }
     } catch (error) {
       console.error("Error refreshing profile:", error);
       toast.error("Could not load your profile. Please try again later.");

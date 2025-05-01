@@ -17,7 +17,7 @@ export function useSession() {
   } catch (error) {
     // If useNavigate throws an error, we're outside Router context
     // Provide a no-op function instead
-    navigate = () => {};
+    navigate = (path: string) => {};
   }
 
   useEffect(() => {

@@ -3,22 +3,12 @@ import { useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { migrateSingleToMultiSalon } from '@/utils/migration/migrateSingleToMultiSalon';
 
-/**
- * This component handles the migration of users to the multi-salon model
- * It's used as a child component in the main App.tsx
- * 
- * @component
- * @returns {null} This component doesn't render anything
- */
+// This component will handle the migration of users to the multi-salon model
+// We'll use it as a child component in the main App.tsx
 const AppModifier = () => {
-  const auth = useAuth();
-  const { user, userRole, isSignedIn } = auth;
+  const { user, userRole, isSignedIn } = useAuth();
   
   useEffect(() => {
-    /**
-     * Handles the migration process for salon owners
-     * @returns {Promise<void>}
-     */
     const handleMigration = async () => {
       // Only run migration for salon owners who are signed in
       if (isSignedIn && user?.id && (userRole === 'salon' || userRole === 'owner')) {

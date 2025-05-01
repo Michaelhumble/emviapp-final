@@ -1,6 +1,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import { Sparkles } from "lucide-react";
 
 interface SectionTitleProps {
   language: "en" | "vi";
@@ -9,25 +10,39 @@ interface SectionTitleProps {
 
 const SectionTitle = ({ language, itemVariants }: SectionTitleProps) => {
   return (
-    <motion.div
-      className="text-center mb-16"
+    <motion.div 
+      className="text-center mb-14"
       variants={itemVariants}
     >
-      {language === "en" ? (
-        <motion.h2 className="text-4xl md:text-5xl font-playfair font-bold mb-6 text-gray-900">
-          The Platform You've Been Waiting For
-        </motion.h2>
-      ) : (
-        <motion.h2 className="text-4xl md:text-5xl font-playfair font-bold mb-6 text-gray-900">
-          Nền Tảng Mà Bạn Đang Chờ Đợi
-        </motion.h2>
-      )}
-      <motion.p className="text-lg text-gray-600 max-w-3xl mx-auto">
-        {language === "en" 
-          ? "Connecting beauty professionals with the right opportunities across salons, booth rentals, and established businesses for sale."
-          : "Kết nối các chuyên gia làm đẹp với cơ hội phù hợp trên các tiệm salon, cho thuê booth, và các doanh nghiệp đang bán."
-        }
-      </motion.p>
+      <div className="inline-block relative">
+        <h2 className="text-4xl md:text-5xl font-bold text-center mb-3 font-playfair bg-clip-text text-transparent bg-gradient-to-r from-purple-700 to-indigo-600">
+          {language === "en" ? (
+            "Let's Experience EmviApp Together"
+          ) : (
+            "Hãy Cùng Nhau Trải Nghiệm Emviapp"
+          )}
+        </h2>
+        <motion.div 
+          className="absolute -bottom-2 left-1/2 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full"
+          initial={{ width: "0%", x: "-50%" }}
+          whileInView={{ width: "60%", x: "-50%" }}
+          transition={{ delay: 0.5, duration: 0.8 }}
+          viewport={{ once: true }}
+        />
+        <motion.div 
+          className="absolute -top-7 -right-10 text-yellow-400"
+          animate={{ 
+            rotate: [0, 20, 0, -20, 0],
+            scale: [1, 1.2, 1, 1.2, 1],
+          }}
+          transition={{ 
+            repeat: Infinity,
+            duration: 3
+          }}
+        >
+          <Sparkles size={32} className="text-yellow-400 drop-shadow-md" />
+        </motion.div>
+      </div>
     </motion.div>
   );
 };

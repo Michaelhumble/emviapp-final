@@ -1,228 +1,210 @@
-
-import React, { useState, useEffect, useContext } from 'react';
-import { User } from '@supabase/supabase-js';
-import { useSessionQuery } from '@/hooks/useSessionQuery';
-import { useProfileQuery } from '@/hooks/useProfileQuery';
-import { useRoleQuery } from '@/hooks/useRoleQuery';
-import { UserProfile, UserRole, AuthContextType } from './types/authTypes';
-import { useProfileSync } from '@/hooks/useProfileSync';
-import { Alert } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { RefreshCw } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Session, User } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
 import { AuthContext } from './AuthContext';
+import { fetchUserProfile, createUserProfile, updateUserProfile } from './userProfileService';
+import { UserRole, UserProfile } from './types';
+import { toast } from 'sonner';
+import { normalizeRole } from '@/utils/roles';
 
 interface AuthProviderProps {
   children: React.ReactNode;
 }
 
-/**
- * Authentication Provider component enhanced with React Query
- * @description Manages auth state and provides auth methods throughout the app
- */
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  // Use React Query hooks for authentication state management
-  const {
-    session,
-    user,
-    loading: sessionLoading,
-    isNewUser,
-    clearIsNewUser,
-    signIn: sessionSignIn,
-    signUp: sessionSignUp,
-    signOut: sessionSignOut,
-    isSigningIn,
-    isSigningUp,
-    isSigningOut,
-    authError,
-    retryAuthentication
-  } = useSessionQuery();
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [userRole, setUserRole] = useState<UserRole>('customer');
+  const [loading, setLoading] = useState(true);
+  const [isNewUser, setIsNewUser] = useState(false);
+  const [isError, setIsError] = useState(false);
 
-  // Error recovery state
-  const [showRecoveryAlert, setShowRecoveryAlert] = useState(false);
+  const clearIsNewUser = () => {
+    setIsNewUser(false);
+  };
 
-  // Show recovery alert when there's a persistent auth error
-  useEffect(() => {
-    if (authError) {
-      const timer = setTimeout(() => {
-        setShowRecoveryAlert(true);
-      }, 2000); // Show recovery options after 2 seconds
+  const signIn = async (email: string, password: string): Promise<{ success: boolean; error?: Error }> => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        return { success: false, error: new Error(error.message) };
+      }
       
-      return () => clearTimeout(timer);
-    } else {
-      setShowRecoveryAlert(false);
-    }
-  }, [authError]);
-
-  // Use Profile Query hook when we have a user
-  const {
-    profile: userProfile,
-    role: profileRole,
-    isLoading: profileLoading,
-    isError: profileError,
-    refreshProfile,
-    updateProfile,
-    isUpdating: isUpdatingProfile
-  } = useProfileQuery(user?.id);
-
-  // Use Role Query for dedicated role management
-  const {
-    userRole,
-    isLoading: roleLoading,
-    updateRole: updateUserRole,
-    isUpdating: isUpdatingRole,
-    hasRole
-  } = useRoleQuery(user?.id);
-
-  // Handle profile fetch errors gracefully
-  useEffect(() => {
-    if (profileError && user) {
-      console.error("Profile fetch error detected");
-    }
-  }, [profileError, user]);
-
-  // Initialize real-time profile synchronization
-  useProfileSync();
-
-  // Calculate final loading state
-  const loading = sessionLoading || profileLoading || roleLoading;
-  
-  // Determine the effective role (roleQuery takes precedence)
-  const effectiveRole = userRole || profileRole;
-
-  /**
-   * Wrapper for signIn function to ensure consistent return type
-   */
-  const handleSignIn = async (email: string, password: string): Promise<{ success: boolean; error?: Error; user?: User }> => {
-    try {
-      const result = await sessionSignIn({ email, password });
-      if (result.error) {
-        return { success: false, error: result.error as Error };
-      }
-      return { success: true, user: result.user || undefined };
+      return { success: true };
     } catch (error) {
-      return { success: false, error: error as Error };
+      console.error('Error signing in:', error);
+      const errorObj = error instanceof Error ? error : new Error('An unexpected error occurred');
+      return { success: false, error: errorObj };
     }
   };
 
-  /**
-   * Wrapper for signUp function to ensure consistent return type
-   */
-  const handleSignUp = async (email: string, password: string, userData?: any): Promise<{ success: boolean; error?: Error; userId?: string }> => {
+  const signUp = async (email: string, password: string, userData: Partial<UserProfile> = {}): Promise<{ success: boolean; error?: Error; userId?: string }> => {
     try {
-      const result = await sessionSignUp({ email, password, userData });
-      if (result.error) {
-        return { success: false, error: result.error as Error };
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            ...userData
+          }
+        }
+      });
+
+      if (error) {
+        return { success: false, error: new Error(error.message) };
       }
-      return { success: true, userId: result.user?.id };
+      
+      return { success: true, userId: data.user?.id };
     } catch (error) {
-      return { success: false, error: error as Error };
+      console.error('Error signing up:', error);
+      const errorObj = error instanceof Error ? error : new Error('An unexpected error occurred');
+      return { success: false, error: errorObj };
     }
   };
 
-  /**
-   * Wrapper for signOut function
-   */
-  const handleSignOut = async (): Promise<void> => {
-    await sessionSignOut();
-  };
-
-  /**
-   * Wrapper for refreshProfile function
-   */
-  const handleRefreshProfile = async (): Promise<boolean> => {
+  const refreshUserProfile = async () => {
+    if (!user) return false;
+    
     try {
-      await refreshProfile();
+      const profile = await fetchUserProfile(user.id);
+      if (profile) {
+        setUserProfile(profile);
+        if (profile.role) {
+          const normalizedRole = normalizeRole(profile.role);
+          setUserRole(normalizedRole);
+        }
+      } else {
+        console.log('No profile found, creating one...');
+        const newProfile = await createUserProfile(user);
+        if (newProfile) {
+          setUserProfile(newProfile);
+          if (newProfile.role) {
+            const normalizedRole = normalizeRole(newProfile.role);
+            setUserRole(normalizedRole);
+          }
+          setIsNewUser(true);
+        }
+      }
       return true;
     } catch (error) {
-      console.error('Error refreshing profile:', error);
+      console.error('Error fetching user profile:', error);
+      setIsError(true);
       return false;
     }
   };
 
-  /**
-   * Wrapper for updateUserRole function
-   */
-  const handleUpdateRole = async (role: UserRole): Promise<void> => {
-    await updateUserRole(role);
-  };
-
-  // Construct auth context value with proper Promise wrappers
-  const authContextValue: AuthContextType = {
-    user,
-    userProfile,
-    userRole: effectiveRole as UserRole,
-    session,
-    loading,
-    loggingIn: isSigningIn,
-    loggingOut: isSigningOut,
-    signingUp: isSigningUp,
-    isSignedIn: !!user,
-    isError: !!profileError,
-    isNewUser,
-    clearIsNewUser,
-    error: authError,
-    signIn: handleSignIn,
-    signUp: handleSignUp,
-    signOut: handleSignOut,
-    refreshUserProfile: handleRefreshProfile,
-    updateUserRole: handleUpdateRole,
-    updateProfile: async (data) => {
-      try {
-        await updateProfile(data);
-        return { success: true };
-      } catch (error) {
-        return { success: false, error: error as Error };
+  const updateUserRole = async (role: UserRole): Promise<void> => {
+    if (!user) return;
+    
+    try {
+      const updatedProfile = await updateUserProfile({ 
+        id: user.id,
+        role: role
+      });
+      
+      if (updatedProfile && updatedProfile.role) {
+        const normalizedRole = normalizeRole(updatedProfile.role);
+        setUserRole(normalizedRole);
       }
-    },
-    hasRole
+    } catch (error) {
+      console.error('Error updating user role:', error);
+    }
   };
 
-  // If there's an auth error and the recovery alert should be shown,
-  // present recovery options to the user
-  if (authError && showRecoveryAlert && !loading) {
-    return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-        <div className="bg-background rounded-lg shadow-xl max-w-md w-full p-6">
-          <h3 className="text-xl font-semibold mb-3">Authentication Error</h3>
-          <p className="text-muted-foreground mb-6">
-            {authError.message || "There was a problem with your authentication session."}
-          </p>
-          <div className="space-y-3">
-            <Button 
-              variant="default" 
-              className="w-full" 
-              onClick={retryAuthentication}
-            >
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Retry Authentication
-            </Button>
-            <Button 
-              variant="outline" 
-              className="w-full" 
-              onClick={() => {
-                window.location.href = "/sign-in";
-              }}
-            >
-              Sign In Again
-            </Button>
-            <Button 
-              variant="ghost" 
-              className="w-full" 
-              onClick={() => {
-                localStorage.clear();
-                window.location.reload();
-              }}
-            >
-              Clear Cache & Refresh
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const signOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+      setUserProfile(null);
+      setUserRole('customer');
+      localStorage.removeItem('emviapp_user_role');
+      localStorage.removeItem('emviapp_new_user');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      toast.error('Failed to sign out. Please try again.');
+    }
+  };
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(session?.user || null);
+      setLoading(false);
+    });
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user || null);
+      setLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      refreshUserProfile();
+    } else {
+      setUserProfile(null);
+      setUserRole('customer');
+    }
+  }, [user]);
+
+  const updateProfile = async (data: Partial<UserProfile>): Promise<{ success: boolean; error?: Error }> => {
+    try {
+      if (!user || !userProfile) {
+        return { success: false, error: new Error('User not authenticated') };
+      }
+      
+      const updatedProfile = await updateUserProfile({
+        id: userProfile.id,
+        ...data
+      });
+      
+      if (updatedProfile) {
+        setUserProfile(updatedProfile);
+        if (updatedProfile.role && updatedProfile.role !== userRole) {
+          const normalizedRole = normalizeRole(updatedProfile.role);
+          setUserRole(normalizedRole);
+        }
+        return { success: true };
+      }
+      
+      return { success: false, error: new Error('Failed to update profile') };
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error instanceof Error ? error : new Error('Unknown error occurred') 
+      };
+    }
+  };
 
   return (
-    <AuthContext.Provider value={authContextValue}>
+    <AuthContext.Provider
+      value={{
+        user,
+        userProfile,
+        userRole,
+        loading,
+        isSignedIn: !!user,
+        isError,
+        isNewUser,
+        clearIsNewUser,
+        signIn,
+        signUp,
+        signOut,
+        refreshUserProfile,
+        updateUserRole,
+        updateProfile
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

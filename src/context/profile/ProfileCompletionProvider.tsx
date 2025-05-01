@@ -1,18 +1,9 @@
 
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useAuth } from '@/context/auth';
+import { ProfileCompletionStatus } from '@/types/profile-completion';
 import { useSafeQuery } from '@/hooks/useSafeQuery';
 import { supabase } from '@/integrations/supabase/client';
-
-// Define the profile completion status interface
-export interface ProfileCompletionStatus {
-  isComplete: boolean;
-  completionPercentage: number;
-  requiredFields: string[];
-  optionalFields: string[];
-  minCompletionPercentage: number;
-  missingFields: string[];
-}
 
 interface ProfileCompletionContextProps {
   completionStatus: ProfileCompletionStatus | undefined;
@@ -29,18 +20,8 @@ export const ProfileCompletionProvider: React.FC<{ children: React.ReactNode }> 
   const { user, userRole, userProfile } = useAuth();
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
 
-  // Define the shape of the database view result
-  interface ProfileCompletionResult {
-    isComplete: boolean;
-    completionPercentage: number;
-    requiredFields: string[];
-    optionalFields: string[];
-    minCompletionPercentage: number;
-    missingFields: string[];
-  }
-
   // Fetch profile completion status from the database view
-  const { data, isLoading } = useSafeQuery<ProfileCompletionResult>({
+  const { data: dbCompletionStatus, isLoading } = useSafeQuery<any>({
     queryKey: ['profile-completion', user?.id],
     queryFn: async () => {
       if (!user?.id || !userRole) {
@@ -73,9 +54,6 @@ export const ProfileCompletionProvider: React.FC<{ children: React.ReactNode }> 
     enabled: !!user?.id && !!userRole,
     context: "profile-completion"
   });
-
-  // Cast the database result to our expected ProfileCompletionStatus type
-  const completionStatus: ProfileCompletionStatus | undefined = data;
 
   // Load completed tasks from userProfile
   useEffect(() => {
@@ -122,10 +100,10 @@ export const ProfileCompletionProvider: React.FC<{ children: React.ReactNode }> 
   return (
     <ProfileCompletionContext.Provider
       value={{
-        completionStatus,
+        completionStatus: dbCompletionStatus,
         isLoading,
-        isProfileComplete: completionStatus?.isComplete ?? false,
-        completionPercentage: completionStatus?.completionPercentage || 0,
+        isProfileComplete: dbCompletionStatus?.isComplete ?? false,
+        completionPercentage: dbCompletionStatus?.completionPercentage || 0,
         markTaskComplete,
         isTaskComplete
       }}

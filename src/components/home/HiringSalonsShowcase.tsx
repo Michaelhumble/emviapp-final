@@ -1,100 +1,164 @@
 
-import React from 'react';
-import { Container } from '@/components/ui/container';
-import { Button } from '@/components/ui/button';
-import jobsData from '@/data/jobsData';
-import { Card, CardContent } from '@/components/ui/card';
-import { MapPin, Building } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
-import { Job } from '@/types/job';
+import React from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Link, useNavigate } from "react-router-dom";
+import { MapPin, Star, Building } from "lucide-react";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/context/auth";
+import { NAIL_SALON_IMAGES } from "@/utils/nailSalonImages";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
-// Utility function to transform job data to match required Job type
-const transformJobData = (job: any): Job => {
-  return {
-    id: job.id?.toString() || '',
-    title: job.title || '',
-    company: job.company || '',
-    location: job.location || '',
-    created_at: job.posted || new Date().toISOString(), 
-    description: job.description || '',
-    image: job.image || '',
-    price: job.price || '',
-    status: 'active',
-    // Add other required fields with safe defaults
-    type: 'job',
-    role: job.role || job.title || '',
-  };
+// Sample salon data with no images
+const hiringSalons = [
+  {
+    id: "1",
+    name: "Salon Envy",
+    location: "Atlanta, GA",
+    rating: "4.9",
+    isNail: true,
+    isHiring: true,
+    specialty: "Full Service Salon"
+  },
+  {
+    id: "2",
+    name: "Luxe Beauty Bar",
+    location: "Los Angeles, CA",
+    rating: "4.8",
+    isNail: true,
+    isHiring: true,
+    specialty: "Nail Spa"
+  },
+  {
+    id: "3",
+    name: "The Nail Boutique",
+    location: "New York, NY",
+    rating: "5.0",
+    isNail: true,
+    isHiring: true,
+    specialty: "Nail Art Studio"
+  }
+];
+
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2
+    }
+  }
 };
 
-export default function HiringSalonsShowcase() {
-  // Filter to find hiring-related jobs
-  const hiringJobs = jobsData
-    .filter(job => 
-      job.title?.toLowerCase().includes('hiring') || 
-      job.description?.toLowerCase().includes('hiring') ||
-      job.title?.toLowerCase().includes('technician') ||
-      job.title?.toLowerCase().includes('artist')
-    )
-    .slice(0, 3)
-    .map(transformJobData);
-  
-  if (hiringJobs.length === 0) {
-    return null;
-  }
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 }
+};
 
+const HiringSalonsShowcase = () => {
+  const isMobile = useIsMobile();
+  const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
+  
+  const handleViewDetails = (salonId: string) => {
+    if (isSignedIn) {
+      navigate(`/salons/${salonId}`);
+    } else {
+      navigate(`/sign-in?redirect=${encodeURIComponent(`/salons/${salonId}`)}`);
+    }
+  };
+  
   return (
-    <section className="py-12 bg-white">
-      <Container>
-        <div className="text-center mb-8">
-          <h2 className="font-playfair text-3xl font-bold mb-2">Nail & Beauty Salons Hiring Now</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Find your next opportunity at these premier salons looking for talented professionals.
+    <section className="py-24 bg-white">
+      <div className="container mx-auto px-4">
+        <motion.div 
+          className="text-center max-w-3xl mx-auto mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+        >
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Nail & Beauty Salons Hiring Now</h2>
+          <p className="text-lg text-gray-600">
+            Connect with top salons looking for talented beauty professionals like you
           </p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {hiringJobs.map((job, index) => (
-            <Card key={index} className="overflow-hidden h-full hover:shadow-md transition-shadow">
-              <div className="aspect-video bg-gray-100 w-full overflow-hidden">
-                <ImageWithFallback
-                  src={job.image || ''}
-                  alt={job.title || 'Salon job opportunity'}
-                  className="w-full h-full object-cover"
-                  businessName={job.company || 'Nail Salon'}
-                />
-              </div>
-              <CardContent className="p-5">
-                <h3 className="font-medium text-lg mb-1">{job.title}</h3>
+        </motion.div>
+
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+        >
+          {hiringSalons.map((salon, index) => (
+            <motion.div key={salon.id} variants={item}>
+              <Card className="overflow-hidden h-full transition-shadow hover:shadow-lg border-gray-100">
+                {salon.isNail ? (
+                  <div className="h-48 w-full overflow-hidden">
+                    <ImageWithFallback
+                      src={index === 0 ? NAIL_SALON_IMAGES.luxuryLarge : 
+                           index === 1 ? NAIL_SALON_IMAGES.minimalist :
+                           NAIL_SALON_IMAGES.executiveNails}
+                      alt={salon.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="h-48 bg-gray-100 flex items-center justify-center">
+                    <Building className="h-12 w-12 text-gray-300" />
+                  </div>
+                )}
                 
-                <div className="flex items-center text-gray-500 mb-1 text-sm">
-                  <Building className="h-3.5 w-3.5 mr-1.5" />
-                  <span>{job.company}</span>
-                </div>
-                
-                <div className="flex items-center text-gray-500 mb-2 text-sm">
-                  <MapPin className="h-3.5 w-3.5 mr-1.5" />
-                  <span>{job.location}</span>
-                </div>
-                
-                <div className="text-gray-600 text-sm line-clamp-2 mb-4">
-                  {job.description?.substring(0, 120)}...
-                </div>
-                
-                <Link to={`/jobs/${job.id}`} className="text-primary text-sm font-medium hover:underline">
-                  View Job Details →
-                </Link>
-              </CardContent>
-            </Card>
+                <CardContent className="pt-6">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-xl font-semibold">{salon.name}</h3>
+                    <div className="flex items-center text-amber-500">
+                      <Star className="w-4 h-4 fill-current mr-1" />
+                      <span className="text-sm font-medium">{salon.rating}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-gray-500 mb-4">
+                    <MapPin className="w-4 h-4 mr-1" />
+                    <span className="text-sm">{salon.location}</span>
+                  </div>
+                  
+                  {salon.specialty && (
+                    <Badge variant="outline" className="mb-3 bg-blue-50 text-blue-700 border-blue-200">
+                      {salon.specialty}
+                    </Badge>
+                  )}
+                  
+                  <p className="text-primary font-medium mt-2">
+                    {salon.isHiring ? "Currently Hiring" : "Contact for Opportunities"}
+                  </p>
+                </CardContent>
+                <CardFooter className="pt-0">
+                  <button 
+                    onClick={() => handleViewDetails(salon.id)} 
+                    className="text-primary hover:text-primary/80 text-sm font-medium cursor-pointer flex items-center"
+                  >
+                    {isSignedIn ? "View details →" : "Sign in to view details →"}
+                  </button>
+                </CardFooter>
+              </Card>
+            </motion.div>
           ))}
-        </div>
-        
-        <div className="text-center">
-          <Link to="/jobs">
-            <Button variant="outline" size="lg">View All Job Listings</Button>
+        </motion.div>
+
+        <div className="mt-14 text-center">
+          <Link to="/salons">
+            <Button size="lg" variant="outline" className="font-medium">
+              <Building className="mr-2 h-4 w-4" />
+              Explore All Salons
+            </Button>
           </Link>
         </div>
-      </Container>
+      </div>
     </section>
   );
-}
+};
+
+export default HiringSalonsShowcase;

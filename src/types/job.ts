@@ -58,6 +58,4 @@ export interface Job {
   name?: string;
   // Add imageUrl property that's needed for consistent image handling
   imageUrl?: string;
-  // Add the missing property
-  is_vietnamese_listing?: boolean;
 }

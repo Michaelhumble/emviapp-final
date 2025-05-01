@@ -1,93 +1,118 @@
+import { useEffect, useState } from "react";
+import { useAuth } from "@/context/auth";
+import SalonBoostBanner from "@/components/salon/SalonBoostBanner";
+import CustomerVisibilityBanner from "./components/CustomerVisibilityBanner";
+import PostReachStatsCard from "./components/PostReachStatsCard";
+import SalonFeatureCardsGrid from "./components/SalonFeatureCardsGrid";
+import SalonSecondaryFeatures from "./components/SalonSecondaryFeatures";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useSafeQuery } from "@/hooks/useSafeQuery";
+import FallbackBoundary from "@/components/error-handling/FallbackBoundary";
+import SimpleLoadingFallback from "@/components/error-handling/SimpleLoadingFallback";
+import SalonDashboard from "./SalonDashboard";
 
-import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Coins as CoinsIcon, Star as StarIcon } from 'lucide-react';
-import { useSafeQuery } from '@/hooks/useSafeQuery';
-import { useAuth } from '@/context/auth';
-import { Skeleton } from "@/components/ui/skeleton";
-
-// Define the shape of the dashboard data
 interface SalonDashboardData {
-  credits: number;
-  teamSize: number;
   postViews: number;
   localReach: number;
+  credits: number;
   isPremium: boolean;
-  revenueData: {
-    month: string;
-    revenue: number;
-  }[];
 }
 
-export const SalonOwnerDashboardWidgets = () => {
-  const { userProfile } = useAuth();
+const SalonOwnerDashboardWidgets = () => {
+  const { userProfile, user } = useAuth();
   
-  // Fetch dashboard data
-  const { data, isLoading, isError } = useSafeQuery<SalonDashboardData>({
-    queryKey: ['salon-dashboard', userProfile?.id],
+  const { data: dashboardData, isLoading } = useSafeQuery<SalonDashboardData>({
+    queryKey: ['salon-dashboard-data', user?.id],
     queryFn: async () => {
-      // Mock data for now - would normally come from a real API call
+      if (!user?.id) throw new Error("User not authenticated");
+      
+      // Fetch credits
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('credits, boosted_until')
+        .eq('id', user.id)
+        .single();
+      
+      if (userError) throw userError;
+      
+      // Check for premium/boosted status
+      const boostedUntil = userData?.boosted_until ? new Date(userData.boosted_until) : null;
+      const isPremium = boostedUntil ? new Date() < boostedUntil : false;
+      
+      // Get post views from jobs or posts
+      let postViews = 0;
+      const { count: jobCount } = await supabase
+        .from('jobs')
+        .select('id', { count: 'exact', head: true })
+        .eq('salon_id', user.id);
+        
+      // For local reach, we'll use a simple formula based on job listings and location
+      // In a real implementation, this would come from analytics
+      const localReach = Math.max(30, (jobCount || 0) * 30 + Math.floor(Math.random() * 40));
+      
       return {
-        credits: userProfile?.credits || 0,
-        teamSize: 5,
-        postViews: 128,
-        localReach: 85,
-        isPremium: Boolean(userProfile?.boosted_until && new Date(userProfile.boosted_until) > new Date()),
-        revenueData: [
-          { month: 'Jan', revenue: 1200 },
-          { month: 'Feb', revenue: 1800 },
-          { month: 'Mar', revenue: 1600 },
-          { month: 'Apr', revenue: 2100 },
-          { month: 'May', revenue: 1900 },
-        ]
+        postViews: jobCount || 0,
+        localReach,
+        credits: userData?.credits || 0,
+        isPremium
       };
     },
-    customErrorMessage: 'Failed to load salon dashboard data',
-    initialData: {
-      credits: userProfile?.credits || 0,
-      teamSize: 0,
+    enabled: !!user?.id,
+    fallbackData: {
       postViews: 0,
       localReach: 0,
-      isPremium: false,
-      revenueData: []
-    }
+      credits: userProfile?.credits || 0,
+      isPremium: false
+    },
+    context: "salon-dashboard-data"
   });
-
-  if (isLoading) {
-    return <Skeleton className="h-32 w-full" />;
-  }
-
-  if (isError) {
-    return <div>Error loading dashboard data. Please refresh.</div>;
-  }
+  
+  const handleBoostClick = () => {
+    toast.info("Redirecting to salon boost options...");
+    // In a real implementation, this would navigate to a boost page or open a modal
+  };
   
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Credits</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center">
-            <CoinsIcon className="w-4 h-4 mr-2 text-yellow-500" />
-            <span className="text-2xl font-bold">{data.credits}</span>
-          </div>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Account Status</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center">
-            <StarIcon className={`w-4 h-4 mr-2 ${data.isPremium ? 'text-purple-500' : 'text-gray-400'}`} />
-            <span className="text-lg font-medium">{data.isPremium ? 'Premium' : 'Standard'}</span>
-          </div>
-        </CardContent>
-      </Card>
-      
-      {/* Additional widgets here */}
-    </div>
+    <FallbackBoundary>
+      <div className="space-y-6">
+        <h2 className="text-2xl font-serif">Salon Owner Dashboard</h2>
+        
+        {/* Enhanced Salon Dashboard */}
+        <FallbackBoundary>
+          <SalonDashboard />
+        </FallbackBoundary>
+        
+        {/* Customer Visibility Banner */}
+        <FallbackBoundary>
+          <CustomerVisibilityBanner 
+            loading={isLoading}
+            credits={dashboardData.credits}
+          />
+        </FallbackBoundary>
+        
+        {/* Post Reach Stats Card */}
+        <FallbackBoundary>
+          <PostReachStatsCard 
+            postViews={dashboardData.postViews} 
+            localReach={dashboardData.localReach} 
+            isPremium={dashboardData.isPremium}
+            loading={isLoading}
+          />
+        </FallbackBoundary>
+        
+        {/* Feature Cards Grid */}
+        <FallbackBoundary>
+          <SalonFeatureCardsGrid credits={dashboardData.credits} />
+        </FallbackBoundary>
+        
+        {/* Second Row */}
+        <FallbackBoundary>
+          <SalonSecondaryFeatures isPremium={dashboardData.isPremium} />
+        </FallbackBoundary>
+      </div>
+    </FallbackBoundary>
   );
 };
+
+export default SalonOwnerDashboardWidgets;

@@ -1,63 +1,70 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Check, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Sparkles, ArrowRight } from "lucide-react";
 
 interface EnglishContentProps {
   itemVariants: any;
 }
 
 const EnglishContent = ({ itemVariants }: EnglishContentProps) => {
-  const benefits = [
-    "Find salons ready to hire you right now",
-    "Connect with booth rental opportunities",
-    "Discover established salons for sale",
-    "Get paid what you're worth"
-  ];
-
   return (
-    <div className="space-y-8">
-      <motion.h3 
-        className="text-3xl md:text-4xl font-playfair font-bold text-gray-800"
-        variants={itemVariants}
-      >
-        Your Missing Piece in the Beauty Industry
-      </motion.h3>
-      
-      <motion.p 
-        className="text-lg text-gray-600"
-        variants={itemVariants}
-      >
-        Connecting talented beauty professionals with their perfect opportunities has never been easier. Whether you're looking to join a team or find your next star employee, we've created the platform the beauty industry has been waiting for.
-      </motion.p>
-      
-      <div className="space-y-3">
-        {benefits.map((benefit, index) => (
-          <motion.div 
-            key={index}
-            className="flex items-start"
-            variants={itemVariants}
-          >
-            <Check className="h-5 w-5 text-primary mr-3 mt-0.5 flex-shrink-0" />
-            <span className="text-gray-700">{benefit}</span>
-          </motion.div>
-        ))}
-      </div>
-      
+    <>
       <motion.div 
-        className="pt-4"
+        className="text-center mb-10" 
         variants={itemVariants}
+        initial="visible" // Ensure component is visible immediately
       >
-        <Link to="/sign-up">
-          <Button size="lg" className="group">
-            Join EmviApp Today
-            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </Button>
-        </Link>
+        <h3 className="text-2xl md:text-3xl font-bold text-indigo-700 mb-6">
+          <span className="bg-indigo-50 px-4 py-1 rounded-lg">Your Business, Supercharged</span>
+        </h3>
+        <p className="text-xl text-gray-700 leading-relaxed max-w-3xl mx-auto">
+          <span className="font-semibold text-indigo-600">We help bring customers straight to your salon.</span>{" "}
+          Our platform connects you with skilled technicians, delivers irresistible offers, and streamlines shop management — all in one elegant solution.
+        </p>
       </motion.div>
-    </div>
+
+      <motion.div 
+        className="bg-gradient-to-r from-indigo-50 to-purple-50 p-8 rounded-2xl mb-10 border border-indigo-100/50 shadow-inner"
+        variants={itemVariants}
+        initial="visible" // Ensure component is visible immediately
+      >
+        <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+          <div className="flex-shrink-0 bg-white rounded-2xl p-4 shadow-md">
+            <Sparkles size={48} className="text-indigo-600" />
+          </div>
+          <p className="text-xl text-gray-700 text-center md:text-left">
+            <span className="font-semibold">EmviApp's intelligent AI handles the complex work —</span><br />
+            so you can focus on your passion and growing your business.
+          </p>
+        </div>
+      </motion.div>
+
+      <motion.div 
+        className="text-center" 
+        variants={itemVariants}
+        initial="visible" // Ensure component is visible immediately
+      >
+        <p className="text-xl text-gray-800 font-medium mb-8">
+          Without EmviApp, you might be missing out on opportunities<br />
+          that your competitors are already embracing. <span className="text-2xl">😌</span>
+        </p>
+        
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.98 }}
+          className="group inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-full text-lg font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+        >
+          Try it now and experience the difference
+          <motion.div
+            animate={{ x: [0, 5, 0] }}
+            transition={{ repeat: Infinity, duration: 1.5 }}
+          >
+            <ArrowRight size={20} className="text-white" />
+          </motion.div>
+        </motion.button>
+      </motion.div>
+    </>
   );
 };
 

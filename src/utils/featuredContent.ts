@@ -1,3 +1,4 @@
+
 import { Job } from '@/types/job';
 import { Salon } from '@/types/salon';
 import { sampleSalons } from '@/data/sampleSalons';
@@ -17,7 +18,6 @@ const featuredJobs: Job[] = [
     location: "Los Angeles, CA",
     created_at: new Date().toISOString(),
     is_featured: true,
-    image: "/lovable-uploads/72f0f6c8-5793-4750-993d-f250b495146d.png",
   },
   {
     id: "job-2",
@@ -26,7 +26,6 @@ const featuredJobs: Job[] = [
     location: "New York, NY",
     created_at: new Date().toISOString(),
     is_featured: true,
-    image: "/lovable-uploads/0c68659d-ebd4-4091-aa1a-9329f3690d68.png",
   },
   {
     id: "job-3",
@@ -35,7 +34,6 @@ const featuredJobs: Job[] = [
     location: "Miami, FL",
     created_at: new Date().toISOString(),
     is_featured: true,
-    image: "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png",
   }
 ];
 
@@ -49,7 +47,7 @@ const boothlListings = [
     created_at: new Date().toISOString(),
     price: "500",
     description: "Luxury booth available in high-end salon",
-    image: "/lovable-uploads/72f0f6c8-5793-4750-993d-f250b495146d.png"
+    image: ""
   },
   {
     id: "booth-2",
@@ -59,7 +57,7 @@ const boothlListings = [
     created_at: new Date().toISOString(),
     price: "350",
     description: "Well-equipped nail station in busy location",
-    image: "/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png"
+    image: ""
   }
 ];
 
@@ -73,7 +71,6 @@ export const getSalonById = (id: string): Salon | undefined => {
 /**
  * Convert a Salon object to a Job object
  * This ensures proper type compatibility when displaying salon details with job components
- * IMPORTANT: This preserves all original image URLs
  */
 export const getSalonByIdAsJob = (id: string): Job | null => {
   const salon = getSalonById(id);
@@ -85,14 +82,10 @@ export const getSalonByIdAsJob = (id: string): Job | null => {
     title: salon.name || '',
     company: salon.name || '',
     location: salon.location || '',
-    created_at: salon.created_at || new Date().toISOString(),
+    created_at: salon.created_at || new Date().toISOString(), // Ensure created_at is always present
     description: salon.description || '',
     price: salon.price?.toString() || '',
-    
-    // PRESERVE ORIGINAL IMAGES - Do not override or provide defaults
-    // This ensures we keep the original image URLs
-    image: salon.image || salon.imageUrl || '',
-    
+    image: '', // Removing image references
     salon_features: salon.features || [],
     contact_info: {
       owner_name: salon.contact_info?.owner_name || "Salon Owner",
@@ -109,7 +102,6 @@ export const getSalonByIdAsJob = (id: string): Job | null => {
  * Get all featured salons, optionally limited by count
  */
 export const getFeaturedSalons = (count?: number): Salon[] => {
-  // Return unmodified featured salons - preserve all image URLs
   return count ? featuredSalons.slice(0, count) : featuredSalons;
 };
 
@@ -117,7 +109,6 @@ export const getFeaturedSalons = (count?: number): Salon[] => {
  * Get all salons for sale, optionally limited by count
  */
 export const getSalonsForSale = (count?: number): Salon[] => {
-  // Return unmodified salons for sale - preserve all image URLs
   return count ? salonsForSale.slice(0, count) : salonsForSale;
 };
 

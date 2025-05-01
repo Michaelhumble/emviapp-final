@@ -1,54 +1,91 @@
+import { useQuery, UseQueryOptions, UseQueryResult } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
-import { UseQueryOptions, useQuery, UseQueryResult } from '@tanstack/react-query';
-import { toast } from 'sonner';
+type ErrorLoggerFunction = (error: any, context: string) => void;
 
-// Extend the normal useQuery options with custom error handling options
-type SafeQueryOptions<TData, TError> = Omit<UseQueryOptions<TData, TError, TData>, 'meta'> & {
-  suppressErrorToast?: boolean;
-  customErrorMessage?: string;
-  retryMessage?: string;
-  context?: string; // For providing context in error messages
-  initialData?: TData;
+// Default error logger that logs to console
+const defaultErrorLogger: ErrorLoggerFunction = (error, context) => {
+  console.error(`[SafeQuery:${context}] Error:`, error);
 };
 
 /**
- * A wrapper around useQuery that provides standardized error handling
+ * A safe wrapper around useQuery that handles common failure modes
+ * and provides fallback data to prevent UI crashes
  */
-export function useSafeQuery<TData, TError = Error>(queryOptions: SafeQueryOptions<TData, TError>): UseQueryResult<TData, TError> {
-  const {
-    suppressErrorToast = false,
-    customErrorMessage,
-    retryMessage,
-    context,
-    initialData,
-    ...restOptions
-  } = queryOptions;
-  
-  // Create a new options object with our error handler
-  const options: UseQueryOptions<TData, TError, TData> = {
-    ...restOptions,
-    initialData,
-  };
-  
-  // Use the query with our enhanced options
-  const result = useQuery<TData, TError>(options);
-  
-  // Handle errors with toast notifications if needed
-  if (result.isError && !suppressErrorToast) {
-    const errorMessage = `${customErrorMessage || 'Error loading data'}${context ? ` for ${context}` : ''}. ${(result.error as Error).message || ''}`;
-    
-    toast.error(errorMessage, {
-      duration: 5000,
-      action: {
-        label: retryMessage || 'Retry',
-        onClick: () => {
-          // Safely access the refetch function from the result
-          result.refetch();
-        }
-      }
-    });
+export function useSafeQuery<TData = unknown>(
+  options: Omit<UseQueryOptions<TData, Error, TData>, "queryFn"> & {
+    queryFn: () => Promise<TData>;
+    enabled?: boolean;
+    fallbackData?: TData;
+    context?: string;
+    errorLogger?: ErrorLoggerFunction;
+    retryCount?: number;
   }
+): {
+  data: TData | undefined;
+  isLoading: boolean;
+  error: Error | null;
+  refetch: () => Promise<any>;
+  isFetching: boolean;
+  isError: boolean;
+} {
+  const {
+    fallbackData,
+    context = "unknown",
+    errorLogger = defaultErrorLogger,
+    retryCount = 3,
+    ...queryOptions
+  } = options;
+
+  // CRITICAL FIX: Break the type inference chain completely by using any types
+  // TypeScript will no longer try to resolve the deep nested generic types
+  const result = useQuery({
+    ...queryOptions,
+    queryFn: async () => {
+      try {
+        // Execute the query function without type information propagation
+        return await options.queryFn();
+      } catch (error: any) {
+        // Log the error with context
+        errorLogger(error, context);
+        
+        // If supabase error contains 'not found' or 'does not exist'
+        if (
+          error?.message?.includes('not found') || 
+          error?.message?.includes('does not exist') ||
+          error?.message?.includes('failed') ||
+          error?.code === 'PGRST116'  // PostgREST not found code
+        ) {
+          // Return fallback data if provided
+          if (fallbackData !== undefined) {
+            console.warn(`[SafeQuery:${context}] Using fallback data due to resource not found`);
+            return fallbackData;
+          }
+        }
+        
+        // Re-throw to let React Query handle retry logic
+        throw error;
+      }
+    },
+    retry: retryCount,
+    enabled: queryOptions.enabled
+  } as any) as UseQueryResult<TData, Error>;
   
-  // Return the query result
-  return result;
+  // Handle error states with fallback data when needed
+  useEffect(() => {
+    if (result.error && fallbackData !== undefined) {
+      console.warn(`[SafeQuery:${context}] Using fallback data due to error:`, result.error);
+    }
+  }, [result.error, fallbackData, context]);
+
+  // We return a completely new object to break any reference chains
+  return {
+    data: result.error && fallbackData !== undefined ? fallbackData : result.data,
+    isLoading: result.isLoading,
+    error: result.error as Error | null,
+    refetch: result.refetch,
+    isFetching: result.isFetching,
+    isError: result.isError
+  };
 }

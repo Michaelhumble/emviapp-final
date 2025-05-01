@@ -1,15 +1,30 @@
 
 import { useState } from "react";
 import { Job } from "@/types/job";
+import { Salon } from "@/types/salon"; 
 import SalonDetailsDialog from "./SalonDetailModal";
 import FilterSection from "./FilterSection";
 import PricingInfoCard from "./PricingInfoCard";
+import SalonCard from "./SalonCard";
 import EmptyState from "./EmptyState";
-import ValidatedSalonCard from "./ValidatedSalonCard";
 
 interface SalonListingsProps {
   salonsForSale: Job[];
 }
+
+// Create a conversion function to adapt Job type to Salon type
+const convertJobToSalon = (job: Job): Salon => {
+  return {
+    id: job.id,
+    name: job.company || 'Unnamed Salon',
+    location: job.location || '',
+    price: typeof job.price === 'string' ? parseFloat(job.price.replace(/[^0-9.-]+/g, "")) : 0,
+    imageUrl: job.image || '',
+    description: job.description || '',
+    image: job.image,
+    featured: job.is_featured
+  };
+};
 
 export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
   const [locationFilter, setLocationFilter] = useState<string>("");
@@ -18,7 +33,7 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedSalon, setSelectedSalon] = useState<Job | null>(null);
 
-  // Check if a salon is expired (for demo purposes)
+  // Check if a salon is expired (for demo purposes, using random)
   const isExpired = (salon: Job) => {
     // In a real application, this would check the creation date against current date
     if (salon.id === "104") return true; // Make one of the salons expired for demonstration
@@ -30,13 +45,10 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
     const matchesLocation = locationFilter === "" || 
       salon.location.toLowerCase().includes(locationFilter.toLowerCase());
     
-    const priceValue = typeof salon.price === 'string' ? 
-      parseFloat(salon.price?.replace(/[^0-9.-]+/g, "") || "0") : 
-      (salon.price || 0);
-    
+    const priceValue = parseFloat(salon.asking_price?.replace(/[^0-9.-]+/g, "") || "0");
     const matchesPrice = priceValue >= priceRange[0] && priceValue <= priceRange[1];
     
-    const sizeValue = parseFloat(salon.square_feet?.toString()?.replace(/[^0-9.-]+/g, "") || "0");
+    const sizeValue = parseFloat(salon.square_feet?.replace(/[^0-9.-]+/g, "") || "0");
     const matchesSize = sizeValue >= sizeRange[0] && sizeValue <= sizeRange[1];
     
     const matchesStatus = statusFilter === "all" || 
@@ -82,10 +94,11 @@ export const SalonListings = ({ salonsForSale }: SalonListingsProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {filteredSalons.length > 0 ? (
           filteredSalons.map((salon) => (
-            <ValidatedSalonCard 
+            <SalonCard 
               key={salon.id}
-              salon={salon} 
-              listingType="salon"
+              salon={convertJobToSalon(salon)} // Convert Job to Salon
+              isExpired={isExpired(salon)}
+              onViewDetails={() => handleViewDetails(salon)}
             />
           ))
         ) : (

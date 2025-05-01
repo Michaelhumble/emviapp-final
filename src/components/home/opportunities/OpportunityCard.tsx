@@ -1,11 +1,16 @@
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { Job } from '@/types/job';
+import React from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { enhanceListingWithImage } from '@/utils/listingsVerification';
-import { MapPin, DollarSign, Clock, Briefcase } from 'lucide-react';
+import { MapPin, Building, Lock, Calendar } from 'lucide-react';
+import { Job } from '@/types/job';
+import { useAuth } from '@/context/auth';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { isLashBrowJob, getLashBrowJobImage } from '@/utils/lashBrowSalonImages';
+import { isMassageJob, getMassageJobImage } from '@/utils/massageSalonImages';
+import { isNailJob, NAIL_SALON_IMAGES } from '@/utils/nailSalonImages';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 
 interface OpportunityCardProps {
@@ -13,142 +18,179 @@ interface OpportunityCardProps {
   index: number;
 }
 
-/**
- * OpportunityCard displays job or salon listings with appropriate styling
- */
-const OpportunityCard: React.FC<OpportunityCardProps> = ({ listing, index }) => {
-  const [isHovered, setIsHovered] = useState(false);
+const OpportunityCard = ({ listing, index }: OpportunityCardProps) => {
+  const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
   
-  // Special image mappings for specific titles - ensure all mappings are correct
-  const getSpecialImage = (title: string): string | null => {
-    const titleMappings: Record<string, string> = {
-      "Nail Tech - Private Suite": "/lovable-uploads/72f0f6c8-5793-4750-993d-f250b495146d.png",
-      "Luxury Booth Rental": "/lovable-uploads/52b943aa-d9b3-46ce-9f7f-94f3b223cb28.png",
-      "Licensed Esthetician": "/lovable-uploads/16e16a16-df62-4741-aec7-3364fdc958ca.png",
-      "Experienced Tattoo Artist": "/lovable-uploads/21d69945-acea-4057-9ff0-df824cd3c607.png"
-    };
+  const formatDate = (dateString: string) => {
+    const now = new Date();
+    const created = new Date(dateString);
+    const diffTime = Math.abs(now.getTime() - created.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     
-    return titleMappings[title] || null;
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+    return `${Math.floor(diffDays / 30)} months ago`;
   };
+  
+  // IMPORTANT: First check if this is a nail job (PRIORITIZE nail detection per user's request)
+  const isNailTechJob = isNailJob(listing.title || '', listing.description || '');
+  
+  // Then check if this is a lash or brow job (only if not a nail job)
+  const isLashJob = !isNailTechJob && isLashBrowJob(listing.title || '', listing.description || '') && 
+                   (listing.title || '').toLowerCase().includes('lash');
+                   
+  const isBrowJob = !isNailTechJob && isLashBrowJob(listing.title || '', listing.description || '') && 
+                   (listing.title || '').toLowerCase().includes('brow');
+  
+  // Then check if this is a massage job (only if not a nail job, lash job, or brow job)
+  const isMassageTherapistJob = !isNailTechJob && !isLashJob && !isBrowJob && isMassageJob(listing.title || '', listing.description || '');
+  
+  // Get appropriate image for the job type with nail jobs taking priority
+  let jobImage = '';
+  
+  if (isNailTechJob) {
+    // For nail jobs, select a high-quality image based on index for variety
+    const nailJobImages = [
+      NAIL_SALON_IMAGES.artGallery,
+      NAIL_SALON_IMAGES.executiveNails,
+      NAIL_SALON_IMAGES.minimalist,
+      NAIL_SALON_IMAGES.modernDeluxe
+    ];
+    jobImage = nailJobImages[index % nailJobImages.length];
+  } else if (isLashJob) {
+    jobImage = getLashBrowJobImage(true);
+  } else if (isBrowJob) {
+    jobImage = getLashBrowJobImage(false);
+  } else if (isMassageTherapistJob) {
+    jobImage = getMassageJobImage(true); // Force randomization for variety
+  }
 
-  // Determine the appropriate image for the listing
-  const getListingImage = () => {
-    // Check for specific title-based images first
-    if (listing.title) {
-      const specialImage = getSpecialImage(listing.title);
-      if (specialImage) return specialImage;
-    }
-    
-    // If listing already has a valid image URL, use it
-    if (listing.imageUrl && listing.imageUrl.includes('lovable-uploads')) {
-      return listing.imageUrl;
-    }
-    
-    // Otherwise use the image from the enhanced listing
-    const enhancedListing = enhanceListingWithImage({ ...listing });
-    return enhancedListing.imageUrl;
-  };
+  // Store the image URL in the job object for detail view consistency
+  if ((isNailTechJob || isLashJob || isBrowJob || isMassageTherapistJob) && jobImage && !listing.imageUrl) {
+    listing.imageUrl = jobImage;
+  }
 
-  // Define motion variants for card animation
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { 
-        duration: 0.4,
-        delay: index * 0.1 
-      } 
+  const handleViewDetails = () => {
+    if (listing.id) {
+      navigate(`/opportunities/${listing.id}`);
     }
-  };
-
-  // Format price for display
-  const formatPrice = () => {
-    if (listing.asking_price) {
-      if (typeof listing.asking_price === 'string' && listing.asking_price.includes('$')) {
-        return listing.asking_price;
-      }
-      return `$${listing.asking_price}`;
-    }
-    return listing.for_sale ? 'Contact for price' : '';
-  };
-
-  // Determine card link based on listing type and ensure it's valid
-  const getCardLink = () => {
-    if (!listing.type) return '#'; // Fallback for listings with no type
-    
-    if (listing.type === 'salon') {
-      return `/salons/${listing.id}`;
-    }
-    return `/opportunities/${listing.id}`;
   };
 
   return (
-    <motion.div
-      variants={cardVariants}
-      initial="hidden"
-      animate="visible"
-      className="h-full"
+    <Card 
+      className="group overflow-hidden h-full flex flex-col transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer bg-white"
+      onClick={handleViewDetails}
     >
-      <div 
-        className={`bg-white rounded-lg shadow-sm overflow-hidden h-full border border-gray-100 transition-all duration-300 ${isHovered ? 'shadow-md transform-gpu -translate-y-1' : ''}`}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <Link to={getCardLink()} className="block">
-          <div className="w-full aspect-[5/3] overflow-hidden">
-            <ImageWithFallback
-              src={getListingImage()}
-              alt={listing.title || listing.company || "Opportunity listing"}
-              className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-              businessName={listing.company || ""}
-              category={listing.specialties && listing.specialties.length > 0 ? listing.specialties[0] : undefined}
-            />
-          </div>
-        </Link>
-
-        <div className="p-5">
-          <div className="flex justify-between items-start mb-2">
-            <h3 className="font-semibold text-gray-900 line-clamp-1">{listing.title}</h3>
-            {listing.for_sale && (
-              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">For Sale</Badge>
+      <div className="aspect-[4/3] w-full bg-gray-100 flex items-center justify-center relative">
+        {(isNailTechJob || isLashJob || isBrowJob || isMassageTherapistJob) && jobImage ? (
+          <ImageWithFallback
+            src={jobImage}
+            alt={listing.title || (
+              isNailTechJob ? "Nail Technician Job" :
+              isLashJob ? "Lash Artist Job" : 
+              isBrowJob ? "Brow Specialist Job" : 
+              isMassageTherapistJob ? "Massage Therapist Job" : 
+              "Job Listing"
             )}
+            className="h-full w-full object-cover"
+            priority={true}
+            fallbackImage={jobImage} // Add fallback for reliability
+          />
+        ) : (
+          <Building className="h-12 w-12 text-gray-200" />
+        )}
+        
+        {listing.is_featured && (
+          <Badge 
+            variant="secondary" 
+            className="absolute top-3 left-3 bg-white/90 text-primary shadow-sm"
+          >
+            Featured
+          </Badge>
+        )}
+      </div>
+      
+      <CardContent className="p-6 flex flex-col h-full">
+        <div className="flex justify-between items-start mb-3">
+          <h3 className="font-semibold text-xl text-gray-900 line-clamp-2 flex-grow">
+            {listing.title || listing.company}
+          </h3>
+          {listing.for_sale && (
+            <Badge variant="secondary" className="ml-2 bg-emvi-accent/10 text-emvi-accent whitespace-nowrap">
+              For Sale
+            </Badge>
+          )}
+        </div>
+        
+        <div className="space-y-2 mb-4">
+          <div className="flex items-center text-gray-600 text-sm">
+            <Building className="h-4 w-4 mr-2 flex-shrink-0" />
+            <span className="line-clamp-1">{listing.company}</span>
           </div>
           
-          {listing.company && (
-            <div className="flex items-center text-gray-700 mb-1.5">
-              <Briefcase className="h-3.5 w-3.5 mr-1.5" />
-              <span className="text-sm">{listing.company}</span>
-            </div>
-          )}
+          <div className="flex items-center text-gray-600 text-sm">
+            <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
+            <span className="line-clamp-1">{listing.location}</span>
+          </div>
           
-          {listing.location && (
-            <div className="flex items-center text-gray-600 mb-2">
-              <MapPin className="h-3.5 w-3.5 mr-1.5" />
-              <span className="text-sm">{listing.location}</span>
-            </div>
-          )}
-          
-          {listing.description && (
-            <p className="text-sm text-gray-600 mt-2 line-clamp-2">{listing.description}</p>
-          )}
-
-          <div className="mt-3 flex items-center justify-between">
-            {formatPrice() && (
-              <div className="flex items-center font-medium text-emerald-700">
-                <DollarSign className="h-4 w-4 mr-0.5 flex-shrink-0" />
-                <span>{formatPrice()}</span>
-              </div>
-            )}
-            
-            <div className="text-xs text-gray-500 flex items-center ml-auto">
-              <Clock className="h-3.5 w-3.5 mr-1" />
-              <span>Posted recently</span>
-            </div>
+          <div className="flex items-center text-gray-500 text-sm">
+            <Calendar className="h-4 w-4 mr-2" />
+            <span>Posted {formatDate(listing.created_at)}</span>
           </div>
         </div>
-      </div>
-    </motion.div>
+        
+        {listing.specialties && listing.specialties.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {listing.specialties.slice(0, 3).map((specialty, idx) => (
+              <Badge 
+                key={idx} 
+                variant="outline" 
+                className="bg-gray-50/50 text-gray-600 border-gray-200"
+              >
+                {specialty}
+              </Badge>
+            ))}
+          </div>
+        )}
+        
+        <p className="text-gray-600 text-sm line-clamp-2 mb-6 flex-grow">
+          {listing.vietnamese_description || listing.description}
+        </p>
+
+        <div className="mt-auto pt-4 border-t border-gray-100">
+          {!isSignedIn ? (
+            <HoverCard>
+              <HoverCardTrigger>
+                <div className="flex items-center text-sm text-gray-500">
+                  <Lock className="h-4 w-4 mr-2" />
+                  <span>Sign in to view contact details</span>
+                </div>
+              </HoverCardTrigger>
+              <HoverCardContent className="w-80 p-4">
+                <p className="text-sm text-gray-600">
+                  Create a free account to access full listing details and contact information.
+                </p>
+              </HoverCardContent>
+            </HoverCard>
+          ) : (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-primary hover:text-primary-dark w-full justify-center"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleViewDetails();
+              }}
+            >
+              View Full Details
+            </Button>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

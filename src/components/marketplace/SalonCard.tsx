@@ -4,6 +4,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import ImageWithFallback from "@/components/ui/ImageWithFallback";
 import { determineSalonCategory } from "@/utils/salonImageFallbacks";
+import { getBarberShopImage, isBarberShop } from "@/utils/barberShopImages";
+import { NAIL_SALON_IMAGES, isNailSalon } from "@/utils/nailSalonImages";
+import { isMassageSpa, getMassageSalonImage, isLuxuryMassageSpa } from "@/utils/massageSalonImages";
 
 interface SalonCardProps {
   salon: {
@@ -36,42 +39,82 @@ export const SalonCard = ({ salon, viewDetails }: SalonCardProps) => {
     return { text: "Fair Price", color: "bg-blue-100 text-blue-800" };
   })();
 
-  // Get salon image, always prioritizing the original image
-  const getSalonImage = () => {
-    // Always use original image if provided (both premium and non-premium listings)
-    if (salon.image && salon.image.trim() !== '') {
-      return salon.image;
+  // Determine appropriate fallback image category based on salon description or name
+  const salonCategory = determineSalonCategory(
+    salon.description?.en || '',
+    salon.name
+  );
+
+  // Check if this is specifically a massage or spa salon - direct check for better detection
+  const isMassageSalon = isMassageSpa(salon.name, salon.description?.en || '');
+  
+  // Check if this is a luxury massage salon
+  const isLuxuryMassage = isMassageSalon && isLuxuryMassageSpa(salon.name, salon.description?.en || '');
+
+  // Check if this is specifically a nail salon - direct check for better detection
+  const isNailSalonItem = isNailSalon(salon.name, salon.description?.en || '');
+
+  // Choose an appropriate fallback image based on salon type with priority for nail salons
+  const getFallbackImage = () => {
+    // First, check if this is a nail salon - PRIORITY FOR NAIL DETECTION
+    if (isNailSalonItem || salonCategory === 'nail') {
+      const nailImages = [
+        NAIL_SALON_IMAGES.luxuryLarge,
+        NAIL_SALON_IMAGES.modernDeluxe,
+        NAIL_SALON_IMAGES.artGallery,
+        NAIL_SALON_IMAGES.executiveNails,
+        NAIL_SALON_IMAGES.minimalist
+      ];
+      
+      // Select different image based on price point and features
+      if (salon.featured) {
+        return salon.price > 200000 ? NAIL_SALON_IMAGES.luxuryLarge : NAIL_SALON_IMAGES.modernDeluxe;
+      }
+      
+      return nailImages[Math.floor(Math.random() * nailImages.length)];
     }
     
-    // If we have images array with valid URLs, use the first one
-    if (salon.images && salon.images.length > 0 && salon.images[0].trim() !== '') {
-      return salon.images[0];
+    // Then check if this is a massage/spa salon
+    if (isMassageSalon || salonCategory === 'massage' || salonCategory === 'spa') {
+      return getMassageSalonImage(isLuxuryMassage || salon.featured);
     }
     
-    // Only if no image exists, use appropriate fallback based on salon type
-    const salonCategory = determineSalonCategory(
-      salon.description?.en || '',
-      salon.name
-    );
+    // Then check if this is a barbershop
+    if (salonCategory === 'barber' || isBarberShop(salon.name, salon.description?.en || '')) {
+      return getBarberShopImage(false, salon.featured);
+    }
     
-    // Use category-based fallback
-    return `/lovable-uploads/f7ba1d82-2928-4e73-a61b-112e5aaf5b7e.png`;
+    // Then check other salon types (using default categories)
+    if (salonCategory === 'hair') {
+      return "/lovable-uploads/0c68659d-ebd4-4091-aa1a-9329f3690d68.png";
+    } else {
+      return "/lovable-uploads/2fba1cd5-b1ed-4030-b7e1-06517fbab43e.png";
+    }
   };
+
+  // Get the fallback image to use - make sure we have it for data consistency
+  const fallbackImage = getFallbackImage();
 
   return (
     <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg h-full flex flex-col">
       <div className="relative">
         <div className="aspect-video bg-gray-100 w-full overflow-hidden">
           <ImageWithFallback 
-            src={getSalonImage()} 
+            src={salon.image || ""}
             alt={salon.name} 
             className="w-full h-full object-cover"
+            fallbackImage={fallbackImage}
             businessName={salon.name}
           />
         </div>
         {salon.featured && (
           <div className="absolute top-2 right-2 bg-yellow-400 text-yellow-900 text-xs px-2 py-1 rounded-full flex items-center">
             <Star className="h-3 w-3 mr-1" /> Featured
+          </div>
+        )}
+        {isMassageSalon && isLuxuryMassage && (
+          <div className="absolute top-2 left-2 bg-gradient-to-r from-blue-400 to-teal-500 text-white text-xs px-2 py-1 rounded-full">
+            Premium Spa
           </div>
         )}
       </div>

@@ -1,25 +1,26 @@
 
-import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Info } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
-const PricingInfoCard: React.FC = () => {
+const PricingInfoCard = () => {
   return (
-    <Card className="bg-blue-50 border-blue-200">
-      <CardContent className="p-4 flex items-start space-x-3">
-        <div className="flex-shrink-0 mt-1">
-          <Info className="h-5 w-5 text-blue-500" />
+    <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-xl shadow-sm border border-blue-100 text-center">
+      <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+        <div className="flex items-center">
+          <Badge variant="outline" className="bg-white text-gray-800 font-normal text-sm py-1.5">
+            Standard Listing: $20
+          </Badge>
         </div>
-        <div className="text-sm text-blue-800">
-          <p className="font-medium mb-1">Smart Pricing Tips:</p>
-          <ul className="list-disc pl-4 space-y-1">
-            <li>Sale prices typically range from $50K-$250K depending on location and clientele</li>
-            <li>Consider monthly revenue (typically 2-5x asking price)</li>
-            <li>Review lease terms before making a purchase decision</li>
-          </ul>
+        <div className="flex items-center">
+          <Badge variant="outline" className="bg-white text-gray-800 font-normal text-sm py-1.5">
+            Nationwide Boost: +$10
+          </Badge>
         </div>
-      </CardContent>
-    </Card>
+        <Button variant="default" className="bg-gradient-to-r from-purple-600 to-blue-600">
+          Post Your Salon For Sale
+        </Button>
+      </div>
+    </div>
   );
 };
 

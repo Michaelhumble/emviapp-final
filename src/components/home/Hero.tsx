@@ -1,7 +1,10 @@
 
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { motion } from "framer-motion";
+import { ChevronRight } from "lucide-react";
 import { heroImages } from "./hero/heroData";
 import HeroCarousel from "./hero/HeroCarousel";
 import HeroContent from "./hero/HeroContent";
@@ -26,7 +29,7 @@ const Hero = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
-  // Rotate background images every 6.5 seconds with smooth transitions
+  // Change background image every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setIsChanging(true);
@@ -35,8 +38,8 @@ const Hero = () => {
           prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1
         );
         setIsChanging(false);
-      }, 800); // Longer fade transition for smoother experience
-    }, 6500); // Slightly longer display time for each image
+      }, 500);
+    }, 5000);
     
     return () => clearInterval(interval);
   }, []);
@@ -46,45 +49,31 @@ const Hero = () => {
     setTimeout(() => {
       setCurrentImageIndex(index);
       setIsChanging(false);
-    }, 500);
+    }, 300);
   };
-
-  // Preload next few images for smoother transitions
-  useEffect(() => {
-    const preloadNextImages = () => {
-      const imagesToPreload = 3; // Number of images to preload
-      for (let i = 1; i <= imagesToPreload; i++) {
-        const nextIndex = (currentImageIndex + i) % heroImages.length;
-        const img = new Image();
-        img.src = heroImages[nextIndex].url;
-      }
-    };
-    
-    preloadNextImages();
-  }, [currentImageIndex]);
 
   return (
     <section 
       className="relative overflow-hidden"
       style={{
         width: '100%',
-        height: '100vh', // Full viewport height for impressive hero display
+        height: `${viewportHeight}px`,
         maxWidth: '100vw',
-        maxHeight: '100vh',
+        maxHeight: `${viewportHeight}px`,
         position: 'relative',
         margin: 0,
         padding: 0,
         border: 'none'
       }}
     >
-      {/* Background image carousel with full rotation through all images */}
+      {/* Background image carousel */}
       <HeroCarousel 
         images={heroImages} 
         activeIndex={currentImageIndex} 
         isMobile={isMobile}
       />
       
-      {/* Main hero content - locked title and subtitle */}
+      {/* Main content */}
       <div className="relative z-10 w-full h-full flex items-center justify-center">
         <HeroContent 
           activeIndex={currentImageIndex}

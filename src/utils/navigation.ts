@@ -1,84 +1,111 @@
 
 import { NavigateFunction } from "react-router-dom";
-import { UserRole } from "@/context/auth/types/authTypes";
+import { UserRole } from "@/context/auth/types";
+import { toast } from "sonner";
+import { normalizeRole } from "./roles";
 
 /**
- * Navigate to the appropriate dashboard based on user role
+ * Navigates the user to their role-specific dashboard with validation
  */
-export function navigateToRoleDashboard(navigate: NavigateFunction, role: UserRole | null): void {
-  if (!role) {
-    navigate('/role-selection');
+export const navigateToRoleDashboard = (
+  navigate: NavigateFunction,
+  userRole: UserRole | null
+) => {
+  // Normalize the role for consistent routing
+  const normalizedRole = normalizeRole(userRole);
+  
+  if (!normalizedRole) {
+    navigate("/profile/edit");
+    toast.error("Please complete your profile to access your dashboard");
     return;
   }
   
-  switch (role) {
+  // Store normalized role in localStorage for persistence
+  localStorage.setItem('emviapp_user_role', normalizedRole);
+  
+  let targetDashboard = '';
+  
+  // Route based on normalized role
+  switch (normalizedRole) {
     case 'artist':
-    case 'nail technician/artist':
-      navigate('/dashboard/artist');
+      targetDashboard = '/dashboard/artist';
       break;
     case 'salon':
-    case 'owner':
-      navigate('/dashboard/salon');
+      targetDashboard = '/dashboard/salon';
       break;
     case 'customer':
-      navigate('/dashboard/customer');
-      break;
-    case 'freelancer':
-      navigate('/dashboard/freelancer');
+      targetDashboard = '/dashboard/customer';
       break;
     case 'supplier':
-    case 'beauty supplier':
-    case 'vendor':
-      navigate('/dashboard/supplier');
+      targetDashboard = '/dashboard/supplier';
       break;
-    case 'renter':
-      navigate('/dashboard/artist'); // Renters use artist dashboard for now
-      break;
-    case 'manager':
-      navigate('/dashboard/manager');
-      break;
-    case 'admin':
-      navigate('/dashboard/admin');
-      break;
-    default:
-      navigate('/dashboard');
-  }
-}
-
-/**
- * Get a personalized greeting based on user name and role
- */
-export function getPersonalizedGreeting(name: string, role: UserRole | null): string {
-  const defaultGreeting = `Welcome back, ${name}!`;
-  
-  if (!role) return defaultGreeting;
-  
-  switch (role) {
-    case 'artist':
-    case 'nail technician/artist':
-      return `Welcome to your artist dashboard, ${name}!`;
-    case 'customer':
-      return `Welcome, ${name}!`;
-    case 'salon':
-    case 'owner':
-      return `Welcome to your salon dashboard, ${name}!`;
     case 'freelancer':
-      return `Welcome, Freelancer ${name}!`;
-    case 'supplier':
-    case 'beauty supplier':
-    case 'vendor':
-      return `Welcome to your supplier dashboard, ${name}!`;
+      targetDashboard = '/dashboard/freelancer';
+      break;
+    case 'other':
+      targetDashboard = '/dashboard/other';
+      break;
     default:
-      return defaultGreeting;
+      navigate("/profile/edit");
+      toast.error("Invalid user role. Please update your profile.");
+      return;
   }
-}
+
+  navigate(targetDashboard);
+};
 
 /**
- * Check if a user has access to a specific role-based area
- * @param userRole The current user's role
- * @param allowedRoles Array of roles that have access
+ * Check if a user is allowed to view a specific route based on their role
+ * @param userRole The user's role from auth context
+ * @param allowedRoles Array of roles allowed to access the route
  * @returns Boolean indicating if the user has access
  */
-export function hasRoleAccess(userRole: UserRole, allowedRoles: UserRole[]): boolean {
-  return allowedRoles.includes(userRole);
-}
+export const hasRoleAccess = (
+  userRole: UserRole | null,
+  allowedRoles: UserRole[]
+): boolean => {
+  if (!userRole) return false;
+  
+  // Normalize the user's role
+  const normalizedRole = normalizeRole(userRole);
+  
+  // Check if normalized role is in allowed roles
+  return allowedRoles.includes(normalizedRole as UserRole);
+};
+
+/**
+ * Get a personalized greeting based on user's name and role
+ * @param name The user's name
+ * @param role The user's role
+ * @returns A personalized greeting message
+ */
+export const getPersonalizedGreeting = (
+  name: string,
+  role: UserRole | null
+): string => {
+  if (!name || name.trim() === '') {
+    name = "there";
+  }
+  
+  if (!role) {
+    return `Hello, ${name}!`;
+  }
+  
+  // Normalize role for consistent greetings
+  const normalizedRole = normalizeRole(role);
+
+  switch (normalizedRole) {
+    case 'artist':
+      return `Welcome back, ${name}! Ready to showcase your artistry?`;
+    case 'salon':
+      return `Hello, ${name}! Managing your salon made easy.`;
+    case 'customer':
+      return `Welcome, ${name}! Discover your perfect beauty experience.`;
+    case 'supplier':
+      return `Welcome, ${name}! Showcase your products to businesses.`;
+    case 'freelancer':
+      return `Hey ${name}! Find your next gig today.`;
+    default:
+      return `Hello, ${name}! Welcome to your dashboard.`;
+  }
+};

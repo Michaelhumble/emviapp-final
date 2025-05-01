@@ -86,10 +86,10 @@ export const useProfileForm = ({ onProfileUpdate }: UseProfileFormProps = {}) =>
       toast.success("Profile updated successfully");
       
       if (onProfileUpdate && userProfile) {
-        // Create a compatible profile object for onProfileUpdate
+        // When calling onProfileUpdate, we need to make sure the object conforms to UserProfile
+        // Make a copy of the userProfile and spread in our form data to maintain type compatibility
         const updatedProfile: UserProfile = {
-          id: userProfile.id,
-          email: userProfile.email,
+          ...userProfile,
           full_name: formData.full_name,
           bio: formData.bio,
           specialty: formData.specialty,
@@ -97,9 +97,6 @@ export const useProfileForm = ({ onProfileUpdate }: UseProfileFormProps = {}) =>
           instagram: formData.instagram,
           website: formData.website,
           affiliate_code: referralCode,
-          communication_preferences: userProfile.communication_preferences || [], // Ensure this is an array
-          // Copy over all other properties from the original userProfile
-          ...userProfile,
         };
         
         onProfileUpdate(updatedProfile);

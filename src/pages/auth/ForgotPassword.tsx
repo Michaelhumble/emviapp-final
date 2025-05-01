@@ -13,12 +13,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { getLanguagePreference } from "@/utils/languagePreference";
 
-/**
- * ForgotPassword component handles password reset workflow
- * Allows users to request a password reset link via email
- * 
- * @returns {JSX.Element} Rendered forgot password page
- */
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,18 +20,12 @@ const ForgotPassword = () => {
   const [success, setSuccess] = useState(false);
   const language = getLanguagePreference();
 
-  /**
-   * Handle the form submission to request password reset
-   * 
-   * @param {React.FormEvent} e - Form event
-   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
     setSuccess(false);
 
-    // Validate email format
     if (!email || !email.includes('@')) {
       setError(language === 'en' ? 'Please enter a valid email address' : 'Vui lòng nhập địa chỉ email hợp lệ');
       setIsSubmitting(false);
@@ -68,7 +56,6 @@ const ForgotPassword = () => {
     }
   };
 
-  // Translations based on user language preference
   const translations = {
     en: {
       title: "Reset Your Password",
@@ -99,7 +86,7 @@ const ForgotPassword = () => {
   return (
     <Layout>
       <div className="flex items-center justify-center min-h-[70vh] p-4 bg-background">
-        <Card className="w-full max-w-md border border-gray-100 shadow-lg">
+        <Card className="w-full max-w-md">
           <div className="flex justify-center pt-6">
             <EmviLogo size="large" />
           </div>
@@ -113,7 +100,7 @@ const ForgotPassword = () => {
           
           {success ? (
             <CardContent className="space-y-4">
-              <Alert className="bg-green-50 border-green-200 animate-in fade-in-50">
+              <Alert className="bg-green-50 border-green-200">
                 <CheckCircle className="h-4 w-4 text-green-600" />
                 <AlertDescription className="text-green-700 font-medium">
                   {t.successMessage}
@@ -127,7 +114,7 @@ const ForgotPassword = () => {
             <form onSubmit={handleSubmit}>
               <CardContent className="space-y-4">
                 {error && (
-                  <Alert variant="destructive" className="animate-in fade-in-50 slide-in-from-top-5">
+                  <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription>{error}</AlertDescription>
                   </Alert>
@@ -143,8 +130,6 @@ const ForgotPassword = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     disabled={isSubmitting}
-                    className="transition-all duration-200 focus:ring-2 focus:ring-indigo-300"
-                    aria-label="Email address for password reset"
                   />
                 </div>
               </CardContent>
@@ -152,7 +137,7 @@ const ForgotPassword = () => {
               <CardFooter className="flex flex-col space-y-4">
                 <Button 
                   type="submit" 
-                  className="w-full transition-all duration-200" 
+                  className="w-full" 
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
@@ -166,7 +151,7 @@ const ForgotPassword = () => {
                 </Button>
                 
                 <div className="text-sm text-center text-gray-500">
-                  <Link to="/sign-in" className="text-primary hover:underline">
+                  <Link to="/auth/signin" className="text-primary hover:underline">
                     {t.backToSignIn}
                   </Link>
                 </div>
