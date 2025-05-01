@@ -2,11 +2,16 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Store, Search, Users } from 'lucide-react';
+import { Store, Sun, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useScrollAnimation } from '@/hooks/useScrollAnimation';
-import { MobileButton } from '@/components/ui/mobile-button';
 import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const BeautyExchangeSection = () => {
   const { ref: sectionRef, isVisible } = useScrollAnimation({
@@ -82,10 +87,31 @@ const BeautyExchangeSection = () => {
     }
   };
   
+  const sunshineTextVariants = {
+    hidden: { opacity: 0, y: -5 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        delay: 0.5,
+        duration: 0.5,
+        repeat: 0,
+        repeatType: "mirror" as const,
+      }
+    }
+  };
+  
+  // Routes for the dropdown menu
+  const exchangeRoutes = [
+    { title: "Post a Job", path: "/jobs/create" },
+    { title: "List a Salon for Sale", path: "/salons/create" },
+    { title: "Find Artists & Stylists", path: "/artists" },
+  ];
+  
   return (
     <section 
       ref={sectionRef}
-      className="relative py-14 md:py-20 overflow-hidden bg-gradient-to-r from-white to-purple-50/30"
+      className="relative py-10 md:py-16 overflow-hidden bg-gradient-to-r from-white to-purple-50/30"
     >
       {isLoading ? (
         <div className="container mx-auto px-4 animate-pulse">
@@ -99,7 +125,6 @@ const BeautyExchangeSection = () => {
               <div className="h-4 bg-gray-200 rounded-md w-5/6 mx-auto md:mx-0"></div>
               <div className="flex flex-wrap justify-center md:justify-start gap-2">
                 <div className="h-10 bg-gray-200 rounded-md w-40"></div>
-                <div className="h-10 bg-gray-200 rounded-md w-32"></div>
               </div>
             </div>
           </div>
@@ -115,10 +140,10 @@ const BeautyExchangeSection = () => {
             <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
               {/* Left side - Image/Icon with enhanced animation */}
               <motion.div 
-                className="w-full md:w-1/2 flex justify-center"
+                className="w-full md:w-1/2 flex justify-center flex-col items-center"
                 variants={imageVariants}
               >
-                <div className="relative">
+                <div className="relative mb-2">
                   <div className="absolute -inset-4 rounded-full bg-purple-100/80 blur-xl"></div>
                   <div className="relative bg-white p-8 rounded-full shadow-xl border border-purple-100 transition-transform duration-500 hover:scale-105">
                     <Store 
@@ -127,9 +152,27 @@ const BeautyExchangeSection = () => {
                     />
                   </div>
                 </div>
+                
+                {/* Added little Sunshine text with bouncing animation */}
+                <motion.div
+                  variants={sunshineTextVariants}
+                  className="mt-2 text-center"
+                  animate={{ y: [0, -3, 0] }}
+                  transition={{
+                    duration: 2,
+                    ease: "easeInOut",
+                    times: [0, 0.5, 1],
+                    repeat: Infinity,
+                    repeatDelay: 1
+                  }}
+                >
+                  <span className="text-sm font-medium text-[#B57CF3]">
+                    little Sunshine ☀️
+                  </span>
+                </motion.div>
               </motion.div>
               
-              {/* Right side - Title, Subtitle, Supporting Line, and CTAs with staggered animations */}
+              {/* Right side - Title, Subtitle, Supporting Line, and CTA with staggered animations */}
               <div className="w-full md:w-1/2 text-center md:text-left space-y-3">
                 <motion.h2 
                   className="text-3xl md:text-4xl font-playfair font-bold mb-2"
@@ -152,46 +195,38 @@ const BeautyExchangeSection = () => {
                   Find Your Startup. Build Something Beautiful With Your New Team.
                 </motion.p>
                 
-                {/* CTA Buttons with mobile optimization using MobileButton */}
+                {/* New CTA button with dropdown */}
                 <motion.div 
-                  className="flex flex-col sm:flex-row flex-wrap items-center gap-4 justify-center md:justify-start"
+                  className="flex flex-wrap items-center gap-4 justify-center md:justify-start"
                   variants={itemVariants}
                 >
-                  <Link to="/salons">
-                    <MobileButton 
-                      className="bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white shadow-md min-w-[210px]"
-                      size="lg"
-                    >
-                      <Search className="mr-2 h-5 w-5" /> Browse Beauty Listings
-                    </MobileButton>
-                  </Link>
-                  
-                  <Link to="/create-listing">
-                    <MobileButton 
-                      className="border-2 border-purple-600 bg-transparent text-purple-700 hover:bg-purple-50 min-w-[210px]"
-                      variant="outline"
-                      size="lg"
-                    >
-                      <Store className="mr-2 h-5 w-5" /> Post a Job or Salon
-                    </MobileButton>
-                  </Link>
-                  
-                  <Link to="/artists">
-                    <MobileButton 
-                      className="border-2 border-purple-600 bg-transparent text-purple-700 hover:bg-purple-50 min-w-[210px]"
-                      variant="outline"
-                      size="lg"
-                    >
-                      <Users className="mr-2 h-5 w-5" /> Find Artists & Stylists
-                    </MobileButton>
-                  </Link>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button 
+                        className="bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white shadow-md min-w-[240px]" 
+                        size="lg"
+                      >
+                        Browse Beauty Exchange
+                        <ChevronDown className="ml-2 h-4 w-4 opacity-70" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="center" className="w-[240px] p-2">
+                      {exchangeRoutes.map((route) => (
+                        <DropdownMenuItem key={route.path} asChild className="cursor-pointer">
+                          <Link to={route.path} className="w-full px-2 py-2 hover:bg-purple-50">
+                            {route.title}
+                          </Link>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </motion.div>
               </div>
             </div>
             
             {/* Optional: Subtle page indicator/scroll prompt for better UX */}
             <motion.div 
-              className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-2"
+              className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex items-center gap-2"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 0.7, y: 0 }}
               transition={{ delay: 1.2, duration: 0.5 }}
