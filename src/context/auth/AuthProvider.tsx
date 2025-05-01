@@ -3,7 +3,7 @@ import React from 'react';
 import { AuthContext } from './AuthContext';
 import { UserRole, UserProfile, AuthContextType } from './types/authTypes';
 import { useAuthState } from './hooks/useAuthState';
-import { useAuthSession } from './hooks/useAuthSession';
+import { useSession } from './hooks/useSession';
 import { useAuthMethods } from './hooks/useAuthMethods';
 
 interface AuthProviderProps {
@@ -35,7 +35,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   } = useAuthState();
 
   // Get authentication session data
-  const authSession = useAuthSession();
+  const authSession = useSession();
   
   // Use the session data to update our state
   React.useEffect(() => {
