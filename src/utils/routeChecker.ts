@@ -58,3 +58,44 @@ export const isKnownRouteCached = (path: string, availableRoutes: string[]): boo
 export const clearRouteCache = (): void => {
   routeCache.clear();
 };
+
+/**
+ * Log route access for debugging
+ */
+export const logRouteAccess = (path: string): void => {
+  console.log(`Route accessed: ${path}`);
+};
+
+/**
+ * Get a human-readable name for a route
+ */
+export const getRouteName = (route: string): string => {
+  // Remove leading/trailing slashes and convert to title case
+  const normalizedPath = route.replace(/^\/|\/$/g, '');
+  
+  if (normalizedPath === '') return 'Home';
+  
+  // Special cases
+  switch (normalizedPath) {
+    case 'dashboard':
+      return 'Dashboard';
+    case 'jobs':
+      return 'Jobs';
+    case 'salons':
+      return 'Salons';
+    case 'profile':
+      return 'Profile';
+    case 'messages':
+      return 'Messages';
+    default:
+      // Convert kebab-case or path segments to readable format
+      return normalizedPath
+        .split('/')
+        .map(segment => 
+          segment.split('-')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ')
+        )
+        .join(' › ');
+  }
+};

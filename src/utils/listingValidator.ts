@@ -1,4 +1,3 @@
-
 /**
  * Validates if a listing exists in the system
  */
@@ -52,4 +51,22 @@ export const getListingFallbackRoute = (listingType: ListingType): string => {
     default:
       return '/';
   }
+};
+
+/**
+ * Validates if a listing's data contains all required fields
+ * This is a placeholder implementation that always returns true
+ */
+export const validateListingData = (data: any, requiredFields: string[] = []): boolean => {
+  // Check if data exists
+  if (!data) return false;
+  
+  // Check if all required fields exist in data
+  for (const field of requiredFields) {
+    if (data[field] === undefined || data[field] === null) {
+      return false;
+    }
+  }
+  
+  return true;
 };
