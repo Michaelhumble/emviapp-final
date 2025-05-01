@@ -19,6 +19,22 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Base path for all assets
+  base: './',
+  build: {
+    // Generate assets with proper paths
+    assetsDir: 'assets',
+    // Ensure sourcemaps are properly configured
+    sourcemap: true,
+    // Optimize CSS and avoid extraction issues
+    cssCodeSplit: true,
+    // Ensure rollup properly handles dynamic imports
+    rollupOptions: {
+      output: {
+        manualChunks: undefined
+      }
+    }
+  },
   // Define environment variables explicitly for better error handling
   define: {
     'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(process.env.VITE_SUPABASE_URL || "https://wwhqbjrhbajpabfdwnip.supabase.co"),
