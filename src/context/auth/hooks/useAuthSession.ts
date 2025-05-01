@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { User, Session } from '@supabase/supabase-js';
+import { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
 import { determineUserRole, persistUserRole } from '../utils/roleManagement';
 import { UserRole, UserProfile } from '../types/authTypes';
 import { fetchUserProfile } from '../userProfileService';
@@ -41,7 +41,7 @@ export const useAuthSession = (
           setUser(session.user);
           
           // Handle each auth event type appropriately
-          switch (event) {
+          switch (event as AuthChangeEvent) {
             case 'SIGNED_IN':
               // Check for role in user metadata and store it
               const userRole = determineUserRole(
