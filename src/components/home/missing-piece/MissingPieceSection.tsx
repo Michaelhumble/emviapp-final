@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, ErrorBoundary } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/hooks/useTranslation";
 import SectionTitle from "./SectionTitle";
