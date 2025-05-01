@@ -8,7 +8,7 @@ export const normalizeRole = (role: UserRole | string | null): UserRole => {
   if (!role) return null;
   
   // Convert to lowercase for case-insensitive comparison
-  const lowercaseRole = typeof role === 'string' ? role.toLowerCase() : '';
+  const lowercaseRole = typeof role === 'string' ? role.toLowerCase().trim() : '';
   
   // Match to known roles with proper casing
   switch (lowercaseRole) {
@@ -21,13 +21,14 @@ export const normalizeRole = (role: UserRole | string | null): UserRole => {
     case 'nail artist':
     case 'nail tech':
     case 'nail technician':
+    case 'nail technician/artist':
       return 'artist';
       
     case 'salon':
+    case 'salon owner':
       return 'salon';
       
     case 'owner':
-    case 'salon owner':
     case 'business owner':
       return 'owner';
       
@@ -38,18 +39,11 @@ export const normalizeRole = (role: UserRole | string | null): UserRole => {
       
     case 'supplier':
     case 'beauty supplier':
+    case 'vendor':
       return 'supplier';
     
-    case 'vendor':
-      return 'vendor';
-      
-    case 'nail technician/artist':
-      return 'nail technician/artist';
-    
-    case 'renter':
-    case 'booth renter':
-    case 'chair renter':
-      return 'renter';
+    case 'manager':
+      return 'manager';
       
     default:
       // If it's already a valid UserRole, return it
@@ -58,13 +52,8 @@ export const normalizeRole = (role: UserRole | string | null): UserRole => {
           role === 'salon' || 
           role === 'owner' || 
           role === 'freelancer' ||
-          role === 'manager' ||
-          role === 'admin' ||
           role === 'supplier' || 
-          role === 'vendor' || 
-          role === 'beauty supplier' || 
-          role === 'nail technician/artist' || 
-          role === 'renter' ||
+          role === 'manager' ||
           role === 'other') {
         return role as UserRole;
       }
@@ -93,18 +82,8 @@ export const getRoleLabel = (role: UserRole | null): string => {
       return 'Freelancer';
     case 'supplier':
       return 'Supplier';
-    case 'vendor':
-      return 'Vendor';
-    case 'beauty supplier':
-      return 'Beauty Supplier';
-    case 'nail technician/artist':
-      return 'Nail Technician';
-    case 'renter':
-      return 'Booth Renter';
     case 'manager':
       return 'Manager';
-    case 'admin':
-      return 'Administrator';
     case 'other':
       return 'Other';
     default:

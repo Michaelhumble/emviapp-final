@@ -15,7 +15,7 @@ interface DashboardRedirectorProps {
 }
 
 const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRedirectorProps) => {
-  const { user, userRole, isSignedIn, isNewUser, clearIsNewUser } = useAuth();
+  const { user, userRole, userProfile, isSignedIn, isNewUser, clearIsNewUser } = useAuth();
   const navigate = useNavigate();
   const [showRoleModal, setShowRoleModal] = useState(false);
 
@@ -26,58 +26,29 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
     }
 
     try {
-      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
-      
-      if (!authError) {
-        const metadataRole = authUser?.user_metadata?.role as UserRole | null;
-        
-        if (metadataRole) {
-          const normalizedRole = normalizeRole(metadataRole);
-          localStorage.setItem('emviapp_user_role', normalizedRole || '');
-          
-          if (normalizedRole === 'artist' || normalizedRole === 'nail technician/artist') {
-            navigate('/dashboard/artist');
-            return;
-          }
-          
-          navigateToRoleDashboard(navigate, normalizedRole);
-          return;
-        }
+      // First check for role in user profile (highest priority)
+      if (userProfile?.role) {
+        const normalizedRole = normalizeRole(userProfile.role);
+        localStorage.setItem('emviapp_user_role', normalizedRole);
+        navigateToRoleDashboard(navigate, normalizedRole);
+        return;
       }
-      
-      if (userRole) {
-        if (userRole === 'artist' || userRole === 'nail technician/artist') {
-          navigate('/dashboard/artist');
-          return;
-        }
 
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('manager_for_salon_id')
-          .eq('id', user.id)
-          .single();
-          
-        if (!userError && userData && userData.manager_for_salon_id) {
-          navigate('/dashboard/manager');
-          return;
-        }
-        
+      // If we have userRole from context, use it
+      if (userRole) {
         navigateToRoleDashboard(navigate, userRole);
         return;
       }
+
+      // Try to get role from auth metadata
+      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
       
-      const cachedRole = localStorage.getItem('emviapp_user_role');
-      if (cachedRole) {
-        const normalizedRole = normalizeRole(cachedRole as UserRole);
+      if (!authError && authUser?.user_metadata?.role) {
+        const metadataRole = authUser.user_metadata.role as UserRole;
+        const normalizedRole = normalizeRole(metadataRole);
+        localStorage.setItem('emviapp_user_role', normalizedRole);
         
-        try {
-          await supabase.auth.updateUser({
-            data: { role: normalizedRole }
-          });
-        } catch (updateErr) {
-          // Silent error - continue anyway
-        }
-        
+        // Special check for managers
         const { data: userData, error: userError } = await supabase
           .from('users')
           .select('manager_for_salon_id')
@@ -93,49 +64,26 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
         return;
       }
       
-      const { data: profile, error } = await supabase
-        .from('users')
-        .select('role, manager_for_salon_id')
-        .eq('id', user.id)
-        .maybeSingle();
-        
-      if (error) {
-        throw new Error(`Failed to fetch user role: ${error.message}`);
-      }
-      
-      if (!profile || !profile.role) {
-        setShowRoleModal(true);
-        if (isNewUser) {
-          clearIsNewUser();
-        }
+      // Last resort: check localStorage
+      const cachedRole = localStorage.getItem('emviapp_user_role');
+      if (cachedRole) {
+        const normalizedRole = normalizeRole(cachedRole as UserRole);
+        navigateToRoleDashboard(navigate, normalizedRole);
         return;
       }
       
-      if (profile.manager_for_salon_id) {
-        navigate('/dashboard/manager');
-        return;
+      // If no role found, show role selection modal
+      setShowRoleModal(true);
+      if (isNewUser) {
+        clearIsNewUser();
       }
-      
-      try {
-        const normalizedRole = normalizeRole(profile.role as UserRole);
-        await supabase.auth.updateUser({
-          data: { role: normalizedRole }
-        });
-      } catch (updateErr) {
-        // Silent error - continue anyway
-      }
-      
-      const normalizedRole = normalizeRole(profile.role as UserRole);
-      localStorage.setItem('emviapp_user_role', normalizedRole || '');
-      navigateToRoleDashboard(navigate, normalizedRole);
-      
     } catch (error) {
       setRedirectError("Unable to determine your user role. Please try again or select a role.");
       navigate("/profile/edit");
     } finally {
       setLocalLoading(false);
     }
-  }, [user, userRole, isSignedIn, navigate, isNewUser, clearIsNewUser, setRedirectError, setLocalLoading]);
+  }, [user, userRole, userProfile, isSignedIn, navigate, isNewUser, clearIsNewUser, setRedirectError, setLocalLoading]);
 
   useEffect(() => {
     checkUserRoleAndRedirect();

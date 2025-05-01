@@ -1,4 +1,3 @@
-
 import { NavigateFunction } from "react-router-dom";
 import { UserRole } from "@/context/auth/types";
 import { toast } from "sonner";
@@ -23,35 +22,33 @@ export const navigateToRoleDashboard = (
   // Store normalized role in localStorage for persistence
   localStorage.setItem('emviapp_user_role', normalizedRole);
   
-  let targetDashboard = '';
-  
   // Route based on normalized role
   switch (normalizedRole) {
     case 'artist':
-      targetDashboard = '/dashboard/artist';
+      navigate('/dashboard/artist');
       break;
     case 'salon':
-      targetDashboard = '/dashboard/salon';
+    case 'owner':
+      navigate('/dashboard/salon');
       break;
     case 'customer':
-      targetDashboard = '/dashboard/customer';
+      navigate('/dashboard/customer');
       break;
     case 'supplier':
-      targetDashboard = '/dashboard/supplier';
+    case 'beauty supplier':
+      navigate('/dashboard/supplier');
       break;
     case 'freelancer':
-      targetDashboard = '/dashboard/freelancer';
+      navigate('/dashboard/freelancer');
+      break;
+    case 'manager':
+      navigate('/dashboard/manager');
       break;
     case 'other':
-      targetDashboard = '/dashboard/other';
-      break;
     default:
-      navigate("/profile/edit");
-      toast.error("Invalid user role. Please update your profile.");
-      return;
+      navigate('/dashboard/other');
+      break;
   }
-
-  navigate(targetDashboard);
 };
 
 /**
