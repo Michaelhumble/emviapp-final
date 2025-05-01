@@ -5,6 +5,8 @@ import { useAuth } from '@/context/auth';
 import { AuthProvider } from '@/context/auth';
 import { UserRole } from '@/context/auth/types';
 import { supabase } from '@/integrations/supabase/client';
+import { Session, User } from '@supabase/supabase-js';
+import React from 'react';
 
 // Mock Supabase client
 vi.mock('@/integrations/supabase/client', () => ({
@@ -42,7 +44,7 @@ vi.mock('react-router-dom', () => ({
 }));
 
 // Wrapper for testing hooks that need AuthProvider
-const wrapper = ({ children }) => <AuthProvider>{children}</AuthProvider>;
+const wrapper = ({ children }: { children: React.ReactNode }) => <AuthProvider>{children}</AuthProvider>;
 
 describe('useAuth hook', () => {
   beforeEach(() => {
@@ -56,7 +58,7 @@ describe('useAuth hook', () => {
 
   it('should initialize with default values', () => {
     // Setup mock for getSession
-    supabase.auth.getSession.mockResolvedValue({
+    (supabase.auth.getSession as any).mockResolvedValue({
       data: { session: null },
       error: null,
     });
@@ -72,34 +74,36 @@ describe('useAuth hook', () => {
 
   it('should update state when user signs in', async () => {
     // Setup mocks for authentication
-    const mockUser = { id: 'test-user-id', email: 'test@example.com' };
-    const mockSession = { user: mockUser };
+    const mockUser = { id: 'test-user-id', email: 'test@example.com' } as User;
+    const mockSession = { user: mockUser } as Session;
     
-    supabase.auth.getSession.mockResolvedValue({
+    (supabase.auth.getSession as any).mockResolvedValue({
       data: { session: mockSession },
       error: null,
     });
 
-    supabase.auth.getUser.mockResolvedValue({
+    (supabase.auth.getUser as any).mockResolvedValue({
       data: { user: mockUser },
       error: null,
     });
 
-    supabase.from().select().eq().single.mockResolvedValue({
-      data: { 
-        id: 'test-user-id', 
-        role: 'artist',
-        email: 'test@example.com'
-      },
+    const userProfile = { 
+      id: 'test-user-id', 
+      role: 'artist' as UserRole,
+      email: 'test@example.com'
+    };
+
+    vi.mocked(supabase.from('users').select().eq().single).mockResolvedValue({
+      data: userProfile,
       error: null,
-    });
+    } as any);
 
     const { result, rerender } = renderHook(() => useAuth(), { wrapper });
 
     // Wait for auth state to update
     await act(async () => {
       // Simulate onAuthStateChange event
-      const authStateChangeHandler = supabase.auth.onAuthStateChange.mock.calls[0][0];
+      const authStateChangeHandler = (supabase.auth.onAuthStateChange as any).mock.calls[0][0];
       authStateChangeHandler('SIGNED_IN', mockSession);
       
       // Force re-render to ensure state updates
@@ -114,21 +118,21 @@ describe('useAuth hook', () => {
 
   it('should handle sign out correctly', async () => {
     // Setup initial signed-in state
-    const mockUser = { id: 'test-user-id', email: 'test@example.com' };
+    const mockUser = { id: 'test-user-id', email: 'test@example.com' } as User;
     
-    supabase.auth.getSession.mockResolvedValue({
+    (supabase.auth.getSession as any).mockResolvedValue({
       data: { session: { user: mockUser } },
       error: null,
     });
 
-    supabase.auth.signOut.mockResolvedValue({ error: null });
+    (supabase.auth.signOut as any).mockResolvedValue({ error: null });
 
     const { result } = renderHook(() => useAuth(), { wrapper });
 
     // Wait for initial auth state
     await act(async () => {
       // Simulate onAuthStateChange event for sign in
-      const authStateChangeHandler = supabase.auth.onAuthStateChange.mock.calls[0][0];
+      const authStateChangeHandler = (supabase.auth.onAuthStateChange as any).mock.calls[0][0];
       authStateChangeHandler('SIGNED_IN', { user: mockUser });
     });
 
@@ -137,7 +141,7 @@ describe('useAuth hook', () => {
       await result.current.signOut();
       
       // Simulate onAuthStateChange event for sign out
-      const authStateChangeHandler = supabase.auth.onAuthStateChange.mock.calls[0][0];
+      const authStateChangeHandler = (supabase.auth.onAuthStateChange as any).mock.calls[0][0];
       authStateChangeHandler('SIGNED_OUT', null);
     });
 
@@ -150,52 +154,52 @@ describe('useAuth hook', () => {
 
   it('should handle role updates correctly', async () => {
     // Setup mocks
-    const mockUser = { id: 'test-user-id', email: 'test@example.com' };
-    const mockSession = { user: mockUser };
-    const initialRole = 'customer';
+    const mockUser = { id: 'test-user-id', email: 'test@example.com' } as User;
+    const mockSession = { user: mockUser } as Session;
+    const initialRole = 'customer' as UserRole;
     const newRole = 'artist' as UserRole;
     
-    supabase.auth.getSession.mockResolvedValue({
+    (supabase.auth.getSession as any).mockResolvedValue({
       data: { session: mockSession },
       error: null,
     });
 
-    supabase.auth.getUser.mockResolvedValue({
+    (supabase.auth.getUser as any).mockResolvedValue({
       data: { user: mockUser },
       error: null,
     });
 
-    supabase.from().select().eq().single.mockResolvedValueOnce({
+    vi.mocked(supabase.from('users').select().eq().single).mockResolvedValueOnce({
       data: { 
         id: 'test-user-id', 
         role: initialRole,
         email: 'test@example.com'
       },
       error: null,
-    });
+    } as any);
 
-    supabase.from().update().eq.mockResolvedValue({
+    vi.mocked(supabase.from('users').update().eq).mockResolvedValue({
       data: { role: newRole },
       error: null,
-    });
+    } as any);
 
     const { result } = renderHook(() => useAuth(), { wrapper });
 
     // Wait for initial auth state
     await act(async () => {
-      const authStateChangeHandler = supabase.auth.onAuthStateChange.mock.calls[0][0];
+      const authStateChangeHandler = (supabase.auth.onAuthStateChange as any).mock.calls[0][0];
       authStateChangeHandler('SIGNED_IN', mockSession);
     });
 
     // Mock updateUserProfile to return success for role update
-    supabase.from().select().eq().single.mockResolvedValueOnce({
+    vi.mocked(supabase.from('users').select().eq().single).mockResolvedValueOnce({
       data: { 
         id: 'test-user-id', 
         role: newRole,
         email: 'test@example.com'
       },
       error: null,
-    });
+    } as any);
 
     // Update user role
     await act(async () => {

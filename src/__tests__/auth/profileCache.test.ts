@@ -1,5 +1,5 @@
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { 
   profileCache, 
   cacheProfile, 
@@ -9,6 +9,7 @@ import {
   CACHE_FRESH_DURATION,
   CACHE_STALE_DURATION
 } from '@/context/auth/utils/profileCache';
+import { UserRole, UserProfile } from '@/context/auth/types';
 
 describe('Profile caching module', () => {
   beforeEach(() => {
@@ -38,8 +39,8 @@ describe('Profile caching module', () => {
       id: userId,
       email: 'test@example.com',
       full_name: 'Test User',
-      role: 'artist'
-    };
+      role: 'artist' as UserRole
+    } as UserProfile;
     
     // Cache the profile
     cacheProfile(userId, userProfile, 'artist');
@@ -58,7 +59,7 @@ describe('Profile caching module', () => {
     const userProfile = {
       id: userId,
       email: 'test@example.com'
-    };
+    } as UserProfile;
     
     // Create cache entry with manipulated timestamp
     const now = Date.now();
@@ -98,8 +99,8 @@ describe('Profile caching module', () => {
     const userId2 = 'user-2';
     
     // Cache profiles for two different users
-    cacheProfile(userId1, { id: userId1, email: 'user1@example.com' }, 'artist');
-    cacheProfile(userId2, { id: userId2, email: 'user2@example.com' }, 'customer');
+    cacheProfile(userId1, { id: userId1, email: 'user1@example.com' } as UserProfile, 'artist');
+    cacheProfile(userId2, { id: userId2, email: 'user2@example.com' } as UserProfile, 'customer');
     
     // Verify both are cached
     expect(getCachedProfile(userId1)).not.toBeNull();
@@ -118,8 +119,8 @@ describe('Profile caching module', () => {
     const userProfile = {
       id: userId,
       email: 'test456@example.com',
-      role: 'salon'
-    };
+      role: 'salon' as UserRole
+    } as UserProfile;
     
     cacheProfile(userId, userProfile, 'salon');
     
@@ -127,7 +128,7 @@ describe('Profile caching module', () => {
     expect(localStorage.setItem).toHaveBeenCalled();
     
     // The first argument should be the cache key
-    const firstCallArgs = localStorage.setItem.mock.calls[0];
+    const firstCallArgs = (localStorage.setItem as any).mock.calls[0];
     expect(firstCallArgs[0]).toBe('emviapp_profile_cache');
     
     // The second argument should be a JSON string containing the profile

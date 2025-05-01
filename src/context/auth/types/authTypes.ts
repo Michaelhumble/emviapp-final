@@ -1,63 +1,70 @@
 
-import { User, Session } from "@supabase/supabase-js";
+import { User, Session, AuthSession } from '@supabase/supabase-js';
 
-export type UserRole = 'artist' | 'customer' | 'salon' | 'owner' | 'freelancer' | 'supplier' | 'admin' | 'super_admin' | 'beauty supplier' | 'nail technician/artist' | string | null;
+export type UserRole = 
+  | 'customer' 
+  | 'artist' 
+  | 'salon' 
+  | 'owner' 
+  | 'freelancer' 
+  | 'manager' 
+  | 'admin' 
+  | 'supplier' 
+  | 'vendor' 
+  | 'beauty supplier' 
+  | 'nail technician/artist' 
+  | 'renter' 
+  | 'other'
+  | null;
 
 export interface UserProfile {
   id: string;
-  user_id?: string;
   email?: string;
+  first_name?: string;
+  last_name?: string;
   full_name?: string;
+  username?: string;
   avatar_url?: string;
-  bio?: string;
-  website?: string;
-  specialty?: string;
-  role?: UserRole;
-  salon_name?: string;
-  instagram?: string;
-  location?: string | any;
   phone?: string;
+  bio?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zip_code?: string;
+  country?: string;
+  role?: UserRole;
   created_at?: string;
   updated_at?: string;
-  booked_until?: string;
-  years_experience?: number;
-  completed_profile_tasks?: string[];
-  portfolio_urls?: string[];
-  professional_name?: string;
-  affiliate_code?: string;
-  referral_code?: string;
-  referral_count?: number;
-  credits?: number;
-  profile_views?: number;
-  badges?: any[];
-  booking_url?: string;
-  contact_link?: string;
-  accepts_bookings?: boolean;
-  preferences?: string[];
-  preferred_language?: string;
-  skills?: string[];
-  profile_completion?: number;
-  favorite_artist_types?: string[];
-  artistTypes?: string[];
-  birthday?: string | null;
-  communication_preferences?: string[];
-  independent?: boolean;
+  [key: string]: any;
+}
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface SignUpCredentials extends LoginCredentials {
+  role?: UserRole;
+  full_name?: string;
 }
 
 export interface AuthContextType {
   user: User | null;
   userProfile: UserProfile | null;
   userRole: UserRole;
-  loading: boolean;
+  session: Session | null;
   isSignedIn: boolean;
-  isNewUser: boolean;
-  isError: boolean;
-  clearIsNewUser: () => void;
-  signIn: (email: string, password: string) => void;
-  signUp: (email: string, password: string, userData: any) => void;
-  signOut: () => void;
-  refreshUserProfile: () => Promise<any>;
-  updateUserRole: (role: UserRole) => void;
-  updateProfile: (data: Partial<UserProfile>) => void;
+  loading: boolean;
+  loggingIn: boolean;
+  loggingOut: boolean;
+  signingUp: boolean;
+  error: Error | null;
   hasRole: (role: UserRole) => boolean;
+  signIn: (credentials: LoginCredentials) => Promise<{ user: User | null; error: Error | null }>;
+  signOut: () => Promise<void>;
+  signUp: (credentials: SignUpCredentials) => Promise<{ user: User | null; error: Error | null }>;
+  updateUserRole: (role: UserRole) => Promise<void>;
+  updateUserProfile: (profile: Partial<UserProfile>) => Promise<void>;
+  refreshUserProfile: () => Promise<void>;
+  handleAuthError: (error: Error | unknown, operation: string) => void;
 }

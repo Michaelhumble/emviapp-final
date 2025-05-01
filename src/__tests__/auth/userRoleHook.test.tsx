@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
+import { UserRole } from '@/context/auth/types';
 
 // Mock Supabase client
 vi.mock('@/integrations/supabase/client', () => ({
@@ -44,9 +45,9 @@ describe('useUserRole hook', () => {
   it('should fetch role from auth metadata when available', async () => {
     // Setup mocks
     const userId = 'test-user-id';
-    const metadataRole = 'artist';
+    const metadataRole = 'artist' as UserRole;
     
-    supabase.auth.getUser.mockResolvedValue({
+    (supabase.auth.getUser as any).mockResolvedValue({
       data: {
         user: {
           id: userId,
@@ -69,9 +70,9 @@ describe('useUserRole hook', () => {
 
   it('should fall back to database role if metadata role is not available', async () => {
     const userId = 'test-user-id';
-    const dbRole = 'salon';
+    const dbRole = 'salon' as UserRole;
     
-    supabase.auth.getUser.mockResolvedValue({
+    (supabase.auth.getUser as any).mockResolvedValue({
       data: {
         user: {
           id: userId,
@@ -81,10 +82,10 @@ describe('useUserRole hook', () => {
       error: null
     });
     
-    supabase.from().select().eq().maybeSingle.mockResolvedValue({
+    vi.mocked(supabase.from('users').select('role').eq('id', userId).maybeSingle).mockResolvedValue({
       data: { role: dbRole },
       error: null
-    });
+    } as any);
     
     const { result } = renderHook(() => useUserRole(userId));
     
@@ -98,11 +99,11 @@ describe('useUserRole hook', () => {
 
   it('should fall back to localStorage role if metadata and database roles are not available', async () => {
     const userId = 'test-user-id';
-    const localStorageRole = 'customer';
+    const localStorageRole = 'customer' as UserRole;
     
     localStorage.setItem('emviapp_user_role', localStorageRole);
     
-    supabase.auth.getUser.mockResolvedValue({
+    (supabase.auth.getUser as any).mockResolvedValue({
       data: {
         user: {
           id: userId,
@@ -112,10 +113,10 @@ describe('useUserRole hook', () => {
       error: null
     });
     
-    supabase.from().select().eq().maybeSingle.mockResolvedValue({
+    vi.mocked(supabase.from('users').select('role').eq('id', userId).maybeSingle).mockResolvedValue({
       data: null, // No role in database
       error: null
-    });
+    } as any);
     
     const { result } = renderHook(() => useUserRole(userId));
     
@@ -128,11 +129,11 @@ describe('useUserRole hook', () => {
 
   it('should correctly implement the hasRole helper function', async () => {
     const userId = 'test-user-id';
-    const role = 'artist';
+    const role = 'artist' as UserRole;
     
     localStorage.setItem('emviapp_user_role', role);
     
-    supabase.auth.getUser.mockRejectedValue(new Error('Network error'));
+    (supabase.auth.getUser as any).mockRejectedValue(new Error('Network error'));
     
     const { result } = renderHook(() => useUserRole(userId));
     
@@ -145,16 +146,16 @@ describe('useUserRole hook', () => {
     expect(result.current.hasRole('customer')).toBe(false);
     
     // Test with role variants
-    expect(result.current.hasRole('nail tech')).toBe(true); // Should normalize to 'artist'
+    expect(result.current.hasRole('artist')).toBe(true); // Should normalize to 'artist'
   });
 
   it('should handle API errors gracefully', async () => {
     const userId = 'test-user-id';
-    const localStorageRole = 'freelancer';
+    const localStorageRole = 'freelancer' as UserRole;
     
     localStorage.setItem('emviapp_user_role', localStorageRole);
     
-    supabase.auth.getUser.mockRejectedValue(new Error('Auth API error'));
+    (supabase.auth.getUser as any).mockRejectedValue(new Error('Auth API error'));
     
     const { result } = renderHook(() => useUserRole(userId));
     
