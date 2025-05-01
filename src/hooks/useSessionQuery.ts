@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import { Session, User } from '@supabase/supabase-js';
+import { Session, User, AuthChangeEvent } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 
@@ -36,7 +36,7 @@ export function useSessionQuery() {
       
       // If the user just signed up, set isNewUser to true
       // Using string literals directly for comparison since event is a string
-      if (event === 'SIGNED_UP') {
+      if (event === AuthChangeEvent.SIGNED_UP) {
         setIsNewUser(true);
         localStorage.setItem('emviapp_new_user', 'true');
         
