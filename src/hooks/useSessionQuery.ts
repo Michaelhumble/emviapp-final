@@ -7,6 +7,12 @@ import { toast } from 'sonner';
 import { User, Session } from '@supabase/supabase-js';
 import { LoginCredentials, SignUpCredentials } from '@/context/auth/types/authTypes';
 
+/**
+ * Custom hook to manage authentication session state using React Query
+ * Handles authentication operations like sign in, sign up, sign out
+ * 
+ * @returns {Object} Authentication state and methods
+ */
 export function useSessionQuery() {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -26,13 +32,17 @@ export function useSessionQuery() {
 
   // Sync session and user state with Supabase auth
   useEffect(() => {
+    console.log("Setting up auth state listener");
+    
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
+      console.log(`Auth state changed: ${event}`);
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       
       // Handle specific auth events
       if (event === 'SIGNED_UP') {
+        console.log("User signed up, setting new user state");
         setIsNewUser(true);
         localStorage.setItem('emviapp_new_user', 'true');
         
@@ -47,6 +57,7 @@ export function useSessionQuery() {
       
       // Handle sign in
       if (event === 'SIGNED_IN') {
+        console.log("User signed in");
         const userRole = currentSession?.user?.user_metadata?.role;
         if (userRole) {
           localStorage.setItem('emviapp_user_role', userRole);
@@ -55,6 +66,7 @@ export function useSessionQuery() {
 
       // Handle sign out
       if (event === 'SIGNED_OUT') {
+        console.log("User signed out, clearing state");
         setIsNewUser(false);
         localStorage.removeItem('emviapp_new_user');
         localStorage.removeItem('emviapp_user_role');
@@ -66,6 +78,7 @@ export function useSessionQuery() {
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+      console.log("Initial session check:", initialSession ? "Session found" : "No session");
       setSession(initialSession);
       setUser(initialSession?.user ?? null);
       
@@ -74,15 +87,20 @@ export function useSessionQuery() {
       }
       
       setLoading(false);
+    }).catch(error => {
+      console.error("Error getting initial session:", error);
+      setLoading(false);
     });
 
     return () => {
+      console.log("Cleaning up auth state listener");
       subscription.unsubscribe();
     };
   }, [navigate, queryClient]);
 
   // Clear new user status
   const clearIsNewUser = useCallback(() => {
+    console.log("Clearing new user status");
     setIsNewUser(false);
     localStorage.removeItem('emviapp_new_user');
   }, []);
@@ -90,15 +108,18 @@ export function useSessionQuery() {
   // Sign in mutation
   const signInMutation = useMutation({
     mutationFn: async (credentials: LoginCredentials) => {
+      console.log(`Attempting to sign in user: ${credentials.email}`);
       const result = await supabase.auth.signInWithPassword({
         email: credentials.email,
         password: credentials.password
       });
       
       if (result.error) {
+        console.error("Sign in error:", result.error.message);
         throw result.error;
       }
       
+      console.log("Sign in successful");
       return result.data;
     },
     onSuccess: () => {
@@ -117,6 +138,7 @@ export function useSessionQuery() {
     mutationFn: async (credentials: SignUpCredentials) => {
       const { email, password, ...userData } = credentials;
       
+      console.log(`Attempting to register new user: ${email}`);
       const result = await supabase.auth.signUp({
         email,
         password,
@@ -126,9 +148,11 @@ export function useSessionQuery() {
       });
       
       if (result.error) {
+        console.error("Sign up error:", result.error.message);
         throw result.error;
       }
       
+      console.log("Sign up successful");
       return result.data;
     },
     onSuccess: () => {
@@ -151,12 +175,15 @@ export function useSessionQuery() {
   // Sign out mutation
   const signOutMutation = useMutation({
     mutationFn: async () => {
+      console.log("Signing out user");
       const result = await supabase.auth.signOut();
       
       if (result.error) {
+        console.error("Sign out error:", result.error.message);
         throw result.error;
       }
       
+      console.log("Sign out successful");
       return result;
     },
     onSuccess: () => {
@@ -173,12 +200,14 @@ export function useSessionQuery() {
 
   // Retry authentication
   const retryAuthentication = useCallback(async () => {
+    console.log("Attempting to retry authentication");
     setLoading(true);
     try {
       const { data } = await supabase.auth.getSession();
       setSession(data.session);
       setUser(data.session?.user ?? null);
       setAuthError(null);
+      console.log("Authentication retry successful:", data.session ? "Session found" : "No session");
     } catch (error) {
       console.error('Retry authentication error:', error);
     } finally {

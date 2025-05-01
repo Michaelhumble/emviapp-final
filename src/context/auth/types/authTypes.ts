@@ -1,80 +1,198 @@
 
-import { User, Session, AuthSession } from '@supabase/supabase-js';
+import { Session, User } from "@supabase/supabase-js";
 
+/**
+ * Available user roles in the application
+ */
 export type UserRole = 
-  | 'customer' 
-  | 'artist' 
-  | 'salon' 
-  | 'owner' 
-  | 'freelancer' 
-  | 'manager' 
-  | 'admin' 
-  | 'supplier' 
-  | 'vendor' 
-  | 'beauty supplier' 
-  | 'nail technician/artist' 
-  | 'renter' 
-  | 'other'
-  | null;
+  | "customer" 
+  | "artist" 
+  | "salon" 
+  | "freelancer" 
+  | "owner" 
+  | "supplier" 
+  | "admin"
+  | "nail technician/artist"
+  | "beauty supplier"
+  | "salon owner";
 
+/**
+ * User profile data structure
+ */
 export interface UserProfile {
+  /** Unique identifier (matches auth.user.id) */
   id: string;
+  
+  /** User's email address */
   email: string;
-  first_name?: string;
-  last_name?: string;
-  full_name?: string;
-  username?: string;
-  avatar_url?: string;
-  phone?: string;
-  bio?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zip_code?: string;
-  country?: string;
+  
+  /** User's role in the system */
   role?: UserRole;
+  
+  /** User's first name */
+  first_name?: string;
+  
+  /** User's last name */
+  last_name?: string;
+  
+  /** User's full name (displayed in UI) */
+  full_name?: string;
+  
+  /** User's avatar/profile image URL */
+  avatar_url?: string;
+  
+  /** User's bio/description */
+  bio?: string;
+  
+  /** User's professional specialty */
   specialty?: string;
+  
+  /** User's geographical location */
   location?: string;
+  
+  /** User's Instagram handle */
   instagram?: string;
+  
+  /** User's website URL */
   website?: string;
-  referred_by?: string;
+  
+  /** User's preferred language */
+  language_preference?: string;
+  
+  /** User's referral/affiliate code */
   referral_code?: string;
-  portfolio_urls?: string[];
-  affiliate_code?: string;
+  
+  /** User's personal rating (e.g., for artists) */
+  rating?: number;
+  
+  /** Timestamp when the profile was created */
   created_at?: string;
+  
+  /** Timestamp when the profile was last updated */
   updated_at?: string;
-  [key: string]: any;
+  
+  /** Whether the profile is publicly visible */
+  is_public?: boolean;
+  
+  /** Record of who referred this user */
+  referred_by?: string;
+  
+  /** User's phone number */
+  phone?: string;
+  
+  /** Whether the profile has been verified */
+  verified?: boolean;
+  
+  /** Username for public profiles */
+  username?: string;
+  
+  /** The code used by another user to refer this user */
+  referred_by_referral_code?: string;
+  
+  /** Affiliate code for marketing purposes */
+  affiliate_code?: string;
 }
 
+/**
+ * Credentials for sign-in functionality
+ */
 export interface LoginCredentials {
+  /** User's email address */
   email: string;
+  
+  /** User's password */
   password: string;
 }
 
+/**
+ * Extended credentials for sign-up functionality
+ */
 export interface SignUpCredentials extends LoginCredentials {
-  role?: UserRole;
-  full_name?: string;
+  /** Additional user data for registration */
+  [key: string]: any;
 }
 
+/**
+ * Authentication context type definition
+ * Provides authentication state and methods throughout the app
+ */
 export interface AuthContextType {
+  /** Current authenticated user */
   user: User | null;
+  
+  /** Detailed profile data for the current user */
   userProfile: UserProfile | null;
+  
+  /** Current user's role in the system */
   userRole: UserRole;
+  
+  /** Current authentication session */
   session: Session | null;
-  isSignedIn: boolean;
+  
+  /** Whether authentication data is still loading */
   loading: boolean;
+  
+  /** Whether user is currently signing in */
   loggingIn: boolean;
+  
+  /** Whether user is currently signing out */
   loggingOut: boolean;
-  signingUp: boolean;
-  error: Error | null;
+  
+  /** Whether user is currently signing up */
+  signingUp?: boolean;
+  
+  /** Whether the user is authenticated */
+  isSignedIn: boolean;
+  
+  /** Whether there was an error fetching profile */
   isError: boolean;
-  isNewUser: boolean;
-  clearIsNewUser: () => void;
-  hasRole: (role: UserRole) => boolean;
+  
+  /** Whether the user just registered */
+  isNewUser?: boolean;
+  
+  /** Function to clear the new user flag */
+  clearIsNewUser?: () => void;
+  
+  /** Any authentication error that occurred */
+  error?: Error | null;
+
+  /**
+   * Sign in with credentials
+   * @param credentials - User login credentials
+   */
   signIn: (credentials: LoginCredentials) => Promise<{ user: User | null; error: Error | null }>;
-  signOut: () => Promise<void>;
+  
+  /**
+   * Sign up with credentials
+   * @param credentials - User registration data
+   */
   signUp: (credentials: SignUpCredentials) => Promise<{ user: User | null; error: Error | null }>;
-  updateUserRole: (role: UserRole) => Promise<void>;
-  updateProfile: (data: Partial<UserProfile>) => Promise<{ success: boolean; error?: Error }>;
+  
+  /**
+   * Sign out the current user
+   */
+  signOut: () => Promise<void>;
+  
+  /**
+   * Refresh the user profile data
+   */
   refreshUserProfile: () => Promise<void>;
+  
+  /**
+   * Update the user's role
+   * @param role - New role to set
+   */
+  updateUserRole: (role: UserRole) => Promise<void>;
+  
+  /**
+   * Update user profile data
+   * @param data - Profile data to update
+   */
+  updateProfile?: (data: Partial<UserProfile>) => Promise<{ success: boolean; error?: Error }>;
+  
+  /**
+   * Check if user has a specific role
+   * @param role - Role to check
+   */
+  hasRole: (role: UserRole | UserRole[]) => boolean;
 }

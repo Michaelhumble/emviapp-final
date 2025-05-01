@@ -1,4 +1,5 @@
-import React, { useState, createContext, useContext } from 'react';
+
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import { User } from '@supabase/supabase-js';
 import { useSessionQuery } from '@/hooks/useSessionQuery';
 import { useProfileQuery } from '@/hooks/useProfileQuery';
@@ -87,6 +88,59 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Determine the effective role (roleQuery takes precedence)
   const effectiveRole = userRole || profileRole;
 
+  /**
+   * Wrapper for signIn function to ensure consistent return type
+   * @param credentials - Login credentials
+   * @returns Promise with user and error information
+   */
+  const handleSignIn = async (credentials: any) => {
+    try {
+      const result = await signIn(credentials);
+      return result;
+    } catch (error) {
+      return { user: null, error: error as Error };
+    }
+  };
+
+  /**
+   * Wrapper for signUp function to ensure consistent return type
+   * @param credentials - Registration credentials
+   * @returns Promise with user and error information
+   */
+  const handleSignUp = async (credentials: any) => {
+    try {
+      const result = await signUp(credentials);
+      return result;
+    } catch (error) {
+      return { user: null, error: error as Error };
+    }
+  };
+
+  /**
+   * Wrapper for signOut function to ensure consistent return type
+   * @returns Promise<void>
+   */
+  const handleSignOut = async (): Promise<void> => {
+    await signOut();
+  };
+
+  /**
+   * Wrapper for refreshUserProfile function to ensure consistent return type
+   * @returns Promise<void>
+   */
+  const handleRefreshProfile = async (): Promise<void> => {
+    await refreshProfile();
+  };
+
+  /**
+   * Wrapper for updateUserRole function to ensure consistent return type
+   * @param role - New user role
+   * @returns Promise<void>
+   */
+  const handleUpdateRole = async (role: UserRole): Promise<void> => {
+    await updateUserRole(role);
+  };
+
   // Construct auth context value with proper Promise wrappers
   const authContextValue: AuthContextType = {
     user,
@@ -98,25 +152,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loggingOut: isSigningOut,
     signingUp: isSigningUp,
     isSignedIn: !!user,
-    isError: profileError,
+    isError: !!profileError,
     isNewUser,
     clearIsNewUser,
     error: authError,
-    signIn: async (credentials) => {
-      return await signIn(credentials);
-    },
-    signUp: async (credentials) => {
-      return await signUp(credentials);
-    },
-    signOut: async () => {
-      await signOut();
-    },
-    refreshUserProfile: async () => {
-      await refreshProfile();
-    },
-    updateUserRole: async (role) => {
-      await updateUserRole(role);
-    },
+    signIn: handleSignIn,
+    signUp: handleSignUp,
+    signOut: handleSignOut,
+    refreshUserProfile: handleRefreshProfile,
+    updateUserRole: handleUpdateRole,
     updateProfile: async (data) => {
       try {
         await updateProfile(data);
@@ -177,13 +221,4 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};
-
-// Hook for using auth context
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };
