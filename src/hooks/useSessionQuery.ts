@@ -35,7 +35,8 @@ export function useSessionQuery() {
       setUser(session?.user ?? null);
       
       // If the user just signed up, set isNewUser to true
-      if (event === 'SIGNED_UP') {
+      // Using string literals for event comparison as required by Supabase's types
+      if (event === "SIGNED_UP") {
         setIsNewUser(true);
         localStorage.setItem('emviapp_new_user', 'true');
         
@@ -49,7 +50,7 @@ export function useSessionQuery() {
       }
       
       // If the user signs in, check for role info
-      if (event === 'SIGNED_IN') {
+      if (event === "SIGNED_IN") {
         const userRole = session?.user?.user_metadata?.role;
         if (userRole) {
           localStorage.setItem('emviapp_user_role', userRole);
@@ -57,7 +58,7 @@ export function useSessionQuery() {
       }
 
       // If the user signs out, reset all states
-      if (event === 'SIGNED_OUT') {
+      if (event === "SIGNED_OUT") {
         setIsNewUser(false);
         localStorage.removeItem('emviapp_new_user');
         localStorage.removeItem('emviapp_user_role');
