@@ -1,37 +1,43 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 
 interface LanguageToggleButtonProps {
   language: "en" | "vi";
-  setLanguage: (language: "en" | "vi") => void;
+  setLanguage: (lang: "en" | "vi") => void;
   itemVariants: any;
 }
 
 const LanguageToggleButton = ({ language, setLanguage, itemVariants }: LanguageToggleButtonProps) => {
+  // Safety check for language value
+  const currentLanguage = language === "vi" ? "vi" : "en";
+  
   return (
-    <motion.div
-      className="flex justify-center"
+    <motion.div 
+      className="flex justify-center mb-8"
       variants={itemVariants}
     >
-      <div className="inline-flex rounded-md shadow-sm" role="group">
-        <Button
-          type="button"
-          variant={language === "en" ? "default" : "outline"}
-          className="rounded-l-md rounded-r-none"
+      <div className="bg-gray-100 rounded-full p-1 flex shadow-sm">
+        <button
           onClick={() => setLanguage("en")}
+          className={`px-4 py-1 rounded-full text-sm font-medium transition-colors ${
+            currentLanguage === "en" 
+              ? "bg-white text-violet-600 shadow-sm" 
+              : "text-gray-500 hover:text-gray-700"
+          }`}
         >
-          English
-        </Button>
-        <Button
-          type="button"
-          variant={language === "vi" ? "default" : "outline"}
-          className="rounded-r-md rounded-l-none"
+          EN
+        </button>
+        <button
           onClick={() => setLanguage("vi")}
+          className={`px-4 py-1 rounded-full text-sm font-medium transition-colors ${
+            currentLanguage === "vi" 
+              ? "bg-white text-violet-600 shadow-sm" 
+              : "text-gray-500 hover:text-gray-700"
+          }`}
         >
-          Tiếng Việt
-        </Button>
+          VI
+        </button>
       </div>
     </motion.div>
   );

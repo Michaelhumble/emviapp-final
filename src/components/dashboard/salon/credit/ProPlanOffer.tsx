@@ -3,7 +3,6 @@ import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/hooks/useTranslation";
-import { toTranslatableText } from "../SalonTranslationHelper";
 
 interface ProPlanOfferProps {
   isDiscountEligible: boolean;
@@ -20,7 +19,7 @@ const ProPlanOffer = ({ isDiscountEligible, handleUpgrade }: ProPlanOfferProps) 
           <div className="flex items-center space-x-2">
             <Sparkles className="h-4 w-4 text-amber-500" />
             <p className="font-medium text-gray-800">
-              {t(toTranslatableText("Upgrade to Pro"))}
+              {t("Upgrade to Pro")}
             </p>
             {isDiscountEligible && (
               <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
@@ -30,8 +29,8 @@ const ProPlanOffer = ({ isDiscountEligible, handleUpgrade }: ProPlanOfferProps) 
           </div>
           <p className="text-sm text-gray-600 mt-1">
             {isDiscountEligible
-              ? t(toTranslatableText("Special offer! Save 20% on your subscription."))
-              : t(toTranslatableText("Unlock premium features to grow your salon."))}
+              ? t("Special offer! Save 20% on your subscription.")
+              : t("Unlock premium features to grow your salon.")}
           </p>
         </div>
         <Button 
@@ -39,7 +38,7 @@ const ProPlanOffer = ({ isDiscountEligible, handleUpgrade }: ProPlanOfferProps) 
           size="sm"
           className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600"
         >
-          {t(toTranslatableText("Upgrade"))}
+          {t("Upgrade")}
         </Button>
       </div>
     </div>

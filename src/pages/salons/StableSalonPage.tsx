@@ -1,13 +1,25 @@
 
 import React from 'react';
 import SalonsFinal from './SalonsFinal';
-import { StableRouteGuard } from '@/utils/stability/RouteStabilityGuard';
+import StablePageWrapper from '@/components/common/StablePageWrapper';
 
-const StableSalonPage = () => {
+/**
+ * Stable wrapper for the salon pages using the reusable StablePageWrapper
+ */
+const StableSalonPage: React.FC = () => {
   return (
-    <StableRouteGuard isStable={true}>
+    <StablePageWrapper
+      title="Salons"
+      description="Browse our comprehensive directory of nail salons."
+      fallbackLinks={[
+        { href: "/jobs", label: "Jobs" },
+        { href: "/", label: "Homepage" },
+        { href: "/dashboard", label: "Dashboard" }
+      ]}
+      version="1.0.3"
+    >
       <SalonsFinal />
-    </StableRouteGuard>
+    </StablePageWrapper>
   );
 };
 

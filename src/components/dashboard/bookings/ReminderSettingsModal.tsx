@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -140,16 +139,10 @@ const ReminderSettingsModal = ({ isOpen, onClose }: ReminderSettingsModalProps) 
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            {t({
-              english: "Reminder Settings",
-              vietnamese: "Cài đặt nhắc nhở"
-            })}
+            {t("Reminder Settings")}
           </DialogTitle>
           <DialogDescription>
-            {t({
-              english: "Configure how you'd like to receive booking reminders",
-              vietnamese: "Cấu hình cách bạn muốn nhận nhắc nhở đặt lịch"
-            })}
+            {t("Configure how you'd like to receive booking reminders")}
           </DialogDescription>
         </DialogHeader>
         
@@ -166,10 +159,7 @@ const ReminderSettingsModal = ({ isOpen, onClose }: ReminderSettingsModalProps) 
                 onCheckedChange={(checked) => setEmailReminders(checked === true)}
               />
               <Label htmlFor="email-reminders">
-                {t({
-                  english: "Email reminders (24 hours before)",
-                  vietnamese: "Nhắc nhở qua email (24 giờ trước)"
-                })}
+                {t("Email reminders (24 hours before)")}
               </Label>
             </div>
             
@@ -180,10 +170,7 @@ const ReminderSettingsModal = ({ isOpen, onClose }: ReminderSettingsModalProps) 
                 onCheckedChange={(checked) => setSmsReminders(checked === true)}
               />
               <Label htmlFor="sms-reminders">
-                {t({
-                  english: "SMS reminders (24 hours before)",
-                  vietnamese: "Nhắc nhở qua SMS (24 giờ trước)"
-                })}
+                {t("SMS reminders (24 hours before)")}
               </Label>
             </div>
           </div>
@@ -195,10 +182,7 @@ const ReminderSettingsModal = ({ isOpen, onClose }: ReminderSettingsModalProps) 
             onClick={onClose}
             disabled={isSaving}
           >
-            {t({
-              english: "Cancel",
-              vietnamese: "Hủy"
-            })}
+            {t("Cancel")}
           </Button>
           <Button 
             onClick={saveSettings}
@@ -207,10 +191,7 @@ const ReminderSettingsModal = ({ isOpen, onClose }: ReminderSettingsModalProps) 
             {isSaving ? (
               <div className="h-4 w-4 border-2 border-t-transparent border-current rounded-full animate-spin mr-2"></div>
             ) : null}
-            {t({
-              english: "Save Settings",
-              vietnamese: "Lưu cài đặt"
-            })}
+            {t("Save Settings")}
           </Button>
         </DialogFooter>
       </DialogContent>

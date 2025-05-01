@@ -1,10 +1,10 @@
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Session, User, AuthChangeEvent } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 
-export function useSession() {
+export function useSessionQuery() {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,6 +35,7 @@ export function useSession() {
       setUser(session?.user ?? null);
       
       // If the user just signed up, set isNewUser to true
+      // Using string literals directly for comparison since event is a string
       if ((event as any) === "SIGNED_UP") {
         setIsNewUser(true);
         localStorage.setItem('emviapp_new_user', 'true');

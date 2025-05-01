@@ -1,59 +1,58 @@
 
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-type AnimationType = 'fade-in' | 'slide-up' | 'bounce' | 'none';
-
-interface ScrollAnimationOptions {
+export interface UseScrollAnimationProps {
   threshold?: number;
+  animation?: string;
+  once?: boolean;
   rootMargin?: string;
-  animation?: AnimationType;
-  delay?: number;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
-export const useScrollAnimation = (options: ScrollAnimationOptions = {}) => {
-  const {
-    threshold = 0.1,
-    rootMargin = '0px',
-    animation = 'fade-in',
-    delay = 0
-  } = options;
-  
+export const useScrollAnimation = ({
+  threshold = 0.1,
+  animation = 'fade-in',
+  once = true,
+  rootMargin = '0px 0px -100px 0px',
+  className = '',
+  style = {}
+}: UseScrollAnimationProps = {}) => {
+  const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
-  const elementRef = useRef<HTMLElement | null>(null);
   
   useEffect(() => {
-    const current = elementRef.current;
-    if (!current) return;
+    const currentRef = ref.current;
     
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setTimeout(() => {
-            setIsVisible(true);
-          }, delay);
-          observer.unobserve(current);
+          setIsVisible(true);
+          // If once is true, unobserve after it becomes visible
+          if (once && currentRef) {
+            observer.unobserve(currentRef);
+          }
+        } else if (!once) {
+          // Only set to false if once is false
+          setIsVisible(false);
         }
       },
-      { threshold, rootMargin }
+      {
+        threshold,
+        rootMargin // Trigger slightly before the element comes into view
+      }
     );
-    
-    observer.observe(current);
-    
+
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
     return () => {
-      if (current) {
-        observer.unobserve(current);
+      if (currentRef) {
+        observer.unobserve(currentRef);
       }
     };
-  }, [threshold, rootMargin, delay]);
-  
-  return {
-    ref: elementRef,
-    isVisible,
-    className: isVisible ? animation : 'opacity-0',
-    style: { 
-      transitionProperty: 'opacity, transform',
-      transitionDuration: '0.5s',
-      transitionTimingFunction: 'ease-out'
-    }
-  };
+  }, [threshold, once, rootMargin]);
+
+  return { ref, isVisible, animation, className, style };
 };

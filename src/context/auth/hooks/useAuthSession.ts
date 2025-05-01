@@ -1,7 +1,7 @@
 
-import React, { useEffect, useState } from 'react';
-import { Session, User, AuthChangeEvent } from '@supabase/supabase-js';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { Session, User, AuthChangeEvent } from '@supabase/supabase-js';
 import { useNavigate } from 'react-router-dom';
 
 export function useSession() {
@@ -35,7 +35,7 @@ export function useSession() {
       setUser(session?.user ?? null);
       
       // If the user just signed up, set isNewUser to true
-      if ((event as any) === "SIGNED_UP") {
+      if (event === 'SIGNED_UP' as AuthChangeEvent) {
         setIsNewUser(true);
         localStorage.setItem('emviapp_new_user', 'true');
         
@@ -49,7 +49,7 @@ export function useSession() {
       }
       
       // If the user signs in, check for role info
-      if ((event as any) === "SIGNED_IN") {
+      if (event === 'SIGNED_IN' as AuthChangeEvent) {
         const userRole = session?.user?.user_metadata?.role;
         if (userRole) {
           localStorage.setItem('emviapp_user_role', userRole);
@@ -57,7 +57,7 @@ export function useSession() {
       }
 
       // If the user signs out, reset all states
-      if ((event as any) === "SIGNED_OUT") {
+      if (event === 'SIGNED_OUT' as AuthChangeEvent) {
         setIsNewUser(false);
         localStorage.removeItem('emviapp_new_user');
         localStorage.removeItem('emviapp_user_role');

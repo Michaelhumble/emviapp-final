@@ -14,8 +14,6 @@ const ArtistReferralRewards = () => {
   const { referralStats, loading } = useReferralSystem();
   const { userProfile } = useAuth();
   
-  const isVietnamese = userProfile?.preferred_language?.toLowerCase() === 'vietnamese';
-  
   // Calculate estimated credits from referrals (placeholder logic)
   const creditsFromReferrals = referralStats?.completedReferrals * 5 || 0;
   
@@ -78,10 +76,7 @@ const ArtistReferralRewards = () => {
                 className="text-lg font-medium mb-1"
                 variants={itemVariants}
               >
-                {t({
-                  english: "Your Referral Rewards",
-                  vietnamese: "Phần Thưởng Giới Thiệu"
-                })}
+                {t("Your Referral Rewards")}
               </motion.h3>
               
               <motion.div
@@ -91,40 +86,28 @@ const ArtistReferralRewards = () => {
                 <div className="grid grid-cols-2 gap-2 mt-3">
                   <div className="bg-purple-50 rounded-lg p-3 flex flex-col">
                     <span className="text-sm text-purple-600 font-medium">
-                      {t({
-                        english: "Credits Earned",
-                        vietnamese: "Credits Đã Nhận"
-                      })}
+                      {t("Credits Earned")}
                     </span>
                     <div className="flex items-center mt-1">
                       <span className="text-2xl font-bold text-purple-700">
                         {creditsFromReferrals}
                       </span>
                       <span className="text-xs ml-1 text-purple-500 font-medium">
-                        {t({
-                          english: "credits",
-                          vietnamese: "credits"
-                        })}
+                        {t("credits")}
                       </span>
                     </div>
                   </div>
                   
                   <div className="bg-indigo-50 rounded-lg p-3 flex flex-col">
                     <span className="text-sm text-indigo-600 font-medium">
-                      {t({
-                        english: "Successful Invites",
-                        vietnamese: "Lượt Giới Thiệu"
-                      })}
+                      {t("Successful Invites")}
                     </span>
                     <div className="flex items-center mt-1">
                       <span className="text-2xl font-bold text-indigo-700">
                         {referralStats?.completedReferrals || 0}
                       </span>
                       <span className="text-xs ml-1 text-indigo-500 font-medium">
-                        {t({
-                          english: "friends",
-                          vietnamese: "bạn"
-                        })}
+                        {t("friends")}
                       </span>
                     </div>
                   </div>
@@ -133,19 +116,13 @@ const ArtistReferralRewards = () => {
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <Heart className="h-4 w-4 text-pink-500" />
                   <span>
-                    {t({
-                      english: "Every referral helps grow EmviApp 💖",
-                      vietnamese: "Mỗi lượt giới thiệu là một bước phát triển 💖"
-                    })}
+                    {t("Every referral helps grow EmviApp 💖")}
                   </span>
                 </div>
                 
                 <Button className="w-full" asChild>
                   <Link to="/referrals">
-                    {t({
-                      english: "View Referral History",
-                      vietnamese: "Xem lịch sử giới thiệu"
-                    })}
+                    {t("View Referral History")}
                   </Link>
                 </Button>
               </motion.div>
