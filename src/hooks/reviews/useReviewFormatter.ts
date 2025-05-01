@@ -3,7 +3,7 @@ import { format, formatDistance } from 'date-fns';
 import { useTranslation } from '@/hooks/useTranslation';
 
 export const useReviewFormatter = () => {
-  const { t } = useTranslation();
+  const { isVietnamese } = useTranslation();
 
   const formatDate = (dateStr: string) => {
     try {
@@ -26,54 +26,33 @@ export const useReviewFormatter = () => {
   const getRatingLabel = (rating: number) => {
     switch (rating) {
       case 5:
-        return t({
-          english: 'Excellent',
-          vietnamese: 'Xuất sắc'
-        });
+        return isVietnamese ? 'Xuất sắc' : 'Excellent';
       case 4:
-        return t({
-          english: 'Very Good',
-          vietnamese: 'Rất tốt'
-        });
+        return isVietnamese ? 'Rất tốt' : 'Very Good';
       case 3:
-        return t({
-          english: 'Good',
-          vietnamese: 'Tốt'
-        });
+        return isVietnamese ? 'Tốt' : 'Good';
       case 2:
-        return t({
-          english: 'Fair',
-          vietnamese: 'Trung bình'
-        });
+        return isVietnamese ? 'Trung bình' : 'Fair';
       case 1:
-        return t({
-          english: 'Poor',
-          vietnamese: 'Kém'
-        });
+        return isVietnamese ? 'Kém' : 'Poor';
       default:
         return '';
     }
   };
 
   const getReviewsLabel = (count: number) => {
-    return t({
-      english: count === 1 ? '1 Review' : `${count} Reviews`,
-      vietnamese: count === 1 ? '1 Đánh giá' : `${count} Đánh giá`
-    });
+    if (isVietnamese) {
+      return count === 1 ? '1 Đánh giá' : `${count} Đánh giá`;
+    }
+    return count === 1 ? '1 Review' : `${count} Reviews`;
   };
 
   const getVerifiedClientLabel = () => {
-    return t({
-      english: 'Verified Client',
-      vietnamese: 'Khách hàng đã xác minh'
-    });
+    return isVietnamese ? 'Khách hàng đã xác minh' : 'Verified Client';
   };
 
   const getNoReviewsLabel = () => {
-    return t({
-      english: 'No reviews yet',
-      vietnamese: 'Chưa có đánh giá nào'
-    });
+    return isVietnamese ? 'Chưa có đánh giá nào' : 'No reviews yet';
   };
 
   return {

@@ -3,14 +3,13 @@ import React from 'react';
 import { Referral } from './types';
 import { CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
-import { toTranslatableText } from '@/components/dashboard/salon/SalonTranslationHelper';
 
 interface ReferralListProps {
   referrals: Referral[];
 }
 
 const ReferralList = ({ referrals }: ReferralListProps) => {
-  const { t } = useTranslation();
+  const { isVietnamese } = useTranslation();
   
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -39,7 +38,7 @@ const ReferralList = ({ referrals }: ReferralListProps) => {
   if (!referrals || referrals.length === 0) {
     return (
       <div className="text-center py-6 text-gray-500">
-        {t(toTranslatableText('No referrals yet'))}
+        {isVietnamese ? 'Chưa có giới thiệu nào' : 'No referrals yet'}
       </div>
     );
   }

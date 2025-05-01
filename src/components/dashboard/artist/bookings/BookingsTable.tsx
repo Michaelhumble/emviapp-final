@@ -22,13 +22,20 @@ const BookingsTable = ({
   handleAccept, 
   handleDecline 
 }: BookingsTableProps) => {
-  const { t } = useTranslation();
+  const { isVietnamese } = useTranslation();
+  
+  // Translations
+  const loadingText = isVietnamese ? "Đang tải đặt chỗ..." : "Loading bookings...";
+  const noBookingsFoundText = isVietnamese ? "Không tìm thấy đặt chỗ nào" : "No bookings found";
+  const bookingsAppearText = isVietnamese 
+    ? "Khi khách hàng đặt dịch vụ của bạn, họ sẽ xuất hiện ở đây." 
+    : "When clients book your services, they will appear here.";
   
   if (loading) {
     return (
       <div className="text-center py-12">
         <div className="animate-spin h-8 w-8 border-2 border-primary rounded-full border-t-transparent mx-auto mb-4"></div>
-        <p className="text-gray-500">{t("Loading bookings...")}</p>
+        <p className="text-gray-500">{loadingText}</p>
       </div>
     );
   }
@@ -38,10 +45,10 @@ const BookingsTable = ({
       <div className="text-center py-12 border rounded-md bg-gray-50">
         <Clock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
         <h3 className="text-lg font-medium mb-2">
-          {t("No bookings found")}
+          {noBookingsFoundText}
         </h3>
         <p className="text-gray-500 max-w-md mx-auto">
-          {t("When clients book your services, they will appear here.")}
+          {bookingsAppearText}
         </p>
       </div>
     );

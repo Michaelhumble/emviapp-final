@@ -13,16 +13,13 @@ interface NotificationHeaderProps {
 }
 
 export function NotificationHeader({ unreadCount, onMarkAllAsRead, variant = 'icon' }: NotificationHeaderProps) {
-  const { t } = useTranslation();
+  const { isVietnamese } = useTranslation();
 
   if (variant === 'icon') {
     return (
       <CardHeader className="px-4 py-3 border-b flex flex-row items-center justify-between">
         <CardTitle className="text-sm font-medium">
-          {t({
-            english: "Notifications",
-            vietnamese: "Thông báo"
-          })}
+          {isVietnamese ? "Thông báo" : "Notifications"}
         </CardTitle>
         {unreadCount > 0 && (
           <Button 
@@ -31,10 +28,7 @@ export function NotificationHeader({ unreadCount, onMarkAllAsRead, variant = 'ic
             className="h-8 text-xs"
             onClick={onMarkAllAsRead}
           >
-            {t({
-              english: "Mark all as read",
-              vietnamese: "Đánh dấu tất cả đã đọc"
-            })}
+            {isVietnamese ? "Đánh dấu tất cả đã đọc" : "Mark all as read"}
           </Button>
         )}
       </CardHeader>
@@ -45,10 +39,7 @@ export function NotificationHeader({ unreadCount, onMarkAllAsRead, variant = 'ic
     <CardHeader className="pb-3 flex flex-row items-center justify-between">
       <CardTitle className="text-lg font-medium flex items-center">
         <Bell className="mr-2 h-5 w-5" />
-        {t({
-          english: "Notifications",
-          vietnamese: "Thông báo"
-        })}
+        {isVietnamese ? "Thông báo" : "Notifications"}
         {unreadCount > 0 && (
           <Badge className="ml-2">
             {unreadCount}
@@ -61,10 +52,7 @@ export function NotificationHeader({ unreadCount, onMarkAllAsRead, variant = 'ic
           size="sm"
           onClick={onMarkAllAsRead}
         >
-          {t({
-            english: "Mark all as read",
-            vietnamese: "Đánh dấu tất cả đã đọc"
-          })}
+          {isVietnamese ? "Đánh dấu tất cả đã đọc" : "Mark all as read"}
         </Button>
       )}
     </CardHeader>

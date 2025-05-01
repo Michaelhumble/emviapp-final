@@ -10,7 +10,7 @@ interface BookingNotesProps {
 }
 
 const BookingNotes = ({ bookings }: BookingNotesProps) => {
-  const { t } = useTranslation();
+  const { isVietnamese } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   
   // Filter bookings with notes - ensure we check if note exists and is not empty
@@ -19,6 +19,12 @@ const BookingNotes = ({ bookings }: BookingNotesProps) => {
   if (bookingsWithNotes.length === 0) {
     return null;
   }
+  
+  // Translations
+  const bookingWithNotesText = isVietnamese ? "booking với ghi chú đặc biệt" : "booking with special notes";
+  const bookingsWithNotesText = isVietnamese ? "bookings với ghi chú đặc biệt" : "bookings with special notes"; 
+  const serviceText = isVietnamese ? "Dịch vụ:" : "Service:";
+  const noteText = isVietnamese ? "Ghi chú:" : "Note:";
   
   return (
     <Collapsible
@@ -30,7 +36,7 @@ const BookingNotes = ({ bookings }: BookingNotesProps) => {
         <div className="flex items-center">
           <AlertTriangle className="h-4 w-4 text-yellow-600 mr-2" />
           <span className="font-medium">
-            {bookingsWithNotes.length} {bookingsWithNotes.length > 1 ? t("bookings with special notes") : t("booking with special notes")}
+            {bookingsWithNotes.length} {bookingsWithNotes.length > 1 ? bookingsWithNotesText : bookingWithNotesText}
           </span>
         </div>
         <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'transform rotate-180' : ''}`} />
@@ -46,11 +52,11 @@ const BookingNotes = ({ bookings }: BookingNotesProps) => {
                 </div>
               </div>
               <div className="text-sm">
-                <span className="font-medium mr-1">{t("Service:")} </span>
+                <span className="font-medium mr-1">{serviceText} </span>
                 {booking.service_name}
               </div>
               <div className="mt-2 bg-gray-50 p-2 rounded-md text-sm">
-                <span className="font-medium mr-1">{t("Note:")} </span>
+                <span className="font-medium mr-1">{noteText} </span>
                 {booking.note}
               </div>
             </div>

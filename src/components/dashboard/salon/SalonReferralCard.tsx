@@ -8,11 +8,10 @@ import { useTranslation } from "@/hooks/useTranslation";
 import ReferralHeader from "./referral/ReferralHeader";
 import ReferralLink from "./referral/ReferralLink";
 import ReferralStats from "./referral/ReferralStats";
-import { toTranslatableText } from "./SalonTranslationHelper";
 
 const SalonReferralCard = () => {
   const { user, userProfile } = useAuth();
-  const { t } = useTranslation();
+  const { isVietnamese } = useTranslation();
   const [referralCode, setReferralCode] = useState("");
   const [referralCount, setReferralCount] = useState(0);
   const [copied, setCopied] = useState(false);
@@ -49,12 +48,16 @@ const SalonReferralCard = () => {
     
     navigator.clipboard.writeText(referralCode);
     setCopied(true);
-    toast.success(t(toTranslatableText("Referral code copied to clipboard")));
+    toast.success(isVietnamese ? "Đã sao chép mã giới thiệu vào clipboard" : "Referral code copied to clipboard");
     
     setTimeout(() => setCopied(false), 2000);
   };
   
   const referralLink = `https://emviapp.com/join?ref=${referralCode}`;
+  
+  const inviteText = isVietnamese 
+    ? "Mời các salon khác và kiếm tín dụng miễn phí. Giúp phát triển cộng đồng của chúng tôi!" 
+    : "Invite other salons and earn free credits. Help grow our community!";
   
   return (
     <Card className="border-blue-100" id="referral-card">
@@ -63,7 +66,7 @@ const SalonReferralCard = () => {
       </CardHeader>
       <CardContent>
         <p className="text-gray-600 mb-4">
-          {t(toTranslatableText("Invite other salons and earn free credits. Help grow our community!"))}
+          {inviteText}
         </p>
         
         <div className="space-y-4">
