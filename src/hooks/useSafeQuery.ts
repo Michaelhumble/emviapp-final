@@ -1,13 +1,14 @@
 
-import { UseQueryOptions, useQuery } from '@tanstack/react-query';
+import { UseQueryOptions, useQuery, UseQueryResult } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 // Extend the normal useQuery options with custom error handling options
-type SafeQueryOptions<TData, TError> = UseQueryOptions<TData, TError> & {
+type SafeQueryOptions<TData, TError> = Omit<UseQueryOptions<TData, TError, TData>, 'onError'> & {
   suppressErrorToast?: boolean;
   customErrorMessage?: string;
   retryMessage?: string;
   context?: string; // For providing context in error messages
+  initialData?: TData;
 };
 
 /**
@@ -19,11 +20,9 @@ export function useSafeQuery<TData, TError = Error>(queryOptions: SafeQueryOptio
     customErrorMessage,
     retryMessage,
     context,
+    initialData,
     ...restOptions
   } = queryOptions;
-  
-  // Separate the onError callback from the options
-  const userOnError = restOptions.onError;
   
   // Create a new onError handler that includes toast notifications
   const handleError = (error: TError) => {
@@ -34,24 +33,23 @@ export function useSafeQuery<TData, TError = Error>(queryOptions: SafeQueryOptio
         action: {
           label: retryMessage || 'Retry',
           onClick: () => {
-            // Safely access the refetch function
-            if (typeof restOptions.queryFn === 'function') {
-              queryOptions.refetch?.();
-            }
+            // Safely access the refetch function from the result later
+            refetch();
           }
         }
       });
     }
-    
-    // Call original onError handler if provided
-    if (userOnError) {
-      userOnError(error);
-    }
   };
 
   // Pass all options except our custom ones, plus our enhanced onError handler
-  return useQuery<TData, TError>({
+  const result = useQuery<TData, TError>({
     ...restOptions,
-    onError: handleError
+    initialData,
+    onError: handleError,
   });
+  
+  const { refetch } = result;
+
+  // Return the query result
+  return result;
 }

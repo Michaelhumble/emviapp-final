@@ -6,7 +6,6 @@ export type UserRole =
   | 'artist' 
   | 'salon' 
   | 'owner'
-  | 'salon owner'
   | 'manager' 
   | 'admin' 
   | 'freelancer' 
@@ -44,6 +43,9 @@ export interface UserProfile {
     sms?: boolean;
     push?: boolean;
   };
+  instagram?: string;
+  website?: string;
+  affiliate_code?: string;
   [key: string]: any;
 }
 
@@ -51,12 +53,17 @@ export interface AuthContextType {
   user: User | null;
   userProfile: UserProfile | null;
   userRole: UserRole;
+  session?: Session | null;
   loading: boolean;
+  loggingIn?: boolean;
+  loggingOut?: boolean;
+  signingUp?: boolean;
   isSignedIn: boolean;
   isError: boolean;
   isNewUser: boolean;
+  error?: Error | null;
   clearIsNewUser: () => void;
-  signIn: (params: {email: string, password: string}) => Promise<{ success: boolean; error?: Error; user?: User }>;
+  signIn: (email: string, password: string) => Promise<{ success: boolean; error?: Error; user?: User }>;
   signUp: (email: string, password: string, userData?: any) => Promise<{ success: boolean; error?: Error; userId?: string }>;
   signOut: () => Promise<void>;
   refreshUserProfile: () => Promise<boolean>;

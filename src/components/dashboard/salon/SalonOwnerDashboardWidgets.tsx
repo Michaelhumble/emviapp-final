@@ -3,8 +3,8 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { CoinsIcon, StarIcon } from 'lucide-react';
 import { useSafeQuery } from '@/hooks/useSafeQuery';
-import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
 import { useAuth } from '@/context/auth';
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Define the shape of the dashboard data
 interface SalonDashboardData {
@@ -54,7 +54,7 @@ export const SalonOwnerDashboardWidgets = () => {
   });
 
   if (isLoading) {
-    return <LoadingSkeleton />;
+    return <Skeleton className="h-32 w-full" />;
   }
 
   if (isError) {

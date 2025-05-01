@@ -1,111 +1,74 @@
 
 import { NavigateFunction } from "react-router-dom";
-import { UserRole } from "@/context/auth/types";
-import { toast } from "sonner";
-import { normalizeRole } from "./roles";
+import { UserRole } from "@/context/auth/types/authTypes";
 
 /**
- * Navigates the user to their role-specific dashboard with validation
+ * Navigate to the appropriate dashboard based on user role
  */
-export const navigateToRoleDashboard = (
-  navigate: NavigateFunction,
-  userRole: UserRole | null
-) => {
-  // Normalize the role for consistent routing
-  const normalizedRole = normalizeRole(userRole);
-  
-  if (!normalizedRole) {
-    navigate("/profile/edit");
-    toast.error("Please complete your profile to access your dashboard");
+export function navigateToRoleDashboard(navigate: NavigateFunction, role: UserRole | null): void {
+  if (!role) {
+    navigate('/role-selection');
     return;
   }
   
-  // Store normalized role in localStorage for persistence
-  localStorage.setItem('emviapp_user_role', normalizedRole);
-  
-  let targetDashboard = '';
-  
-  // Route based on normalized role
-  switch (normalizedRole) {
+  switch (role) {
     case 'artist':
-      targetDashboard = '/dashboard/artist';
+    case 'nail technician/artist':
+      navigate('/dashboard/artist');
       break;
     case 'salon':
-      targetDashboard = '/dashboard/salon';
+    case 'owner':
+      navigate('/dashboard/salon');
       break;
     case 'customer':
-      targetDashboard = '/dashboard/customer';
-      break;
-    case 'supplier':
-      targetDashboard = '/dashboard/supplier';
+      navigate('/dashboard/customer');
       break;
     case 'freelancer':
-      targetDashboard = '/dashboard/freelancer';
+      navigate('/dashboard/freelancer');
       break;
-    case 'other':
-      targetDashboard = '/dashboard/other';
+    case 'supplier':
+    case 'beauty supplier':
+    case 'vendor':
+      navigate('/dashboard/supplier');
+      break;
+    case 'renter':
+      navigate('/dashboard/artist'); // Renters use artist dashboard for now
+      break;
+    case 'manager':
+      navigate('/dashboard/manager');
+      break;
+    case 'admin':
+      navigate('/dashboard/admin');
       break;
     default:
-      navigate("/profile/edit");
-      toast.error("Invalid user role. Please update your profile.");
-      return;
+      navigate('/dashboard');
   }
-
-  navigate(targetDashboard);
-};
+}
 
 /**
- * Check if a user is allowed to view a specific route based on their role
- * @param userRole The user's role from auth context
- * @param allowedRoles Array of roles allowed to access the route
- * @returns Boolean indicating if the user has access
+ * Get a personalized greeting based on user name and role
  */
-export const hasRoleAccess = (
-  userRole: UserRole | null,
-  allowedRoles: UserRole[]
-): boolean => {
-  if (!userRole) return false;
+export function getPersonalizedGreeting(name: string, role: UserRole | null): string {
+  const defaultGreeting = `Welcome back, ${name}!`;
   
-  // Normalize the user's role
-  const normalizedRole = normalizeRole(userRole);
+  if (!role) return defaultGreeting;
   
-  // Check if normalized role is in allowed roles
-  return allowedRoles.includes(normalizedRole as UserRole);
-};
-
-/**
- * Get a personalized greeting based on user's name and role
- * @param name The user's name
- * @param role The user's role
- * @returns A personalized greeting message
- */
-export const getPersonalizedGreeting = (
-  name: string,
-  role: UserRole | null
-): string => {
-  if (!name || name.trim() === '') {
-    name = "there";
-  }
-  
-  if (!role) {
-    return `Hello, ${name}!`;
-  }
-  
-  // Normalize role for consistent greetings
-  const normalizedRole = normalizeRole(role);
-
-  switch (normalizedRole) {
+  switch (role) {
     case 'artist':
-      return `Welcome back, ${name}! Ready to showcase your artistry?`;
-    case 'salon':
-      return `Hello, ${name}! Managing your salon made easy.`;
+    case 'nail technician/artist':
+      return `Welcome to your artist dashboard, ${name}!`;
     case 'customer':
-      return `Welcome, ${name}! Discover your perfect beauty experience.`;
-    case 'supplier':
-      return `Welcome, ${name}! Showcase your products to businesses.`;
+      return `Welcome, ${name}!`;
+    case 'salon':
+    case 'owner':
+      return `Welcome to your salon dashboard, ${name}!`;
     case 'freelancer':
-      return `Hey ${name}! Find your next gig today.`;
+      return `Welcome, Freelancer ${name}!`;
+    case 'supplier':
+    case 'beauty supplier':
+    case 'vendor':
+      return `Welcome to your supplier dashboard, ${name}!`;
     default:
-      return `Hello, ${name}! Welcome to your dashboard.`;
+      return defaultGreeting;
   }
-};
+}

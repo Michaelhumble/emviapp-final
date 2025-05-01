@@ -34,9 +34,9 @@ export function useProfileSync() {
           
           // If the update was made from this session, we can ignore it
           // as the local state would already be up to date
-          if (payload.old_record && payload.new_record) {
+          if (payload.record && payload.old_record) {
             const oldProfile = payload.old_record as unknown as UserProfile;
-            const newProfile = payload.new_record as unknown as UserProfile;
+            const newProfile = payload.record as unknown as UserProfile;
             
             // Only refresh if important profile fields have changed
             const hasSignificantChanges = 

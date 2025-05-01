@@ -30,7 +30,7 @@ const SignInForm = ({
   const [formError, setFormError] = useState<string | null>(initialError || null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { signIn, loading: loggingIn } = useAuth();
+  const { signIn, loggingIn } = useAuth();
 
   /**
    * Handles form submission for user authentication
