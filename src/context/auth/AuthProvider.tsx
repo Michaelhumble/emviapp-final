@@ -1,10 +1,10 @@
-
-import React, { useState, useEffect } from 'react';
-import { AuthContext } from './AuthContext';
-import { UserRole, UserProfile, AuthContextType } from './types/authTypes';
+import React, { useState, createContext, useContext } from 'react';
+import { User } from '@supabase/supabase-js';
 import { useSessionQuery } from '@/hooks/useSessionQuery';
 import { useProfileQuery } from '@/hooks/useProfileQuery';
 import { useRoleQuery } from '@/hooks/useRoleQuery';
+import { UserProfile, UserRole, AuthContextType } from './types/authTypes';
+import { useProfileSync } from '@/hooks/useProfileSync';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
@@ -77,6 +77,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error("Profile fetch error detected");
     }
   }, [profileError, user]);
+
+  // Initialize real-time profile synchronization
+  useProfileSync();
 
   // Calculate final loading state
   const loading = sessionLoading || profileLoading || roleLoading;
@@ -174,4 +177,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
+};
+
+// Hook for using auth context
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };

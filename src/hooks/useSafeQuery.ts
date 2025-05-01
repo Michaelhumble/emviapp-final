@@ -13,15 +13,19 @@ type SafeQueryOptions<TData, TError> = UseQueryOptions<TData, TError> & {
 /**
  * A wrapper around useQuery that provides standardized error handling
  */
-export function useSafeQuery<TData, TError = Error>({
-  suppressErrorToast = false,
-  customErrorMessage,
-  retryMessage,
-  context,
-  onError,
-  ...queryOptions
-}: SafeQueryOptions<TData, TError>) {
-  // Allow custom onError handling while still showing toast
+export function useSafeQuery<TData, TError = Error>(queryOptions: SafeQueryOptions<TData, TError>) {
+  const {
+    suppressErrorToast = false,
+    customErrorMessage,
+    retryMessage,
+    context,
+    ...restOptions
+  } = queryOptions;
+  
+  // Separate the onError callback from the options
+  const userOnError = restOptions.onError;
+  
+  // Create a new onError handler that includes toast notifications
   const handleError = (error: TError) => {
     if (!suppressErrorToast) {
       // Use string template literal instead of JSX
@@ -29,19 +33,25 @@ export function useSafeQuery<TData, TError = Error>({
         duration: 5000,
         action: {
           label: retryMessage || 'Retry',
-          onClick: () => queryOptions.refetch?.()
+          onClick: () => {
+            // Safely access the refetch function
+            if (typeof restOptions.queryFn === 'function') {
+              queryOptions.refetch?.();
+            }
+          }
         }
       });
     }
     
-    // Call passed onError handler if it exists
-    if (onError) {
-      onError(error);
+    // Call original onError handler if provided
+    if (userOnError) {
+      userOnError(error);
     }
   };
 
+  // Pass all options except our custom ones, plus our enhanced onError handler
   return useQuery<TData, TError>({
-    ...queryOptions,
+    ...restOptions,
     onError: handleError
   });
 }

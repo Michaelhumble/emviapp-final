@@ -1,4 +1,3 @@
-
 import React, { useEffect, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@/context/auth';
@@ -15,6 +14,7 @@ import RouteLogger from '@/components/common/RouteLogger';
 import StableSalonPage from "@/pages/salons/StableSalonPage";
 import StableJobsPage from "@/pages/jobs/StableJobsPage";
 import { logRouteAccess } from '@/utils/routeChecker';
+import { ProfileSyncNotification } from '@/components/profile/ProfileSyncNotification';
 
 function App() {
   const location = useLocation();
@@ -33,38 +33,43 @@ function App() {
   }, [location.pathname]);
 
   return (
-    <GeneralErrorBoundary>
-      <AuthProvider>
-        <SalonProvider>
-          <SubscriptionProvider>
-            <NotificationProvider>
-              <RouteLogger />
-              <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
-                <Routes>
-                  {/* Explicitly define stable page routes */}
-                  <Route path="/salons" element={<StableSalonPage />} />
-                  <Route path="/jobs" element={<StableJobsPage />} />
-                  
-                  {/* Keep existing routes */}
-                  {routes.map((route, index) => (
-                    (route.path !== "/salons" && route.path !== "/jobs") && (
-                      <Route 
-                        key={index}
-                        path={route.path}
-                        element={route.element}
-                      />
-                    )
-                  ))}
-                  <Route path="/dashboard/artist/booking-calendar" element={<BookingCalendar />} />
-                  <Route path="/dashboard/artist/inbox" element={<ArtistInbox />} />
-                </Routes>
-              </Suspense>
-              <Toaster />
-            </NotificationProvider>
-          </SubscriptionProvider>
-        </SalonProvider>
-      </AuthProvider>
-    </GeneralErrorBoundary>
+    <div className="App">
+      {/* Add the invisible ProfileSyncNotification component */}
+      <ProfileSyncNotification />
+      
+      <GeneralErrorBoundary>
+        <AuthProvider>
+          <SalonProvider>
+            <SubscriptionProvider>
+              <NotificationProvider>
+                <RouteLogger />
+                <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
+                  <Routes>
+                    {/* Explicitly define stable page routes */}
+                    <Route path="/salons" element={<StableSalonPage />} />
+                    <Route path="/jobs" element={<StableJobsPage />} />
+                    
+                    {/* Keep existing routes */}
+                    {routes.map((route, index) => (
+                      (route.path !== "/salons" && route.path !== "/jobs") && (
+                        <Route 
+                          key={index}
+                          path={route.path}
+                          element={route.element}
+                        />
+                      )
+                    ))}
+                    <Route path="/dashboard/artist/booking-calendar" element={<BookingCalendar />} />
+                    <Route path="/dashboard/artist/inbox" element={<ArtistInbox />} />
+                  </Routes>
+                </Suspense>
+                <Toaster />
+              </NotificationProvider>
+            </SubscriptionProvider>
+          </SalonProvider>
+        </AuthProvider>
+      </GeneralErrorBoundary>
+    </div>
   );
 }
 
