@@ -3,8 +3,6 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Trophy, Gift, Crown, Star, Lock, Unlock } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
-import { toTranslatableText } from '@/components/dashboard/salon/SalonTranslationHelper';
-import { ReferralProgress } from '@/components/referral/types';
 
 export interface ReferralMilestonesProps {
   referralStats: {
@@ -22,36 +20,36 @@ const ReferralMilestones = ({
   referralStats = { completedReferrals: 0, totalReferrals: 0 }, 
   referralProgress = { percentage: 0, nextMilestoneIn: 0, nextMilestone: 5 } 
 }: ReferralMilestonesProps) => {
-  const { t } = useTranslation();
+  const { isVietnamese } = useTranslation();
   
   // Define milestones
   const milestones = [
     {
       tier: 1,
       icon: Gift,
-      name: t(toTranslatableText('First Milestone')),
-      description: t(toTranslatableText('Get 50 bonus credits')),
+      name: isVietnamese ? 'Mốc Đầu Tiên' : 'First Milestone',
+      description: isVietnamese ? 'Nhận 50 tín dụng thưởng' : 'Get 50 bonus credits',
       requirement: 3,
     },
     {
       tier: 2,
       icon: Trophy,
-      name: t(toTranslatableText('Second Milestone')),
-      description: t(toTranslatableText('Get 100 bonus credits')),
+      name: isVietnamese ? 'Mốc Thứ Hai' : 'Second Milestone',
+      description: isVietnamese ? 'Nhận 100 tín dụng thưởng' : 'Get 100 bonus credits',
       requirement: 6,
     },
     {
       tier: 3,
       icon: Star,
-      name: t(toTranslatableText('Third Milestone')),
-      description: t(toTranslatableText('Get Premium status for 1 month')),
+      name: isVietnamese ? 'Mốc Thứ Ba' : 'Third Milestone',
+      description: isVietnamese ? 'Nhận trạng thái Premium trong 1 tháng' : 'Get Premium status for 1 month',
       requirement: 9,
     },
     {
       tier: 4,
       icon: Crown,
-      name: t(toTranslatableText('Fourth Milestone')),
-      description: t(toTranslatableText('Get 500 bonus credits')),
+      name: isVietnamese ? 'Mốc Thứ Tư' : 'Fourth Milestone',
+      description: isVietnamese ? 'Nhận 500 tín dụng thưởng' : 'Get 500 bonus credits',
       requirement: 12,
     },
   ];
