@@ -2,10 +2,23 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Session, User, AuthError } from '@supabase/supabase-js';
-import { UserRole, LoginCredentials, SignUpCredentials } from '@/context/auth/types/authTypes';
+import { Session, User, AuthError, AuthChangeEvent } from '@supabase/supabase-js';
+import { UserRole } from '@/context/auth/types/authTypes';
 import { toast } from 'sonner';
 import { normalizeRole } from '@/utils/roles';
+
+// Define the interface for login credentials
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+// Define the interface for signup credentials
+interface SignUpCredentials {
+  email: string;
+  password: string;
+  userData?: any;
+}
 
 export function useSessionQuery() {
   const [session, setSession] = useState<Session | null>(null);
@@ -36,7 +49,7 @@ export function useSessionQuery() {
       setUser(session?.user ?? null);
       
       // If the user just signed up, set isNewUser to true
-      if (event === 'SIGNED_UP') {
+      if (event === AuthChangeEvent.SIGNED_UP) {
         setIsNewUser(true);
         localStorage.setItem('emviapp_new_user', 'true');
         
@@ -50,7 +63,7 @@ export function useSessionQuery() {
       }
       
       // If the user signs in, check for role info
-      if (event === 'SIGNED_IN') {
+      if (event === AuthChangeEvent.SIGNED_IN) {
         const userRole = session?.user?.user_metadata?.role as UserRole;
         if (userRole) {
           localStorage.setItem('emviapp_user_role', userRole);
@@ -58,7 +71,7 @@ export function useSessionQuery() {
       }
 
       // If the user signs out, reset all states
-      if (event === 'SIGNED_OUT') {
+      if (event === AuthChangeEvent.SIGNED_OUT) {
         setIsNewUser(false);
         localStorage.removeItem('emviapp_new_user');
         localStorage.removeItem('emviapp_user_role');
@@ -105,14 +118,14 @@ export function useSessionQuery() {
       if (error) {
         setAuthError(error);
         toast.error(`Sign in failed: ${error.message}`);
-        return { error, user: null };
+        return { success: false, error, user: null };
       }
       
-      return { user: data.user, error: null };
+      return { success: true, user: data.user, error: null };
     } catch (error) {
       setAuthError(error as Error);
       toast.error('An unexpected error occurred during sign in');
-      return { user: null, error: error as Error };
+      return { success: false, user: null, error: error as Error };
     } finally {
       setIsSigningIn(false);
     }
@@ -140,18 +153,18 @@ export function useSessionQuery() {
       if (error) {
         setAuthError(error);
         toast.error(`Sign up failed: ${error.message}`);
-        return { error, user: null };
+        return { success: false, error, user: null };
       }
       
       // Set new user flag in local storage
       localStorage.setItem('emviapp_new_user', 'true');
       setIsNewUser(true);
       
-      return { user: data.user, error: null };
+      return { success: true, user: data.user, error: null };
     } catch (error) {
       setAuthError(error as Error);
       toast.error('An unexpected error occurred during sign up');
-      return { user: null, error: error as Error };
+      return { success: false, user: null, error: error as Error };
     } finally {
       setIsSigningUp(false);
     }
@@ -169,9 +182,11 @@ export function useSessionQuery() {
       setIsNewUser(false);
       localStorage.removeItem('emviapp_new_user');
       localStorage.removeItem('emviapp_user_role');
+      return true;
     } catch (error) {
       console.error('Error signing out:', error);
       toast.error('Failed to sign out');
+      return false;
     } finally {
       setIsSigningOut(false);
     }
