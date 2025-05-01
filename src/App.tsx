@@ -25,6 +25,10 @@ function App() {
     
     // Log route for debugging using consolidated logger
     logRouteAccess(location.pathname);
+
+    // Add console logs to help identify route issues
+    console.log('Current route:', location.pathname);
+    console.log('Available routes:', routes.map(r => r.path).join(', '));
   }, [location.pathname]);
 
   return (

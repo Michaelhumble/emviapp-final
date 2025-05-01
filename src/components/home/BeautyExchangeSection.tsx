@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Sun } from 'lucide-react';
@@ -34,7 +35,7 @@ const BeautyExchangeSection = () => {
               Connecting beauty professionals with opportunities. Find jobs, salons for sale, and talented artists all in one place.
             </p>
             
-            {/* Stable fallback button that links to an existing working route */}
+            {/* Ensure button links to a known working route */}
             <Button asChild className="bg-purple-500 hover:bg-purple-600">
               <Link to="/jobs">Browse Beauty Listings</Link>
             </Button>

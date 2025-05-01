@@ -41,10 +41,14 @@ const Index = () => {
     document.title = "EmviApp | The Beauty Industry Platform";
     console.log("Index page loaded");
     
-    // Run verification to ensure all listings have proper routing
-    runListingsVerification()
-      .then(() => console.log("Listings verification completed"))
-      .catch(err => console.error("Error in listings verification:", err));
+    try {
+      // Run verification to ensure all listings have proper routing
+      runListingsVerification()
+        .then(() => console.log("Listings verification completed"))
+        .catch(err => console.error("Error in listings verification:", err));
+    } catch (error) {
+      console.error("Failed to run listings verification:", error);
+    }
   }, []);
   
   return (
@@ -52,28 +56,28 @@ const Index = () => {
       {/* Hero section as first */}
       <Hero />
       
-      {/* ✨ Re-enabled Beauty Exchange Section with stable fix */}
+      {/* Beauty Exchange Section with stable fix */}
       <BeautyExchangeSection />
       
-      {/* 1️⃣ Latest Industry Opportunities (Beauty Exchange) */}
+      {/* Latest Industry Opportunities (Beauty Exchange) */}
       <LatestIndustryOpportunities />
       
-      {/* 2️⃣ Nail & Beauty Salons Hiring Now */}
+      {/* Nail & Beauty Salons Hiring Now */}
       <SalonJobListingsShowcase />
       
-      {/* 3️⃣ Why Artists & Salons Trust Us */}
+      {/* Why Artists & Salons Trust Us */}
       <WhyTrustSection />
       
       {/* Let AI Do the Hard Work (moved here) */}
       <EnhancedAIFeatures />
       
-      {/* 4️⃣ What You Can Do With EmviApp */}
+      {/* What You Can Do With EmviApp */}
       <WhatYouCanDoSection />
       
-      {/* 6️⃣ Let's Experience EmviApp Together */}
+      {/* Let's Experience EmviApp Together */}
       <MissingPieceSection />
       
-      {/* 7️⃣ No Matter Your Craft — We Know the Struggle */}
+      {/* No Matter Your Craft — We Know the Struggle */}
       <ClientSuccessStories />
       
       {/* 8️⃣ What's Really Keeping Your Salon From Growing? */}
