@@ -35,7 +35,40 @@ export const isValidRoute = (path: string): boolean => {
   return !!path;
 };
 
+/**
+ * Checks if a route is in the list of known routes
+ * @param path The route path to check
+ * @param availableRoutes Array of available route paths
+ * @returns boolean indicating if the route is known
+ */
+export const isKnownRoute = (path: string, availableRoutes: string[]): boolean => {
+  return availableRoutes.includes(path);
+};
+
+/**
+ * Gets a human-readable name for a route
+ * @param path The route path
+ * @returns A formatted name for the route
+ */
+export const getRouteName = (path: string): string => {
+  // Strip trailing slash and leading slash
+  const cleanPath = path.replace(/^\/*|\/*$/g, '');
+  
+  // Handle root path
+  if (!cleanPath) return 'Home';
+  
+  // Convert kebab-case to Title Case
+  return cleanPath
+    .split('/')
+    .pop()!
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
 export default { 
   logRouteAccess,
-  isValidRoute
+  isValidRoute,
+  isKnownRoute,
+  getRouteName
 };

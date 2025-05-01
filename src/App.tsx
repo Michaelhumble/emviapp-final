@@ -14,7 +14,7 @@ import SimpleLoadingFallback from '@/components/error-handling/SimpleLoadingFall
 import RouteLogger from '@/components/common/RouteLogger';
 import StableSalonPage from "@/pages/salons/StableSalonPage";
 import StableJobsPage from "@/pages/jobs/StableJobsPage";
-import { logRouteAccess } from '@/utils/routing/routeValidation';
+import { logRouteAccess } from '@/utils/routeChecker';
 
 function App() {
   const location = useLocation();
