@@ -12,13 +12,8 @@ export const getAssetPath = (assetPath: string): string => {
   // Remove leading slash if present for consistency
   const normalizedPath = assetPath.startsWith('/') ? assetPath.substring(1) : assetPath;
   
-  // In development, we can use root-relative paths
-  if (import.meta.env.DEV) {
-    return `/${normalizedPath}`;
-  }
-  
-  // In production, use relative paths that work with the base URL
-  return `./${normalizedPath}`;
+  // Always use direct paths without prefixes for simplicity
+  return normalizedPath;
 };
 
 /**
@@ -26,7 +21,7 @@ export const getAssetPath = (assetPath: string): string => {
  * @returns The base path prefix
  */
 export const getBasePath = (): string => {
-  return import.meta.env.DEV ? '/' : './';
+  return '';
 };
 
 /**
@@ -51,24 +46,32 @@ export const validateAssetPath = (path: string): void => {
  * Add additional asset loading validation to track all loaded assets
  */
 export const initializeAssetLoadingTracker = (): void => {
-  // Only run in production to debug preview issues
-  if (!import.meta.env.DEV) {
-    console.info('🔍 Asset path tracker initialized');
-    
-    // Track script loading
-    document.addEventListener('DOMContentLoaded', () => {
-      const scripts = document.querySelectorAll('script');
-      scripts.forEach(script => {
-        if (script.src) {
-          console.info(`📁 Script: ${script.src}`);
-        }
-      });
-      
-      // Track stylesheet loading
-      const stylesheets = document.querySelectorAll('link[rel="stylesheet"]');
-      stylesheets.forEach(stylesheet => {
-        console.info(`📁 Stylesheet: ${stylesheet.getAttribute('href')}`);
-      });
+  // Run in both development and production to debug preview issues
+  console.info('🔍 Asset path tracker initialized');
+  
+  // Track script loading
+  document.addEventListener('DOMContentLoaded', () => {
+    const scripts = document.querySelectorAll('script');
+    scripts.forEach(script => {
+      if (script.src) {
+        console.info(`📁 Script: ${script.src}`);
+      }
     });
-  }
+    
+    // Track stylesheet loading
+    const stylesheets = document.querySelectorAll('link[rel="stylesheet"]');
+    stylesheets.forEach(stylesheet => {
+      console.info(`📁 Stylesheet: ${stylesheet.getAttribute('href')}`);
+    });
+
+    // Check if main resources were loaded
+    console.info('📑 Checking main resources loaded status...');
+  });
+};
+
+/**
+ * Check if path is an absolute URL
+ */
+export const isAbsoluteUrl = (url: string): boolean => {
+  return /^(?:[a-z+]+:)?\/\//i.test(url);
 };

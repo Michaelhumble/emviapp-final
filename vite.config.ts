@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   // Ensure base path is properly set for all builds
-  base: './',
+  base: '',
   build: {
     // Generate assets with proper paths
     assetsDir: 'assets',

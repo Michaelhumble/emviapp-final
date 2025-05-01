@@ -11,7 +11,11 @@ const RouteLogger = () => {
   useEffect(() => {
     try {
       // Log route access for analytics
-      logRouteAccess(location.pathname);
+      if (typeof logRouteAccess === 'function') {
+        logRouteAccess(location.pathname);
+      } else {
+        console.info(`📍 Route accessed: ${location.pathname}`);
+      }
       
       // Add additional info for logged in users
       if (user) {
@@ -19,6 +23,9 @@ const RouteLogger = () => {
       } else {
         console.info(`Anonymous user accessing route: ${location.pathname}`);
       }
+      
+      // Debug asset path issues by logging the current route
+      console.info(`Current route: ${location.pathname}`);
     } catch (error) {
       console.error("Error in RouteLogger:", error);
     }

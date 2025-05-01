@@ -12,12 +12,20 @@ window.addEventListener('error', (event) => {
   // Check if this is a resource loading error
   if (event.target && (event.target as HTMLElement).tagName) {
     const element = event.target as HTMLElement;
-    if (element.tagName === 'IMG') {
-      console.error(`Resource loading error: Failed to load ${(element as HTMLImageElement).src}`);
-    } else if (element.tagName === 'SCRIPT') {
-      console.error(`Resource loading error: Failed to load ${(element as HTMLScriptElement).src}`);
-    } else if (element.tagName === 'LINK') {
-      console.error(`Resource loading error: Failed to load ${(element as HTMLLinkElement).href}`);
+    const tagName = element.tagName;
+    const resourceType = tagName === 'IMG' ? 'image' : 
+                        tagName === 'SCRIPT' ? 'script' : 
+                        tagName === 'LINK' ? 'stylesheet' : 'resource';
+    
+    const resourcePath = tagName === 'IMG' ? (element as HTMLImageElement).src : 
+                        tagName === 'SCRIPT' ? (element as HTMLScriptElement).src : 
+                        tagName === 'LINK' ? (element as HTMLLinkElement).href : '';
+    
+    console.error(`Failed to load ${resourceType}: ${resourcePath}`);
+    
+    // For debugging in production
+    if (!import.meta.env.DEV) {
+      console.info(`Failed resource details: Type=${tagName}, Path=${resourcePath}`);
     }
   } else {
     console.error('Global error caught:', event.error);
@@ -41,7 +49,7 @@ initializeAssetLoadingTracker();
 // Set favicon with correct path
 const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
 if (link) {
-  link.href = `${getBasePath()}lovable-uploads/aa25a147-5384-4b72-86f0-e3cc8caba2cc.png`;
+  link.href = `lovable-uploads/aa25a147-5384-4b72-86f0-e3cc8caba2cc.png`;
 }
 
 // Improved viewport meta tag with better mobile optimizations
@@ -100,7 +108,7 @@ if (!rootElement) {
     ReactDOM.createRoot(rootElement).render(
       <React.StrictMode>
         <QueryClientProvider client={queryClient}>
-          <Router basename={import.meta.env.DEV ? '/' : '.'}>
+          <Router>
             <App />
           </Router>
         </QueryClientProvider>

@@ -1,45 +1,41 @@
 
 /**
- * Utility to check and validate application routes
+ * Utility for logging and validating route access
  */
 
-// Log route access for debugging
-export const logRouteAccess = (pathname: string) => {
-  console.log(`Route accessed: ${pathname}`);
-};
-
-// Check if a route exists in our defined routes
-export const isKnownRoute = (pathname: string, availableRoutes: string[]) => {
-  const normalizedPath = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
-  
-  // Handle dynamic routes with parameters
-  const isDynamicRoute = availableRoutes.some(route => {
-    // Convert route patterns like "/profile/:username" to regex
-    if (route.includes(':')) {
-      const routeRegex = new RegExp(
-        `^${route.replace(/:[^\/]+/g, '[^/]+')}$`
-      );
-      return routeRegex.test(normalizedPath);
+/**
+ * Logs route access for analytics and debugging
+ * @param path The current route path
+ */
+export const logRouteAccess = (path: string): void => {
+  if (path) {
+    console.info(`🧭 Route accessed: ${path}`);
+    
+    // Track assets on route change to help debug path issues
+    if (typeof document !== 'undefined') {
+      const scripts = document.querySelectorAll('script[src]');
+      const styles = document.querySelectorAll('link[rel="stylesheet"]');
+      
+      if (scripts.length > 0 || styles.length > 0) {
+        console.info(`📦 Assets loaded on route ${path}:`);
+        scripts.forEach(script => console.info(`- Script: ${(script as HTMLScriptElement).src}`));
+        styles.forEach(style => console.info(`- Style: ${(style as HTMLLinkElement).href}`));
+      }
     }
-    return false;
-  });
-  
-  if (isDynamicRoute) return true;
-  
-  return availableRoutes.some(route => {
-    const normalizedRoute = route.endsWith('/') ? route.slice(0, -1) : route;
-    return normalizedRoute === normalizedPath || route === '*';
-  });
+  }
 };
 
-// Get a user-friendly name for a route path
-export const getRouteName = (path: string) => {
-  if (path === '/') return 'Home';
-  
-  // Extract the last segment of the path
-  const segments = path.split('/').filter(Boolean);
-  if (segments.length === 0) return 'Unknown';
-  
-  const lastSegment = segments[segments.length - 1];
-  return lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1);
+/**
+ * Checks if a route is valid
+ * @param path The route path to check
+ * @returns boolean indicating if the route is valid
+ */
+export const isValidRoute = (path: string): boolean => {
+  // Add route validation logic if needed
+  return !!path;
+};
+
+export default { 
+  logRouteAccess,
+  isValidRoute
 };
