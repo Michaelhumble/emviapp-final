@@ -6,9 +6,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 import './index.css';
 
-// Global error handler
+// Global error handler with improved asset error detection
 window.addEventListener('error', (event) => {
   console.error('Global error caught:', event.error);
+  
+  // Check if this is a 404 asset error
+  if (event.target && ('src' in event.target || 'href' in event.target)) {
+    console.error('Asset loading error detected:', event.target);
+  }
 });
 
 // Create query client with optimized settings for mobile
@@ -22,10 +27,19 @@ const queryClient = new QueryClient({
   }
 });
 
-// Set favicon
-const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
-if (link) {
-  link.href = "/lovable-uploads/aa25a147-5384-4b72-86f0-e3cc8caba2cc.png";
+// Set favicon with error handling
+try {
+  const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+  if (link) {
+    link.href = "/lovable-uploads/aa25a147-5384-4b72-86f0-e3cc8caba2cc.png";
+    // Verify the favicon loads
+    const img = new Image();
+    img.onerror = () => console.error("Favicon failed to load");
+    img.onload = () => console.log("Favicon loaded successfully");
+    img.src = link.href;
+  }
+} catch (error) {
+  console.error("Error setting favicon:", error);
 }
 
 // Improved viewport meta tag with better mobile optimizations
@@ -70,7 +84,7 @@ const rootElement = document.getElementById('root');
 if (!rootElement) {
   const fallbackDiv = document.createElement('div');
   fallbackDiv.innerHTML = `
-    <div style="padding: 20px; text-align: center; font-family: sans-serif;">
+    <div style="padding: k20px; text-align: center; font-family: sans-serif;">
       <h2>Application Error</h2>
       <p>Could not find root element. Please refresh the page or contact support.</p>
       <button onclick="window.location.reload()" style="padding: 8px 16px; background: #f97316; color: white; border: none; border-radius: 4px; cursor: pointer;">

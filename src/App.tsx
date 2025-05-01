@@ -14,8 +14,8 @@ import { Toaster } from "@/components/ui/toaster";
 import GeneralErrorBoundary from '@/components/error-handling/GeneralErrorBoundary';
 import SimpleLoadingFallback from '@/components/error-handling/SimpleLoadingFallback';
 import RouteLogger from '@/components/common/RouteLogger';
-import SalonsFinal from "@/pages/salons/SalonsFinal";  // Import SalonsFinal directly
-import StableSalonPage from "@/pages/salons/StableSalonPage"; // Import the stable wrapper
+import SalonsFinal from "@/pages/salons/SalonsFinal";  
+import StableSalonPage from "@/pages/salons/StableSalonPage";
 
 function App() {
   const location = useLocation();
