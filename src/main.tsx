@@ -1,4 +1,3 @@
-
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -12,8 +11,12 @@ window.addEventListener('error', (event) => {
   // Check if this is a resource loading error
   if (event.target && (event.target as HTMLElement).tagName) {
     const element = event.target as HTMLElement;
-    if (element.tagName === 'LINK' || element.tagName === 'SCRIPT' || element.tagName === 'IMG') {
-      console.error(`Resource loading error: Failed to load ${(element as HTMLImageElement | HTMLScriptElement | HTMLLinkElement).src || (element as HTMLLinkElement).href}`);
+    if (element.tagName === 'IMG') {
+      console.error(`Resource loading error: Failed to load ${(element as HTMLImageElement).src}`);
+    } else if (element.tagName === 'SCRIPT') {
+      console.error(`Resource loading error: Failed to load ${(element as HTMLScriptElement).src}`);
+    } else if (element.tagName === 'LINK') {
+      console.error(`Resource loading error: Failed to load ${(element as HTMLLinkElement).href}`);
     }
   } else {
     console.error('Global error caught:', event.error);
