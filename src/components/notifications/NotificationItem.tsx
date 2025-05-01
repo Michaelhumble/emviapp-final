@@ -10,7 +10,7 @@ interface NotificationItemProps {
 }
 
 export function NotificationItem({ notification, onClick }: NotificationItemProps) {
-  const { t, isVietnamese } = useTranslation();
+  const { t } = useTranslation();
 
   // Format notification timestamp
   const formatTime = (timestamp: string) => {
@@ -18,14 +18,14 @@ export function NotificationItem({ notification, onClick }: NotificationItemProp
     const now = new Date();
     const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
     
-    if (diffInMinutes < 1) return isVietnamese ? 'Vừa xong' : 'Just now';
-    if (diffInMinutes < 60) return `${diffInMinutes}m ${isVietnamese ? 'trước' : 'ago'}`;
+    if (diffInMinutes < 1) return t('Just now');
+    if (diffInMinutes < 60) return `${diffInMinutes}m ${t('ago')}`;
     
     const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return `${diffInHours}h ${isVietnamese ? 'trước' : 'ago'}`;
+    if (diffInHours < 24) return `${diffInHours}h ${t('ago')}`;
     
     const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays}d ${isVietnamese ? 'trước' : 'ago'}`;
+    if (diffInDays < 7) return `${diffInDays}d ${t('ago')}`;
     
     return date.toLocaleDateString();
   };

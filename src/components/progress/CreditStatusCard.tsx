@@ -4,30 +4,22 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CreditCard, Gift, Users } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
+import { toTranslatableText } from './TranslationHelper';
 
 export interface CreditStatusCardProps {
   credits?: number;
-  loading?: boolean;
+  loading?: boolean; // Added loading prop
 }
 
 const CreditStatusCard = ({ credits = 0, loading = false }: CreditStatusCardProps) => {
-  const { isVietnamese } = useTranslation();
-  
-  // Translations
-  const yourCreditsText = isVietnamese ? "Tín dụng của bạn" : "Your Credits";
-  const buyCreditsText = isVietnamese ? "Mua tín dụng" : "Buy Credits";
-  const earnFreeCreditsText = isVietnamese ? "Kiếm tín dụng miễn phí" : "Earn Free Credits";
-  const completeProfileText = isVietnamese 
-    ? "Hoàn thành hồ sơ và mời bạn bè để kiếm tới 50 tín dụng" 
-    : "Complete your profile and invite friends to earn up to 50 credits";
-  const seeWaysToEarnText = isVietnamese ? "Xem cách kiếm" : "See Ways to Earn";
+  const { t } = useTranslation();
   
   return (
     <Card className="border-emerald-100 shadow-sm">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg flex items-center text-emerald-700">
           <CreditCard className="mr-2 h-5 w-5 text-emerald-500" />
-          {yourCreditsText}
+          {t(toTranslatableText("Your Credits"))}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -37,7 +29,7 @@ const CreditStatusCard = ({ credits = 0, loading = false }: CreditStatusCardProp
             <span className="text-sm text-gray-500 ml-2">Credits</span>
           </div>
           <Button size="sm" variant="outline" className="border-emerald-200 text-emerald-700 hover:bg-emerald-50">
-            {buyCreditsText}
+            {t(toTranslatableText("Buy Credits"))}
           </Button>
         </div>
         
@@ -47,13 +39,13 @@ const CreditStatusCard = ({ credits = 0, loading = false }: CreditStatusCardProp
               <Gift className="h-5 w-5 text-emerald-500 mr-2 mt-0.5 flex-shrink-0" />
               <div>
                 <h3 className="font-medium text-emerald-800">
-                  {earnFreeCreditsText}
+                  {t(toTranslatableText("Earn Free Credits"))}
                 </h3>
                 <p className="text-xs text-emerald-700 mb-2">
-                  {completeProfileText}
+                  {t(toTranslatableText("Complete your profile and invite friends to earn up to 50 credits"))}
                 </p>
                 <Button size="sm" variant="outline" className="bg-white border-emerald-200 text-emerald-700 hover:bg-emerald-50">
-                  {seeWaysToEarnText}
+                  {t(toTranslatableText("See Ways to Earn"))}
                 </Button>
               </div>
             </div>

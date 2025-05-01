@@ -40,7 +40,10 @@ const ManualReminderButton = ({ booking, onSuccess }: ManualReminderButtonProps)
         } as any) // Use type assertion to bypass TypeScript check temporarily
         .eq("id", booking.id);
       
-      toast.success(t("Reminder sent"), {
+      toast.success(t({
+        english: "Reminder sent",
+        vietnamese: "Đã gửi nhắc nhở"
+      }), {
         duration: 3000,
         position: "bottom-right"
       });
@@ -50,7 +53,10 @@ const ManualReminderButton = ({ booking, onSuccess }: ManualReminderButtonProps)
       }
     } catch (error) {
       console.error("Error sending manual reminder:", error);
-      toast.error(t("Failed to send"));
+      toast.error(t({
+        english: "Failed to send",
+        vietnamese: "Không thể gửi"
+      }));
     } finally {
       setSending(false);
     }
@@ -69,7 +75,10 @@ const ManualReminderButton = ({ booking, onSuccess }: ManualReminderButtonProps)
       ) : (
         <Bell className="h-2.5 w-2.5" />
       )}
-      {t("Send")}
+      {t({
+        english: "Send",
+        vietnamese: "Gửi"
+      })}
     </Button>
   );
 };

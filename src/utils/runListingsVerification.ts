@@ -1,42 +1,69 @@
 
-import { validateListing } from './routing/routeValidation';
+import { validateListingExists } from "./listingValidator";
+import { salonListings } from "@/data/salonData";
 
 /**
- * Utility function to verify that listings have proper routing
- * This can be run on application startup or from specific pages
+ * Runs a verification on all featured listings to ensure they're valid
+ * This helps catch any broken links before users encounter them
  */
-export const runListingsVerification = async (): Promise<void> => {
-  console.log("Running listings verification...");
-  
+export async function runListingsVerification(): Promise<void> {
   try {
-    // Test cases for verification
-    const testSalonId = "salon123";
-    const testJobId = "job123";
+    console.log("Starting listings verification...");
     
-    // Validate sample listings
-    console.log(`Validating listing: ${testSalonId} of type: salon`);
-    const salonResult = await validateListing(testSalonId, "salon");
+    // Verify salon listings
+    if (salonListings && salonListings.length > 0) {
+      console.log(`Verifying ${salonListings.length} salon listings`);
+      let validCount = 0;
+      let invalidCount = 0;
+      
+      for (const salon of salonListings) {
+        if (salon.id) {
+          const isValid = await validateListingExists(salon.id, 'salon');
+          if (!isValid) {
+            console.error(`❌ Invalid salon listing detected: ${salon.id} - ${salon.name || 'Unnamed'}`);
+            invalidCount++;
+          } else {
+            console.log(`✓ Valid salon listing: ${salon.id} - ${salon.name || 'Unnamed'}`);
+            validCount++;
+          }
+        }
+      }
+      
+      console.log(`Salon listings verification completed: ${validCount} valid, ${invalidCount} invalid`);
+    } else {
+      console.log("No salon listings found to verify");
+    }
     
-    console.log(`Validating listing: ${testJobId} of type: job`);
-    const jobResult = await validateListing(testJobId, "job");
-    
-    // Log verification results
-    console.log("Verification results:", { salonResult, jobResult });
-    console.log("Listings verification completed");
+    console.log("Listings verification complete");
   } catch (error) {
     console.error("Error during listings verification:", error);
   }
-};
+}
 
-/**
- * Utility to check if a given listing route is valid before navigation
- * Can be used with link components to validate before navigation
- */
-export const validateListingRoute = async (id: string, type: 'salon' | 'job' | 'opportunity' | 'booth'): Promise<boolean> => {
+// Add function to validate a specific listing and get detailed results
+export async function validateListing(id: string, type: 'salon' | 'job' | 'opportunity' | 'booth'): Promise<{
+  isValid: boolean;
+  id: string;
+  type: string;
+  timestamp: string;
+  error?: string;
+}> {
   try {
-    const result = await validateListing(id, type);
-    return result.isValid;
-  } catch {
-    return false;
+    const isValid = await validateListingExists(id, type);
+    return {
+      isValid,
+      id,
+      type,
+      timestamp: new Date().toISOString(),
+      ...(isValid ? {} : { error: `Listing ${id} of type ${type} does not exist` })
+    };
+  } catch (error) {
+    return {
+      isValid: false,
+      id,
+      type,
+      timestamp: new Date().toISOString(),
+      error: error instanceof Error ? error.message : 'Unknown error'
+    };
   }
-};
+}

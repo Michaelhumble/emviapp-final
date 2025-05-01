@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -11,9 +10,8 @@ import { useRoleSelection } from "@/hooks/useRoleSelection";
 import AIPowerhouse from "@/components/home/AIPowerhouse";
 import AITeam from "@/components/home/AITeam";
 import TrustFirstPanel from "@/components/home/TrustFirstPanel";
-import MissingPieceSection from "@/components/home/missing-piece/MissingPieceSection";
+import MissingPieceSection from "@/components/home/missing-piece";
 import { runListingsVerification } from "@/utils/runListingsVerification";
-import SimpleLoadingFallback from "@/components/error-handling/SimpleLoadingFallback";
 
 // Enhanced homepage components
 import LatestIndustryOpportunities from "@/components/home/LatestIndustryOpportunities";
@@ -24,13 +22,9 @@ import FinalFounderCTA from "@/components/home/FinalFounderCTA";
 import SalonClientGrowthSystem from "@/components/home/SalonClientGrowthSystem";
 import WhyTrustSection from "@/components/home/sections/WhyTrustSection";
 import WhatYouCanDoSection from "@/components/home/sections/WhatYouCanDoSection";
-import BeautyExchangeSection from "@/components/home/BeautyExchangeSection";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
-  // Add guard clause to prevent rendering when auth is loading
-  if (loading) return <SimpleLoadingFallback message="Loading EmviApp..." />;
-  
   const navigate = useNavigate();
   
   const { 
@@ -55,9 +49,6 @@ const Index = () => {
     <Layout>
       {/* Hero section as first */}
       <Hero />
-      
-      {/* ✨ Re-enabled Beauty Exchange Section with stable fix */}
-      <BeautyExchangeSection />
       
       {/* 1️⃣ Latest Industry Opportunities (Beauty Exchange) */}
       <LatestIndustryOpportunities />

@@ -5,11 +5,6 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 import './index.css';
-import { setupChunkErrorHandler, logResourceErrors } from './utils/chunkErrorHandler';
-
-// Setup chunk error detection
-setupChunkErrorHandler();
-logResourceErrors();
 
 // Global error handler
 window.addEventListener('error', (event) => {
@@ -30,7 +25,7 @@ const queryClient = new QueryClient({
 // Set favicon
 const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
 if (link) {
-  link.href = "./lovable-uploads/aa25a147-5384-4b72-86f0-e3cc8caba2cc.png";
+  link.href = "/lovable-uploads/aa25a147-5384-4b72-86f0-e3cc8caba2cc.png";
 }
 
 // Improved viewport meta tag with better mobile optimizations
@@ -89,7 +84,7 @@ if (!rootElement) {
     ReactDOM.createRoot(rootElement).render(
       <React.StrictMode>
         <QueryClientProvider client={queryClient}>
-          <Router basename={import.meta.env.BASE_URL || '/'}>
+          <Router>
             <App />
           </Router>
         </QueryClientProvider>

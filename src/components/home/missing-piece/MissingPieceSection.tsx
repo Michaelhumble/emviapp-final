@@ -1,124 +1,108 @@
 
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { useTranslation } from "@/hooks/useTranslation";
+import { motion, AnimatePresence } from "framer-motion";
+import { getLanguagePreference } from "@/utils/languagePreference";
+import DecorativeBackground from "../sections/DecorativeBackground";
 import SectionTitle from "./SectionTitle";
 import ContentCard from "./ContentCard";
 import LanguageToggleButton from "./LanguageToggleButton";
 
-// Simple error boundary fallback
-const ErrorFallback = () => (
-  <div className="py-16 text-center">
-    <p className="text-gray-500">This section encountered an error. Please reload the page.</p>
-  </div>
-);
-
-// Error boundary component
-class MissingPieceSectionErrorBoundary extends React.Component<
-  { children: React.ReactNode },
-  { hasError: boolean }
-> {
-  constructor(props: { children: React.ReactNode }) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error: any, info: any) {
-    console.error("MissingPieceSection Error:", error, info);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <ErrorFallback />;
-    }
-    return this.props.children;
-  }
-}
-
 const MissingPieceSection = () => {
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        when: "beforeChildren",
-        staggerChildren: 0.2,
-        duration: 0.6,
-      },
-    },
+  const [language, setLanguage] = useState<"en" | "vi">(getLanguagePreference());
+  const [isChangingLanguage, setIsChangingLanguage] = useState(false);
+
+  useEffect(() => {
+    const handleLanguageChange = (event: CustomEvent) => {
+      if (event.detail && event.detail.language) {
+        setIsChangingLanguage(true);
+        // Small delay to ensure smooth transition
+        setTimeout(() => {
+          setLanguage(event.detail.language);
+          setIsChangingLanguage(false);
+        }, 100);
+      }
+    };
+    
+    window.addEventListener('languageChanged', handleLanguageChange as EventListener);
+    
+    // Get initial language preference
+    const storedLanguage = localStorage.getItem('emvi_language_preference');
+    if (storedLanguage === 'vi' || storedLanguage === 'en') {
+      setLanguage(storedLanguage as "en" | "vi");
+    }
+    
+    return () => {
+      window.removeEventListener('languageChanged', handleLanguageChange as EventListener);
+    };
+  }, []);
+
+  const handleSetLanguage = (newLanguage: "en" | "vi") => {
+    if (newLanguage === language) return;
+    
+    setIsChangingLanguage(true);
+    setTimeout(() => {
+      setLanguage(newLanguage);
+      setIsChangingLanguage(false);
+    }, 100);
+  };
+
+  const variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        duration: 0.4,
+        staggerChildren: 0.12,
+        delayChildren: 0.1
+      }
+    }
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
+    hidden: { opacity: 0, y: 15 },
+    visible: { 
+      opacity: 1, 
       y: 0,
-      transition: { duration: 0.5 }
-    },
-  };
-
-  // Get language from context or preference
-  const { lang, setLanguage } = useTranslation();
-  const [language, setLocalLanguage] = useState<"en" | "vi">("en"); // Default to English
-
-  useEffect(() => {
-    // Safely set language with fallback
-    try {
-      if (lang && (lang === "en" || lang === "vi")) {
-        setLocalLanguage(lang);
-      }
-    } catch (err) {
-      console.error("Error setting language:", err);
-      setLocalLanguage("en"); // Fallback to English
-    }
-  }, [lang]);
-  
-  const handleLanguageChange = (newLanguage: "en" | "vi") => {
-    try {
-      setLocalLanguage(newLanguage);
-      if (setLanguage) {
-        setLanguage(newLanguage);
-      }
-    } catch (err) {
-      console.error("Error changing language:", err);
+      transition: { duration: 0.25 }
     }
   };
 
   return (
-    <MissingPieceSectionErrorBoundary>
-      <section id="experience-emviapp" className="py-16 md:py-24 bg-gradient-to-b from-white to-slate-50/70">
-        <div className="container mx-auto px-4">
+    <section className="py-16 sm:py-20 md:py-28 relative overflow-hidden bg-gradient-to-b from-white via-indigo-50/30 to-purple-50/30">
+      <div className="absolute inset-0 opacity-60">
+        <DecorativeBackground />
+      </div>
+      
+      <div className="container mx-auto px-4 relative z-10">
+        <AnimatePresence mode="wait">
           <motion.div
-            variants={containerVariants}
+            key={language} // Force re-render when language changes
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            className="max-w-4xl mx-auto"
+            animate={isChangingLanguage ? "hidden" : "visible"}
+            exit="hidden"
+            variants={variants}
+            className="max-w-5xl mx-auto"
           >
-            {/* Section Title */}
-            <SectionTitle language={language} itemVariants={itemVariants} />
-            
-            {/* Language Toggle */}
-            <LanguageToggleButton 
+            <SectionTitle 
               language={language} 
-              setLanguage={handleLanguageChange} 
               itemVariants={itemVariants} 
             />
             
-            {/* Content Card - Content switches based on language */}
             <ContentCard 
+              language={language} 
+              itemVariants={itemVariants} 
+            />
+            
+            <LanguageToggleButton 
               language={language}
+              setLanguage={handleSetLanguage}
               itemVariants={itemVariants}
             />
           </motion.div>
-        </div>
-      </section>
-    </MissingPieceSectionErrorBoundary>
+        </AnimatePresence>
+      </div>
+    </section>
   );
 };
 

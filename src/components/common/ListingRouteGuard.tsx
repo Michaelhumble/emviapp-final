@@ -1,9 +1,8 @@
 
 import React, { ReactNode, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ListingType, validateListingExists, getListingFallbackRoute } from '@/utils/listingValidator';
-import { toast } from '@/components/ui/use-toast';
-import SimpleLoadingFallback from '@/components/error-handling/SimpleLoadingFallback';
+import { validateListingExists, ListingType } from '@/utils/listingValidator';
+import { toast } from 'sonner';
 
 interface ListingRouteGuardProps {
   children: ReactNode;
@@ -29,37 +28,39 @@ const ListingRouteGuard: React.FC<ListingRouteGuardProps> = ({
   const [isValidating, setIsValidating] = useState(true);
   const [isValid, setIsValid] = useState(false);
 
+  // Determine fallback route based on listing type if not provided
+  const determinedFallback = fallbackRoute || (() => {
+    switch (listingType) {
+      case 'salon': return '/salon-not-found';
+      case 'job':
+      case 'opportunity': return '/opportunity-not-found';
+      case 'booth': return '/booth-not-found';
+      default: return '/not-found';
+    }
+  })();
+
   useEffect(() => {
-    const validateListingRoute = async () => {
+    const validateListing = async () => {
       if (!id) {
-        console.error(`ListingRouteGuard: No ID parameter found`);
+        console.log(`ListingRouteGuard: No ID parameter found, redirecting to ${determinedFallback}`);
+        navigate(determinedFallback);
         if (notifyOnInvalid) {
-          toast({
-            title: "Error",
-            description: `Invalid listing: missing ID parameter`,
-            variant: "destructive"
-          });
+          toast.error(`Invalid listing: missing ID parameter`);
         }
-        navigate(fallbackRoute || getListingFallbackRoute(listingType));
         return;
       }
 
       try {
         setIsValidating(true);
         console.log(`ListingRouteGuard: Validating ${listingType} with ID ${id}...`);
-        
         const exists = await validateListingExists(id, listingType);
         
         if (!exists) {
-          console.log(`ListingRouteGuard: Invalid ${listingType} ID ${id}`);
+          console.log(`ListingRouteGuard: Invalid ${listingType} ID ${id}, redirecting to ${determinedFallback}`);
           if (notifyOnInvalid) {
-            toast({
-              title: "Not Found",
-              description: `The requested ${listingType} listing could not be found`,
-              variant: "destructive"
-            });
+            toast.error(`The requested ${listingType} listing could not be found`);
           }
-          navigate(fallbackRoute || getListingFallbackRoute(listingType));
+          navigate(determinedFallback);
         } else {
           console.log(`ListingRouteGuard: Valid ${listingType} ID ${id}`);
           setIsValid(true);
@@ -67,24 +68,20 @@ const ListingRouteGuard: React.FC<ListingRouteGuardProps> = ({
       } catch (error) {
         console.error('Error validating listing:', error);
         if (notifyOnInvalid) {
-          toast({
-            title: "Error",
-            description: `Error validating listing: ${error instanceof Error ? error.message : 'Unknown error'}`,
-            variant: "destructive"
-          });
+          toast.error(`Error validating listing: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
-        navigate(fallbackRoute || getListingFallbackRoute(listingType));
+        navigate(determinedFallback);
       } finally {
         setIsValidating(false);
       }
     };
 
-    validateListingRoute();
-  }, [id, listingType, navigate, fallbackRoute, notifyOnInvalid]);
+    validateListing();
+  }, [id, listingType, navigate, determinedFallback, notifyOnInvalid]);
 
   // Show loading component while validating
   if (isValidating) {
-    return <>{loadingComponent || <SimpleLoadingFallback message={`Validating ${listingType}...`} />}</>;
+    return <>{loadingComponent || <div className="flex justify-center items-center p-8">Validating listing...</div>}</>;
   }
 
   // Only render children if the listing is valid

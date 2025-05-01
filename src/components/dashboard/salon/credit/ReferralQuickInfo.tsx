@@ -1,6 +1,7 @@
 
 import { Users } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { toTranslatableText } from "../SalonTranslationHelper";
 import { Link } from "react-router-dom";
 
 interface ReferralQuickInfoProps {
@@ -18,18 +19,18 @@ const ReferralQuickInfo = ({ referralCount, isDiscountEligible }: ReferralQuickI
       </div>
       <div>
         <p className="text-gray-600">
-          {t("You've referred")} 
+          {t(toTranslatableText("You've referred"))} 
           <span className="font-medium text-blue-600 mx-1">{referralCount}</span>
-          {t("salons")}
+          {t(toTranslatableText("salons"))}
         </p>
         <Link 
           to="#referral-card" 
           className="text-xs text-blue-500 hover:underline"
         >
-          {t("Refer more to earn credits")}
+          {t(toTranslatableText("Refer more to earn credits"))}
           {!isDiscountEligible && referralCount === 0 && (
             <span className="ml-1 text-green-500">
-              {t("and Pro discounts!")}
+              {t(toTranslatableText("and Pro discounts!"))}
             </span>
           )}
         </Link>

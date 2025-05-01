@@ -3,7 +3,7 @@ import { format, formatDistance } from 'date-fns';
 import { useTranslation } from '@/hooks/useTranslation';
 
 export const useReviewFormatter = () => {
-  const { isVietnamese } = useTranslation();
+  const { t } = useTranslation();
 
   const formatDate = (dateStr: string) => {
     try {
@@ -26,33 +26,54 @@ export const useReviewFormatter = () => {
   const getRatingLabel = (rating: number) => {
     switch (rating) {
       case 5:
-        return isVietnamese ? 'Xuất sắc' : 'Excellent';
+        return t({
+          english: 'Excellent',
+          vietnamese: 'Xuất sắc'
+        });
       case 4:
-        return isVietnamese ? 'Rất tốt' : 'Very Good';
+        return t({
+          english: 'Very Good',
+          vietnamese: 'Rất tốt'
+        });
       case 3:
-        return isVietnamese ? 'Tốt' : 'Good';
+        return t({
+          english: 'Good',
+          vietnamese: 'Tốt'
+        });
       case 2:
-        return isVietnamese ? 'Trung bình' : 'Fair';
+        return t({
+          english: 'Fair',
+          vietnamese: 'Trung bình'
+        });
       case 1:
-        return isVietnamese ? 'Kém' : 'Poor';
+        return t({
+          english: 'Poor',
+          vietnamese: 'Kém'
+        });
       default:
         return '';
     }
   };
 
   const getReviewsLabel = (count: number) => {
-    if (isVietnamese) {
-      return count === 1 ? '1 Đánh giá' : `${count} Đánh giá`;
-    }
-    return count === 1 ? '1 Review' : `${count} Reviews`;
+    return t({
+      english: count === 1 ? '1 Review' : `${count} Reviews`,
+      vietnamese: count === 1 ? '1 Đánh giá' : `${count} Đánh giá`
+    });
   };
 
   const getVerifiedClientLabel = () => {
-    return isVietnamese ? 'Khách hàng đã xác minh' : 'Verified Client';
+    return t({
+      english: 'Verified Client',
+      vietnamese: 'Khách hàng đã xác minh'
+    });
   };
 
   const getNoReviewsLabel = () => {
-    return isVietnamese ? 'Chưa có đánh giá nào' : 'No reviews yet';
+    return t({
+      english: 'No reviews yet',
+      vietnamese: 'Chưa có đánh giá nào'
+    });
   };
 
   return {

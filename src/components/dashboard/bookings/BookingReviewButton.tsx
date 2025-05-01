@@ -53,14 +53,20 @@ const BookingReviewButton = ({ booking, onSuccess }: BookingReviewButtonProps) =
         onClick={() => setIsOpen(true)}
       >
         <MessageSquare className="h-3 w-3" />
-        {t("Leave Review")}
+        {t({
+          english: "Leave Review",
+          vietnamese: "Viết đánh giá"
+        })}
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
-              {t("Rate Your Experience")}
+              {t({
+                english: "Rate Your Experience",
+                vietnamese: "Đánh giá trải nghiệm của bạn"
+              })}
             </DialogTitle>
           </DialogHeader>
           <div className="py-4">

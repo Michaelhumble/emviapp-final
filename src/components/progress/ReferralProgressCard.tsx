@@ -15,7 +15,7 @@ export interface ReferralProgressCardProps {
 
 const ReferralProgressCard = ({ referralStats = {}, loading = false }: ReferralProgressCardProps) => {
   const { userProfile } = useAuth();
-  const { t, isVietnamese } = useTranslation();
+  const { t } = useTranslation();
   
   // Default values if profile data is missing
   const referralCount = referralStats?.completedReferrals || userProfile?.referral_count || 0;
@@ -39,25 +39,19 @@ const ReferralProgressCard = ({ referralStats = {}, loading = false }: ReferralP
     // Use toast to show success message
   };
   
-  // Translation text
-  const referralProgramText = isVietnamese ? "Chương Trình Giới Thiệu" : "Referral Program";
-  const referralsText = isVietnamese ? "giới thiệu" : "referrals";
-  const achievedText = isVietnamese ? "Đã Đạt Được" : "Achieved";
-  const copyReferralLinkText = isVietnamese ? "Sao Chép Liên Kết Giới Thiệu" : "Copy Referral Link";
-  
   return (
     <Card className="border-indigo-100 shadow-sm">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg flex items-center text-indigo-700">
           <Users className="mr-2 h-5 w-5 text-indigo-500" />
-          {referralProgramText}
+          {t(toTranslatableText("Referral Program"))}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="mb-4">
           <div className="flex justify-between items-center mb-1">
             <span className="text-sm font-medium text-gray-700">
-              {referralCount} {referralsText}
+              {referralCount} {t(toTranslatableText("referrals"))}
             </span>
             <span className="text-sm text-gray-500">
               {nextTier.reached ? 'Max level reached' : `${nextTier.count} needed for next tier`}
@@ -78,13 +72,13 @@ const ReferralProgressCard = ({ referralStats = {}, loading = false }: ReferralP
                     {tier.label}
                   </span>
                   <span className="text-sm text-gray-500">
-                    {tier.count} {referralsText}
+                    {tier.count} {t(toTranslatableText("referrals"))}
                   </span>
                 </div>
                 {tier.reached && (
                   <div className="flex items-center text-xs text-green-600 mt-0.5">
                     <CheckCircle className="h-3 w-3 mr-1" />
-                    {achievedText}
+                    {t(toTranslatableText("Achieved"))}
                   </div>
                 )}
               </div>
@@ -96,7 +90,7 @@ const ReferralProgressCard = ({ referralStats = {}, loading = false }: ReferralP
           onClick={handleCopyReferralLink}
           className="w-full bg-indigo-500 hover:bg-indigo-600"
         >
-          {copyReferralLinkText}
+          {t(toTranslatableText("Copy Referral Link"))}
         </Button>
       </CardContent>
     </Card>

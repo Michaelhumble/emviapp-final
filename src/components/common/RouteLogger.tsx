@@ -1,29 +1,30 @@
 
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useAuth } from '@/context/auth';
+import { logRouteAccess } from '@/utils/routeChecker';
 
-/**
- * A component that logs route changes for debugging purposes
- */
 const RouteLogger = () => {
   const location = useLocation();
+  const { user } = useAuth();
   
   useEffect(() => {
-    // Log the current route for debugging
-    console.log(`Route changed: ${location.pathname}`);
-    
-    // Check for query parameters
-    if (location.search) {
-      console.log(`Query params: ${location.search}`);
+    try {
+      // Log route access for analytics
+      logRouteAccess(location.pathname);
+      
+      // Add additional info for logged in users
+      if (user) {
+        console.info(`User ${user.id} accessing route: ${location.pathname}`);
+      } else {
+        console.info(`Anonymous user accessing route: ${location.pathname}`);
+      }
+    } catch (error) {
+      console.error("Error in RouteLogger:", error);
     }
-    
-    // Check for hash
-    if (location.hash) {
-      console.log(`Hash: ${location.hash}`);
-    }
-  }, [location]);
+  }, [location.pathname, user]);
   
-  // This component doesn't render anything
+  // This is a utility component that doesn't render anything
   return null;
 };
 

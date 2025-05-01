@@ -3,28 +3,28 @@ import React from "react";
 import { useTranslation } from "@/hooks/useTranslation";
 
 const BookingTableHeader = () => {
-  const { isVietnamese } = useTranslation();
+  const { t } = useTranslation();
   
   return (
     <thead className="bg-gray-50">
       <tr>
         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          {isVietnamese ? "Khách hàng" : "Client"}
+          {t({ english: "Client", vietnamese: "Khách hàng" })}
         </th>
         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          {isVietnamese ? "Dịch vụ" : "Service"}
+          {t({ english: "Service", vietnamese: "Dịch vụ" })}
         </th>
         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          {isVietnamese ? "Ngày" : "Date"}
+          {t({ english: "Date", vietnamese: "Ngày" })}
         </th>
         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          {isVietnamese ? "Thời gian" : "Time"}
+          {t({ english: "Time", vietnamese: "Thời gian" })}
         </th>
         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          {isVietnamese ? "Trạng thái" : "Status"}
+          {t({ english: "Status", vietnamese: "Trạng thái" })}
         </th>
         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          {isVietnamese ? "Hành động" : "Actions"}
+          {t({ english: "Actions", vietnamese: "Hành động" })}
         </th>
       </tr>
     </thead>
