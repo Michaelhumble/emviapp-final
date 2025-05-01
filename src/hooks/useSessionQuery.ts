@@ -35,7 +35,7 @@ export function useSessionQuery() {
       setUser(session?.user ?? null);
       
       // If the user just signed up, set isNewUser to true
-      // Using explicit type comparison with string literals to match Supabase's expected types
+      // Using string literals directly for comparison since event is a string
       if (event === "SIGNED_UP") {
         setIsNewUser(true);
         localStorage.setItem('emviapp_new_user', 'true');
