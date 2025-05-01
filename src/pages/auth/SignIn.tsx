@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -9,6 +10,8 @@ import { signInWithEmail } from "@/services/auth";
 import { ForgotPasswordLink, SignUpLink } from "@/components/auth/AuthLinks";
 import { ExclamationTriangleIcon, CheckCircledIcon } from "@radix-ui/react-icons";
 import { navigateToRoleDashboard } from "@/utils/navigation";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -44,14 +47,14 @@ const SignIn = () => {
 
     setLoading(true);
     try {
-      const { data, error } = await signInWithEmail({ email, password });
+      const response = await signInWithEmail(email, password);
 
-      if (error) {
-        setError(error.message || "Invalid credentials. Please try again.");
+      if (response.error) {
+        setError(response.error.message || "Invalid credentials. Please try again.");
         return;
       }
 
-      if (data?.session?.user?.email && !data?.session?.user?.email_confirmed_at) {
+      if (response.user?.email && !response.user?.email_confirmed_at) {
         setShowVerificationAlert(true);
         return;
       }
@@ -73,7 +76,7 @@ const SignIn = () => {
     setSendingVerification(true);
     try {
       const { error } = await supabase.auth.resend({
-        type: 'email',
+        type: 'signup',
         email: email,
       });
 
@@ -94,13 +97,13 @@ const SignIn = () => {
       <Card className="w-full max-w-md p-8">
         <h2 className="text-2xl font-semibold text-center mb-4">Sign In</h2>
         {error && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" className="mb-4">
             <ExclamationTriangleIcon className="h-4 w-4" />
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
         {showVerificationAlert && (
-          <Alert variant="warning">
+          <Alert variant="destructive" className="mb-4">
             <CheckCircledIcon className="h-4 w-4" />
             <AlertDescription>
               Please verify your email to continue.{" "}
