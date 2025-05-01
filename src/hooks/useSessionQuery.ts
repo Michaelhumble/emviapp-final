@@ -36,7 +36,7 @@ export function useSessionQuery() {
       
       // If the user just signed up, set isNewUser to true
       // Using string literals directly for comparison since event is a string
-      if (event === "SIGNED_UP") {
+      if (event === 'SIGNED_UP') {
         setIsNewUser(true);
         localStorage.setItem('emviapp_new_user', 'true');
         
