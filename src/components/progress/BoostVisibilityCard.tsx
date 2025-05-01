@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { TrendingUp, Star, Zap, ShoppingCart } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
-import { toTranslatableText } from './TranslationHelper';
 
 export interface BoostVisibilityCardProps {
   boostStatus?: any;
@@ -12,21 +11,34 @@ export interface BoostVisibilityCardProps {
   loading?: boolean;
 }
 
-// This will update the BoostVisibilityCard component to fix t() usage
+// Updated BoostVisibilityCard component to fix t() usage
 const BoostVisibilityCard = ({ boostStatus = {}, credits = 0, loading = false }: BoostVisibilityCardProps) => {
-  const { t } = useTranslation();
+  const { isVietnamese } = useTranslation();
+  
+  // Translation text
+  const boostVisibilityText = isVietnamese ? "Tăng Khả Năng Hiển Thị" : "Boost Your Visibility";
+  const standOutText = isVietnamese ? "Nổi bật khỏi đám đông và có được nhiều khách hàng hơn với các tùy chọn quảng cáo này." : "Stand out from the crowd and get more clients with these promotional options.";
+  const featuredArtistText = isVietnamese ? "Vị Trí Nghệ Sĩ Nổi Bật" : "Featured Artist Spot";
+  const appearHomepageText = isVietnamese ? "Xuất hiện trên trang chủ và nhận được nhiều lượt xem hồ sơ gấp 5 lần" : "Appear on the homepage and get 5x more profile views";
+  const applyNowText = isVietnamese ? "Đăng Ký Ngay" : "Apply Now";
+  const verifiedBadgeText = isVietnamese ? "Huy Hiệu Đã Xác Minh" : "Verified Badge";
+  const gainClientTrustText = isVietnamese ? "Có được sự tin tưởng của khách hàng với xác minh chất lượng của chúng tôi" : "Gain client trust with our quality verification";
+  const getVerifiedText = isVietnamese ? "Xác Minh" : "Get Verified";
+  const specialOfferText = isVietnamese ? "Gói Ưu Đãi Đặc Biệt" : "Special Offer Bundle";
+  const getFeaturedVerifiedText = isVietnamese ? "Nhận nổi bật, huy hiệu đã xác minh và hỗ trợ ưu tiên cùng nhau" : "Get featured, verified badge, and priority support together";
+  const getBundleText = isVietnamese ? "Nhận Gói" : "Get The Bundle";
   
   return (
     <Card className="border-blue-100 shadow-sm">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg flex items-center text-blue-700">
           <TrendingUp className="mr-2 h-5 w-5 text-blue-500" />
-          {t(toTranslatableText("Boost Your Visibility"))}
+          {boostVisibilityText}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <p className="text-sm text-gray-600 mb-4">
-          {t(toTranslatableText("Stand out from the crowd and get more clients with these promotional options."))}
+          {standOutText}
         </p>
         
         <div className="space-y-4">
@@ -35,13 +47,13 @@ const BoostVisibilityCard = ({ boostStatus = {}, credits = 0, loading = false }:
               <Star className="h-5 w-5 text-amber-500 mr-2 mt-0.5 flex-shrink-0" />
               <div>
                 <h3 className="font-medium text-blue-800">
-                  {t(toTranslatableText("Featured Artist Spot"))}
+                  {featuredArtistText}
                 </h3>
                 <p className="text-xs text-blue-700 mb-2">
-                  {t(toTranslatableText("Appear on the homepage and get 5x more profile views"))}
+                  {appearHomepageText}
                 </p>
                 <Button size="sm" variant="outline" className="bg-white border-blue-200 text-blue-700 hover:bg-blue-50">
-                  {t(toTranslatableText("Apply Now"))}
+                  {applyNowText}
                 </Button>
               </div>
             </div>
@@ -52,13 +64,13 @@ const BoostVisibilityCard = ({ boostStatus = {}, credits = 0, loading = false }:
               <Zap className="h-5 w-5 text-amber-500 mr-2 mt-0.5 flex-shrink-0" />
               <div>
                 <h3 className="font-medium text-amber-800">
-                  {t(toTranslatableText("Verified Badge"))}
+                  {verifiedBadgeText}
                 </h3>
                 <p className="text-xs text-amber-700 mb-2">
-                  {t(toTranslatableText("Gain client trust with our quality verification"))}
+                  {gainClientTrustText}
                 </p>
                 <Button size="sm" variant="outline" className="bg-white border-amber-200 text-amber-700 hover:bg-amber-50">
-                  {t(toTranslatableText("Get Verified"))}
+                  {getVerifiedText}
                 </Button>
               </div>
             </div>
@@ -69,17 +81,17 @@ const BoostVisibilityCard = ({ boostStatus = {}, credits = 0, loading = false }:
               <ShoppingCart className="h-5 w-5 text-purple-500 mr-2 mt-0.5 flex-shrink-0" />
               <div>
                 <h3 className="font-medium text-purple-800">
-                  {t(toTranslatableText("Special Offer Bundle"))}
+                  {specialOfferText}
                 </h3>
                 <p className="text-xs text-purple-700 mb-2">
-                  {t(toTranslatableText("Get featured, verified badge, and priority support together"))}
+                  {getFeaturedVerifiedText}
                 </p>
                 <div className="flex items-center mb-2">
                   <span className="text-xs line-through text-gray-500 mr-2">$29.99</span>
                   <span className="text-sm font-bold text-purple-700">$19.99</span>
                 </div>
                 <Button size="sm" variant="outline" className="bg-white border-purple-200 text-purple-700 hover:bg-purple-50">
-                  {t(toTranslatableText("Get The Bundle"))}
+                  {getBundleText}
                 </Button>
               </div>
             </div>
