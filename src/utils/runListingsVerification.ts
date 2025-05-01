@@ -19,14 +19,17 @@ export async function runListingsVerification(): Promise<void> {
   }
 }
 
-// Add function to validate a specific listing and get detailed results
-export async function validateListing(id: string, type: 'salon' | 'job' | 'opportunity' | 'booth'): Promise<{
+// Update the interface for validation results
+interface ListingValidationResult {
   isValid: boolean;
   id: string;
   type: string;
   timestamp: string;
   error?: string;
-}> {
+}
+
+// Add function to validate a specific listing and get detailed results
+export async function validateListing(id: string, type: 'salon' | 'job' | 'opportunity' | 'booth'): Promise<ListingValidationResult> {
   try {
     const isValid = await validateListingExists(id, type);
     return {
