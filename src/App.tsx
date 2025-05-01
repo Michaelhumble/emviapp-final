@@ -6,16 +6,15 @@ import { SalonProvider } from '@/context/salon';
 import { SubscriptionProvider } from '@/context/subscription';
 import { NotificationProvider } from '@/context/notification';
 import routes from './routes';
-import SimpleSalonsPage from "@/pages/salons/SimpleSalonsPage";
-import SimpleSalonDetailPage from "@/pages/salons/SimpleSalonDetailPage";
 import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";
 import ArtistInbox from "@/pages/dashboard/artist/Inbox";
 import { Toaster } from "@/components/ui/toaster";
 import GeneralErrorBoundary from '@/components/error-handling/GeneralErrorBoundary';
 import SimpleLoadingFallback from '@/components/error-handling/SimpleLoadingFallback';
 import RouteLogger from '@/components/common/RouteLogger';
-import SalonsFinal from "@/pages/salons/SalonsFinal";  // Import SalonsFinal directly
-import StableSalonPage from "@/pages/salons/StableSalonPage"; // Import the stable wrapper
+import StableSalonPage from "@/pages/salons/StableSalonPage";
+import StableJobsPage from "@/pages/jobs/StableJobsPage";
+import { logRouteAccess } from '@/utils/routing/routeValidation';
 
 function App() {
   const location = useLocation();
@@ -24,8 +23,8 @@ function App() {
     // Scroll to top on route change
     window.scrollTo(0, 0);
     
-    // Log route for debugging
-    console.log('Current route:', location.pathname);
+    // Log route for debugging using consolidated logger
+    logRouteAccess(location.pathname);
   }, [location.pathname]);
 
   return (
@@ -37,12 +36,13 @@ function App() {
               <RouteLogger />
               <Suspense fallback={<SimpleLoadingFallback message="Loading application..." />}>
                 <Routes>
-                  {/* Explicitly define the /salons route to use StableSalonPage which includes SalonsFinal */}
+                  {/* Explicitly define stable page routes */}
                   <Route path="/salons" element={<StableSalonPage />} />
+                  <Route path="/jobs" element={<StableJobsPage />} />
                   
                   {/* Keep existing routes */}
                   {routes.map((route, index) => (
-                    route.path !== "/salons" && (
+                    (route.path !== "/salons" && route.path !== "/jobs") && (
                       <Route 
                         key={index}
                         path={route.path}

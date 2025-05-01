@@ -1,8 +1,9 @@
 
 import React, { ReactNode, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { validateListingExists, ListingType } from '@/utils/listingValidator';
+import { ListingType } from '@/utils/listingValidator';
 import { toast } from 'sonner';
+import { validateListing } from '@/utils/routing/routeValidation';
 
 interface ListingRouteGuardProps {
   children: ReactNode;
@@ -15,6 +16,7 @@ interface ListingRouteGuardProps {
 /**
  * A route guard component that validates listing IDs before rendering children
  * Will redirect to a fallback route if the listing doesn't exist
+ * Now uses the centralized validation utilities
  */
 const ListingRouteGuard: React.FC<ListingRouteGuardProps> = ({ 
   children, 
@@ -28,39 +30,30 @@ const ListingRouteGuard: React.FC<ListingRouteGuardProps> = ({
   const [isValidating, setIsValidating] = useState(true);
   const [isValid, setIsValid] = useState(false);
 
-  // Determine fallback route based on listing type if not provided
-  const determinedFallback = fallbackRoute || (() => {
-    switch (listingType) {
-      case 'salon': return '/salon-not-found';
-      case 'job':
-      case 'opportunity': return '/opportunity-not-found';
-      case 'booth': return '/booth-not-found';
-      default: return '/not-found';
-    }
-  })();
-
   useEffect(() => {
-    const validateListing = async () => {
+    const validateListingRoute = async () => {
       if (!id) {
-        console.log(`ListingRouteGuard: No ID parameter found, redirecting to ${determinedFallback}`);
-        navigate(determinedFallback);
+        console.log(`ListingRouteGuard: No ID parameter found`);
         if (notifyOnInvalid) {
           toast.error(`Invalid listing: missing ID parameter`);
         }
+        navigate(fallbackRoute || '/not-found');
         return;
       }
 
       try {
         setIsValidating(true);
         console.log(`ListingRouteGuard: Validating ${listingType} with ID ${id}...`);
-        const exists = await validateListingExists(id, listingType);
         
-        if (!exists) {
-          console.log(`ListingRouteGuard: Invalid ${listingType} ID ${id}, redirecting to ${determinedFallback}`);
+        // Use the centralized validation function
+        const result = await validateListing(id, listingType);
+        
+        if (!result.isValid) {
+          console.log(`ListingRouteGuard: Invalid ${listingType} ID ${id}`);
           if (notifyOnInvalid) {
             toast.error(`The requested ${listingType} listing could not be found`);
           }
-          navigate(determinedFallback);
+          navigate(fallbackRoute || result.fallbackRoute);
         } else {
           console.log(`ListingRouteGuard: Valid ${listingType} ID ${id}`);
           setIsValid(true);
@@ -70,14 +63,14 @@ const ListingRouteGuard: React.FC<ListingRouteGuardProps> = ({
         if (notifyOnInvalid) {
           toast.error(`Error validating listing: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
-        navigate(determinedFallback);
+        navigate(fallbackRoute || '/not-found');
       } finally {
         setIsValidating(false);
       }
     };
 
-    validateListing();
-  }, [id, listingType, navigate, determinedFallback, notifyOnInvalid]);
+    validateListingRoute();
+  }, [id, listingType, navigate, fallbackRoute, notifyOnInvalid]);
 
   // Show loading component while validating
   if (isValidating) {

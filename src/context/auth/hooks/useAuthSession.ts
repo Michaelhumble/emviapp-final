@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
@@ -7,13 +8,6 @@ import { fetchUserProfile } from '../userProfileService';
 
 /**
  * Hook to manage auth session and state changes
- * @param setUser Function to update user state
- * @param setSession Function to update session state
- * @param setUserProfile Function to update user profile state
- * @param setUserRole Function to update user role state
- * @param setIsNewUser Function to update new user state
- * @param setLoading Function to update loading state
- * @param setIsError Function to update error state
  */
 export const useAuthSession = (
   setUser: (user: User | null) => void,
@@ -33,14 +27,14 @@ export const useAuthSession = (
 
     // Set up auth state change listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (event: AuthChangeEvent, session) => {
         setSession(session);
         
         if (session?.user) {
           setUser(session.user);
           
           // Handle each auth event type appropriately
-          switch (event as AuthChangeEvent) {
+          switch (event) {
             case 'SIGNED_IN':
               // Check for role in user metadata and store it
               const userRole = determineUserRole(
