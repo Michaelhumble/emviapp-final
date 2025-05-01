@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import CustomerDashboard from "@/components/dashboard/customer/CustomerDashboard";
 import { useAuth } from "@/context/auth";
 import { toast } from "sonner";
-import { hasRoleAccess } from "@/utils/navigation";
 import { UserRole } from "@/context/auth/types";
 import Layout from "@/components/layout/Layout";
 import { useReferralNotifications } from "@/hooks/useReferralNotifications";
@@ -22,7 +21,7 @@ const CustomerDashboardPage = () => {
     if (loading) return;
 
     const allowedRoles: UserRole[] = ['customer'];
-    if (userRole && !hasRoleAccess(userRole, allowedRoles)) {
+    if (userRole && !allowedRoles.includes(userRole)) {
       toast.error(`You don't have access to the customer dashboard. Redirecting...`);
       navigate("/dashboard");
       return;

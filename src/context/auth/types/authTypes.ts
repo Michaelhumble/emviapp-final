@@ -67,3 +67,15 @@ export interface AuthContextType {
   updateProfile: (data: Partial<UserProfile>) => Promise<{ success: boolean; error?: Error }>;
   hasRole: (role: UserRole) => boolean;
 }
+
+// Add these interfaces for useSessionQuery
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface SignUpCredentials {
+  email: string;
+  password: string;
+  userData?: any;
+}

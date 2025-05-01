@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/context/auth";
 import { formatDistance } from 'date-fns';
 import { UserProfile as ProfileType } from '@/types/profile';
+import { formatLocation } from '@/utils/location';
 
 interface UserProfileProps {
   profile?: ProfileType;
@@ -95,7 +96,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
               {location && (
                 <div className="flex items-center gap-1">
                   <MapPin className="h-4 w-4" />
-                  <span>{location}</span>
+                  <span>{typeof location === 'string' ? location : formatLocation(location)}</span>
                 </div>
               )}
               

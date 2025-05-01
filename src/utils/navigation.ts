@@ -72,3 +72,13 @@ export function getPersonalizedGreeting(name: string, role: UserRole | null): st
       return defaultGreeting;
   }
 }
+
+/**
+ * Check if a user has access to a specific role-based area
+ * @param userRole The current user's role
+ * @param allowedRoles Array of roles that have access
+ * @returns Boolean indicating if the user has access
+ */
+export function hasRoleAccess(userRole: UserRole, allowedRoles: UserRole[]): boolean {
+  return allowedRoles.includes(userRole);
+}

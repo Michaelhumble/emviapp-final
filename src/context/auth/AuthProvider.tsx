@@ -98,7 +98,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (result.error) {
         return { success: false, error: result.error as Error };
       }
-      return { success: true, user: result.data?.user || undefined };
+      return { success: true, user: result.user || undefined };
     } catch (error) {
       return { success: false, error: error as Error };
     }
@@ -113,7 +113,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (result.error) {
         return { success: false, error: result.error as Error };
       }
-      return { success: true, userId: result.data?.user?.id };
+      return { success: true, userId: result.user?.id };
     } catch (error) {
       return { success: false, error: error as Error };
     }

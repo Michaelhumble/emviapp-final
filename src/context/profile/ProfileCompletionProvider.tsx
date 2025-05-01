@@ -40,7 +40,7 @@ export const ProfileCompletionProvider: React.FC<{ children: React.ReactNode }> 
   }
 
   // Fetch profile completion status from the database view
-  const { data: dbCompletionStatus, isLoading } = useSafeQuery<ProfileCompletionResult>({
+  const { data, isLoading } = useSafeQuery<ProfileCompletionResult>({
     queryKey: ['profile-completion', user?.id],
     queryFn: async () => {
       if (!user?.id || !userRole) {
@@ -75,14 +75,7 @@ export const ProfileCompletionProvider: React.FC<{ children: React.ReactNode }> 
   });
 
   // Cast the database result to our expected ProfileCompletionStatus type
-  const completionStatus: ProfileCompletionStatus | undefined = dbCompletionStatus ? {
-    isComplete: dbCompletionStatus.isComplete,
-    completionPercentage: dbCompletionStatus.completionPercentage,
-    requiredFields: dbCompletionStatus.requiredFields,
-    optionalFields: dbCompletionStatus.optionalFields,
-    minCompletionPercentage: dbCompletionStatus.minCompletionPercentage,
-    missingFields: dbCompletionStatus.missingFields
-  } : undefined;
+  const completionStatus: ProfileCompletionStatus | undefined = data;
 
   // Load completed tasks from userProfile
   useEffect(() => {

@@ -3,7 +3,7 @@ import { UseQueryOptions, useQuery, UseQueryResult } from '@tanstack/react-query
 import { toast } from 'sonner';
 
 // Extend the normal useQuery options with custom error handling options
-type SafeQueryOptions<TData, TError> = Omit<UseQueryOptions<TData, TError, TData>, 'onError'> & {
+type SafeQueryOptions<TData, TError> = Omit<UseQueryOptions<TData, TError, TData>, 'meta'> & {
   suppressErrorToast?: boolean;
   customErrorMessage?: string;
   retryMessage?: string;

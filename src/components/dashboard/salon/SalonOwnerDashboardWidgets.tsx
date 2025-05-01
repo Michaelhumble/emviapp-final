@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { CoinsIcon, StarIcon } from 'lucide-react';
+import { Coins as CoinsIcon, Star as StarIcon } from 'lucide-react';
 import { useSafeQuery } from '@/hooks/useSafeQuery';
 import { useAuth } from '@/context/auth';
 import { Skeleton } from "@/components/ui/skeleton";
