@@ -11,7 +11,7 @@ interface VietnameseContentProps {
 const VietnameseContent = ({ itemVariants }: VietnameseContentProps) => {
   return (
     <div className="space-y-8">
-      {/* First block - Kinh Doanh Của Bạn, Được Nâng Cấp */}
+      {/* First block - Kinh Doanh Của Bạn */}
       <motion.div 
         className="bg-white rounded-3xl shadow-lg p-6 sm:p-8 mb-8 border border-indigo-100/50"
         variants={itemVariants}
@@ -21,8 +21,8 @@ const VietnameseContent = ({ itemVariants }: VietnameseContentProps) => {
         </h3>
         
         <p className="text-gray-700 text-lg">
-          Chúng tôi giúp bạn mang khách hàng đến tận tiệm. Giúp bạn tìm những thợ giỏi, có kinh nghiệm, 
-          và đưa ra những ưu đãi tốt nhất — để bạn quản lý tiệm dễ dàng và đạt hiệu quả cao.
+          Chúng tôi giúp bạn mang khách hàng đến tận tiệm. Giúp bạn tìm những thợ giỏi, 
+          có kinh nghiệm, và đưa ra những ưu đãi tốt nhất — để bạn quản lý tiệm dễ dàng và đạt hiệu quả cao.
         </p>
       </motion.div>
       
@@ -39,8 +39,8 @@ const VietnameseContent = ({ itemVariants }: VietnameseContentProps) => {
           />
         </div>
         <p className="text-violet-700 text-lg font-medium">
-          Hãy để A.I thông minh của EmviApp lo mọi thứ cho bạn — bạn chỉ cần tập trung làm điều mình yêu thích 
-          và phát triển sự nghiệp của mình.
+          Hãy để A.I thông minh của EmviApp lo mọi thứ cho bạn —
+          bạn chỉ cần tập trung làm điều mình yêu thích và phát triển sự nghiệp của mình.
         </p>
       </motion.div>
       

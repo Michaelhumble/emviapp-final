@@ -1,57 +1,34 @@
 
-import { useEffect, useState } from 'react';
-import { getLanguagePreference, setLanguagePreference, addLanguageChangeListener } from "@/utils/languagePreference";
+import { useState, useEffect } from 'react';
 
 type Language = 'en' | 'vi';
 
-export type Translation = {
-  english: string;
-  vietnamese: string;
-} | string; // Allow string as a valid type for backward compatibility
+export function useTranslation() {
+  const [lang, setLang] = useState<Language>('en');
 
-export const useTranslation = () => {
-  const [lang, setLang] = useState<Language>(getLanguagePreference());
-  
   useEffect(() => {
-    // Listen for language changes from other components
-    const unsubscribe = addLanguageChangeListener((newLang) => {
-      setLang(newLang);
-    });
-    
-    return () => {
-      unsubscribe();
-    };
+    try {
+      // Try to get language from localStorage if available
+      const storedLang = localStorage.getItem('emviapp_language');
+      if (storedLang && (storedLang === 'en' || storedLang === 'vi')) {
+        setLang(storedLang as Language);
+      }
+    } catch (error) {
+      console.error('Error accessing localStorage:', error);
+      // Fallback to English if there's an error
+      setLang('en');
+    }
   }, []);
-  
-  const t = (translation: Translation): string => {
-    if (typeof translation === 'string') {
-      return translation; // If a string is passed directly, just return it
-    }
-    
-    if (lang === 'vi') {
-      return translation.vietnamese;
-    }
-    return translation.english;
-  };
-  
-  // Helper to detect if the current language is Vietnamese
-  const isVietnamese = lang === 'vi';
-  
-  // Function to toggle between languages
-  const toggleLanguage = () => {
-    const newLang = lang === 'en' ? 'vi' : 'en';
-    setLanguagePreference(newLang);
-    setLang(newLang);
-  };
-  
-  return { 
-    t, 
-    lang, 
-    isVietnamese, 
-    toggleLanguage,
-    setLanguage: (newLang: Language) => {
-      setLanguagePreference(newLang);
+
+  const setLanguage = (newLang: Language) => {
+    try {
       setLang(newLang);
+      // Store language preference
+      localStorage.setItem('emviapp_language', newLang);
+    } catch (error) {
+      console.error('Error setting language:', error);
     }
   };
-};
+
+  return { lang, setLanguage };
+}
