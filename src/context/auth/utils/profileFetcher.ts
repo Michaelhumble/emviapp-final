@@ -107,3 +107,11 @@ export const fetchFreshProfileData = async (userId: string): Promise<{
     };
   }
 };
+
+// React Query key factory for profile data
+export const profileKeys = {
+  all: ['profile'] as const,
+  user: (userId: string) => [...profileKeys.all, userId] as const,
+  userData: (userId: string) => [...profileKeys.user(userId), 'data'] as const,
+  userRole: (userId: string) => [...profileKeys.user(userId), 'role'] as const,
+}

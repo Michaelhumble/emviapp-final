@@ -1,60 +1,63 @@
 
-import { User } from '@supabase/supabase-js';
+import { User, Session } from "@supabase/supabase-js";
 
-/**
- * Represents the possible user roles in the application
- * @description These roles determine access levels and dashboard routing
- */
-export type UserRole = 
-  | 'customer'      // Regular users browsing and booking services
-  | 'artist'        // Nail technicians and beauty artists
-  | 'salon'         // Salon businesses
-  | 'owner'         // Owner of salon businesses
-  | 'manager'       // Manager of salon businesses
-  | 'admin'         // Application administrators
-  | 'freelancer'    // Independent beauty professionals
-  | 'nail technician/artist' // Specialized nail artists
-  | 'beauty supplier' // Beauty product suppliers
-  | 'supplier'      // General suppliers
-  | 'vendor'        // Vendors selling products/services
-  | 'renter'        // Booth/chair renters
-  | 'other';        // Other user types
+export type UserRole = 'artist' | 'customer' | 'salon' | 'owner' | 'freelancer' | 'supplier' | 'admin' | 'super_admin' | 'beauty supplier' | 'nail technician/artist' | string | null;
 
-/**
- * User profile data structure
- * @description Extended user information beyond auth data
- */
 export interface UserProfile {
   id: string;
-  email: string;
+  user_id?: string;
+  email?: string;
   full_name?: string;
-  role?: UserRole;
   avatar_url?: string;
   bio?: string;
+  website?: string;
   specialty?: string;
-  location?: string;
-  referral_code?: string;
+  role?: UserRole;
+  salon_name?: string;
+  instagram?: string;
+  location?: string | any;
+  phone?: string;
+  created_at?: string;
+  updated_at?: string;
+  booked_until?: string;
+  years_experience?: number;
+  completed_profile_tasks?: string[];
   portfolio_urls?: string[];
-  [key: string]: any;
+  professional_name?: string;
+  affiliate_code?: string;
+  referral_code?: string;
+  referral_count?: number;
+  credits?: number;
+  profile_views?: number;
+  badges?: any[];
+  booking_url?: string;
+  contact_link?: string;
+  accepts_bookings?: boolean;
+  preferences?: string[];
+  preferred_language?: string;
+  skills?: string[];
+  profile_completion?: number;
+  favorite_artist_types?: string[];
+  artistTypes?: string[];
+  birthday?: string | null;
+  communication_preferences?: string[];
+  independent?: boolean;
 }
 
-/**
- * Auth context data and methods
- * @description Provides authentication state and functions throughout the app
- */
 export interface AuthContextType {
   user: User | null;
   userProfile: UserProfile | null;
   userRole: UserRole;
   loading: boolean;
   isSignedIn: boolean;
-  isError: boolean;
   isNewUser: boolean;
+  isError: boolean;
   clearIsNewUser: () => void;
-  signIn: (email: string, password: string) => Promise<{ success: boolean; error?: Error }>;
-  signUp: (email: string, password: string, userData?: any) => Promise<{ success: boolean; error?: Error; userId?: string }>;
-  signOut: () => Promise<void>;
-  refreshUserProfile: () => Promise<boolean>;
-  updateUserRole: (role: UserRole) => Promise<void>;
-  updateProfile: (data: Partial<UserProfile>) => Promise<{ success: boolean; error?: Error }>;
+  signIn: (email: string, password: string) => void;
+  signUp: (email: string, password: string, userData: any) => void;
+  signOut: () => void;
+  refreshUserProfile: () => Promise<any>;
+  updateUserRole: (role: UserRole) => void;
+  updateProfile: (data: Partial<UserProfile>) => void;
+  hasRole: (role: UserRole) => boolean;
 }

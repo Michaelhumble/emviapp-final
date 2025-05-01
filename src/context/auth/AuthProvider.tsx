@@ -2,116 +2,79 @@
 import React from 'react';
 import { AuthContext } from './AuthContext';
 import { UserRole, UserProfile, AuthContextType } from './types/authTypes';
-import { useAuthState } from './hooks/useAuthState';
-import { useSession } from './hooks/useSession';
-import { useAuthMethods } from './hooks/useAuthMethods';
+import { useSessionQuery } from '@/hooks/useSessionQuery';
+import { useProfileQuery } from '@/hooks/useProfileQuery';
+import { useRoleQuery } from '@/hooks/useRoleQuery';
 
 interface AuthProviderProps {
   children: React.ReactNode;
 }
 
 /**
- * Authentication Provider component
+ * Authentication Provider component enhanced with React Query
  * @description Manages auth state and provides auth methods throughout the app
  */
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  // Use our new hooks to manage auth state
+  // Use React Query hooks for authentication state management
   const {
     session,
-    setSession,
     user,
-    setUser,
-    userProfile,
-    setUserProfile,
-    userRole,
-    setUserRole,
-    loading,
-    setLoading,
+    loading: sessionLoading,
     isNewUser,
-    setIsNewUser,
-    isError,
-    setIsError,
-    clearIsNewUser
-  } = useAuthState();
-
-  // Get authentication session data
-  const authSession = useSession();
-  
-  // Use the session data to update our state
-  React.useEffect(() => {
-    if (authSession.user) {
-      setUser(authSession.user);
-    }
-    if (authSession.session) {
-      setSession(authSession.session);
-    }
-    if (authSession.isNewUser) {
-      setIsNewUser(true);
-    }
-    setLoading(authSession.loading);
-  }, [authSession, setUser, setSession, setIsNewUser, setLoading]);
-
-  // Initialize auth methods
-  const {
+    clearIsNewUser,
     signIn,
     signUp,
     signOut,
-    refreshUserProfile: refreshProfile,
-    updateUserRole: updateRole,
-    updateProfile: updateUserProfile
-  } = useAuthMethods(
-    setLoading,
-    setUser,
-    setUserProfile,
-    setUserRole,
-    setIsNewUser,
-    setIsError
-  );
+    isSigningIn,
+    isSigningUp,
+    isSigningOut
+  } = useSessionQuery();
 
-  // Wrap clearIsNewUser to ensure both implementations are called
-  const handleClearIsNewUser = () => {
-    clearIsNewUser();
-    if (authSession.clearIsNewUser) {
-      authSession.clearIsNewUser();
-    }
-  };
+  // Use Profile Query hook when we have a user
+  const {
+    profile: userProfile,
+    role: profileRole,
+    isLoading: profileLoading,
+    isError: profileError,
+    refreshProfile: refreshUserProfile,
+    updateProfile,
+    isUpdating: isUpdatingProfile
+  } = useProfileQuery(user?.id);
 
-  // Wrapper for refreshUserProfile to include userId
-  const refreshUserProfile = async (): Promise<boolean> => {
-    if (!user) return false;
-    return refreshProfile(user.id);
-  };
+  // Use Role Query for dedicated role management
+  const {
+    userRole,
+    isLoading: roleLoading,
+    updateRole: updateUserRole,
+    isUpdating: isUpdatingRole,
+    hasRole
+  } = useRoleQuery(user?.id);
 
-  // Wrapper for updateUserRole to include userId
-  const updateUserRole = async (role: UserRole): Promise<void> => {
-    if (!user) return;
-    return updateRole(user.id, role);
-  };
-
-  // Wrapper for updateProfile to include userId
-  const updateProfile = async (data: Partial<UserProfile>): Promise<{ success: boolean; error?: Error }> => {
-    if (!user) {
-      return { success: false, error: new Error('User not authenticated') };
-    }
-    return updateUserProfile(userProfile?.id || user.id, data);
-  };
+  // Calculate final loading state
+  const loading = sessionLoading || profileLoading || roleLoading;
+  
+  // Determine the effective role (roleQuery takes precedence)
+  const effectiveRole = userRole || profileRole;
 
   // Construct auth context value
   const authContextValue: AuthContextType = {
     user,
     userProfile,
-    userRole,
+    userRole: effectiveRole,
     loading,
     isSignedIn: !!user,
-    isError,
+    isError: profileError,
     isNewUser,
-    clearIsNewUser: handleClearIsNewUser,
-    signIn,
-    signUp,
+    clearIsNewUser,
+    signIn: (email, password) => signIn({ email, password }),
+    signUp: (email, password, userData) => signUp({ email, password, userData }),
     signOut,
     refreshUserProfile,
     updateUserRole,
-    updateProfile
+    updateProfile: (data: Partial<UserProfile>) => {
+      return updateProfile(data);
+    },
+    hasRole // Add the hasRole function from roleQuery
   };
 
   return (

@@ -1,91 +1,29 @@
-import { useQuery, UseQueryOptions, UseQueryResult } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 
-type ErrorLoggerFunction = (error: any, context: string) => void;
+import { useQuery, UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
-// Default error logger that logs to console
-const defaultErrorLogger: ErrorLoggerFunction = (error, context) => {
-  console.error(`[SafeQuery:${context}] Error:`, error);
-};
-
-/**
- * A safe wrapper around useQuery that handles common failure modes
- * and provides fallback data to prevent UI crashes
- */
-export function useSafeQuery<TData = unknown>(
-  options: Omit<UseQueryOptions<TData, Error, TData>, "queryFn"> & {
-    queryFn: () => Promise<TData>;
-    enabled?: boolean;
-    fallbackData?: TData;
+// Type-safe wrapper around useQuery with improved error handling
+export function useSafeQuery<TData, TError = Error>(
+  options: UseQueryOptions<TData, TError> & { 
     context?: string;
-    errorLogger?: ErrorLoggerFunction;
-    retryCount?: number;
+    suppressErrorToast?: boolean; 
   }
-): {
-  data: TData | undefined;
-  isLoading: boolean;
-  error: Error | null;
-  refetch: () => Promise<any>;
-  isFetching: boolean;
-  isError: boolean;
-} {
-  const {
-    fallbackData,
-    context = "unknown",
-    errorLogger = defaultErrorLogger,
-    retryCount = 3,
-    ...queryOptions
-  } = options;
+): UseQueryResult<TData, TError> {
+  const { context = 'data', suppressErrorToast = false, ...queryOptions } = options;
 
-  // CRITICAL FIX: Break the type inference chain completely by using any types
-  // TypeScript will no longer try to resolve the deep nested generic types
-  const result = useQuery({
+  return useQuery<TData, TError>({
     ...queryOptions,
-    queryFn: async () => {
-      try {
-        // Execute the query function without type information propagation
-        return await options.queryFn();
-      } catch (error: any) {
-        // Log the error with context
-        errorLogger(error, context);
-        
-        // If supabase error contains 'not found' or 'does not exist'
-        if (
-          error?.message?.includes('not found') || 
-          error?.message?.includes('does not exist') ||
-          error?.message?.includes('failed') ||
-          error?.code === 'PGRST116'  // PostgREST not found code
-        ) {
-          // Return fallback data if provided
-          if (fallbackData !== undefined) {
-            console.warn(`[SafeQuery:${context}] Using fallback data due to resource not found`);
-            return fallbackData;
-          }
+    meta: {
+      ...queryOptions.meta,
+      onError: (error: TError) => {
+        console.error(`Error fetching ${context}:`, error);
+        if (!suppressErrorToast) {
+          toast.error(`Failed to load ${context}. Please try again.`);
         }
-        
-        // Re-throw to let React Query handle retry logic
-        throw error;
+        if (queryOptions.meta?.onError) {
+          queryOptions.meta.onError(error);
+        }
       }
-    },
-    retry: retryCount,
-    enabled: queryOptions.enabled
-  } as any) as UseQueryResult<TData, Error>;
-  
-  // Handle error states with fallback data when needed
-  useEffect(() => {
-    if (result.error && fallbackData !== undefined) {
-      console.warn(`[SafeQuery:${context}] Using fallback data due to error:`, result.error);
     }
-  }, [result.error, fallbackData, context]);
-
-  // We return a completely new object to break any reference chains
-  return {
-    data: result.error && fallbackData !== undefined ? fallbackData : result.data,
-    isLoading: result.isLoading,
-    error: result.error as Error | null,
-    refetch: result.refetch,
-    isFetching: result.isFetching,
-    isError: result.isError
-  };
+  });
 }
