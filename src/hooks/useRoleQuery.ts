@@ -100,7 +100,7 @@ export function useRoleQuery(userId: string | undefined) {
     isLoading,
     isError,
     updateRole: updateRoleMutation.mutate,
-    isUpdating: updateRoleMutation.isLoading,
+    isUpdating: updateRoleMutation.isPending, // Updated from isLoading to isPending
     hasRole
   };
 }

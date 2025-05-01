@@ -5,7 +5,6 @@ import { UserRole, UserProfile, AuthContextType } from './types/authTypes';
 import { useSessionQuery } from '@/hooks/useSessionQuery';
 import { useProfileQuery } from '@/hooks/useProfileQuery';
 import { useRoleQuery } from '@/hooks/useRoleQuery';
-import { toast } from 'sonner';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
@@ -58,7 +57,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     role: profileRole,
     isLoading: profileLoading,
     isError: profileError,
-    refreshProfile: refreshUserProfile,
+    refreshProfile,
     updateProfile,
     isUpdating: isUpdatingProfile
   } = useProfileQuery(user?.id);
@@ -76,17 +75,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     if (profileError && user) {
       console.error("Profile fetch error detected");
-      // Show a recovery toast only once
-      toast.error("Profile data error - Unable to load your profile data", {
-        id: 'profile-error',
-        duration: 8000,
-        action: {
-          label: "Retry",
-          onClick: () => refreshUserProfile()
-        }
-      });
     }
-  }, [profileError, user, refreshUserProfile]);
+  }, [profileError, user]);
 
   // Calculate final loading state
   const loading = sessionLoading || profileLoading || roleLoading;
@@ -94,23 +84,43 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Determine the effective role (roleQuery takes precedence)
   const effectiveRole = userRole || profileRole;
 
-  // Construct auth context value
+  // Construct auth context value with proper Promise wrappers
   const authContextValue: AuthContextType = {
     user,
     userProfile,
-    userRole: effectiveRole,
+    userRole: effectiveRole as UserRole,
+    session,
     loading,
+    loggingIn: isSigningIn,
+    loggingOut: isSigningOut,
+    signingUp: isSigningUp,
     isSignedIn: !!user,
     isError: profileError,
     isNewUser,
     clearIsNewUser,
-    signIn: (email, password) => signIn({ email, password }),
-    signUp: (email, password, userData) => signUp({ email, password, userData }),
-    signOut,
-    refreshUserProfile,
-    updateUserRole,
-    updateProfile: (data: Partial<UserProfile>) => {
-      return updateProfile(data);
+    error: authError,
+    signIn: async (credentials) => {
+      return await signIn(credentials);
+    },
+    signUp: async (credentials) => {
+      return await signUp(credentials);
+    },
+    signOut: async () => {
+      await signOut();
+    },
+    refreshUserProfile: async () => {
+      await refreshProfile();
+    },
+    updateUserRole: async (role) => {
+      await updateUserRole(role);
+    },
+    updateProfile: async (data) => {
+      try {
+        await updateProfile(data);
+        return { success: true };
+      } catch (error) {
+        return { success: false, error: error as Error };
+      }
     },
     hasRole
   };

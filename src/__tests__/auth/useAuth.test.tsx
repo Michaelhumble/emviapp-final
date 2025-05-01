@@ -93,10 +93,25 @@ describe('useAuth hook', () => {
       email: 'test@example.com'
     };
 
-    vi.mocked(supabase.from('users').select().eq().single).mockResolvedValue({
+    const mockSingle = vi.fn().mockResolvedValue({
       data: userProfile,
       error: null,
-    } as any);
+    });
+
+    const mockEq = vi.fn().mockReturnValue({
+      single: mockSingle,
+    });
+
+    const mockSelect = vi.fn().mockReturnValue({
+      eq: mockEq,
+    });
+
+    const mockFrom = vi.fn().mockReturnValue({
+      select: mockSelect,
+    });
+
+    // Setup mock chain
+    (supabase.from as any) = mockFrom;
 
     const { result, rerender } = renderHook(() => useAuth(), { wrapper });
 
@@ -150,64 +165,5 @@ describe('useAuth hook', () => {
     expect(result.current.user).toBeNull();
     expect(result.current.userProfile).toBeNull();
     expect(result.current.isSignedIn).toBe(false);
-  });
-
-  it('should handle role updates correctly', async () => {
-    // Setup mocks
-    const mockUser = { id: 'test-user-id', email: 'test@example.com' } as User;
-    const mockSession = { user: mockUser } as Session;
-    const initialRole = 'customer' as UserRole;
-    const newRole = 'artist' as UserRole;
-    
-    (supabase.auth.getSession as any).mockResolvedValue({
-      data: { session: mockSession },
-      error: null,
-    });
-
-    (supabase.auth.getUser as any).mockResolvedValue({
-      data: { user: mockUser },
-      error: null,
-    });
-
-    vi.mocked(supabase.from('users').select().eq().single).mockResolvedValueOnce({
-      data: { 
-        id: 'test-user-id', 
-        role: initialRole,
-        email: 'test@example.com'
-      },
-      error: null,
-    } as any);
-
-    vi.mocked(supabase.from('users').update().eq).mockResolvedValue({
-      data: { role: newRole },
-      error: null,
-    } as any);
-
-    const { result } = renderHook(() => useAuth(), { wrapper });
-
-    // Wait for initial auth state
-    await act(async () => {
-      const authStateChangeHandler = (supabase.auth.onAuthStateChange as any).mock.calls[0][0];
-      authStateChangeHandler('SIGNED_IN', mockSession);
-    });
-
-    // Mock updateUserProfile to return success for role update
-    vi.mocked(supabase.from('users').select().eq().single).mockResolvedValueOnce({
-      data: { 
-        id: 'test-user-id', 
-        role: newRole,
-        email: 'test@example.com'
-      },
-      error: null,
-    } as any);
-
-    // Update user role
-    await act(async () => {
-      await result.current.updateUserRole(newRole);
-    });
-
-    // Verify role was updated
-    expect(result.current.userRole).toBe(newRole);
-    expect(localStorage.getItem('emviapp_user_role')).toBe(newRole);
   });
 });

@@ -1,115 +1,123 @@
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect, useCallback } from 'react';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Session, User } from '@supabase/supabase-js';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-
-const sessionKeys = {
-  all: ['auth', 'session'] as const,
-  current: () => [...sessionKeys.all, 'current'] as const,
-};
+import { User, Session } from '@supabase/supabase-js';
+import { LoginCredentials, SignUpCredentials } from '@/context/auth/types/authTypes';
 
 export function useSessionQuery() {
-  const queryClient = useQueryClient();
-  const [isNewUser, setIsNewUser] = useState<boolean>(false);
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isNewUser, setIsNewUser] = useState(false);
   const [authError, setAuthError] = useState<Error | null>(null);
-  
-  // Initial setup for the session listener
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  // Check for new user status in localStorage
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      // Update cached session data
-      queryClient.setQueryData(sessionKeys.current(), session);
+    const storedNewUserStatus = localStorage.getItem('emviapp_new_user') === 'true';
+    if (storedNewUserStatus) {
+      setIsNewUser(true);
+    }
+  }, []);
+
+  // Sync session and user state with Supabase auth
+  useEffect(() => {
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
       
-      // Handle sign-up events
+      // Handle specific auth events
       if (event === 'SIGNED_UP') {
         setIsNewUser(true);
         localStorage.setItem('emviapp_new_user', 'true');
         
-        // Store user role if available
-        if (session?.user?.user_metadata?.role) {
-          localStorage.setItem('emviapp_user_role', session.user.user_metadata.role);
+        // Store role in localStorage if available
+        const userRole = currentSession?.user?.user_metadata?.role;
+        if (userRole) {
+          localStorage.setItem('emviapp_user_role', userRole);
         }
-        toast.success("Account created successfully! Welcome to EmviApp.");
+        
+        navigate('/choose-role');
       }
       
-      // Handle sign-in events
+      // Handle sign in
       if (event === 'SIGNED_IN') {
-        toast.success("Signed in successfully!");
-        setAuthError(null);
+        const userRole = currentSession?.user?.user_metadata?.role;
+        if (userRole) {
+          localStorage.setItem('emviapp_user_role', userRole);
+        }
+      }
+
+      // Handle sign out
+      if (event === 'SIGNED_OUT') {
+        setIsNewUser(false);
+        localStorage.removeItem('emviapp_new_user');
+        localStorage.removeItem('emviapp_user_role');
+        queryClient.clear(); // Clear query cache on signout
       }
       
-      // Handle signed-out events
-      if (event === 'SIGNED_OUT') {
-        toast.success("Signed out successfully");
-        setAuthError(null);
-      }
+      setLoading(false);
     });
-    
-    // Check for new user flag in localStorage
-    const storedNewUser = localStorage.getItem('emviapp_new_user');
-    if (storedNewUser === 'true') {
-      setIsNewUser(true);
-    }
-    
-    // Cleanup function
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
+      setSession(initialSession);
+      setUser(initialSession?.user ?? null);
+      
+      if (initialSession?.user?.user_metadata?.role) {
+        localStorage.setItem('emviapp_user_role', initialSession.user.user_metadata.role);
+      }
+      
+      setLoading(false);
+    });
+
     return () => {
       subscription.unsubscribe();
     };
-  }, [queryClient]);
-  
-  // Query for the current session
-  const { data: session, isLoading } = useQuery({
-    queryKey: sessionKeys.current(),
-    queryFn: async () => {
-      try {
-        const { data, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        return data.session;
-      } catch (error) {
-        console.error("Session retrieval error:", error);
-        setAuthError(error instanceof Error ? error : new Error("Failed to retrieve session"));
-        return null;
-      }
-    },
-    staleTime: Infinity, // Don't automatically refetch
-    cacheTime: Infinity, // Keep in cache
-    retry: 2, // Retry failed requests twice
-    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 10000), // Exponential backoff
-  });
-  
-  // Authentication mutations with enhanced error handling
+  }, [navigate, queryClient]);
+
+  // Clear new user status
+  const clearIsNewUser = useCallback(() => {
+    setIsNewUser(false);
+    localStorage.removeItem('emviapp_new_user');
+  }, []);
+
+  // Sign in mutation
   const signInMutation = useMutation({
-    mutationFn: async ({ email, password }: { email: string; password: string }) => {
-      setAuthError(null);
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        // Handle specific error types with helpful messages
-        if (error.message.includes('Invalid login')) {
-          throw new Error('Invalid email or password. Please check your credentials and try again.');
-        } else if (error.message.includes('Email not confirmed')) {
-          throw new Error('Please verify your email before signing in. Check your inbox for a verification link.');
-        } else {
-          throw error;
-        }
+    mutationFn: async (credentials: LoginCredentials) => {
+      const result = await supabase.auth.signInWithPassword({
+        email: credentials.email,
+        password: credentials.password
+      });
+      
+      if (result.error) {
+        throw result.error;
       }
-      return data;
+      
+      return result.data;
     },
-    onSuccess: (data) => {
-      queryClient.setQueryData(sessionKeys.current(), data.session);
+    onSuccess: () => {
+      // Reset auth error state
       setAuthError(null);
     },
-    onError: (error) => {
-      console.error("Sign in error:", error);
+    onError: (error: Error) => {
       setAuthError(error instanceof Error ? error : new Error("Failed to sign in"));
-      toast.error(`Sign in failed - ${error instanceof Error ? error.message : 'Authentication error'}`);
+      // Use string template literal instead of JSX
+      toast.error(`Sign in failed: ${error instanceof Error ? error.message : 'Authentication error'}`);
     }
   });
-  
+
+  // Sign up mutation
   const signUpMutation = useMutation({
-    mutationFn: async ({ email, password, userData }: { email: string; password: string; userData: any }) => {
-      setAuthError(null);
-      const { data, error } = await supabase.auth.signUp({
+    mutationFn: async (credentials: SignUpCredentials) => {
+      const { email, password, ...userData } = credentials;
+      
+      const result = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -117,72 +125,100 @@ export function useSessionQuery() {
         }
       });
       
-      if (error) {
-        // Handle specific error types with helpful messages
-        if (error.message.includes('already registered')) {
-          throw new Error('This email is already registered. Please sign in instead or use a different email.');
-        } else if (error.message.includes('password')) {
-          throw new Error('Password is too weak. Please use a stronger password (at least 6 characters).');
-        } else {
-          throw error;
-        }
+      if (result.error) {
+        throw result.error;
       }
       
-      setIsNewUser(true);
-      localStorage.setItem('emviapp_new_user', 'true');
-      return data;
-    },
-    onError: (error) => {
-      console.error("Sign up error:", error);
-      setAuthError(error instanceof Error ? error : new Error("Failed to sign up"));
-      toast.error(`Sign up failed - ${error instanceof Error ? error.message : 'Registration error'}`);
-    }
-  });
-  
-  const signOutMutation = useMutation({
-    mutationFn: async () => {
-      setAuthError(null);
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      return true;
+      return result.data;
     },
     onSuccess: () => {
-      queryClient.setQueryData(sessionKeys.current(), null);
-      localStorage.removeItem('emviapp_new_user');
-      localStorage.removeItem('emviapp_user_role');
+      setIsNewUser(true);
+      localStorage.setItem('emviapp_new_user', 'true');
+      
+      // Reset auth error state
+      setAuthError(null);
+      
+      // Use string template literal instead of JSX
+      toast.success(`Account created successfully! Please check your email.`);
     },
-    onError: (error) => {
-      console.error("Sign out error:", error);
-      setAuthError(error instanceof Error ? error : new Error("Failed to sign out"));
-      toast.error(`Sign out failed - ${error instanceof Error ? error.message : 'Unable to sign out properly'} - Please try again or refresh your browser`);
+    onError: (error: Error) => {
+      setAuthError(error instanceof Error ? error : new Error("Failed to sign up"));
+      // Use string template literal instead of JSX
+      toast.error(`Sign up failed: ${error instanceof Error ? error.message : 'Registration error'}`);
     }
   });
-  
-  // Clear new user status
-  const clearIsNewUser = useCallback(() => {
-    setIsNewUser(false);
-    localStorage.removeItem('emviapp_new_user');
+
+  // Sign out mutation
+  const signOutMutation = useMutation({
+    mutationFn: async () => {
+      const result = await supabase.auth.signOut();
+      
+      if (result.error) {
+        throw result.error;
+      }
+      
+      return result;
+    },
+    onSuccess: () => {
+      // Clear client-side state
+      setAuthError(null);
+      queryClient.clear();
+      navigate('/');
+    },
+    onError: (error: Error) => {
+      console.error('Sign out error:', error);
+      setAuthError(error);
+    }
+  });
+
+  // Retry authentication
+  const retryAuthentication = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data } = await supabase.auth.getSession();
+      setSession(data.session);
+      setUser(data.session?.user ?? null);
+      setAuthError(null);
+    } catch (error) {
+      console.error('Retry authentication error:', error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
-  
-  // Function to retry authentication after failure
-  const retryAuthentication = useCallback(() => {
-    setAuthError(null);
-    queryClient.refetchQueries({ queryKey: sessionKeys.current() });
-  }, [queryClient]);
-  
+
   return {
     session,
-    user: session?.user || null,
-    loading: isLoading,
+    user,
+    loading,
     isNewUser,
     clearIsNewUser,
-    signIn: signInMutation.mutate,
-    signUp: signUpMutation.mutate,
-    signOut: signOutMutation.mutate,
-    isSigningIn: signInMutation.isLoading,
-    isSigningUp: signUpMutation.isLoading,
-    isSigningOut: signOutMutation.isLoading,
+    isSigningIn: signInMutation.isPending,
+    isSigningUp: signUpMutation.isPending,
+    isSigningOut: signOutMutation.isPending,
     authError,
-    retryAuthentication,
+    
+    signIn: async (credentials: LoginCredentials) => {
+      try {
+        const data = await signInMutation.mutateAsync(credentials);
+        return { user: data.user, error: null };
+      } catch (error) {
+        return { user: null, error: error as Error };
+      }
+    },
+    
+    signUp: async (credentials: SignUpCredentials) => {
+      try {
+        const data = await signUpMutation.mutateAsync(credentials);
+        return { user: data.user, error: null };
+      } catch (error) {
+        return { user: null, error: error as Error };
+      }
+    },
+    
+    signOut: async () => {
+      await signOutMutation.mutateAsync();
+    },
+    
+    retryAuthentication
   };
 }

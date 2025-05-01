@@ -23,7 +23,7 @@ export function useProfileQuery(userId: string | undefined) {
     },
     enabled: !!userId,
     staleTime: 1000 * 60 * 5, // 5 minutes
-    cacheTime: 1000 * 60 * 10, // 10 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes - replaces cacheTime
   });
 
   // Mutation for updating the profile
@@ -68,7 +68,7 @@ export function useProfileQuery(userId: string | undefined) {
     isError,
     refreshProfile: refetch,
     updateProfile: updateProfileMutation.mutate,
-    isUpdating: updateProfileMutation.isLoading,
+    isUpdating: updateProfileMutation.isPending, // Updated from isLoading to isPending
     syncRoleWithAuth
   };
 }

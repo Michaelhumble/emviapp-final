@@ -19,7 +19,7 @@ export type UserRole =
 
 export interface UserProfile {
   id: string;
-  email?: string;
+  email: string;
   first_name?: string;
   last_name?: string;
   full_name?: string;
@@ -33,6 +33,14 @@ export interface UserProfile {
   zip_code?: string;
   country?: string;
   role?: UserRole;
+  specialty?: string;
+  location?: string;
+  instagram?: string;
+  website?: string;
+  referred_by?: string;
+  referral_code?: string;
+  portfolio_urls?: string[];
+  affiliate_code?: string;
   created_at?: string;
   updated_at?: string;
   [key: string]: any;
@@ -59,12 +67,14 @@ export interface AuthContextType {
   loggingOut: boolean;
   signingUp: boolean;
   error: Error | null;
+  isError: boolean;
+  isNewUser: boolean;
+  clearIsNewUser: () => void;
   hasRole: (role: UserRole) => boolean;
   signIn: (credentials: LoginCredentials) => Promise<{ user: User | null; error: Error | null }>;
   signOut: () => Promise<void>;
   signUp: (credentials: SignUpCredentials) => Promise<{ user: User | null; error: Error | null }>;
   updateUserRole: (role: UserRole) => Promise<void>;
-  updateUserProfile: (profile: Partial<UserProfile>) => Promise<void>;
+  updateProfile: (data: Partial<UserProfile>) => Promise<{ success: boolean; error?: Error }>;
   refreshUserProfile: () => Promise<void>;
-  handleAuthError: (error: Error | unknown, operation: string) => void;
 }

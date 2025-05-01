@@ -1,11 +1,24 @@
 
-import { User } from '@supabase/supabase-js';
+import { User, Session } from '@supabase/supabase-js';
 
-export type UserRole = 'customer' | 'artist' | 'salon' | 'owner' | 'manager' | 'admin' | 'freelancer' | 'nail technician/artist' | 'beauty supplier' | 'supplier' | 'vendor' | 'renter' | 'other';
+export type UserRole = 
+  | 'customer' 
+  | 'artist' 
+  | 'salon' 
+  | 'owner' 
+  | 'manager' 
+  | 'admin' 
+  | 'freelancer' 
+  | 'nail technician/artist' 
+  | 'beauty supplier' 
+  | 'supplier' 
+  | 'vendor' 
+  | 'renter' 
+  | 'other';
 
 export interface UserProfile {
   id: string;
-  email: string; // Changed from optional to required to match other UserProfile definitions
+  email: string;
   full_name?: string;
   role?: UserRole;
   avatar_url?: string;
@@ -32,4 +45,5 @@ export interface AuthContextType {
   refreshUserProfile: () => Promise<boolean>;
   updateUserRole: (role: UserRole) => Promise<void>;
   updateProfile: (data: Partial<UserProfile>) => Promise<{ success: boolean; error?: Error }>;
+  hasRole: (role: UserRole) => boolean;
 }

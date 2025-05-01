@@ -1,3 +1,4 @@
+
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -14,7 +15,7 @@ interface DashboardRedirectorProps {
 }
 
 const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRedirectorProps) => {
-  const { user, userRole, isSignedIn, isNewUser, clearIsNewUser } = useAuth();
+  const { user, userRole, isSignedIn } = useAuth();
   const navigate = useNavigate();
   const [showRoleModal, setShowRoleModal] = useState(false);
 
@@ -104,9 +105,6 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
       
       if (!profile || !profile.role) {
         setShowRoleModal(true);
-        if (isNewUser) {
-          clearIsNewUser();
-        }
         return;
       }
       
@@ -134,7 +132,7 @@ const DashboardRedirector = ({ setRedirectError, setLocalLoading }: DashboardRed
     } finally {
       setLocalLoading(false);
     }
-  }, [user, userRole, isSignedIn, navigate, isNewUser, clearIsNewUser, setRedirectError, setLocalLoading]);
+  }, [user, userRole, isSignedIn, navigate, setRedirectError, setLocalLoading]);
 
   useEffect(() => {
     checkUserRoleAndRedirect();
