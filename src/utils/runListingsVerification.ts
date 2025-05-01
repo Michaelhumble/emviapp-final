@@ -19,8 +19,8 @@ export async function runListingsVerification(): Promise<void> {
   }
 }
 
-// Update the interface for validation results
-interface ListingValidationResult {
+// Interface for validation results
+export interface ListingValidationResult {
   isValid: boolean;
   id: string;
   type: string;
