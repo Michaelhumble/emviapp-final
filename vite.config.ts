@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  base: "./", // Use relative paths for assets
+  base: './', // Use relative paths for assets
   plugins: [
     react(),
     mode === 'development' && componentTagger(),
@@ -29,7 +29,8 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: "dist",
     assetsDir: "assets",
-    sourcemap: true, // Enable source maps for better debugging
+    sourcemap: true,
+    cssCodeSplit: true, // Enable CSS code splitting
     rollupOptions: {
       output: {
         manualChunks: {
