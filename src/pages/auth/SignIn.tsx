@@ -20,7 +20,7 @@ const SignIn = () => {
   const [error, setError] = useState<string | null>(null);
   const [sendingVerification, setSendingVerification] = useState(false);
   const [showVerificationAlert, setShowVerificationAlert] = useState(false);
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -29,10 +29,39 @@ const SignIn = () => {
 
   useEffect(() => {
     if (user) {
-      const decodedRedirect = redirectUrl ? decodeURIComponent(redirectUrl) : '/dashboard';
-      navigate(decodedRedirect, { replace: true });
+      // Determine where to redirect based on user role
+      let targetDashboard = '/dashboard';
+      
+      if (userRole) {
+        switch (userRole) {
+          case 'artist':
+          case 'nail technician/artist':
+            targetDashboard = '/dashboard/artist';
+            break;
+          case 'salon':
+          case 'owner':
+            targetDashboard = '/dashboard/salon';
+            break;
+          case 'freelancer':
+            targetDashboard = '/dashboard/freelancer';
+            break;
+          case 'customer':
+            targetDashboard = '/dashboard/customer';
+            break;
+          case 'supplier':
+          case 'beauty supplier':
+            targetDashboard = '/dashboard/supplier';
+            break;
+          default:
+            targetDashboard = '/dashboard/other';
+        }
+      }
+      
+      // If a specific redirect URL was provided, use that instead
+      const finalRedirect = redirectUrl !== '/dashboard' ? decodeURIComponent(redirectUrl) : targetDashboard;
+      navigate(finalRedirect, { replace: true });
     }
-  }, [user, navigate, redirectUrl]);
+  }, [user, userRole, navigate, redirectUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
