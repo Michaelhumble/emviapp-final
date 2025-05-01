@@ -1,8 +1,18 @@
+
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useAuth } from '@/context/auth';
-import { ProfileCompletionStatus } from '@/types/profile-completion';
 import { useSafeQuery } from '@/hooks/useSafeQuery';
 import { supabase } from '@/integrations/supabase/client';
+
+// Define the profile completion status interface
+export interface ProfileCompletionStatus {
+  isComplete: boolean;
+  completionPercentage: number;
+  requiredFields: string[];
+  optionalFields: string[];
+  minCompletionPercentage: number;
+  missingFields: string[];
+}
 
 interface ProfileCompletionContextProps {
   completionStatus: ProfileCompletionStatus | undefined;

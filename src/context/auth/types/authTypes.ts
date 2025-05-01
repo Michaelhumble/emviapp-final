@@ -33,11 +33,7 @@ export interface UserProfile {
   profile_views?: number;
   user_id?: string;
   birthday?: string;
-  communication_preferences?: {
-    email?: boolean;
-    sms?: boolean;
-    push?: boolean;
-  };
+  communication_preferences?: string[]; // Changed to string[] to match the profile.ts type
   commPrefs?: {
     email?: boolean;
     sms?: boolean;

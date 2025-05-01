@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { User } from '@supabase/supabase-js';
 import { useSessionQuery } from '@/hooks/useSessionQuery';
 import { useProfileQuery } from '@/hooks/useProfileQuery';
@@ -9,6 +9,7 @@ import { useProfileSync } from '@/hooks/useProfileSync';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { RefreshCw } from 'lucide-react';
+import { AuthContext } from './AuthContext';
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -26,9 +27,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loading: sessionLoading,
     isNewUser,
     clearIsNewUser,
-    signIn,
-    signUp,
-    signOut,
+    signIn: sessionSignIn,
+    signUp: sessionSignUp,
+    signOut: sessionSignOut,
     isSigningIn,
     isSigningUp,
     isSigningOut,
@@ -90,52 +91,56 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   /**
    * Wrapper for signIn function to ensure consistent return type
-   * @param credentials - Login credentials
-   * @returns Promise with user and error information
    */
-  const handleSignIn = async (credentials: any) => {
+  const handleSignIn = async (email: string, password: string): Promise<{ success: boolean; error?: Error; user?: User }> => {
     try {
-      const result = await signIn(credentials);
-      return result;
+      const result = await sessionSignIn({ email, password });
+      if (result.error) {
+        return { success: false, error: result.error as Error };
+      }
+      return { success: true, user: result.data?.user || undefined };
     } catch (error) {
-      return { user: null, error: error as Error };
+      return { success: false, error: error as Error };
     }
   };
 
   /**
    * Wrapper for signUp function to ensure consistent return type
-   * @param credentials - Registration credentials
-   * @returns Promise with user and error information
    */
-  const handleSignUp = async (credentials: any) => {
+  const handleSignUp = async (email: string, password: string, userData?: any): Promise<{ success: boolean; error?: Error; userId?: string }> => {
     try {
-      const result = await signUp(credentials);
-      return result;
+      const result = await sessionSignUp({ email, password, userData });
+      if (result.error) {
+        return { success: false, error: result.error as Error };
+      }
+      return { success: true, userId: result.data?.user?.id };
     } catch (error) {
-      return { user: null, error: error as Error };
+      return { success: false, error: error as Error };
     }
   };
 
   /**
-   * Wrapper for signOut function to ensure consistent return type
-   * @returns Promise<void>
+   * Wrapper for signOut function
    */
   const handleSignOut = async (): Promise<void> => {
-    await signOut();
+    await sessionSignOut();
   };
 
   /**
-   * Wrapper for refreshUserProfile function to ensure consistent return type
-   * @returns Promise<void>
+   * Wrapper for refreshProfile function
    */
-  const handleRefreshProfile = async (): Promise<void> => {
-    await refreshProfile();
+  const handleRefreshProfile = async (): Promise<boolean> => {
+    try {
+      await refreshProfile();
+      return true;
+    } catch (error) {
+      console.error('Error refreshing profile:', error);
+      return false;
+    }
   };
 
   /**
-   * Wrapper for updateUserRole function to ensure consistent return type
-   * @param role - New user role
-   * @returns Promise<void>
+   * Wrapper for updateUserRole function
    */
   const handleUpdateRole = async (role: UserRole): Promise<void> => {
     await updateUserRole(role);

@@ -3,68 +3,64 @@ import { useEffect } from 'react';
 import { useAuth } from '@/context/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { UserProfile } from '@/context/auth/types/authTypes';
 
 /**
- * Hook to synchronize user profile data across tabs/devices in real-time
- * Only listens for changes to the authenticated user's profile
+ * Hook to synchronize profile changes in real-time
  */
 export function useProfileSync() {
-  const { user, userProfile, refreshUserProfile } = useAuth();
-  
+  const { user, refreshUserProfile } = useAuth();
+
   useEffect(() => {
-    // Only subscribe to changes if we have an authenticated user
     if (!user?.id) return;
-    
-    console.log("Setting up real-time profile sync for user", user.id);
-    
-    // Create a channel subscription for profile changes
+
+    // Set up real-time subscription to the users table for the current user
     const channel = supabase
-      .channel('profile-sync')
+      .channel(`users-changes-${user.id}`)
       .on(
         'postgres_changes',
         {
           event: 'UPDATE',
           schema: 'public',
           table: 'users',
-          filter: `id=eq.${user.id}`
+          filter: `id=eq.${user.id}`,
         },
         async (payload) => {
-          console.log('Profile update detected from another session:', payload);
-          
-          // If the update was made from this session, we can ignore it
-          // as the local state would already be up to date
-          if (payload.record && payload.old_record) {
-            const oldProfile = payload.old_record as unknown as UserProfile;
-            const newProfile = payload.record as unknown as UserProfile;
-            
-            // Only refresh if important profile fields have changed
-            const hasSignificantChanges = 
-              oldProfile.full_name !== newProfile.full_name ||
-              oldProfile.avatar_url !== newProfile.avatar_url ||
-              oldProfile.bio !== newProfile.bio ||
-              oldProfile.specialty !== newProfile.specialty ||
-              oldProfile.role !== newProfile.role;
-              
-            if (hasSignificantChanges) {
-              // Notify user about the sync
-              toast.info("Your profile was updated from another device");
-              
-              // Refresh the user profile data
+          try {
+            // Get the old and new record from the payload
+            const oldRecord = payload.old || {};
+            const newRecord = payload.new || {};
+
+            // Check if significant changes were made
+            const significantChanges = ['credits', 'role', 'boosted_until'].some(
+              field => oldRecord[field] !== newRecord[field]
+            );
+
+            // Only refresh and notify for significant changes
+            if (significantChanges) {
               await refreshUserProfile();
+              
+              // Check for specific changes to notify about
+              if (oldRecord.credits !== newRecord.credits) {
+                const difference = (newRecord.credits || 0) - (oldRecord.credits || 0);
+                if (difference > 0) {
+                  toast.success(`${difference} credits added to your account!`);
+                }
+              }
+              
+              if (oldRecord.role !== newRecord.role) {
+                toast.info(`Your account role has been updated to ${newRecord.role || 'customer'}`);
+              }
             }
+          } catch (error) {
+            console.error('Error handling profile update:', error);
           }
         }
       )
       .subscribe();
-    
-    // Clean up the subscription when the component unmounts
-    // or when the user changes
+
+    // Clean up subscription when unmounting
     return () => {
-      console.log("Cleaning up real-time profile sync subscription");
       supabase.removeChannel(channel);
     };
   }, [user?.id, refreshUserProfile]);
-  
-  return null; // This hook doesn't return anything
 }
