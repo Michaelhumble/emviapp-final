@@ -31,6 +31,7 @@ export default defineConfig(({ mode }) => ({
     assetsDir: "assets",
     sourcemap: true,
     cssCodeSplit: true, // Enable CSS code splitting
+    emptyOutDir: true, // Clean the output directory before each build
     rollupOptions: {
       output: {
         manualChunks: {
