@@ -1,7 +1,6 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
 
 interface SectionTitleProps {
   language: "en" | "vi";
