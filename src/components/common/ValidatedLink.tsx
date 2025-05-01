@@ -1,109 +1,66 @@
 
-import React, { useState } from 'react';
-import { Link, LinkProps, useNavigate } from 'react-router-dom';
-import { validateListingExists, ListingType } from '@/utils/listingValidator';
+import React, { useState, useEffect } from 'react';
+import { Link, LinkProps } from 'react-router-dom';
+import { validateListingRoute } from '@/utils/runListingsVerification';
+import { ListingType } from '@/utils/listingValidator';
 
 interface ValidatedLinkProps extends LinkProps {
-  listingId: string;
-  listingType: ListingType;
-  fallbackRoute?: string;
-  onInvalid?: () => void;
-  validateBeforeClick?: boolean; // Set to true to validate on hover instead of on click
+  listingId?: string;
+  listingType?: ListingType;
+  fallbackUrl?: string;
+  preValidated?: boolean;
 }
 
 /**
- * A Link component that validates listing existence before navigation
+ * A Link component that validates the destination before navigation
+ * If the destination is invalid, it will redirect to a fallback URL
  */
 const ValidatedLink: React.FC<ValidatedLinkProps> = ({
+  to,
   listingId,
   listingType,
-  fallbackRoute,
-  onInvalid,
-  validateBeforeClick = false,
+  fallbackUrl,
+  preValidated = false,
   children,
-  ...linkProps
+  ...rest
 }) => {
-  const navigate = useNavigate();
-  const [isValidating, setIsValidating] = useState(false);
-  const [isInvalid, setIsInvalid] = useState(false);
-  
-  // Determine the fallback route based on listing type if not provided
-  const determinedFallback = fallbackRoute || (() => {
-    switch (listingType) {
-      case 'salon': return '/salon-not-found';
-      case 'job':
-      case 'opportunity': return '/opportunity-not-found';
-      case 'booth': return '/booth-not-found';
-      default: return '/not-found';
-    }
-  })();
+  const [actualTo, setActualTo] = useState<string | any>(to);
+  const [isValidating, setIsValidating] = useState<boolean>(!preValidated);
 
-  // Validate listing on hover if requested
-  const handleMouseEnter = async () => {
-    if (validateBeforeClick && !isValidating && !isInvalid) {
-      setIsValidating(true);
-      try {
-        const isValid = await validateListingExists(listingId, listingType);
-        if (!isValid) {
-          setIsInvalid(true);
-        }
-      } catch (error) {
-        console.error('Error validating listing:', error);
-      } finally {
-        setIsValidating(false);
-      }
-    }
-  };
-
-  // Handle click with validation
-  const handleClick = async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    // If we already know it's invalid, navigate to fallback
-    if (isInvalid) {
-      e.preventDefault();
-      navigate(determinedFallback);
-      if (onInvalid) onInvalid();
+  useEffect(() => {
+    // If no validation is needed or already prevalidated, use the original URL
+    if (!listingId || !listingType || preValidated) {
+      setIsValidating(false);
       return;
     }
-    
-    // If we haven't pre-validated, do it now
-    if (!validateBeforeClick) {
-      e.preventDefault();
-      setIsValidating(true);
-      
+
+    const validateRoute = async () => {
       try {
-        const isValid = await validateListingExists(listingId, listingType);
+        const isValid = await validateListingRoute(listingId, listingType);
         
-        if (!isValid) {
-          setIsInvalid(true);
-          navigate(determinedFallback);
-          if (onInvalid) onInvalid();
-        } else {
-          // Manually navigate since we prevented default
-          navigate(linkProps.to);
+        if (!isValid && fallbackUrl) {
+          setActualTo(fallbackUrl);
         }
       } catch (error) {
-        console.error('Error validating listing:', error);
-        navigate(determinedFallback);
+        console.error('Error validating link:', error);
+        if (fallbackUrl) {
+          setActualTo(fallbackUrl);
+        }
       } finally {
         setIsValidating(false);
       }
-    }
-  };
+    };
 
-  // If it's invalid and we've pre-validated, update the link to the fallback
-  const linkTo = isInvalid ? determinedFallback : linkProps.to;
+    validateRoute();
+  }, [listingId, listingType, fallbackUrl, preValidated]);
 
-  return (
-    <Link 
-      {...linkProps}
-      to={linkTo}
-      onClick={handleClick}
-      onMouseEnter={handleMouseEnter}
-      className={`${linkProps.className || ''} ${isValidating ? 'cursor-wait' : ''}`}
-    >
-      {children}
-    </Link>
-  );
+  // While validating, render a placeholder or the original link
+  if (isValidating) {
+    // You can render a loading state or just the children without the link
+    return <span className="cursor-not-allowed opacity-70">{children}</span>;
+  }
+
+  return <Link to={actualTo} {...rest}>{children}</Link>;
 };
 
 export default ValidatedLink;

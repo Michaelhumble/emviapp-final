@@ -1,4 +1,5 @@
-import { validateListingExists, ListingType } from '../listingValidator';
+
+import { validateListingExists, ListingType, getListingFallbackRoute } from '../listingValidator';
 
 /**
  * Centralized route validation utilities
@@ -11,6 +12,7 @@ export const APP_ROUTES = {
   DASHBOARD: '/dashboard',
   SALONS: '/salons',
   JOBS: '/jobs',
+  OPPORTUNITIES: '/opportunities',
   PROFILE: '/profile',
   
   // Dashboard variants
@@ -55,7 +57,9 @@ export const isValidRoute = (pathname: string): boolean => {
     /^\/u\/[^\/]+$/, // Artist profiles like /u/artist-name
     /^\/salon\/[^\/]+$/, // Salon details like /salon/123
     /^\/job\/[^\/]+$/, // Job details
+    /^\/jobs\/[^\/]+$/, // Job details alternative route
     /^\/opportunity\/[^\/]+$/, // Opportunity details
+    /^\/opportunities\/[^\/]+$/, // Opportunity details alternative route
     /^\/booth\/[^\/]+$/, // Booth details
   ];
   
@@ -78,6 +82,9 @@ export const getFallbackRoute = (pathname: string): string => {
     case 'salons': return APP_ROUTES.SALONS;
     case 'salon': return APP_ROUTES.SALONS;
     case 'jobs': return APP_ROUTES.JOBS;
+    case 'job': return APP_ROUTES.JOBS;
+    case 'opportunities': return APP_ROUTES.JOBS;
+    case 'opportunity': return APP_ROUTES.JOBS;
     case 'profile': return APP_ROUTES.PROFILE;
     case 'u': return APP_ROUTES.SALONS;
     default: return APP_ROUTES.HOME;
@@ -96,23 +103,8 @@ export const validateListing = async (
     const exists = await validateListingExists(id, listingType);
     
     if (!exists) {
-      // Determine appropriate fallback route
-      let fallbackRoute: string;
-      
-      switch (listingType) {
-        case 'salon':
-          fallbackRoute = APP_ROUTES.SALON_NOT_FOUND;
-          break;
-        case 'job':
-        case 'opportunity':
-          fallbackRoute = APP_ROUTES.OPPORTUNITY_NOT_FOUND;
-          break;
-        case 'booth':
-          fallbackRoute = APP_ROUTES.BOOTH_NOT_FOUND;
-          break;
-        default:
-          fallbackRoute = APP_ROUTES.NOT_FOUND;
-      }
+      // Use the standardized fallback route function
+      const fallbackRoute = getListingFallbackRoute(listingType);
       
       return { isValid: false, fallbackRoute };
     }
@@ -128,5 +120,37 @@ export const validateListing = async (
  * Log route access for debugging
  */
 export const logRouteAccess = (pathname: string): void => {
-  console.log(`Route accessed: ${pathname} - Valid: ${isValidRoute(pathname)}`);
+  const isValid = isValidRoute(pathname);
+  console.log(`Route accessed: ${pathname} - Valid: ${isValid}`);
+  
+  // Track invalid routes for analytics
+  if (!isValid) {
+    console.warn(`🚨 Invalid route accessed: ${pathname}`);
+  }
+};
+
+/**
+ * Verify all listings have valid routes
+ */
+export const runListingsVerification = async (): Promise<void> => {
+  console.log("Running listings verification...");
+  
+  try {
+    // Test cases for verification
+    const testSalonId = "salon123";
+    const testJobId = "job123";
+    
+    // Validate sample listings
+    console.log(`Validating listing: ${testSalonId} of type: salon`);
+    const salonResult = await validateListing(testSalonId, "salon");
+    
+    console.log(`Validating listing: ${testJobId} of type: job`);
+    const jobResult = await validateListing(testJobId, "job");
+    
+    // Log verification results
+    console.log("Verification results:", { salonResult, jobResult });
+    console.log("Listings verification completed");
+  } catch (error) {
+    console.error("Error during listings verification:", error);
+  }
 };

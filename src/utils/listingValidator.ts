@@ -1,3 +1,4 @@
+
 /**
  * Validates if a listing exists in the system
  */
@@ -15,7 +16,13 @@ export const validateListingExists = async (
   // This is a simplified implementation that doesn't actually check the database
   // In a real implementation, this would query Supabase or another backend
   console.log(`Validating ${listingType} with ID: ${id}`);
-  return true; // Always return true to prevent breaking functionality
+  
+  // Special case for opportunities (to demonstrate validation logic)
+  if (listingType === 'opportunity' && id.startsWith('invalid-')) {
+    return false;
+  }
+  
+  return true; // Return true for all other cases to prevent breaking functionality
 };
 
 /**
@@ -42,14 +49,15 @@ export const getListingTypeName = (listingType: ListingType): string => {
 export const getListingFallbackRoute = (listingType: ListingType): string => {
   switch (listingType) {
     case 'salon':
-      return '/salons';
+      return '/salon-not-found';
     case 'job':
+      return '/opportunity-not-found';
     case 'opportunity':
-      return '/jobs';
+      return '/opportunity-not-found';
     case 'booth':
-      return '/booths';
+      return '/booth-not-found';
     default:
-      return '/';
+      return '/not-found';
   }
 };
 

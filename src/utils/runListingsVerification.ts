@@ -1,55 +1,42 @@
 
-import { enhanceListingWithImage } from './listingsVerification';
+import { validateListing } from './routing/routeValidation';
 
-// Define the ListingValidationResult interface
-export interface ListingValidationResult {
-  isValid: boolean;
-  fallbackRoute: string;
-  message?: string;
-}
-
-// Function to validate a specific listing
-export const validateListing = async (id: string, type: string): Promise<ListingValidationResult> => {
-  console.log(`Validating listing: ${id} of type: ${type}`);
+/**
+ * Utility function to verify that listings have proper routing
+ * This can be run on application startup or from specific pages
+ */
+export const runListingsVerification = async (): Promise<void> => {
+  console.log("Running listings verification...");
   
   try {
-    // For now, we just return true as valid to prevent routing issues
-    // In a real implementation, this would query the database to check if the listing exists
-    return {
-      isValid: true,
-      fallbackRoute: type === 'salon' ? '/salons' : '/jobs'
-    };
+    // Test cases for verification
+    const testSalonId = "salon123";
+    const testJobId = "job123";
+    
+    // Validate sample listings
+    console.log(`Validating listing: ${testSalonId} of type: salon`);
+    const salonResult = await validateListing(testSalonId, "salon");
+    
+    console.log(`Validating listing: ${testJobId} of type: job`);
+    const jobResult = await validateListing(testJobId, "job");
+    
+    // Log verification results
+    console.log("Verification results:", { salonResult, jobResult });
+    console.log("Listings verification completed");
   } catch (error) {
-    console.error(`Error validating ${type} listing:`, error);
-    return {
-      isValid: false,
-      fallbackRoute: type === 'salon' ? '/salons' : '/jobs',
-      message: `Error validating ${type} listing: ${error instanceof Error ? error.message : 'Unknown error'}`
-    };
+    console.error("Error during listings verification:", error);
   }
 };
 
-// Main function to run verification on all listings
-export const runListingsVerification = async () => {
-  console.log('Running listings verification...');
-  
+/**
+ * Utility to check if a given listing route is valid before navigation
+ * Can be used with link components to validate before navigation
+ */
+export const validateListingRoute = async (id: string, type: 'salon' | 'job' | 'opportunity' | 'booth'): Promise<boolean> => {
   try {
-    // This is a placeholder to verify routing integrity
-    // Here we would normally check a selection of listings in each category
-    
-    // Example: verify a fixed salon listing
-    const salonResult = await validateListing('salon123', 'salon');
-    
-    // Example: verify a fixed job listing
-    const jobResult = await validateListing('job123', 'job');
-    
-    // Log the results
-    console.log('Verification results:', { salonResult, jobResult });
-    
-    // Return overall status
-    return salonResult.isValid && jobResult.isValid;
-  } catch (error) {
-    console.error('Listings verification failed:', error);
+    const result = await validateListing(id, type);
+    return result.isValid;
+  } catch {
     return false;
   }
 };
