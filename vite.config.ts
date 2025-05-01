@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  // Base path for all assets
+  // Ensure base path is properly set for all builds
   base: './',
   build: {
     // Generate assets with proper paths

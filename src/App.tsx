@@ -25,6 +25,11 @@ function App() {
     
     // Log route for debugging using consolidated logger
     logRouteAccess(location.pathname);
+    
+    // Log for asset path debugging in production
+    if (!import.meta.env.DEV) {
+      console.info(`📍 Route accessed: ${location.pathname}`);
+    }
   }, [location.pathname]);
 
   return (

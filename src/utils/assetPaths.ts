@@ -46,3 +46,29 @@ export const validateAssetPath = (path: string): void => {
       });
   }
 };
+
+/**
+ * Add additional asset loading validation to track all loaded assets
+ */
+export const initializeAssetLoadingTracker = (): void => {
+  // Only run in production to debug preview issues
+  if (!import.meta.env.DEV) {
+    console.info('🔍 Asset path tracker initialized');
+    
+    // Track script loading
+    document.addEventListener('DOMContentLoaded', () => {
+      const scripts = document.querySelectorAll('script');
+      scripts.forEach(script => {
+        if (script.src) {
+          console.info(`📁 Script: ${script.src}`);
+        }
+      });
+      
+      // Track stylesheet loading
+      const stylesheets = document.querySelectorAll('link[rel="stylesheet"]');
+      stylesheets.forEach(stylesheet => {
+        console.info(`📁 Stylesheet: ${stylesheet.getAttribute('href')}`);
+      });
+    });
+  }
+};

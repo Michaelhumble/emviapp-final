@@ -1,10 +1,11 @@
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter as Router } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App';
 import './index.css';
-import { getBasePath } from './utils/assetPaths';
+import { getBasePath, initializeAssetLoadingTracker } from './utils/assetPaths';
 
 // Global error handler with more detailed reporting for asset loading issues
 window.addEventListener('error', (event) => {
@@ -33,6 +34,9 @@ const queryClient = new QueryClient({
     }
   }
 });
+
+// Initialize asset loading tracker for debugging
+initializeAssetLoadingTracker();
 
 // Set favicon with correct path
 const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
