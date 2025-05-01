@@ -65,7 +65,7 @@ describe('useAuth hook', () => {
 
     const { result } = renderHook(() => useAuth(), { wrapper });
     
-    // Explicitly type the result.current as AuthContextType
+    // Get the auth context values and verify defaults
     const auth = result.current;
     expect(auth.user).toBeNull();
     expect(auth.userProfile).toBeNull();

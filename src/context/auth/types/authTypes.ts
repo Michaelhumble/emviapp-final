@@ -3,6 +3,8 @@ import { Session, User } from "@supabase/supabase-js";
 
 /**
  * Available user roles in the application
+ * 
+ * @description Defines all possible user roles within the system
  */
 export type UserRole = 
   | "customer" 
@@ -14,10 +16,16 @@ export type UserRole =
   | "admin"
   | "nail technician/artist"
   | "beauty supplier"
-  | "salon owner";
+  | "salon owner"
+  | "vendor"
+  | "manager"
+  | "renter"
+  | "other";
 
 /**
  * User profile data structure
+ * 
+ * @description Defines the structure for user profile data stored in the database
  */
 export interface UserProfile {
   /** Unique identifier (matches auth.user.id) */
@@ -58,6 +66,7 @@ export interface UserProfile {
   
   /** User's preferred language */
   language_preference?: string;
+  preferred_language?: string;
   
   /** User's referral/affiliate code */
   referral_code?: string;
@@ -91,6 +100,64 @@ export interface UserProfile {
   
   /** Affiliate code for marketing purposes */
   affiliate_code?: string;
+  
+  /** Whether the user is independent (for artists/professionals) */
+  independent?: boolean;
+  
+  /** User's credits in the system */
+  credits?: number;
+  
+  /** Credits earned in the current month */
+  creditsThisMonth?: number;
+  
+  /** Count of users referred */
+  referral_count?: number;
+  
+  /** User preferences */
+  preferences?: string[];
+  
+  /** Favorite artist types */
+  favorite_artist_types?: string[];
+  artistTypes?: string[];
+  
+  /** Portfolio image URLs */
+  portfolio_urls?: string[];
+  
+  /** Whether the user is boosted (premium) */
+  boosted_until?: string;
+  
+  /** Completed profile tasks */
+  completed_profile_tasks?: string[];
+  
+  /** Booking URL */
+  booking_url?: string;
+  
+  /** Skills */
+  skills?: string[];
+  
+  /** Custom role description */
+  custom_role?: string;
+  
+  /** Contact link */
+  contact_link?: string;
+  
+  /** Achievement badges */
+  badges?: string[];
+  
+  /** Whether the user accepts bookings */
+  accepts_bookings?: boolean;
+  
+  /** Years of experience */
+  years_experience?: number;
+  
+  /** Professional name */
+  professional_name?: string;
+  
+  /** Salon name for salon owners */
+  salon_name?: string;
+  
+  /** Company name for business owners */
+  company_name?: string;
 }
 
 /**
