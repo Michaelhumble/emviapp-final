@@ -1,39 +1,24 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 
 interface LanguageToggleButtonProps {
-  language: "en" | "vi";
-  setLanguage: (language: "en" | "vi") => void;
-  itemVariants: any;
+  isVietnamese: boolean;
+  toggleLanguage: () => void;
 }
 
-const LanguageToggleButton = ({ language, setLanguage, itemVariants }: LanguageToggleButtonProps) => {
+const LanguageToggleButton = ({ isVietnamese, toggleLanguage }: LanguageToggleButtonProps) => {
   return (
-    <motion.div
-      className="flex justify-center"
-      variants={itemVariants}
+    <motion.button
+      onClick={toggleLanguage}
+      className="flex items-center justify-center space-x-2 px-4 py-2 rounded-full bg-white shadow-md hover:shadow-lg transition-shadow"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
     >
-      <div className="inline-flex rounded-md shadow-sm" role="group">
-        <Button
-          type="button"
-          variant={language === "en" ? "default" : "outline"}
-          className="rounded-l-md rounded-r-none"
-          onClick={() => setLanguage("en")}
-        >
-          English
-        </Button>
-        <Button
-          type="button"
-          variant={language === "vi" ? "default" : "outline"}
-          className="rounded-r-md rounded-l-none"
-          onClick={() => setLanguage("vi")}
-        >
-          Tiếng Việt
-        </Button>
-      </div>
-    </motion.div>
+      <span className={isVietnamese ? "opacity-50" : "font-medium"}>English</span>
+      <span className="w-px h-4 bg-gray-300 mx-2"></span>
+      <span className={isVietnamese ? "font-medium" : "opacity-50"}>Tiếng Việt</span>
+    </motion.button>
   );
 };
 
