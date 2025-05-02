@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -21,6 +22,7 @@ import SalonClientGrowthSystem from "@/components/home/SalonClientGrowthSystem";
 import WhyTrustSection from "@/components/home/sections/WhyTrustSection";
 import WhatYouCanDoSection from "@/components/home/sections/WhatYouCanDoSection";
 import BeautyExchangeSection from "@/components/home/BeautyExchangeSection";
+import BeautyExchangeLayout from "@/components/home/BeautyExchangeLayout";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -63,6 +65,9 @@ const Index = () => {
       
       {/* Let's Experience EmviApp Together */}
       <MissingPieceSection />
+      
+      {/* New Beauty Exchange Layout - Added directly after MissingPieceSection */}
+      <BeautyExchangeLayout />
       
       {/* No Matter Your Craft — We Know the Struggle */}
       <ClientSuccessStories />
