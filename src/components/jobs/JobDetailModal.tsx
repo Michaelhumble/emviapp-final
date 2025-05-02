@@ -1,12 +1,14 @@
 
-import React from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Job } from "@/types/job";
-import { MapPin, Phone, Mail, Calendar, DollarSign, Briefcase, Verified } from "lucide-react";
-import { format } from "date-fns";
-import { useTranslation } from "@/hooks/useTranslation";
+import React from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Job } from '@/types/job';
+import { MapPin, Calendar, DollarSign, Mail, Phone, ExternalLink, Verified, Lock } from 'lucide-react';
+import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
+import { format } from 'date-fns';
+import { useTranslation } from '@/hooks/useTranslation';
+import { Separator } from '@/components/ui/separator';
 
 interface JobDetailModalProps {
   job: Job;
@@ -15,247 +17,253 @@ interface JobDetailModalProps {
 }
 
 const JobDetailModal = ({ job, isOpen, onClose }: JobDetailModalProps) => {
-  const { isVietnamese, toggleLanguage } = useTranslation();
-  
-  const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      return format(date, 'MMMM d, yyyy');
-    } catch (error) {
-      return "Recent";
-    }
-  };
-  
+  const { t, isVietnamese, toggleLanguage } = useTranslation();
+  const isExpired = job.status === "expired";
+
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-2xl font-playfair flex items-center gap-2">
-              {job.title}
-              {job.trust_indicators?.verified && (
-                <Badge className="bg-blue-100 text-blue-800 inline-flex items-center">
-                  <Verified className="h-3.5 w-3.5 mr-1" /> Verified
-                </Badge>
-              )}
-            </DialogTitle>
-            
-            {job.is_featured && (
-              <Badge className="bg-purple-100 text-purple-800">
-                Featured
+            <DialogTitle className="text-2xl font-playfair">{job.title}</DialogTitle>
+            {job.trust_indicators?.verified && (
+              <Badge className="bg-blue-600 text-white">
+                <Verified className="h-3.5 w-3.5 mr-1" /> {isVietnamese ? "Đã Xác Minh" : "Verified"}
               </Badge>
             )}
           </div>
-          <div className="text-lg text-gray-700">{job.company}</div>
-        </DialogHeader>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-2 space-y-6">
-            {/* Language Toggle */}
-            {job.vietnamese_description && (
-              <div className="flex items-center justify-end mb-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={toggleLanguage}
-                  className="text-xs"
-                >
-                  {isVietnamese ? "Switch to English" : "Chuyển sang Tiếng Việt"}
-                </Button>
-              </div>
-            )}
-            
-            {/* Job Description */}
-            <div>
-              <h3 className="text-lg font-semibold mb-2">
-                {isVietnamese ? "Mô Tả Công Việc" : "Job Description"}
-              </h3>
-              <div className="space-y-4">
-                <p className="text-gray-700 whitespace-pre-line">
-                  {isVietnamese && job.vietnamese_description 
-                    ? job.vietnamese_description 
-                    : job.description}
-                </p>
-                
-                {/* Show both languages if both exist */}
-                {job.vietnamese_description && !isVietnamese && (
-                  <div className="mt-6 pt-4 border-t">
-                    <h4 className="font-medium mb-2">
-                      Tiếng Việt / Vietnamese Description
-                    </h4>
-                    <p className="text-gray-600">
-                      {job.vietnamese_description}
-                    </p>
-                  </div>
-                )}
+          <DialogDescription>
+            <div className="flex items-center">
+              <span className="font-medium text-gray-800">{job.company}</span>
+              <span className="mx-2">•</span>
+              <div className="flex items-center text-gray-600">
+                <MapPin className="h-3.5 w-3.5 mr-1" />
+                <span>{job.location}</span>
               </div>
             </div>
+          </DialogDescription>
+        </DialogHeader>
+
+        {/* Image with potential status badge */}
+        <div className="relative rounded-md overflow-hidden">
+          <ImageWithFallback
+            src={job.image || job.imageUrl || '/default-job.jpg'}
+            alt={job.title || "Job listing"}
+            className="w-full h-56 object-cover"
+          />
+          
+          {isExpired && (
+            <Badge variant="destructive" className="absolute top-3 left-3">
+              <Lock className="h-3.5 w-3.5 mr-1" /> {isVietnamese ? "Đã Hết Hạn" : "Expired"}
+            </Badge>
+          )}
+        </div>
+        
+        {/* Job Details */}
+        <div className="space-y-4">
+          {/* Basic Info */}
+          <div className="flex flex-wrap gap-3">
+            {job.employment_type && (
+              <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                {job.employment_type}
+              </Badge>
+            )}
             
-            {/* Specialties */}
-            {job.specialties && job.specialties.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold mb-2">
-                  {isVietnamese ? "Chuyên Môn" : "Specialties"}
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {job.specialties.map((specialty, index) => (
-                    <Badge 
-                      key={index} 
-                      className="bg-pink-50 text-pink-700 border border-pink-200"
+            <Badge variant="outline" className="bg-gray-50 text-gray-600 border-gray-200 flex items-center">
+              <Calendar className="h-3.5 w-3.5 mr-1" /> 
+              {isExpired 
+                ? (isVietnamese ? "Đã hết hạn (30 ngày trước)" : "Expired (30 days ago)") 
+                : `${isVietnamese ? "Đăng ngày" : "Posted on"} ${format(new Date(job.created_at), 'MM/dd/yyyy')}`
+              }
+            </Badge>
+            
+            {job.salary_range && (
+              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 flex items-center">
+                <DollarSign className="h-3.5 w-3.5 mr-1" /> {job.salary_range}
+              </Badge>
+            )}
+          </div>
+          
+          {/* Features */}
+          <div className="flex flex-wrap gap-2">
+            {job.weekly_pay && (
+              <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">
+                💰 {isVietnamese ? "Trả Lương Tuần" : "Weekly Pay"}
+              </Badge>
+            )}
+            
+            {job.owner_will_train && (
+              <Badge className="bg-amber-50 text-amber-700 border border-amber-200 font-medium">
+                ✨ {isVietnamese ? "Có Đào Tạo" : "Owner Will Train"}
+              </Badge>
+            )}
+            
+            {job.has_housing && (
+              <Badge className="bg-indigo-50 text-indigo-700 border border-indigo-200 font-medium">
+                🏠 {isVietnamese ? "Có Chỗ Ở" : "Housing Available"}
+              </Badge>
+            )}
+            
+            {job.no_supply_deduction && (
+              <Badge className="bg-teal-50 text-teal-700 border border-teal-200 font-medium">
+                ✅ {isVietnamese ? "Không Trừ Tiền Vật Liệu" : "No Supply Fee"}
+              </Badge>
+            )}
+            
+            {job.tip_range && (
+              <Badge className="bg-amber-50 text-amber-700 border-amber-100">
+                💸 {isVietnamese ? "Tip" : "Tips"}: {job.tip_range}
+              </Badge>
+            )}
+          </div>
+          
+          {/* Specialties */}
+          {job.specialties && job.specialties.length > 0 && (
+            <div>
+              <h3 className="text-sm font-medium mb-1.5">
+                {isVietnamese ? "Chuyên môn:" : "Specialties:"}
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {job.specialties.map((specialty, index) => (
+                  <Badge 
+                    key={index} 
+                    className="bg-pink-100 text-pink-800 border-pink-200"
+                  >
+                    {specialty}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          <Separator />
+          
+          {/* Description */}
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-lg font-medium">
+                {isVietnamese ? "Mô Tả Công Việc" : "Job Description"}
+              </h3>
+              
+              {job.vietnamese_description && job.description && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={toggleLanguage} 
+                  className="text-purple-600 hover:text-purple-800 hover:bg-purple-50"
+                >
+                  {isVietnamese ? "Switch to English" : "Chuyển sang tiếng Việt"}
+                </Button>
+              )}
+            </div>
+            
+            <div className="prose prose-sm max-w-none">
+              {job.vietnamese_description && job.description ? (
+                <p>{isVietnamese ? job.vietnamese_description : job.description}</p>
+              ) : (
+                <p>{job.description}</p>
+              )}
+            </div>
+          </div>
+          
+          <Separator />
+          
+          {/* Contact Information */}
+          <div>
+            <h3 className="text-lg font-medium mb-3">
+              {isVietnamese ? "Thông Tin Liên Hệ" : "Contact Information"}
+            </h3>
+            
+            {isExpired ? (
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+                <Lock className="h-10 w-10 mx-auto text-red-500 mb-2" />
+                <h4 className="font-semibold text-lg mb-1">{isVietnamese ? "Thông Tin Bị Khóa" : "Information Locked"}</h4>
+                <p className="text-gray-500 mb-3">
+                  {isVietnamese 
+                    ? "Bài đăng công việc này đã hết hạn. Đăng ký để nhận thông báo về các cơ hội mới."
+                    : "This job posting has expired. Sign up to get notified about new opportunities."}
+                </p>
+                <Button 
+                  className="w-full sm:w-auto" 
+                  onClick={() => window.location.href = "/sign-up"}
+                >
+                  {isVietnamese ? "Đăng Ký Ngay" : "Sign Up Now"}
+                </Button>
+              </div>
+            ) : job.contact_info ? (
+              <div className="space-y-2">
+                {job.contact_info.owner_name && (
+                  <p className="flex items-start">
+                    <span className="font-medium min-w-[100px]">{isVietnamese ? "Liên hệ:" : "Contact:"}</span>
+                    <span>{job.contact_info.owner_name}</span>
+                  </p>
+                )}
+                
+                {job.contact_info.phone && (
+                  <p className="flex items-start">
+                    <span className="font-medium min-w-[100px]">{isVietnamese ? "Điện thoại:" : "Phone:"}</span>
+                    <a 
+                      href={`tel:${job.contact_info.phone}`} 
+                      className="text-blue-600 hover:underline flex items-center"
                     >
-                      {specialty}
-                    </Badge>
-                  ))}
-                </div>
+                      <Phone className="h-3.5 w-3.5 mr-1" /> {job.contact_info.phone}
+                    </a>
+                  </p>
+                )}
+                
+                {job.contact_info.email && (
+                  <p className="flex items-start">
+                    <span className="font-medium min-w-[100px]">{isVietnamese ? "Email:" : "Email:"}</span>
+                    <a 
+                      href={`mailto:${job.contact_info.email}`}
+                      className="text-blue-600 hover:underline flex items-center"
+                    >
+                      <Mail className="h-3.5 w-3.5 mr-1" /> {job.contact_info.email}
+                    </a>
+                  </p>
+                )}
+                
+                {job.contact_info.notes && (
+                  <p className="flex items-start">
+                    <span className="font-medium min-w-[100px]">{isVietnamese ? "Ghi chú:" : "Notes:"}</span>
+                    <span>{job.contact_info.notes}</span>
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
+                <p className="text-amber-700">
+                  {isVietnamese 
+                    ? "Đăng nhập để xem thông tin liên hệ đầy đủ"
+                    : "Sign in to view complete contact information"}
+                </p>
+                <Button 
+                  variant="outline" 
+                  className="mt-2 border-amber-300 text-amber-800 hover:bg-amber-100"
+                  onClick={() => window.location.href = "/sign-in"}
+                >
+                  {isVietnamese ? "Đăng Nhập" : "Sign In"}
+                </Button>
               </div>
             )}
           </div>
           
-          {/* Details Sidebar */}
-          <div className="space-y-6">
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h3 className="text-lg font-semibold mb-3">
-                {isVietnamese ? "Chi Tiết" : "Details"}
-              </h3>
-              
-              <div className="space-y-3">
-                <div className="flex items-center text-gray-600">
-                  <MapPin className="h-4 w-4 mr-2" />
-                  <span>{job.location}</span>
-                </div>
-                
-                <div className="flex items-center text-gray-600">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  <span>Posted {formatDate(job.created_at)}</span>
-                </div>
-                
-                <div className="flex items-center text-gray-600">
-                  <Briefcase className="h-4 w-4 mr-2" />
-                  <span>{job.employment_type}</span>
-                </div>
-                
-                {job.salary_range && (
-                  <div className="flex items-center font-medium text-green-700">
-                    <DollarSign className="h-4 w-4 mr-2" />
-                    <span>{job.salary_range}</span>
-                  </div>
-                )}
-                
-                {job.tip_range && (
-                  <div className="flex items-start text-gray-600">
-                    <DollarSign className="h-4 w-4 mr-2 mt-0.5" />
-                    <div>
-                      <span className="block font-medium">
-                        {isVietnamese ? "Típ" : "Tips"}
-                      </span>
-                      <span>{job.tip_range}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
+          {/* Apply button */}
+          {!isExpired && (
+            <div className="flex justify-end pt-4">
+              <Button 
+                size="lg" 
+                className="gap-2"
+                onClick={isExpired ? () => window.location.href = "/sign-up" : onClose}
+              >
+                {isExpired 
+                  ? (isVietnamese ? "Đăng Ký Tài Khoản" : "Create Account") 
+                  : (isVietnamese ? "Liên Hệ Ngay" : "Contact Now")}
+                <ExternalLink className="h-4 w-4" />
+              </Button>
             </div>
-            
-            {/* Special Features */}
-            <div>
-              <h3 className="text-lg font-semibold mb-3">
-                {isVietnamese ? "Đặc Điểm" : "Features"}
-              </h3>
-              <div className="space-y-2">
-                {job.weekly_pay && (
-                  <div className="flex items-center">
-                    <span className="w-5 h-5 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 mr-2">
-                      <Check className="h-3 w-3" />
-                    </span>
-                    <span>
-                      {isVietnamese ? "Trả lương hàng tuần" : "Weekly Pay"}
-                    </span>
-                  </div>
-                )}
-                
-                {job.owner_will_train && (
-                  <div className="flex items-center">
-                    <span className="w-5 h-5 bg-amber-100 rounded-full flex items-center justify-center text-amber-700 mr-2">
-                      <Check className="h-3 w-3" />
-                    </span>
-                    <span>
-                      {isVietnamese ? "Chủ tiệm sẽ đào tạo" : "Owner Will Train"}
-                    </span>
-                  </div>
-                )}
-                
-                {job.has_housing && (
-                  <div className="flex items-center">
-                    <span className="w-5 h-5 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-700 mr-2">
-                      <Check className="h-3 w-3" />
-                    </span>
-                    <span>
-                      {isVietnamese ? "Có chỗ ở" : "Housing Available"}
-                    </span>
-                  </div>
-                )}
-                
-                {job.no_supply_deduction && (
-                  <div className="flex items-center">
-                    <span className="w-5 h-5 bg-teal-100 rounded-full flex items-center justify-center text-teal-700 mr-2">
-                      <Check className="h-3 w-3" />
-                    </span>
-                    <span>
-                      {isVietnamese ? "Không trừ tiền vật liệu" : "No Supply Fee"}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            {/* Contact Information */}
-            {job.contact_info && (
-              <div>
-                <h3 className="text-lg font-semibold mb-3">
-                  {isVietnamese ? "Thông Tin Liên Hệ" : "Contact Information"}
-                </h3>
-                <div className="space-y-3">
-                  {job.contact_info.owner_name && (
-                    <div className="text-gray-700">
-                      {job.contact_info.owner_name}
-                    </div>
-                  )}
-                  
-                  {job.contact_info.phone && (
-                    <div className="flex items-center text-gray-600">
-                      <Phone className="h-4 w-4 mr-2" />
-                      <a href={`tel:${job.contact_info.phone}`} className="hover:text-primary">
-                        {job.contact_info.phone}
-                      </a>
-                    </div>
-                  )}
-                  
-                  {job.contact_info.email && (
-                    <div className="flex items-center text-gray-600">
-                      <Mail className="h-4 w-4 mr-2" />
-                      <a href={`mailto:${job.contact_info.email}`} className="hover:text-primary">
-                        {job.contact_info.email}
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
+          )}
         </div>
-        
-        <DialogFooter className="sm:justify-between">
-          <Button variant="outline" onClick={onClose}>
-            {isVietnamese ? "Đóng" : "Close"}
-          </Button>
-          <div className="flex gap-2">
-            <Button>
-              {isVietnamese ? "Liên hệ ngay" : "Contact Now"}
-            </Button>
-            <Button variant="secondary">
-              {isVietnamese ? "Lưu công việc" : "Save Job"}
-            </Button>
-          </div>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

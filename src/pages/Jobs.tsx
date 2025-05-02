@@ -6,7 +6,7 @@ const Jobs = () => {
   useEffect(() => {
     // Log page visit
     console.log("Jobs page accessed, rendering JobsPage component");
-    document.title = "Nail Salon Jobs | EmviApp";
+    document.title = "Beauty Industry Jobs | EmviApp";
   }, []);
 
   // Render the actual jobs page component
