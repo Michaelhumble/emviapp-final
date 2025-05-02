@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
@@ -48,38 +47,34 @@ const Index = () => {
   
   return (
     <Layout>
-      {/* Hero section as first */}
+      {/* 1. Hero section as first */}
       <Hero />
       
-      {/* ✨ The Beauty Exchange Section - Positioned first after hero */}
+      {/* 2. Emvi Beauty Connections™ */}
       <BeautyExchangeSection />
       
-      {/* Why Artists & Salons Trust Us */}
-      <WhyTrustSection />
-      
-      {/* Let AI Do the Hard Work */}
-      <EnhancedAIFeatures />
-      
-      {/* What You Can Do With EmviApp */}
-      <WhatYouCanDoSection />
-      
-      {/* Let's Experience EmviApp Together */}
-      <MissingPieceSection />
-      
-      {/* New Beauty Exchange Layout - Added directly after MissingPieceSection */}
+      {/* 3. Beauty Exchange Marketplace with real-life ads */}
       <BeautyExchangeLayout />
       
-      {/* No Matter Your Craft — We Know the Struggle */}
-      <ClientSuccessStories />
+      {/* 4. Why Artists & Salons Trust Us */}
+      <WhyTrustSection />
       
-      {/* What's Really Keeping Your Salon From Growing? */}
+      {/* 5. Let AI Do the Hard Work */}
+      <EnhancedAIFeatures />
+      
+      {/* 6. What's Really Keeping Your Salon From Growing? */}
       <SalonClientGrowthSystem />
       
-      {/* Trust First Panel */}
-      <TrustFirstPanel />
+      {/* 7. No Matter Your Craft — We Know the Struggle */}
+      <ClientSuccessStories />
       
-      {/* Founder sections at bottom */}
+      {/* 8. Let's Experience EmviApp Together - bilingual content */}
+      <MissingPieceSection />
+      
+      {/* 9. Founder Message */}
       <FounderMessage />
+      
+      {/* 10. Final CTA */}
       <FinalFounderCTA />
       
       {user && userId && (
