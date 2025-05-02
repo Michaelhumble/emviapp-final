@@ -2,17 +2,25 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Lock } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ArrowLeft, MapPin, Calendar, Clock, DollarSign, Home, Award, User, Lock, Sparkles } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Job } from "@/types/job";
 import { SalonSale } from "@/types/salonSale";
 import { getLocationString } from "@/utils/location";
+import { useAuth } from "@/context/auth";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
+import { Badge } from "@/components/ui/badge";
+import { determineSalonCategory } from "@/utils/salonImageFallbacks";
 
-// Define a more flexible listing type that can work with our sample data
+// Define a more flexible listing type that can work with our data
 export interface BasicListing {
+  id?: string;
   title?: string;
+  name?: string;
+  company?: string;
   description?: string;
+  vietnamese_description?: string;
   location?: string;
   role?: string;
   employment_type?: string;
@@ -20,6 +28,7 @@ export interface BasicListing {
   has_housing?: boolean;
   weekly_pay?: boolean;
   benefits?: string[];
+  specialties?: string[];
   city?: string;
   state?: string;
   asking_price?: number | string;
@@ -27,6 +36,9 @@ export interface BasicListing {
   is_urgent?: boolean;
   business_type?: string;
   created_at?: string;
+  contact_info?: any;
+  image?: string;
+  imageUrl?: string;
 }
 
 interface ListingDetailModalProps {
@@ -37,139 +49,277 @@ interface ListingDetailModalProps {
 }
 
 const ListingDetailModal = ({ isOpen, onClose, listing, listingType }: ListingDetailModalProps) => {
-  const { isVietnamese } = useTranslation();
-  const [title, setTitle] = useState<{ en: string; vi: string }>({ en: '', vi: '' });
-  const [details, setDetails] = useState<{ en: string; vi: string }>({ en: '', vi: '' });
-  
+  const { isVietnamese, toggleLanguage } = useTranslation();
+  const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
+  const [hasSignedUp, setHasSignedUp] = useState(false);
+
   useEffect(() => {
-    if (!listing) return;
-    
-    if (listingType === 'job') {
-      const jobListing = listing as (Job | BasicListing);
-      
-      // Extract title
-      setTitle({
-        en: jobListing.title || `Hiring ${jobListing.role || 'Nail Tech'} | ${jobListing.location || ''}`,
-        vi: `Cần Thợ ${jobListing.role?.includes('Powder') ? 'Bột' : 'Nails'} | ${jobListing.location || ''}`
-      });
-      
-      // Extract details
-      const enDetails = [
-        jobListing.employment_type,
-        jobListing.salary_range,
-        jobListing.has_housing ? 'Housing Provided' : '',
-        jobListing.weekly_pay ? 'Weekly Pay' : '',
-        jobListing.benefits?.join(', ')
-      ].filter(Boolean).join(' • ');
-      
-      const viDetails = [
-        jobListing.employment_type === 'Full-time' ? 'Toàn thời gian' : 
-          jobListing.employment_type === 'Part-time' ? 'Bán thời gian' : jobListing.employment_type,
-        jobListing.salary_range,
-        jobListing.has_housing ? 'Có chỗ ở' : '',
-        jobListing.weekly_pay ? 'Trả lương hàng tuần' : '',
-        'Nhiều khách tốt'
-      ].filter(Boolean).join(' • ');
-      
-      setDetails({ en: enDetails, vi: viDetails });
-    } else {
-      const salonListing = listing as (SalonSale | BasicListing);
-      
-      // Get location by constructing it from city/state or using a helper function
-      let displayLocation = '';
-      
-      if ('location' in salonListing && salonListing.location) {
-        displayLocation = salonListing.location;
-      } else if (salonListing.city || salonListing.state) {
-        displayLocation = getLocationString(salonListing.city, salonListing.state);
-      } else {
-        displayLocation = 'Unknown Location';
-      }
-      
-      setTitle({
-        en: `Salon for Sale | ${displayLocation}`,
-        vi: `Cần Sang Tiệm Nail | ${displayLocation}`
-      });
-      
-      // Extract details
-      const askingPrice = salonListing.asking_price ? 
-        (typeof salonListing.asking_price === 'string' ? 
-          salonListing.asking_price : 
-          `$${new Intl.NumberFormat('en-US').format(salonListing.asking_price as number)}`
-        ) : 'Contact for price';
-      
-      const isUrgent = 'is_urgent' in salonListing ? salonListing.is_urgent : false;
-      
-      const enDetails = [
-        salonListing.size ? `${salonListing.size} sqft` : '',
-        askingPrice + (isUrgent ? ' Negotiable' : ''),
-        'Prime Location',
-        salonListing.business_type
-      ].filter(Boolean).join(' • ');
-      
-      const viDetails = [
-        salonListing.size ? `${salonListing.size} sqft` : '',
-        askingPrice + (isUrgent ? ' Thương Lượng' : ''),
-        'Khu Đông Khách',
-        salonListing.business_type
-      ].filter(Boolean).join(' • ');
-      
-      setDetails({ en: enDetails, vi: viDetails });
+    // Reset the signed up state when the modal opens
+    if (isOpen) {
+      setHasSignedUp(false);
     }
-  }, [listing, listingType]);
-  
+  }, [isOpen]);
+
   if (!listing) return null;
+
+  // Get the title based on language and listing type
+  const getTitle = () => {
+    if (isVietnamese && 'vietnamese_title' in listing && listing.vietnamese_title) {
+      return listing.vietnamese_title;
+    }
+    if ('title' in listing && listing.title) return listing.title;
+    if ('name' in listing && listing.name) return listing.name;
+    if ('company' in listing && listing.company) return listing.company;
+    if ('role' in listing) {
+      return `${listing.role} Position` + (listing.location ? ` | ${listing.location}` : '');
+    }
+    return listingType === 'job' ? 'Job Listing' : 'Salon For Sale';
+  };
+
+  // Get the description based on language and listing type
+  const getDescription = () => {
+    if (isVietnamese && 'vietnamese_description' in listing && listing.vietnamese_description) {
+      return listing.vietnamese_description;
+    }
+    if ('description' in listing && listing.description) return listing.description;
+    return '';
+  };
+
+  // Get the location
+  const getLocation = () => {
+    if ('location' in listing && listing.location) return listing.location;
+    if ('city' in listing && 'state' in listing && listing.city && listing.state) {
+      return getLocationString(listing.city, listing.state);
+    }
+    return '';
+  };
+
+  // Get date display
+  const getDateDisplay = () => {
+    if ('created_at' in listing && listing.created_at) {
+      return new Date(listing.created_at).toLocaleDateString();
+    }
+    return '';
+  };
   
+  // Get image for the listing
+  const getImage = () => {
+    if ('imageUrl' in listing && listing.imageUrl) return listing.imageUrl;
+    if ('image' in listing && listing.image) return listing.image;
+    
+    // Determine category for appropriate image
+    const category = determineSalonCategory(
+      getDescription(),
+      getTitle()
+    );
+    
+    return '/placeholder.svg';
+  };
+
+  // Get perks/features to display
+  const getFeatures = () => {
+    const features = [];
+    
+    if ('employment_type' in listing && listing.employment_type) {
+      features.push({
+        icon: <Clock className="h-4 w-4 text-gray-400" />,
+        label: isVietnamese && listing.employment_type === 'Full-time' ? 'Toàn thời gian' : listing.employment_type
+      });
+    }
+    
+    if ('has_housing' in listing && listing.has_housing) {
+      features.push({
+        icon: <Home className="h-4 w-4 text-gray-400" />,
+        label: isVietnamese ? 'Có chỗ ở' : 'Housing Included'
+      });
+    }
+    
+    if ('weekly_pay' in listing && listing.weekly_pay) {
+      features.push({
+        icon: <Award className="h-4 w-4 text-gray-400" />,
+        label: isVietnamese ? 'Trả lương hàng tuần' : 'Weekly Pay'
+      });
+    }
+    
+    if ('salary_range' in listing && listing.salary_range) {
+      features.push({
+        icon: <DollarSign className="h-4 w-4 text-gray-400" />,
+        label: listing.salary_range
+      });
+    } else if ('price' in listing || 'asking_price' in listing) {
+      const price = 'price' in listing ? listing.price : 
+                    'asking_price' in listing ? listing.asking_price : null;
+      if (price) {
+        features.push({
+          icon: <DollarSign className="h-4 w-4 text-gray-400" />,
+          label: typeof price === 'number' ? `$${price.toLocaleString()}` : price
+        });
+      }
+    }
+    
+    return features;
+  };
+
+  // Get specialties
+  const getSpecialties = () => {
+    if ('specialties' in listing && listing.specialties) {
+      if (typeof listing.specialties === 'string') {
+        return [listing.specialties];
+      }
+      return listing.specialties;
+    }
+    return [];
+  };
+
+  // Handle the sign in action
+  const handleSignInClick = () => {
+    if (hasSignedUp || isSignedIn) {
+      onClose();
+    } else {
+      navigate(`/sign-in?redirect=${encodeURIComponent(window.location.pathname)}`);
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-lg md:text-xl space-y-1">
-            <div className="font-bold">{isVietnamese ? title.vi : title.en}</div>
-            <div className="text-sm text-gray-500 font-normal">
-              {isVietnamese ? title.en : title.vi}
-            </div>
+    <Dialog open={isOpen} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <DialogContent className="max-w-3xl overflow-hidden">
+        <DialogHeader className="pb-2">
+          <DialogTitle className="text-xl md:text-2xl font-bold">
+            {getTitle()}
           </DialogTitle>
+          <DialogDescription className="flex items-center text-base">
+            <MapPin className="h-4 w-4 mr-1.5" />
+            {getLocation()}
+            {getDateDisplay() && (
+              <span className="flex items-center ml-4">
+                <Calendar className="h-4 w-4 mr-1.5" />
+                {getDateDisplay()}
+              </span>
+            )}
+          </DialogDescription>
         </DialogHeader>
         
-        <div className="py-4 space-y-4">
-          {/* Listing details */}
-          <div className="space-y-2">
-            <div className="text-base font-medium">
-              {isVietnamese ? details.vi : details.en}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Left column - Image and details */}
+          <div className="space-y-4">
+            {/* Image */}
+            <div className="aspect-video rounded-md overflow-hidden">
+              <ImageWithFallback
+                src={getImage()}
+                alt={getTitle()}
+                className="w-full h-full object-cover"
+                businessName={getTitle()}
+                priority={true}
+              />
             </div>
-            <div className="text-sm text-gray-500">
-              {isVietnamese ? details.en : details.vi}
+            
+            {/* Features/Perks */}
+            <div className="space-y-3">
+              {getFeatures().length > 0 && (
+                <div className="flex flex-wrap gap-3">
+                  {getFeatures().map((feature, index) => (
+                    <div key={index} className="flex items-center bg-gray-50 px-3 py-1.5 rounded-md">
+                      {feature.icon}
+                      <span className="ml-1.5 text-sm">{feature.label}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {/* Specialties */}
+              {getSpecialties().length > 0 && (
+                <div className="pt-2">
+                  <h3 className="text-sm font-medium text-gray-700 mb-2">
+                    {isVietnamese ? 'Chuyên môn' : 'Specialties'}
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {getSpecialties().map((specialty, index) => (
+                      <Badge key={index} variant="outline" className="bg-gray-50">
+                        <Sparkles className="h-3 w-3 mr-1 text-amber-500" />
+                        {specialty}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           
-          {/* Description section */}
-          {listing.description && (
-            <div className="space-y-2 py-2">
-              <h4 className="text-sm font-medium text-gray-700">
-                {isVietnamese ? 'Mô Tả' : 'Description'}
-              </h4>
-              <p className="text-sm text-gray-600">{listing.description}</p>
-            </div>
-          )}
-          
-          {/* Locked contact info message */}
-          <div className="bg-gray-50 border border-gray-100 p-4 rounded-md text-center">
-            <div className="flex items-center justify-center mb-2 text-gray-500">
-              <Lock className="h-4 w-4 mr-1" />
-              <p>
-                {isVietnamese 
-                  ? "🔒 Đăng ký hoặc đăng nhập để xem thông tin liên hệ đầy đủ." 
-                  : "🔒 Please sign up or log in to view full contact details."}
+          {/* Right column - Description and other details */}
+          <div className="space-y-4">
+            {/* Toggle language button */}
+            {'vietnamese_description' in listing && listing.vietnamese_description && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={toggleLanguage}
+                className="mb-2"
+              >
+                {isVietnamese ? 'View in English' : 'Xem bằng tiếng Việt'}
+              </Button>
+            )}
+            
+            {/* Description */}
+            <div className="bg-gray-50 p-4 rounded-md">
+              <h3 className="text-base font-medium mb-2">
+                {isVietnamese ? 'Mô tả' : 'Description'}
+              </h3>
+              <p className="text-sm whitespace-pre-line">
+                {getDescription()}
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 justify-center mt-4">
-              <Button asChild>
-                <Link to="/auth/signup">Đăng Ký / Sign Up</Link>
-              </Button>
-              <Button variant="outline" asChild>
-                <Link to="/auth/login">Đăng Nhập / Login</Link>
-              </Button>
+            
+            {/* Contact info - only visible for authenticated users */}
+            <div className="bg-gray-50 p-4 rounded-md">
+              <h3 className="text-base font-medium mb-1 flex items-center">
+                <User className="h-4 w-4 mr-1.5" />
+                {isVietnamese ? 'Thông tin liên hệ' : 'Contact Information'}
+              </h3>
+              
+              {isSignedIn ? (
+                <div className="space-y-1.5 mt-3">
+                  {'contact_info' in listing && listing.contact_info ? (
+                    <>
+                      {listing.contact_info.owner_name && (
+                        <p className="text-sm"><span className="font-medium">Name:</span> {listing.contact_info.owner_name}</p>
+                      )}
+                      {listing.contact_info.phone && (
+                        <p className="text-sm"><span className="font-medium">Phone:</span> {listing.contact_info.phone}</p>
+                      )}
+                      {listing.contact_info.email && (
+                        <p className="text-sm"><span className="font-medium">Email:</span> {listing.contact_info.email}</p>
+                      )}
+                      {listing.contact_info.notes && (
+                        <p className="text-sm mt-3">{listing.contact_info.notes}</p>
+                      )}
+                    </>
+                  ) : (
+                    <p className="text-sm text-gray-500 italic">
+                      {isVietnamese ? 
+                        'Hãy liên hệ với chúng tôi để biết thêm thông tin.' : 
+                        'Please contact EmviApp for contact details.'}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-3">
+                  <div className="flex items-center justify-center mb-3 text-gray-500">
+                    <Lock className="h-5 w-5 mr-2" />
+                    <p>
+                      {isVietnamese 
+                        ? "Đăng ký để xem thông tin liên lạc"
+                        : "Sign up to view contact details"}
+                    </p>
+                  </div>
+                  <Button 
+                    onClick={handleSignInClick}
+                    className="w-full"
+                  >
+                    {isVietnamese ? 'Đăng ký ngay' : 'Sign Up Now'}
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
