@@ -30,17 +30,21 @@ const ValidatedLink: React.FC<ValidatedLinkProps> = ({
   // Determine the fallback route based on listing type if not provided
   const determinedFallback = fallbackRoute || (() => {
     switch (listingType) {
-      case 'salon': return '/salon-not-found';
+      case 'salon': return '/salons';
       case 'job':
-      case 'opportunity': return '/opportunity-not-found';
-      case 'booth': return '/booth-not-found';
-      default: return '/not-found';
+      case 'opportunity': return '/jobs';
+      case 'booth': return '/opportunities';
+      case 'page': return '/signup';
+      default: return '/';
     }
   })();
 
+  // For specific page routes, we skip validation as they're static pages
+  const isStaticPage = listingType === 'page';
+
   // Validate listing on hover if requested
   const handleMouseEnter = async () => {
-    if (validateBeforeClick && !isValidating && !isInvalid) {
+    if (validateBeforeClick && !isValidating && !isInvalid && !isStaticPage) {
       setIsValidating(true);
       try {
         const isValid = await validateListingExists(listingId, listingType);
@@ -57,6 +61,9 @@ const ValidatedLink: React.FC<ValidatedLinkProps> = ({
 
   // Handle click with validation
   const handleClick = async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    // Skip validation for static page links
+    if (isStaticPage) return;
+    
     // If we already know it's invalid, navigate to fallback
     if (isInvalid) {
       e.preventDefault();
@@ -97,8 +104,8 @@ const ValidatedLink: React.FC<ValidatedLinkProps> = ({
     <Link 
       {...linkProps}
       to={linkTo}
-      onClick={handleClick}
-      onMouseEnter={handleMouseEnter}
+      onClick={isStaticPage ? undefined : handleClick}
+      onMouseEnter={isStaticPage ? undefined : handleMouseEnter}
       className={`${linkProps.className || ''} ${isValidating ? 'cursor-wait' : ''}`}
     >
       {children}

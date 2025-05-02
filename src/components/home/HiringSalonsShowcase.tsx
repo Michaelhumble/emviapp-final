@@ -82,9 +82,15 @@ export default function HiringSalonsShowcase() {
                   {job.description?.substring(0, 120)}...
                 </div>
                 
-                <Link to={`/jobs/${job.id}`} className="text-primary text-sm font-medium hover:underline">
+                <ValidatedLink 
+                  to={`/jobs/${job.id}`} 
+                  listingId={job.id} 
+                  listingType="job" 
+                  className="text-primary text-sm font-medium hover:underline"
+                  fallbackRoute="/jobs"
+                >
                   View Job Details →
-                </Link>
+                </ValidatedLink>
               </CardContent>
             </Card>
           ))}

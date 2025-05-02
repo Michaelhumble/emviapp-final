@@ -6,6 +6,7 @@ import { getFeaturedSalons } from "@/utils/featuredContent";
 import { useEffect, useState } from "react";
 import { Salon } from "@/types/salon";
 import ValidatedSalonCard from "@/components/salons/ValidatedSalonCard";
+import ValidatedLink from "@/components/common/ValidatedLink";
 
 const container = {
   hidden: { opacity: 0 },
@@ -58,9 +59,15 @@ const FeaturedSalons = () => {
         >
           {salons.map((salon) => (
             <motion.div key={salon.id} variants={item}>
-              <Link to={`/salons/${salon.id}`} className="block h-full">
+              <ValidatedLink 
+                to={`/salons/${salon.id}`} 
+                listingId={salon.id} 
+                listingType="salon"
+                className="block h-full"
+                fallbackRoute="/salons"
+              >
                 <ValidatedSalonCard salon={salon} listingType="salon" />
-              </Link>
+              </ValidatedLink>
             </motion.div>
           ))}
         </motion.div>

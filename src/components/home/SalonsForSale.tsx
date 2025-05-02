@@ -10,6 +10,7 @@ import SalonsLoadingState from '@/components/salons/SalonsLoadingState';
 import { Link } from 'react-router-dom';
 import { Job } from '@/types/job';
 import { determineSalonCategory, getDefaultSalonImage } from '@/utils/salonImageFallbacks';
+import ValidatedLink from '@/components/common/ValidatedLink';
 
 // Transform job data to match the Job type with enhanced image selection
 const transformSalonData = (job: any): Job => {
@@ -89,9 +90,9 @@ export default function SalonsForSale() {
             <Link to="/salons">
               <Button variant="outline">View All Listings</Button>
             </Link>
-            <Link to="/salon-owners">
+            <ValidatedLink to="/salon-owners" listingId="salon-owners" listingType="page" fallbackRoute="/signup">
               <Button>List Your Salon</Button>
-            </Link>
+            </ValidatedLink>
           </div>
         </div>
 

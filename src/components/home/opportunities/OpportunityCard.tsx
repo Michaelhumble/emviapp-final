@@ -1,7 +1,5 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
 import { Job } from '@/types/job';
 import { Badge } from '@/components/ui/badge';
 import { enhanceListingWithImage } from '@/utils/listingsVerification';
@@ -73,16 +71,6 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({ listing, index }) => 
     return listing.for_sale ? 'Contact for price' : '';
   };
 
-  // Determine card link based on listing type and ensure it's valid
-  const getCardLink = () => {
-    if (!listing.type) return '#'; // Fallback for listings with no type
-    
-    if (listing.type === 'salon') {
-      return `/salons/${listing.id}`;
-    }
-    return `/opportunities/${listing.id}`;
-  };
-
   return (
     <motion.div
       variants={cardVariants}
@@ -95,17 +83,15 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({ listing, index }) => 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <Link to={getCardLink()} className="block">
-          <div className="w-full aspect-[5/3] overflow-hidden">
-            <ImageWithFallback
-              src={getListingImage()}
-              alt={listing.title || listing.company || "Opportunity listing"}
-              className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-              businessName={listing.company || ""}
-              category={listing.specialties && listing.specialties.length > 0 ? listing.specialties[0] : undefined}
-            />
-          </div>
-        </Link>
+        <div className="w-full aspect-[5/3] overflow-hidden">
+          <ImageWithFallback
+            src={getListingImage()}
+            alt={listing.title || listing.company || "Opportunity listing"}
+            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            businessName={listing.company || ""}
+            category={listing.specialties && listing.specialties.length > 0 ? listing.specialties[0] : undefined}
+          />
+        </div>
 
         <div className="p-5">
           <div className="flex justify-between items-start mb-2">

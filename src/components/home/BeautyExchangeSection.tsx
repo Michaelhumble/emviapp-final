@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import ValidatedLink from '@/components/common/ValidatedLink';
 
 const BeautyExchangeSection = () => {
   return (
@@ -27,11 +28,11 @@ const BeautyExchangeSection = () => {
             <p className="text-gray-600 mb-4">
               Find clients who value your craft, set your own schedule, and grow your career.
             </p>
-            <Link to="/dashboard/artist">
+            <ValidatedLink to="/dashboard/artist" listingId="artist-dashboard" listingType="page" fallbackRoute="/signup">
               <Button variant="outline" size="sm" className="inline-flex items-center">
                 Learn More <ArrowRight className="ml-1 h-4 w-4" />
               </Button>
-            </Link>
+            </ValidatedLink>
           </div>
 
           <div className="bg-gray-50 p-6 rounded-lg text-center">
@@ -42,11 +43,11 @@ const BeautyExchangeSection = () => {
             <p className="text-gray-600 mb-4">
               Find reliable talent, streamline operations, and build a thriving business.
             </p>
-            <Link to="/salon-owners">
+            <ValidatedLink to="/salon-owners" listingId="salon-owners" listingType="page" fallbackRoute="/signup">
               <Button variant="outline" size="sm" className="inline-flex items-center">
                 Learn More <ArrowRight className="ml-1 h-4 w-4" />
               </Button>
-            </Link>
+            </ValidatedLink>
           </div>
           
           <div className="bg-gray-50 p-6 rounded-lg text-center">
@@ -57,11 +58,11 @@ const BeautyExchangeSection = () => {
             <p className="text-gray-600 mb-4">
               Discover talented artists, book with confidence, and enjoy seamless beauty services.
             </p>
-            <Link to="/clients">
+            <ValidatedLink to="/clients" listingId="clients" listingType="page" fallbackRoute="/signup">
               <Button variant="outline" size="sm" className="inline-flex items-center">
                 Learn More <ArrowRight className="ml-1 h-4 w-4" />
               </Button>
-            </Link>
+            </ValidatedLink>
           </div>
         </div>
       </div>

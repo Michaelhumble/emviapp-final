@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MapPin, Briefcase } from "lucide-react";
 import { motion } from "framer-motion";
+import ValidatedLink from "@/components/common/ValidatedLink";
 
 const jobListings = [
   {
@@ -82,9 +83,9 @@ const JobsHighlight = () => {
                       <p className="text-gray-600 mb-3">{job.salary} • {job.type}</p>
                     </div>
                     <div className="mt-4 md:mt-0">
-                      <Link to={`/jobs/${job.id}`}>
+                      <ValidatedLink to={`/jobs/${job.id}`} listingId={job.id} listingType="job" fallbackRoute="/jobs">
                         <Button>Apply Now</Button>
-                      </Link>
+                      </ValidatedLink>
                     </div>
                   </div>
                 </div>

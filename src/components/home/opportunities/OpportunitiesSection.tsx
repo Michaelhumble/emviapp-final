@@ -7,6 +7,7 @@ import AuthAction from '@/components/common/AuthAction';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Building } from 'lucide-react';
+import ValidatedLink from '@/components/common/ValidatedLink';
 
 interface OpportunitiesSectionProps {
   diverseListings: Job[];
@@ -57,15 +58,22 @@ const OpportunitiesSection = ({ diverseListings }: OpportunitiesSectionProps) =>
               <AuthAction
                 key={listing.id}
                 onAction={() => true}
-                redirectPath={listing.type === 'salon' ? `/salons/${listing.id}` : `/opportunities/${listing.id}`}
+                redirectPath={listing.type === 'salon' ? `/salons/${listing.id}` : `/jobs/${listing.id}`}
                 customTitle="Sign in to view full details"
                 creditMessage="Create a free account to access contact information and more details."
               >
-                <OpportunityCard 
-                  key={listing.id} 
-                  listing={listing} 
-                  index={index}
-                />
+                <ValidatedLink
+                  to={listing.type === 'salon' ? `/salons/${listing.id}` : `/jobs/${listing.id}`}
+                  listingId={listing.id}
+                  listingType={listing.type}
+                  fallbackRoute={listing.type === 'salon' ? '/salons' : '/jobs'}
+                >
+                  <OpportunityCard 
+                    key={listing.id} 
+                    listing={listing} 
+                    index={index}
+                  />
+                </ValidatedLink>
               </AuthAction>
             ))
           ) : (
