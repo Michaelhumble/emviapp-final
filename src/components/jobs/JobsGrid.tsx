@@ -4,6 +4,7 @@ import JobListingCard from "@/components/jobs/JobListingCard";
 import JobDetailModal from "@/components/jobs/JobDetailModal";
 import { Job } from "@/types/job";
 import { differenceInDays } from 'date-fns';
+import { isJobExpired } from "@/utils/jobs/jobListingFormatter";
 
 export interface JobsGridProps {
   jobs: Job[];
@@ -42,10 +43,8 @@ const JobsGrid = ({
       return expirations[job.id];
     }
     
-    // Default 30-day expiration logic
-    const createdDate = new Date(job.created_at);
-    const now = new Date();
-    return differenceInDays(now, createdDate) >= 30;
+    // Use our utility function as a fallback
+    return isJobExpired(job);
   };
 
   const viewJobDetails = (job: Job) => {
