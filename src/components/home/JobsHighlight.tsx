@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 
 const jobListings = [
   {
-    id: 1,
+    id: "job-1",
     title: "Senior Nail Technician",
     salon: "Glossy Nail Studio",
     location: "San Francisco, CA",
@@ -15,7 +15,7 @@ const jobListings = [
     type: "Full-time"
   },
   {
-    id: 2,
+    id: "job-2",
     title: "Lash Specialist",
     salon: "Elite Beauty Bar",
     location: "Los Angeles, CA",
@@ -23,7 +23,7 @@ const jobListings = [
     type: "Part-time"
   },
   {
-    id: 3,
+    id: "job-3",
     title: "Salon Manager",
     salon: "Luxe Nail Lounge",
     location: "New York, NY",
@@ -82,7 +82,7 @@ const JobsHighlight = () => {
                       <p className="text-gray-600 mb-3">{job.salary} • {job.type}</p>
                     </div>
                     <div className="mt-4 md:mt-0">
-                      <Link to="/jobs">
+                      <Link to={`/jobs/${job.id}`}>
                         <Button>Apply Now</Button>
                       </Link>
                     </div>

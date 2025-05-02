@@ -89,7 +89,7 @@ export default function SalonsForSale() {
             <Link to="/salons">
               <Button variant="outline">View All Listings</Button>
             </Link>
-            <Link to="/sell-salon">
+            <Link to="/salon-owners">
               <Button>List Your Salon</Button>
             </Link>
           </div>

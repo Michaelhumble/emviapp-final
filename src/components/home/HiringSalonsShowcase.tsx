@@ -8,6 +8,7 @@ import { MapPin, Building } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 import { Job } from '@/types/job';
+import ValidatedLink from '@/components/common/ValidatedLink';
 
 // Utility function to transform job data to match required Job type
 const transformJobData = (job: any): Job => {
@@ -81,9 +82,15 @@ export default function HiringSalonsShowcase() {
                   {job.description?.substring(0, 120)}...
                 </div>
                 
-                <Link to={`/jobs/${job.id}`} className="text-primary text-sm font-medium hover:underline">
+                <ValidatedLink 
+                  to={`/jobs/${job.id}`} 
+                  listingId={job.id} 
+                  listingType="job"
+                  fallbackRoute="/jobs" 
+                  className="text-primary text-sm font-medium hover:underline"
+                >
                   View Job Details →
-                </Link>
+                </ValidatedLink>
               </CardContent>
             </Card>
           ))}

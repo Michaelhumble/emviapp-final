@@ -1,106 +1,40 @@
 
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { getLanguagePreference } from "@/utils/languagePreference";
-import DecorativeBackground from "../sections/DecorativeBackground";
-import SectionTitle from "./SectionTitle";
-import ContentCard from "./ContentCard";
-import LanguageToggleButton from "./LanguageToggleButton";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 const MissingPieceSection = () => {
-  const [language, setLanguage] = useState<"en" | "vi">(getLanguagePreference());
-  const [isChangingLanguage, setIsChangingLanguage] = useState(false);
-
-  useEffect(() => {
-    const handleLanguageChange = (event: CustomEvent) => {
-      if (event.detail && event.detail.language) {
-        setIsChangingLanguage(true);
-        // Small delay to ensure smooth transition
-        setTimeout(() => {
-          setLanguage(event.detail.language);
-          setIsChangingLanguage(false);
-        }, 100);
-      }
-    };
-    
-    window.addEventListener('languageChanged', handleLanguageChange as EventListener);
-    
-    // Get initial language preference
-    const storedLanguage = localStorage.getItem('emvi_language_preference');
-    if (storedLanguage === 'vi' || storedLanguage === 'en') {
-      setLanguage(storedLanguage as "en" | "vi");
-    }
-    
-    return () => {
-      window.removeEventListener('languageChanged', handleLanguageChange as EventListener);
-    };
-  }, []);
-
-  const handleSetLanguage = (newLanguage: "en" | "vi") => {
-    if (newLanguage === language) return;
-    
-    setIsChangingLanguage(true);
-    setTimeout(() => {
-      setLanguage(newLanguage);
-      setIsChangingLanguage(false);
-    }, 100);
-  };
-
-  const variants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { 
-        duration: 0.4,
-        staggerChildren: 0.12,
-        delayChildren: 0.1
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 15 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.25 }
-    }
-  };
-
   return (
-    <section className="py-16 sm:py-20 md:py-28 relative overflow-hidden bg-gradient-to-b from-white via-indigo-50/30 to-purple-50/30">
-      <div className="absolute inset-0 opacity-60">
-        <DecorativeBackground />
-      </div>
-      
-      <div className="container mx-auto px-4 relative z-10">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={language} // Force re-render when language changes
-            initial="hidden"
-            animate={isChangingLanguage ? "hidden" : "visible"}
-            exit="hidden"
-            variants={variants}
-            className="max-w-5xl mx-auto"
-          >
-            <SectionTitle 
-              language={language} 
-              itemVariants={itemVariants} 
-            />
-            
-            <ContentCard 
-              language={language} 
-              itemVariants={itemVariants} 
-            />
-            
-            <LanguageToggleButton 
-              language={language}
-              setLanguage={handleSetLanguage}
-              itemVariants={itemVariants}
-            />
-          </motion.div>
-        </AnimatePresence>
+    <section className="py-20 bg-gradient-to-br from-purple-50 to-white">
+      <div className="container mx-auto px-4">
+        <motion.div 
+          className="max-w-3xl mx-auto text-center"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6">
+            Experience the Missing Piece
+          </h2>
+          <p className="text-lg text-gray-600 mb-8">
+            EmviApp bridges the gap between beauty professionals and clients with technology 
+            that fosters trust, transparency and genuine connections.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link to="/auth/signup">
+              <Button size="lg" className="font-medium px-8">
+                Start Your Journey
+              </Button>
+            </Link>
+            <Link to="/tour">
+              <Button size="lg" variant="outline" className="font-medium">
+                Take a Tour
+              </Button>
+            </Link>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
