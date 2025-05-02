@@ -12,6 +12,7 @@ import BeautyExchangeSection from '@/components/home/BeautyExchangeSection';
 import FinalFounderCTA from '@/components/home/FinalFounderCTA';
 import MissingPieceSection from '@/components/home/missing-piece/MissingPieceSection';
 import CallToAction from '@/components/home/CallToAction';
+import BilingualExperienceSection from '@/components/home/BilingualExperienceSection';
 
 const Home = () => {
   return (
@@ -45,6 +46,10 @@ const Home = () => {
       
       <FallbackBoundary errorMessage="Missing piece section failed to load">
         <MissingPieceSection />
+      </FallbackBoundary>
+      
+      <FallbackBoundary errorMessage="Bilingual experience section failed to load">
+        <BilingualExperienceSection />
       </FallbackBoundary>
       
       <FallbackBoundary errorMessage="Call to action section failed to load">
