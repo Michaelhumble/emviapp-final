@@ -48,7 +48,8 @@ export const fetchSalonById = async (id: string): Promise<{
         return { ...response, error: true };
       }
 
-      const formattedSalon = formatJobListings(data);
+      // Fix: Use type assertion to break circular reference
+      const formattedSalon = formatJobListings(data as any);
       return { ...response, salon: formattedSalon };
     }
   } catch (err) {
@@ -142,7 +143,8 @@ export const fetchSalons = async (options: {
         return { ...response, error: true };
       }
       
-      const formattedSalons = data ? data.map(formatJobListings) : [];
+      // Fix: Use type assertion to break circular reference
+      const formattedSalons = data ? data.map((item) => formatJobListings(item as any)) : [];
       const totalPages = count ? Math.ceil(count / limit) : 1;
       
       return {
