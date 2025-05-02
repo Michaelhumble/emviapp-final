@@ -5,7 +5,7 @@ import { AuthProvider } from '@/context/auth';
 import { SalonProvider } from '@/context/salon';
 import { SubscriptionProvider } from '@/context/subscription';
 import { NotificationProvider } from '@/context/notification';
-import routes from './routes';
+import { routes } from './routes'; // Changed from default import to named import
 import SimpleSalonsPage from "@/pages/salons/SimpleSalonsPage";
 import SimpleSalonDetailPage from "@/pages/salons/SimpleSalonDetailPage";
 import BookingCalendar from "@/pages/dashboard/artist/BookingCalendar";

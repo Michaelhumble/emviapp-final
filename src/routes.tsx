@@ -2,7 +2,7 @@
 import { createBrowserRouter, RouteObject } from "react-router-dom";
 import Home from "./pages/home";
 import Index from "./pages/Index";
-import ErrorPage from "./pages/error";
+import ErrorPage from "./pages/NotFound"; // Changed from "./pages/error"
 import Jobs from "./pages/Jobs";
 import JobsPage from "./pages/jobs";
 import SalonsPage from "./pages/salons/SalonsPage";
