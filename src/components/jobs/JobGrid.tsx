@@ -3,7 +3,6 @@ import { useState } from "react";
 import BilingualJobCard from "@/components/jobs/BilingualJobCard";
 import { Job } from "@/types/job";
 import JobDetailModal from "@/components/jobs/JobDetailModal";
-import { isJobExpired } from "@/utils/jobs/jobListingFormatter";
 
 interface JobGridProps {
   jobs: Job[];
@@ -22,16 +21,6 @@ const JobGrid = ({
 }: JobGridProps) => {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
-  const checkExpiration = (job: Job): boolean => {
-    // First check the expirations record if available
-    if (expirations && expirations[job.id] !== undefined) {
-      return expirations[job.id];
-    }
-    
-    // Then use our utility function
-    return isJobExpired(job);
-  };
-
   const viewJobDetails = (job: Job) => {
     setSelectedJob(job);
   };
@@ -47,7 +36,6 @@ const JobGrid = ({
           <BilingualJobCard 
             key={job.id}
             job={job}
-            isExpired={checkExpiration(job)}
             onViewDetails={() => viewJobDetails(job)} 
             onRenew={() => onRenew(job)}
             isRenewing={isRenewing && renewalJobId === job.id}

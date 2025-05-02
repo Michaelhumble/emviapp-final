@@ -47,8 +47,6 @@ export interface Job {
   monthly_rent?: string;
   trust_indicators?: any;
   revenue?: string;
-  monthly_revenue?: string;
-  yearly_revenue?: string;
   has_dining_room?: boolean;
   has_laundry?: boolean;
   experience_level?: string;
@@ -60,10 +58,6 @@ export interface Job {
   name?: string;
   // Add imageUrl property that's needed for consistent image handling
   imageUrl?: string;
-  // Add established property for Salon compatibility
-  established?: number | string;
-  // Add website for Salon compatibility
-  website?: string;
   // Add the missing property
   is_vietnamese_listing?: boolean;
 }

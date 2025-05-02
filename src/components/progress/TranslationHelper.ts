@@ -1,17 +1,15 @@
 
-import { TranslationText } from "@/hooks/useTranslation";
+import { Translation } from "@/hooks/useTranslation";
+
+// Define a type for translatable text
+export type TranslatableText = Translation;
 
 // Helper function to create translation objects
-export const createTranslation = (english: string, vietnamese: string): TranslationText => {
+export const createTranslation = (english: string, vietnamese: string): Translation => {
   return { english, vietnamese };
 };
 
-// Create translation object with the same text for both languages
-export const createBilingualText = (text: string): TranslationText => {
-  return { english: text, vietnamese: text };
-};
-
-// Helper function to convert strings to Translation objects (added this function)
-export const toTranslatableText = (text: string): TranslationText => {
+// Helper function to convert strings to Translation objects
+export const toTranslatableText = (text: string): Translation => {
   return { english: text, vietnamese: text };
 };

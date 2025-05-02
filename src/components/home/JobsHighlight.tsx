@@ -1,79 +1,107 @@
 
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Container } from '@/components/ui/container';
-import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
-import ListingsGrid from '@/components/listings/ListingsGrid';
-import { Job } from '@/types/job';
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { MapPin, Briefcase } from "lucide-react";
+import { motion } from "framer-motion";
+import ValidatedLink from "@/components/common/ValidatedLink";
 
-// Real Vietnamese nail job listings
-const sampleJobs: Job[] = [
+const jobListings = [
   {
     id: "job-1",
-    title: "Thợ Bột và Dip Full Time",
-    company: "Tiệm Nail",
-    location: "Kansas City North",
-    created_at: new Date().toISOString(),
-    description: "Tiệm mình ở Kansas City North đang cần tìm thợ Bột và Dip full time. Luôn đảm bảo income nên cần tìm thợ làm lâu dài, chuyên nghiệp, tận tâm với công việc.",
-    imageUrl: "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png",
-    type: 'job',
-    is_vietnamese_listing: true,
+    title: "Senior Nail Technician",
+    salon: "Glossy Nail Studio",
+    location: "San Francisco, CA",
+    salary: "$25-35/hr",
+    type: "Full-time"
   },
   {
     id: "job-2",
-    title: "Thợ Chân Tay Nước",
-    company: "Cosmo Nails",
-    location: "Overland Park",
-    created_at: new Date().toISOString(),
-    description: "Tiệm Cosmo Nails ở Overland Park cần tìm thợ chân tay nước biết làm dip càng tốt. Chủ trẻ dễ nói chuyện, thợ dễ thương hoà đồng thân thiện.",
-    imageUrl: "/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png",
-    type: 'job',
-    is_vietnamese_listing: true,
+    title: "Lash Specialist",
+    salon: "Elite Beauty Bar",
+    location: "Los Angeles, CA",
+    salary: "$30-40/hr",
+    type: "Part-time"
   },
   {
     id: "job-3",
-    title: "Thợ Nail Everything hoặc Chân Tay Nước",
-    company: "Bellagio Nail & Day Spa",
-    location: "Pensacola, FL",
-    created_at: new Date().toISOString(),
-    description: "Tiệm đang cần thợ làm everything hoặc chân tay nước, biết vẽ càng tốt. Income cao, bao lương or ăn chia tuỳ theo tay nghề.",
-    imageUrl: "/lovable-uploads/5a1ba245-85f7-4036-95f9-0e08ada34602.png",
-    type: 'job',
-    is_vietnamese_listing: true,
+    title: "Salon Manager",
+    salon: "Luxe Nail Lounge",
+    location: "New York, NY",
+    salary: "$60-70k/year",
+    type: "Full-time"
   }
 ];
 
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2
+    }
+  }
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 }
+};
+
 const JobsHighlight = () => {
   return (
-    <section className="py-16 bg-white">
-      <Container>
-        <div className="text-center mb-10 max-w-3xl mx-auto">
-          <h2 className="font-playfair text-3xl font-bold mb-4">
-            Find Your Dream Job in Beauty
-          </h2>
-          <p className="text-gray-600 mb-6">
-            Discover opportunities in nail salons, hair styling, barbershops, and more. Connect with businesses looking for talented professionals like you.
+    <section className="py-20 bg-gray-50">
+      <div className="container mx-auto px-4">
+        <motion.div 
+          className="text-center max-w-3xl mx-auto mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+        >
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Top Beauty Jobs in Your Area</h2>
+          <p className="text-lg text-gray-600">
+            Find your perfect position with competitive pay and benefits
           </p>
+        </motion.div>
+
+        <motion.div 
+          className="space-y-6 max-w-4xl mx-auto"
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+        >
+          {jobListings.map((job) => (
+            <motion.div key={job.id} variants={item}>
+              <Card className="overflow-hidden hover:shadow-md transition-shadow">
+                <div className="p-6">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between">
+                    <div>
+                      <h3 className="text-xl font-semibold mb-2">{job.title}</h3>
+                      <p className="text-gray-600 mb-1">{job.salon} • {job.location}</p>
+                      <p className="text-gray-600 mb-3">{job.salary} • {job.type}</p>
+                    </div>
+                    <div className="mt-4 md:mt-0">
+                      <ValidatedLink to={`/jobs/${job.id}`} listingId={job.id} listingType="job" fallbackRoute="/jobs">
+                        <Button>Apply Now</Button>
+                      </ValidatedLink>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        <div className="mt-12 text-center">
           <Link to="/jobs">
-            <Button className="px-8">
-              View All Opportunities <ArrowRight className="ml-2 h-4 w-4" />
+            <Button size="lg" variant="outline" className="font-medium">
+              Browse All Jobs
             </Button>
           </Link>
         </div>
-
-        <div className="mt-8">
-          <ListingsGrid listings={sampleJobs} />
-        </div>
-
-        <div className="text-center mt-10">
-          <Link to="/jobs">
-            <Button variant="outline">
-              Browse All Jobs <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </Link>
-        </div>
-      </Container>
+      </div>
     </section>
   );
 };

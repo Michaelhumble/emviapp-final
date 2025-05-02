@@ -1,170 +1,317 @@
 
 import { useState, useEffect } from "react";
-import { Search, Frown, Star, SlidersHorizontal } from "lucide-react";
-import Layout from "@/components/layout/Layout";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SalonCard } from "@/components/marketplace/SalonCard";
-import { SalonDetailsDialog } from "@/components/marketplace/SalonDetailsDialog";
-import { SalonFilter } from "@/components/marketplace/SalonFilter";
-import { Salon as MarketplaceSalon, salons } from "@/components/marketplace/mockData";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/auth";
-import { marketplaceToAppSalon, appToMarketplaceSalon } from "@/components/marketplace/salonAdapter";
-import { Salon } from "@/types/salon";
+import Layout from "@/components/layout/Layout";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Search, MapPin, DollarSign, Clock, Filter, Home, Calendar, Star } from "lucide-react";
+import { Link } from "react-router-dom";
+import { toast } from "sonner";
+import { debugRoutes } from "@/utils/routeDebugger";
+import { differenceInDays } from 'date-fns';
 
-const SalonMarketplace = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [locationFilter, setLocationFilter] = useState("all");
-  const [priceFilter, setPriceFilter] = useState("all");
-  const [selectedSalon, setSelectedSalon] = useState<MarketplaceSalon | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { user } = useAuth();
-
-  // Use mapped salons that match our app's Salon type
-  const [mappedSalons, setMappedSalons] = useState<Salon[]>([]);
-
+const SalonsPage = () => {
+  const { userProfile } = useAuth();
+  const [salons, setSalons] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState("all");
+  const [showFilters, setShowFilters] = useState(false);
+  
   useEffect(() => {
-    console.log('SalonMarketplace page rendered - no banner');
-    // Convert marketplace salons to app salon format
-    const convertedSalons = salons.map(salon => marketplaceToAppSalon(salon));
-    setMappedSalons(convertedSalons);
+    document.title = "Salon Directory | EmviApp";
+    console.log("SalonsPage component loaded");
+    debugRoutes(); // Log the current route for debugging
+    fetchSalons();
   }, []);
-
-  // Filter using the mapped salons
-  const filteredSalons = mappedSalons.filter(salon => {
-    const matchesSearch = 
-      salon.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      salon.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      salon.description.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesLocation = locationFilter === 'all' || 
-      salon.location.toLowerCase().includes(locationFilter.toLowerCase());
-
-    let matchesPrice = true;
-    if (priceFilter === 'under100k') {
-      matchesPrice = Number(salon.price) < 100000;
-    } else if (priceFilter === '100k-200k') {
-      matchesPrice = Number(salon.price) >= 100000 && Number(salon.price) <= 200000;
-    } else if (priceFilter === 'over200k') {
-      matchesPrice = Number(salon.price) > 200000;
+  
+  const fetchSalons = async () => {
+    try {
+      setLoading(true);
+      console.log("Fetching salons...");
+      
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('role', 'salon')
+        .order('created_at', { ascending: false });
+        
+      if (error) {
+        console.error("Error fetching salons:", error);
+        toast.error("Failed to load salons");
+        throw error;
+      }
+      
+      console.log("Salons fetched:", data?.length || 0);
+      setSalons(data || []);
+    } catch (error) {
+      console.error("Error in fetchSalons:", error);
+      toast.error("There was a problem loading salons");
+    } finally {
+      setLoading(false);
     }
-
-    return matchesSearch && matchesLocation && matchesPrice;
-  });
-
-  // Put featured salons at the top
-  const sortedSalons = [...filteredSalons].sort((a, b) => {
-    if (a.featured === b.featured) return 0;
-    return a.featured ? -1 : 1;
-  });
-
-  // Component for displaying no results message
-  const NoResults = () => (
-    <div className="flex flex-col items-center justify-center py-12">
-      <div className="bg-gray-100 p-4 rounded-full mb-4">
-        <Search className="h-8 w-8 text-gray-400" />
-      </div>
-      <h3 className="text-lg font-medium mb-2">No salons found</h3>
-      <p className="text-gray-500 text-center mb-6">
-        Try adjusting your filters or search terms
-      </p>
-      <div className="flex gap-4">
-        <button 
-          onClick={() => {
-            setSearchTerm("");
-            setLocationFilter("all");
-            setPriceFilter("all");
-          }}
-          className="text-sm text-primary hover:underline"
-        >
-          Clear all filters
-        </button>
-      </div>
-    </div>
-  );
-
-  // Helper function to render salon grid
-  const renderSalonGrid = (salons: Salon[]) => {
-    if (salons.length === 0) {
-      return <NoResults />;
+  };
+  
+  const filteredSalons = salons.filter(salon => {
+    // Filter by search term
+    const matchesSearch = 
+      salon.salon_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      salon.location?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Filter by tab
+    if (activeTab === "featured" && !salon.is_featured) {
+      return false;
     }
     
+    if (activeTab === "forSale" && !salon.for_sale) {
+      return false;
+    }
+    
+    return matchesSearch;
+  });
+
+  const renderSalonCard = (salon: any) => {
+    const createdDate = new Date(salon.created_at);
+    const daysAgo = differenceInDays(new Date(), createdDate);
+    
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {salons.map((salon) => {
-          // Convert back to marketplace format for display
-          const marketplaceSalon = appToMarketplaceSalon(salon);
-          return (
-            <SalonCard 
-              key={marketplaceSalon.id} 
-              salon={marketplaceSalon}
-              viewDetails={() => viewSalonDetails(marketplaceSalon)} 
+      <Card key={salon.id} className="overflow-hidden hover:shadow-md transition-shadow">
+        <div className="h-48 bg-gray-100 relative">
+          {salon.avatar_url ? (
+            <img 
+              src={salon.avatar_url} 
+              alt={salon.salon_name || "Salon"} 
+              className="w-full h-full object-cover"
             />
-          );
-        })}
-      </div>
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gray-100">
+              <span className="text-gray-400 text-lg">{salon.salon_name || "Salon"}</span>
+            </div>
+          )}
+          
+          {salon.asking_price && (
+            <div className="absolute left-4 bottom-4">
+              <Badge className="bg-purple-600 text-white text-lg py-1 px-3 rounded-md">
+                ${parseInt(salon.asking_price).toLocaleString()}
+              </Badge>
+            </div>
+          )}
+        </div>
+        
+        <CardContent className="p-4">
+          <h3 className="text-xl font-bold mb-1">{salon.salon_name || salon.full_name}</h3>
+          
+          {salon.location && (
+            <div className="flex items-center text-gray-600 mb-2">
+              <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+              <span className="text-sm">{salon.location}</span>
+            </div>
+          )}
+          
+          {salon.monthly_rent && (
+            <div className="flex items-center text-gray-600 mb-1">
+              <DollarSign className="h-4 w-4 mr-1 flex-shrink-0" />
+              <span className="text-sm">Rent: ${salon.monthly_rent}/month</span>
+            </div>
+          )}
+          
+          {salon.created_at && (
+            <div className="flex items-center text-gray-600 mb-1">
+              <Calendar className="h-4 w-4 mr-1 flex-shrink-0" />
+              <span className="text-sm">{daysAgo} days ago</span>
+            </div>
+          )}
+          
+          {salon.vietnamese_description && (
+            <p className="text-sm mt-3 italic text-gray-700">{salon.vietnamese_description}</p>
+          )}
+          
+          {salon.description && (
+            <p className="text-sm mt-1 text-gray-600 line-clamp-2">{salon.description}</p>
+          )}
+          
+          <div className="flex flex-wrap gap-1 mt-4">
+            {salon.salon_features?.map((feature: string, index: number) => (
+              <Badge key={index} variant="outline" className="text-xs">
+                {feature}
+              </Badge>
+            ))}
+            
+            {salon.has_housing && (
+              <Badge variant="outline" className="bg-green-50 text-green-800 text-xs">
+                <Home className="h-3 w-3 mr-1" /> Housing
+              </Badge>
+            )}
+          </div>
+          
+          <Button className="w-full mt-4" size="sm">
+            View Details
+          </Button>
+        </CardContent>
+      </Card>
     );
   };
-
-  // Function to view salon details
-  const viewSalonDetails = (salon: MarketplaceSalon) => {
-    setSelectedSalon(salon);
-    setIsDialogOpen(true);
-  };
-
+  
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-serif font-bold mb-2 text-center">Salon Marketplace</h1>
-        <p className="text-center text-gray-600 mb-8">Browse salons for sale across the country</p>
-        
-        <SalonFilter
-          searchTerm={searchTerm}
-          locationFilter={locationFilter}
-          priceFilter={priceFilter}
-          setSearchTerm={setSearchTerm}
-          setLocationFilter={setLocationFilter}
-          setPriceFilter={setPriceFilter}
-        />
-
-        {filteredSalons.length === 0 && searchTerm.length > 0 && (
-          <Alert className="mb-6">
-            <AlertDescription className="flex items-center gap-2">
-              <Frown className="h-4 w-4" />
-              No results found for "{searchTerm}". Try different keywords or clear filters.
-            </AlertDescription>
-          </Alert>
-        )}
-
-        <Tabs defaultValue="all" className="mb-8">
-          <TabsList className="mb-4">
-            <TabsTrigger value="all">All Salons</TabsTrigger>
-            <TabsTrigger value="featured" className="flex items-center">
-              <Star className="h-3 w-3 mr-1 text-amber-500" /> Featured
-            </TabsTrigger>
-            <TabsTrigger value="recent">Recently Added</TabsTrigger>
-          </TabsList>
-          <TabsContent value="all" className="mt-0">
-            {renderSalonGrid(sortedSalons)}
-          </TabsContent>
-          <TabsContent value="featured" className="mt-0">
-            {renderSalonGrid(sortedSalons.filter(salon => salon.featured))}
-          </TabsContent>
-          <TabsContent value="recent" className="mt-0">
-            {renderSalonGrid(sortedSalons.slice(0, 3))}
-          </TabsContent>
-        </Tabs>
-        
-        {selectedSalon && (
-          <SalonDetailsDialog 
-            isOpen={isDialogOpen}
-            onOpenChange={setIsDialogOpen}
-            salon={selectedSalon}
-          />
-        )}
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-3xl font-serif font-bold mb-2">Salon Directory</h1>
+          <p className="text-gray-600 mb-6">Find the perfect salon near you or list your own salon for potential clients and staff to discover.</p>
+          
+          {/* Search and Filters */}
+          <div className="bg-white shadow-sm rounded-lg border border-gray-100 p-4 mb-6">
+            <div className="flex gap-4 mb-4">
+              <div className="relative flex-grow">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  placeholder="Search by salon name, location, or features..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Button 
+                variant="default" 
+                className="bg-purple-600 hover:bg-purple-700"
+                onClick={() => setShowFilters(!showFilters)}
+              >
+                <Filter className="h-4 w-4 mr-2" /> Filter
+              </Button>
+            </div>
+            
+            {showFilters && (
+              <div className="border rounded-lg p-4 mb-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-medium">Advanced Filters</h3>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div className="space-y-2">
+                    <label className="text-sm text-gray-600">Location</label>
+                    <select className="w-full border border-gray-300 rounded-md p-2">
+                      <option value="all">All Locations</option>
+                      <option value="new-york">New York, NY</option>
+                      <option value="los-angeles">Los Angeles, CA</option>
+                      <option value="chicago">Chicago, IL</option>
+                      <option value="houston">Houston, TX</option>
+                      <option value="denver">Denver, CO</option>
+                    </select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="text-sm text-gray-600">Price Range</label>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs">$0</span>
+                      <div className="h-2 bg-purple-200 flex-grow mx-2 rounded-full">
+                        <div className="h-full w-1/2 bg-purple-600 rounded-full"></div>
+                      </div>
+                      <span className="text-xs">$500,000</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex flex-wrap gap-4 mb-4">
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" id="has-housing" className="h-4 w-4" />
+                    <label htmlFor="has-housing" className="text-sm">Has Housing</label>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" id="show-expired" className="h-4 w-4" />
+                    <label htmlFor="show-expired" className="text-sm">Show Expired</label>
+                  </div>
+                </div>
+                
+                <div className="flex justify-end">
+                  <Button variant="outline" size="sm">Reset Filters</Button>
+                </div>
+              </div>
+            )}
+            
+            <div className="flex flex-wrap gap-2">
+              {["7 Years Established", "High Traffic Area", "Parking Available", "All Equipment Included", 
+                "Denver, CO", "Premium Equipment", "Social Media Following", "Recently Renovated"].map((tag) => (
+                <Badge 
+                  key={tag} 
+                  variant="outline" 
+                  className="cursor-pointer hover:bg-gray-100"
+                  onClick={() => setSearchQuery(tag)}
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          </div>
+          
+          {/* Salon Categories */}
+          <Tabs defaultValue="all" className="mb-6" value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="mb-6">
+              <TabsTrigger value="all">All Salons</TabsTrigger>
+              <TabsTrigger value="featured">Featured</TabsTrigger>
+              <TabsTrigger value="forSale">For Sale</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          
+          {/* Salons Grid */}
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {Array(6).fill(0).map((_, index) => (
+                <Card key={index} className="overflow-hidden">
+                  <div className="h-48 bg-gray-100 animate-pulse"></div>
+                  <CardContent className="p-4">
+                    <div className="h-6 bg-gray-100 rounded animate-pulse mb-2"></div>
+                    <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4 mb-2"></div>
+                    <div className="h-4 bg-gray-100 rounded animate-pulse mb-2"></div>
+                    <div className="h-4 bg-gray-100 rounded animate-pulse w-1/2 mb-4"></div>
+                    <div className="h-8 bg-gray-100 rounded animate-pulse mt-4"></div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : filteredSalons.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+              {filteredSalons.map(renderSalonCard)}
+            </div>
+          ) : (
+            <div className="text-center py-16 bg-gray-50 rounded-lg mb-12">
+              <Search className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+              <h3 className="text-lg font-medium mb-2">No salons found</h3>
+              <p className="text-gray-600 mb-4">
+                We couldn't find any salons matching your search criteria.
+              </p>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setSearchQuery("");
+                  setActiveTab("all");
+                }}
+              >
+                Clear Filters
+              </Button>
+            </div>
+          )}
+          
+          {/* Salon Promotion Banner */}
+          <div className="bg-blue-50 rounded-lg p-8 text-center mb-12">
+            <h2 className="text-2xl font-bold mb-2">List Your Salon on EmviApp</h2>
+            <p className="text-gray-700 mb-4">
+              Reach thousands of potential clients and talented nail technicians looking for their next opportunity.
+            </p>
+            <Link to="/salons/list">
+              <Button className="bg-purple-600 hover:bg-purple-700">
+                List Your Salon
+              </Button>
+            </Link>
+          </div>
+        </div>
       </div>
     </Layout>
   );
 };
 
-export default SalonMarketplace;
+export default SalonsPage;

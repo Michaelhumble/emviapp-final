@@ -1,307 +1,221 @@
 
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { 
-  MapPin, Phone, Mail, Calendar, Users, DollarSign, 
-  Building, TrendingUp, SquareDot, Globe, Award
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { fetchSalonById } from '@/utils/salonFetcher';
-import { Job } from '@/types/job';
-
-// Define interface for URL parameters
-interface SalonDetailPageParams {
-  id: string;
-  [key: string]: string; // Index signature for type constraint
-}
+import React from 'react';
+import { useParams, Link, useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
+import Layout from '@/components/layout/Layout';
+import { Button } from "@/components/ui/button";
+import { salonListings } from '@/data/salonData';
+import { vietnameseSalonListings } from '@/data/vietnameseSalonListings';
+import { useAuth } from '@/context/auth';
+import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
+import { isNailSalon, getNailSalonImage } from '@/utils/nailSalonImages';
+import { isBarberShop, getBarberShopImage } from '@/utils/barberShopImages';
+import { isHairSalon, getHairSalonImage } from '@/utils/hairSalonImages';
 
 const SimpleSalonDetailPage = () => {
-  const { id } = useParams<SalonDetailPageParams>();
-  const [salon, setSalon] = useState<Job | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const { id } = useParams();
+  const { isSignedIn } = useAuth();
+  const location = useLocation();
   
-  useEffect(() => {
-    const loadSalon = async () => {
-      if (!id) {
-        setError(true);
-        setLoading(false);
-        return;
-      }
-      
-      try {
-        setLoading(true);
-        const result = await fetchSalonById(id);
-        
-        if (result.error || !result.salon) {
-          setError(true);
-        } else {
-          setSalon(result.salon);
-        }
-      } catch (err) {
-        console.error("Error loading salon:", err);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    loadSalon();
-  }, [id]);
+  // First check Vietnamese listings, then regular listings
+  const salon = vietnameseSalonListings.find(s => s.id === id) || 
+               salonListings.find(s => s.id === id);
 
-  if (loading) {
+  if (!salon) {
     return (
-      <div className="container mx-auto py-20">
-        <div className="flex flex-col items-center justify-center">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <p className="mt-4 text-lg text-gray-600">Loading salon details...</p>
+      <Layout>
+        <div className="container mx-auto px-4 py-12 text-center">
+          <h1 className="font-playfair text-2xl font-bold mb-4">Salon Not Found</h1>
+          <Link to="/salons">
+            <Button>Return to Listings</Button>
+          </Link>
         </div>
-      </div>
+      </Layout>
     );
   }
 
-  if (error || !salon) {
-    return (
-      <div className="container mx-auto py-20">
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center p-8">
-            <h2 className="text-2xl font-bold text-gray-700 mb-4">Salon Not Found</h2>
-            <p className="text-gray-500 mb-6">Sorry, we couldn't find the salon you were looking for.</p>
-            <Button asChild>
-              <a href="/salons">Browse Other Salons</a>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
+  // Use Vietnamese content when available
+  const title = salon.vietnamese_title || salon.name;
+  const description = salon.vietnamese_description || salon.description;
+  const isVietnamese = salon.is_vietnamese_listing;
+  const backToListingsText = isVietnamese ? "← Trở lại danh sách" : "← Back to Listings";
+
+  // Check if this is a barbershop first (prioritize barber category)
+  const isBarber = isBarberShop(salon.name, salon.description);
+  
+  // Check if this is a hair salon second
+  const isHair = !isBarber && isHairSalon(salon.name, salon.description);
+  
+  // Then check if this is a nail salon 
+  const isNail = !isBarber && !isHair && isNailSalon(salon.name, salon.description);
+
+  // IMPORTANT: Use the stored imageUrl from the salon object
+  // If there's no stored imageUrl, generate one using the same logic as the listing card
+  let displayImageUrl = salon.imageUrl;
+  if (isBarber && !displayImageUrl) {
+    displayImageUrl = getBarberShopImage(salon.isPremium, salon.featured);
+  } else if (isHair && !displayImageUrl) {
+    displayImageUrl = getHairSalonImage(salon.isPremium, salon.featured);
+  } else if (isNail && !displayImageUrl) {
+    displayImageUrl = getNailSalonImage(isVietnamese, salon.isPremium, salon.featured);
   }
+
+  // Construct the path to return to after login
+  const currentPath = location.pathname;
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="bg-white rounded-lg overflow-hidden shadow-md">
-        {/* Hero Section */}
-        <div className="relative h-64 bg-gradient-to-r from-blue-600 to-indigo-600">
-          {salon.imageUrl && (
-            <img 
-              src={salon.imageUrl} 
-              alt={salon.name || salon.title} 
-              className="w-full h-full object-cover opacity-70"
-            />
-          )}
-          <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end p-8">
-            <Badge variant="secondary" className="w-fit mb-3">
-              {salon.salon_type || 'Nail Salon'}
-            </Badge>
-            <h1 className="text-3xl font-bold text-white mb-2">
-              {salon.name || salon.title}
-            </h1>
-            <div className="flex items-center text-white">
-              <MapPin className="h-4 w-4 mr-2" />
-              <span>{salon.location}</span>
+    <Layout>
+      <Helmet>
+        <title>{title} | EmviApp</title>
+        <meta name="description" content={description} />
+      </Helmet>
+
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to="/salons" className="text-purple-600 hover:text-purple-700 mb-6 inline-block">
+            {backToListingsText}
+          </Link>
+          
+          <div className="bg-white rounded-xl overflow-hidden shadow-sm">
+            {/* Hero image - Use ImageWithFallback for better consistency */}
+            {displayImageUrl ? (
+              <div className="h-64 overflow-hidden">
+                <ImageWithFallback
+                  src={displayImageUrl}
+                  alt={title || (
+                    isBarber ? "Barbershop" :
+                    isHair ? "Hair Salon" :
+                    isNail ? "Nail Salon" : "Salon"
+                  )}
+                  className="w-full h-full object-cover"
+                  priority={true}
+                />
+              </div>
+            ) : (
+              <div 
+                className="h-64 bg-cover bg-center"
+                style={{ backgroundImage: `url(${salon.imageUrl})` }}
+              />
+            )}
+            
+            {/* Content */}
+            <div className="p-6">
+              {isVietnamese && (
+                <div className="inline-block bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium mb-4">
+                  Vietnamese Listing
+                </div>
+              )}
+              {isBarber && (
+                <div className="inline-block bg-slate-100 text-slate-800 px-3 py-1 rounded-full text-sm font-medium mb-4">
+                  Barbershop
+                </div>
+              )}
+              {isHair && (
+                <div className="inline-block bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-sm font-medium mb-4">
+                  Hair Salon
+                </div>
+              )}
+              
+              <h1 className="font-playfair text-3xl font-bold mb-2">{title}</h1>
+              <p className="text-gray-600 mb-4">{salon.location}</p>
+              
+              <div className="flex items-center mb-6">
+                <p className="text-2xl font-semibold text-gray-800">
+                  {salon.price === 0 ? "Giá thương lượng" : new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    maximumFractionDigits: 0,
+                  }).format(salon.price)}
+                </p>
+                {salon.income_range && (
+                  <span className="ml-3 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                    Income: {salon.income_range}
+                  </span>
+                )}
+              </div>
+              
+              <div className="prose max-w-none">
+                <p className="text-gray-700 whitespace-pre-line">{description}</p>
+              </div>
+              
+              {/* Features */}
+              {salon.features && salon.features.length > 0 && (
+                <div className="mt-8">
+                  <h3 className="font-semibold text-lg mb-3">
+                    {isVietnamese ? "Thông tin chi tiết" : "Features"}
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {salon.features.map((feature, index) => (
+                      <span 
+                        key={index}
+                        className="bg-gray-100 rounded-full px-3 py-1 text-sm"
+                      >
+                        {feature}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Contact info */}
+              <div className="mt-8 pt-6 border-t">
+                <h3 className="font-semibold text-lg mb-3">
+                  {isVietnamese ? "Liên hệ" : "Contact Information"}
+                </h3>
+                
+                {isSignedIn && salon.contact_info ? (
+                  <div className="bg-white p-4 rounded-lg border">
+                    {salon.contact_info.owner_name && (
+                      <p className="mb-2">
+                        <span className="text-gray-500 mr-2">
+                          {isVietnamese ? "Người bán:" : "Owner:"}
+                        </span>
+                        {salon.contact_info.owner_name}
+                      </p>
+                    )}
+                    {salon.contact_info.phone && (
+                      <p className="mb-2">
+                        <span className="text-gray-500 mr-2">
+                          {isVietnamese ? "Điện thoại:" : "Phone:"}
+                        </span>
+                        <a href={`tel:${salon.contact_info.phone}`} className="text-purple-600 hover:text-purple-800">
+                          {salon.contact_info.phone}
+                        </a>
+                      </p>
+                    )}
+                    {salon.contact_info.email && (
+                      <p className="mb-2">
+                        <span className="text-gray-500 mr-2">Email:</span>
+                        <a href={`mailto:${salon.contact_info.email}`} className="text-purple-600 hover:text-purple-800">
+                          {salon.contact_info.email}
+                        </a>
+                      </p>
+                    )}
+                    {salon.contact_info.zalo && (
+                      <p>
+                        <span className="text-gray-500 mr-2">Zalo:</span>
+                        {salon.contact_info.zalo}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <p className="text-gray-500 text-sm mb-2">
+                      {isVietnamese ? "Vui lòng đăng nhập để xem thông tin liên hệ" : "Please sign in to see contact details"}
+                    </p>
+                    <Link to={`/sign-in?redirect=${encodeURIComponent(currentPath)}`}>
+                      <Button size="sm">
+                        {isVietnamese ? "Đăng nhập" : "Sign In"}
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
-        
-        {/* Content */}
-        <div className="p-6">
-          {/* Quick Facts */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <Card>
-              <CardContent className="p-4">
-                <h3 className="text-lg font-semibold flex items-center">
-                  <DollarSign className="h-5 w-5 mr-2 text-green-600" />
-                  Pricing
-                </h3>
-                <div className="mt-2">
-                  <p className="text-2xl font-bold text-green-600">${salon.price || salon.asking_price || 'Contact'}</p>
-                  <p className="text-sm text-gray-500">Asking Price</p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="p-4">
-                <h3 className="text-lg font-semibold flex items-center">
-                  <TrendingUp className="h-5 w-5 mr-2 text-blue-600" />
-                  Revenue
-                </h3>
-                <div className="mt-2">
-                  <p className="text-2xl font-bold text-blue-600">
-                    ${salon.monthly_revenue || salon.revenue || salon.yearly_revenue || "N/A"}
-                    <span className="text-sm font-normal ml-1">{salon.monthly_revenue ? '/mo' : salon.yearly_revenue ? '/yr' : ''}</span>
-                  </p>
-                  <p className="text-sm text-gray-500">Average Monthly Revenue</p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="p-4">
-                <h3 className="text-lg font-semibold flex items-center">
-                  <Calendar className="h-5 w-5 mr-2 text-purple-600" />
-                  Established
-                </h3>
-                <div className="mt-2">
-                  <p className="text-2xl font-bold text-purple-600">
-                    {salon.established || "N/A"}
-                  </p>
-                  <p className="text-sm text-gray-500">Years in Business</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          
-          {/* Tabs */}
-          <Tabs defaultValue="details" className="w-full">
-            <TabsList className="mb-6">
-              <TabsTrigger value="details">Details</TabsTrigger>
-              <TabsTrigger value="features">Features</TabsTrigger>
-              <TabsTrigger value="contact">Contact</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="details">
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-xl font-semibold mb-3">About This Salon</h2>
-                  <p className="text-gray-700">{salon.description}</p>
-                </div>
-                
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Location Details</h3>
-                  <div className="flex items-start gap-2">
-                    <MapPin className="h-5 w-5 text-gray-500 mt-0.5" />
-                    <div>
-                      <p className="text-gray-700">{salon.location}</p>
-                      <p className="text-gray-500 text-sm">
-                        High-traffic area with excellent visibility.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Business Details</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex items-center gap-3">
-                      <Users className="h-5 w-5 text-gray-500" />
-                      <div>
-                        <p className="text-gray-700">4-8 staff</p>
-                        <p className="text-gray-500 text-sm">Current staffing</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Building className="h-5 w-5 text-gray-500" />
-                      <div>
-                        <p className="text-gray-700">${salon.monthly_rent || "Contact"}</p>
-                        <p className="text-gray-500 text-sm">Monthly rent</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <SquareDot className="h-5 w-5 text-gray-500" />
-                      <div>
-                        <p className="text-gray-700">{salon.square_feet || "Contact"} sq ft</p>
-                        <p className="text-gray-500 text-sm">Space</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Globe className="h-5 w-5 text-gray-500" />
-                      <div>
-                        <p className="text-gray-700">
-                          {salon.website ? (
-                            <a href={salon.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                              {salon.website.replace('https://', '').replace('http://', '')}
-                            </a>
-                          ) : "No website provided"}
-                        </p>
-                        <p className="text-gray-500 text-sm">Online presence</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="features">
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-xl font-semibold mb-3">Salon Features</h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    {(salon.features || salon.salon_features || []).map((feature, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <Award className="h-4 w-4 text-green-600" />
-                        <span>{feature}</span>
-                      </div>
-                    ))}
-                    {(!salon.features && !salon.salon_features) && (
-                      <div className="col-span-full text-gray-500">
-                        No specific features listed.
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="contact">
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-xl font-semibold mb-3">Contact Information</h2>
-                  <div className="space-y-4">
-                    {salon.contact_info?.owner_name && (
-                      <div className="flex items-center gap-3">
-                        <Users className="h-5 w-5 text-gray-500" />
-                        <div>
-                          <p className="text-gray-700">{salon.contact_info.owner_name}</p>
-                          <p className="text-gray-500 text-sm">Owner/Contact</p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {salon.contact_info?.phone && (
-                      <div className="flex items-center gap-3">
-                        <Phone className="h-5 w-5 text-gray-500" />
-                        <div>
-                          <p className="text-gray-700">{salon.contact_info.phone}</p>
-                          <p className="text-gray-500 text-sm">Call for details</p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {salon.contact_info?.email && (
-                      <div className="flex items-center gap-3">
-                        <Mail className="h-5 w-5 text-gray-500" />
-                        <div>
-                          <p className="text-gray-700">{salon.contact_info.email}</p>
-                          <p className="text-gray-500 text-sm">Email for inquiries</p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {(!salon.contact_info?.owner_name && !salon.contact_info?.phone && !salon.contact_info?.email) && (
-                      <div className="p-4 border border-gray-200 rounded-lg">
-                        <p className="text-center text-gray-500">Contact information is hidden. Request details below.</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="pt-4">
-                  <Button className="w-full">Request Information</Button>
-                </div>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

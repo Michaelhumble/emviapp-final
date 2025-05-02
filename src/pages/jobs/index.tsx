@@ -1,215 +1,241 @@
-import { useState, useEffect } from "react";
-import Layout from "@/components/layout/Layout";
-import { Container } from "@/components/ui/container";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SearchIcon, FilterIcon, MapPinIcon } from "lucide-react";
-import { Job } from "@/types/job";
-import ListingsGrid from "@/components/listings/ListingsGrid";
 
-// Real Vietnamese job listings data
-const jobsData: Job[] = [
-  {
-    id: "job-1",
-    title: "Thợ Bột và Dip Full Time",
-    company: "Tiệm Nail",
-    location: "Kansas City North",
-    created_at: new Date().toISOString(),
-    description: "Tiệm mình ở Kansas City North đang cần tìm thợ Bột và Dip full time. Luôn đảm bảo income nên cần tìm thợ làm lâu dài, chuyên nghiệp, tận tâm với công việc, xin phép không tuyển thợ ngắn hạn. Tiệm có số lượng khách ổn định, khách lịch sự, dễ thương, dễ build khách. Môi trường làm việc vui vẻ, trẻ trung, luôn hỗ trợ nhau trong công việc và giúp đỡ nhau trong cuộc sống.",
-    imageUrl: "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png",
-    type: 'job',
-    is_vietnamese_listing: true,
-    vietnamese_description: "Tiệm mình ở Kansas City North đang cần tìm thợ Bột và Dip full time. Luôn đảm bảo income nên cần tìm thợ làm lâu dài, chuyên nghiệp, tận tâm với công việc, xin phép không tuyển thợ ngắn hạn. Tiệm có số lượng khách ổn định, khách lịch sự, dễ thương, dễ build khách. Môi trường làm việc vui vẻ, trẻ trung, luôn hỗ trợ nhau trong công việc và giúp đỡ nhau trong cuộc sống."
-  },
-  {
-    id: "job-2",
-    title: "Tiệm Nails Cần Bán Gấp",
-    company: "Nails",
-    location: "South Houston, TX",
-    created_at: new Date().toISOString(),
-    description: "☘️☘️cần bán tiệm Nails gấp ☘️☘️ Xin chào mọi người ☘️tiệm của mình nằm trên đường 45 south Houston khu đông dân cư. Tiệm rộng 1500 sqf có 7 ghế 6 bàn 3 phòng wax và facial rent 2700\\month. Máy giặt may sấy.1phong ăn. Tiệm hoạt động 15 năm nên có lượng khách ổn định. Vì muốn về hưu nên muốn sang tiệm.",
-    imageUrl: "/lovable-uploads/d1da4b24-248e-4e84-9289-06237e7d4458.png",
-    type: 'job',
-    is_vietnamese_listing: true,
-    for_sale: true,
-    vietnamese_description: "☘️☘️cần bán tiệm Nails gấp ☘️☘️ Xin chào mọi người ☘️tiệm của mình nằm trên đường 45 south Houston khu đông dân cư. Tiệm rộng 1500 sqf có 7 ghế 6 bàn 3 phòng wax và facial rent 2700\\month. Máy giặt may sấy.1phong ăn. Tiệm hoạt động 15 năm nên có lượng khách ổn định. Vì muốn về hưu nên muốn sang tiệm."
-  },
-  {
-    id: "job-3",
-    title: "Thợ Chân Tay Nước",
-    company: "Cosmo Nails",
-    location: "Overland Park",
-    created_at: new Date().toISOString(),
-    description: "Tiệm Cosmo Nails ở Overland Park cần tìm thợ chân tay nước biết làm dip càng tốt. Chủ trẻ dễ nói chuyện, thợ dễ thương hoà đồng thân thiện. Tiệm khu sang, tip cao, gần nhiều shopping center. Ai muốn về cùng team để cùng phát triển thì vui lòng liên hệ.",
-    imageUrl: "/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png",
-    type: 'job',
-    is_vietnamese_listing: true,
-    vietnamese_description: "Tiệm Cosmo Nails ở Overland Park cần tìm thợ chân tay nước biết làm dip càng tốt. Chủ trẻ dễ nói chuyện, thợ dễ thương hoà đồng thân thiện. Tiệm khu sang, tip cao, gần nhiều shopping center. Ai muốn về cùng team để cùng phát triển thì vui lòng liên hệ."
-  },
-  {
-    id: "job-4",
-    title: "Sang Tiệm Nail",
-    company: "Tiệm Nail Orlando",
-    location: "Orlando, FL",
-    created_at: new Date().toISOString(),
-    description: "🔥 Sang Tiệm Nail 1,400 sqft ở Orlando FL – Vị Trí Đẹp, Khách Sẵn! 📍Diện tích 1,400 sqft, gồm 10 bàn, 8 ghế , có phòng facial, wax, phòng ăn, máy giặt, máy sấy đầy đủ. 📍Khu trung tâm đông dân, gần trường học, ngân hàng,nhà bank.. – tiện mở rộng kinh doanh. 📍Sẵn 4 thợ giỏi làm fulltime, lượng khách quen ổn định.",
-    imageUrl: "/lovable-uploads/4e47f970-963a-483f-8356-eb64235bc2db.png",
-    type: 'job',
-    is_vietnamese_listing: true,
-    vietnamese_description: "🔥 Sang Tiệm Nail 1,400 sqft ở Orlando FL – Vị Trí Đẹp, Khách Sẵn! 📍Diện tích 1,400 sqft, gồm 10 bàn, 8 ghế , có phòng facial, wax, phòng ăn, máy giặt, máy sấy đầy đủ. 📍Khu trung tâm đông dân, gần trường học, ngân hàng,nhà bank.. – tiện mở rộng kinh doanh. 📍Sẵn 4 thợ giỏi làm fulltime, lượng khách quen ổn định.",
-    for_sale: true,
-    salon_features: ["10 bàn", "8 ghế", "Phòng facial", "Phòng wax"]
-  },
-  {
-    id: "job-5",
-    title: "Cần Thợ Nail",
-    company: "Bellagio Nail & Day Spa",
-    location: "Pensacola, FL",
-    created_at: new Date().toISOString(),
-    description: "‼️ Cần Nhiều Thợ Nail Cho Tiệm ở Pensacola FL 💅 Tiệm đang cần thợ làm everything hoặc chân tay nước, biết vẽ càng tốt. ✨ Income cao, bao lương or ăn chia tuùy theo tay nghề. 👉🏻Gọi đi làm liền, nơi làm việc vui vẻ, thoải mái.",
-    imageUrl: "/lovable-uploads/5a1ba245-85f7-4036-95f9-0e08ada34602.png",
-    type: 'job',
-    is_vietnamese_listing: true,
-    vietnamese_description: "‼️ Cần Nhiều Thợ Nail Cho Tiệm ở Pensacola FL 💅 Tiệm đang cần thợ làm everything hoặc chân tay nước, biết vẽ càng tốt. ✨ Income cao, bao lương or ăn chia tuùy theo tay nghề. 👉🏻Gọi đi làm liền, nơi làm việc vui vẻ, thoải mái.",
-    contact_info: {
-      owner_name: "Bellagio Nail & Day Spa",
-      phone: "(850) 346-7273"
-    }
-  },
+import { useState, useEffect } from 'react';
+import Layout from '@/components/layout/Layout';
+import { Container } from '@/components/ui/container';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Job } from '@/types/job';
+import JobGrid from '@/components/jobs/JobGrid';
+import BilingualJobCard from '@/components/jobs/BilingualJobCard';
+import expiredJobListings from '@/data/expiredJobListings';
+import { usePostExpirationCheck } from '@/hooks/usePostExpirationCheck';
+import { Input } from '@/components/ui/input';
+import { Search, Filter } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Helmet } from 'react-helmet';
+import { toast } from 'sonner';
+import { useNavigate, Link } from 'react-router-dom';
+
+// Categories for job filters
+const jobCategories = [
+  "All Jobs",
+  "Nail Technicians",
+  "Hair Stylists",
+  "Tattoo Artists", 
+  "Eyelash & Brow",
+  "Massage & Spa"
 ];
 
+// Function to filter jobs by role/category
+const filterJobsByCategory = (jobs: Job[], category: string): Job[] => {
+  if (category === "All Jobs") return jobs;
+  
+  // Category-specific filtering logic
+  switch(category) {
+    case "Nail Technicians":
+      return jobs.filter(job => 
+        job.title?.toLowerCase().includes("nail") || 
+        job.title?.toLowerCase().includes("thợ") ||
+        job.description?.toLowerCase().includes("nail") ||
+        job.company?.toLowerCase().includes("nail")
+      );
+    case "Hair Stylists":
+      return jobs.filter(job => 
+        job.title?.toLowerCase().includes("hair") || 
+        job.title?.toLowerCase().includes("stylist") ||
+        job.title?.toLowerCase().includes("barber") ||
+        job.specialties?.some(s => s.toLowerCase().includes("hair")) ||
+        job.specialties?.some(s => s.toLowerCase().includes("cut"))
+      );
+    case "Tattoo Artists":
+      return jobs.filter(job => 
+        job.title?.toLowerCase().includes("tattoo") || 
+        job.company?.toLowerCase().includes("ink") ||
+        job.specialties?.some(s => s.toLowerCase().includes("tattoo"))
+      );
+    case "Eyelash & Brow":
+      return jobs.filter(job => 
+        job.title?.toLowerCase().includes("lash") || 
+        job.title?.toLowerCase().includes("brow") ||
+        job.specialties?.some(s => s.toLowerCase().includes("lash")) ||
+        job.specialties?.some(s => s.toLowerCase().includes("brow"))
+      );
+    case "Massage & Spa":
+      return jobs.filter(job => 
+        job.title?.toLowerCase().includes("massage") || 
+        job.title?.toLowerCase().includes("spa") ||
+        job.title?.toLowerCase().includes("therapist") ||
+        job.specialties?.some(s => s.toLowerCase().includes("massage")) ||
+        job.specialties?.some(s => s.toLowerCase().includes("facial"))
+      );
+    default:
+      return jobs;
+  }
+};
+
 const JobsPage = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredJobs, setFilteredJobs] = useState<Job[]>(jobsData);
-  const [activeTab, setActiveTab] = useState("all");
-  const [loading, setLoading] = useState(false);
+  const [jobs, setJobs] = useState<Job[]>(expiredJobListings);
+  const [selectedCategory, setSelectedCategory] = useState("All Jobs");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredJobs, setFilteredJobs] = useState<Job[]>(jobs);
+  const [isRenewing, setIsRenewing] = useState(false);
+  const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
+  const navigate = useNavigate();
+  
+  // Get all job IDs for expiration check
+  const jobIds = jobs.map(job => job.id);
+  const { expirations } = usePostExpirationCheck(jobIds);
 
+  // Handle search and filtering
   useEffect(() => {
-    document.title = "Beauty Industry Jobs | EmviApp";
-  }, []);
-
-  useEffect(() => {
-    setLoading(true);
-    // Simulating API request delay
-    const timer = setTimeout(() => {
-      filterJobs();
-      setLoading(false);
-    }, 300);
+    let results = jobs;
     
-    return () => clearTimeout(timer);
-  }, [searchTerm, activeTab]);
-
-  const filterJobs = () => {
-    let results = [...jobsData];
-
-    // Filter by search term if provided
-    if (searchTerm.trim()) {
-      const searchTermLower = searchTerm.toLowerCase();
+    // Apply category filter
+    results = filterJobsByCategory(results, selectedCategory);
+    
+    // Apply search filter if query exists
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
       results = results.filter(job => 
-        job.title.toLowerCase().includes(searchTermLower) || 
-        job.company.toLowerCase().includes(searchTermLower) ||
-        (job.location && job.location.toLowerCase().includes(searchTermLower))
+        job.title?.toLowerCase().includes(query) || 
+        job.company?.toLowerCase().includes(query) || 
+        job.location?.toLowerCase().includes(query) || 
+        job.description?.toLowerCase().includes(query)
       );
     }
-
-    // Filter by job category if not "all"
-    if (activeTab !== "all") {
-      results = results.filter(job => {
-        // This is a simplification - you may want to map job types to categories
-        const jobType = job.title.toLowerCase();
-        return jobType.includes(activeTab);
-      });
-    }
-
+    
     setFilteredJobs(results);
-  };
+  }, [jobs, selectedCategory, searchQuery]);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    filterJobs();
+  // Handle job renewal
+  const handleRenewJob = (job: Job) => {
+    setIsRenewing(true);
+    setRenewalJobId(job.id);
+    
+    // Simulate API call for renewal
+    setTimeout(() => {
+      toast.success(`Job renewal request sent for "${job.title}"`, {
+        description: "Check your account for approval status.",
+        action: {
+          label: "View Dashboard",
+          onClick: () => navigate("/dashboard")
+        }
+      });
+      setIsRenewing(false);
+      setRenewalJobId(null);
+    }, 1500);
   };
-
-  const jobCategories = [
-    { id: "all", label: "All Jobs" },
-    { id: "nail", label: "Nail Tech" },
-    { id: "hair", label: "Hair Stylist" },
-    { id: "barber", label: "Barber" },
-    { id: "spa", label: "Spa Therapist" },
-    { id: "management", label: "Management" },
-  ];
 
   return (
     <Layout>
-      <Container className="py-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">Beauty Industry Jobs</h1>
-        <p className="text-gray-600 mb-8">
-          Find your dream job in the beauty and wellness industry
-        </p>
-        
-        {/* Search and filters */}
-        <div className="mb-8">
-          <form onSubmit={handleSearch} className="flex gap-2 mb-6">
-            <div className="relative flex-1">
-              <SearchIcon className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-              <Input 
-                placeholder="Search by title, company, or location..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
+      <Helmet>
+        <title>Beauty Industry Jobs | EmviApp</title>
+        <meta 
+          name="description" 
+          content="Browse job opportunities in the beauty industry. Find positions for nail technicians, hair stylists, estheticians, and more."
+        />
+      </Helmet>
+      
+      <div className="bg-gradient-to-br from-purple-50 to-pink-50 py-16">
+        <Container>
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="text-4xl md:text-5xl font-playfair font-bold mb-4">
+              Beauty Industry Jobs
+            </h1>
+            <p className="text-lg text-gray-700 mb-8">
+              Find your next opportunity or post job openings to attract talented professionals
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Button size="lg" className="bg-emvi-accent hover:bg-emvi-accent/90">
+                Post a Job
+              </Button>
+              <Link to="/jobs/salary-guide">
+                <Button size="lg" variant="outline">
+                  Salary Guide
+                </Button>
+              </Link>
             </div>
-            <Button type="submit">
-              Search
-            </Button>
-          </form>
-          
-          {/* Category tabs */}
-          <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="w-full overflow-x-auto flex flex-nowrap justify-start mb-6">
-              {jobCategories.map((category) => (
-                <TabsTrigger
-                  key={category.id}
-                  value={category.id}
-                  className="px-4 py-2 text-sm"
-                >
-                  {category.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-        </div>
-        
-        {/* Quick filter buttons */}
-        <div className="flex flex-wrap gap-2 mb-8">
-          <Button variant="outline" size="sm">
-            <MapPinIcon className="mr-2 h-4 w-4" /> Near Me
-          </Button>
-          <Button variant="outline" size="sm">
-            <FilterIcon className="mr-2 h-4 w-4" /> More Filters
-          </Button>
-        </div>
-        
-        {/* Results */}
-        {loading ? (
-          <div className="py-20 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Searching for jobs...</p>
           </div>
-        ) : (
-          <>
-            <div className="mb-4">
-              <h2 className="text-lg font-medium">
-                {filteredJobs.length} Jobs Found
-              </h2>
-            </div>
-            
-            <ListingsGrid 
-              listings={filteredJobs} 
-              emptyMessage="No jobs match your search criteria. Try adjusting your filters or search terms."
+        </Container>
+      </div>
+      
+      <Container className="py-12">
+        {/* Search and filters */}
+        <div className="mb-8 flex flex-col md:flex-row gap-4">
+          <div className="relative flex-grow">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            <Input 
+              placeholder="Search jobs by title, location, or keywords..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
             />
-          </>
+          </div>
+          <div className="flex gap-2 items-center">
+            <Filter size={18} className="text-gray-500" />
+            <span className="text-sm text-gray-500">Filter:</span>
+            <div className="flex flex-wrap gap-2">
+              {jobCategories.map((category) => (
+                <Badge
+                  key={category}
+                  variant={selectedCategory === category ? "default" : "outline"}
+                  className={`cursor-pointer transition-all ${
+                    selectedCategory === category 
+                      ? 'bg-emvi-accent hover:bg-emvi-accent/90' 
+                      : 'hover:bg-gray-100'
+                  }`}
+                  onClick={() => setSelectedCategory(category)}
+                >
+                  {category}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        {/* Results count */}
+        <div className="mb-6 flex justify-between items-center">
+          <p className="text-sm text-gray-500">
+            Showing {filteredJobs.length} {filteredJobs.length === 1 ? 'job' : 'jobs'}
+            {selectedCategory !== "All Jobs" && ` in ${selectedCategory}`}
+            {searchQuery && ` matching "${searchQuery}"`}
+          </p>
+          
+          <Button variant="outline" size="sm" onClick={() => {
+            setSelectedCategory("All Jobs");
+            setSearchQuery("");
+          }}>
+            Reset Filters
+          </Button>
+        </div>
+        
+        {/* Job listings grid */}
+        <JobGrid 
+          jobs={filteredJobs}
+          expirations={expirations}
+          onRenew={handleRenewJob}
+          isRenewing={isRenewing}
+          renewalJobId={renewalJobId}
+        />
+        
+        {/* Empty state */}
+        {filteredJobs.length === 0 && (
+          <div className="text-center py-16">
+            <h3 className="text-xl font-medium mb-2">No jobs found</h3>
+            <p className="text-gray-500">Try adjusting your search or filters</p>
+          </div>
         )}
+        
+        {/* Sign up CTA */}
+        <div className="mt-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl p-8 text-center">
+          <h2 className="text-2xl font-bold mb-4">Don't miss out on premium opportunities!</h2>
+          <p className="mb-6 max-w-2xl mx-auto">
+            Sign up for EmviApp to receive notifications about new job openings before they expire.
+          </p>
+          <Button size="lg" asChild>
+            <Link to="/sign-up">Create Free Account</Link>
+          </Button>
+        </div>
       </Container>
     </Layout>
   );

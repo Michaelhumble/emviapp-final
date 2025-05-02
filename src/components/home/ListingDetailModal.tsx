@@ -1,339 +1,178 @@
 
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, DollarSign, MapPin, Clock, Award, Briefcase, Phone, Mail } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { Job } from "@/types/job";
-import { Salon } from "@/types/salon";
-import { useAuth } from "@/context/auth";
-import { useState } from "react";
+import { Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
-import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
+import { Job } from "@/types/job";
+import { SalonSale } from "@/types/salonSale";
+import { getLocationString } from "@/utils/location";
+
+// Define a more flexible listing type that can work with our sample data
+export interface BasicListing {
+  title?: string;
+  description?: string;
+  location?: string;
+  role?: string;
+  employment_type?: string;
+  salary_range?: string;
+  has_housing?: boolean;
+  weekly_pay?: boolean;
+  benefits?: string[];
+  city?: string;
+  state?: string;
+  asking_price?: number | string;
+  size?: string;
+  is_urgent?: boolean;
+  business_type?: string;
+  created_at?: string;
+}
 
 interface ListingDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  listing: Job | Salon;
-  listingType: "job" | "salon";
+  listing: Job | SalonSale | BasicListing | null;
+  listingType: 'job' | 'salon';
 }
 
-const ListingDetailModal = ({
-  isOpen,
-  onClose,
-  listing,
-  listingType,
-}: ListingDetailModalProps) => {
-  const { user } = useAuth();
-  const [showLogin, setShowLogin] = useState(false);
-  const { isVietnamese, toggleLanguage } = useTranslation();
-
-  // Safely access nested properties with null checks
-  const safeGetProperty = (obj: any, path: string, defaultVal: any = "") => {
-    if (!obj) return defaultVal;
+const ListingDetailModal = ({ isOpen, onClose, listing, listingType }: ListingDetailModalProps) => {
+  const { isVietnamese } = useTranslation();
+  const [title, setTitle] = useState<{ en: string; vi: string }>({ en: '', vi: '' });
+  const [details, setDetails] = useState<{ en: string; vi: string }>({ en: '', vi: '' });
+  
+  useEffect(() => {
+    if (!listing) return;
     
-    const parts = path.split(".");
-    let value = obj;
-    for (const part of parts) {
-      if (value === null || value === undefined || typeof value !== "object") {
-        return defaultVal;
-      }
-      value = value[part];
-    }
-    return value === undefined || value === null ? defaultVal : value;
-  };
-
-  const getListingTitle = () => {
-    if (listingType === "job") {
-      return safeGetProperty(listing, "title", "Job Opportunity");
+    if (listingType === 'job') {
+      const jobListing = listing as (Job | BasicListing);
+      
+      // Extract title
+      setTitle({
+        en: jobListing.title || `Hiring ${jobListing.role || 'Nail Tech'} | ${jobListing.location || ''}`,
+        vi: `Cần Thợ ${jobListing.role?.includes('Powder') ? 'Bột' : 'Nails'} | ${jobListing.location || ''}`
+      });
+      
+      // Extract details
+      const enDetails = [
+        jobListing.employment_type,
+        jobListing.salary_range,
+        jobListing.has_housing ? 'Housing Provided' : '',
+        jobListing.weekly_pay ? 'Weekly Pay' : '',
+        jobListing.benefits?.join(', ')
+      ].filter(Boolean).join(' • ');
+      
+      const viDetails = [
+        jobListing.employment_type === 'Full-time' ? 'Toàn thời gian' : 
+          jobListing.employment_type === 'Part-time' ? 'Bán thời gian' : jobListing.employment_type,
+        jobListing.salary_range,
+        jobListing.has_housing ? 'Có chỗ ở' : '',
+        jobListing.weekly_pay ? 'Trả lương hàng tuần' : '',
+        'Nhiều khách tốt'
+      ].filter(Boolean).join(' • ');
+      
+      setDetails({ en: enDetails, vi: viDetails });
     } else {
-      return safeGetProperty(listing, "name", "Salon");
-    }
-  };
-
-  // Get appropriate description based on language preference
-  const getDescription = () => {
-    if (isVietnamese && 'vietnamese_description' in listing && listing.vietnamese_description) {
-      return listing.vietnamese_description;
-    }
-    
-    return safeGetProperty(listing, "description", "No description available.");
-  };
-
-  // Handle authentication check
-  const handleActionClick = () => {
-    if (!user) {
-      setShowLogin(true);
-    } else {
-      // Handle apply or visit based on listing type
-      if (listingType === "job") {
-        console.log("User applying for job:", listing.id);
-        // Implementation for job application would go here
+      const salonListing = listing as (SalonSale | BasicListing);
+      
+      // Get location by constructing it from city/state or using a helper function
+      let displayLocation = '';
+      
+      if ('location' in salonListing && salonListing.location) {
+        displayLocation = salonListing.location;
+      } else if (salonListing.city || salonListing.state) {
+        displayLocation = getLocationString(salonListing.city, salonListing.state);
       } else {
-        console.log("User viewing salon details:", listing.id);
-        // Implementation for salon visit would go here
+        displayLocation = 'Unknown Location';
       }
+      
+      setTitle({
+        en: `Salon for Sale | ${displayLocation}`,
+        vi: `Cần Sang Tiệm Nail | ${displayLocation}`
+      });
+      
+      // Extract details
+      const askingPrice = salonListing.asking_price ? 
+        (typeof salonListing.asking_price === 'string' ? 
+          salonListing.asking_price : 
+          `$${new Intl.NumberFormat('en-US').format(salonListing.asking_price as number)}`
+        ) : 'Contact for price';
+      
+      const isUrgent = 'is_urgent' in salonListing ? salonListing.is_urgent : false;
+      
+      const enDetails = [
+        salonListing.size ? `${salonListing.size} sqft` : '',
+        askingPrice + (isUrgent ? ' Negotiable' : ''),
+        'Prime Location',
+        salonListing.business_type
+      ].filter(Boolean).join(' • ');
+      
+      const viDetails = [
+        salonListing.size ? `${salonListing.size} sqft` : '',
+        askingPrice + (isUrgent ? ' Thương Lượng' : ''),
+        'Khu Đông Khách',
+        salonListing.business_type
+      ].filter(Boolean).join(' • ');
+      
+      setDetails({ en: enDetails, vi: viDetails });
     }
-  };
-
-  const renderContactInfo = () => {
-    if (!user) return null;
-    
-    const contactInfo = safeGetProperty(listing, "contact_info", null);
-    if (!contactInfo) return null;
-    
-    return (
-      <div className="mt-4 border-t pt-4">
-        <h3 className="font-medium text-lg mb-2">Contact Information</h3>
-        <div className="space-y-2">
-          {contactInfo.owner_name && (
-            <div className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4 text-gray-600" />
-              <span>{contactInfo.owner_name}</span>
-            </div>
-          )}
-          {contactInfo.phone && (
-            <div className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-green-600" />
-              <span>{contactInfo.phone}</span>
-            </div>
-          )}
-          {contactInfo.email && (
-            <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-blue-600" />
-              <span>{contactInfo.email}</span>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  const renderJobDetails = (job: Job) => {
-    return (
-      <div className="mt-6 space-y-4">
-        <div className="w-full aspect-video overflow-hidden rounded-lg mb-4">
-          <ImageWithFallback
-            src={job.imageUrl || ""}
-            alt={job.title || "Job listing"}
-            className="w-full h-full object-cover"
-            priority={true}
-            category={job.salon_type || 'nail'}
-          />
-        </div>
-        
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h3 className="font-medium text-lg mb-2">Job Details</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {safeGetProperty(job, "location") && (
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-blue-600" />
-                <span>{safeGetProperty(job, "location")}</span>
-              </div>
-            )}
-            {safeGetProperty(job, "salary_range") && (
-              <div className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-green-600" />
-                <span>{safeGetProperty(job, "salary_range")}</span>
-              </div>
-            )}
-            {safeGetProperty(job, "created_at") && (
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-purple-600" />
-                <span>Posted: {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}</span>
-              </div>
-            )}
-            {job.for_sale && (
-              <div className="flex items-center gap-2">
-                <Award className="h-4 w-4 text-amber-600" />
-                <span>Business For Sale</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="font-medium text-lg">Description</h3>
-            {job.is_vietnamese_listing && (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={toggleLanguage}
-                className="text-xs"
-              >
-                {isVietnamese ? "English" : "Tiếng Việt"}
-              </Button>
-            )}
-          </div>
-          <p className="text-gray-700 whitespace-pre-line">
-            {getDescription()}
-          </p>
-        </div>
-
-        {job.salon_features && job.salon_features.length > 0 && (
-          <div>
-            <h3 className="font-medium text-lg mb-2">Features</h3>
-            <div className="flex flex-wrap gap-2">
-              {job.salon_features.map((feature, idx) => (
-                <span key={idx} className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">
-                  {feature}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {renderContactInfo()}
-
-        <div className="pt-4">
-          <Button
-            onClick={handleActionClick}
-            className="w-full"
-            size="lg"
-          >
-            {!user ? "Sign In to View Contact Details" : "Contact Now"}
-          </Button>
-        </div>
-      </div>
-    );
-  };
-
-  const renderSalonDetails = (salon: Salon) => {
-    return (
-      <div className="mt-6 space-y-4">
-        <div className="w-full aspect-video overflow-hidden rounded-lg mb-4">
-          <ImageWithFallback
-            src={salon.imageUrl || ""}
-            alt={salon.name || "Salon"}
-            className="w-full h-full object-cover"
-            priority={true}
-            category={salon.salon_type || 'nail'}
-          />
-        </div>
-        
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h3 className="font-medium text-lg mb-2">Salon Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {safeGetProperty(salon, "location") && (
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-blue-600" />
-                <span>{safeGetProperty(salon, "location")}</span>
-              </div>
-            )}
-            {safeGetProperty(salon, "salon_type") && (
-              <div className="flex items-center gap-2">
-                <Award className="h-4 w-4 text-amber-600" />
-                <span>Type: {safeGetProperty(salon, "salon_type")}</span>
-              </div>
-            )}
-            {safeGetProperty(salon, "square_feet") && (
-              <div className="flex items-center gap-2">
-                <span className="text-gray-600">Size:</span>
-                <span>{safeGetProperty(salon, "square_feet")} sq ft</span>
-              </div>
-            )}
-            {safeGetProperty(salon, "monthly_rent") && (
-              <div className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-green-600" />
-                <span>Rent: ${safeGetProperty(salon, "monthly_rent")}/month</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="font-medium text-lg">Description</h3>
-            {salon.is_vietnamese_listing && (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={toggleLanguage}
-                className="text-xs"
-              >
-                {isVietnamese ? "English" : "Tiếng Việt"}
-              </Button>
-            )}
-          </div>
-          <p className="text-gray-700 whitespace-pre-line">
-            {getDescription()}
-          </p>
-        </div>
-        
-        {salon.features && salon.features.length > 0 && (
-          <div>
-            <h3 className="font-medium text-lg mb-2">Features</h3>
-            <div className="flex flex-wrap gap-2">
-              {salon.features.map((feature, idx) => (
-                <span key={idx} className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">
-                  {feature}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {renderContactInfo()}
-
-        <div className="pt-4">
-          <Button
-            onClick={handleActionClick}
-            className="w-full"
-            size="lg"
-          >
-            {!user ? "Sign In to View Contact Details" : "Contact Salon"}
-          </Button>
-        </div>
-      </div>
-    );
-  };
-
+  }, [listing, listingType]);
+  
+  if (!listing) return null;
+  
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg md:max-w-2xl lg:max-w-3xl">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl sm:text-2xl font-semibold">
-            {getListingTitle()}
+          <DialogTitle className="text-lg md:text-xl space-y-1">
+            <div className="font-bold">{isVietnamese ? title.vi : title.en}</div>
+            <div className="text-sm text-gray-500 font-normal">
+              {isVietnamese ? title.en : title.vi}
+            </div>
           </DialogTitle>
-          <DialogDescription>
-            {listingType === "job" 
-              ? safeGetProperty(listing, "company", "") 
-              : safeGetProperty(listing, "location", "")}
-          </DialogDescription>
         </DialogHeader>
-
-        {showLogin ? (
-          <div className="py-8 text-center">
-            <h3 className="text-lg font-medium mb-4">
-              Sign in to continue
-            </h3>
-            <p className="mb-6 text-gray-600">
-              Create an account or sign in to apply to jobs and view salon details.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/sign-in">
-                <Button className="w-full sm:w-auto" size="lg">
-                  Sign In
-                </Button>
-              </Link>
-              <Link to="/sign-up">
-                <Button
-                  variant="outline"
-                  className="w-full sm:w-auto"
-                  size="lg"
-                >
-                  Create Account
-                </Button>
-              </Link>
+        
+        <div className="py-4 space-y-4">
+          {/* Listing details */}
+          <div className="space-y-2">
+            <div className="text-base font-medium">
+              {isVietnamese ? details.vi : details.en}
+            </div>
+            <div className="text-sm text-gray-500">
+              {isVietnamese ? details.en : details.vi}
             </div>
           </div>
-        ) : (
-          <>
-            {/* Display appropriate details based on listing type */}
-            {listingType === "job" ? renderJobDetails(listing as Job) : renderSalonDetails(listing as Salon)}
-          </>
-        )}
+          
+          {/* Description section */}
+          {listing.description && (
+            <div className="space-y-2 py-2">
+              <h4 className="text-sm font-medium text-gray-700">
+                {isVietnamese ? 'Mô Tả' : 'Description'}
+              </h4>
+              <p className="text-sm text-gray-600">{listing.description}</p>
+            </div>
+          )}
+          
+          {/* Locked contact info message */}
+          <div className="bg-gray-50 border border-gray-100 p-4 rounded-md text-center">
+            <div className="flex items-center justify-center mb-2 text-gray-500">
+              <Lock className="h-4 w-4 mr-1" />
+              <p>
+                {isVietnamese 
+                  ? "🔒 Đăng ký hoặc đăng nhập để xem thông tin liên hệ đầy đủ." 
+                  : "🔒 Please sign up or log in to view full contact details."}
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2 justify-center mt-4">
+              <Button asChild>
+                <Link to="/auth/signup">Đăng Ký / Sign Up</Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link to="/auth/login">Đăng Nhập / Login</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
