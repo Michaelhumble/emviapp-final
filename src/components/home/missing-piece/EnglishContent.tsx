@@ -50,7 +50,7 @@ const EnglishContent = ({ itemVariants }: EnglishContentProps) => {
         className="pt-4"
         variants={itemVariants}
       >
-        <Link to="/signup">
+        <Link to="/auth/signup">
           <Button size="lg" className="group">
             Join EmviApp Today
             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />

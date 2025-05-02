@@ -50,7 +50,7 @@ const VietnameseContent = ({ itemVariants }: VietnameseContentProps) => {
         className="pt-4"
         variants={itemVariants}
       >
-        <Link to="/sign-up">
+        <Link to="/auth/signup">
           <Button size="lg" className="group">
             Tham Gia EmviApp Ngay Hôm Nay
             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
