@@ -109,7 +109,7 @@ const PricingDialog: React.FC = () => {
                 "Instant visibility"
               ]}
               ctaText="Post a Job"
-              onCtaClick={() => navigate("/posting/job")}
+              onCtaClick={() => navigate("/jobs/post")}
             />
           </TabsContent>
           
@@ -126,7 +126,7 @@ const PricingDialog: React.FC = () => {
                 "Direct messaging with buyers"
               ]}
               ctaText="List a Salon"
-              onCtaClick={() => navigate("/posting/salon")}
+              onCtaClick={() => navigate("/salons/post")}
             />
           </TabsContent>
           
@@ -143,7 +143,7 @@ const PricingDialog: React.FC = () => {
                 "Booth rental agreement templates"
               ]}
               ctaText="Post a Booth"
-              onCtaClick={() => navigate("/posting/booth")}
+              onCtaClick={() => navigate("/opportunities/post")}
             />
           </TabsContent>
         </Tabs>

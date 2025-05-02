@@ -28,7 +28,7 @@ const BeautyExchangeSection = () => {
             <p className="text-gray-600 mb-4">
               Find clients who value your craft, set your own schedule, and grow your career.
             </p>
-            <Link to="/signup">
+            <Link to="/auth/signup">
               <Button variant="outline" size="sm" className="inline-flex items-center">
                 Join Today <ArrowRight className="ml-1 h-4 w-4" />
               </Button>
@@ -43,7 +43,7 @@ const BeautyExchangeSection = () => {
             <p className="text-gray-600 mb-4">
               Find reliable talent, streamline operations, and build a thriving business.
             </p>
-            <Link to="/signup">
+            <Link to="/auth/signup">
               <Button variant="outline" size="sm" className="inline-flex items-center">
                 Get Started <ArrowRight className="ml-1 h-4 w-4" />
               </Button>
@@ -58,7 +58,7 @@ const BeautyExchangeSection = () => {
             <p className="text-gray-600 mb-4">
               Discover talented artists, book with confidence, and enjoy seamless beauty services.
             </p>
-            <Link to="/signup">
+            <Link to="/auth/signup">
               <Button variant="outline" size="sm" className="inline-flex items-center">
                 Find Services <ArrowRight className="ml-1 h-4 w-4" />
               </Button>

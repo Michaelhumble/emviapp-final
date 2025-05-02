@@ -1,3 +1,4 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -96,12 +97,12 @@ const HeroContent = ({
           transition={{ duration: 0.7, delay: 0.6 }}
         >
           {/* Single CTA Button - Start Your Journey */}
-          <Link to="/signup">
+          <Link to="/auth/signup">
             <Button 
               size="lg" 
               className="font-medium px-8 py-6 text-lg shadow-lg shadow-black/20 hover:shadow-xl hover:shadow-black/30 transition-all duration-300"
             >
-              Start Your Journey
+              Join EmviApp Today
             </Button>
           </Link>
         </motion.div>
