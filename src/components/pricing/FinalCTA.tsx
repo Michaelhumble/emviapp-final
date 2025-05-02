@@ -30,7 +30,7 @@ const FinalCTA = () => {
         })}
       </p>
 
-      <Link to="/signup">
+      <Link to="/auth/signup">
         <Button 
           size="lg" 
           className="bg-emvi-accent hover:bg-emvi-accent/90 transform hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl px-8 py-5 text-lg"
