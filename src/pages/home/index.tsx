@@ -8,6 +8,10 @@ import JobsHighlight from '@/components/home/JobsHighlight';
 import NailImageStatus from '@/components/debug/NailImageStatus';
 import BarberImageStatus from '@/components/debug/BarberImageStatus';
 import FallbackBoundary from '@/components/error-handling/FallbackBoundary';
+import BeautyExchangeSection from '@/components/home/BeautyExchangeSection';
+import FinalFounderCTA from '@/components/home/FinalFounderCTA';
+import MissingPieceSection from '@/components/home/missing-piece/MissingPieceSection';
+import CallToAction from '@/components/home/CallToAction';
 
 const Home = () => {
   return (
@@ -17,6 +21,10 @@ const Home = () => {
           <NailImageStatus />
           <BarberImageStatus />
         </div>
+      </FallbackBoundary>
+      
+      <FallbackBoundary errorMessage="Beauty Exchange section failed to load">
+        <BeautyExchangeSection />
       </FallbackBoundary>
       
       <FallbackBoundary errorMessage="Salons for sale section failed to load">
@@ -33,6 +41,18 @@ const Home = () => {
       
       <FallbackBoundary errorMessage="Jobs section failed to load">
         <JobsHighlight />
+      </FallbackBoundary>
+      
+      <FallbackBoundary errorMessage="Missing piece section failed to load">
+        <MissingPieceSection />
+      </FallbackBoundary>
+      
+      <FallbackBoundary errorMessage="Call to action section failed to load">
+        <CallToAction />
+      </FallbackBoundary>
+      
+      <FallbackBoundary errorMessage="Final CTA section failed to load">
+        <FinalFounderCTA />
       </FallbackBoundary>
     </Layout>
   );

@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Briefcase, MapPin } from "lucide-react";
+import { MapPin, Briefcase } from "lucide-react";
 import { motion } from "framer-motion";
 
 const jobListings = [

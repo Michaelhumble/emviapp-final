@@ -58,7 +58,9 @@ const FeaturedSalons = () => {
         >
           {salons.map((salon) => (
             <motion.div key={salon.id} variants={item}>
-              <ValidatedSalonCard salon={salon} listingType="salon" />
+              <Link to={`/salons/${salon.id}`} className="block h-full">
+                <ValidatedSalonCard salon={salon} listingType="salon" />
+              </Link>
             </motion.div>
           ))}
         </motion.div>

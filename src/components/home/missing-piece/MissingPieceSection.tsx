@@ -28,7 +28,7 @@ const MissingPieceSection = () => {
                 Start Your Journey
               </Button>
             </Link>
-            <Link to="/tour">
+            <Link to="/salons">
               <Button size="lg" variant="outline" className="font-medium">
                 Take a Tour
               </Button>
