@@ -45,6 +45,12 @@ const SalonClientGrowthSystem = () => {
     }
   };
 
+  // Handle click events to prevent propagation issues
+  const handleCtaClick = (e: React.MouseEvent) => {
+    // Prevent any potential event bubbling issues
+    e.stopPropagation();
+  };
+
   return (
     <section className="py-16 md:py-24 bg-gradient-to-br from-slate-50 to-white">
       <div className="container mx-auto px-4">
@@ -89,7 +95,11 @@ const SalonClientGrowthSystem = () => {
                   </motion.p>
                   
                   <motion.div variants={itemVariants}>
-                    <Link to="/auth/signup">
+                    <Link 
+                      to="/auth/signup" 
+                      onClick={handleCtaClick}
+                      className="block w-full"
+                    >
                       <Button className="w-full mt-2">
                         Get Started Free
                         <ArrowRight className="ml-2 h-4 w-4" />
