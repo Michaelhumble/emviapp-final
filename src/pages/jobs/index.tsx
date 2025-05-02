@@ -1,417 +1,242 @@
 
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
+import { Container } from '@/components/ui/container';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Search, Filter, MapPin } from 'lucide-react';
-import { bilingualJobListings } from '@/data/bilingualJobs';
-import { expiredJobListings } from '@/data/expiredJobListings';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Job } from '@/types/job';
 import JobGrid from '@/components/jobs/JobGrid';
-import { GradientBackground } from '@/components/ui/gradient-background';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import BilingualJobCard from '@/components/jobs/BilingualJobCard';
+import expiredJobListings from '@/data/expiredJobListings';
+import { usePostExpirationCheck } from '@/hooks/usePostExpirationCheck';
+import { Input } from '@/components/ui/input';
+import { Search, Filter } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { Helmet } from 'react-helmet';
 import { toast } from 'sonner';
+import { useNavigate, Link } from 'react-router-dom';
+
+// Categories for job filters
+const jobCategories = [
+  "All Jobs",
+  "Nail Technicians",
+  "Hair Stylists",
+  "Tattoo Artists", 
+  "Eyelash & Brow",
+  "Massage & Spa"
+];
+
+// Function to filter jobs by role/category
+const filterJobsByCategory = (jobs: Job[], category: string): Job[] => {
+  if (category === "All Jobs") return jobs;
+  
+  // Category-specific filtering logic
+  switch(category) {
+    case "Nail Technicians":
+      return jobs.filter(job => 
+        job.title?.toLowerCase().includes("nail") || 
+        job.title?.toLowerCase().includes("thợ") ||
+        job.description?.toLowerCase().includes("nail") ||
+        job.company?.toLowerCase().includes("nail")
+      );
+    case "Hair Stylists":
+      return jobs.filter(job => 
+        job.title?.toLowerCase().includes("hair") || 
+        job.title?.toLowerCase().includes("stylist") ||
+        job.title?.toLowerCase().includes("barber") ||
+        job.specialties?.some(s => s.toLowerCase().includes("hair")) ||
+        job.specialties?.some(s => s.toLowerCase().includes("cut"))
+      );
+    case "Tattoo Artists":
+      return jobs.filter(job => 
+        job.title?.toLowerCase().includes("tattoo") || 
+        job.company?.toLowerCase().includes("ink") ||
+        job.specialties?.some(s => s.toLowerCase().includes("tattoo"))
+      );
+    case "Eyelash & Brow":
+      return jobs.filter(job => 
+        job.title?.toLowerCase().includes("lash") || 
+        job.title?.toLowerCase().includes("brow") ||
+        job.specialties?.some(s => s.toLowerCase().includes("lash")) ||
+        job.specialties?.some(s => s.toLowerCase().includes("brow"))
+      );
+    case "Massage & Spa":
+      return jobs.filter(job => 
+        job.title?.toLowerCase().includes("massage") || 
+        job.title?.toLowerCase().includes("spa") ||
+        job.title?.toLowerCase().includes("therapist") ||
+        job.specialties?.some(s => s.toLowerCase().includes("massage")) ||
+        job.specialties?.some(s => s.toLowerCase().includes("facial"))
+      );
+    default:
+      return jobs;
+  }
+};
 
 const JobsPage = () => {
-  const [jobs, setJobs] = useState<Job[]>([...bilingualJobListings, ...expiredJobListings]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [activeFilters, setActiveFilters] = useState({
-    weeklyPay: false,
-    ownerWillTrain: false,
-    housing: false,
-    noSupplyFee: false,
-    fullTime: false,
-    partTime: false,
-    verified: false,
-    showExpired: true,
-  });
+  const [jobs, setJobs] = useState<Job[]>(expiredJobListings);
+  const [selectedCategory, setSelectedCategory] = useState("All Jobs");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredJobs, setFilteredJobs] = useState<Job[]>(jobs);
+  const [isRenewing, setIsRenewing] = useState(false);
+  const [renewalJobId, setRenewalJobId] = useState<string | null>(null);
+  const navigate = useNavigate();
+  
+  // Get all job IDs for expiration check
+  const jobIds = jobs.map(job => job.id);
+  const { expirations } = usePostExpirationCheck(jobIds);
 
+  // Handle search and filtering
   useEffect(() => {
-    document.title = "Nail Salon Jobs & Opportunities | EmviApp";
-    setIsLoading(true);
-    // Simulate loading for better UX
+    let results = jobs;
+    
+    // Apply category filter
+    results = filterJobsByCategory(results, selectedCategory);
+    
+    // Apply search filter if query exists
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      results = results.filter(job => 
+        job.title?.toLowerCase().includes(query) || 
+        job.company?.toLowerCase().includes(query) || 
+        job.location?.toLowerCase().includes(query) || 
+        job.description?.toLowerCase().includes(query)
+      );
+    }
+    
+    setFilteredJobs(results);
+  }, [jobs, selectedCategory, searchQuery]);
+
+  // Handle job renewal
+  const handleRenewJob = (job: Job) => {
+    setIsRenewing(true);
+    setRenewalJobId(job.id);
+    
+    // Simulate API call for renewal
     setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
-  }, []);
-
-  // Function to handle renew button click
-  const handleRenew = (job: Job) => {
-    toast.info("Please sign up to renew expired job listings", {
-      description: "Create an account to access this feature",
-      action: {
-        label: "Sign Up",
-        onClick: () => window.location.href = "/sign-up"
-      }
-    });
-  };
-
-  // Apply filters to jobs
-  const applyFilters = (jobsList: Job[]) => {
-    return jobsList.filter(job => {
-      // Search term filter
-      if (searchTerm && 
-          !job.title?.toLowerCase().includes(searchTerm.toLowerCase()) && 
-          !job.company?.toLowerCase().includes(searchTerm.toLowerCase()) && 
-          !job.location?.toLowerCase().includes(searchTerm.toLowerCase()) &&
-          !job.description?.toLowerCase().includes(searchTerm.toLowerCase()) &&
-          !job.vietnamese_description?.toLowerCase().includes(searchTerm.toLowerCase()) &&
-          !(job.specialties?.some(specialty => specialty.toLowerCase().includes(searchTerm.toLowerCase())))) {
-        return false;
-      }
-      
-      // Weekly pay filter
-      if (activeFilters.weeklyPay && !job.weekly_pay) {
-        return false;
-      }
-      
-      // Owner will train filter
-      if (activeFilters.ownerWillTrain && !job.owner_will_train) {
-        return false;
-      }
-      
-      // Housing filter
-      if (activeFilters.housing && !job.has_housing) {
-        return false;
-      }
-      
-      // No supply fee filter
-      if (activeFilters.noSupplyFee && !job.no_supply_deduction) {
-        return false;
-      }
-      
-      // Full-time filter
-      if (activeFilters.fullTime && job.employment_type !== 'Full-Time') {
-        return false;
-      }
-      
-      // Part-time filter
-      if (activeFilters.partTime && job.employment_type !== 'Part-Time') {
-        return false;
-      }
-      
-      // Verified filter
-      if (activeFilters.verified && (!job.trust_indicators || !job.trust_indicators.verified)) {
-        return false;
-      }
-      
-      // Show expired filter (always show if showExpired is true)
-      if (!activeFilters.showExpired && job.status === 'expired') {
-        return false;
-      }
-      
-      return true;
-    });
-  };
-
-  // Filter jobs based on category types
-  const getJobsByCategory = (category: string) => {
-    const categoryJobs = jobs.filter(job => {
-      switch(category) {
-        case 'nail':
-          return (job.title?.toLowerCase().includes('nail') || 
-                 job.specialties?.some(s => ['acrylic', 'gel', 'manicure', 'pedicure', 'nail art'].includes(s.toLowerCase())));
-        case 'hair':
-          return (job.title?.toLowerCase().includes('hair') || job.title?.toLowerCase().includes('barber') ||
-                 job.specialties?.some(s => ['hair', 'cut', 'color', 'barber', 'stylist'].includes(s.toLowerCase())));
-        case 'tattoo':
-          return (job.title?.toLowerCase().includes('tattoo') || 
-                 job.specialties?.some(s => ['tattoo', 'ink', 'body art'].includes(s.toLowerCase())));
-        case 'lash':
-          return (job.title?.toLowerCase().includes('lash') || job.title?.toLowerCase().includes('brow') ||
-                 job.specialties?.some(s => ['lash', 'eyelash', 'brow', 'eyebrow', 'microblading'].includes(s.toLowerCase())));
-        case 'spa':
-          return (job.title?.toLowerCase().includes('massage') || job.title?.toLowerCase().includes('spa') || 
-                job.title?.toLowerCase().includes('facial') || job.title?.toLowerCase().includes('esthetician') ||
-                job.specialties?.some(s => ['massage', 'facial', 'spa', 'skin', 'esthetician'].includes(s.toLowerCase())));
-        case 'all':
-        default:
-          return true;
-      }
-    });
-    return applyFilters(categoryJobs);
-  };
-
-  const toggleFilter = (filter: string) => {
-    setActiveFilters(prev => ({
-      ...prev,
-      [filter]: !prev[filter as keyof typeof prev]
-    }));
-  };
-
-  // Count of active filters
-  const activeFilterCount = Object.values(activeFilters).filter(Boolean).length - 1; // Subtract 1 because showExpired is default true
-
-  const numberOfFilteredJobs = (category: string) => {
-    return getJobsByCategory(category).length;
+      toast.success(`Job renewal request sent for "${job.title}"`, {
+        description: "Check your account for approval status.",
+        action: {
+          label: "View Dashboard",
+          onClick: () => navigate("/dashboard")
+        }
+      });
+      setIsRenewing(false);
+      setRenewalJobId(null);
+    }, 1500);
   };
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-12 max-w-7xl">
-        <GradientBackground 
-          variant="premium" 
-          className="p-6 md:p-10 mb-8"
-        >
-          <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl md:text-4xl font-playfair font-bold mb-2 text-center">
-              Beauty Industry Job Board
+      <Helmet>
+        <title>Beauty Industry Jobs | EmviApp</title>
+        <meta 
+          name="description" 
+          content="Browse job opportunities in the beauty industry. Find positions for nail technicians, hair stylists, estheticians, and more."
+        />
+      </Helmet>
+      
+      <div className="bg-gradient-to-br from-purple-50 to-pink-50 py-16">
+        <Container>
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="text-4xl md:text-5xl font-playfair font-bold mb-4">
+              Beauty Industry Jobs
             </h1>
-            <p className="text-gray-600 mb-8 text-center">
-              Find your perfect position with our curated job listings — or post your own
+            <p className="text-lg text-gray-700 mb-8">
+              Find your next opportunity or post job openings to attract talented professionals
             </p>
-
-            <div className="flex flex-col md:flex-row gap-4 mb-6">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <Input 
-                    placeholder="Search jobs by title, salon, location, or skills" 
-                    className="pl-10 h-12 rounded-lg border-gray-200 focus:border-purple-300 focus:ring-purple-200"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <Button className="h-12 gap-2 w-full md:w-auto bg-purple-600 hover:bg-purple-700">
-                  <Filter size={18} /> 
-                  {activeFilterCount > 0 ? `Filters (${activeFilterCount})` : 'Filter Results'}
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Button size="lg" className="bg-emvi-accent hover:bg-emvi-accent/90">
+                Post a Job
+              </Button>
+              <Link to="/jobs/salary-guide">
+                <Button size="lg" variant="outline">
+                  Salary Guide
                 </Button>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2 items-center">
-              <Button 
-                variant={activeFilters.showExpired ? "default" : "outline"} 
-                size="sm" 
-                className={`rounded-full ${activeFilters.showExpired ? "bg-purple-600 hover:bg-purple-700" : ""}`}
-                onClick={() => toggleFilter('showExpired')}
-              >
-                {activeFilters.showExpired ? "Showing All Jobs" : "Hide Expired Jobs"}
-              </Button>
-              
-              <Separator orientation="vertical" className="h-6 mx-1 hidden md:block" />
-              
-              <Button 
-                variant={activeFilters.weeklyPay ? "default" : "outline"} 
-                size="sm" 
-                className={`rounded-full ${activeFilters.weeklyPay ? "bg-purple-600 hover:bg-purple-700" : ""}`}
-                onClick={() => toggleFilter('weeklyPay')}
-              >
-                Weekly Pay
-              </Button>
-              
-              <Button 
-                variant={activeFilters.ownerWillTrain ? "default" : "outline"} 
-                size="sm" 
-                className={`rounded-full ${activeFilters.ownerWillTrain ? "bg-purple-600 hover:bg-purple-700" : ""}`}
-                onClick={() => toggleFilter('ownerWillTrain')}
-              >
-                Owner Will Train
-              </Button>
-              
-              <Button 
-                variant={activeFilters.housing ? "default" : "outline"} 
-                size="sm" 
-                className={`rounded-full ${activeFilters.housing ? "bg-purple-600 hover:bg-purple-700" : ""}`}
-                onClick={() => toggleFilter('housing')}
-              >
-                Housing Available
-              </Button>
-              
-              <Button 
-                variant={activeFilters.noSupplyFee ? "default" : "outline"} 
-                size="sm" 
-                className={`rounded-full ${activeFilters.noSupplyFee ? "bg-purple-600 hover:bg-purple-700" : ""}`}
-                onClick={() => toggleFilter('noSupplyFee')}
-              >
-                No Supply Fee
-              </Button>
-              
-              <Button 
-                variant={activeFilters.verified ? "default" : "outline"} 
-                size="sm" 
-                className={`rounded-full ${activeFilters.verified ? "bg-purple-600 hover:bg-purple-700" : ""}`}
-                onClick={() => toggleFilter('verified')}
-              >
-                Verified Only
-              </Button>
+              </Link>
             </div>
           </div>
-        </GradientBackground>
-
-        <Tabs defaultValue="all" className="mb-8">
-          <TabsList className="mb-6 w-full flex overflow-x-auto py-2 justify-start sm:justify-center">
-            <TabsTrigger value="all" className="min-w-max">
-              All Jobs <Badge variant="secondary" className="ml-2">{numberOfFilteredJobs('all')}</Badge>
-            </TabsTrigger>
-            <TabsTrigger value="nail" className="min-w-max">
-              Nail Technicians <Badge variant="secondary" className="ml-2">{numberOfFilteredJobs('nail')}</Badge>
-            </TabsTrigger>
-            <TabsTrigger value="hair" className="min-w-max">
-              Hair Stylists/Barbers <Badge variant="secondary" className="ml-2">{numberOfFilteredJobs('hair')}</Badge>
-            </TabsTrigger>
-            <TabsTrigger value="tattoo" className="min-w-max">
-              Tattoo Artists <Badge variant="secondary" className="ml-2">{numberOfFilteredJobs('tattoo')}</Badge>
-            </TabsTrigger>
-            <TabsTrigger value="lash" className="min-w-max">
-              Lash & Brow <Badge variant="secondary" className="ml-2">{numberOfFilteredJobs('lash')}</Badge>
-            </TabsTrigger>
-            <TabsTrigger value="spa" className="min-w-max">
-              Massage & Spa <Badge variant="secondary" className="ml-2">{numberOfFilteredJobs('spa')}</Badge>
-            </TabsTrigger>
-          </TabsList>
-
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-              {[...Array(6)].map((_, i) => (
-                <div 
-                  key={i} 
-                  className="bg-gray-100 rounded-lg h-80 animate-pulse"
-                ></div>
+        </Container>
+      </div>
+      
+      <Container className="py-12">
+        {/* Search and filters */}
+        <div className="mb-8 flex flex-col md:flex-row gap-4">
+          <div className="relative flex-grow">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            <Input 
+              placeholder="Search jobs by title, location, or keywords..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <div className="flex gap-2 items-center">
+            <Filter size={18} className="text-gray-500" />
+            <span className="text-sm text-gray-500">Filter:</span>
+            <div className="flex flex-wrap gap-2">
+              {jobCategories.map((category) => (
+                <Badge
+                  key={category}
+                  variant={selectedCategory === category ? "default" : "outline"}
+                  className={`cursor-pointer transition-all ${
+                    selectedCategory === category 
+                      ? 'bg-emvi-accent hover:bg-emvi-accent/90' 
+                      : 'hover:bg-gray-100'
+                  }`}
+                  onClick={() => setSelectedCategory(category)}
+                >
+                  {category}
+                </Badge>
               ))}
             </div>
-          ) : (
-            <>
-              <TabsContent value="all">
-                <div className="flex justify-between items-center mb-6">
-                  <div className="text-gray-600">
-                    Showing {getJobsByCategory('all').length} job opportunities
-                  </div>
-                  <div className="hidden md:flex gap-2">
-                    <Button variant="outline" size="sm">Latest</Button>
-                    <Button variant="outline" size="sm">Featured</Button>
-                  </div>
-                </div>
-                <JobGrid 
-                  jobs={getJobsByCategory('all')} 
-                  expirations={{}} 
-                  onRenew={handleRenew} 
-                  isRenewing={false}
-                  renewalJobId={null}
-                />
-              </TabsContent>
-
-              <TabsContent value="nail">
-                <div className="flex justify-between items-center mb-6">
-                  <div className="text-gray-600">
-                    Showing {getJobsByCategory('nail').length} nail technician opportunities
-                  </div>
-                </div>
-                <JobGrid 
-                  jobs={getJobsByCategory('nail')} 
-                  expirations={{}} 
-                  onRenew={handleRenew} 
-                  isRenewing={false}
-                  renewalJobId={null}
-                />
-              </TabsContent>
-
-              <TabsContent value="hair">
-                <div className="flex justify-between items-center mb-6">
-                  <div className="text-gray-600">
-                    Showing {getJobsByCategory('hair').length} hair stylist opportunities
-                  </div>
-                </div>
-                <JobGrid 
-                  jobs={getJobsByCategory('hair')} 
-                  expirations={{}} 
-                  onRenew={handleRenew} 
-                  isRenewing={false}
-                  renewalJobId={null}
-                />
-              </TabsContent>
-
-              <TabsContent value="tattoo">
-                <div className="flex justify-between items-center mb-6">
-                  <div className="text-gray-600">
-                    Showing {getJobsByCategory('tattoo').length} tattoo artist opportunities
-                  </div>
-                </div>
-                <JobGrid 
-                  jobs={getJobsByCategory('tattoo')} 
-                  expirations={{}} 
-                  onRenew={handleRenew} 
-                  isRenewing={false}
-                  renewalJobId={null}
-                />
-              </TabsContent>
-
-              <TabsContent value="lash">
-                <div className="flex justify-between items-center mb-6">
-                  <div className="text-gray-600">
-                    Showing {getJobsByCategory('lash').length} lash & brow opportunities
-                  </div>
-                </div>
-                <JobGrid 
-                  jobs={getJobsByCategory('lash')} 
-                  expirations={{}} 
-                  onRenew={handleRenew} 
-                  isRenewing={false}
-                  renewalJobId={null}
-                />
-              </TabsContent>
-
-              <TabsContent value="spa">
-                <div className="flex justify-between items-center mb-6">
-                  <div className="text-gray-600">
-                    Showing {getJobsByCategory('spa').length} massage & spa opportunities
-                  </div>
-                </div>
-                <JobGrid 
-                  jobs={getJobsByCategory('spa')} 
-                  expirations={{}} 
-                  onRenew={handleRenew} 
-                  isRenewing={false}
-                  renewalJobId={null}
-                />
-              </TabsContent>
-            </>
-          )}
-
-          {(searchTerm || Object.values(activeFilters).some(Boolean)) && getJobsByCategory('all').length === 0 && !isLoading && (
-            <div className="text-center py-16">
-              <div className="rounded-full bg-gray-100 w-16 h-16 mx-auto flex items-center justify-center mb-4">
-                <Search className="h-8 w-8 text-gray-400" />
-              </div>
-              <h3 className="text-xl font-medium mb-2">No jobs found</h3>
-              <p className="text-gray-500 mb-4">Try adjusting your search criteria</p>
-              <Button onClick={() => {
-                setSearchTerm('');
-                setActiveFilters({
-                  weeklyPay: false,
-                  ownerWillTrain: false,
-                  housing: false,
-                  noSupplyFee: false,
-                  fullTime: false,
-                  partTime: false,
-                  verified: false,
-                  showExpired: true,
-                });
-              }}>Clear Filters</Button>
-            </div>
-          )}
-        </Tabs>
-
-        <div className="mt-12 text-center p-8 border border-gray-200 rounded-xl bg-gradient-to-br from-purple-50 to-white shadow-sm">
-          <h2 className="text-2xl font-playfair font-bold mb-2">Post Your Job on EmviApp</h2>
-          <p className="text-gray-600 mb-6 max-w-xl mx-auto">
-            Reach thousands of qualified beauty professionals and fill your positions faster.
+          </div>
+        </div>
+        
+        {/* Results count */}
+        <div className="mb-6 flex justify-between items-center">
+          <p className="text-sm text-gray-500">
+            Showing {filteredJobs.length} {filteredJobs.length === 1 ? 'job' : 'jobs'}
+            {selectedCategory !== "All Jobs" && ` in ${selectedCategory}`}
+            {searchQuery && ` matching "${searchQuery}"`}
           </p>
-          <Button 
-            size="lg" 
-            className="bg-purple-600 hover:bg-purple-700 text-white font-medium"
-            onClick={() => window.location.href = "/sign-up"}
-          >
-            Post a Job - Free Trial Available
+          
+          <Button variant="outline" size="sm" onClick={() => {
+            setSelectedCategory("All Jobs");
+            setSearchQuery("");
+          }}>
+            Reset Filters
           </Button>
         </div>
-      </div>
+        
+        {/* Job listings grid */}
+        <JobGrid 
+          jobs={filteredJobs}
+          expirations={expirations}
+          onRenew={handleRenewJob}
+          isRenewing={isRenewing}
+          renewalJobId={renewalJobId}
+        />
+        
+        {/* Empty state */}
+        {filteredJobs.length === 0 && (
+          <div className="text-center py-16">
+            <h3 className="text-xl font-medium mb-2">No jobs found</h3>
+            <p className="text-gray-500">Try adjusting your search or filters</p>
+          </div>
+        )}
+        
+        {/* Sign up CTA */}
+        <div className="mt-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl p-8 text-center">
+          <h2 className="text-2xl font-bold mb-4">Don't miss out on premium opportunities!</h2>
+          <p className="mb-6 max-w-2xl mx-auto">
+            Sign up for EmviApp to receive notifications about new job openings before they expire.
+          </p>
+          <Button size="lg" asChild>
+            <Link to="/sign-up">Create Free Account</Link>
+          </Button>
+        </div>
+      </Container>
     </Layout>
   );
 };
