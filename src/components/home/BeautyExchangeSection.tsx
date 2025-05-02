@@ -11,11 +11,10 @@ const BeautyExchangeSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <h2 className="text-3xl md:text-4xl font-serif font-bold mb-4">
-            The Beauty Exchange™
+            Emvi Beauty Connections™
           </h2>
           <p className="text-lg text-gray-600">
-            The first marketplace connecting service providers, business owners, and clients
-            through empathetic technology that prioritizes trust and human connection.
+            Connect with artists, salon owners, and clients through a shared vision of beauty and success.
           </p>
         </div>
 
