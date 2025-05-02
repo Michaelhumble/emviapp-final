@@ -23,7 +23,7 @@ const MissingPieceSection = () => {
             that fosters trust, transparency and genuine connections.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/signup">
+            <Link to="/sign-up">
               <Button size="lg" className="font-medium px-8">
                 Start Your Journey
               </Button>
