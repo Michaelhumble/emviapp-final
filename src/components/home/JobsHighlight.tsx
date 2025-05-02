@@ -6,12 +6,13 @@ import { Link } from 'react-router-dom';
 import jobsData from '@/data/jobsData';
 import { ArrowRight } from 'lucide-react';
 import ListingsGrid from '@/components/listings/ListingsGrid';
+import { Job } from '@/types/job';
 
 // Limit to 3 job samples for the highlight section
 const sampleJobs = jobsData.slice(0, 3).map(job => ({
-  ...job, 
-  type: 'job'
-}));
+  ...job,
+  type: 'job' 
+})) as Job[];
 
 const JobsHighlight = () => {
   return (

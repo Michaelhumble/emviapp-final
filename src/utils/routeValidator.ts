@@ -1,6 +1,6 @@
 
 import { isKnownRoute } from './routeChecker';
-import routes from '../routes';
+import { routes } from '../routes'; // Changed from default import to named import
 
 // Map routes config to paths for validation
 const getRoutePaths = () => {

@@ -1,328 +1,220 @@
 
-import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MapPin, Calendar, Clock, DollarSign, Home, Award, User, Lock, Sparkles } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { useTranslation } from "@/hooks/useTranslation";
+import { CalendarIcon, DollarSign, MapPin, Clock, Award, Briefcase } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import { Job } from "@/types/job";
-import { SalonSale } from "@/types/salonSale";
-import { getLocationString } from "@/utils/location";
+import { Salon } from "@/types/salon";
 import { useAuth } from "@/context/auth";
-import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
-import { Badge } from "@/components/ui/badge";
-import { determineSalonCategory } from "@/utils/salonImageFallbacks";
-
-// Define a more flexible listing type that can work with our data
-export interface BasicListing {
-  id?: string;
-  title?: string;
-  name?: string;
-  company?: string;
-  description?: string;
-  vietnamese_description?: string;
-  location?: string;
-  role?: string;
-  employment_type?: string;
-  salary_range?: string;
-  has_housing?: boolean;
-  weekly_pay?: boolean;
-  benefits?: string[];
-  specialties?: string[];
-  city?: string;
-  state?: string;
-  asking_price?: number | string;
-  size?: string;
-  is_urgent?: boolean;
-  business_type?: string;
-  created_at?: string;
-  contact_info?: any;
-  image?: string;
-  imageUrl?: string;
-}
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 interface ListingDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  listing: Job | SalonSale | BasicListing | null;
-  listingType: 'job' | 'salon';
+  listing: Job | Salon;
+  listingType: "job" | "salon";
 }
 
-const ListingDetailModal = ({ isOpen, onClose, listing, listingType }: ListingDetailModalProps) => {
-  const { isVietnamese, toggleLanguage } = useTranslation();
-  const { isSignedIn } = useAuth();
-  const navigate = useNavigate();
-  const [hasSignedUp, setHasSignedUp] = useState(false);
+const ListingDetailModal = ({
+  isOpen,
+  onClose,
+  listing,
+  listingType,
+}: ListingDetailModalProps) => {
+  const { user } = useAuth();
+  const [showLogin, setShowLogin] = useState(false);
 
-  useEffect(() => {
-    // Reset the signed up state when the modal opens
-    if (isOpen) {
-      setHasSignedUp(false);
-    }
-  }, [isOpen]);
-
-  if (!listing) return null;
-
-  // Get the title based on language and listing type
-  const getTitle = () => {
-    if (isVietnamese && 'vietnamese_title' in listing && listing.vietnamese_title) {
-      return listing.vietnamese_title;
-    }
-    if ('title' in listing && listing.title) return listing.title;
-    if ('name' in listing && listing.name) return listing.name;
-    if ('company' in listing && listing.company) return listing.company;
-    if ('role' in listing) {
-      return `${listing.role} Position` + (listing.location ? ` | ${listing.location}` : '');
-    }
-    return listingType === 'job' ? 'Job Listing' : 'Salon For Sale';
-  };
-
-  // Get the description based on language and listing type
-  const getDescription = () => {
-    if (isVietnamese && 'vietnamese_description' in listing && listing.vietnamese_description) {
-      return listing.vietnamese_description;
-    }
-    if ('description' in listing && listing.description) return listing.description;
-    return '';
-  };
-
-  // Get the location
-  const getLocation = () => {
-    if ('location' in listing && listing.location) return listing.location;
-    if ('city' in listing && 'state' in listing && listing.city && listing.state) {
-      return getLocationString(listing.city, listing.state);
-    }
-    return '';
-  };
-
-  // Get date display
-  const getDateDisplay = () => {
-    if ('created_at' in listing && listing.created_at) {
-      return new Date(listing.created_at).toLocaleDateString();
-    }
-    return '';
-  };
-  
-  // Get image for the listing
-  const getImage = () => {
-    if ('imageUrl' in listing && listing.imageUrl) return listing.imageUrl;
-    if ('image' in listing && listing.image) return listing.image;
-    
-    // Determine category for appropriate image
-    const category = determineSalonCategory(
-      getDescription(),
-      getTitle()
-    );
-    
-    return '/placeholder.svg';
-  };
-
-  // Get perks/features to display
-  const getFeatures = () => {
-    const features = [];
-    
-    if ('employment_type' in listing && listing.employment_type) {
-      features.push({
-        icon: <Clock className="h-4 w-4 text-gray-400" />,
-        label: isVietnamese && listing.employment_type === 'Full-time' ? 'Toàn thời gian' : listing.employment_type
-      });
-    }
-    
-    if ('has_housing' in listing && listing.has_housing) {
-      features.push({
-        icon: <Home className="h-4 w-4 text-gray-400" />,
-        label: isVietnamese ? 'Có chỗ ở' : 'Housing Included'
-      });
-    }
-    
-    if ('weekly_pay' in listing && listing.weekly_pay) {
-      features.push({
-        icon: <Award className="h-4 w-4 text-gray-400" />,
-        label: isVietnamese ? 'Trả lương hàng tuần' : 'Weekly Pay'
-      });
-    }
-    
-    if ('salary_range' in listing && listing.salary_range) {
-      features.push({
-        icon: <DollarSign className="h-4 w-4 text-gray-400" />,
-        label: listing.salary_range
-      });
-    } else if ('price' in listing || 'asking_price' in listing) {
-      const price = 'price' in listing ? listing.price : 
-                    'asking_price' in listing ? listing.asking_price : null;
-      if (price) {
-        features.push({
-          icon: <DollarSign className="h-4 w-4 text-gray-400" />,
-          label: typeof price === 'number' ? `$${price.toLocaleString()}` : price
-        });
+  // Safely access nested properties with null checks
+  const safeGetProperty = (obj: any, path: string, defaultVal: any = "") => {
+    const parts = path.split(".");
+    let value = obj;
+    for (const part of parts) {
+      if (value === null || value === undefined || typeof value !== "object") {
+        return defaultVal;
       }
+      value = value[part];
     }
-    
-    return features;
+    return value === undefined || value === null ? defaultVal : value;
   };
 
-  // Get specialties
-  const getSpecialties = () => {
-    if ('specialties' in listing && listing.specialties) {
-      if (typeof listing.specialties === 'string') {
-        return [listing.specialties];
-      }
-      return listing.specialties;
-    }
-    return [];
-  };
-
-  // Handle the sign in action
-  const handleSignInClick = () => {
-    if (hasSignedUp || isSignedIn) {
-      onClose();
+  const getListingTitle = () => {
+    if (listingType === "job") {
+      return safeGetProperty(listing, "title", "Job Opportunity");
     } else {
-      navigate(`/sign-in?redirect=${encodeURIComponent(window.location.pathname)}`);
+      return safeGetProperty(listing, "name", "Salon");
     }
+  };
+
+  // Handle authentication check
+  const handleActionClick = () => {
+    if (!user) {
+      setShowLogin(true);
+    } else {
+      // Handle apply or visit based on listing type
+      if (listingType === "job") {
+        console.log("User applying for job:", listing.id);
+        // Implementation for job application would go here
+      } else {
+        console.log("User viewing salon details:", listing.id);
+        // Implementation for salon visit would go here
+      }
+    }
+  };
+
+  const renderJobDetails = (job: Job) => {
+    return (
+      <div className="mt-6 space-y-4">
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h3 className="font-medium text-lg mb-2">Job Details</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {safeGetProperty(job, "salary") && (
+              <div className="flex items-center gap-2">
+                <DollarSign className="h-4 w-4 text-green-600" />
+                <span>{safeGetProperty(job, "salary")}</span>
+              </div>
+            )}
+            {safeGetProperty(job, "location") && (
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-blue-600" />
+                <span>{safeGetProperty(job, "location")}</span>
+              </div>
+            )}
+            {safeGetProperty(job, "posted") && (
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-purple-600" />
+                <span>Posted: {safeGetProperty(job, "posted")}</span>
+              </div>
+            )}
+            {safeGetProperty(job, "experience") && (
+              <div className="flex items-center gap-2">
+                <Briefcase className="h-4 w-4 text-amber-600" />
+                <span>Experience: {safeGetProperty(job, "experience")}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <h3 className="font-medium text-lg mb-2">Description</h3>
+          <p className="text-gray-700 whitespace-pre-line">
+            {safeGetProperty(job, "description", "No description available.")}
+          </p>
+        </div>
+
+        {safeGetProperty(job, "requirements") && (
+          <div>
+            <h3 className="font-medium text-lg mb-2">Requirements</h3>
+            <ul className="list-disc pl-5 space-y-1">
+              {Array.isArray(safeGetProperty(job, "requirements", [])) &&
+                safeGetProperty(job, "requirements", []).map(
+                  (req: string, idx: number) => (
+                    <li key={idx}>{req}</li>
+                  )
+                )}
+            </ul>
+          </div>
+        )}
+
+        <div className="pt-4">
+          <Button
+            onClick={handleActionClick}
+            className="w-full"
+            size="lg"
+          >
+            {!user ? "Sign In to Apply" : "Apply Now"}
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
+  const renderSalonDetails = (salon: Salon) => {
+    return (
+      <div className="mt-6 space-y-4">
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h3 className="font-medium text-lg mb-2">Salon Information</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {safeGetProperty(salon, "location") && (
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-blue-600" />
+                <span>{safeGetProperty(salon, "location")}</span>
+              </div>
+            )}
+            {safeGetProperty(salon, "salon_type") && (
+              <div className="flex items-center gap-2">
+                <Award className="h-4 w-4 text-amber-600" />
+                <span>Type: {safeGetProperty(salon, "salon_type")}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <h3 className="font-medium text-lg mb-2">About This Salon</h3>
+          <p className="text-gray-700 whitespace-pre-line">
+            {safeGetProperty(salon, "description", "No description available.")}
+          </p>
+        </div>
+
+        <div className="pt-4">
+          <Button
+            onClick={handleActionClick}
+            className="w-full"
+            size="lg"
+          >
+            {!user ? "Sign In to View Details" : "View Salon Profile"}
+          </Button>
+        </div>
+      </div>
+    );
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="max-w-3xl overflow-hidden">
-        <DialogHeader className="pb-2">
-          <DialogTitle className="text-xl md:text-2xl font-bold">
-            {getTitle()}
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-lg md:max-w-2xl lg:max-w-3xl">
+        <DialogHeader>
+          <DialogTitle className="text-xl sm:text-2xl font-semibold">
+            {getListingTitle()}
           </DialogTitle>
-          <DialogDescription className="flex items-center text-base">
-            <MapPin className="h-4 w-4 mr-1.5" />
-            {getLocation()}
-            {getDateDisplay() && (
-              <span className="flex items-center ml-4">
-                <Calendar className="h-4 w-4 mr-1.5" />
-                {getDateDisplay()}
-              </span>
-            )}
+          <DialogDescription>
+            {listingType === "job" 
+              ? safeGetProperty(listing, "company", "") 
+              : safeGetProperty(listing, "address", "")}
           </DialogDescription>
         </DialogHeader>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Left column - Image and details */}
-          <div className="space-y-4">
-            {/* Image */}
-            <div className="aspect-video rounded-md overflow-hidden">
-              <ImageWithFallback
-                src={getImage()}
-                alt={getTitle()}
-                className="w-full h-full object-cover"
-                businessName={getTitle()}
-                priority={true}
-              />
-            </div>
-            
-            {/* Features/Perks */}
-            <div className="space-y-3">
-              {getFeatures().length > 0 && (
-                <div className="flex flex-wrap gap-3">
-                  {getFeatures().map((feature, index) => (
-                    <div key={index} className="flex items-center bg-gray-50 px-3 py-1.5 rounded-md">
-                      {feature.icon}
-                      <span className="ml-1.5 text-sm">{feature.label}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-              
-              {/* Specialties */}
-              {getSpecialties().length > 0 && (
-                <div className="pt-2">
-                  <h3 className="text-sm font-medium text-gray-700 mb-2">
-                    {isVietnamese ? 'Chuyên môn' : 'Specialties'}
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {getSpecialties().map((specialty, index) => (
-                      <Badge key={index} variant="outline" className="bg-gray-50">
-                        <Sparkles className="h-3 w-3 mr-1 text-amber-500" />
-                        {specialty}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
+
+        {showLogin ? (
+          <div className="py-8 text-center">
+            <h3 className="text-lg font-medium mb-4">
+              Sign in to continue
+            </h3>
+            <p className="mb-6 text-gray-600">
+              Create an account or sign in to apply to jobs and view salon details.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/login">
+                <Button className="w-full sm:w-auto" size="lg">
+                  Sign In
+                </Button>
+              </Link>
+              <Link to="/signup">
+                <Button
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                  size="lg"
+                >
+                  Create Account
+                </Button>
+              </Link>
             </div>
           </div>
-          
-          {/* Right column - Description and other details */}
-          <div className="space-y-4">
-            {/* Toggle language button */}
-            {'vietnamese_description' in listing && listing.vietnamese_description && (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={toggleLanguage}
-                className="mb-2"
-              >
-                {isVietnamese ? 'View in English' : 'Xem bằng tiếng Việt'}
-              </Button>
-            )}
-            
-            {/* Description */}
-            <div className="bg-gray-50 p-4 rounded-md">
-              <h3 className="text-base font-medium mb-2">
-                {isVietnamese ? 'Mô tả' : 'Description'}
-              </h3>
-              <p className="text-sm whitespace-pre-line">
-                {getDescription()}
-              </p>
-            </div>
-            
-            {/* Contact info - only visible for authenticated users */}
-            <div className="bg-gray-50 p-4 rounded-md">
-              <h3 className="text-base font-medium mb-1 flex items-center">
-                <User className="h-4 w-4 mr-1.5" />
-                {isVietnamese ? 'Thông tin liên hệ' : 'Contact Information'}
-              </h3>
-              
-              {isSignedIn ? (
-                <div className="space-y-1.5 mt-3">
-                  {'contact_info' in listing && listing.contact_info ? (
-                    <>
-                      {listing.contact_info.owner_name && (
-                        <p className="text-sm"><span className="font-medium">Name:</span> {listing.contact_info.owner_name}</p>
-                      )}
-                      {listing.contact_info.phone && (
-                        <p className="text-sm"><span className="font-medium">Phone:</span> {listing.contact_info.phone}</p>
-                      )}
-                      {listing.contact_info.email && (
-                        <p className="text-sm"><span className="font-medium">Email:</span> {listing.contact_info.email}</p>
-                      )}
-                      {listing.contact_info.notes && (
-                        <p className="text-sm mt-3">{listing.contact_info.notes}</p>
-                      )}
-                    </>
-                  ) : (
-                    <p className="text-sm text-gray-500 italic">
-                      {isVietnamese ? 
-                        'Hãy liên hệ với chúng tôi để biết thêm thông tin.' : 
-                        'Please contact EmviApp for contact details.'}
-                    </p>
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-3">
-                  <div className="flex items-center justify-center mb-3 text-gray-500">
-                    <Lock className="h-5 w-5 mr-2" />
-                    <p>
-                      {isVietnamese 
-                        ? "Đăng ký để xem thông tin liên lạc"
-                        : "Sign up to view contact details"}
-                    </p>
-                  </div>
-                  <Button 
-                    onClick={handleSignInClick}
-                    className="w-full"
-                  >
-                    {isVietnamese ? 'Đăng ký ngay' : 'Sign Up Now'}
-                  </Button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        ) : (
+          <>
+            {/* Display appropriate details based on listing type */}
+            {listingType === "job" ? renderJobDetails(listing as Job) : renderSalonDetails(listing as Salon)}
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );

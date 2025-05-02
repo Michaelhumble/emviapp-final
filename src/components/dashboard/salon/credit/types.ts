@@ -1,17 +1,29 @@
 
-import { Translation } from "@/hooks/useTranslation";
+import { TranslationText } from "@/hooks/useTranslation";
 
-export type CreditOption = {
+// Credit-related types and interfaces
+export interface CreditOption {
   id: string;
-  title: Translation;
-  description: Translation;
+  name: TranslationText;
+  description: TranslationText;
   credits: number;
-  icon: React.ReactNode;
-  action: () => Promise<void>;
-};
+  cost: number;
+  popular?: boolean;
+  features?: TranslationText[];
+}
 
-export type CreditPrompt = {
-  title: Translation;
-  description: Translation;
-  actionText: Translation;
-};
+export interface CreditTransaction {
+  id: string;
+  amount: number;
+  type: 'earned' | 'spent';
+  description: string;
+  date: string;
+}
+
+export interface CreditUsage {
+  id: string;
+  feature: string;
+  credits: number;
+  date: string;
+  status: 'pending' | 'completed' | 'failed';
+}

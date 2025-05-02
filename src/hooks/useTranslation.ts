@@ -1,7 +1,7 @@
 
 import { useState, useCallback } from 'react';
 
-type TranslationText = {
+export type TranslationText = {
   english: string;
   vietnamese: string;
 };
