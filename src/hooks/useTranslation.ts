@@ -1,6 +1,12 @@
 
 import { useState, useCallback } from 'react';
 
+// Define a simple Translation type to avoid recursive type dependencies
+export type Translation = {
+  english: string;
+  vietnamese: string;
+};
+
 export function useTranslation() {
   const [isVietnamese, setIsVietnamese] = useState(false);
   
