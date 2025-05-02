@@ -3,321 +3,220 @@ import React from "react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Job } from "@/types/job";
+import { ArrowRight, Clock, MapPin, Briefcase, DollarSign, Building, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { 
-  MapPin, Building, Phone, Mail, User, Calendar, ListRestart, 
-  Clock, CheckCircle, X, AlertTriangle, Check, ExternalLink 
-} from "lucide-react";
-import { useTranslation } from "@/hooks/useTranslation";
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
-import { Link } from "react-router-dom";
-import { useAuth } from "@/context/auth";
 
 interface JobDetailModalProps {
-  job: Job;
+  job: Job | null;
   isOpen: boolean;
   onClose: () => void;
 }
 
-const JobDetailModal = ({
+const JobDetailModal: React.FC<JobDetailModalProps> = ({
   job,
   isOpen,
-  onClose
-}: JobDetailModalProps) => {
-  const { isSignedIn } = useAuth();
-  const { t, isVietnamese, toggleLanguage } = useTranslation();
-  
-  // Format the posted date
-  const getPostedDate = () => {
-    try {
-      return formatDistanceToNow(new Date(job.created_at), { addSuffix: true });
-    } catch (error) {
-      return "30 days ago";
-    }
-  };
-  
-  // Check if job is expired
-  const isExpired = job.status === 'expired';
-  
-  // Show blurred contact info for expired jobs or non-signed in users
-  const showBlurredContact = isExpired || !isSignedIn;
-  
+  onClose,
+}) => {
+  if (!job) return null;
+
+  const postedDate = job.created_at
+    ? formatDistanceToNow(new Date(job.created_at), { addSuffix: true })
+    : "";
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-semibold">
-            {job.title}
-            
-            {/* Verified badge if job has trust indicators */}
-            {job.trust_indicators && (
-              <Badge className="ml-2 bg-blue-500 text-white flex items-center gap-1">
-                <Check className="h-3 w-3" /> Verified
-              </Badge>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="relative">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="absolute right-0 top-0" 
+            onClick={onClose}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+          <DialogTitle className="text-2xl font-playfair pr-8">{job.title || job.role}</DialogTitle>
+          <DialogDescription className="flex flex-wrap gap-4 text-sm">
+            {job.company && (
+              <div className="flex items-center">
+                <Building className="h-4 w-4 mr-1.5 text-gray-500" />
+                <span>{job.company}</span>
+              </div>
             )}
-            
-            {/* Expired badge */}
-            {isExpired && (
-              <Badge variant="destructive" className="ml-2 flex items-center gap-1">
-                <AlertTriangle className="h-3 w-3" /> 
-                {isVietnamese ? "Đã Hết Hạn" : "Expired"}
-              </Badge>
-            )}
-          </DialogTitle>
-        </DialogHeader>
-        
-        {/* Job image */}
-        <div className="mb-5 rounded-md overflow-hidden">
-          <ImageWithFallback
-            src={job.imageUrl || job.image || ''}
-            alt={job.title || job.company || "Job Listing"}
-            className="w-full aspect-video object-cover"
-            fallbackImage="/lovable-uploads/4c3f751f-3631-43c1-b95d-c6521663f366.png"
-          />
-        </div>
-        
-        <div className="space-y-6">
-          {/* Job metadata */}
-          <div className="space-y-2">
-            <div className="flex items-center text-gray-700">
-              <Building className="h-5 w-5 mr-2" />
-              <span className="font-medium">{job.company}</span>
-            </div>
-            
-            <div className="flex items-center text-gray-700">
-              <MapPin className="h-5 w-5 mr-2" />
+            <div className="flex items-center">
+              <MapPin className="h-4 w-4 mr-1.5 text-gray-500" />
               <span>{job.location}</span>
             </div>
-            
-            <div className="flex items-center text-gray-700">
-              <Calendar className="h-5 w-5 mr-2" />
-              <span>Posted {getPostedDate()}</span>
+            <div className="flex items-center">
+              <Clock className="h-4 w-4 mr-1.5 text-gray-500" />
+              <span>Posted {postedDate}</span>
             </div>
-          </div>
-          
-          {/* Salary/compensation */}
-          {(job.salary_range || job.compensation_details) && (
-            <div className="border-t border-b py-4">
-              <h3 className="font-medium text-gray-800 mb-2">
-                {isVietnamese ? "Thông Tin Lương:" : "Compensation Details:"}
-              </h3>
-              <p className="text-green-600 font-semibold text-lg">
-                {job.salary_range || job.compensation_details}
-              </p>
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            {/* Job image */}
+            <div className="rounded-md overflow-hidden mb-6">
+              <ImageWithFallback
+                src={job.image || job.imageUrl || ""}
+                alt={job.title || job.role || "Job listing"}
+                className="w-full aspect-video object-cover"
+                businessName={job.company || job.title || ""}
+              />
+            </div>
+
+            {/* Job description */}
+            <div className="space-y-4">
+              <h3 className="font-medium text-lg">Job Description</h3>
               
-              {job.tip_range && (
-                <p className="text-gray-700">
-                  <span className="font-medium">Tips:</span> {job.tip_range}
+              {/* English description */}
+              <div className="prose prose-sm max-w-none">
+                <p className="whitespace-pre-line text-gray-700">
+                  {job.description || "No description provided."}
                 </p>
-              )}
-              
-              {job.employment_type && (
-                <p className="text-gray-700 mt-1">
-                  <span className="font-medium">
-                    {isVietnamese ? "Hình Thức Làm:" : "Employment Type:"}
-                  </span> {job.employment_type}
-                </p>
-              )}
-            </div>
-          )}
-          
-          {/* Features section */}
-          <div>
-            <h3 className="font-medium text-gray-800 mb-3">
-              {isVietnamese ? "Đặc Điểm Công Việc:" : "Job Features:"}
-            </h3>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {job.weekly_pay && (
-                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                  💸 {isVietnamese ? "Trả Lương Tuần" : "Weekly Pay"}
-                </Badge>
-              )}
-              
-              {job.owner_will_train && (
-                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                  ✨ {isVietnamese ? "Chủ Sẽ Đào Tạo" : "Owner Will Train"}
-                </Badge>
-              )}
-              
-              {job.has_housing && (
-                <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                  🏠 {isVietnamese ? "Có Chỗ Ở" : "Housing Available"}
-                </Badge>
-              )}
-              
-              {job.no_supply_deduction && (
-                <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
-                  ✅ {isVietnamese ? "Không Trừ Tiền Supplies" : "No Supply Deduction"}
-                </Badge>
-              )}
-            </div>
-          </div>
-          
-          {/* Specialties section */}
-          {job.specialties && job.specialties.length > 0 && (
-            <div>
-              <h3 className="font-medium text-gray-800 mb-3">
-                {isVietnamese ? "Chuyên Môn:" : "Specialties:"}
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {job.specialties.map((specialty, index) => (
-                  <Badge
-                    key={index}
-                    variant="outline"
-                    className="bg-pink-50 text-pink-600 border-pink-200"
-                  >
-                    {specialty}
-                  </Badge>
-                ))}
               </div>
-            </div>
-          )}
-          
-          {/* Description section */}
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="font-medium text-gray-800">
-                {isVietnamese ? "Mô Tả Công Việc:" : "Job Description:"}
-              </h3>
               
+              {/* Vietnamese description if available */}
               {job.vietnamese_description && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={toggleLanguage} 
-                  className="text-xs"
-                >
-                  {isVietnamese ? "View in English" : "Xem Tiếng Việt"}
-                </Button>
-              )}
-            </div>
-            
-            <div className="bg-gray-50 p-4 rounded-md">
-              {isVietnamese && job.vietnamese_description ? (
-                <p className="whitespace-pre-line">{job.vietnamese_description}</p>
-              ) : (
-                <p className="whitespace-pre-line">{job.description}</p>
-              )}
-            </div>
-            
-            {isExpired && (
-              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                <p className="text-red-600 flex items-center gap-1.5 font-medium">
-                  <AlertTriangle className="h-4 w-4" />
-                  {isVietnamese 
-                    ? "Mã tin này đã hết hạn (quá 30 ngày)" 
-                    : "This job post has expired (over 30 days old)"}
-                </p>
-              </div>
-            )}
-          </div>
-          
-          {/* Contact information section - blurred for non-logged in users or expired jobs */}
-          <div>
-            <h3 className="font-medium text-gray-800 mb-3">
-              {isVietnamese ? "Thông Tin Liên Hệ:" : "Contact Information:"}
-            </h3>
-            
-            {showBlurredContact ? (
-              <div className="bg-gray-50 p-4 rounded-md relative">
-                {/* Blurred content */}
-                <div className="blur-sm">
-                  <div className="flex items-center mb-2">
-                    <User className="h-4 w-4 mr-2" />
-                    <span>Jane Doe</span>
-                  </div>
-                  <div className="flex items-center mb-2">
-                    <Phone className="h-4 w-4 mr-2" />
-                    <span>(123) 456-7890</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Mail className="h-4 w-4 mr-2" />
-                    <span>contact@example.com</span>
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <h3 className="font-medium text-lg mb-2">Mô Tả Công Việc</h3>
+                  <div className="prose prose-sm max-w-none">
+                    <p className="whitespace-pre-line text-gray-700">
+                      {job.vietnamese_description}
+                    </p>
                   </div>
                 </div>
+              )}
+              
+              {/* Requirements */}
+              {job.requirements && job.requirements.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="font-medium text-lg mb-2">Requirements</h3>
+                  <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                    {typeof job.requirements === 'string' ? (
+                      <li>{job.requirements}</li>
+                    ) : (
+                      job.requirements.map((req, index) => (
+                        <li key={index}>{req}</li>
+                      ))
+                    )}
+                  </ul>
+                </div>
+              )}
+              
+              {/* Benefits */}
+              {job.benefits && job.benefits.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="font-medium text-lg mb-2">Benefits</h3>
+                  <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                    {job.benefits.map((benefit, index) => (
+                      <li key={index}>{benefit}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Job details sidebar */}
+          <div className="lg:col-span-1">
+            <div className="bg-gray-50 rounded-lg p-5 space-y-4 sticky top-4">
+              <h3 className="font-medium text-lg">Job Details</h3>
+              
+              {/* Job type */}
+              <div>
+                <div className="text-sm text-gray-500 mb-1">Job Type</div>
+                <div className="flex items-center">
+                  <Briefcase className="h-4 w-4 mr-1.5 text-gray-600" />
+                  <span>{job.employment_type || "Full-time"}</span>
+                </div>
+              </div>
+              
+              {/* Salary/Compensation */}
+              {(job.salary_range || job.compensation_details) && (
+                <div>
+                  <div className="text-sm text-gray-500 mb-1">Compensation</div>
+                  <div className="flex items-center">
+                    <DollarSign className="h-4 w-4 mr-1.5 text-gray-600" />
+                    <span>{job.salary_range || job.compensation_details}</span>
+                  </div>
+                </div>
+              )}
+              
+              {/* Special features */}
+              <div className="space-y-2">
+                {job.weekly_pay && (
+                  <div className="flex items-center">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-2"></span>
+                    <span className="text-sm">Weekly Pay</span>
+                  </div>
+                )}
                 
-                {/* Overlay with sign-up prompt */}
-                <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-md">
-                  {isExpired ? (
-                    <div className="text-center p-4">
-                      <AlertTriangle className="h-8 w-8 text-amber-500 mx-auto mb-2" />
-                      <p className="text-gray-800 font-medium">
-                        {isVietnamese 
-                          ? "Thông tin liên hệ không còn hiển thị cho mã tin đã hết hạn" 
-                          : "Contact information is hidden for expired listings"}
-                      </p>
+                {job.has_housing && (
+                  <div className="flex items-center">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-2"></span>
+                    <span className="text-sm">Housing Provided</span>
+                  </div>
+                )}
+                
+                {job.owner_will_train && (
+                  <div className="flex items-center">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-2"></span>
+                    <span className="text-sm">Training Provided</span>
+                  </div>
+                )}
+              </div>
+              
+              {/* Contact info */}
+              {job.contact_info && (
+                <div className="pt-4 mt-4 border-t border-gray-200">
+                  <h4 className="font-medium mb-2">Contact Information</h4>
+                  {job.contact_info.owner_name && (
+                    <div className="text-sm mb-1">
+                      <span className="font-medium">Contact:</span> {job.contact_info.owner_name}
                     </div>
-                  ) : (
-                    <div className="text-center p-4">
-                      <Link to="/sign-up">
-                        <Button>
-                          {isVietnamese 
-                            ? "Đăng Ký Để Xem Thông Tin Liên Hệ" 
-                            : "Sign Up To View Contact Info"}
-                        </Button>
-                      </Link>
+                  )}
+                  {job.contact_info.email && (
+                    <div className="text-sm mb-1">
+                      <span className="font-medium">Email:</span>{" "}
+                      <a href={`mailto:${job.contact_info.email}`} className="text-primary hover:underline">
+                        {job.contact_info.email}
+                      </a>
+                    </div>
+                  )}
+                  {job.contact_info.phone && (
+                    <div className="text-sm">
+                      <span className="font-medium">Phone:</span>{" "}
+                      <a href={`tel:${job.contact_info.phone}`} className="text-primary hover:underline">
+                        {job.contact_info.phone}
+                      </a>
                     </div>
                   )}
                 </div>
-              </div>
-            ) : (
-              <div className="bg-gray-50 p-4 rounded-md">
-                {job.contact_info?.owner_name && (
-                  <div className="flex items-center mb-2">
-                    <User className="h-4 w-4 mr-2" />
-                    <span>{job.contact_info.owner_name}</span>
-                  </div>
-                )}
-                
-                {job.contact_info?.phone && (
-                  <div className="flex items-center mb-2">
-                    <Phone className="h-4 w-4 mr-2" />
-                    <a href={`tel:${job.contact_info.phone}`} className="text-blue-600 hover:underline">
-                      {job.contact_info.phone}
-                    </a>
-                  </div>
-                )}
-                
-                {job.contact_info?.email && (
-                  <div className="flex items-center">
-                    <Mail className="h-4 w-4 mr-2" />
-                    <a href={`mailto:${job.contact_info.email}`} className="text-blue-600 hover:underline">
-                      {job.contact_info.email}
-                    </a>
-                  </div>
-                )}
-              </div>
-            )}
+              )}
+              
+              {/* Apply button */}
+              <Button className="w-full mt-4 group">
+                Apply Now <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </div>
           </div>
         </div>
-        
-        <DialogFooter className="mt-6 flex sm:justify-between gap-4 flex-col sm:flex-row">
+
+        <DialogFooter className="flex flex-col sm:flex-row sm:justify-between gap-2 mt-6">
           <Button variant="outline" onClick={onClose}>
-            {isVietnamese ? "Đóng" : "Close"}
+            Close
           </Button>
-          
-          <div className="flex gap-2">
-            {isExpired ? (
-              <Button className="flex items-center gap-1.5">
-                <ListRestart className="h-4 w-4" />
-                {isVietnamese ? "Gia Hạn Tin" : "Renew Listing"}
-              </Button>
-            ) : (
-              <Link to="/sign-up">
-                <Button className="flex items-center gap-1.5">
-                  <ExternalLink className="h-4 w-4" />
-                  {isVietnamese ? "Ứng Tuyển Ngay" : "Apply Now"}
-                </Button>
-              </Link>
-            )}
-          </div>
+          <Button>Apply for this Position</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

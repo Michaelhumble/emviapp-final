@@ -48,8 +48,8 @@ export const fetchSalonById = async (id: string): Promise<{
         return { ...response, error: true };
       }
 
-      // Fix: Use type assertion to break circular reference
-      const formattedSalon = formatJobListings(data as any);
+      // Use explicit type conversion to break circular reference
+      const formattedSalon = formatJobListings(data as Record<string, any>);
       return { ...response, salon: formattedSalon };
     }
   } catch (err) {
@@ -143,8 +143,8 @@ export const fetchSalons = async (options: {
         return { ...response, error: true };
       }
       
-      // Fix: Use type assertion to break circular reference
-      const formattedSalons = data ? data.map((item) => formatJobListings(item as any)) : [];
+      // Use explicit type conversion to break circular reference
+      const formattedSalons = data ? data.map((item) => formatJobListings(item as Record<string, any>)) : [];
       const totalPages = count ? Math.ceil(count / limit) : 1;
       
       return {

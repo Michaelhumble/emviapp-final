@@ -1,14 +1,13 @@
+
 import { useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import Hero from "@/components/home/Hero";
 import ClientSuccessStories from "@/components/home/ClientSuccessStories";
-import Testimonials from "@/components/home/Testimonials";
 import { useAuth } from "@/context/auth";
 import { useNavigate } from "react-router-dom";
 import RoleSelectionModal from "@/components/auth/RoleSelectionModal";
 import { useRoleSelection } from "@/hooks/useRoleSelection";
 import AIPowerhouse from "@/components/home/AIPowerhouse";
-import AITeam from "@/components/home/AITeam";
 import TrustFirstPanel from "@/components/home/TrustFirstPanel";
 import MissingPieceSection from "@/components/home/missing-piece";
 import { runListingsVerification } from "@/utils/runListingsVerification";
@@ -21,6 +20,7 @@ import SalonClientGrowthSystem from "@/components/home/SalonClientGrowthSystem";
 import WhyTrustSection from "@/components/home/sections/WhyTrustSection";
 import WhatYouCanDoSection from "@/components/home/sections/WhatYouCanDoSection";
 import BeautyExchangeSection from "@/components/home/BeautyExchangeSection";
+import BilingualExperienceSection from "@/components/home/BilingualExperienceSection";
 
 const Index = () => {
   const { user, userRole, loading } = useAuth();
@@ -72,6 +72,9 @@ const Index = () => {
       
       {/* Trust First Panel */}
       <TrustFirstPanel />
+      
+      {/* Bilingual Experience Section - restored as requested */}
+      <BilingualExperienceSection />
       
       {/* Founder sections at bottom */}
       <FounderMessage />
