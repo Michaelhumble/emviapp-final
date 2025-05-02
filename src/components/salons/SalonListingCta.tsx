@@ -23,7 +23,7 @@ const SalonListingCta = () => {
               </p>
               <div className="flex flex-wrap gap-4">
                 <Button asChild size="lg" className="bg-orange-500 hover:bg-orange-600">
-                  <Link to="/salons/post">List Your Salon</Link>
+                  <Link to="/signup">List Your Salon</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg">
                   <Link to="/salons">View Other Listings</Link>

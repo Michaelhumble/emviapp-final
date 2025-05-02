@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
 import { Crown } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const FinalCTA = () => {
   const { t } = useTranslation();
@@ -29,17 +30,18 @@ const FinalCTA = () => {
         })}
       </p>
 
-      <Button 
-        size="lg" 
-        className="bg-emvi-accent hover:bg-emvi-accent/90 transform hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl px-8 py-5 text-lg"
-        onClick={() => window.location.href = '/checkout?plan=founding_member'}
-      >
-        <Crown className="mr-2 h-5 w-5" />
-        {t({
-          english: "Join the Founders Circle",
-          vietnamese: "Tham gia Câu lạc bộ Người sáng lập"
-        })}
-      </Button>
+      <Link to="/signup">
+        <Button 
+          size="lg" 
+          className="bg-emvi-accent hover:bg-emvi-accent/90 transform hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl px-8 py-5 text-lg"
+        >
+          <Crown className="mr-2 h-5 w-5" />
+          {t({
+            english: "Join the Founders Circle",
+            vietnamese: "Tham gia Câu lạc bộ Người sáng lập"
+          })}
+        </Button>
+      </Link>
     </motion.section>
   );
 };

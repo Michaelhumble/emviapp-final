@@ -21,11 +21,11 @@ const CallToAction = () => {
         <div className="flex flex-wrap gap-4 justify-center">
           {!user ? (
             <>
-              <Link to="/auth/signup">
+              <Link to="/signup">
                 <Button size="lg">Get Started</Button>
               </Link>
-              <Link to="/early-access">
-                <Button size="lg" variant="outline">Get Early Access</Button>
+              <Link to="/salons">
+                <Button size="lg" variant="outline">Browse Services</Button>
               </Link>
             </>
           ) : (
@@ -35,9 +35,9 @@ const CallToAction = () => {
               </Link>
               
               {!hasActiveSubscription && (
-                <PremiumFeatureGate feature="multiple-posts">
-                  <Button size="lg" variant="outline">Post Multiple Listings</Button>
-                </PremiumFeatureGate>
+                <Link to="/pricing">
+                  <Button size="lg" variant="outline">View Premium Features</Button>
+                </Link>
               )}
             </>
           )}

@@ -22,14 +22,14 @@ const FinalFounderCTA = () => {
             Join thousands of artists, salon owners, and beauty enthusiasts who've found success with EmviApp.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/auth/signup">
+            <Link to="/signup">
               <Button size="lg" className="font-medium px-6">
                 Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
-            <Link to="/salon-owners">
+            <Link to="/salons">
               <Button size="lg" variant="outline" className="font-medium">
-                I'm a Salon Owner
+                Explore Services
               </Button>
             </Link>
           </div>

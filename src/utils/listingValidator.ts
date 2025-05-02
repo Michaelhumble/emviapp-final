@@ -35,6 +35,20 @@ export const validateListingExists = async (id: string, type: ListingType): Prom
 };
 
 /**
+ * Validates listing data by checking required fields
+ * @param data Listing data to validate
+ * @param requiredFields Array of field names that must exist in data
+ * @returns boolean True if the listing data is valid, false otherwise
+ */
+export const validateListingData = (data: any, requiredFields: string[]): boolean => {
+  if (!data) return false;
+  
+  return requiredFields.every(field => {
+    return data[field] !== undefined && data[field] !== null;
+  });
+};
+
+/**
  * Generates a fallback route based on listing type
  * @param type The type of listing
  * @returns A fallback route for the listing type

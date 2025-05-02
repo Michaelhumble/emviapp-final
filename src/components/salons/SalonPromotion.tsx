@@ -18,7 +18,7 @@ const SalonPromotion: React.FC = () => {
         <Badge variant="outline" className="bg-white text-gray-800 font-normal text-sm py-1.5 px-4">
           Featured Listing: $99
         </Badge>
-        <Link to="/salons/list">
+        <Link to="/signup">
           <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 px-6">
             List Your Salon
           </Button>
