@@ -14,6 +14,7 @@ export interface Salon {
   monthly_revenue?: string;
   yearly_revenue?: string;
   image?: string;
+  images?: string[];
   featured?: boolean;
   contact_info?: {
     phone?: string;

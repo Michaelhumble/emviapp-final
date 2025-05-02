@@ -1,4 +1,3 @@
-
 import { Salon as AppSalon } from "@/types/salon";
 import { Salon as MarketplaceSalon } from "@/components/marketplace/mockData";
 
@@ -24,7 +23,11 @@ export const marketplaceToAppSalon = (marketplaceSalon: MarketplaceSalon): AppSa
       : undefined,
     // Add other required fields with defaults
     featured: marketplaceSalon.featured,
-    is_vietnamese_listing: typeof marketplaceSalon.description === 'object' && !!marketplaceSalon.description.vi
+    is_vietnamese_listing: typeof marketplaceSalon.description === 'object' && !!marketplaceSalon.description.vi,
+    // Adding images property to fix TypeScript error
+    images: marketplaceSalon.images || (marketplaceSalon.image ? [marketplaceSalon.image] : []),
+    // Keep image reference for backward compatibility
+    image: marketplaceSalon.image
   };
 };
 
@@ -42,6 +45,7 @@ export const appToMarketplaceSalon = (appSalon: AppSalon): MarketplaceSalon => {
     willTrain: appSalon.willTrain || false,
     featured: appSalon.featured || false,
     image: appSalon.imageUrl || appSalon.image || "",
+    images: appSalon.images || [],
     description: {
       en: appSalon.description || "",
       vi: appSalon.vietnamese_description || ""

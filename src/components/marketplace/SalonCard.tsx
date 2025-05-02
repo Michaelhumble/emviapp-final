@@ -29,7 +29,8 @@ interface SalonCardProps {
 export const SalonCard = ({ salon, viewDetails }: SalonCardProps) => {
   const priceAnalysis = (() => {
     const marketAvg = 180000;
-    const priceDiff = (salon.price - marketAvg) / marketAvg * 100;
+    const salonPrice = Number(salon.price);
+    const priceDiff = (salonPrice - marketAvg) / marketAvg * 100;
     
     if (priceDiff < -10) return { text: "Good Deal", color: "bg-green-100 text-green-800" };
     if (priceDiff > 10) return { text: "Premium", color: "bg-orange-100 text-orange-800" };
@@ -83,7 +84,7 @@ export const SalonCard = ({ salon, viewDetails }: SalonCardProps) => {
             style: 'currency',
             currency: 'USD',
             maximumFractionDigits: 0
-          }).format(salon.price)}</span>
+          }).format(Number(salon.price))}</span>
         </div>
         
         <div className="flex items-center text-gray-600 mb-3 text-sm">

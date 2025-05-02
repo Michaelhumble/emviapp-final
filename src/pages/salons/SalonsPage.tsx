@@ -42,11 +42,11 @@ const SalonMarketplace = () => {
 
     let matchesPrice = true;
     if (priceFilter === 'under100k') {
-      matchesPrice = salon.price < 100000;
+      matchesPrice = Number(salon.price) < 100000;
     } else if (priceFilter === '100k-200k') {
-      matchesPrice = salon.price >= 100000 && salon.price <= 200000;
+      matchesPrice = Number(salon.price) >= 100000 && Number(salon.price) <= 200000;
     } else if (priceFilter === 'over200k') {
-      matchesPrice = salon.price > 200000;
+      matchesPrice = Number(salon.price) > 200000;
     }
 
     return matchesSearch && matchesLocation && matchesPrice;

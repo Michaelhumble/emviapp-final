@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -61,7 +62,7 @@ const SalonDetailsDialog: React.FC<SalonDetailsDialogProps> = ({
       // Otherwise, add the $ sign
       return `$${price}`;
     } else if (typeof price === 'number') {
-      return `$${price.toLocaleString()}`;
+      return `$${Number(price).toLocaleString()}`;
     }
     
     return 'Contact for Price';
