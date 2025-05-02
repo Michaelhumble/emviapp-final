@@ -10,3 +10,8 @@ export const createTranslation = (english: string, vietnamese: string): Translat
 export const createBilingualText = (text: string): TranslationText => {
   return { english: text, vietnamese: text };
 };
+
+// Helper function to convert strings to Translation objects (added this function)
+export const toTranslatableText = (text: string): TranslationText => {
+  return { english: text, vietnamese: text };
+};

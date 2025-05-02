@@ -13,7 +13,7 @@ export function useTranslation() {
     setIsVietnamese(prev => !prev);
   }, []);
   
-  // Updated translation function that accepts either a string pair or an object with english/vietnamese properties
+  // Updated translation function that handles both string and TranslationText properly
   const t = useCallback((text: string | TranslationText, fallbackText?: string): string => {
     // If text is an object with english/vietnamese properties
     if (typeof text === 'object' && text !== null && 'english' in text && 'vietnamese' in text) {
@@ -21,7 +21,7 @@ export function useTranslation() {
     }
     
     // If text is a string (legacy format)
-    return isVietnamese ? (fallbackText || text) : text;
+    return isVietnamese ? (fallbackText || text as string) : (text as string);
   }, [isVietnamese]);
   
   return { isVietnamese, toggleLanguage, t };

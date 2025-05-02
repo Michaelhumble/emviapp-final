@@ -5,14 +5,78 @@ import { Container } from "@/components/ui/container";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SearchIcon, MapPinIcon, SliderIcon } from "lucide-react";
+import { SearchIcon, MapPinIcon, SlidersIcon } from "lucide-react";
 import { Salon } from "@/types/salon";
 import ListingsGrid from "@/components/listings/ListingsGrid";
-import { salonListings } from "@/components/home/SalonJobListingsShowcase";
+
+// Import real salon listings data
+const salonData: Salon[] = [
+  {
+    id: "salon-1",
+    name: "Tiệm Nail ở Kansas City North",
+    location: "Kansas City North",
+    price: 0,
+    imageUrl: "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png",
+    description: "Tiệm mình ở Kansas City North đang cần tìm thợ Bột và Dip full time. Luôn đảm bảo income nên cần tìm thợ làm lâu dài, chuyên nghiệp, tận tâm với công việc, xin phép không tuyển thợ ngắn hạn.",
+    features: ["Môi trường làm việc vui vẻ", "Trẻ trung", "Khách lịch sự"],
+    salon_type: "nail",
+    is_vietnamese_listing: true
+  },
+  {
+    id: "salon-2",
+    name: "Tiệm Nails trên đường 45 south Houston",
+    location: "Houston, TX",
+    price: 40000,
+    imageUrl: "/lovable-uploads/d1da4b24-248e-4e84-9289-06237e7d4458.png",
+    description: "Tiệm rộng 1500 sqf có 7 ghế 6 bàn 3 phòng wax và facial rent 2700\\month. Máy giặt may sấy.1phong ăn. Tiệm hoạt động 15 năm nên có lượng khách ổn định.",
+    features: ["7 ghế", "6 bàn", "3 phòng wax", "Máy giặt sấy"],
+    square_feet: 1500,
+    monthly_rent: 2700,
+    salon_type: "nail",
+    is_vietnamese_listing: true
+  },
+  {
+    id: "salon-3",
+    name: "Cosmo Nails",
+    location: "Overland Park",
+    price: 0,
+    imageUrl: "/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png",
+    description: "Tiệm Cosmo Nails ở Overland Park cần tìm thợ chân tay nước biết làm dip càng tốt. Chủ trẻ dễ nói chuyện, thợ dễ thương hoà đồng thân thiện. Tiệm khu sang, tip cao, gần nhiều shopping center.",
+    features: ["Tip cao", "Khu sang", "Gần shopping center"],
+    salon_type: "nail",
+    is_vietnamese_listing: true
+  },
+  {
+    id: "salon-4",
+    name: "Tiệm Nail ở Orlando FL",
+    location: "Orlando, FL",
+    price: 0,
+    imageUrl: "/lovable-uploads/4e47f970-963a-483f-8356-eb64235bc2db.png",
+    description: "Diện tích 1,400 sqft, gồm 10 bàn, 8 ghế , có phòng facial, wax, phòng ăn, máy giặt, máy sấy đầy đủ. Khu trung tâm đông dân, gần trường học, ngân hàng,nhà bank.. – tiện mở rộng kinh doanh.",
+    features: ["10 bàn", "8 ghế", "Phòng facial", "Máy giặt sấy"],
+    square_feet: 1400,
+    salon_type: "nail",
+    is_vietnamese_listing: true
+  },
+  {
+    id: "salon-5",
+    name: "Bellagio Nail & Day Spa",
+    location: "Pensacola, FL",
+    price: 0,
+    imageUrl: "/lovable-uploads/5a1ba245-85f7-4036-95f9-0e08ada34602.png",
+    description: "Tiệm đang cần thợ làm everything hoặc chân tay nước, biết vẽ càng tốt. Income cao, bao lương or ăn chia tuỳ theo tay nghề.",
+    features: ["Income cao", "Môi trường vui vẻ"],
+    salon_type: "nail",
+    is_vietnamese_listing: true,
+    contact_info: {
+      phone: "(850) 346-7273"
+    }
+  },
+];
 
 const SalonsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredSalons, setFilteredSalons] = useState<Salon[]>(salonListings);
+  const [filteredSalons, setFilteredSalons] = useState<Salon[]>(salonData);
   const [activeTab, setActiveTab] = useState("all");
   const [loading, setLoading] = useState(false);
 
@@ -32,7 +96,7 @@ const SalonsPage = () => {
   }, [searchTerm, activeTab]);
 
   const filterSalons = () => {
-    let results = [...salonListings];
+    let results = [...salonData];
 
     // Filter by search term if provided
     if (searchTerm.trim()) {

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { Container } from "@/components/ui/container";
@@ -6,21 +5,83 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SearchIcon, FilterIcon, MapPinIcon } from "lucide-react";
-import jobsData from "@/data/jobsData";
 import { Job } from "@/types/job";
 import ListingsGrid from "@/components/listings/ListingsGrid";
 
-// Add type property to convert jobsData to proper Job type
-const typedJobs: Job[] = jobsData.map(job => ({
-  ...job,
-  created_at: job.posted || new Date().toISOString(),
-  updated_at: new Date().toISOString(),
-  type: 'job'
-})) as Job[];
+// Real Vietnamese job listings data
+const jobsData: Job[] = [
+  {
+    id: "job-1",
+    title: "Thợ Bột và Dip Full Time",
+    company: "Tiệm Nail",
+    location: "Kansas City North",
+    created_at: new Date().toISOString(),
+    description: "Tiệm mình ở Kansas City North đang cần tìm thợ Bột và Dip full time. Luôn đảm bảo income nên cần tìm thợ làm lâu dài, chuyên nghiệp, tận tâm với công việc, xin phép không tuyển thợ ngắn hạn. Tiệm có số lượng khách ổn định, khách lịch sự, dễ thương, dễ build khách. Môi trường làm việc vui vẻ, trẻ trung, luôn hỗ trợ nhau trong công việc và giúp đỡ nhau trong cuộc sống.",
+    imageUrl: "/lovable-uploads/bb5c8292-c127-4fd2-9663-c65d596b135d.png",
+    type: 'job',
+    is_vietnamese_listing: true,
+    vietnamese_description: "Tiệm mình ở Kansas City North đang cần tìm thợ Bột và Dip full time. Luôn đảm bảo income nên cần tìm thợ làm lâu dài, chuyên nghiệp, tận tâm với công việc, xin phép không tuyển thợ ngắn hạn. Tiệm có số lượng khách ổn định, khách lịch sự, dễ thương, dễ build khách. Môi trường làm việc vui vẻ, trẻ trung, luôn hỗ trợ nhau trong công việc và giúp đỡ nhau trong cuộc sống."
+  },
+  {
+    id: "job-2",
+    title: "Tiệm Nails Cần Bán Gấp",
+    company: "Nails",
+    location: "South Houston, TX",
+    created_at: new Date().toISOString(),
+    description: "☘️☘️cần bán tiệm Nails gấp ☘️☘️ Xin chào mọi người ☘️tiệm của mình nằm trên đường 45 south Houston khu đông dân cư. Tiệm rộng 1500 sqf có 7 ghế 6 bàn 3 phòng wax và facial rent 2700\\month. Máy giặt may sấy.1phong ăn. Tiệm hoạt động 15 năm nên có lượng khách ổn định. Vì muốn về hưu nên muốn sang tiệm.",
+    imageUrl: "/lovable-uploads/d1da4b24-248e-4e84-9289-06237e7d4458.png",
+    type: 'job',
+    is_vietnamese_listing: true,
+    for_sale: true,
+    vietnamese_description: "☘️☘️cần bán tiệm Nails gấp ☘️☘️ Xin chào mọi người ☘️tiệm của mình nằm trên đường 45 south Houston khu đông dân cư. Tiệm rộng 1500 sqf có 7 ghế 6 bàn 3 phòng wax và facial rent 2700\\month. Máy giặt may sấy.1phong ăn. Tiệm hoạt động 15 năm nên có lượng khách ổn định. Vì muốn về hưu nên muốn sang tiệm."
+  },
+  {
+    id: "job-3",
+    title: "Thợ Chân Tay Nước",
+    company: "Cosmo Nails",
+    location: "Overland Park",
+    created_at: new Date().toISOString(),
+    description: "Tiệm Cosmo Nails ở Overland Park cần tìm thợ chân tay nước biết làm dip càng tốt. Chủ trẻ dễ nói chuyện, thợ dễ thương hoà đồng thân thiện. Tiệm khu sang, tip cao, gần nhiều shopping center. Ai muốn về cùng team để cùng phát triển thì vui lòng liên hệ.",
+    imageUrl: "/lovable-uploads/fa1b4f95-ebc9-452c-a18b-9d4e78db84bb.png",
+    type: 'job',
+    is_vietnamese_listing: true,
+    vietnamese_description: "Tiệm Cosmo Nails ở Overland Park cần tìm thợ chân tay nước biết làm dip càng tốt. Chủ trẻ dễ nói chuyện, thợ dễ thương hoà đồng thân thiện. Tiệm khu sang, tip cao, gần nhiều shopping center. Ai muốn về cùng team để cùng phát triển thì vui lòng liên hệ."
+  },
+  {
+    id: "job-4",
+    title: "Sang Tiệm Nail",
+    company: "Tiệm Nail Orlando",
+    location: "Orlando, FL",
+    created_at: new Date().toISOString(),
+    description: "🔥 Sang Tiệm Nail 1,400 sqft ở Orlando FL – Vị Trí Đẹp, Khách Sẵn! 📍Diện tích 1,400 sqft, gồm 10 bàn, 8 ghế , có phòng facial, wax, phòng ăn, máy giặt, máy sấy đầy đủ. 📍Khu trung tâm đông dân, gần trường học, ngân hàng,nhà bank.. – tiện mở rộng kinh doanh. 📍Sẵn 4 thợ giỏi làm fulltime, lượng khách quen ổn định.",
+    imageUrl: "/lovable-uploads/4e47f970-963a-483f-8356-eb64235bc2db.png",
+    type: 'job',
+    is_vietnamese_listing: true,
+    vietnamese_description: "🔥 Sang Tiệm Nail 1,400 sqft ở Orlando FL – Vị Trí Đẹp, Khách Sẵn! 📍Diện tích 1,400 sqft, gồm 10 bàn, 8 ghế , có phòng facial, wax, phòng ăn, máy giặt, máy sấy đầy đủ. 📍Khu trung tâm đông dân, gần trường học, ngân hàng,nhà bank.. – tiện mở rộng kinh doanh. 📍Sẵn 4 thợ giỏi làm fulltime, lượng khách quen ổn định.",
+    for_sale: true,
+    salon_features: ["10 bàn", "8 ghế", "Phòng facial", "Phòng wax"]
+  },
+  {
+    id: "job-5",
+    title: "Cần Thợ Nail",
+    company: "Bellagio Nail & Day Spa",
+    location: "Pensacola, FL",
+    created_at: new Date().toISOString(),
+    description: "‼️ Cần Nhiều Thợ Nail Cho Tiệm ở Pensacola FL 💅 Tiệm đang cần thợ làm everything hoặc chân tay nước, biết vẽ càng tốt. ✨ Income cao, bao lương or ăn chia tuùy theo tay nghề. 👉🏻Gọi đi làm liền, nơi làm việc vui vẻ, thoải mái.",
+    imageUrl: "/lovable-uploads/5a1ba245-85f7-4036-95f9-0e08ada34602.png",
+    type: 'job',
+    is_vietnamese_listing: true,
+    vietnamese_description: "‼️ Cần Nhiều Thợ Nail Cho Tiệm ở Pensacola FL 💅 Tiệm đang cần thợ làm everything hoặc chân tay nước, biết vẽ càng tốt. ✨ Income cao, bao lương or ăn chia tuùy theo tay nghề. 👉🏻Gọi đi làm liền, nơi làm việc vui vẻ, thoải mái.",
+    contact_info: {
+      owner_name: "Bellagio Nail & Day Spa",
+      phone: "(850) 346-7273"
+    }
+  },
+];
 
 const JobsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredJobs, setFilteredJobs] = useState<Job[]>(typedJobs);
+  const [filteredJobs, setFilteredJobs] = useState<Job[]>(jobsData);
   const [activeTab, setActiveTab] = useState("all");
   const [loading, setLoading] = useState(false);
 
@@ -40,7 +101,7 @@ const JobsPage = () => {
   }, [searchTerm, activeTab]);
 
   const filterJobs = () => {
-    let results = [...typedJobs];
+    let results = [...jobsData];
 
     // Filter by search term if provided
     if (searchTerm.trim()) {
