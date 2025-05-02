@@ -1,270 +1,257 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Badge } from '@/components/ui/badge';
-import { MapPin, DollarSign, Users, Building, SquareDot, TrendingUp, Calendar } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
-import { Salon } from '@/types/salon';
-import Layout from '@/components/layout/Layout';
-import { determineSalonCategory } from '@/utils/salonImageFallbacks';
 
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import Layout from '@/components/layout/Layout';
+import { SquareDot, MapPin, Clock, DollarSign, Phone, Mail, Globe, Star } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
+import { Card } from '@/components/ui/card';
+import { fetchSalonById } from '@/utils/salonFetcher';
+import { determineSalonCategory } from '@/utils/salonImageFallbacks';
+import { Job } from '@/types/job';
+
+// Define params as a Record<string, string> to satisfy the constraint
 interface SalonDetailPageParams {
-  salonId: string;
+  [key: string]: string; // This adds an index signature
+  id: string;
 }
 
-const SimpleSalonDetailPage: React.FC = () => {
-  const { salonId } = useParams<SalonDetailPageParams>();
-  const [salon, setSalon] = useState<Salon | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+const SimpleSalonDetailPage = () => {
+  const navigate = useNavigate();
+  const { id } = useParams<SalonDetailPageParams>();
+  const [salon, setSalon] = useState<Job | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    const fetchSalonDetails = async () => {
-      setIsLoading(true);
-      setError(null);
-
+    const loadSalon = async () => {
       try {
-        if (!salonId) {
-          setError('Salon ID is missing.');
+        if (!id) {
+          setError(true);
+          setLoading(false);
           return;
         }
 
-        const response = await fetch(`/api/salons/${salonId}`);
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch salon details: ${response.status}`);
+        const { salon: salonData, error: fetchError } = await fetchSalonById(id);
+        
+        if (fetchError || !salonData) {
+          setError(true);
+          setLoading(false);
+          return;
         }
 
-        const data = await response.json();
-        setSalon(data);
-      } catch (err: any) {
-        setError(err.message || 'Failed to fetch salon details.');
-      } finally {
-        setIsLoading(false);
+        setSalon(salonData);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error loading salon:', err);
+        setError(true);
+        setLoading(false);
       }
     };
 
-    fetchSalonDetails();
-  }, [salonId]);
+    loadSalon();
+  }, [id]);
 
-  if (isLoading) {
-    return <Layout><div className="container mx-auto p-4">Loading salon details...</div></Layout>;
+  if (loading) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-12">
+          <div className="animate-pulse">
+            <div className="h-72 bg-gray-200 rounded-lg mb-6"></div>
+            <div className="h-10 bg-gray-200 rounded w-3/4 mb-4"></div>
+            <div className="h-6 bg-gray-200 rounded w-1/2 mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="h-40 bg-gray-200 rounded"></div>
+              <div className="h-40 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
   }
 
-  if (error) {
-    return <Layout><div className="container mx-auto p-4 text-red-500">Error: {error}</div></Layout>;
+  if (error || !salon) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-12 text-center">
+          <h1 className="text-3xl font-bold mb-4">Salon Not Found</h1>
+          <p className="mb-6">Sorry, we couldn't find the salon you're looking for.</p>
+          <Button onClick={() => navigate('/salons')}>Browse Other Salons</Button>
+        </div>
+      </Layout>
+    );
   }
 
-  if (!salon) {
-    return <Layout><div className="container mx-auto p-4">Salon not found.</div></Layout>;
-  }
-
-  const getSalonImage = () => {
-    try {
-      if (salon.image && typeof salon.image === 'string' && salon.image.trim() !== '') {
-        return salon.image;
-      }
-      
-      if (salon.imageUrl && typeof salon.imageUrl === 'string' && salon.imageUrl.trim() !== '') {
-        return salon.imageUrl;
-      }
-      
-      const category = salon.category || determineSalonCategory(salon.description, salon.name);
-      return `/img/salon-images/${category || 'generic'}.jpg`;
-    } catch (error) {
-      console.error('Error getting salon image:', error);
-      return '/img/salon-images/generic.jpg';
-    }
-  };
+  // Get salon category for appropriate image fallback
+  const salonCategory = determineSalonCategory(
+    salon.description || '',
+    salon.title || salon.name || ''
+  );
 
   return (
     <Layout>
-      <div className="container mx-auto p-4">
-        <Card className="overflow-hidden">
-          <div className="relative">
-            <div className="aspect-video w-full overflow-hidden">
-              <ImageWithFallback
-                src={getSalonImage()}
-                alt={salon.name || 'Salon listing'}
-                className="w-full h-full object-cover"
-                businessName={salon.name || 'Salon'}
-                category={salon.category}
-                showPremiumBadge={salon.isPremium}
-                priority={true}
-              />
-            </div>
-            {salon.featured && (
-              <Badge variant="outline" className="absolute top-2 right-2 bg-amber-50 text-amber-600 border-amber-200 uppercase text-xs">
-                Featured
-              </Badge>
-            )}
-          </div>
-
-          <CardContent className="p-6">
-            <h1 className="text-2xl font-semibold mb-4">{salon.name}</h1>
-            <Tabs defaultvalue="details" className="w-full">
-              <TabsList>
-                <TabsTrigger value="details">Details</TabsTrigger>
-                {salon.services && (
-                  <TabsTrigger value="services">Services</TabsTrigger>
-                )}
-                {salon.amenities && (
-                  <TabsTrigger value="amenities">Amenities</TabsTrigger>
-                )}
-                {salon.hours && (
-                  <TabsTrigger value="hours">Hours</TabsTrigger>
-                )}
-              </TabsList>
-              <TabsContent value="details">
-                <SalonDetailsContent salon={salon} />
-              </TabsContent>
-              {salon.services && (
-                <TabsContent value="services">
-                  <SalonServicesContent services={salon.services} />
-                </TabsContent>
-              )}
-              {salon.amenities && (
-                <TabsContent value="amenities">
-                  <SalonAmenitiesContent amenities={salon.amenities} />
-                </TabsContent>
-              )}
-              {salon.hours && (
-                <TabsContent value="hours">
-                  <SalonHoursContent hours={salon.hours} />
-                </TabsContent>
-              )}
-            </Tabs>
-          </CardContent>
-        </Card>
-      </div>
-    </Layout>
-  );
-};
-
-const SalonDetailsContent = ({ salon }: { salon: Salon }) => {
-  return (
-    <div className="grid md:grid-cols-2 gap-8 mt-6">
-      <div>
-        <h3 className="text-lg font-semibold mb-2">Salon Details</h3>
-        <div className="space-y-3">
-          <div className="flex items-center">
-            <MapPin className="h-4 w-4 mr-2 text-gray-500" />
-            <span>{salon.location}</span>
+      <div className="container mx-auto px-4 py-8">
+        {/* Hero Section */}
+        <div className="mb-8">
+          <div className="aspect-[16/9] w-full overflow-hidden rounded-lg mb-6">
+            <ImageWithFallback
+              src={salon.image || ''}
+              alt={salon.title || salon.name || 'Salon'}
+              className="w-full h-full object-cover"
+              businessName={salon.title || salon.name || 'Salon'}
+              category={salonCategory}
+              priority={true}
+            />
           </div>
           
-          {salon.monthlyRent && (
-            <div className="flex items-center">
-              <Building className="h-4 w-4 mr-2 text-gray-500" />
-              <span>Monthly Rent: ${Number(salon.monthlyRent).toLocaleString()}</span>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold">{salon.title || salon.name}</h1>
+              <div className="flex items-center mt-2 text-gray-600">
+                <MapPin className="h-4 w-4 mr-1" />
+                <span>{salon.location || 'Location not available'}</span>
+              </div>
             </div>
-          )}
-          
-          {salon.square_feet && (
+            
             <div className="flex items-center">
-              <SquareDot className="h-4 w-4 mr-2 text-gray-500" />
-              <span>Area: {Number(salon.square_feet).toLocaleString()} sq ft</span>
-            </div>
-          )}
-          
-          {salon.staff && (
-            <div className="flex items-center">
-              <Users className="h-4 w-4 mr-2 text-gray-500" />
-              <span>Staff: {salon.staff}</span>
-            </div>
-          )}
-          
-          {(salon.revenue || salon.monthly_revenue || salon.yearly_revenue) && (
-            <div className="flex items-center">
-              <TrendingUp className="h-4 w-4 mr-2 text-gray-500" />
-              <span>
-                Revenue: {
-                  salon.revenue ? `$${Number(salon.revenue).toLocaleString()}` :
-                  salon.monthly_revenue ? `$${salon.monthly_revenue}/month` :
-                  salon.yearly_revenue ? `$${salon.yearly_revenue}/year` : 'Contact for details'
-                }
+              <span className="font-bold text-2xl text-primary">
+                {typeof salon.price === 'number' || typeof salon.price === 'string' 
+                  ? `$${Number(salon.price).toLocaleString()}`
+                  : 'Contact for price'}
               </span>
             </div>
-          )}
-          
-          {salon.willTrain !== undefined && (
-            <div className="flex items-center">
-              <Calendar className="h-4 w-4 mr-2 text-gray-500" />
-              <span>{salon.willTrain ? 'Training available for new owner' : 'No training included'}</span>
-            </div>
-          )}
-        </div>
-        
-        <h3 className="text-lg font-semibold mt-6 mb-2">Asking Price</h3>
-        <div className="flex items-center">
-          <DollarSign className="h-5 w-5 mr-2 text-emerald-600" />
-          <span className="text-xl font-bold text-emerald-700">
-            {salon.asking_price ? `$${Number(salon.asking_price).toLocaleString()}` : salon.price ? `$${Number(salon.price).toLocaleString()}` : 'Contact for price'}
-          </span>
-        </div>
-      </div>
-      
-      <div>
-        <h3 className="text-lg font-semibold mb-2">Description</h3>
-        <p className="text-gray-700 whitespace-pre-line">{salon.description}</p>
-        
-        {salon.features && salon.features.length > 0 && (
-          <>
-            <h3 className="text-lg font-semibold mt-6 mb-2">Features</h3>
-            <div className="flex flex-wrap gap-2">
-              {salon.features.map((feature, index) => (
-                <Badge key={index} variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                  {feature}
-                </Badge>
-              ))}
-            </div>
-          </>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const SalonServicesContent = ({ services }: { services: string[] }) => {
-  return (
-    <div className="mt-4">
-      <h3 className="text-lg font-semibold mb-2">Services Offered</h3>
-      <ul className="list-disc list-inside text-gray-700">
-        {services.map((service, index) => (
-          <li key={index}>{service}</li>
-        ))}
-      </ul>
-    </div>
-  );
-};
-
-const SalonAmenitiesContent = ({ amenities }: { amenities: string[] }) => {
-  return (
-    <div className="mt-4">
-      <h3 className="text-lg font-semibold mb-2">Amenities</h3>
-      <div className="flex flex-wrap gap-2">
-        {amenities.map((amenity, index) => (
-          <Badge key={index} variant="secondary">{amenity}</Badge>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const SalonHoursContent = ({ hours }: { hours: { [key: string]: string } }) => {
-  return (
-    <div className="mt-4">
-      <h3 className="text-lg font-semibold mb-2">Business Hours</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {Object.entries(hours).map(([day, time]) => (
-          <div key={day} className="flex justify-between">
-            <span className="font-medium capitalize">{day}:</span>
-            <span>{time}</span>
           </div>
-        ))}
+        </div>
+        
+        {/* Tabs Section */}
+        <Tabs defaultValue="details" className="mb-10">
+          <TabsList className="mb-6">
+            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="features">Features</TabsTrigger>
+            <TabsTrigger value="contact">Contact</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="details" className="space-y-6">
+            {/* Description */}
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold mb-4">Description</h2>
+              <p className="text-gray-700">{salon.description || 'No description available.'}</p>
+            </Card>
+            
+            {/* Specifications */}
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold mb-4">Specifications</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {salon.square_feet && (
+                  <div className="flex items-center">
+                    <SquareDot className="h-5 w-5 text-gray-400 mr-2" />
+                    <span>
+                      <strong>{Number(salon.square_feet).toLocaleString()}</strong> sq ft
+                    </span>
+                  </div>
+                )}
+                
+                {salon.monthly_rent && (
+                  <div className="flex items-center">
+                    <DollarSign className="h-5 w-5 text-gray-400 mr-2" />
+                    <span>
+                      <strong>${Number(salon.monthly_rent).toLocaleString()}</strong> monthly rent
+                    </span>
+                  </div>
+                )}
+                
+                {salon.monthly_revenue && (
+                  <div className="flex items-center">
+                    <DollarSign className="h-5 w-5 text-green-500 mr-2" />
+                    <span>
+                      <strong>${typeof salon.monthly_revenue === 'string' ? salon.monthly_revenue : Number(salon.monthly_revenue).toLocaleString()}</strong> monthly revenue
+                    </span>
+                  </div>
+                )}
+                
+                {salon.established && (
+                  <div className="flex items-center">
+                    <Clock className="h-5 w-5 text-gray-400 mr-2" />
+                    <span>
+                      Established <strong>{salon.established}</strong>
+                    </span>
+                  </div>
+                )}
+              </div>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="features" className="space-y-6">
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold mb-4">Features</h2>
+              {salon.features && salon.features.length > 0 ? (
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {salon.features.map((feature, index) => (
+                    <li key={index} className="flex items-center">
+                      <Star className="h-4 w-4 text-amber-400 mr-2" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-500">No features listed for this salon.</p>
+              )}
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="contact" className="space-y-6">
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold mb-4">Contact Information</h2>
+              <div className="space-y-4">
+                {salon.contact_info?.phone && (
+                  <div className="flex items-center">
+                    <Phone className="h-5 w-5 text-gray-400 mr-2" />
+                    <span>{salon.contact_info.phone}</span>
+                  </div>
+                )}
+                
+                {salon.contact_info?.email && (
+                  <div className="flex items-center">
+                    <Mail className="h-5 w-5 text-gray-400 mr-2" />
+                    <span>{salon.contact_info.email}</span>
+                  </div>
+                )}
+                
+                {salon.website && (
+                  <div className="flex items-center">
+                    <Globe className="h-5 w-5 text-gray-400 mr-2" />
+                    <a href={salon.website} className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
+                      {salon.website}
+                    </a>
+                  </div>
+                )}
+                
+                {salon.contact_info?.owner_name && (
+                  <div className="mt-4 p-3 bg-gray-50 rounded border border-gray-100">
+                    <p className="text-sm text-gray-500">Owner/Manager</p>
+                    <p className="font-medium">{salon.contact_info.owner_name}</p>
+                  </div>
+                )}
+              </div>
+            </Card>
+          </TabsContent>
+        </Tabs>
+        
+        {/* Actions */}
+        <div className="flex flex-col sm:flex-row gap-4 mt-10">
+          <Button className="flex-1" onClick={() => window.history.back()}>
+            Back
+          </Button>
+          <Button variant="outline" className="flex-1" onClick={() => navigate('/salons')}>
+            View All Salons
+          </Button>
+          <Button variant="default" className="flex-1" onClick={() => window.location.href = `mailto:${salon.contact_info?.email || 'info@emviapp.com'}?subject=Inquiry about ${salon.title || salon.name}`}>
+            Contact Seller
+          </Button>
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 
