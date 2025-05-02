@@ -23,7 +23,8 @@ export const validateListingExists = async (id: string, type: ListingType): Prom
     
     case 'job':
     case 'opportunity':
-      return !!jobsData.find(job => job.id === id);
+      // Fix: Convert the job.id to string before comparing with the string id parameter
+      return !!jobsData.find(job => job.id.toString() === id);
     
     case 'booth':
       // We could implement booth validation in the future
