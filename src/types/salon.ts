@@ -5,7 +5,7 @@ export interface Salon {
   id: string;
   name: string;
   location: string;
-  price: number;
+  price: number | string;
   imageUrl: string;
   description: string;
   features?: string[];
@@ -80,4 +80,10 @@ export interface Salon {
   
   // Created at timestamp (needed for Job compatibility)
   created_at?: string;
+  
+  // Added marketplace specific properties to resolve type errors
+  monthlyRent?: number;
+  revenue?: number;
+  staff?: number;
+  willTrain?: boolean;
 }

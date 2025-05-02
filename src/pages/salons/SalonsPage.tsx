@@ -1,304 +1,170 @@
 
-import React, { useState, useEffect } from 'react';
-import { Container } from '@/components/ui/container';
-import { SalonFilter } from '@/components/marketplace/SalonFilter';
-import { Salon } from '@/types/salon';
-import { SalonCard } from '@/components/marketplace/SalonCard';
-import { SalonDetailsDialog } from '@/components/marketplace/SalonDetailsDialog';
-import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { SlidersHorizontal } from "lucide-react"; // Correct import
+import { useState, useEffect } from "react";
+import { Search, Frown, Star, SlidersHorizontal } from "lucide-react";
+import Layout from "@/components/layout/Layout";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SalonCard } from "@/components/marketplace/SalonCard";
+import { SalonDetailsDialog } from "@/components/marketplace/SalonDetailsDialog";
+import { SalonFilter } from "@/components/marketplace/SalonFilter";
+import { Salon as MarketplaceSalon, salons } from "@/components/marketplace/mockData";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/context/auth";
+import { marketplaceToAppSalon, appToMarketplaceSalon } from "@/components/marketplace/salonAdapter";
+import { Salon } from "@/types/salon";
 
-// Sample data for demonstration
-const sampleSalons = [
-  {
-    id: 1,
-    name: "Luxe Nail & Spa",
-    location: "Houston, TX",
-    price: 120000,
-    monthlyRent: 2500,
-    staff: 6,
-    revenue: 22000,
-    willTrain: true,
-    featured: true,
-    image: "/lovable-uploads/f7ba1d82-2928-4e73-a61b-112e5aaf5b7e.png",
-    description: {
-      en: "Established nail salon with loyal clientele in upscale shopping center. Owner retiring after 10 successful years in business.",
-      vi: "Tiệm nail đã hoạt động với khách hàng thân thiết trong trung tâm mua sắm cao cấp. Chủ nghỉ hưu sau 10 năm kinh doanh thành công."
-    }
-  },
-  {
-    id: 2,
-    name: "Forever Beauty Salon",
-    location: "Miami, FL",
-    price: 85000,
-    monthlyRent: 1800,
-    staff: 4,
-    revenue: 15000,
-    willTrain: true,
-    featured: false,
-    image: "/lovable-uploads/4c4050d4-4a79-4610-8d47-bf6cc92bf8a3.png",
-    description: {
-      en: "Turnkey operation in busy strip mall with all equipment included. Great opportunity for first-time owners.",
-      vi: "Hoạt động chìa khóa trao tay trong trung tâm mua sắm nhộn nhịp với đầy đủ thiết bị. Cơ hội tuyệt vời cho chủ sở hữu lần đầu."
-    }
-  },
-  {
-    id: 3,
-    name: "Diamond Nails",
-    location: "Las Vegas, NV",
-    price: 175000,
-    monthlyRent: 3200,
-    staff: 8,
-    revenue: 28000,
-    willTrain: false,
-    featured: true,
-    image: "/lovable-uploads/1f97f5e0-6b52-4ac6-925b-396bc0a1e585.png",
-    description: {
-      en: "Premium nail salon in high-traffic tourist area. Fully staffed with experienced technicians and high profit margins.",
-      vi: "Tiệm nail cao cấp trong khu vực du lịch đông đúc. Đầy đủ nhân viên với thợ có kinh nghiệm và tỷ suất lợi nhuận cao."
-    }
-  },
-  {
-    id: 4,
-    name: "Elegance Hair Studio",
-    location: "Atlanta, GA",
-    price: 95000,
-    monthlyRent: 2100,
-    staff: 5,
-    revenue: 18000,
-    willTrain: true,
-    featured: false,
-    image: "/lovable-uploads/8df4a272-7afd-41a2-bbf7-994276084ec4.png",
-    description: {
-      en: "Well-established hair salon with modern equipment and decor. Owner relocating out of state.",
-      vi: "Tiệm tóc được thiết lập tốt với thiết bị và trang trí hiện đại. Chủ chuyển đến tiểu bang khác."
-    }
-  },
-  {
-    id: 5,
-    name: "Blissful Day Spa",
-    location: "San Diego, CA",
-    price: 230000,
-    monthlyRent: 4000,
-    staff: 10,
-    revenue: 35000,
-    willTrain: false,
-    featured: true,
-    image: "/lovable-uploads/3d3a731b-4560-4317-8dc7-93d933b82b10.png",
-    description: {
-      en: "Luxury day spa with full range of services including massage, facials, and body treatments. Excellent reputation and high-end clientele.",
-      vi: "Spa cao cấp với đầy đủ các dịch vụ bao gồm massage, chăm sóc da mặt và điều trị cơ thể. Uy tín tuyệt vời và khách hàng cao cấp."
-    }
-  },
-  {
-    id: 6,
-    name: "Classic Cuts Barbershop",
-    location: "Chicago, IL",
-    price: 75000,
-    monthlyRent: 1600,
-    staff: 4,
-    revenue: 14000,
-    willTrain: true,
-    featured: false,
-    image: "/lovable-uploads/4e42c014-9ec4-4834-ade3-2b11c8e47361.png",
-    description: {
-      en: "Traditional barbershop with modern twist in downtown location. Loyal customer base and all equipment included.",
-      vi: "Tiệm cắt tóc nam truyền thống với phong cách hiện đại ở trung tâm thành phố. Cơ sở khách hàng trung thành và bao gồm tất cả thiết bị."
-    }
-  }
-];
+const SalonMarketplace = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [locationFilter, setLocationFilter] = useState("all");
+  const [priceFilter, setPriceFilter] = useState("all");
+  const [selectedSalon, setSelectedSalon] = useState<MarketplaceSalon | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { user } = useAuth();
 
-export default function SalonsPage() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [locationFilter, setLocationFilter] = useState('all');
-  const [priceFilter, setPriceFilter] = useState('all');
-  const [selectedSalon, setSelectedSalon] = useState<Salon | null>(null);
-  const [salons, setSalons] = useState<Salon[]>(sampleSalons);
-  const [priceRange, setPriceRange] = useState([0, 250000]);
-  const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
+  // Use mapped salons that match our app's Salon type
+  const [mappedSalons, setMappedSalons] = useState<Salon[]>([]);
 
-  // Filter salons based on search, location, and price
   useEffect(() => {
-    let filtered = sampleSalons;
+    console.log('SalonMarketplace page rendered - no banner');
+    // Convert marketplace salons to app salon format
+    const convertedSalons = salons.map(salon => marketplaceToAppSalon(salon));
+    setMappedSalons(convertedSalons);
+  }, []);
 
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(salon => 
-        salon.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        salon.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (salon.description?.en?.toLowerCase().includes(searchTerm.toLowerCase()))
-      );
+  // Filter using the mapped salons
+  const filteredSalons = mappedSalons.filter(salon => {
+    const matchesSearch = 
+      salon.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      salon.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      salon.description.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesLocation = locationFilter === 'all' || 
+      salon.location.toLowerCase().includes(locationFilter.toLowerCase());
+
+    let matchesPrice = true;
+    if (priceFilter === 'under100k') {
+      matchesPrice = salon.price < 100000;
+    } else if (priceFilter === '100k-200k') {
+      matchesPrice = salon.price >= 100000 && salon.price <= 200000;
+    } else if (priceFilter === 'over200k') {
+      matchesPrice = salon.price > 200000;
     }
 
-    // Location filter
-    if (locationFilter !== 'all') {
-      filtered = filtered.filter(salon => 
-        salon.location.toLowerCase().includes(locationFilter.toLowerCase())
-      );
-    }
+    return matchesSearch && matchesLocation && matchesPrice;
+  });
 
-    // Price filter
-    if (priceFilter !== 'all') {
-      switch (priceFilter) {
-        case 'under100k':
-          filtered = filtered.filter(salon => salon.price < 100000);
-          break;
-        case '100k-200k':
-          filtered = filtered.filter(salon => salon.price >= 100000 && salon.price <= 200000);
-          break;
-        case 'over200k':
-          filtered = filtered.filter(salon => salon.price > 200000);
-          break;
-      }
-    }
+  // Put featured salons at the top
+  const sortedSalons = [...filteredSalons].sort((a, b) => {
+    if (a.featured === b.featured) return 0;
+    return a.featured ? -1 : 1;
+  });
 
-    // Price range slider filter
-    filtered = filtered.filter(
-      salon => salon.price >= priceRange[0] && salon.price <= priceRange[1]
+  // Component for displaying no results message
+  const NoResults = () => (
+    <div className="flex flex-col items-center justify-center py-12">
+      <div className="bg-gray-100 p-4 rounded-full mb-4">
+        <Search className="h-8 w-8 text-gray-400" />
+      </div>
+      <h3 className="text-lg font-medium mb-2">No salons found</h3>
+      <p className="text-gray-500 text-center mb-6">
+        Try adjusting your filters or search terms
+      </p>
+      <div className="flex gap-4">
+        <button 
+          onClick={() => {
+            setSearchTerm("");
+            setLocationFilter("all");
+            setPriceFilter("all");
+          }}
+          className="text-sm text-primary hover:underline"
+        >
+          Clear all filters
+        </button>
+      </div>
+    </div>
+  );
+
+  // Helper function to render salon grid
+  const renderSalonGrid = (salons: Salon[]) => {
+    if (salons.length === 0) {
+      return <NoResults />;
+    }
+    
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {salons.map((salon) => {
+          // Convert back to marketplace format for display
+          const marketplaceSalon = appToMarketplaceSalon(salon);
+          return (
+            <SalonCard 
+              key={marketplaceSalon.id} 
+              salon={marketplaceSalon}
+              viewDetails={() => viewSalonDetails(marketplaceSalon)} 
+            />
+          );
+        })}
+      </div>
     );
+  };
 
-    setSalons(filtered);
-  }, [searchTerm, locationFilter, priceFilter, priceRange]);
-
-  const viewSalonDetails = (salon: Salon) => {
+  // Function to view salon details
+  const viewSalonDetails = (salon: MarketplaceSalon) => {
     setSelectedSalon(salon);
-  };
-
-  const closeSalonDetails = () => {
-    setSelectedSalon(null);
-  };
-
-  const handlePriceRangeChange = (value: number[]) => {
-    setPriceRange(value);
+    setIsDialogOpen(true);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <Container>
-        <div className="text-center mb-12">
-          <h1 className="font-playfair text-4xl md:text-5xl font-bold mb-4">Salon Marketplace</h1>
-          <p className="text-gray-600 max-w-3xl mx-auto">
-            Browse beauty salons for sale across the country. Find the perfect business opportunity in the beauty industry.
-          </p>
-        </div>
+    <Layout>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-serif font-bold mb-2 text-center">Salon Marketplace</h1>
+        <p className="text-center text-gray-600 mb-8">Browse salons for sale across the country</p>
         
-        <div className="flex flex-col md:flex-row gap-4 mb-8 items-center">
-          <div className="w-full md:flex-1">
-            <SalonFilter 
-              searchTerm={searchTerm}
-              locationFilter={locationFilter}
-              priceFilter={priceFilter}
-              setSearchTerm={setSearchTerm}
-              setLocationFilter={setLocationFilter}
-              setPriceFilter={setPriceFilter}
-            />
-          </div>
-          
-          <div className="md:hidden w-full">
-            <Sheet open={isFilterSheetOpen} onOpenChange={setIsFilterSheetOpen}>
-              <SheetTrigger asChild>
-                <Button variant="outline" className="w-full">
-                  <SlidersHorizontal className="mr-2 h-4 w-4" /> More Filters
-                </Button>
-              </SheetTrigger>
-              <SheetContent>
-                <SheetHeader>
-                  <SheetTitle>Price Range Filter</SheetTitle>
-                  <SheetDescription>
-                    Adjust the slider to filter by price range
-                  </SheetDescription>
-                </SheetHeader>
-                <div className="py-6 px-1">
-                  <div className="mb-2">
-                    <p className="text-sm text-gray-500 mb-1">Price Range:</p>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm font-medium">
-                        ${(priceRange[0] / 1000).toFixed(0)}k
-                      </span>
-                      <span className="text-sm font-medium">
-                        ${(priceRange[1] / 1000).toFixed(0)}k
-                      </span>
-                    </div>
-                  </div>
-                  <Slider
-                    defaultValue={[0, 250000]}
-                    max={250000}
-                    step={5000}
-                    value={priceRange}
-                    onValueChange={handlePriceRangeChange}
-                  />
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
-        </div>
+        <SalonFilter
+          searchTerm={searchTerm}
+          locationFilter={locationFilter}
+          priceFilter={priceFilter}
+          setSearchTerm={setSearchTerm}
+          setLocationFilter={setLocationFilter}
+          setPriceFilter={setPriceFilter}
+        />
 
-        {/* Desktop price range filter */}
-        <div className="hidden md:block mb-8 bg-white p-4 rounded-md shadow-sm">
-          <p className="text-sm font-medium mb-2">Price Range:</p>
-          <div className="flex justify-between mb-2">
-            <span className="text-sm text-gray-500">
-              ${(priceRange[0] / 1000).toFixed(0)}k
-            </span>
-            <span className="text-sm text-gray-500">
-              ${(priceRange[1] / 1000).toFixed(0)}k
-            </span>
-          </div>
-          <Slider
-            defaultValue={[0, 250000]}
-            max={250000}
-            step={5000}
-            value={priceRange}
-            onValueChange={handlePriceRangeChange}
-            className="mt-2"
-          />
-        </div>
-
-        {salons.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            {salons.map(salon => (
-              <SalonCard 
-                key={salon.id} 
-                salon={salon} 
-                viewDetails={() => viewSalonDetails(salon)} 
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-            <h3 className="text-xl font-semibold mb-2">No salons found</h3>
-            <p className="text-gray-600">
-              Try adjusting your search filters to find more results.
-            </p>
-          </div>
+        {filteredSalons.length === 0 && searchTerm.length > 0 && (
+          <Alert className="mb-6">
+            <AlertDescription className="flex items-center gap-2">
+              <Frown className="h-4 w-4" />
+              No results found for "{searchTerm}". Try different keywords or clear filters.
+            </AlertDescription>
+          </Alert>
         )}
 
-        <div className="text-center">
-          <p className="text-gray-600 mb-4">
-            Don't see what you're looking for? Post your salon for sale today.
-          </p>
-          <Button size="lg">
-            Post Your Salon For Sale
-          </Button>
-        </div>
-      </Container>
-
-      {selectedSalon && (
-        <SalonDetailsDialog 
-          isOpen={!!selectedSalon} 
-          onClose={closeSalonDetails} 
-          salon={selectedSalon} 
-        />
-      )}
-    </div>
+        <Tabs defaultValue="all" className="mb-8">
+          <TabsList className="mb-4">
+            <TabsTrigger value="all">All Salons</TabsTrigger>
+            <TabsTrigger value="featured" className="flex items-center">
+              <Star className="h-3 w-3 mr-1 text-amber-500" /> Featured
+            </TabsTrigger>
+            <TabsTrigger value="recent">Recently Added</TabsTrigger>
+          </TabsList>
+          <TabsContent value="all" className="mt-0">
+            {renderSalonGrid(sortedSalons)}
+          </TabsContent>
+          <TabsContent value="featured" className="mt-0">
+            {renderSalonGrid(sortedSalons.filter(salon => salon.featured))}
+          </TabsContent>
+          <TabsContent value="recent" className="mt-0">
+            {renderSalonGrid(sortedSalons.slice(0, 3))}
+          </TabsContent>
+        </Tabs>
+        
+        {selectedSalon && (
+          <SalonDetailsDialog 
+            isOpen={isDialogOpen}
+            onOpenChange={setIsDialogOpen}
+            salon={selectedSalon}
+          />
+        )}
+      </div>
+    </Layout>
   );
-}
+};
+
+export default SalonMarketplace;
