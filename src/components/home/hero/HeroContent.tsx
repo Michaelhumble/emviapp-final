@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -91,35 +90,24 @@ const HeroContent = ({
         </motion.p>
         
         <motion.div
-          className="flex flex-wrap justify-center gap-4 mt-8"
+          className="flex justify-center mt-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.6 }}
         >
-          {/* Main CTA Button */}
-          <Link to={currentSlide.cta?.link || "/auth/signup"}>
+          {/* Single CTA Button - Start Your Journey */}
+          <Link to="/signup">
             <Button 
               size="lg" 
               className="font-medium px-8 py-6 text-lg shadow-lg shadow-black/20 hover:shadow-xl hover:shadow-black/30 transition-all duration-300"
             >
-              {currentSlide.cta?.text || "Join EmviApp Today"}
-            </Button>
-          </Link>
-          
-          {/* Secondary CTA Button */}
-          <Link to="/explore">
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="bg-white/10 border-white/20 text-white font-medium px-8 py-6 text-lg backdrop-blur-sm hover:bg-white/20 transition-all duration-300"
-            >
-              Explore First
+              Start Your Journey
             </Button>
           </Link>
         </motion.div>
       </div>
       
-      {/* Image selection dots/indicators - showing active set with overflow indicator */}
+      {/* Image selection dots/indicators - keeping the image slider functionality */}
       <div className="flex justify-center items-center gap-2 mt-10">
         {heroImages.length > 7 && activeIndex > 3 && (
           <button
