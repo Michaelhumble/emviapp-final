@@ -1,7 +1,8 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
-import { nailSalonListings } from '@/utils/beautyExchangeImages';
+import { featuredNailsAds } from '@/utils/featuredNailsAds';
 import NailSalonDetailModal from './NailSalonDetailModal';
 
 // Categories that will be displayed
@@ -15,11 +16,11 @@ const categories = [
 
 const BeautyExchangeLayout = () => {
   // State for managing the selected listing and detail modal
-  const [selectedListing, setSelectedListing] = useState<typeof nailSalonListings[0] | null>(null);
+  const [selectedListing, setSelectedListing] = useState<typeof featuredNailsAds[0] | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   // Handler for opening the detail modal
-  const handleViewDetails = (listing: typeof nailSalonListings[0]) => {
+  const handleViewDetails = (listing: typeof featuredNailsAds[0]) => {
     setSelectedListing(listing);
     setIsDetailOpen(true);
   };
@@ -45,7 +46,7 @@ const BeautyExchangeLayout = () => {
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {category === "Nails" ? (
                   // Display real nail salon listings with uploaded images
-                  nailSalonListings.map((listing) => (
+                  featuredNailsAds.map((listing) => (
                     <div 
                       key={listing.id} 
                       className="bg-white border border-gray-200 rounded-lg shadow hover:shadow-md transition-shadow duration-300"
@@ -62,7 +63,7 @@ const BeautyExchangeLayout = () => {
                       {/* Card content */}
                       <div className="p-4">
                         <h4 className="font-medium mb-1 truncate">{listing.title}</h4>
-                        <p className="text-gray-500 text-xs mb-2">{listing.location}</p>
+                        <p className="text-gray-500 text-xs mb-2">{listing.location} • {listing.price}</p>
                         <Button 
                           variant="outline" 
                           size="sm" 

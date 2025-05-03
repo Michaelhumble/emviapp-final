@@ -2,7 +2,7 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Star } from 'lucide-react';
+import { Star, Phone } from 'lucide-react';
 
 type NailSalonDetailModalProps = {
   open: boolean;
@@ -16,6 +16,7 @@ type NailSalonDetailModalProps = {
     photos: string[];
     price: string;
     rating: number;
+    contact?: string;
   } | null;
 }
 
@@ -53,6 +54,15 @@ const NailSalonDetailModal = ({ open, onOpenChange, listing }: NailSalonDetailMo
             <h3 className="font-medium mb-2">About this salon</h3>
             <p className="text-gray-600">{listing.description}</p>
           </div>
+          
+          {listing.contact && (
+            <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
+              <div className="flex items-center">
+                <Phone className="w-4 h-4 text-primary mr-2" />
+                <span className="font-medium">{listing.contact}</span>
+              </div>
+            </div>
+          )}
           
           <div className="mt-6 pt-4 border-t border-gray-100 flex justify-between">
             <Button variant="outline">Send Message</Button>
